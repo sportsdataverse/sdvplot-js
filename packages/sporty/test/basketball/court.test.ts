@@ -52,3 +52,9 @@ test("color and param updates: hidden feature is #00000000; updates typed; FIBA 
   expect(fiba.units).toBe("ft");
   expect(fiba.bbox[2]).toBeCloseTo((28 / 2 + 2.5) * 3.28084, 2); // FIBA JSON: court_length 28 m, court_apron_endline 2.5 m
 });
+
+test("three-point table counts R's corner column: a second corner adds a second arc (R draws 110 layers)", () => {
+  expect(
+    basketballCourt("nba", { updates: { basket_center_to_corner_three: [22, 21] } }).features,
+  ).toHaveLength(110);
+});

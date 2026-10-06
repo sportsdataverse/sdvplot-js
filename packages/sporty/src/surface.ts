@@ -33,8 +33,9 @@ export function mergeColors<F extends string>(
   return { ...defaults, ...updates };
 }
 
+/** R `data.frame()` recycling: colour i of a vector is `c[i % length]`. */
 export const colorAt = (c: Color | readonly Color[], i: number): Color =>
-  typeof c === "string" ? c : (c[i] ?? c[c.length - 1] ?? "#00000000");
+  typeof c === "string" ? c : (c[i % c.length] ?? "#00000000");
 
 export interface FeatureOptions {
   /** R `feature_outline_color` (default `#ffffff00` = no stroke). */
@@ -87,7 +88,10 @@ export function displayBbox(xlim: Limits, ylim: Limits, rotation: number): Scene
   return [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)];
 }
 
-/** Divergence from R, which converts the features but not the display limits (so a non-native plot is cropped wrong). */
+/**
+ * Divergence from R: R converts the feature points but neither the anchors nor the display limits, so its
+ * non-native plot is scrambled as well as cropped. We convert all three (see `addFeature`).
+ */
 export const convertLimits = (
   xlim: Limits,
   ylim: Limits,

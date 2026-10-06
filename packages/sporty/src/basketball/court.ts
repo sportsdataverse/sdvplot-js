@@ -142,6 +142,7 @@ export function basketballCourt(
 
   const threePointArcs = frame({
     radius: orVec(p.basket_center_to_three_point_arc, 0),
+    corner: orVec(p.basket_center_to_corner_three, 0), // unused for drawing; R counts it in nrow()
     line: asArray(colors.three_point_line),
     twoPointRange: asArray(colors.two_point_range),
   }).sort((a, b) => b.radius - a.radius);
