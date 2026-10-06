@@ -24,7 +24,7 @@ const url = await logoUrl("KC", "nfl"); // CDN logo URL
 
 ## Data provenance
 
-The identity data is curated in the Python `sdvplot` repo. This package ships it as generated per-league `.ts` shards (`src/data/**`, never hand-edited) plus a best-marks slice of the CDN manifest. Regenerate with:
+Curation lives only in the Python `sdvplot` repo (spec J4); this package ships generated per-league `.ts` shards (J13, `src/data/**`, never hand-edited) and a best-marks slice of the CDN manifest (J14), regenerated with `SDVPLOT_PY_REPO=… pnpm build:index` and drift-gated in CI by `pnpm build:index --check`. Regenerate with:
 
 ```sh
 SDVPLOT_PY_REPO=/path/to/sdvplot pnpm build:index
