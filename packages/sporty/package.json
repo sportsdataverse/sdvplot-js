@@ -6,9 +6,11 @@
   "type": "module",
   "sideEffects": false,
   "engines": { "node": ">=20.18.1" },
-  "files": ["dist"],
+  "files": ["dist", "NOTICE.md"],
   "exports": {
     ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" },
+    "./svg": { "types": "./dist/svg.d.ts", "import": "./dist/svg.js" },
+    "./specs": { "types": "./dist/specs/index.d.ts", "import": "./dist/specs/index.js" },
     "./package.json": "./package.json"
   },
   "scripts": {

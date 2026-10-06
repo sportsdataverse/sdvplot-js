@@ -36,7 +36,8 @@ Parity is enforced by the Python oracle (`pnpm oracle:sdvplot`): the test suite 
 
 1. Create the `sportsdataverse` organization on npm.
 2. Enable OIDC trusted publishing for `@sportsdataverse/sdvplot` (repository `sportsdataverse/sdvplot-js`, release workflow).
+3. Formalize the J3 licence understanding in writing before first publish (spec §9).
 
 ## License
 
-MIT
+MIT. See [NOTICE.md](NOTICE.md) for the sdvplot/sdvplotR material.
