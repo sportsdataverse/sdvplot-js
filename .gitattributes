@@ -1,0 +1,2 @@
+# build-index --check hashes these bytes; keep them LF on every checkout
+packages/sdvplot/src/data/** -text

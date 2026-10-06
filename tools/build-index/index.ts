@@ -1,8 +1,9 @@
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { join, resolve, sep } from "node:path";
 import { parquetReadObjects } from "hyparquet";
 import { compressors } from "hyparquet-compressors";
 import Papa from "papaparse";
+import { CHECKSUMS, checksumsText, verifyChecksums } from "./checksums.js";
 import { HEADER, emitConstModule, leagueFirstSeason } from "./emit.js";
 import { type ManifestRow, leagueMarks, manifestVariants } from "./marks.js";
 
@@ -48,14 +49,30 @@ async function fetchBytes(url: string): Promise<ArrayBuffer> {
 const files = new Map<string, string>();
 const put = (rel: string, src: string) => files.set(rel, src);
 
+/** Every file under `dir`, keyed by its `/`-separated relative path. */
+function readTree(dir: string): Map<string, Buffer> {
+  const out = new Map<string, Buffer>();
+  for (const rel of readdirSync(dir, { recursive: true }) as string[])
+    if (statSync(join(dir, rel)).isFile()) out.set(rel.split(sep).join("/"), readFileSync(join(dir, rel)));
+  return out;
+}
+
 async function main() {
-  if (!existsSync(join(PY, "src/sdvplot/data/teams.parquet"))) {
-    if (check && existsSync(OUT)) {
-      console.log("build-index --check: Python repo absent; skipping (generated files committed)");
-      return;
+  const haveInputs = existsSync(join(PY, "src/sdvplot/data/teams.parquet"));
+  if (check) {
+    // Hermetic half (CI has no Python repo): the committed shards still hash to what the generator wrote.
+    if (!existsSync(OUT)) throw new Error(`${OUT} does not exist; run: pnpm build:index`);
+    const listing = existsSync(join(OUT, CHECKSUMS)) ? readFileSync(join(OUT, CHECKSUMS), "utf8") : "";
+    const { listed, problems } = verifyChecksums(listing, readTree(OUT));
+    if (problems.length) {
+      console.error(
+        `build-index --check: src/data does not match ${CHECKSUMS}:\n  ${problems.join("\n  ")}\nrun: pnpm build:index`,
+      );
+      process.exit(1);
     }
-    throw new Error(`sdvplot Python repo not found at ${PY}; set SDVPLOT_PY_REPO`);
-  }
+    console.log(`build-index --check: digests verified (${listed} files)`);
+    if (!haveInputs) return;
+  } else if (!haveInputs) throw new Error(`sdvplot Python repo not found at ${PY}; set SDVPLOT_PY_REPO`);
   const teams = await readParquet(toAB(readFileSync(join(PY, "src/sdvplot/data/teams.parquet"))));
   const aliases = await readParquet(toAB(readFileSync(join(PY, "src/sdvplot/data/aliases.parquet"))));
   const indexVersion = readFileSync(join(PY, "src/sdvplot/data/INDEX_VERSION"), "utf8").trim();
@@ -160,7 +177,8 @@ ${leagues.map((lg) => `  ${JSON.stringify(lg)}: async () => { const [t, a, m] = 
         ([rel, src]) =>
           !existsSync(join(OUT, rel)) || strip(readFileSync(join(OUT, rel), "utf8")) !== strip(src),
       )
-      .map(([rel]) => rel);
+      .map(([rel]) => rel)
+      .concat([...readTree(OUT).keys()].filter((rel) => rel !== CHECKSUMS && !files.has(rel)));
     if (bad.length) {
       console.error(
         `build-index --check: stale generated files:\n  ${bad.join("\n  ")}\nrun: pnpm build:index`,
@@ -170,6 +188,7 @@ ${leagues.map((lg) => `  ${JSON.stringify(lg)}: async () => { const [t, a, m] = 
     console.log("build-index --check: up to date");
     return;
   }
+  put(CHECKSUMS, checksumsText(files));
   rmSync(OUT, { recursive: true, force: true });
   for (const [rel, src] of files) {
     mkdirSync(join(OUT, rel, ".."), { recursive: true });
