@@ -84,10 +84,46 @@ export type BasketballDisplayRange = (typeof BASKETBALL_DISPLAY_RANGES)[number];
 const SURFACE = "#d2ab6f";
 const LINE = "#000000";
 
-/** Defaults of `basketball_features_set_colors()`, re-keyed to feature names. */
-export const BASKETBALL_DEFAULT_COLORS: Readonly<Record<BasketballFeature | "plot_background", Color>> = {
+/**
+ * The 26 argument names of `basketball_features_set_colors()`, in R's declaration order.
+ * Colour keys are NOT feature names: e.g. the `half_court` feature is drawn twice, coloured
+ * by `offensive_half_court` / `defensive_half_court`; Task 13 maps colour -> feature at `addFeature`.
+ */
+export const BASKETBALL_COLOR_KEYS = [
+  "plot_background",
+  "defensive_half_court",
+  "offensive_half_court",
+  "court_apron",
+  "center_circle_outline",
+  "center_circle_fill",
+  "division_line",
+  "endline",
+  "sideline",
+  "two_point_range",
+  "three_point_line",
+  "painted_area",
+  "lane_boundary",
+  "free_throw_circle_outline",
+  "free_throw_circle_fill",
+  "free_throw_circle_dash",
+  "lane_space_mark",
+  "inbounding_line",
+  "substitution_line",
+  "baseline_lower_defensive_box",
+  "lane_lower_defensive_box",
+  "team_bench_line",
+  "restricted_arc",
+  "backboard",
+  "basket_ring",
+  "net",
+] as const;
+export type BasketballColorKey = (typeof BASKETBALL_COLOR_KEYS)[number];
+
+/** Defaults of `basketball_features_set_colors()` (R's plot_background default is NULL; transparent here). */
+export const BASKETBALL_DEFAULT_COLORS: Readonly<Record<BasketballColorKey, Color>> = {
   plot_background: "#ffffff00",
-  half_court: SURFACE,
+  defensive_half_court: SURFACE,
+  offensive_half_court: SURFACE,
   court_apron: SURFACE,
   center_circle_outline: LINE,
   center_circle_fill: SURFACE,
@@ -97,16 +133,17 @@ export const BASKETBALL_DEFAULT_COLORS: Readonly<Record<BasketballFeature | "plo
   two_point_range: SURFACE,
   three_point_line: LINE,
   painted_area: SURFACE,
-  free_throw_lane_boundary: LINE, // R: lane_boundary
-  lane_space_mark: LINE,
+  lane_boundary: LINE,
+  free_throw_circle_outline: LINE,
   free_throw_circle_fill: SURFACE,
-  free_throw_circle: LINE, // R: free_throw_circle_outline
   free_throw_circle_dash: LINE,
-  restricted_arc: LINE,
-  lower_defensive_box_mark: LINE, // R: baseline_/lane_lower_defensive_box
+  lane_space_mark: LINE,
   inbounding_line: LINE,
   substitution_line: LINE,
+  baseline_lower_defensive_box: LINE,
+  lane_lower_defensive_box: LINE,
   team_bench_line: LINE,
+  restricted_arc: LINE,
   backboard: LINE,
   basket_ring: "#f55b33",
   net: "#ffffff",
