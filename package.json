@@ -1,0 +1,36 @@
+{
+  "name": "sdvplot-js",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=20.18.1" },
+  "packageManager": "pnpm@9.12.0",
+  "scripts": {
+    "build": "pnpm -r --filter './packages/*' build",
+    "test": "vitest run",
+    "test:types": "vitest run --typecheck.only",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "typecheck": "pnpm -r --filter './packages/*' typecheck",
+    "api:check": "pnpm -r --filter './packages/*' api:check",
+    "pack:check": "pnpm -r --filter './packages/*' pack:check",
+    "build:index": "tsx tools/build-index/index.ts",
+    "vendor": "tsx tools/vendor/index.ts",
+    "codegen": "tsx tools/codegen/index.ts",
+    "oracle:sdvplot": "uv run --project ${SDVPLOT_PY_REPO:-../sdvplot} python tools/oracle/sdvplot.py",
+    "oracle:sporty": "Rscript tools/oracle/sporty.R",
+    "changeset": "changeset",
+    "release": "pnpm build && changeset publish"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.0",
+    "@biomejs/biome": "^1.9.4",
+    "@changesets/cli": "^2.27.0",
+    "@microsoft/api-extractor": "^7.47.0",
+    "@types/node": "^22.0.0",
+    "publint": "^0.2.12",
+    "tsup": "^8.3.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  }
+}
