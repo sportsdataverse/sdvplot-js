@@ -1,3 +1,4 @@
+import { SportyError } from "./errors.js";
 import type { Color, Feature, Point, Scene, TextFeature, Units } from "./scene.js";
 import { createRectangle } from "./shapes.js";
 import { asArray } from "./specs/_normalize.js";
@@ -39,6 +40,13 @@ export function mergeColors<F extends string>(
     if (v !== undefined && v !== null) out[k] = v;
   }
   return out;
+}
+
+/** `SurfaceOptions.arcResolution` (default 200): points per arc, an integer >= 2, else `SportyError`. */
+export function arcResolution(n: number | undefined): number {
+  const v = n ?? 200;
+  if (!Number.isInteger(v) || v < 2) throw new SportyError(`arcResolution must be an integer >= 2; got ${n}`);
+  return v;
 }
 
 /** R `data.frame()` recycling: colour i of a vector is `c[i % length]`. */

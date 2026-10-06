@@ -22,6 +22,10 @@ test("infers array-normalized types across leagues", () => {
   const src = emitSport("basketball", leagues);
   expect(src).toContain("export interface BasketballParams");
   expect(src).toContain('"center_circle_radius":[1.8]'); // scalar normalized to array in the emitted spec
+  expect(src).toContain(
+    "Readonly<Record<BasketballLeague, Readonly<BasketballParams>>> = /* @__PURE__ */ Object.freeze({",
+  );
+  expect(src).toContain('"fiba":/* @__PURE__ */ Object.freeze({'); // each league frozen too
 });
 test("an empty array is flat, not 2-D", () => {
   expect(inferFieldType("x", { a: { x: [] }, b: { x: [1, 2] } })).toBe("readonly number[]");

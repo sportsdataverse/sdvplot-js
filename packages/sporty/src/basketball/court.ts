@@ -11,6 +11,7 @@ import {
   UnknownDisplayRangeError,
   UnknownLeagueError,
   addFeature,
+  arcResolution,
   colorAt,
   convertLimits,
   displayBbox,
@@ -86,7 +87,7 @@ export function basketballCourt(
   const p = mergeParams(BASKETBALL_SPECS[key], opts.updates, ARRAY_FIELDS);
   const colors = mergeColors(BASKETBALL_DEFAULT_COLORS, opts.colorUpdates);
   const col = (k: BasketballColorKey): Color => colorAt(colors[k], 0);
-  const npoints = opts.arcResolution ?? 200;
+  const npoints = arcResolution(opts.arcResolution);
   const from = normalizeUnit(p.court_units || "ft"); // custom's "" (R would error converting from "")
   const units = normalizeUnit(opts.units ?? from);
   const conv = units === from ? undefined : ([from, units] as const);

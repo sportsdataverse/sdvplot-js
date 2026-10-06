@@ -17,7 +17,7 @@ export const BASKETBALL_FEATURES: readonly ["half_court", "court_apron", "center
 export const BASKETBALL_LEAGUES: readonly ["custom", "fiba", "nba", "nba g league", "ncaa", "nfhs", "wnba"];
 
 // @public (undocumented)
-export const BASKETBALL_SPECS: Readonly<Record<BasketballLeague, BasketballParams>>;
+export const BASKETBALL_SPECS: Readonly<Record<BasketballLeague, Readonly<BasketballParams>>>;
 
 // @public (undocumented)
 export type BasketballColorKey = (typeof BASKETBALL_COLOR_KEYS)[number];
@@ -226,7 +226,7 @@ export const FOOTBALL_FEATURES: readonly ["half_field", "endzone", "field_apron"
 export const FOOTBALL_LEAGUES: readonly ["cfl", "custom", "ncaa", "nfhs11", "nfhs6", "nfhs8", "nfhs9", "nfl"];
 
 // @public (undocumented)
-export const FOOTBALL_SPECS: Readonly<Record<FootballLeague, FootballParams>>;
+export const FOOTBALL_SPECS: Readonly<Record<FootballLeague, Readonly<FootballParams>>>;
 
 // @public (undocumented)
 export type FootballColorKey = (typeof FOOTBALL_COLOR_KEYS)[number];
@@ -375,7 +375,7 @@ export const HOCKEY_FEATURES: readonly ["defensive_zone", "neutral_zone", "offen
 export const HOCKEY_LEAGUES: readonly ["ahl", "custom", "echl", "iihf", "ncaa", "nhl", "nwhl", "ohl", "phf", "pwhl", "qmjhl", "ushl"];
 
 // @public (undocumented)
-export const HOCKEY_SPECS: Readonly<Record<HockeyLeague, HockeyParams>>;
+export const HOCKEY_SPECS: Readonly<Record<HockeyLeague, Readonly<HockeyParams>>>;
 
 // @public (undocumented)
 export type HockeyColorKey = (typeof HOCKEY_COLOR_KEYS)[number];

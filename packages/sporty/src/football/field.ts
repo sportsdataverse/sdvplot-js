@@ -12,6 +12,7 @@ import {
   UnknownLeagueError,
   addFeature,
   addText,
+  arcResolution,
   colorAt,
   convertLimits,
   displayBbox,
@@ -81,6 +82,7 @@ export function footballField(
   const p = mergeParams(FOOTBALL_SPECS[key], opts.updates, ARRAY_FIELDS);
   const colors = mergeColors(FOOTBALL_DEFAULT_COLORS, opts.colorUpdates);
   const col = (k: FootballColorKey): Color => colorAt(colors[k], 0);
+  arcResolution(opts.arcResolution); // validated for a uniform API; the field draws no arcs
   const from = normalizeUnit(p.field_units || "ft"); // custom's "" (R's `%or% "ft"` only catches NULL)
   const units = normalizeUnit(opts.units ?? from);
   const conv = units === from ? undefined : ([from, units] as const);

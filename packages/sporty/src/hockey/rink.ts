@@ -4,6 +4,7 @@ import {
   UnknownDisplayRangeError,
   UnknownLeagueError,
   addFeature,
+  arcResolution,
   colorAt,
   convertLimits,
   displayBbox,
@@ -62,7 +63,7 @@ export function hockeyRink(
   const p = mergeParams(HOCKEY_SPECS[key], opts.updates, []);
   const colors = mergeColors(HOCKEY_DEFAULT_COLORS, opts.colorUpdates);
   const col = (k: HockeyColorKey): Color => colorAt(colors[k], 0);
-  const npoints = opts.arcResolution ?? 200;
+  const npoints = arcResolution(opts.arcResolution);
   const from = normalizeUnit(p.rink_units || "ft"); // custom's "" (R would error converting from "")
   const units = normalizeUnit(opts.units ?? from);
   const conv = units === from ? undefined : ([from, units] as const);

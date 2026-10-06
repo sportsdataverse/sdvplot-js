@@ -37,6 +37,10 @@ const canvasY = (v: unknown, h: number): number | null => {
  * surface frame (feet, surface origin).
  */
 export const FRAMES: {
+  /**
+   * stats.nba.com legacy shots. The hoop lands at `x = -41.75`, so every shot is on the -x half: pair it with
+   * `displayRange: "defense"` (as sdvplot's `court_coords` documents).
+   */
   readonly "nba-legacy": Frame;
   readonly "hockeytech-a": Frame;
   readonly "hockeytech-b": Frame;

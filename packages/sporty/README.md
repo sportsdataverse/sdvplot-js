@@ -16,7 +16,7 @@ const shots = toSurfaceFrame([{ x_legacy: 120, y_legacy: 35 }], { from: "nba-leg
 // [{ x_legacy: 120, y_legacy: 35, surface_x: -38.25, surface_y: 12 }] -> plot (surface_x, surface_y) in feet
 ```
 
-`surface(sport, league, opts)` dispatches by sport; `leagues`, `features`, `displayRanges` and `colorKeys` list what each sport accepts. Options mirror sportyR: `updates` (parameter overrides), `colorUpdates`, `rotation`, `xTrans`, `yTrans`, `units` (`ft`, `m`, `yd`, `in`, `cm`, `mm`, any case, or a full name such as `"feet"`; anything else throws `UnknownUnitError`), `displayRange`, `xlim`, `ylim`, `arcResolution` (points per arc, default 200). Options are typed per sport, so a misspelled option or key is a compile error.
+`surface(sport, league, opts)` dispatches by sport; `leagues`, `features`, `displayRanges` and `colorKeys` list what each sport accepts. Options mirror sportyR: `updates` (parameter overrides), `colorUpdates`, `rotation`, `xTrans`, `yTrans`, `units` (`ft`, `m`, `yd`, `in`, `cm`, `mm`, any case, or a full name such as `"feet"`; anything else throws `UnknownUnitError`), `displayRange`, `xlim`, `ylim`, `arcResolution` (points per arc, an integer >= 2, default 200). Options are typed per sport, so a misspelled option or key is a compile error.
 
 ## Ported sports
 
@@ -34,7 +34,7 @@ The other six sports' generated parameter specs are importable from `@sportsdata
 
 | Name | Source | Formula |
 | --- | --- | --- |
-| `nba-legacy` | stats.nba.com shots (tenths of a foot, hoop origin; inputs default to `x_legacy`/`y_legacy`) | `surface_x = -47 + 5.25 + y/10`, `surface_y = x/10` |
+| `nba-legacy` | stats.nba.com shots (tenths of a foot, hoop origin; inputs default to `x_legacy`/`y_legacy`). Shots land on the -x half: pair with `displayRange: "defense"` | `surface_x = -47 + 5.25 + y/10`, `surface_y = x/10` |
 | `hockeytech-a` | HockeyTech 850x400 canvas, top-left origin | `(x - 425) * 200/850`, `(200 - y) * 85/400` |
 | `hockeytech-b` | HockeyTech 600x300 canvas (fastRhockey) | `x/3 - 100`, `42.5 - y*85/300` |
 | `espn-football-0-100` | ESPN yardline 0-100 | `x - 50`, `y` unchanged |
