@@ -27,3 +27,7 @@ test("normSeason accepts 2020, 2020.0, '2020'; rejects split seasons with a hint
   expect(() => normSeason("2020-21")).toThrowError(/ending year \(2021/);
   expect(() => normSeason("x")).toThrow(InputError);
 });
+
+test("normValue casefolds ß like Python", () => {
+  expect(normValue("Preußen Münster")).toBe(normValue("Preussen Munster"));
+});

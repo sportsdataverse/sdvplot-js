@@ -19,7 +19,7 @@ export function normValue(value: unknown): string | null {
       .replace(/[‘’–—]/g, (c) => PUNCT[c] ?? c)
       .normalize("NFKD")
       .replace(/\p{M}/gu, "");
-  s = s.toLowerCase(); // Python casefold ≈ toLowerCase for these inputs; the oracle (Task 7) confirms
+  s = s.toLowerCase().replace(/ß/g, "ss").replace(/ς/g, "σ"); // Python casefold ≈ toLowerCase for these inputs; the oracle (Task 7) confirms
   if (FLOAT_ID.test(s)) s = s.split(".")[0] as string;
   return s || null;
 }

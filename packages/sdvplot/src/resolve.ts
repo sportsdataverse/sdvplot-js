@@ -161,7 +161,7 @@ export async function resolve<T extends Value | readonly Value[]>(
   return resolveSync(values, league, opts);
 }
 
-/** Port of `suggest`: difflib.get_close_matches(cutoff 0.6) ≈ normalized Levenshtein ratio ≥ 0.6, best first; never picks one. */
+/** Port of `suggest`: difflib.get_close_matches(cutoff 0.6): SequenceMatcher(a=candidate, b=query).ratio() ≥ 0.6, best first, ties by candidate key descending; never picks one. */
 export async function suggest(
   value: Value,
   league: League,
@@ -180,9 +180,9 @@ export async function suggest(
     for (const [k, cands] of sys) merged.set(k, [...(merged.get(k) ?? []), ...cands.map((c) => c[0])]);
   const names = new Map(d.teams.map((t) => [t.team_id, t.name ?? t.team_id]));
   const scored = [...merged.keys()]
-    .map((k) => [k, ratio(key, k)] as const)
+    .map((k) => [k, ratio(k, key)] as const)
     .filter(([, r]) => r >= 0.6)
-    .sort((a, b) => b[1] - a[1])
+    .sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? 1 : a[0] > b[0] ? -1 : 0))
     .slice(0, n * 3);
   const out: Array<[TeamId, string]> = [];
   for (const [k] of scored)

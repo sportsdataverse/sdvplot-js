@@ -39,3 +39,14 @@ test("resolveSync works after preloadAll and suggest never guesses", async () =>
   const s = await suggest("Kansas Cty Chiefs", "nfl", { n: 2 });
   expect(s[0]?.[1]).toBe("Kansas City Chiefs");
 });
+
+test("suggest matches Python's difflib order, including ties (key descending)", async () => {
+  const s = await suggest("CAL", "nfl");
+  expect(s.map(([id]) => id)).toEqual(["6", "5", "11", "29", "33"]);
+  expect((await suggest("Kansas Cty Chiefs", "nfl")).map(([id]) => id)).toEqual(["12"]);
+});
+
+test("casefold ß resolves; NHL has no league floor so 1975 is allowed", async () => {
+  expect(await resolve("Preußen Münster", "soccer")).toBeDefined();
+  expect(await resolve("WPG", "nhl", { season: 1975 })).toBe("28");
+});
