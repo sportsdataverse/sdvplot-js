@@ -1,5 +1,5 @@
-import type { Alias, MarkRow } from "../../packages/sdvplot/src/data/index.js";
-import { type RawMark, rankMarks } from "./emit.js";
+import type { Alias } from "../../packages/sdvplot/src/data/index.js";
+import { type RawMark, type StoredMark, archiveUrl, rankMarks } from "./emit.js";
 
 export interface ManifestRow {
   level: string;
@@ -18,6 +18,11 @@ export interface ManifestRow {
   first_seen: string;
 }
 const int = (s: string): number | null => (s === "" ? null : Number.parseInt(s, 10));
+/** archive_url reaches the web adapters' HTML (Python drops rows failing SAFE_URL); here a row must carry exactly the content-addressed URL the loader derives, or it is dropped. */
+export const safeArchive = (m: Pick<ManifestRow, "archive_url" | "sha256" | "ext">): boolean =>
+  /^[0-9a-f]{64}$/.test(m.sha256) &&
+  /^[a-z0-9]+$/.test(m.ext) &&
+  m.archive_url === archiveUrl(m.sha256, m.ext);
 const key = (source: string, id: string) => `${source}:${id}`.trim().toLowerCase();
 
 /** mark aliases: key → (team_id, union range), unique team mappings only. */
@@ -58,7 +63,7 @@ export function leagueMarks(
   league: string,
   manifest: readonly ManifestRow[],
   aliases: readonly Alias[],
-): MarkRow[] {
+): StoredMark[] {
   const ma = markAliases(aliases);
   const raw: RawMark[] = [];
   for (const m of manifest) {
@@ -79,7 +84,6 @@ export function leagueMarks(
       ext: m.ext,
       width: int(m.width),
       height: int(m.height),
-      archive_url: m.archive_url,
     });
   }
   // J14: keep the best-ranked row per (team, mark_type, variant, valid_from, valid_to); selectMark only ever reads the

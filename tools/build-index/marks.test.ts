@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
 import type { Alias } from "../../packages/sdvplot/src/data/index.js";
-import { type ManifestRow, leagueMarks, manifestVariants, markAliases } from "./marks.js";
+import { type ManifestRow, leagueMarks, manifestVariants, markAliases, safeArchive } from "./marks.js";
 
 const al = (value: string, team_id: string, valid_from: number | null, valid_to: number | null): Alias => ({
   id_system: "mark",
@@ -67,6 +67,18 @@ test("leagueMarks skips non-team rows and rows without an alias", () => {
     [al("espn:1", "A", null, null)],
   );
   expect(rows).toEqual([]);
+});
+
+test("safeArchive accepts only the derived content-addressed URL", () => {
+  const base = "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256";
+  const sha = "c2ab581364eeb44d43d8a0826ca3560285a8025b23d07955084878db65fbaec8";
+  expect(safeArchive({ sha256: sha, ext: "png", archive_url: `${base}/c2/${sha}.png` })).toBe(true);
+  expect(safeArchive({ sha256: sha, ext: "png", archive_url: `${base}/c2/${sha}.svg` })).toBe(false);
+  expect(safeArchive({ sha256: sha, ext: "png", archive_url: "javascript:alert(1)" })).toBe(false);
+  // the derived URL is only as safe as its parts: a hostile sha256/ext would equal itself
+  const bad = 'x"><script>';
+  expect(safeArchive({ sha256: bad, ext: "png", archive_url: `${base}/x"/${bad}.png` })).toBe(false);
+  expect(safeArchive({ sha256: sha, ext: "png?x", archive_url: `${base}/c2/${sha}.png?x` })).toBe(false);
 });
 
 test("manifestVariants is the sorted unique set over every row", () => {

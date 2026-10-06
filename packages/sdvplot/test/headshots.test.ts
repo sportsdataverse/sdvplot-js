@@ -3,6 +3,7 @@ import { InputError } from "../src/errors.js";
 import {
   HEADSHOT_ASPECT,
   headshotUrl,
+  loadGsis,
   mlbHeadshotUrl,
   nbaHeadshotUrl,
   nhlHeadshotUrl,
@@ -22,7 +23,9 @@ test("espn ids per league slug; malformed id → undefined", () => {
 test("argument checks run before the null-id short circuit", () => {
   expect(() => headshotUrl(null, "ohl" as never)).toThrow(InputError);
 });
-test("gsis → nfl.com headshot rewritten, else ESPN fallback", () => {
+test("gsis → nfl.com headshot rewritten, else ESPN fallback; the map must be loaded first", async () => {
+  expect(() => headshotUrl("00-0033873", "nfl", { idSystem: "gsis" })).toThrow(/loadGsis/);
+  await loadGsis();
   const u = headshotUrl("00-0033873", "nfl", { idSystem: "gsis" });
   expect(u).toMatch(/^https:\/\/.*\.png$/);
   expect(u).not.toContain("/f_auto,q_auto/");

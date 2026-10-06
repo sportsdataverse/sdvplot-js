@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { emitConstModule, rankMarks } from "./emit.js";
+import { archiveUrl, emitConstModule, rankMarks } from "./emit.js";
 
 test("emitConstModule writes a header and as-const data", () => {
   const src = emitConstModule("teams", "Team", [{ league: "nfl", team_id: "12", abbr: "KC" }]);
@@ -22,7 +22,6 @@ test("rankMarks orders by source_rank, open-ended first, valid_to desc, first_se
       ext: "png",
       width: null,
       height: null,
-      archive_url: "u1",
     },
     {
       team_id: "1",
@@ -36,7 +35,6 @@ test("rankMarks orders by source_rank, open-ended first, valid_to desc, first_se
       ext: "png",
       width: null,
       height: null,
-      archive_url: "u2",
     },
     {
       team_id: "1",
@@ -50,12 +48,17 @@ test("rankMarks orders by source_rank, open-ended first, valid_to desc, first_se
       ext: "png",
       width: null,
       height: null,
-      archive_url: "u3",
     },
   ]);
-  expect(rows.map((r) => r.archive_url)).toEqual(["u2", "u1", "u3"]);
+  expect(rows.map((r) => r.sha256)).toEqual(["a", "b", "c"]);
   expect(rows[0]?.source_rank).toBe(0);
   expect(rows[2]?.source_rank).toBe(4);
+});
+
+test("archiveUrl is the content-addressed layout", () => {
+  expect(archiveUrl("c2ab58", "png")).toBe(
+    "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/c2/c2ab58.png",
+  );
 });
 
 test("leagueFirstSeason: only whole-history id systems that close a range set a floor", async () => {

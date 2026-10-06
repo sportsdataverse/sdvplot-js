@@ -4,8 +4,8 @@ import { parquetReadObjects } from "hyparquet";
 import { compressors } from "hyparquet-compressors";
 import Papa from "papaparse";
 import { CHECKSUMS, checksumsText, verifyChecksums } from "./checksums.js";
-import { HEADER, emitConstModule, leagueFirstSeason } from "./emit.js";
-import { type ManifestRow, leagueMarks, manifestVariants } from "./marks.js";
+import { ARCHIVE_BASE, HEADER, emitConstModule, leagueFirstSeason } from "./emit.js";
+import { type ManifestRow, leagueMarks, manifestVariants, safeArchive } from "./marks.js";
 
 const PY = resolve(process.env.SDVPLOT_PY_REPO ?? "../sdvplot");
 const OUT = resolve("packages/sdvplot/src/data");
@@ -82,9 +82,14 @@ async function main() {
   const parsed = Papa.parse<ManifestRow>(manifestText, { header: true, skipEmptyLines: true });
   if (parsed.errors.length)
     throw new Error(`manifest CSV parse errors: ${JSON.stringify(parsed.errors.slice(0, 3))}`);
-  const manifest = parsed.data;
-  const missing = MANIFEST_COLUMNS.filter((c) => !(c in (manifest[0] ?? {})));
+  const missing = MANIFEST_COLUMNS.filter((c) => !(c in (parsed.data[0] ?? {})));
   if (missing.length) throw new Error(`manifest missing columns: ${missing.join(", ")}`);
+  const unsafe = parsed.data.filter((m) => !safeArchive(m));
+  if (unsafe.length)
+    console.warn(
+      `build-index: dropped ${unsafe.length} manifest row(s) whose archive_url is not ${ARCHIVE_BASE}/<sha[:2]>/<sha>.<ext>, e.g. ${JSON.stringify(unsafe[0]?.archive_url).slice(0, 100)}`,
+    );
+  const manifest = parsed.data.filter(safeArchive);
   if (manifest.length < MIN_MANIFEST_ROWS)
     throw new Error(`manifest has ${manifest.length} rows (< ${MIN_MANIFEST_ROWS})`);
   const leagues = [...new Set(teams.map((t) => String(t.league)))].sort();
@@ -132,7 +137,7 @@ async function main() {
     }
     put(`teams/${lg}.ts`, emitConstModule("teams", "Team", T));
     put(`aliases/${lg}.ts`, emitConstModule("aliases", "Alias", A));
-    put(`marks/${lg}.ts`, emitConstModule("marks", "MarkRow", leagueMarks(lg, manifest, A)));
+    put(`marks/${lg}.ts`, emitConstModule("marks", "StoredMark", leagueMarks(lg, manifest, A)));
   }
   const localPlayers = join(PY, "../nflverse-players.parquet");
   const players = existsSync(localPlayers)
@@ -163,9 +168,14 @@ export const LEAGUE_META: Readonly<Record<League, { latestSeason: number | null;
 export interface Team { league: League; team_id: string; abbr: string | null; name: string | null; short_name: string | null; location: string | null; program: string | null; conference_id: string | null; conference: string | null; color_primary: string | null; color_secondary: string | null; color_source: string | null }
 export interface Alias { id_system: string; value: string; team_id: string; valid_from: number | null; valid_to: number | null }
 export interface MarkRow { team_id: string; mark_type: "logo" | "wordmark"; variant: string; valid_from: number | null; valid_to: number | null; source: string; source_rank: number; first_seen: string; sha256: string; ext: string; width: number | null; height: number | null; archive_url: string }
+/** Shard row: archive_url is derived by the loader (archiveUrl), never stored. */
+export type StoredMark = Omit<MarkRow, "archive_url">;
 export interface LeagueData { teams: readonly Team[]; aliases: readonly Alias[]; marks: readonly MarkRow[] }
+export const ARCHIVE_BASE: string = ${JSON.stringify(ARCHIVE_BASE)};
+/** Content-addressed archive URL of a mark (<base>/<sha[:2]>/<sha>.<ext>, Python _images.mark_file). */
+export function archiveUrl(sha256: string, ext: string): string { return \`\${ARCHIVE_BASE}/\${sha256.slice(0, 2)}/\${sha256}.\${ext}\`; }
 export const loaders: Readonly<Record<League, () => Promise<LeagueData>>> = {
-${leagues.map((lg) => `  ${JSON.stringify(lg)}: async () => { const [t, a, m] = await Promise.all([import("./teams/${lg}.js"), import("./aliases/${lg}.js"), import("./marks/${lg}.js")]); return { teams: t.teams, aliases: a.aliases, marks: m.marks }; },`).join("\n")}
+${leagues.map((lg) => `  ${JSON.stringify(lg)}: async () => { const [t, a, m] = await Promise.all([import("./teams/${lg}.js"), import("./aliases/${lg}.js"), import("./marks/${lg}.js")]); return { teams: t.teams, aliases: a.aliases, marks: m.marks.map((r) => ({ ...r, archive_url: archiveUrl(r.sha256, r.ext) })) }; },`).join("\n")}
 };
 `,
   );

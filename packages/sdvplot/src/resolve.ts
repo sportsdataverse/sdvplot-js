@@ -96,7 +96,11 @@ function resolveIds(
   for (const y of new Set(ss)) if (y !== null) checkSeason(y, league);
   const table = lookup(d);
   const latest = latestSeason(league);
-  const names = new Map(d.teams.map((t) => [t.team_id, t.name ?? ""]));
+  let names: Map<string, string> | undefined; // only the ambiguous message reads it: build it on first use, not per call
+  const nameOf = (t: string): string => {
+    names ??= new Map(d.teams.map((x) => [x.team_id, x.name ?? ""]));
+    return names.get(t) ?? "";
+  };
   const out: (TeamId | undefined)[] = [];
   const unresolved = new Map<string, string>();
   const memo = new Map<string, ReturnType<typeof match>>();
@@ -114,7 +118,7 @@ function resolveIds(
         String(v),
         hit === null
           ? "unknown"
-          : `ambiguous: ${(hit as readonly string[]).map((t) => `${t} ${names.get(t) ?? ""}`.trim()).join(" or ")}`,
+          : `ambiguous: ${(hit as readonly string[]).map((t) => `${t} ${nameOf(t)}`.trim()).join(" or ")}`,
       );
       out.push(undefined);
     } else out.push(asTeamId(hit as string));
