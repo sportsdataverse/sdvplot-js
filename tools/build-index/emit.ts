@@ -44,3 +44,16 @@ export function rankMarks(rows: readonly RawMark[]): MarkRow[] {
         (a.sha256 < b.sha256 ? -1 : a.sha256 > b.sha256 ? 1 : 0),
     );
 }
+
+/** Id systems whose dated aliases cover a league's whole history (Python `_index._HISTORY_SYSTEMS`); a curated relocation (nflverse OAK, NHL WIN) dates one team, not the league. */
+export const HISTORY_SYSTEMS: readonly string[] = ["bref", "sportsipy", "mlbstats", "espn_abbr"];
+
+/** A league's own first season: set only when a history-system alias closes a range; then the min over that league's history-system aliases. Else null (index floor applies). */
+export function leagueFirstSeason(
+  aliases: readonly { id_system: string; valid_from: number | null; valid_to: number | null }[],
+): number | null {
+  const h = aliases.filter((a) => HISTORY_SYSTEMS.includes(a.id_system));
+  if (!h.some((a) => a.valid_to !== null)) return null;
+  const xs = h.flatMap((a) => [a.valid_from, a.valid_to]).filter((x): x is number => x !== null);
+  return xs.length ? Math.min(...xs) : null;
+}

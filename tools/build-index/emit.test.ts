@@ -57,3 +57,17 @@ test("rankMarks orders by source_rank, open-ended first, valid_to desc, first_se
   expect(rows[0]?.source_rank).toBe(0);
   expect(rows[2]?.source_rank).toBe(4);
 });
+
+test("leagueFirstSeason: only whole-history id systems that close a range set a floor", async () => {
+  const { leagueFirstSeason } = await import("./emit.js");
+  const a = (id_system: string, valid_from: number | null, valid_to: number | null) => ({
+    id_system,
+    valid_from,
+    valid_to,
+  });
+  expect(leagueFirstSeason([a("nflverse", 1980, 1996), a("espn", 2026, null)])).toBeNull();
+  expect(leagueFirstSeason([a("bref", 1920, 1930), a("bref", 1931, null), a("nflverse", 1900, 1910)])).toBe(
+    1920,
+  );
+  expect(leagueFirstSeason([a("bref", 1950, null)])).toBeNull();
+});

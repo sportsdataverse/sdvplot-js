@@ -3,7 +3,7 @@ import { join, resolve } from "node:path";
 import { parquetReadObjects } from "hyparquet";
 import { compressors } from "hyparquet-compressors";
 import Papa from "papaparse";
-import { HEADER, emitConstModule } from "./emit.js";
+import { HEADER, emitConstModule, leagueFirstSeason } from "./emit.js";
 import { type ManifestRow, leagueMarks } from "./marks.js";
 
 const PY = resolve(process.env.SDVPLOT_PY_REPO ?? "../sdvplot");
@@ -105,10 +105,9 @@ async function main() {
     const nums = (xs: (number | null)[]) => xs.filter((x): x is number => x !== null);
     const hi = nums([...dated.map((a) => a.valid_from), ...dated.map((a) => a.valid_to)]);
     const lo = nums([...A.map((a) => a.valid_from), ...A.map((a) => a.valid_to)]);
-    const closes = A.some((a) => a.valid_to !== null);
     meta[lg] = {
       latestSeason: hi.length ? Math.max(...hi) : null,
-      firstSeason: closes && lo.length ? Math.min(...lo) : null,
+      firstSeason: leagueFirstSeason(A),
     };
     if (lo.length) {
       idxFirst = Math.min(idxFirst ?? Number.POSITIVE_INFINITY, ...lo);
