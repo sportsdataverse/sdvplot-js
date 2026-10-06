@@ -5,7 +5,294 @@
 ```ts
 
 // @public (undocumented)
+export interface Alias {
+    // (undocumented)
+    id_system: string;
+    // (undocumented)
+    team_id: string;
+    // (undocumented)
+    valid_from: number | null;
+    // (undocumented)
+    valid_to: number | null;
+    // (undocumented)
+    value: string;
+}
+
+// @public
+export function contrast(a: string, b: string): number;
+
+// @public (undocumented)
+export class DownloadError extends OfflineError {
+    constructor(message: string, url: string, status?: number | undefined);
+    // (undocumented)
+    readonly status?: number | undefined;
+    // (undocumented)
+    readonly url: string;
+}
+
+// @public
+export const ESPN_HEADSHOT_LEAGUES: Readonly<Record<string, string>>;
+
+// @public (undocumented)
+export const EXPLICIT_ONLY: readonly ["nhl_id"];
+
+// @public
+export const HEADSHOT_ASPECT: number;
+
+// @public (undocumented)
+export type HeadshotIdSystem = "espn" | "gsis";
+
+// @public
+export function headshotUrl(playerId: Value, league: League, input?: {
+    idSystem?: HeadshotIdSystem;
+}): string | undefined;
+
+// @public
+export function hex6(color: string, opts?: {
+    dropAlpha?: boolean;
+}): string;
+
+// @public (undocumented)
+export type IdSystem = "auto" | (typeof PRIORITY)[number] | (typeof EXPLICIT_ONLY)[number];
+
+// @public (undocumented)
+export const INDEX_VERSION: string;
+
+// @public (undocumented)
+export class InputError extends SdvplotError {
+}
+
+// @public (undocumented)
+export const latestSeason: (league: League) => number | null;
+
+// @public (undocumented)
+export type League = (typeof LEAGUES)[number];
+
+// @public (undocumented)
+export interface LeagueData {
+    // (undocumented)
+    aliases: readonly Alias[];
+    // (undocumented)
+    marks: readonly MarkRow[];
+    // (undocumented)
+    teams: readonly Team[];
+}
+
+// @public (undocumented)
+export const LEAGUES: readonly ["aaf", "ahl", "cfb", "cricket", "echl", "mbb", "milb", "mlb", "nba", "nbagl", "ncaa_baseball", "ncaa_mhockey", "ncaa_softball", "ncaa_whockey", "nfl", "nhl", "ohl", "phf", "pwhl", "qmjhl", "soccer", "ufl", "usfl", "ushl", "wbb", "whl", "wnba", "xfl"];
+
+// @public (undocumented)
+export function loadLeague(league: League): Promise<LeagueData>;
+
+// Warning: (ae-forgotten-export) The symbol "LogoUrlOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export function logoUrl(team: Value, league: League, o?: LogoUrlOptions): Promise<string | undefined>;
+
+// @public
+export function logoUrlSync(team: Value, league: League, o?: LogoUrlOptions): string | undefined;
+
+// @public
+export function luminance(color: string): number;
+
+// @public (undocumented)
+export interface MarkRow {
+    // (undocumented)
+    archive_url: string;
+    // (undocumented)
+    ext: string;
+    // (undocumented)
+    first_seen: string;
+    // (undocumented)
+    height: number | null;
+    // (undocumented)
+    mark_type: "logo" | "wordmark";
+    // (undocumented)
+    sha256: string;
+    // (undocumented)
+    source: string;
+    // (undocumented)
+    source_rank: number;
+    // (undocumented)
+    team_id: string;
+    // (undocumented)
+    valid_from: number | null;
+    // (undocumented)
+    valid_to: number | null;
+    // (undocumented)
+    variant: string;
+    // (undocumented)
+    width: number | null;
+}
+
+// @public
+export function marks(team: Value, league: League, o?: {
+    season?: SeasonInput;
+    idSystem?: IdSystem;
+}): Promise<readonly MarkRow[]>;
+
+// @public (undocumented)
+export type MarkType = "logo" | "wordmark";
+
+// @public
+export function mix(a: string, b: string, t: number): string;
+
+// @public (undocumented)
+export function mlbHeadshotUrl(id: string | number): string;
+
+// @public (undocumented)
+export function nbaHeadshotUrl(id: string | number): string;
+
+// @public (undocumented)
+export function nhlHeadshotUrl(id: string | number): string;
+
+// @public (undocumented)
+export function normSeason(value: SeasonInput, league?: League): number | null;
+
+// @public
+export function normValue(value: unknown): string | null;
+
+// @public (undocumented)
+export class OfflineError extends SdvplotError {
+}
+
+// @public
+export function onColor(background: string): string;
+
+// Warning: (ae-forgotten-export) The symbol "ColorOptions" needs to be exported by the entry point index.d.ts
+//
+// @public
+export function palette(league: League, teams?: Value | readonly Value[], opts?: ColorOptions): Promise<Record<string, string>>;
+
+// @public (undocumented)
+export function preloadAll(): Promise<void>;
+
+// @public (undocumented)
+export const PRIORITY: readonly ["team_id", "espn", "espn_abbr", "nhl", "nflverse", "mlbstats", "nba_api", "hockeytech", "ncaa", "pff", "cricinfo", "cfbd", "bref", "sportsipy", "fangraphs", "sdvplotr", "name"];
+
+// @public (undocumented)
+export function resetWarnings(): void;
+
+// @public (undocumented)
+export function resolve<T extends Value | readonly Value[]>(values: T, league: League, opts?: ResolveOptions): Promise<Resolved<T>>;
+
+// @public (undocumented)
+export type Resolved<T> = T extends readonly Value[] ? (TeamId | undefined)[] : TeamId | undefined;
+
+// @public (undocumented)
+export interface ResolveOptions {
+    // (undocumented)
+    idSystem?: IdSystem;
+    // (undocumented)
+    season?: SeasonInput | readonly SeasonInput[];
+    // (undocumented)
+    strict?: boolean;
+}
+
+// @public (undocumented)
+export function resolveSync<T extends Value | readonly Value[]>(values: T, league: League, opts?: ResolveOptions): Resolved<T>;
+
+// @public (undocumented)
+export class SdvplotError extends Error {
+    constructor(message: string, options?: ErrorOptions);
+}
+
+// @public
+export function seasonBounds(league?: League): readonly [number, number] | null;
+
+// @public (undocumented)
+export type SeasonInput = number | string | null | undefined;
+
+// Warning: (ae-forgotten-export) The symbol "SelectOptions" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export function selectMark(team: Value, league: League, o?: SelectOptions): Promise<MarkRow | undefined>;
+
+// Warning: (ae-forgotten-export) The symbol "Handler" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export function setWarningHandler(fn: Handler | null): void;
+
+// @public
+export function solid(color: string, background?: string): string;
+
+// @public
+export function suggest(value: Value, league: League, opts?: {
+    n?: number;
+}): Promise<Array<[TeamId, string]>>;
+
+// @public (undocumented)
+export interface Team {
+    // (undocumented)
+    abbr: string | null;
+    // (undocumented)
+    color_primary: string | null;
+    // (undocumented)
+    color_secondary: string | null;
+    // (undocumented)
+    color_source: string | null;
+    // (undocumented)
+    conference: string | null;
+    // (undocumented)
+    conference_id: string | null;
+    // (undocumented)
+    league: League;
+    // (undocumented)
+    location: string | null;
+    // (undocumented)
+    name: string | null;
+    // (undocumented)
+    program: string | null;
+    // (undocumented)
+    short_name: string | null;
+    // (undocumented)
+    team_id: string;
+}
+
+// Warning: (ae-forgotten-export) The symbol "ColorResult" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export function teamColors<T extends Value | readonly Value[]>(league: League, teams: T, opts?: ColorOptions): Promise<ColorResult<T>>;
+
+// @public
+export function teamColorsSync<T extends Value | readonly Value[]>(league: League, teams: T, opts?: ColorOptions): ColorResult<T>;
+
+// @public
+export type TeamId = string & {
+    readonly [brand]: "TeamId";
+};
+
+// @public
+export function teams(league?: League): Promise<readonly Team[]>;
+
+// @public (undocumented)
+export class UnresolvedTeamError extends SdvplotError {
+}
+
+// @public (undocumented)
+export type Value = string | number | bigint | null | undefined;
+
+// @public
+export type Variant = "default" | "dark" | (string & {});
+
+// @public (undocumented)
+export const VARIANTS: readonly ["alternate", "cap_on_dark", "cap_on_light", "cricinfo", "crop_64px", "dark", "default", "grayscale", "large", "logo2", "medium", "on_dark", "on_light", "primary_logo_black", "primary_logo_on_black_color", "primary_logo_on_primary_color", "primary_logo_on_secondary_color", "primary_logo_on_white_color", "primary_logo_white", "primary_on_dark", "primary_on_light", "scoreboard", "scoreboard_dark", "secondary_logo_black", "secondary_logo_on_black_color", "secondary_logo_on_primary_color", "secondary_logo_on_secondary_color", "secondary_logo_on_white_color", "secondary_logo_white", "sport_pictogram", "squared", "team_strip"];
+
+// @public (undocumented)
 export const VERSION: string;
+
+// @public (undocumented)
+export function versions(): {
+    sdvplot: string;
+    index: string;
+    manifestLastModified: string;
+};
+
+// @public (undocumented)
+export type Which = "primary" | "secondary";
+
+// @public (undocumented)
+export function wnbaHeadshotUrl(id: string | number): string;
 
 // (No @packageDocumentation comment for this package)
 
