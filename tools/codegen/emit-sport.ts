@@ -2,7 +2,7 @@ type Leagues = Record<string, Record<string, unknown>>;
 const isNumArr = (v: unknown): v is number[] => Array.isArray(v) && v.every((x) => typeof x === "number");
 const isBoolArr = (v: unknown): v is boolean[] => Array.isArray(v) && v.every((x) => typeof x === "boolean");
 const isStrArr = (v: unknown): v is string[] => Array.isArray(v) && v.every((x) => typeof x === "string");
-const isNum2d = (v: unknown): v is number[][] => Array.isArray(v) && v.every(isNumArr);
+const isNum2d = (v: unknown): v is number[][] => Array.isArray(v) && v.length > 0 && v.every(isNumArr);
 
 /** The field's type across every league: a field that is a number in one league and number[] in another is `readonly number[]`. */
 export function inferFieldType(field: string, leagues: Leagues): string {

@@ -23,3 +23,7 @@ test("infers array-normalized types across leagues", () => {
   expect(src).toContain("export interface BasketballParams");
   expect(src).toContain('"center_circle_radius":[1.8]'); // scalar normalized to array in the emitted spec
 });
+test("an empty array is flat, not 2-D", () => {
+  expect(inferFieldType("x", { a: { x: [] }, b: { x: [1, 2] } })).toBe("readonly number[]");
+  expect(inferFieldType("x", { a: { x: [] }, b: { x: [[1], [2]] } })).toBe("readonly (readonly number[])[]");
+});
