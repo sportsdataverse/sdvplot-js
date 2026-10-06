@@ -262,6 +262,8 @@ export interface Placement {
     // (undocumented)
     id: string;
     // (undocumented)
+    index: number;
+    // (undocumented)
     mark: MarkRow | null;
     // (undocumented)
     url: string;

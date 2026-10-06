@@ -33,7 +33,7 @@ test("known teams place at their own x/y with the team's logo url and aspect, no
 });
 test("an unknown team is dropped with its own x/y and exactly one warning", () => {
   const p = placeSync([10, 20], [-3, -7], ["XXX", "LV"], { league: "nfl" });
-  expect(p.map((m) => [m.x, m.y])).toEqual([[20, -7]]);
+  expect(p.map((m) => [m.index, m.x, m.y])).toEqual([[1, 20, -7]]);
   expect(warned).toHaveLength(1);
 });
 test("missing x or y is skipped with one warning", () => {

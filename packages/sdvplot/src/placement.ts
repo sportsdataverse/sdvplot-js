@@ -9,8 +9,9 @@ import { type ResolveOptions, type Value, resolveSync } from "./resolve.js";
 import type { HeadshotIdSystem, IdSystem, League, SeasonInput, Variant } from "./types.js";
 
 export type Kind = "logo" | "wordmark" | "headshot";
-/** One point to draw: the caller's own x/y, the image URL and its width / height ratio (null when unknown). */
+/** One point to draw: the caller's own x/y, the image URL and its width / height ratio (null when unknown). `index` is the row's position in the input arrays (skipped rows leave gaps). */
 export interface Placement {
+  index: number;
   id: string;
   x: Value;
   y: Value;
@@ -85,7 +86,7 @@ export function placeSync(
         return;
       }
       const id = gsis ? String(pid).trim() : (normValue(pid) ?? String(pid).trim());
-      out.push({ id, x: xs[i], y: ys[i], url, aspect: HEADSHOT_ASPECT, mark: null });
+      out.push({ index: i, id, x: xs[i], y: ys[i], url, aspect: HEADSHOT_ASPECT, mark: null });
     });
     skipped(league, "with no headshot", noImage, on);
   } else {
@@ -113,7 +114,7 @@ export function placeSync(
         return;
       }
       const aspect = row.width && row.height ? row.width / row.height : null;
-      out.push({ id, x: xs[i], y: ys[i], url: row.archive_url, aspect, mark: row });
+      out.push({ index: i, id, x: xs[i], y: ys[i], url: row.archive_url, aspect, mark: row });
     });
     skipped(league, `with no ${kind} archived`, noMark, on);
   }
