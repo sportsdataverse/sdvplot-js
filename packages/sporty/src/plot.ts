@@ -1,5 +1,14 @@
 import * as Plot from "@observablehq/plot";
-import type { PolygonFeature, Scene, TextFeature } from "./scene.js";
+import {
+  type PolygonFeature,
+  type Scene,
+  type TextFeature,
+  hidden,
+  isVisiblePolygon,
+  isVisibleText,
+} from "./scene.js";
+
+export { isVisiblePolygon }; // re-exported so existing importers keep working
 
 export const SPORTY_PLOT_SUBPATH = "@sportsdataverse/sporty/plot";
 
@@ -21,15 +30,6 @@ interface GeoFeature {
 export interface SurfaceFeatureCollection {
   type: "FeatureCollection";
   features: GeoFeature[];
-}
-
-const hidden = (c: string): boolean => c.length === 9 && c.endsWith("00");
-
-/** Mirrors toSVG's polygon skips: no points, a non-finite point, or a hidden fill with no stroke. */
-export function isVisiblePolygon(f: PolygonFeature): boolean {
-  if (f.points.length === 0 || f.points.some(([x, y]) => !Number.isFinite(x) || !Number.isFinite(y)))
-    return false;
-  return !(hidden(f.fill) && f.stroke === undefined);
 }
 
 /**
@@ -64,10 +64,7 @@ export function sceneToGeoJSON(scene: Scene): SurfaceFeatureCollection {
 export function surfaceMark(scene: Scene, o: { textFontSize?: number } = {}): Plot.Markish[] {
   const [x0, y0, x1, y1] = scene.bbox;
   const texts = scene.features
-    .filter(
-      (f): f is TextFeature =>
-        f.kind === "text" && Number.isFinite(f.x) && Number.isFinite(f.y) && !hidden(f.fill),
-    )
+    .filter((f): f is TextFeature => f.kind === "text" && isVisibleText(f))
     .sort((a, b) => a.zIndex - b.zIndex);
   const marks: Plot.Markish[] = [];
   if (scene.background !== undefined) {
