@@ -29,4 +29,6 @@ for (sport in sports) for (league in setdiff(names(dims[[sport]]), "custom")) {
   write.csv(data.frame(x0 = lim$x[1], y0 = lim$y[1], x1 = lim$x[2], y1 = lim$y[2]), file.path(dir, "bbox_rot90_t10_-5.csv"), row.names = FALSE)
   cat(sprintf("%s/%s: %d polygon layers\n", sport, league, k))
 }
-writeLines(c(sprintf("sportyR %s", as.character(packageVersion("sportyR"))), format(Sys.time(), "%Y-%m-%d")), file.path(root, "VERSION"))
+sha <- tryCatch(system2("git", c("-C", Sys.getenv("SPORTYR_REPO", "/mnt/sdv_repos/sportyR"), "rev-parse", "--short", "HEAD"), stdout = TRUE, stderr = FALSE)[1], error = function(e) NA_character_, warning = function(w) NA_character_)
+if (is.na(sha) || !nzchar(sha)) sha <- "unknown"
+writeLines(c(sprintf("sportyR %s", as.character(packageVersion("sportyR"))), sprintf("sportyR-git %s", sha), sprintf("R %s.%s", R.version$major, R.version$minor)), file.path(root, "VERSION"))
