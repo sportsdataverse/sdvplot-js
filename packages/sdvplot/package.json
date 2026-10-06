@@ -18,10 +18,40 @@
       "types": "./dist/react.d.ts",
       "import": "./dist/react.js"
     },
+    "./plot": {
+      "types": "./dist/plot.d.ts",
+      "import": "./dist/plot.js"
+    },
+    "./d3": {
+      "types": "./dist/d3.d.ts",
+      "import": "./dist/d3.js"
+    },
+    "./testing": {
+      "types": "./dist/testing.d.ts",
+      "import": "./dist/testing.js"
+    },
     "./package.json": "./package.json"
   },
-  "peerDependencies": { "react": ">=18" },
-  "peerDependenciesMeta": { "react": { "optional": true } },
+  "peerDependencies": {
+    "react": ">=18",
+    "@observablehq/plot": ">=0.6.16",
+    "d3": ">=7",
+    "@sportsdataverse/sporty": "workspace:^"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "@observablehq/plot": {
+      "optional": true
+    },
+    "d3": {
+      "optional": true
+    },
+    "@sportsdataverse/sporty": {
+      "optional": true
+    }
+  },
   "scripts": {
     "build": "tsup",
     "typecheck": "tsc -p tsconfig.json",
@@ -40,12 +70,18 @@
     "provenance": true
   },
   "devDependencies": {
+    "@observablehq/plot": "^0.6.17",
+    "@sportsdataverse/sporty": "workspace:^",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
+    "@types/d3": "^7.4.3",
+    "@types/jsdom": "^21.1.7",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "d3": "^7.9.0",
     "jsdom": "^26.1.0",
+    "linkedom": "^0.18",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
   }

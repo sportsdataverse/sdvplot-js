@@ -3,8 +3,22 @@ import { defineConfig } from "tsup";
 import pkg from "./package.json" with { type: "json" };
 
 export default defineConfig({
-  entry: { index: "src/index.ts", react: "src/react/index.tsx" },
-  external: ["react", "react/jsx-runtime"],
+  entry: {
+    index: "src/index.ts",
+    react: "src/react/index.tsx",
+    plot: "src/plot/index.ts",
+    d3: "src/d3/index.ts",
+    testing: "src/testing/index.ts",
+  },
+  external: [
+    "react",
+    "react/jsx-runtime",
+    "@observablehq/plot",
+    "d3",
+    "@sportsdataverse/sporty",
+    "@sportsdataverse/sporty/plot",
+    "@sportsdataverse/sporty/d3",
+  ],
   format: ["esm"],
   dts: true,
   sourcemap: true,
