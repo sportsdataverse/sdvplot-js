@@ -129,6 +129,8 @@ async function main() {
     if (id)
       gsis[id] = { espn_id: str(p.espn_id), headshot: hs && /^https:\/\/[^\s"'<>]+$/.test(hs) ? hs : null };
   }
+  if (Object.keys(gsis).length < MIN_GSIS_IDS)
+    throw new Error(`players parquet yielded ${Object.keys(gsis).length} gsis ids (< ${MIN_GSIS_IDS})`);
   put(
     "nfl_gsis.ts",
     `${HEADER}export const NFL_GSIS: Readonly<Record<string, { espn_id: string | null; headshot: string | null }>> = ${JSON.stringify(gsis)};\n`,
