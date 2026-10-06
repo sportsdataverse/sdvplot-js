@@ -1,5 +1,6 @@
 export { VERSION } from "./version.js";
 export { surface, leagues, features, displayRanges, colorKeys } from "./api.js";
+export type { LeagueOf, OptionsOf } from "./api.js";
 export { basketballCourt } from "./basketball/court.js";
 export { hockeyRink } from "./hockey/rink.js";
 export { footballField } from "./football/field.js";

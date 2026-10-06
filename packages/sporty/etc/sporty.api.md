@@ -493,6 +493,9 @@ export type HockeyParamUpdates = {
 export function hockeyRink(league: HockeyLeague | (string & {}), opts?: SurfaceOptions<HockeyParamUpdates, HockeyColorKey, HockeyDisplayRange>): Scene;
 
 // @public
+export type LeagueOf<S extends Sport> = S extends "basketball" ? BasketballLeague | (string & {}) : S extends "hockey" ? HockeyLeague | (string & {}) : S extends "football" ? FootballLeague | (string & {}) : string;
+
+// @public
 export function leagues(sport: "basketball"): typeof BASKETBALL_LEAGUES;
 
 // @public (undocumented)
@@ -506,6 +509,9 @@ export function leagues(sport: Sport): readonly string[];
 
 // @public
 export function normalizeUnit(u: string): Units;
+
+// @public
+export type OptionsOf<S extends Sport> = S extends "basketball" ? SurfaceOptions<BasketballParamUpdates, BasketballColorKey, BasketballDisplayRange> : S extends "hockey" ? SurfaceOptions<HockeyParamUpdates, HockeyColorKey, HockeyDisplayRange> : S extends "football" ? SurfaceOptions<FootballParamUpdates, FootballColorKey, FootballDisplayRange> : never;
 
 // @public
 export function placeFeature(points: readonly Point[], p: Placement): Point[][];
@@ -599,6 +605,9 @@ export function surface(sport: "hockey", league: HockeyLeague | (string & {}), o
 
 // @public (undocumented)
 export function surface(sport: "football", league: FootballLeague | (string & {}), opts?: SurfaceOptions<FootballParamUpdates, FootballColorKey, FootballDisplayRange>): Scene;
+
+// @public (undocumented)
+export function surface<S extends Sport>(sport: S, league: LeagueOf<S>, opts?: OptionsOf<S>): Scene;
 
 // @public (undocumented)
 export interface SurfaceOptions<U, C extends string, D extends string> {

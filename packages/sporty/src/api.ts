@@ -35,9 +35,28 @@ import { HOCKEY_LEAGUES, type HockeyLeague, type HockeyParamUpdates } from "./sp
 const notPorted = (sport: string): UnknownLeagueError =>
   new UnknownLeagueError(`${sport} is not ported yet; see the roadmap in README`);
 
+/** League accepted by `surface(sport, …)` for sport `S` (any string for a sport not ported yet). */
+export type LeagueOf<S extends Sport> = S extends "basketball"
+  ? BasketballLeague | (string & {})
+  : S extends "hockey"
+    ? HockeyLeague | (string & {})
+    : S extends "football"
+      ? FootballLeague | (string & {})
+      : string;
+
+/** `surface()` options for sport `S`; `never` for a sport not ported yet. */
+export type OptionsOf<S extends Sport> = S extends "basketball"
+  ? SurfaceOptions<BasketballParamUpdates, BasketballColorKey, BasketballDisplayRange>
+  : S extends "hockey"
+    ? SurfaceOptions<HockeyParamUpdates, HockeyColorKey, HockeyDisplayRange>
+    : S extends "football"
+      ? SurfaceOptions<FootballParamUpdates, FootballColorKey, FootballDisplayRange>
+      : never;
+
 /**
  * Build a surface scene for a ported sport (basketball, hockey, football). Options are typed per sport, so a
- * misspelled option compiles to an error; an unported sport is a type error and throws `UnknownLeagueError`.
+ * misspelled option compiles to an error. A runtime `Sport` (or a union) goes through the generic overload; an
+ * unported sport accepts no options and throws `UnknownLeagueError`.
  */
 export function surface(
   sport: "basketball",
@@ -54,6 +73,7 @@ export function surface(
   league: FootballLeague | (string & {}),
   opts?: SurfaceOptions<FootballParamUpdates, FootballColorKey, FootballDisplayRange>,
 ): Scene;
+export function surface<S extends Sport>(sport: S, league: LeagueOf<S>, opts?: OptionsOf<S>): Scene;
 export function surface(sport: Sport, league: string, opts: object = {}): Scene {
   switch (sport) {
     case "basketball":
