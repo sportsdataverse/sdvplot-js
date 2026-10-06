@@ -29,3 +29,17 @@ test("strokeFor drops partial-alpha outlines like R", () => {
   expect(strokeFor("#ffffffff")).toBe("#ffffff");
   expect(strokeFor("#000000")).toBe("#000000");
 });
+
+test("placeFeature rotates last: shifted (111, 2) turned 90° CCW → (−2, 111)", () => {
+  const copies = placeFeature([[1, 2]], { xAnchor: 10, yAnchor: 0, xTrans: 100, rotation: 90 });
+  expect(copies).toHaveLength(1);
+  expect(copies[0]?.[0]?.[0]).toBeCloseTo(-2, 12);
+  expect(copies[0]?.[0]?.[1]).toBeCloseTo(111, 12);
+});
+test("placeFeature reflectY-only yields 2 copies: (x+ax, y+ay) and (x+ax, −(y+ay)), both + shift", () => {
+  const copies = placeFeature([[1, 2]], { xAnchor: 10, yAnchor: 3, reflectY: true, xTrans: 100, yTrans: 5 });
+  expect(copies.map((c) => c[0])).toEqual([
+    [111, 10],
+    [111, 0],
+  ]);
+});

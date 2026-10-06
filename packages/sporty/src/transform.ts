@@ -8,6 +8,7 @@ export function rotateCoords(pts: readonly Point[], angleDeg: number): Point[] {
   return pts.map(([x, y]): Point => [x * c - y * s, x * s + y * c]);
 }
 
+/** Defaults follow sportyR's `reflect(df, over_x = FALSE, over_y = TRUE)`; pass `overY: false` explicitly for an X-only reflection. */
 export const reflectCoords = (
   pts: readonly Point[],
   { overX = false, overY = true }: { overX?: boolean; overY?: boolean },
