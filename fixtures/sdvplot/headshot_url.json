@@ -1,0 +1,44 @@
+[
+{
+"player_id": "3139477",
+"league": "nfl",
+"id_system": "espn",
+"url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/3139477.png"
+},
+{
+"player_id": "00-0033873",
+"league": "nfl",
+"id_system": "gsis",
+"url": "https://static.www.nfl.com/image/upload/t_headshot_desktop/f_auto/league/wdckwtob1lybvkmxnf7p.png"
+},
+{
+"player_id": "00-0036355",
+"league": "nfl",
+"id_system": "gsis",
+"url": "https://static.www.nfl.com/image/upload/t_headshot_desktop/f_auto/league/jnkspnntgebegzp4ghve.png"
+},
+{
+"player_id": 2544,
+"league": "nba",
+"id_system": "espn",
+"url": "https://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/2544.png"
+},
+{
+"player_id": "x",
+"league": "nba",
+"id_system": "espn",
+"url": null
+},
+{
+"player_id": "4433403",
+"league": "cfb",
+"id_system": "espn",
+"url": "https://a.espncdn.com/combiner/i?img=/i/headshots/college-football/players/full/4433403.png"
+},
+{
+"player_id": "4433403.0",
+"league": "mbb",
+"id_system": "espn",
+"url": "https://a.espncdn.com/combiner/i?img=/i/headshots/mens-college-basketball/players/full/4433403.png"
+}
+]
