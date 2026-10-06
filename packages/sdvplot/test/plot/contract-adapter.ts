@@ -1,8 +1,12 @@
 import * as Plot from "@observablehq/plot";
-import { UnsupportedTargetError } from "../../src/index.js";
-import { headshots, logos, wordmarks } from "../../src/plot/index.js";
+import { axisLogos, headshots, logos, wordmarks } from "../../src/plot/index.js";
 import type { Value } from "../../src/resolve.js";
-import { type ContractAdapter, drawnMarks } from "../../src/testing/index.js";
+import {
+  type ContractAdapter,
+  drawnAxisMarks,
+  drawnMarks,
+  visibleAxisLabels,
+} from "../../src/testing/index.js";
 
 export type Target = Plot.PlotOptions & { marks: Plot.Markish[] };
 export const makeTarget = (): Target => ({
@@ -43,11 +47,9 @@ export const plotAdapter: ContractAdapter<Target> = {
     ...tg,
     marks: [...tg.marks, headshots(rows(x, y, ids), { x: "x", y: "y", player: "t", ...defined(o) })],
   }),
-  axisLogos: () => {
-    throw new UnsupportedTargetError("axis logos land in Task 7");
-  },
-  supportsAxisLogos: false,
+  axisLogos: (tg, axis, o) => ({ ...tg, marks: [...tg.marks, axisLogos(axis, o)] }),
+  supportsAxisLogos: true,
   drawnMarks: (tg) => drawnMarks(Plot.plot(tg)),
-  drawnAxisMarks: () => [],
-  visibleAxisLabels: () => [],
+  drawnAxisMarks: (tg, ax) => drawnAxisMarks(Plot.plot(tg), ax),
+  visibleAxisLabels: (tg, ax) => visibleAxisLabels(Plot.plot(tg), ax),
 };

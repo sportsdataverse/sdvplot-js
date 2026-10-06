@@ -10,6 +10,7 @@ import {
   resolveSync,
   setWarningHandler,
 } from "../index.js";
+import type { Axis } from "../plot/axis.js";
 import type { Value } from "../resolve.js";
 
 export const TESTING_SUBPATH = "@sportsdataverse/sdvplot/testing";
@@ -244,9 +245,11 @@ export async function checkAdapterContract<T>(a: ContractAdapter<T>, o: Contract
   if (a.supportsAxisLogos) {
     const mk = o.makeAxisTarget;
     if (!mk) return fail(r7, "makeAxisTarget is required for an adapter that supports axis logos");
-    const [t, n] = await counted(() => a.axisLogos(mk([ka, "XXX", kb]), "x", { league }));
-    const marks = a.drawnAxisMarks(t, "x");
-    const shown = a.visibleAxisLabels(t, "x");
+    // an adapter may resolve at construction or only when the target renders: count across both
+    const [[marks, shown], n] = await counted(async () => {
+      const t = await a.axisLogos(mk([ka, "XXX", kb]), "x", { league });
+      return [a.drawnAxisMarks(t, "x"), a.visibleAxisLabels(t, "x")] as const;
+    });
     if (
       !same(
         marks.map((m) => m.id),
@@ -284,4 +287,21 @@ export async function checkAdapterContract<T>(a: ContractAdapter<T>, o: Contract
       if (why) fail("rule 8 (alpha)", `${name} with alpha ${bad} must throw InputError, ${why}`);
     }
   setWarningHandler(null);
+}
+
+/** Axis images (`<image data-sdv-axis>`), in tick-position order; `height` is a fraction of the frame. */
+export function drawnAxisMarks(node: ParentNode, axis: Axis): { id: string; tick: number; height: number }[] {
+  return Array.from(node.querySelectorAll(`image[data-sdv-axis="${axis}"]`))
+    .map((img) => ({
+      id: img.getAttribute("data-sdv-id") ?? "",
+      tick: Number(img.getAttribute("data-sdv-tick")),
+      height: Number(img.getAttribute("height")) / Number(img.getAttribute("data-sdv-frame")),
+    }))
+    .sort((a, b) => a.tick - b.tick);
+}
+/** Non-empty tick `<text>` still on the axis (categories that did not resolve to an image). */
+export function visibleAxisLabels(node: ParentNode, axis: Axis): string[] {
+  return Array.from(node.querySelectorAll(`[aria-label="${axis}-axis tick label"] text`))
+    .map((t) => t.textContent ?? "")
+    .filter((s) => s !== "");
 }

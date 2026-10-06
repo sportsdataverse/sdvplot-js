@@ -41,6 +41,29 @@ const values = <R>(data: Data<R>, c: Channel<R>): Value[] =>
   Plot.valueof(data as Plot.Data, c as Plot.ChannelValue) as Value[];
 
 /**
+ * Size an `<image>` to `px` tall (width from the mark's aspect), centre it on (cx, cy) and stamp the
+ * `data-sdv-id/kind/frame` attributes the testing hooks read. Shared by `sizeRender` and `axisLogos`.
+ */
+export function stampImage(
+  img: Element,
+  p: Placement,
+  kind: Kind,
+  px: number,
+  frame: number,
+  cx: number,
+  cy: number,
+): void {
+  const w = px * (p.aspect ?? 1);
+  img.setAttribute("width", String(w));
+  img.setAttribute("height", String(px));
+  img.setAttribute("x", String(cx - w / 2));
+  img.setAttribute("y", String(cy - px / 2));
+  img.setAttribute("data-sdv-id", p.id);
+  img.setAttribute("data-sdv-kind", kind);
+  img.setAttribute("data-sdv-frame", String(frame));
+}
+
+/**
  * Plot `render` transform: size each `<image>` to `height` x the (facet) frame height, keep the mark's
  * aspect, re-centre on the point and stamp the `data-sdv-*` attributes `drawnMarks` reads.
  * `placed` is looked up by original row index (`Placement.index`), which is what Plot hands `render`.
@@ -59,16 +82,9 @@ export function sizeRender(height: number, placed: readonly Placement[], kind: K
       const img = images[k];
       const p = byRow.get(i);
       if (!img || !p) return;
-      const w = px * (p.aspect ?? 1);
-      img.setAttribute("width", String(w));
-      img.setAttribute("height", String(px));
-      img.setAttribute("x", String((X[i] as number) - w / 2));
-      img.setAttribute("y", String((Y[i] as number) - px / 2));
-      img.setAttribute("data-sdv-id", p.id);
+      stampImage(img, p, kind, px, frame, X[i] as number, Y[i] as number);
       img.setAttribute("data-sdv-x", String(p.x));
       img.setAttribute("data-sdv-y", String(p.y));
-      img.setAttribute("data-sdv-kind", kind);
-      img.setAttribute("data-sdv-frame", String(frame));
     });
     return g;
   };
