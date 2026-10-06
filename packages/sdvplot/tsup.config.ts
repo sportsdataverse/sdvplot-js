@@ -1,4 +1,4 @@
-import { readFileSync, readdirSync, unlinkSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, unlinkSync, writeFileSync } from "node:fs";
 import { defineConfig } from "tsup";
 import pkg from "./package.json" with { type: "json" };
 
@@ -25,7 +25,12 @@ export default defineConfig({
       if (!sources.length || !sources.every((s) => s.includes("/src/data/"))) continue;
       unlinkSync(`dist/${f}`);
       const js = `dist/${f.slice(0, -4)}`;
-      writeFileSync(js, readFileSync(js, "utf8").replace(/\n\/\/# sourceMappingURL=\S+\s*$/, "\n"));
+      // tsup appends its own copy of the comment after esbuild's, so strip every occurrence.
+      writeFileSync(js, readFileSync(js, "utf8").replace(/^\/\/# sourceMappingURL=.*\n?/gm, ""));
     }
+    // A dangling map reference makes every consumer's bundler warn on import: assert none survived.
+    for (const f of readdirSync("dist").filter((n) => n.endsWith(".js")))
+      for (const m of readFileSync(`dist/${f}`, "utf8").matchAll(/^\/\/# sourceMappingURL=(\S+)/gm))
+        if (!existsSync(`dist/${m[1]}`)) throw new Error(`dist/${f} references a missing source map ${m[1]}`);
   },
 });

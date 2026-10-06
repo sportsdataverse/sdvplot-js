@@ -71,9 +71,14 @@ test("leagueMarks skips non-team rows and rows without an alias", () => {
 
 test("safeArchive accepts only the derived content-addressed URL", () => {
   const base = "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256";
-  expect(safeArchive({ sha256: "abcd", ext: "png", archive_url: `${base}/ab/abcd.png` })).toBe(true);
-  expect(safeArchive({ sha256: "abcd", ext: "png", archive_url: `${base}/ab/abcd.svg` })).toBe(false);
-  expect(safeArchive({ sha256: "abcd", ext: "png", archive_url: "javascript:alert(1)" })).toBe(false);
+  const sha = "c2ab581364eeb44d43d8a0826ca3560285a8025b23d07955084878db65fbaec8";
+  expect(safeArchive({ sha256: sha, ext: "png", archive_url: `${base}/c2/${sha}.png` })).toBe(true);
+  expect(safeArchive({ sha256: sha, ext: "png", archive_url: `${base}/c2/${sha}.svg` })).toBe(false);
+  expect(safeArchive({ sha256: sha, ext: "png", archive_url: "javascript:alert(1)" })).toBe(false);
+  // the derived URL is only as safe as its parts: a hostile sha256/ext would equal itself
+  const bad = 'x"><script>';
+  expect(safeArchive({ sha256: bad, ext: "png", archive_url: `${base}/x"/${bad}.png` })).toBe(false);
+  expect(safeArchive({ sha256: sha, ext: "png?x", archive_url: `${base}/c2/${sha}.png?x` })).toBe(false);
 });
 
 test("manifestVariants is the sorted unique set over every row", () => {

@@ -20,6 +20,8 @@ export interface ManifestRow {
 const int = (s: string): number | null => (s === "" ? null : Number.parseInt(s, 10));
 /** archive_url reaches the web adapters' HTML (Python drops rows failing SAFE_URL); here a row must carry exactly the content-addressed URL the loader derives, or it is dropped. */
 export const safeArchive = (m: Pick<ManifestRow, "archive_url" | "sha256" | "ext">): boolean =>
+  /^[0-9a-f]{64}$/.test(m.sha256) &&
+  /^[a-z0-9]+$/.test(m.ext) &&
   m.archive_url === archiveUrl(m.sha256, m.ext);
 const key = (source: string, id: string) => `${source}:${id}`.trim().toLowerCase();
 
