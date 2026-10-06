@@ -15,8 +15,8 @@ export type {
   TextFeature,
   Units,
 } from "./scene.js";
-export { SportyError, UnknownDisplayRangeError, UnknownLeagueError } from "./errors.js";
-export { FT_PER_UNIT, convertPoints, convertUnits } from "./units.js";
+export { SportyError, UnknownDisplayRangeError, UnknownLeagueError, UnknownUnitError } from "./errors.js";
+export { FT_PER_UNIT, convertPoints, convertUnits, normalizeUnit } from "./units.js";
 export { placeFeature, reflectCoords, rotateCoords } from "./transform.js";
 export type { Placement } from "./transform.js";
 export { FRAMES, frameBottomLeft, toSurfaceFrame } from "./frames.js";

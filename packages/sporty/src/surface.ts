@@ -4,12 +4,15 @@ import { asArray } from "./specs/_normalize.js";
 import { type Placement, placeFeature, rotateCoords, strokeFor } from "./transform.js";
 import { convertPoints, convertUnits } from "./units.js";
 
-export { SportyError, UnknownDisplayRangeError, UnknownLeagueError } from "./errors.js";
+export { SportyError, UnknownDisplayRangeError, UnknownLeagueError, UnknownUnitError } from "./errors.js";
 
 type Limits = readonly [number, number];
 const isMatrix = (v: unknown): boolean => Array.isArray(v) && Array.isArray(v[0]);
 
-/** R `utils::modifyList(base, updates)`; a scalar update to an array field becomes `[value]`, a flat row to a matrix field `[row]`. */
+/**
+ * R `utils::modifyList(base, updates)`; a scalar update to an array field becomes `[value]`, a flat row to a matrix
+ * field `[row]`. An `undefined`/`null` update keeps the default.
+ */
 export function mergeParams<P extends object>(
   base: P,
   updates: Partial<Record<keyof P, unknown>> | undefined,
@@ -18,19 +21,24 @@ export function mergeParams<P extends object>(
   const out: Record<keyof P, unknown> = { ...base };
   for (const k of Object.keys(updates ?? {}) as (keyof P)[]) {
     const v = updates?.[k];
-    if (v === undefined) continue;
+    if (v === undefined || v === null) continue;
     const w = arrayFields.includes(k) ? asArray(v) : v;
     out[k] = isMatrix(base[k]) && !isMatrix(w) ? [w] : w;
   }
   return out as P;
 }
 
-/** R `utils::modifyList(<set_colors()>, color_updates)`. */
+/** R `utils::modifyList(<set_colors()>, color_updates)`; an `undefined`/`null` colour keeps the default (as `mergeParams`). */
 export function mergeColors<F extends string>(
   defaults: Readonly<Record<F, Color>>,
   updates?: Partial<Record<F, Color | readonly Color[]>>,
 ): Record<F, Color | readonly Color[]> {
-  return { ...defaults, ...updates };
+  const out: Record<F, Color | readonly Color[]> = { ...defaults };
+  for (const k of Object.keys(updates ?? {}) as F[]) {
+    const v = updates?.[k];
+    if (v !== undefined && v !== null) out[k] = v;
+  }
+  return out;
 }
 
 /** R `data.frame()` recycling: colour i of a vector is `c[i % length]`. */

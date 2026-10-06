@@ -1,4 +1,4 @@
-import type { Color, Feature, Point, Scene, SurfaceOptions, Units } from "../scene.js";
+import type { Color, Feature, Point, Scene, SurfaceOptions } from "../scene.js";
 import { createRectangle } from "../shapes.js";
 import {
   FOOTBALL_LEAGUES,
@@ -20,7 +20,7 @@ import {
   mergeParams,
 } from "../surface.js";
 import { rotateCoords } from "../transform.js";
-import { convertPoints } from "../units.js";
+import { convertPoints, normalizeUnit } from "../units.js";
 import * as F from "./features.js";
 import {
   FOOTBALL_DEFAULT_COLORS,
@@ -81,8 +81,8 @@ export function footballField(
   const p = mergeParams(FOOTBALL_SPECS[key], opts.updates, ARRAY_FIELDS);
   const colors = mergeColors(FOOTBALL_DEFAULT_COLORS, opts.colorUpdates);
   const col = (k: FootballColorKey): Color => colorAt(colors[k], 0);
-  const from: Units = p.field_units || "ft"; // custom's "" (R's `%or% "ft"` only catches NULL)
-  const units = opts.units ?? from;
+  const from = normalizeUnit(p.field_units || "ft"); // custom's "" (R's `%or% "ft"` only catches NULL)
+  const units = normalizeUnit(opts.units ?? from);
   const conv = units === from ? undefined : ([from, units] as const);
   const { rotation = 0, xTrans = 0, yTrans = 0 } = opts;
 

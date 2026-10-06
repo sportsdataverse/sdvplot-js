@@ -24,30 +24,36 @@ import {
   type HockeyDisplayRange,
 } from "./hockey/types.js";
 import type { Scene, Sport, SurfaceOptions } from "./scene.js";
-import { BASKETBALL_LEAGUES, type BasketballParamUpdates } from "./specs/basketball.js";
-import { FOOTBALL_LEAGUES, type FootballParamUpdates } from "./specs/football.js";
-import { HOCKEY_LEAGUES, type HockeyParamUpdates } from "./specs/hockey.js";
+import {
+  BASKETBALL_LEAGUES,
+  type BasketballLeague,
+  type BasketballParamUpdates,
+} from "./specs/basketball.js";
+import { FOOTBALL_LEAGUES, type FootballLeague, type FootballParamUpdates } from "./specs/football.js";
+import { HOCKEY_LEAGUES, type HockeyLeague, type HockeyParamUpdates } from "./specs/hockey.js";
 
 const notPorted = (sport: string): UnknownLeagueError =>
   new UnknownLeagueError(`${sport} is not ported yet; see the roadmap in README`);
 
-/** Build a surface scene for a ported sport (basketball, hockey, football); other sports throw `UnknownLeagueError`. */
+/**
+ * Build a surface scene for a ported sport (basketball, hockey, football). Options are typed per sport, so a
+ * misspelled option compiles to an error; an unported sport is a type error and throws `UnknownLeagueError`.
+ */
 export function surface(
   sport: "basketball",
-  league: string,
+  league: BasketballLeague | (string & {}),
   opts?: SurfaceOptions<BasketballParamUpdates, BasketballColorKey, BasketballDisplayRange>,
 ): Scene;
 export function surface(
   sport: "hockey",
-  league: string,
+  league: HockeyLeague | (string & {}),
   opts?: SurfaceOptions<HockeyParamUpdates, HockeyColorKey, HockeyDisplayRange>,
 ): Scene;
 export function surface(
   sport: "football",
-  league: string,
+  league: FootballLeague | (string & {}),
   opts?: SurfaceOptions<FootballParamUpdates, FootballColorKey, FootballDisplayRange>,
 ): Scene;
-export function surface(sport: Sport, league: string, opts?: object): Scene;
 export function surface(sport: Sport, league: string, opts: object = {}): Scene {
   switch (sport) {
     case "basketball":

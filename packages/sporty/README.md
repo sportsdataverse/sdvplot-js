@@ -16,7 +16,7 @@ const shots = toSurfaceFrame([{ x_legacy: 120, y_legacy: 35 }], { from: "nba-leg
 // [{ x_legacy: 120, y_legacy: 35, surface_x: -38.25, surface_y: 12 }] -> plot (surface_x, surface_y) in feet
 ```
 
-`surface(sport, league, opts)` dispatches by sport; `leagues`, `features`, `displayRanges` and `colorKeys` list what each sport accepts. Options mirror sportyR: `updates` (parameter overrides), `colorUpdates`, `rotation`, `xTrans`, `yTrans`, `units`, `displayRange`, `xlim`, `ylim`.
+`surface(sport, league, opts)` dispatches by sport; `leagues`, `features`, `displayRanges` and `colorKeys` list what each sport accepts. Options mirror sportyR: `updates` (parameter overrides), `colorUpdates`, `rotation`, `xTrans`, `yTrans`, `units` (`ft`, `m`, `yd`, `in`, `cm`, `mm`, any case, or a full name such as `"feet"`; anything else throws `UnknownUnitError`), `displayRange`, `xlim`, `ylim`, `arcResolution` (points per arc, default 200). Options are typed per sport, so a misspelled option or key is a compile error.
 
 ## Ported sports
 
@@ -48,6 +48,7 @@ Ported from sportyR 2.2.3 - see `NOTICE.md` (J3). The R package is the oracle: t
 - An unknown `displayRange` throws `UnknownDisplayRangeError` (R silently falls back to `"full"`).
 - `units` converts the anchors and display limits too (R converts only the feature points, so non-native units plot wrongly).
 - Vector colours recycle per copy of a feature (`colorAt`), as R `data.frame()` does.
+- An `undefined`/`null` entry in `updates` or `colorUpdates` keeps the default.
 - The `custom` league builds a surface from its all-zero defaults instead of erroring.
 - Text features carry a `fitBox` (the ggfittext box) that the SVG renderer fits by height only.
 

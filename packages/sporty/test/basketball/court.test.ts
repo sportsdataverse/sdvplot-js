@@ -58,3 +58,11 @@ test("three-point table counts R's corner column: a second corner adds a second 
     basketballCourt("nba", { updates: { basket_center_to_corner_three: [22, 21] } }).features,
   ).toHaveLength(110);
 });
+
+test("colorUpdates: an undefined or null colour keeps the default instead of throwing", () => {
+  const apron = (s: ReturnType<typeof basketballCourt>) =>
+    s.features.find((f) => f.name === "court_apron")?.fill;
+  const base = apron(basketballCourt("nba"));
+  expect(apron(basketballCourt("nba", { colorUpdates: { court_apron: undefined as never } }))).toBe(base);
+  expect(apron(basketballCourt("nba", { colorUpdates: { court_apron: null as never } }))).toBe(base);
+});

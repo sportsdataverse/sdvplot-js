@@ -160,7 +160,7 @@ export function colorKeys(sport: "football"): typeof FOOTBALL_COLOR_KEYS;
 export function colorKeys(sport: Sport): readonly string[];
 
 // @public (undocumented)
-export const convertPoints: (pts: readonly Point[], from: Units, to: Units) => Point[];
+export function convertPoints(pts: readonly Point[], from: Units, to: Units): Point[];
 
 // @public (undocumented)
 export const convertUnits: (value: number, from: Units, to: Units) => number;
@@ -505,6 +505,9 @@ export function leagues(sport: "football"): typeof FOOTBALL_LEAGUES;
 export function leagues(sport: Sport): readonly string[];
 
 // @public
+export function normalizeUnit(u: string): Units;
+
+// @public
 export function placeFeature(points: readonly Point[], p: Placement): Point[][];
 
 // @public (undocumented)
@@ -589,16 +592,13 @@ export class SportyError extends Error {
 }
 
 // @public
-export function surface(sport: "basketball", league: string, opts?: SurfaceOptions<BasketballParamUpdates, BasketballColorKey, BasketballDisplayRange>): Scene;
+export function surface(sport: "basketball", league: BasketballLeague | (string & {}), opts?: SurfaceOptions<BasketballParamUpdates, BasketballColorKey, BasketballDisplayRange>): Scene;
 
 // @public (undocumented)
-export function surface(sport: "hockey", league: string, opts?: SurfaceOptions<HockeyParamUpdates, HockeyColorKey, HockeyDisplayRange>): Scene;
+export function surface(sport: "hockey", league: HockeyLeague | (string & {}), opts?: SurfaceOptions<HockeyParamUpdates, HockeyColorKey, HockeyDisplayRange>): Scene;
 
 // @public (undocumented)
-export function surface(sport: "football", league: string, opts?: SurfaceOptions<FootballParamUpdates, FootballColorKey, FootballDisplayRange>): Scene;
-
-// @public (undocumented)
-export function surface(sport: Sport, league: string, opts?: object): Scene;
+export function surface(sport: "football", league: FootballLeague | (string & {}), opts?: SurfaceOptions<FootballParamUpdates, FootballColorKey, FootballDisplayRange>): Scene;
 
 // @public (undocumented)
 export interface SurfaceOptions<U, C extends string, D extends string> {
@@ -670,6 +670,10 @@ export class UnknownDisplayRangeError extends SportyError {
 
 // @public (undocumented)
 export class UnknownLeagueError extends SportyError {
+}
+
+// @public (undocumented)
+export class UnknownUnitError extends SportyError {
 }
 
 // @public (undocumented)

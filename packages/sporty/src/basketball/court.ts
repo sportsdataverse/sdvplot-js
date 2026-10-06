@@ -1,4 +1,4 @@
-import type { Color, Feature, Point, Scene, SurfaceOptions, Units } from "../scene.js";
+import type { Color, Feature, Point, Scene, SurfaceOptions } from "../scene.js";
 import { asArray } from "../specs/_normalize.js";
 import {
   BASKETBALL_LEAGUES,
@@ -19,7 +19,7 @@ import {
   mergeParams,
   orVec,
 } from "../surface.js";
-import { convertUnits } from "../units.js";
+import { convertUnits, normalizeUnit } from "../units.js";
 import * as F from "./features.js";
 import {
   BASKETBALL_DEFAULT_COLORS,
@@ -87,8 +87,8 @@ export function basketballCourt(
   const colors = mergeColors(BASKETBALL_DEFAULT_COLORS, opts.colorUpdates);
   const col = (k: BasketballColorKey): Color => colorAt(colors[k], 0);
   const npoints = opts.arcResolution ?? 200;
-  const from: Units = p.court_units || "ft"; // custom's "" (R would error converting from "")
-  const units = opts.units ?? from;
+  const from = normalizeUnit(p.court_units || "ft"); // custom's "" (R would error converting from "")
+  const units = normalizeUnit(opts.units ?? from);
   const conv = units === from ? undefined : ([from, units] as const);
   const { rotation = 0, xTrans = 0, yTrans = 0 } = opts;
 

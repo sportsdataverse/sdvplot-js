@@ -1,4 +1,4 @@
-import type { Color, Feature, Point, Scene, SurfaceOptions, Units } from "../scene.js";
+import type { Color, Feature, Point, Scene, SurfaceOptions } from "../scene.js";
 import { HOCKEY_LEAGUES, HOCKEY_SPECS, type HockeyLeague, type HockeyParamUpdates } from "../specs/hockey.js";
 import {
   UnknownDisplayRangeError,
@@ -10,7 +10,7 @@ import {
   mergeColors,
   mergeParams,
 } from "../surface.js";
-import { convertUnits } from "../units.js";
+import { convertUnits, normalizeUnit } from "../units.js";
 import * as F from "./features.js";
 import {
   HOCKEY_DEFAULT_COLORS,
@@ -63,8 +63,8 @@ export function hockeyRink(
   const colors = mergeColors(HOCKEY_DEFAULT_COLORS, opts.colorUpdates);
   const col = (k: HockeyColorKey): Color => colorAt(colors[k], 0);
   const npoints = opts.arcResolution ?? 200;
-  const from: Units = p.rink_units || "ft"; // custom's "" (R would error converting from "")
-  const units = opts.units ?? from;
+  const from = normalizeUnit(p.rink_units || "ft"); // custom's "" (R would error converting from "")
+  const units = normalizeUnit(opts.units ?? from);
   const conv = units === from ? undefined : ([from, units] as const);
   const { rotation = 0, xTrans = 0, yTrans = 0 } = opts;
   const hint = (ft: number): number => convertUnits(ft, "ft", units);

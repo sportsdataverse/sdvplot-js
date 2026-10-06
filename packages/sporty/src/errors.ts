@@ -6,3 +6,4 @@ export class SportyError extends Error {
 }
 export class UnknownLeagueError extends SportyError {}
 export class UnknownDisplayRangeError extends SportyError {}
+export class UnknownUnitError extends SportyError {}
