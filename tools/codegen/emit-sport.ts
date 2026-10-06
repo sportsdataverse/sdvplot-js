@@ -52,8 +52,8 @@ export type ${P}League = (typeof ${sport.toUpperCase()}_LEAGUES)[number];
 export interface ${P}Params {
 ${fields.map((f) => `  ${f}${optional(f)}: ${types[f]};`).join("\n")}
 }
-type Loosen<T> = T extends readonly (readonly number[])[] ? readonly number[] | readonly (readonly number[])[] : T extends readonly number[] ? number | readonly number[] : T extends readonly boolean[] ? boolean | readonly boolean[] : T extends readonly string[] ? string | readonly string[] : T;
-export type ${P}ParamUpdates = { [K in keyof ${P}Params]?: Loosen<${P}Params[K]> };
+export type ${P}Loosen<T> = T extends readonly (readonly number[])[] ? readonly number[] | readonly (readonly number[])[] : T extends readonly number[] ? number | readonly number[] : T extends readonly boolean[] ? boolean | readonly boolean[] : T extends readonly string[] ? string | readonly string[] : T;
+export type ${P}ParamUpdates = { [K in keyof ${P}Params]?: ${P}Loosen<${P}Params[K]> };
 export const ${sport.toUpperCase()}_SPECS: Readonly<Record<${P}League, ${P}Params>> = ${JSON.stringify(specs)} as const;
 `;
 }
