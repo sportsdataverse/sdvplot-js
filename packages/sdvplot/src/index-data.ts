@@ -16,17 +16,24 @@ export function checkLeague(league: string): asserts league is League {
   if (!(LEAGUES as readonly string[]).includes(league))
     throw new InputError(`unknown league ${JSON.stringify(league)}; known leagues: ${LEAGUES.join(", ")}`);
 }
-export function loadLeague(league: League): Promise<LeagueData> {
+/** Async throughout: an unknown league rejects (never throws synchronously); a failed chunk load can be retried. */
+export async function loadLeague(league: League): Promise<LeagueData> {
   checkLeague(league);
   const hit = loaded.get(league);
-  if (hit) return Promise.resolve(hit);
+  if (hit) return hit;
   let p = pending.get(league);
   if (!p) {
-    p = loaders[league]().then((d) => {
-      loaded.set(league, d);
-      pending.delete(league);
-      return d;
-    });
+    p = loaders[league]().then(
+      (d) => {
+        loaded.set(league, d);
+        pending.delete(league);
+        return d;
+      },
+      (e: unknown) => {
+        pending.delete(league);
+        throw e;
+      },
+    );
     pending.set(league, p);
   }
   return p;

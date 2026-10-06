@@ -44,3 +44,14 @@ test("useTeamColors stays undefined for an unknown league", async () => {
   await new Promise((r) => setTimeout(r, 200));
   expect(screen.getByTestId("c").textContent).toBe("none");
 });
+
+test("TeamLogo with an unknown league renders nothing (rejection handled)", async () => {
+  const { container } = render(<TeamLogo team="KC" league={"NFL" as never} />);
+  await new Promise((r) => setTimeout(r, 100));
+  expect(container.innerHTML).toBe("");
+});
+
+test("Headshot renders null for a league without ESPN headshots instead of throwing", () => {
+  const { container } = render(<Headshot playerId="3139477" league={"ahl" as never} />);
+  expect(container.innerHTML).toBe("");
+});

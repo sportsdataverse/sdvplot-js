@@ -17,10 +17,10 @@ export class DownloadError extends OfflineError {
   }
 }
 
-type Handler = (message: string) => void;
-let handler: Handler | null = null;
+export type WarningHandler = (message: string) => void;
+let handler: WarningHandler | null = null;
 const seen = new Set<string>();
-export function setWarningHandler(fn: Handler | null): void {
+export function setWarningHandler(fn: WarningHandler | null): void {
   handler = fn;
 }
 export function resetWarnings(): void {

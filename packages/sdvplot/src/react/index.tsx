@@ -1,6 +1,6 @@
 import { type ImgHTMLAttributes, type ReactElement, useEffect, useState } from "react";
 import { type ColorOptions, palette } from "../colors.js";
-import { HEADSHOT_ASPECT, headshotUrl } from "../headshots.js";
+import { type EspnHeadshotLeague, HEADSHOT_ASPECT, headshotUrl } from "../headshots.js";
 import { getLeagueSync, loadLeague } from "../index-data.js";
 import { type LogoUrlOptions, logoUrlSync } from "../marks.js";
 import { type Value, resolveSync } from "../resolve.js";
@@ -34,21 +34,21 @@ export function TeamLogo({
   const [mark, setMark] = useState<{ src: string; name: string } | undefined>();
   useEffect(() => {
     let live = true;
-    loadLeague(league)
-      .then(() => {
-        if (!live) return;
-        const o: LogoUrlOptions = {};
-        if (season !== undefined) o.season = season;
-        if (variant !== undefined) o.variant = variant;
-        if (markType !== undefined) o.markType = markType;
-        const src = logoUrlSync(team, league, o);
-        const id = resolveSync(team, league, { season });
-        const name = getLeagueSync(league).teams.find((t) => t.team_id === id)?.name ?? "";
-        setMark(src === undefined ? undefined : { src, name });
-      })
-      .catch(() => {
-        if (live) setMark(undefined);
-      });
+    // One async body: any throw (bad league, bad variant, lookup error) becomes a rejection the .catch swallows.
+    (async () => {
+      await loadLeague(league);
+      if (!live) return;
+      const o: LogoUrlOptions = {};
+      if (season !== undefined) o.season = season;
+      if (variant !== undefined) o.variant = variant;
+      if (markType !== undefined) o.markType = markType;
+      const src = logoUrlSync(team, league, o);
+      const id = resolveSync(team, league, { season });
+      const name = getLeagueSync(league).teams.find((t) => t.team_id === id)?.name ?? "";
+      setMark(src === undefined ? undefined : { src, name });
+    })().catch(() => {
+      if (live) setMark(undefined);
+    });
     return () => {
       live = false;
     };
@@ -65,14 +65,14 @@ export function Wordmark(props: Omit<TeamLogoProps, "markType">): ReactElement |
 
 export interface HeadshotProps extends ImgProps {
   playerId: Value;
-  league: League;
+  league: EspnHeadshotLeague;
   idSystem?: HeadshotIdSystem;
   /** Height in px (default 60); width follows the 600:436 headshot aspect. */
   height?: number;
   alt?: string;
 }
 
-/** Player headshot `<img>` (sync). Renders nothing for an unknown/malformed id. */
+/** Player headshot `<img>` (sync). Renders nothing for an unknown/malformed id, or a league/idSystem `headshotUrl` rejects. */
 export function Headshot({
   playerId,
   league,
@@ -81,7 +81,12 @@ export function Headshot({
   alt = "Player headshot",
   ...imgProps
 }: HeadshotProps): ReactElement | null {
-  const src = headshotUrl(playerId, league, idSystem === undefined ? {} : { idSystem });
+  let src: string | undefined;
+  try {
+    src = headshotUrl(playerId, league, idSystem === undefined ? {} : { idSystem });
+  } catch {
+    return null;
+  }
   if (src === undefined) return null;
   return (
     // biome-ignore lint/a11y/useAltText: alt always defaults to a string; imgProps cannot carry it

@@ -18,6 +18,15 @@ export interface Alias {
     value: string;
 }
 
+// @public (undocumented)
+export interface ColorOptions extends ResolveOptions {
+    // (undocumented)
+    which?: Which;
+}
+
+// @public (undocumented)
+export type ColorResult<T> = T extends readonly Value[] ? (string | undefined)[] : string | undefined;
+
 // @public
 export function contrast(a: string, b: string): number;
 
@@ -31,7 +40,19 @@ export class DownloadError extends OfflineError {
 }
 
 // @public
-export const ESPN_HEADSHOT_LEAGUES: Readonly<Record<string, string>>;
+export const ESPN_HEADSHOT_LEAGUES: {
+    readonly nfl: "nfl";
+    readonly nba: "nba";
+    readonly wnba: "wnba";
+    readonly mlb: "mlb";
+    readonly nhl: "nhl";
+    readonly cfb: "college-football";
+    readonly mbb: "mens-college-basketball";
+    readonly wbb: "womens-college-basketball";
+};
+
+// @public
+export type EspnHeadshotLeague = keyof typeof ESPN_HEADSHOT_LEAGUES;
 
 // @public (undocumented)
 export const EXPLICIT_ONLY: readonly ["nhl_id"];
@@ -43,7 +64,7 @@ export const HEADSHOT_ASPECT: number;
 export type HeadshotIdSystem = "espn" | "gsis";
 
 // @public
-export function headshotUrl(playerId: Value, league: League, input?: {
+export function headshotUrl(playerId: Value, league: EspnHeadshotLeague, input?: {
     idSystem?: HeadshotIdSystem;
 }): string | undefined;
 
@@ -81,13 +102,19 @@ export interface LeagueData {
 // @public (undocumented)
 export const LEAGUES: readonly ["aaf", "ahl", "cfb", "cricket", "echl", "mbb", "milb", "mlb", "nba", "nbagl", "ncaa_baseball", "ncaa_mhockey", "ncaa_softball", "ncaa_whockey", "nfl", "nhl", "ohl", "phf", "pwhl", "qmjhl", "soccer", "ufl", "usfl", "ushl", "wbb", "whl", "wnba", "xfl"];
 
-// @public (undocumented)
+// @public
 export function loadLeague(league: League): Promise<LeagueData>;
 
-// Warning: (ae-forgotten-export) The symbol "LogoUrlOptions" needs to be exported by the entry point index.d.ts
-//
 // @public (undocumented)
 export function logoUrl(team: Value, league: League, o?: LogoUrlOptions): Promise<string | undefined>;
+
+// @public (undocumented)
+export interface LogoUrlOptions extends SelectOptions {
+    // (undocumented)
+    idSystem?: IdSystem;
+    // (undocumented)
+    strict?: boolean;
+}
 
 // @public
 export function logoUrlSync(team: Value, league: League, o?: LogoUrlOptions): string | undefined;
@@ -159,8 +186,6 @@ export class OfflineError extends SdvplotError {
 // @public
 export function onColor(background: string): string;
 
-// Warning: (ae-forgotten-export) The symbol "ColorOptions" needs to be exported by the entry point index.d.ts
-//
 // @public
 export function palette(league: League, teams?: Value | readonly Value[], opts?: ColorOptions): Promise<Record<string, string>>;
 
@@ -203,15 +228,24 @@ export function seasonBounds(league?: League): readonly [number, number] | null;
 // @public (undocumented)
 export type SeasonInput = number | string | null | undefined;
 
-// Warning: (ae-forgotten-export) The symbol "SelectOptions" needs to be exported by the entry point index.d.ts
-//
 // @public (undocumented)
 export function selectMark(team: Value, league: League, o?: SelectOptions): Promise<MarkRow | undefined>;
 
-// Warning: (ae-forgotten-export) The symbol "Handler" needs to be exported by the entry point index.d.ts
-//
+// @public
+export function selectMarkSync(team: Value, league: League, o?: SelectOptions): MarkRow | undefined;
+
 // @public (undocumented)
-export function setWarningHandler(fn: Handler | null): void;
+export interface SelectOptions {
+    // (undocumented)
+    markType?: MarkType;
+    // (undocumented)
+    season?: SeasonInput;
+    // (undocumented)
+    variant?: Variant;
+}
+
+// @public (undocumented)
+export function setWarningHandler(fn: WarningHandler | null): void;
 
 // @public
 export function solid(color: string, background?: string): string;
@@ -249,8 +283,6 @@ export interface Team {
     team_id: string;
 }
 
-// Warning: (ae-forgotten-export) The symbol "ColorResult" needs to be exported by the entry point index.d.ts
-//
 // @public (undocumented)
 export function teamColors<T extends Value | readonly Value[]>(league: League, teams: T, opts?: ColorOptions): Promise<ColorResult<T>>;
 
@@ -287,6 +319,9 @@ export function versions(): {
     index: string;
     manifestLastModified: string;
 };
+
+// @public (undocumented)
+export type WarningHandler = (message: string) => void;
 
 // @public (undocumented)
 export type Which = "primary" | "secondary";

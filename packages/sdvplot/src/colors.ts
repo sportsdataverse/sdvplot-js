@@ -30,8 +30,8 @@ export async function palette(
   checkLeague(league);
   await loadLeague(league);
   const colors = colorMap(league, col);
-  const out: Record<string, string> = {};
-  if (teams === undefined) {
+  const out: Record<string, string> = Object.create(null);
+  if (teams == null) {
     const rows = getLeagueSync(league).teams;
     const counts = new Map<string, number>();
     for (const t of rows) if (t.abbr) counts.set(t.abbr, (counts.get(t.abbr) ?? 0) + 1);

@@ -1,4 +1,3 @@
-import type { League } from "./data/index.js";
 import { NFL_GSIS } from "./data/nfl_gsis.js";
 import { InputError } from "./errors.js";
 import { normValue } from "./normalize.js";
@@ -6,7 +5,7 @@ import type { Value } from "./resolve.js";
 import type { HeadshotIdSystem } from "./types.js";
 
 /** Port of `_headshots.ESPN_HEADSHOT_LEAGUES`. */
-export const ESPN_HEADSHOT_LEAGUES: Readonly<Record<string, string>> = {
+export const ESPN_HEADSHOT_LEAGUES = {
   nfl: "nfl",
   nba: "nba",
   wnba: "wnba",
@@ -15,7 +14,9 @@ export const ESPN_HEADSHOT_LEAGUES: Readonly<Record<string, string>> = {
   cfb: "college-football",
   mbb: "mens-college-basketball",
   wbb: "womens-college-basketball",
-};
+} as const;
+/** Leagues with ESPN headshots (gsis ids are nfl-only, and nfl is one of these). */
+export type EspnHeadshotLeague = keyof typeof ESPN_HEADSHOT_LEAGUES;
 
 /** Width / height of a headshot image box (the ESPN combiner crop). */
 export const HEADSHOT_ASPECT: number = 600 / 436;
@@ -36,13 +37,13 @@ export function nhlHeadshotUrl(id: string | number): string {
 
 function espn(id: string, league: string): string | undefined {
   if (!/^\d+$/.test(id)) return undefined;
-  return `https://a.espncdn.com/combiner/i?img=/i/headshots/${ESPN_HEADSHOT_LEAGUES[league]}/players/full/${id}.png`;
+  return `https://a.espncdn.com/combiner/i?img=/i/headshots/${ESPN_HEADSHOT_LEAGUES[league as EspnHeadshotLeague]}/players/full/${id}.png`;
 }
 
 /** Sync port of `_headshots.headshot_url`; the gsis map is bundled, so nothing is downloaded. */
 export function headshotUrl(
   playerId: Value,
-  league: League,
+  league: EspnHeadshotLeague,
   { idSystem = "espn" }: { idSystem?: HeadshotIdSystem } = {},
 ): string | undefined {
   if (idSystem === "espn" && !Object.hasOwn(ESPN_HEADSHOT_LEAGUES, league))

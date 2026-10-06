@@ -1,6 +1,7 @@
 import { beforeEach, expect, test } from "vitest";
 import { palette, teamColors } from "../src/colors.js";
 import { InputError, UnresolvedTeamError, resetWarnings, setWarningHandler } from "../src/errors.js";
+import { loadLeague } from "../src/index-data.js";
 beforeEach(() => {
   resetWarnings();
   setWarningHandler(() => {});
@@ -40,4 +41,15 @@ test("(value, season) dedupe: one key, first team wins", async () => {
 test("strict rejects unknown values", async () => {
   await expect(palette("nfl", ["ZZZ"], { strict: true })).rejects.toThrow(UnresolvedTeamError);
   await expect(teamColors("nfl", "ZZZ", { strict: true })).rejects.toThrow(UnresolvedTeamError);
+});
+test("palette(league, null) is the whole league, like Python teams=None; no prototype keys", async () => {
+  const all = await palette("nfl");
+  expect(await palette("nfl", null)).toEqual(all);
+  expect(Object.getPrototypeOf(all)).toBeNull();
+  expect("constructor" in (await palette("nfl", ["constructor"]))).toBe(false);
+});
+test("loadLeague rejects (never throws synchronously) for an unknown league", async () => {
+  const p = loadLeague("nlf" as never);
+  expect(p).toBeInstanceOf(Promise);
+  await expect(p).rejects.toThrow(InputError);
 });
