@@ -24,6 +24,7 @@ export {
   OfflineError,
   SdvplotError,
   UnresolvedTeamError,
+  UnsupportedTargetError,
   resetWarnings,
   setWarningHandler,
 } from "./errors.js";

@@ -423,6 +423,10 @@ export class UnresolvedTeamError extends SdvplotError {
 }
 
 // @public (undocumented)
+export class UnsupportedTargetError extends SdvplotError {
+}
+
+// @public (undocumented)
 export type Value = string | number | bigint | null | undefined;
 
 // @public
