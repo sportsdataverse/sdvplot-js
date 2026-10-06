@@ -48,7 +48,7 @@ function skipped(league: string, reason: string, values: Value[], on: boolean): 
   if (!on || values.length === 0) return;
   const extra = values.length > 10 ? ` and ${values.length - 10} more` : "";
   const shown = `${values.slice(0, 10).map(String).join(", ")}${extra}`;
-  warn(`place:${league}:${reason}`, `skipped ${values.length} point(s) ${reason}: ${shown}`);
+  warn(`place:${league}:${reason}:${shown}`, `skipped ${values.length} point(s) ${reason}: ${shown}`);
 }
 
 /** Port of `_placement.place` (post-preload): pairs each (x, y) with its team's mark or player's headshot, dropping and warning (once per reason) on rows that cannot be drawn. Needs `loadLeague(league)` (or `preloadAll()`) first; gsis headshots also need `loadGsis()`. */

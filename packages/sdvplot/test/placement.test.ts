@@ -65,3 +65,10 @@ test("place() loads the gsis map for gsis headshots", async () => {
   expect(p).toHaveLength(1);
   expect(p[0]?.url).toContain("t_headshot_desktop");
 });
+test("warnings are keyed per bad set: a different set warns again, the same set does not", () => {
+  placeSync([null], [1], ["LV"], { league: "nfl" });
+  placeSync([null], [1], ["LAR"], { league: "nfl" });
+  expect(warned).toHaveLength(2);
+  placeSync([null], [1], ["LAR"], { league: "nfl" });
+  expect(warned).toHaveLength(2);
+});
