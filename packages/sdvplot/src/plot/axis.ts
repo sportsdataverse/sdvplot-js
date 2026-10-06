@@ -16,6 +16,8 @@ export interface AxisLogosOptions {
   tickSize?: number;
   label?: string | null;
 }
+// Plot 0.6.17's default anchor per axis (axis.js: anchorX/Y/Fx/Fy).
+const DEFAULT_ANCHOR = { x: "bottom", y: "left", fx: "top", fy: "right" } as const;
 const AXIS: Record<Axis, (options: Plot.AxisXOptions) => Plot.Markish> = {
   x: Plot.axisX,
   y: Plot.axisY,
@@ -29,6 +31,7 @@ export function axisLogos(axis: Axis, o: AxisLogosOptions): Plot.Markish {
   const kind = o.markType ?? "logo";
   const tickSize = o.tickSize ?? 6;
   const horizontal = axis === "x" || axis === "fx";
+  const side = o.anchor ?? DEFAULT_ANCHOR[axis];
   const render: Plot.RenderFunction = (index, scales, values, dimensions, context, next) => {
     const g = next?.(index, scales, values, dimensions, context) as SVGElement | null | undefined;
     const text = values.text as ArrayLike<string> | undefined;
@@ -56,10 +59,24 @@ export function axisLogos(axis: Axis, o: AxisLogosOptions): Plot.Markish {
       const t = texts[k];
       const p = byIndex.get(k);
       if (!t || !p) return; // the unknown category keeps its <text>
-      const tick = (horizontal ? X?.[i] : Y?.[i]) as number;
+      // fx/fy tick marks carry no x/y channel: take the band centre from the facet scale instead
+      const pos = horizontal ? X?.[i] : Y?.[i];
+      const sc = (scales as unknown as Record<string, unknown>)[axis] as
+        | (((v: unknown) => number | undefined) & { bandwidth?: () => number })
+        | undefined;
+      const tick = pos ?? (sc ? (sc(labels[k]) ?? Number.NaN) + (sc.bandwidth?.() ?? 0) / 2 : undefined);
+      if (tick === undefined || Number.isNaN(tick)) return;
       const w = px * (p.aspect ?? 1);
-      const cx = horizontal ? tick : dimensions.marginLeft - tickSize - 3 - w / 2;
-      const cy = horizontal ? dimensions.height - dimensions.marginBottom + tickSize + 3 + px / 2 : tick;
+      const gap = tickSize + 3;
+      const c =
+        side === "bottom"
+          ? [tick, dimensions.height - dimensions.marginBottom + gap + px / 2]
+          : side === "top"
+            ? [tick, dimensions.marginTop - gap - px / 2]
+            : side === "left"
+              ? [dimensions.marginLeft - gap - w / 2, tick]
+              : [dimensions.width - dimensions.marginRight + gap + w / 2, tick];
+      const [cx, cy] = c as [number, number];
       const img = context.document.createElementNS("http://www.w3.org/2000/svg", "image");
       img.setAttribute("href", p.url);
       img.setAttribute("preserveAspectRatio", "xMidYMid meet");
@@ -77,7 +94,7 @@ export function axisLogos(axis: Axis, o: AxisLogosOptions): Plot.Markish {
     tickSize,
     label: o.label ?? null,
     ...(o.anchor ? { anchor: o.anchor } : {}),
-    ...(horizontal ? { marginBottom: margin } : { marginLeft: margin }),
+    [`margin${side[0]?.toUpperCase()}${side.slice(1)}`]: margin,
     render,
   } as Plot.AxisXOptions);
 }
