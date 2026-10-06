@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
 import type { Alias } from "../../packages/sdvplot/src/data/index.js";
-import { type ManifestRow, leagueMarks, manifestVariants, markAliases } from "./marks.js";
+import { type ManifestRow, leagueMarks, manifestVariants, markAliases, safeArchive } from "./marks.js";
 
 const al = (value: string, team_id: string, valid_from: number | null, valid_to: number | null): Alias => ({
   id_system: "mark",
@@ -67,6 +67,13 @@ test("leagueMarks skips non-team rows and rows without an alias", () => {
     [al("espn:1", "A", null, null)],
   );
   expect(rows).toEqual([]);
+});
+
+test("safeArchive accepts only the derived content-addressed URL", () => {
+  const base = "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256";
+  expect(safeArchive({ sha256: "abcd", ext: "png", archive_url: `${base}/ab/abcd.png` })).toBe(true);
+  expect(safeArchive({ sha256: "abcd", ext: "png", archive_url: `${base}/ab/abcd.svg` })).toBe(false);
+  expect(safeArchive({ sha256: "abcd", ext: "png", archive_url: "javascript:alert(1)" })).toBe(false);
 });
 
 test("manifestVariants is the sorted unique set over every row", () => {
