@@ -19,6 +19,12 @@ export interface Alias {
 }
 
 // @public (undocumented)
+export function checkAlpha(alpha: unknown): number;
+
+// @public (undocumented)
+export function checkHeight(height: unknown): number;
+
+// @public (undocumented)
 export interface ColorOptions extends ResolveOptions {
     // (undocumented)
     which?: Which;
@@ -82,6 +88,9 @@ export const INDEX_VERSION: string;
 // @public (undocumented)
 export class InputError extends SdvplotError {
 }
+
+// @public (undocumented)
+export type Kind = "logo" | "wordmark" | "headshot";
 
 // @public (undocumented)
 export const latestSeason: (league: League) => number | null;
@@ -191,6 +200,45 @@ export function onColor(background: string): string;
 
 // @public
 export function palette(league: League, teams?: Value | readonly Value[], opts?: ColorOptions): Promise<Record<string, string>>;
+
+// @public (undocumented)
+export function place(xs: readonly Value[], ys: readonly Value[], teams: readonly Value[], o: PlaceOptions): Promise<Placement[]>;
+
+// @public
+export interface Placement {
+    // (undocumented)
+    aspect: number | null;
+    // (undocumented)
+    id: string;
+    // (undocumented)
+    mark: MarkRow | null;
+    // (undocumented)
+    url: string;
+    // (undocumented)
+    x: Value;
+    // (undocumented)
+    y: Value;
+}
+
+// @public (undocumented)
+export interface PlaceOptions {
+    idSystem?: IdSystem | HeadshotIdSystem;
+    // (undocumented)
+    kind?: Kind;
+    // (undocumented)
+    league: League;
+    // (undocumented)
+    season?: SeasonInput | readonly SeasonInput[];
+    // (undocumented)
+    strict?: boolean;
+    // (undocumented)
+    variant?: Variant;
+    // (undocumented)
+    warn?: boolean;
+}
+
+// @public
+export function placeSync(xs: readonly Value[], ys: readonly Value[], teams: readonly Value[], o: PlaceOptions): Placement[];
 
 // @public
 export function preloadAll(): Promise<void>;
