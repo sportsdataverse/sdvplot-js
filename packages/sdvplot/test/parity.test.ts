@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { beforeAll, describe, expect, test } from "vitest";
-import { teamColorsSync } from "../src/colors.js";
+import { palette, teamColorsSync } from "../src/colors.js";
 import { INDEX_VERSION } from "../src/data/index.js";
 import { resetWarnings, setWarningHandler } from "../src/errors.js";
 import { headshotUrl } from "../src/headshots.js";
@@ -20,6 +20,11 @@ beforeAll(async () => {
 test("fixture index matches the shards", () => {
   expect(fx("meta").index_version).toBe(INDEX_VERSION);
 });
+// Python exception name -> the TS error the port throws for it.
+const tsError = (py: string) =>
+  ({ InputError: "InputError", UnresolvedTeamError: "UnresolvedTeamError", TypeError: "InputError" })[py] ??
+  py;
+const plain = (o: object) => Object.fromEntries(Object.entries(o));
 const call = (f: () => unknown) => {
   try {
     return f();
@@ -40,7 +45,7 @@ const cases: [string, (i: In) => Record<string, unknown>][] = [
     }),
   ],
   [
-    "palette",
+    "team_colors",
     (i) => ({
       primary: norm(
         teamColorsSync(i.league as never, i.value as never, {
@@ -88,13 +93,7 @@ describe.each(cases)("%s parity", (name, fn) => {
   test.each(inputs.map((i, k) => [k, i] as const))("input %i", (k, i) => {
     const got = call(() => fn(i)) as Record<string, unknown>;
     const w = want[k] as Record<string, unknown>;
-    if ("error" in w)
-      expect(got).toHaveProperty(
-        "error",
-        { InputError: "InputError", UnresolvedTeamError: "UnresolvedTeamError", TypeError: "InputError" }[
-          w.error as string
-        ] ?? w.error,
-      );
+    if ("error" in w) expect(got).toHaveProperty("error", tsError(w.error as string));
     else
       expect(Object.fromEntries(Object.entries(got).map(([a, b]) => [a, norm(b)]))).toEqual(
         Object.fromEntries(Object.entries(w).map(([a, b]) => [a, norm(b)])),
@@ -111,4 +110,30 @@ test("headshot_url parity", () => {
     expect(
       norm(headshotUrl(h.player_id as never, h.league as never, { idSystem: h.id_system as never })),
     ).toBe(norm(h.url));
+});
+describe("palette_whole parity", () => {
+  test.each(Object.entries(fx("palette_whole") as Record<string, Record<string, string>>))(
+    "%s",
+    async (league, want) => {
+      expect(plain(await palette(league as never))).toEqual(plain(want));
+    },
+  );
+});
+describe("palette_keyed parity", () => {
+  type Keyed = In & { palette?: Record<string, string>; error?: string };
+  test.each((fx("palette_keyed") as Keyed[]).map((r, k) => [k, r] as const))("case %i", async (_k, r) => {
+    let got: Record<string, unknown>;
+    try {
+      got = plain(
+        await palette(r.league as never, [r.value as never], {
+          season: r.season,
+          idSystem: r.id_system as never,
+        }),
+      );
+    } catch (e) {
+      got = { error: (e as Error).name };
+    }
+    if (r.error !== undefined) expect(got).toHaveProperty("error", tsError(r.error));
+    else expect(got).toEqual(plain(r.palette as Record<string, string>));
+  });
 });

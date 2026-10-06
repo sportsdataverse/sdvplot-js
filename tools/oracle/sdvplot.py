@@ -33,9 +33,9 @@ for league, value in [("nfl", "12.0"), ("nfl", " kc "), ("nfl", "Kansas City Chi
     inputs.append({"league": league, "value": value, "season": None, "id_system": "auto"})
     if league == "nhl": inputs.append({"league": league, "value": value, "season": None, "id_system": "nhl_id"})
 
-def run(fn):
+def run(fn, rows=inputs):
     out = []
-    for i in inputs:
+    for i in rows:
         try: out.append(fn(i))
         except Exception as e: out.append({"error": type(e).__name__})
     return out
@@ -43,8 +43,12 @@ def run(fn):
 res = run(lambda i: {"team_id": sdvplot.resolve(i["value"], i["league"], season=i["season"], id_system=i["id_system"])})
 pal = run(lambda i: {"primary": sdvplot.team_colors(i["league"], i["value"], season=i["season"], id_system=i["id_system"]), "secondary": sdvplot.team_colors(i["league"], i["value"], which="secondary", season=i["season"], id_system=i["id_system"])})
 logos = run(lambda i: {v: sdvplot.logo_url(i["value"], i["league"], season=i["season"], variant=v, id_system=i["id_system"]) for v in ("default", "dark")} | {"wordmark": sdvplot.logo_url(i["value"], i["league"], season=i["season"], mark_type="wordmark", id_system=i["id_system"])})
+leagues = sorted(_index.team_table()["league"].unique())
+pal_whole = {lg: sdvplot.palette(lg) for lg in leagues}  # dict keys are JSON strings, as the TS keys are
+keyed_in = [i for lg in leagues for i in [x for x in inputs if x["league"] == lg][:25]]
+pal_keyed = [i | r for i, r in zip(keyed_in, run(lambda i: {"palette": sdvplot.palette(i["league"], [i["value"]], season=i["season"], id_system=i["id_system"])}, keyed_in), strict=True)]
 heads = [{"player_id": p, "league": lg, "id_system": s, "url": sdvplot.headshot_url(p, lg, id_system=s)} for p, lg, s in [("3139477", "nfl", "espn"), ("00-0033873", "nfl", "gsis"), ("00-0036355", "nfl", "gsis"), (2544, "nba", "espn"), ("x", "nba", "espn"), ("4433403", "cfb", "espn"), ("4433403.0", "mbb", "espn")]]
 meta = {"sdvplot_version": sdvplot.__version__, "index_version": _index.index_version(), "manifest_rows": load_manifest().height, "n_inputs": len(inputs)}
-for name, obj in [("inputs", inputs), ("resolve", res), ("palette", pal), ("logo_url", logos), ("headshot_url", heads), ("meta", meta)]:
+for name, obj in [("inputs", inputs), ("resolve", res), ("team_colors", pal), ("palette_whole", pal_whole), ("palette_keyed", pal_keyed), ("logo_url", logos), ("headshot_url", heads), ("meta", meta)]:
     (OUT / f"{name}.json").write_text(json.dumps(obj, indent=0, ensure_ascii=False) + "\n", encoding="utf-8")
 print(f"wrote {len(inputs)} inputs; index {meta['index_version']}")
