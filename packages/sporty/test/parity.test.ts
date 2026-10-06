@@ -34,36 +34,34 @@ for (const [sport, leagues, build] of SURFACES)
   describe.each(leagues.filter((l) => l !== "custom"))(`${sport} %s`, (league) => {
     const dir = new URL(`../../../fixtures/sporty/${sport}/${league.replace(/ /g, "_")}/`, import.meta.url);
     const files = (prefix: string) =>
-      existsSync(dir)
-        ? readdirSync(dir)
-            .filter((f) => f.startsWith(prefix))
-            .sort()
-        : [];
-    test.skipIf(!existsSync(dir))(
-      "every R polygon layer matches point-for-point",
-      () => {
-        const polys = build(league, { arcResolution: 1000 }).features.filter((f) => f.kind === "polygon");
-        const layers = files("layer_");
-        expect(polys.length).toBe(layers.length);
-        layers.forEach((file, k) => {
-          const rows = csv(new URL(file, dir));
-          const p = polys[k]!;
-          expect(p.points.length, `${file} point count`).toBe(rows.length);
-          let delta = 0;
-          const fills: string[] = [];
-          rows.forEach(([x, y, fill], i) => {
-            const [px, py] = p.points[i]!;
-            delta = Math.max(delta, Math.abs(px - Number(x)), Math.abs(py - Number(y)));
-            if (fill && fill !== "NA" && p.fill.toLowerCase() !== fill.toLowerCase())
-              fills.push(`${i}: ${p.fill} != ${fill}`);
-          });
-          expect(delta, `${file} max |Δ|`).toBeLessThan(TOL);
-          expect(fills, `${file} fills`).toEqual([]);
+      readdirSync(dir)
+        .filter((f) => f.startsWith(prefix))
+        .sort();
+    // A league in the vendored JSON without fixtures fails here until `pnpm oracle:sporty <sport>` is re-run.
+    test("R fixtures exist", () => {
+      expect(existsSync(dir), `missing ${dir.pathname}`).toBe(true);
+    });
+    test("every R polygon layer matches point-for-point", () => {
+      const polys = build(league, { arcResolution: 1000 }).features.filter((f) => f.kind === "polygon");
+      const layers = files("layer_");
+      expect(polys.length).toBe(layers.length);
+      layers.forEach((file, k) => {
+        const rows = csv(new URL(file, dir));
+        const p = polys[k]!;
+        expect(p.points.length, `${file} point count`).toBe(rows.length);
+        let delta = 0;
+        const fills: string[] = [];
+        rows.forEach(([x, y, fill], i) => {
+          const [px, py] = p.points[i]!;
+          delta = Math.max(delta, Math.abs(px - Number(x)), Math.abs(py - Number(y)));
+          if (fill && fill !== "NA" && p.fill.toLowerCase() !== fill.toLowerCase())
+            fills.push(`${i}: ${p.fill} != ${fill}`);
         });
-      },
-      60_000,
-    );
-    test.skipIf(!existsSync(dir))("every R ggfittext layer matches box centre, label and angle", () => {
+        expect(delta, `${file} max |Δ|`).toBeLessThan(TOL);
+        expect(fills, `${file} fills`).toEqual([]);
+      });
+    }, 60_000);
+    test("every R ggfittext layer matches box centre, label and angle", () => {
       const texts = build(league).features.filter((f) => f.kind === "text");
       const rows = files("text_").flatMap((file) => csv(new URL(file, dir)));
       expect(texts.length).toBe(rows.length);
@@ -82,7 +80,7 @@ for (const [sport, leagues, build] of SURFACES)
       expect(delta, "max |Δ| over x, y, angle").toBeLessThan(TOL);
       expect(labels).toEqual([]);
     });
-    test.skipIf(!existsSync(dir))("display range bboxes match coord_fixed limits", () => {
+    test("display range bboxes match coord_fixed limits", () => {
       for (const file of files("bbox_").filter((f) => !f.includes("rot90"))) {
         const range = file.slice(5, -4).replace(/_/g, " ");
         const [x0, y0, x1, y1] = csv(new URL(file, dir))[0]!.map(Number);

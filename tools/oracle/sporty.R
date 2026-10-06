@@ -6,6 +6,15 @@ args <- commandArgs(trailingOnly = TRUE); sports <- if (length(args)) args else 
 root <- file.path(dirname(dirname(dirname(normalizePath(sub("--file=", "", grep("--file=", commandArgs(), value = TRUE)))))), "fixtures", "sporty")
 geoms <- list(basketball = geom_basketball, hockey = geom_hockey, football = geom_football)
 dims <- sportyR:::surface_dimensions
+# Gate (spec §7): the installed sportyR's data must equal the vendored JSON the TS specs are generated from. Every
+# ported sport is checked (not only the requested ones) because VERSION records the sha256 of the whole file.
+json <- file.path(dirname(dirname(root)), "packages", "sporty", "data", "surface-dimensions.json")
+vendored <- jsonlite::fromJSON(json)
+for (sport in union(sports, names(geoms))) {
+  eq <- all.equal(dims[[sport]], vendored[[sport]])
+  if (!isTRUE(eq)) stop(sprintf("installed sportyR %s: surface_dimensions$%s differs from %s; install the sportyR it was vendored from (or re-vendor) before regenerating fixtures:\n%s",
+                                as.character(packageVersion("sportyR")), sport, json, paste(eq, collapse = "\n")), call. = FALSE)
+}
 ranges <- list(basketball = c("full", "in bounds only", "offense", "defense", "offensive key", "defensive paint"),
                hockey = c("full", "in bounds only", "offense", "defense", "nzone", "ozone", "dzone"),
                football = c("full", "in bounds only", "offense", "defense", "red zone", "offensive red zone", "defensive red zone"))
@@ -39,4 +48,8 @@ for (sport in sports) for (league in setdiff(names(dims[[sport]]), "custom")) {
 }
 sha <- tryCatch(system2("git", c("-C", Sys.getenv("SPORTYR_REPO", "/mnt/sdv_repos/sportyR"), "rev-parse", "--short", "HEAD"), stdout = TRUE, stderr = FALSE)[1], error = function(e) NA_character_, warning = function(w) NA_character_)
 if (is.na(sha) || !nzchar(sha)) sha <- "unknown"
-writeLines(c(sprintf("sportyR %s", as.character(packageVersion("sportyR"))), sprintf("sportyR-git %s", sha), sprintf("R %s.%s", R.version$major, R.version$minor)), file.path(root, "VERSION"))
+desc <- packageDescription("sportyR")
+json_sha <- if (requireNamespace("digest", quietly = TRUE)) digest::digest(file = json, algo = "sha256") else unname(tools::sha256sum(json))
+writeLines(c(sprintf("sportyR %s (installed: %s, packaged %s)", desc$Version, desc$Repository %||% "local build", desc$Packaged %||% "unknown"),
+             sprintf("sportyR-git %s", sha), sprintf("surface-dimensions-sha256 %s", json_sha), sprintf("R %s.%s", R.version$major, R.version$minor)),
+           file.path(root, "VERSION"))

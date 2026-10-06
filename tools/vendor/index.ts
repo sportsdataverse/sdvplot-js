@@ -27,6 +27,12 @@ if (check) {
   mkdirSync(dir, { recursive: true });
   copyFileSync(src, dest);
   const sha = execFileSync("git", ["-C", repo, "rev-parse", "--short", "HEAD"], { encoding: "utf8" }).trim();
-  writeFileSync(join(dir, "VENDOR_SOURCE"), `sportyR ${sha} ${new Date().toISOString().slice(0, 10)}\n`);
-  console.log(`vendored sportyR ${sha}`);
+  const version =
+    /^Version:\s*(\S+)/m.exec(readFileSync(join(repo, "DESCRIPTION"), "utf8"))?.[1] ?? "unknown";
+  // `sportyR <DESCRIPTION version> <git sha> <date>`; fixtures-version.test.ts ties fixtures/sporty/VERSION to it
+  writeFileSync(
+    join(dir, "VENDOR_SOURCE"),
+    `sportyR ${version} ${sha} ${new Date().toISOString().slice(0, 10)}\n`,
+  );
+  console.log(`vendored sportyR ${version} (${sha})`);
 }
