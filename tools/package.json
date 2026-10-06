@@ -1,1 +1,1 @@
-{ "name": "tools", "private": true, "type": "module" }
+{ "name": "tools", "private": true, "type": "module", "scripts": { "test": "vitest run" } }
