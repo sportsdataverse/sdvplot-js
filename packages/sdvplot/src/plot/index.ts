@@ -11,3 +11,5 @@ export { titleImage } from "./title.js";
 export type { TitleImageOptions } from "./title.js";
 export { teamTiers } from "./tiers.js";
 export type { TeamTiersOptions } from "./tiers.js";
+export { SURFACES, SURFACE_BASE, colorUpdates, surface } from "./surface.js";
+export type { SurfaceOpts } from "./surface.js";
