@@ -4,7 +4,7 @@ import { parquetReadObjects } from "hyparquet";
 import { compressors } from "hyparquet-compressors";
 import Papa from "papaparse";
 import { HEADER, emitConstModule, leagueFirstSeason } from "./emit.js";
-import { type ManifestRow, leagueMarks } from "./marks.js";
+import { type ManifestRow, leagueMarks, manifestVariants } from "./marks.js";
 
 const PY = resolve(process.env.SDVPLOT_PY_REPO ?? "../sdvplot");
 const OUT = resolve("packages/sdvplot/src/data");
@@ -140,6 +140,7 @@ async function main() {
 export type League = (typeof LEAGUES)[number];
 export const INDEX_VERSION: string = ${JSON.stringify(indexVersion)};
 export const MANIFEST_LAST_MODIFIED: string = ${JSON.stringify(new Date().toISOString().slice(0, 10))};
+export const VARIANTS = ${JSON.stringify(manifestVariants(manifest))} as const;
 export const INDEX_FIRST_SEASON: number | null = ${idxFirst}; export const INDEX_LAST_ALIAS_SEASON: number | null = ${idxLast};
 export const LEAGUE_META: Readonly<Record<League, { latestSeason: number | null; firstSeason: number | null }>> = ${JSON.stringify(meta)};
 export interface Team { league: League; team_id: string; abbr: string | null; name: string | null; short_name: string | null; location: string | null; program: string | null; conference_id: string | null; conference: string | null; color_primary: string | null; color_secondary: string | null; color_source: string | null }

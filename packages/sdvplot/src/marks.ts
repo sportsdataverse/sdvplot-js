@@ -1,3 +1,4 @@
+import { VARIANTS } from "./data/index.js";
 import type { League, LeagueData, MarkRow } from "./data/index.js";
 import { InputError, UnresolvedTeamError, warn } from "./errors.js";
 import { getLeagueSync, loadLeague } from "./index-data.js";
@@ -22,6 +23,8 @@ const ro = (o: {
   strict?: boolean | undefined;
 }): ResolveOptions => Object.fromEntries(Object.entries(o).filter(([, v]) => v !== undefined));
 
+const repr = (v: Value): string => (typeof v === "string" ? `'${v}'` : String(v));
+
 const covers = (lo: number | null, hi: number | null, s: number): boolean =>
   (lo === null || s >= lo) && (hi === null || s <= hi);
 
@@ -31,11 +34,11 @@ function checkMarkType(markType: string): void {
 }
 function checkVariant(variant: string, league: League, d: LeagueData): void {
   if (variant === "default" || variant === "dark") return;
-  const known = new Set(d.marks.map((m) => m.variant));
-  if (!known.has(variant))
-    throw new InputError(
-      `unknown variant ${JSON.stringify(variant)} for ${league}; use "default", "dark" or one of ${[...known].sort().join(", ")}`,
-    );
+  if ((VARIANTS as readonly string[]).includes(variant)) return;
+  const known = [...new Set(d.marks.map((m) => m.variant))].sort();
+  throw new InputError(
+    `unknown variant ${JSON.stringify(variant)} for ${league}; use "default", "dark" or one of ${known.join(", ")}`,
+  );
 }
 
 /** Port of `select_mark` (post-preload): requested variant, then (keeping polarity) default / polarity variants, then any; within each, season-covering rows (dated before open-ended), else the best row. Rows are already ranked best-first. */
@@ -83,10 +86,7 @@ export function logoUrlSync(team: Value, league: League, o: LogoUrlOptions = {})
   if (teamId === undefined) return undefined;
   const row = selectMarkSync(teamId, league, o);
   if (row === undefined) {
-    warn(
-      `marks:${league}:${teamId}:${markType}`,
-      `no ${markType} archived for '${String(team)}' (${league})`,
-    );
+    warn(`marks:${league}:${teamId}:${markType}`, `no ${markType} archived for ${repr(team)} (${league})`);
     return undefined;
   }
   return row.archive_url;

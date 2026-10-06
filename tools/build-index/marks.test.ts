@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
 import type { Alias } from "../../packages/sdvplot/src/data/index.js";
-import { type ManifestRow, leagueMarks, markAliases } from "./marks.js";
+import { type ManifestRow, leagueMarks, manifestVariants, markAliases } from "./marks.js";
 
 const al = (value: string, team_id: string, valid_from: number | null, valid_to: number | null): Alias => ({
   id_system: "mark",
@@ -67,4 +67,11 @@ test("leagueMarks skips non-team rows and rows without an alias", () => {
     [al("espn:1", "A", null, null)],
   );
   expect(rows).toEqual([]);
+});
+
+test("manifestVariants is the sorted unique set over every row", () => {
+  expect(manifestVariants([{ variant: "b" }, { variant: "a" }, { variant: "b" }, { variant: "" }])).toEqual([
+    "a",
+    "b",
+  ]);
 });

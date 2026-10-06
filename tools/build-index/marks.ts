@@ -92,3 +92,7 @@ export function leagueMarks(
     return true;
   });
 }
+
+/** Sorted unique non-empty `variant` values over the WHOLE manifest (every row, no level/league filter), as Python's `_check_variant`. */
+export const manifestVariants = (rows: readonly { variant: string }[]): string[] =>
+  [...new Set(rows.map((r) => r.variant).filter((v) => v !== ""))].sort();

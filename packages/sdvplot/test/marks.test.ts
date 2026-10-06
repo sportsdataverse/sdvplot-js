@@ -40,3 +40,7 @@ test("selectMark polarity order: dark → on_dark → default → any", async ()
       r?.variant === "default",
   ).toBe(true);
 });
+test("a variant known to the whole manifest but absent for the team falls back like Python; typos still reject", async () => {
+  expect(await logoUrl("KC", "nfl", { variant: "on_light" })).toBe(await logoUrl("KC", "nfl"));
+  await expect(logoUrl("KC", "nfl", { variant: "neon" })).rejects.toThrow(InputError);
+});
