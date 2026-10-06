@@ -35,6 +35,8 @@ export { teams } from "./teams.js";
 export { palette, teamColors, teamColorsSync } from "./colors.js";
 export { checkAlpha, checkHeight, place, placeSync } from "./placement.js";
 export { compareMarks } from "./rank.js";
+export { TIER_DESC, TIERS_SUBTITLE, TIER_THEMES, prepareTiers, wrapLabel } from "./tiers.js";
+export type { TierRow, Tiers, TiersOptions } from "./tiers.js";
 export {
   MANIFEST_URL,
   fetchManifest,

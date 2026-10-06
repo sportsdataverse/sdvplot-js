@@ -296,6 +296,9 @@ export function placeSync(xs: readonly Value[], ys: readonly Value[], teams: rea
 // @public
 export function preloadAll(): Promise<void>;
 
+// @public
+export function prepareTiers(rows: readonly TierRow[], league: League, o?: TiersOptions): Tiers;
+
 // @public (undocumented)
 export const PRIORITY: readonly ["team_id", "espn", "espn_abbr", "nhl", "nflverse", "mlbstats", "nba_api", "hockeytech", "ncaa", "pff", "cricinfo", "cfbd", "bref", "sportsipy", "fangraphs", "sdvplotr", "name"];
 
@@ -419,6 +422,99 @@ export type TeamId = string & {
 export function teams(league?: League): Promise<readonly Team[]>;
 
 // @public (undocumented)
+export const TIER_DESC: Readonly<Record<number, string>>;
+
+// @public (undocumented)
+export const TIER_THEMES: {
+    readonly dark: {
+        readonly bg: "#1e1e1e";
+        readonly line: "#e0e0e0";
+        readonly text: "#ffffff";
+        readonly muted: "#8e8e93";
+    };
+    readonly light: {
+        readonly bg: "#ffffff";
+        readonly line: "#3a3a3c";
+        readonly text: "#1e1e1e";
+        readonly muted: "#636366";
+    };
+};
+
+// @public (undocumented)
+export interface TierRow {
+    // (undocumented)
+    team: Value;
+    // (undocumented)
+    tier_no?: Value;
+    // (undocumented)
+    tier_rank?: Value;
+    // (undocumented)
+    tierNo?: Value;
+    // (undocumented)
+    tierRank?: Value;
+}
+
+// @public (undocumented)
+export interface Tiers {
+    // (undocumented)
+    alpha: number;
+    // (undocumented)
+    breakLabels: string[];
+    // (undocumented)
+    breaks: number[];
+    // (undocumented)
+    caption: string | null;
+    // (undocumented)
+    height: number;
+    // (undocumented)
+    labels: string[];
+    // (undocumented)
+    lines: number[];
+    // (undocumented)
+    subtitle: string | null;
+    // (undocumented)
+    teamIds: TeamId[];
+    // (undocumented)
+    theme: (typeof TIER_THEMES)[keyof typeof TIER_THEMES];
+    // (undocumented)
+    title: string;
+    // (undocumented)
+    variant: Variant;
+    // (undocumented)
+    x: number[];
+    // (undocumented)
+    xlim: [number, number];
+    // (undocumented)
+    y: number[];
+    // (undocumented)
+    ylim: [number, number];
+}
+
+// @public (undocumented)
+export const TIERS_SUBTITLE = "created with the #sdvplot Tiermaker";
+
+// @public (undocumented)
+export interface TiersOptions {
+    // (undocumented)
+    alpha?: number;
+    // (undocumented)
+    caption?: string | null;
+    height?: number;
+    // (undocumented)
+    noLineBelowTier?: number | readonly number[];
+    // (undocumented)
+    presort?: boolean;
+    subtitle?: string | null;
+    // (undocumented)
+    theme?: "dark" | "light";
+    // (undocumented)
+    tierDesc?: Readonly<Record<number, string>>;
+    title?: string | null;
+    // (undocumented)
+    variant?: Variant | "auto";
+}
+
+// @public (undocumented)
 export class UnresolvedTeamError extends SdvplotError {
 }
 
@@ -453,6 +549,9 @@ export type Which = "primary" | "secondary";
 
 // @public (undocumented)
 export function wnbaHeadshotUrl(id: string | number): string;
+
+// @public
+export function wrapLabel(text: string): string;
 
 // (No @packageDocumentation comment for this package)
 
