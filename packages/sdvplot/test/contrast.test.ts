@@ -19,3 +19,10 @@ test("mix and solid", () => {
   expect(solid("#00000080")).toBe("#7f7f7f");
   expect(() => mix("#000", "#fff", 1.5)).toThrow();
 });
+test("mix rounds half-to-even like Python round()", () => {
+  expect(mix("#000000", "#fdfdfd", 0.5)).toBe("#7e7e7e");
+  expect(mix("#000000", "#050505", 0.5)).toBe("#020202");
+});
+test("luminance anchor from Python", () => {
+  expect(luminance("#e31837")).toBeCloseTo(0.1725999683178323, 12);
+});

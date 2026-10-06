@@ -40,6 +40,13 @@ export function onColor(background: string): string {
   return contrast("#000000", background) >= contrast("#ffffff", background) ? "#000000" : "#ffffff";
 }
 
+/** Python's builtin round(): half to even (inputs are non-negative). */
+function roundHalfEven(x: number): number {
+  const f = Math.floor(x);
+  const d = x - f;
+  return d > 0.5 || (d === 0.5 && f % 2 !== 0) ? f + 1 : f;
+}
+
 /** The color `t` of the way from `a` to `b` in sRGB (`t` in [0, 1]). */
 export function mix(a: string, b: string, t: number): string {
   if (!(t >= 0 && t <= 1)) throw new InputError(`t must be in [0, 1], got ${t}`);
@@ -47,7 +54,7 @@ export function mix(a: string, b: string, t: number): string {
   const cb = channels(hex6(b));
   return `#${ca
     .map((v, i) =>
-      Math.round(v * (1 - t) + (cb[i] as number) * t)
+      roundHalfEven(v * (1 - t) + (cb[i] as number) * t)
         .toString(16)
         .padStart(2, "0"),
     )
