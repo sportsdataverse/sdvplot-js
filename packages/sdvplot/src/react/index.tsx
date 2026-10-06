@@ -1,6 +1,6 @@
 import { type ImgHTMLAttributes, type ReactElement, useEffect, useState } from "react";
 import { type ColorOptions, palette } from "../colors.js";
-import { type EspnHeadshotLeague, HEADSHOT_ASPECT, headshotUrl } from "../headshots.js";
+import { type EspnHeadshotLeague, HEADSHOT_ASPECT, headshotUrl, loadGsis } from "../headshots.js";
 import { getLeagueSync, loadLeague } from "../index-data.js";
 import { type LogoUrlOptions, logoUrlSync } from "../marks.js";
 import { type Value, resolveSync } from "../resolve.js";
@@ -72,7 +72,7 @@ export interface HeadshotProps extends ImgProps {
   alt?: string;
 }
 
-/** Player headshot `<img>` (sync). Renders nothing for an unknown/malformed id, or a league/idSystem `headshotUrl` rejects. */
+/** Player headshot `<img>`: sync for ESPN ids; gsis ids render once the gsis map has loaded. Renders nothing for an unknown/malformed id, or a league/idSystem `headshotUrl` rejects. */
 export function Headshot({
   playerId,
   league,
@@ -81,6 +81,20 @@ export function Headshot({
   alt = "Player headshot",
   ...imgProps
 }: HeadshotProps): ReactElement | null {
+  const [, setGsisReady] = useState(false); // re-render once loadGsis resolves
+  useEffect(() => {
+    if (idSystem !== "gsis") return;
+    let live = true;
+    loadGsis().then(
+      () => {
+        if (live) setGsisReady(true);
+      },
+      () => {},
+    );
+    return () => {
+      live = false;
+    };
+  }, [idSystem]);
   let src: string | undefined;
   try {
     src = headshotUrl(playerId, league, idSystem === undefined ? {} : { idSystem });

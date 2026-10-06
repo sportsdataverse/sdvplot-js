@@ -1,4 +1,3 @@
-import { NFL_GSIS } from "./data/nfl_gsis.js";
 import { InputError } from "./errors.js";
 import { normValue } from "./normalize.js";
 import type { Value } from "./resolve.js";
@@ -40,7 +39,25 @@ function espn(id: string, league: string): string | undefined {
   return `https://a.espncdn.com/combiner/i?img=/i/headshots/${ESPN_HEADSHOT_LEAGUES[league as EspnHeadshotLeague]}/players/full/${id}.png`;
 }
 
-/** Sync port of `_headshots.headshot_url`; the gsis map is bundled, so nothing is downloaded. */
+type GsisRow = { espn_id: string | null; headshot: string | null };
+let gsis: Readonly<Record<string, GsisRow>> | undefined;
+let gsisPending: Promise<void> | undefined;
+/** Loads the bundled nflverse gsis map (its own ~3 MB chunk, imported only on demand); required before `headshotUrl(…, { idSystem: "gsis" })`. Nothing is downloaded. */
+export async function loadGsis(): Promise<void> {
+  if (gsis) return;
+  gsisPending ??= import("./data/nfl_gsis.js").then(
+    (m) => {
+      gsis = m.NFL_GSIS;
+    },
+    (e: unknown) => {
+      gsisPending = undefined;
+      throw e;
+    },
+  );
+  return gsisPending;
+}
+
+/** Sync port of `_headshots.headshot_url`. ESPN ids need no data; gsis ids need `await loadGsis()` (or `preloadAll()`) first. */
 export function headshotUrl(
   playerId: Value,
   league: EspnHeadshotLeague,
@@ -54,12 +71,15 @@ export function headshotUrl(
     throw new InputError(
       `idSystem must be 'espn' (any league) or 'gsis' (nfl), got ${JSON.stringify(idSystem)} for ${JSON.stringify(league)}`,
     );
+  if (idSystem === "gsis" && !gsis)
+    throw new InputError(
+      'the gsis map is not loaded; await loadGsis() (or preloadAll()) before headshotUrl(…, { idSystem: "gsis" })',
+    );
   const pid = normValue(playerId);
   if (pid === null) return undefined;
   if (idSystem === "espn") return espn(pid, league);
-  const row = Object.hasOwn(NFL_GSIS, String(playerId).trim())
-    ? NFL_GSIS[String(playerId).trim()]
-    : undefined;
+  const key = String(playerId).trim();
+  const row = gsis && Object.hasOwn(gsis, key) ? gsis[key] : undefined;
   if (!row) return undefined;
   if (row.headshot) {
     const t = row.headshot.replace("/f_auto,q_auto/", "/t_headshot_desktop/f_auto/");

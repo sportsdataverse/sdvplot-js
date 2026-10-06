@@ -8,6 +8,7 @@ import {
   loaders,
 } from "./data/index.js";
 import { InputError } from "./errors.js";
+import { loadGsis } from "./headshots.js";
 
 const loaded = new Map<League, LeagueData>();
 const pending = new Map<League, Promise<LeagueData>>();
@@ -38,8 +39,9 @@ export async function loadLeague(league: League): Promise<LeagueData> {
   }
   return p;
 }
+/** Every league shard plus the gsis map, so every *Sync variant works afterwards. */
 export async function preloadAll(): Promise<void> {
-  await Promise.all(LEAGUES.map(loadLeague));
+  await Promise.all([...LEAGUES.map(loadLeague), loadGsis()]);
 }
 export function getLeagueSync(league: League): LeagueData {
   checkLeague(league);

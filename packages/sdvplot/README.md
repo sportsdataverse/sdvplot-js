@@ -14,12 +14,13 @@ const url = await logoUrl("KC", "nfl"); // CDN logo URL
 ```
 
 `resolveSync`, `teamColorsSync`, `logoUrlSync` and `selectMarkSync` are available once `loadLeague(league)` (or `preloadAll()`) has run.
+`headshotUrl` is sync; gsis ids additionally need `loadGsis()` (or `preloadAll()`) first — the nflverse map is its own ~3 MB chunk, loaded only on demand. Mark rows never store `archive_url`: it is derived from `sha256` + `ext` at load time, so only the content-addressed CDN URL can ever reach a page.
 
 ## Subpaths
 
 | Import | Contents |
 | --- | --- |
-| `@sportsdataverse/sdvplot` | `resolve`, `suggest`, `teams`, `palette`, `teamColors`, `logoUrl`, `marks`, `selectMark`, `selectMarkSync`, `headshotUrl`, contrast helpers (`hex6`, `luminance`, `contrast`, `onColor`, `mix`, `solid`), `versions`, errors, types |
+| `@sportsdataverse/sdvplot` | `resolve`, `suggest`, `teams`, `palette`, `teamColors`, `logoUrl`, `marks`, `selectMark`, `selectMarkSync`, `headshotUrl`, `loadGsis`, contrast helpers (`hex6`, `luminance`, `contrast`, `onColor`, `mix`, `solid`), `versions`, errors, types |
 | `@sportsdataverse/sdvplot/react` | `TeamLogo`, `Wordmark`, `Headshot`, `useTeamColors` (React >= 18, optional peer) |
 
 ## Data provenance

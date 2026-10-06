@@ -34,6 +34,7 @@ export {
   ESPN_HEADSHOT_LEAGUES,
   HEADSHOT_ASPECT,
   headshotUrl,
+  loadGsis,
   mlbHeadshotUrl,
   nbaHeadshotUrl,
   nhlHeadshotUrl,

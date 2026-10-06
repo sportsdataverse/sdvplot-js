@@ -103,6 +103,9 @@ export interface LeagueData {
 export const LEAGUES: readonly ["aaf", "ahl", "cfb", "cricket", "echl", "mbb", "milb", "mlb", "nba", "nbagl", "ncaa_baseball", "ncaa_mhockey", "ncaa_softball", "ncaa_whockey", "nfl", "nhl", "ohl", "phf", "pwhl", "qmjhl", "soccer", "ufl", "usfl", "ushl", "wbb", "whl", "wnba", "xfl"];
 
 // @public
+export function loadGsis(): Promise<void>;
+
+// @public
 export function loadLeague(league: League): Promise<LeagueData>;
 
 // @public (undocumented)
@@ -189,7 +192,7 @@ export function onColor(background: string): string;
 // @public
 export function palette(league: League, teams?: Value | readonly Value[], opts?: ColorOptions): Promise<Record<string, string>>;
 
-// @public (undocumented)
+// @public
 export function preloadAll(): Promise<void>;
 
 // @public (undocumented)

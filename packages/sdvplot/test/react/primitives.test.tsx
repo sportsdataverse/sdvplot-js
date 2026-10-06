@@ -20,6 +20,15 @@ test("Headshot is sync and keeps 600:436", () => {
   expect(screen.getByRole("img")).toHaveAttribute("width", "60");
 });
 
+test("Headshot with a gsis id renders once the gsis map has loaded", async () => {
+  const { container } = render(<Headshot playerId="00-0033873" league="nfl" idSystem="gsis" />);
+  expect(container.innerHTML).toBe(""); // nothing until the map has loaded
+  await waitFor(
+    () => expect(screen.getByRole("img")).toHaveAttribute("src", expect.stringMatching(/t_headshot_desktop/)),
+    { timeout: 15_000 }, // first dynamic import transforms the 3 MB shard
+  );
+}, 20_000);
+
 test("useTeamColors returns the palette after load", async () => {
   function P() {
     const c = useTeamColors("nfl");
