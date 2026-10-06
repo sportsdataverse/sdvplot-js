@@ -13,6 +13,7 @@ export interface MarkOptions<R> {
   x: Channel<R>;
   y: Channel<R>;
   team: Channel<R>;
+  /** A literal season (number, null, or a 4-digit string like "2023"), or a channel: any other string is a column name; functions and arrays are per-row channels. */
   season?: SeasonInput | Channel<R>;
   /** Fraction of the (facet) frame height in (0, 1]; default 0.1. */
   height?: number;
@@ -113,7 +114,9 @@ function build<R>(data: Data<R>, o: MarkOptions<R>, kind: "logo" | "wordmark"): 
   const ys = values(data, o.y);
   const teams = values(data, o.team);
   const season =
-    o.season === undefined || typeof o.season === "number" || typeof o.season === "string"
+    o.season == null ||
+    typeof o.season === "number" ||
+    (typeof o.season === "string" && /^\d{4}$/.test(o.season))
       ? (o.season as SeasonInput)
       : (values(data, o.season as Channel<R>) as readonly SeasonInput[]);
   const placed = placeSync(xs, ys, teams, {

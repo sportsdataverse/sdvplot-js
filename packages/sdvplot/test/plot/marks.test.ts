@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import * as Plot from "@observablehq/plot";
 import { beforeAll, expect, test } from "vitest";
-import { InputError, loadLeague } from "../../src/index.js";
+import { InputError, loadLeague, placeSync } from "../../src/index.js";
 import { headshots, logos, wordmarks } from "../../src/plot/index.js";
 import { drawnMarks } from "../../src/testing/index.js";
 
@@ -65,6 +65,9 @@ test("facets: height is a fraction of the facet frame", () => {
   expect(hs).toHaveLength(2);
   expect(hs[0]).toBeLessThan(0.5 * (500 - 50));
   expect(hs[0]).toBeCloseTo(hs[1] as number, 6);
+  const dm = drawnMarks(svg);
+  expect(dm).toHaveLength(2);
+  expect(dm.every((d) => Math.abs(d.height - 0.5) / 0.5 < 0.01)).toBe(true);
 });
 test("a null y row is skipped and nothing NaN is written", () => {
   const svg = Plot.plot({
@@ -82,7 +85,20 @@ test("duplicate points and skipped rows keep titles and ids aligned by row", () 
   ];
   const svg = Plot.plot({ ...base, marks: [logos(data, { ...o, title: "t" })] });
   expect(Array.from(svg.querySelectorAll("image title")).map((t) => t.textContent)).toEqual(["a", "c"]);
-  expect(drawnMarks(svg)).toHaveLength(2);
+  const ids = placeSync([10, 10], [-3, -3], ["LV", "LAR"], { league: "nfl" }).map((p) => p.id);
+  expect(ids[0]).not.toBe(ids[1]);
+  expect(drawnMarks(svg).map((d) => d.id)).toEqual(ids);
+});
+test("season: a column name is a channel, a 4-digit string is the literal year", () => {
+  const data = [
+    { epa: 10, sr: -3, team: "LV", yr: 2019 },
+    { epa: 20, sr: -7, team: "LV", yr: 2023 },
+  ];
+  const col = drawnMarks(Plot.plot({ ...base, marks: [logos(data, { ...o, season: "yr" })] }));
+  expect(col.map((d) => d.x)).toEqual([10, 20]);
+  const lit = drawnMarks(Plot.plot({ ...base, marks: [logos(data, { ...o, season: "2023" })] }));
+  const want = placeSync([10, 20], [-3, -7], ["LV", "LV"], { league: "nfl", season: 2023 });
+  expect(lit.map((d) => d.url)).toEqual(want.map((p) => p.url));
 });
 test("wordmarks and headshots stamp their kind; headshots keep 600:436", () => {
   const svg = Plot.plot({
