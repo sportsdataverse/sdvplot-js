@@ -1,6 +1,15 @@
 {
   "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
-  "files": { "ignore": ["**/dist/**", "**/src/data/**", "**/src/specs/**", "fixtures/**", "**/*.api.md"] },
+  "files": {
+    "ignore": [
+      "**/dist/**",
+      "**/src/data/**",
+      "**/src/specs/**",
+      "packages/sporty/data/**",
+      "fixtures/**",
+      "**/*.api.md"
+    ]
+  },
   "formatter": { "indentStyle": "space", "indentWidth": 2, "lineWidth": 110 },
   "linter": { "rules": { "recommended": true, "suspicious": { "noExplicitAny": "error" } } },
   "javascript": { "formatter": { "quoteStyle": "double", "semicolons": "always" } }
