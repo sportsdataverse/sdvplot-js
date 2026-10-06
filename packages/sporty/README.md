@@ -41,7 +41,7 @@ The other six sports' generated parameter specs are importable from `@sportsdata
 
 ## Provenance and parity
 
-Ported from sportyR 2.2.3 - see `NOTICE.md` (J3). The R package is the oracle: the test suite compares every feature of all 24 non-`custom` league surfaces point for point to 1e-9 against R output stored under `fixtures/sporty`, and a league without fixtures fails. Regenerate the fixtures with `pnpm oracle:sporty basketball hockey football` (needs R and sportyR); the oracle refuses to run unless the installed sportyR's `surface_dimensions` equals the vendored `data/surface-dimensions.json`, and records that file's sha256 in `fixtures/sporty/VERSION`. Parameter specs in `src/specs` are generated from the vendored JSON (`pnpm codegen`).
+Ported from sportyR 2.2.3 - see [NOTICE.md](NOTICE.md) (J3). The R package is the oracle: the test suite compares every feature of all 24 non-`custom` league surfaces point for point to 1e-9 against R output stored under `fixtures/sporty`, and a league without fixtures fails. Regenerate the fixtures with `pnpm oracle:sporty basketball hockey football` (needs R and sportyR); the oracle refuses to run unless the installed sportyR's `surface_dimensions` equals the vendored `data/surface-dimensions.json`, and records that file's sha256 in `fixtures/sporty/VERSION`. Parameter specs in `src/specs` are generated from the vendored JSON (`pnpm codegen`).
 
 Drift gates in CI: `pnpm codegen --check` (specs match the vendored JSON) and `test/fixtures-version.test.ts` (the vendored JSON's sha256 and sportyR version/checkout match the ones the fixtures were generated from). `pnpm vendor --check` compares the vendored JSON with a sportyR checkout, so it only runs where one exists (`SPORTYR_REPO`); elsewhere it skips.
 
@@ -63,7 +63,8 @@ Soccer, baseball, tennis, volleyball, curling and lacrosse (Phase 6); canvas, pl
 
 1. Create the `sportsdataverse` organization on npm.
 2. Enable OIDC trusted publishing for `@sportsdataverse/sporty` (repository `sportsdataverse/sdvplot-js`, release workflow).
+3. Formalize the J3 licence understanding in writing before first publish (spec §9).
 
 ## License
 
-MIT
+MIT. See [NOTICE.md](NOTICE.md) for the ported sportyR/sportypy material.
