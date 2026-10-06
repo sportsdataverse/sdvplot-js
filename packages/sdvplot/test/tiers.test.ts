@@ -1,5 +1,5 @@
 import { beforeAll, expect, test } from "vitest";
-import { loadLeague, prepareTiers, setWarningHandler, wrapLabel } from "../src/index.js";
+import { InputError, loadLeague, prepareTiers, setWarningHandler, wrapLabel } from "../src/index.js";
 
 beforeAll(() => loadLeague("nfl"));
 const rows = [
@@ -78,8 +78,8 @@ test("a row with a missing tier is skipped with one warning (the Python text)", 
     setWarningHandler(null);
   }
 });
-test("non-numeric tiers throw TypeError", () => {
-  expect(() => prepareTiers([{ tierNo: "one", team: "KC" }], "nfl")).toThrow(TypeError);
+test("non-numeric tiers throw InputError", () => {
+  expect(() => prepareTiers([{ tierNo: "one", team: "KC" }], "nfl")).toThrow(InputError);
 });
 test("wrapLabel mirrors textwrap.wrap(text, 14, break_long_words=False)", () => {
   expect(prepareTiers([{ tierNo: 5, team: "KC" }], "nfl").breakLabels[0]).toBe("What are they\ndoing?");

@@ -84,7 +84,8 @@ const real = (v: Value): boolean => (typeof v === "number" && !Number.isNaN(v)) 
 /** Port of `sdvplot._tiers.prepare`: validate the rows and compute everything a tier plot draws. */
 export function prepareTiers(rows: readonly TierRow[], league: League, o: TiersOptions = {}): Tiers {
   const theme = o.theme ?? "dark";
-  if (!(theme in TIER_THEMES)) throw new InputError(`theme must be "dark" or "light", got ${String(theme)}`);
+  if (!Object.hasOwn(TIER_THEMES, theme))
+    throw new InputError(`theme must be "dark" or "light", got ${String(theme)}`);
   const height = o.height === undefined ? DEFAULT_HEIGHT : checkHeight(o.height);
   const alpha = checkAlpha(o.alpha ?? 0.8);
   const tiers = rows.map((r): Value => r.tierNo ?? r.tier_no);
@@ -106,16 +107,19 @@ export function prepareTiers(rows: readonly TierRow[], league: League, o: TiersO
   let idx = all.filter((i) => !absent.includes(i));
   if (!idx.length) throw new InputError("data has no rows with a tier_no");
   if (!idx.every((i) => real(tiers[i]) && (given === undefined || real(given[i]))))
-    throw new TypeError("tier_no and tier_rank must hold numbers (tier 1 is the top tier)");
+    throw new InputError("tier_no and tier_rank must hold numbers (tier 1 is the top tier)");
   const tierOf = (i: number): number => Number(tiers[i]);
   if (o.presort) {
     // arrange(tier_no, team), then rank within the tier; a missing team last, as R's NA
     const name = (i: number): string => String(teams[i]);
+    const cp = (i: number): number[] => Array.from(name(i), (c) => c.codePointAt(0) as number);
+    const cmp = (a: number[], b: number[]): number => {
+      for (let k = 0; k < Math.min(a.length, b.length); k++)
+        if (a[k] !== b[k]) return (a[k] as number) - (b[k] as number);
+      return a.length - b.length;
+    };
     idx = idx.sort(
-      (a, b) =>
-        tierOf(a) - tierOf(b) ||
-        Number(miss(teams[a])) - Number(miss(teams[b])) ||
-        (name(a) < name(b) ? -1 : name(a) > name(b) ? 1 : 0),
+      (a, b) => tierOf(a) - tierOf(b) || Number(miss(teams[a])) - Number(miss(teams[b])) || cmp(cp(a), cp(b)),
     );
   }
   const ranks = new Map<number, number>();

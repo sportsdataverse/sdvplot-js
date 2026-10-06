@@ -35,3 +35,10 @@ test("an unknown team draws the title alone", () => {
     setWarningHandler(null);
   }
 });
+test("a throwing call leaves the caller's svg where it was", () => {
+  const div = document.createElement("div");
+  const svg = Plot.plot({ marks: [dot()] }) as SVGSVGElement;
+  div.append(svg);
+  expect(() => titleImage(svg, { image: "http://insecure/x.png", title: "T" })).toThrow(/https/);
+  expect(svg.parentElement).toBe(div);
+});

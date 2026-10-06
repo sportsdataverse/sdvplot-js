@@ -18,23 +18,16 @@ export interface TitleImageOptions {
 /** Puts a team logo (or an https image) in the `<h2>` of a Plot figure and returns the `<figure>` (a bare `<svg>` is wrapped in a new one). An unknown team draws the title alone (the resolver warned once). */
 export function titleImage(figure: HTMLElement | SVGSVGElement, o: TitleImageOptions): HTMLElement {
   const height = o.height ?? 24;
-  if (!(typeof height === "number" && height >= 1))
+  if (!(typeof height === "number" && Number.isFinite(height) && height >= 1))
     throw new InputError(`height is a pixel height of at least 1, got ${String(height)}`);
   const side = o.side ?? "left";
   if (side !== "left" && side !== "right")
     throw new InputError(`side must be "left" or "right", got ${String(side)}`);
-  const doc = figure.ownerDocument;
-  let fig: HTMLElement;
-  if (figure.tagName.toLowerCase() === "svg") {
-    if (!o.title)
-      throw new InputError("the plot has no title; pass {title} (or render with Plot.plot({title}))");
-    fig = doc.createElement("figure");
-    const heading = doc.createElement("h2");
-    heading.textContent = o.title;
-    fig.append(heading, figure);
-  } else fig = figure as HTMLElement;
-  const h2 = fig.querySelector("h2");
-  if (!h2) throw new InputError("the figure has no <h2> title; render with Plot.plot({title}) first");
+  const bare = figure.tagName.toLowerCase() === "svg";
+  if (bare && !o.title)
+    throw new InputError("the plot has no title; pass {title} (or render with Plot.plot({title}))");
+  if (!bare && !figure.querySelector("h2"))
+    throw new InputError("the figure has no <h2> title; render with Plot.plot({title}) first");
   let src: string | undefined;
   if (o.league) {
     const lo: LogoUrlOptions = o.season === undefined ? {} : { season: o.season };
@@ -45,7 +38,17 @@ export function titleImage(figure: HTMLElement | SVGSVGElement, o: TitleImageOpt
       throw new InputError(`image must be an https URL when league is not given, got ${s}`);
     src = s;
   }
+  // every check has passed: only now touch the DOM
+  const doc = figure.ownerDocument;
+  let fig: HTMLElement;
+  if (bare) {
+    fig = doc.createElement("figure");
+    const heading = doc.createElement("h2");
+    heading.textContent = o.title as string;
+    fig.append(heading, figure);
+  } else fig = figure as HTMLElement;
   if (src === undefined) return fig;
+  const h2 = fig.querySelector("h2") as HTMLElement;
   const img = doc.createElement("img");
   img.setAttribute("src", src);
   img.setAttribute("height", String(height));
