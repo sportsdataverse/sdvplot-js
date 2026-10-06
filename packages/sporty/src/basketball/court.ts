@@ -311,8 +311,8 @@ export function basketballCourt(
     let x = L / 2 - bfb;
     for (const m of set) {
       x = x - m.separation;
-      // R reads the colour from row i of the set (`lane_space_mark_set[i, "color"]`), NA if the set is shorter.
-      const fill = m.visible ? (set[i]?.color ?? HIDDEN) : HIDDEN;
+      // Parent bug not ported: R reads `lane_space_mark_set[i, "color"]` (lane index i, NA once i > marks per set).
+      const fill = m.visible ? m.color : HIDDEN;
       add(
         "lane_space_mark",
         F.laneSpaceMark({ featureThickness: m.length, markDepth: m.width }),

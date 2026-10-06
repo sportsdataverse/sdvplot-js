@@ -66,3 +66,16 @@ test("colorUpdates: an undefined or null colour keeps the default instead of thr
   expect(apron(basketballCourt("nba", { colorUpdates: { court_apron: undefined as never } }))).toBe(base);
   expect(apron(basketballCourt("nba", { colorUpdates: { court_apron: null as never } }))).toBe(base);
 });
+
+test("lane_space_mark: with 2 mark sets of 1 mark and colours [c1, c2], set 1 takes c1 and set 2 takes c2 (R's set[i] row bug would give set 2 NA)", () => {
+  const s = basketballCourt("nba", {
+    updates: {
+      lane_space_mark_lengths: [[0.1667], [1]],
+      lane_space_mark_separations: [[3], [3]],
+      lane_space_mark_visibility: [true, true],
+    },
+    colorUpdates: { lane_space_mark: ["#aa0000", "#00bb00"] },
+  });
+  const fills = s.features.filter((f) => f.name === "lane_space_mark").map((f) => f.fill);
+  expect(fills).toEqual([...Array(4).fill("#aa0000"), ...Array(4).fill("#00bb00")]); // 1 mark x 4 reflected copies per set
+});

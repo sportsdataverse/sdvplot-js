@@ -48,6 +48,7 @@ Ported from sportyR 2.2.3 - see `NOTICE.md` (J3). The R package is the oracle: t
 - An unknown `displayRange` throws `UnknownDisplayRangeError` (R silently falls back to `"full"`).
 - `units` converts the anchors and display limits too (R converts only the feature points, so non-native units plot wrongly).
 - Vector colours recycle per copy of a feature (`colorAt`), as R `data.frame()` does.
+- A lane space mark takes its own set's colour; R reads row `i` (the lane index) of the set instead, which is `NA` once a court has more lanes than marks per set. Default leagues are unaffected.
 - An `undefined`/`null` entry in `updates` or `colorUpdates` keeps the default.
 - The `custom` league builds a surface from its all-zero defaults instead of erroring.
 - Text features carry a `fitBox` (the ggfittext box) that the SVG renderer fits by height only.
