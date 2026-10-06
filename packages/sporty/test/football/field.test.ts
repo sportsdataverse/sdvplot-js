@@ -78,6 +78,20 @@ test("yard numbers are text features: R's labels, font, fit box, and the flipped
   expect(s[i - 1]).toMatchObject({ kind: "polygon", name: "yardage_marker_box", fill: "#ffffff00" });
 });
 
+test.each(["nfl", "cfl"])(
+  "%s: every yard number is drawn right after its box, box/text pairs in one block",
+  (league) => {
+    const s = footballField(league).features;
+    const t = s.filter((f) => f.kind === "text");
+    const start = s.findIndex((f) => f.name === "yardage_marker_box");
+    const block = s.slice(start, start + 2 * t.length);
+    expect(block.map((f) => f.name)).toEqual(
+      Array.from({ length: t.length }, () => ["yardage_marker_box", "yardage_marker"]).flat(),
+    );
+    expect(block.at(-1)).toBe(t.at(-1));
+  },
+);
+
 test("CFL: odd number row centres the 'C' on midfield; additional minor lines sit inside the end zone", () => {
   const t = texts("cfl");
   const c = t.find((f) => f.text === "C");

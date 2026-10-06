@@ -32,6 +32,7 @@ export interface TextFeature {
   y: number;
   text: string;
   fontFamily: string;
+  /** Unrotated box in the text's own frame (`[width, height]` before `rotation`); equals R's ggfittext box at 0/90/180/270°. */
   fitBox: readonly [w: number, h: number];
   rotation: number;
 }
