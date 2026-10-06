@@ -28,3 +28,19 @@ test("useTeamColors returns the palette after load", async () => {
   render(<P />);
   await waitFor(() => expect(screen.getByTestId("c").textContent).toMatch(/^#/));
 });
+
+test("TeamLogo renders nothing (no unhandled rejection) when the load/lookup throws", async () => {
+  const { container } = render(<TeamLogo team="KC" league="nfl" variant="neon" />);
+  await new Promise((r) => setTimeout(r, 200));
+  await waitFor(() => expect(container.innerHTML).toBe(""));
+});
+
+test("useTeamColors stays undefined for an unknown league", async () => {
+  function P() {
+    const c = useTeamColors("nlf" as never);
+    return <i data-testid="c">{c === undefined ? "none" : "some"}</i>;
+  }
+  render(<P />);
+  await new Promise((r) => setTimeout(r, 200));
+  expect(screen.getByTestId("c").textContent).toBe("none");
+});

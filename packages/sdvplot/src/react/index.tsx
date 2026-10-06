@@ -34,17 +34,21 @@ export function TeamLogo({
   const [mark, setMark] = useState<{ src: string; name: string } | undefined>();
   useEffect(() => {
     let live = true;
-    loadLeague(league).then(() => {
-      if (!live) return;
-      const o: LogoUrlOptions = {};
-      if (season !== undefined) o.season = season;
-      if (variant !== undefined) o.variant = variant;
-      if (markType !== undefined) o.markType = markType;
-      const src = logoUrlSync(team, league, o);
-      const id = resolveSync(team, league, { season });
-      const name = getLeagueSync(league).teams.find((t) => t.team_id === id)?.name ?? "";
-      setMark(src === undefined ? undefined : { src, name });
-    });
+    loadLeague(league)
+      .then(() => {
+        if (!live) return;
+        const o: LogoUrlOptions = {};
+        if (season !== undefined) o.season = season;
+        if (variant !== undefined) o.variant = variant;
+        if (markType !== undefined) o.markType = markType;
+        const src = logoUrlSync(team, league, o);
+        const id = resolveSync(team, league, { season });
+        const name = getLeagueSync(league).teams.find((t) => t.team_id === id)?.name ?? "";
+        setMark(src === undefined ? undefined : { src, name });
+      })
+      .catch(() => {
+        if (live) setMark(undefined);
+      });
     return () => {
       live = false;
     };
@@ -94,9 +98,13 @@ export function useTeamColors(
   useEffect(() => {
     let live = true;
     setColors(undefined);
-    palette(league, undefined, which === undefined ? {} : { which }).then((c) => {
-      if (live) setColors(c);
-    });
+    palette(league, undefined, which === undefined ? {} : { which })
+      .then((c) => {
+        if (live) setColors(c);
+      })
+      .catch(() => {
+        if (live) setColors(undefined);
+      });
     return () => {
       live = false;
     };
