@@ -1,5 +1,6 @@
 #!/usr/bin/env Rscript
-# Writes fixtures/sporty/<sport>/<league>/layer_<k>.csv (x,y of each geom_polygon layer, in draw order) + bbox_<range>.csv
+# Writes fixtures/sporty/<sport>/<league>/layer_<k>.csv (x,y of each geom_polygon layer, in draw order), text_<k>.csv (each
+# ggfittext layer: box centre x,y + label + angle; its own counter) + bbox_<range>.csv
 suppressPackageStartupMessages({ library(sportyR); library(ggplot2) })
 args <- commandArgs(trailingOnly = TRUE); sports <- if (length(args)) args else c("basketball", "hockey", "football")
 root <- file.path(dirname(dirname(dirname(normalizePath(sub("--file=", "", grep("--file=", commandArgs(), value = TRUE)))))), "fixtures", "sporty")
@@ -11,8 +12,15 @@ ranges <- list(basketball = c("full", "in bounds only", "offense", "defense", "o
 for (sport in sports) for (league in setdiff(names(dims[[sport]]), "custom")) {
   dir <- file.path(root, sport, gsub(" ", "_", league)); dir.create(dir, recursive = TRUE, showWarnings = FALSE)
   g <- geoms[[sport]](league = league)
-  k <- 0
+  k <- 0; tk <- 0
   for (layer in g$layers) {
+    if (inherits(layer$geom, "GeomFitText")) { # ggfittext label: box centre (from its xmin/xmax/ymin/ymax mapping), label, angle
+      tk <- tk + 1
+      box <- lapply(layer$mapping[c("xmin", "xmax", "ymin", "ymax")], rlang::eval_tidy, data = layer$data)
+      df <- data.frame(x = (box$xmin + box$xmax) / 2, y = (box$ymin + box$ymax) / 2, label = layer$aes_params$label, angle = layer$aes_params$angle)
+      write.csv(format(df, digits = 15), file.path(dir, sprintf("text_%03d.csv", tk)), row.names = FALSE, quote = FALSE)
+      next
+    }
     if (!inherits(layer$geom, "GeomPolygon")) next
     k <- k + 1
     df <- layer$data[, c("x", "y")]
@@ -27,7 +35,7 @@ for (sport in sports) for (league in setdiff(names(dims[[sport]]), "custom")) {
   # rotation + translation case
   gt <- geoms[[sport]](league = league, rotation = 90, x_trans = 10, y_trans = -5); lim <- gt$coordinates$limits
   write.csv(data.frame(x0 = lim$x[1], y0 = lim$y[1], x1 = lim$x[2], y1 = lim$y[2]), file.path(dir, "bbox_rot90_t10_-5.csv"), row.names = FALSE)
-  cat(sprintf("%s/%s: %d polygon layers\n", sport, league, k))
+  cat(sprintf("%s/%s: %d polygon layers, %d text layers\n", sport, league, k, tk))
 }
 sha <- tryCatch(system2("git", c("-C", Sys.getenv("SPORTYR_REPO", "/mnt/sdv_repos/sportyR"), "rev-parse", "--short", "HEAD"), stdout = TRUE, stderr = FALSE)[1], error = function(e) NA_character_, warning = function(w) NA_character_)
 if (is.na(sha) || !nzchar(sha)) sha <- "unknown"

@@ -14,8 +14,10 @@ import {
   colorAt,
   convertLimits,
   displayBbox,
+  frame,
   mergeColors,
   mergeParams,
+  orVec,
 } from "../surface.js";
 import { convertUnits } from "../units.js";
 import * as F from "./features.js";
@@ -33,22 +35,6 @@ const ARRAY_FIELDS = (Object.keys(NBA) as (keyof BasketballParams)[]).filter((k)
 
 const isOneOf = <T extends string>(list: readonly T[], v: string): v is T =>
   (list as readonly string[]).includes(v);
-
-/** R `vec %or% d`: an empty vector becomes the length-1 default. */
-const orVec = <T>(v: readonly T[] | undefined, d: T): readonly T[] =>
-  v !== undefined && v.length > 0 ? v : [d];
-
-/** R `data.frame()`: every column is recycled to the longest one. */
-function frame<T extends Record<string, readonly unknown[]>>(cols: T): { [K in keyof T]: T[K][number] }[] {
-  const n = Math.max(...Object.values(cols).map((c) => c.length));
-  return Array.from(
-    { length: n },
-    (_, i) =>
-      Object.fromEntries(Object.entries(cols).map(([k, c]) => [k, c[i % c.length]])) as {
-        [K in keyof T]: T[K][number];
-      },
-  );
-}
 
 /** `display_range` keys with spaces/underscores removed, then R's synonyms folded together. */
 type RangeGroup =

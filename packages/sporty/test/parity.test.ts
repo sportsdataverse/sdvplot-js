@@ -1,9 +1,11 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { describe, expect, test } from "vitest";
 import { basketballCourt } from "../src/basketball/court.js";
+import { footballField } from "../src/football/field.js";
 import { hockeyRink } from "../src/hockey/rink.js";
 import type { Scene } from "../src/scene.js";
 import { BASKETBALL_LEAGUES } from "../src/specs/basketball.js";
+import { FOOTBALL_LEAGUES } from "../src/specs/football.js";
 import { HOCKEY_LEAGUES } from "../src/specs/hockey.js";
 type Build = (
   league: string,
@@ -18,7 +20,10 @@ type Build = (
 const SURFACES: [sport: string, leagues: readonly string[], build: Build][] = [
   ["basketball", BASKETBALL_LEAGUES, basketballCourt as Build],
   ["hockey", HOCKEY_LEAGUES, hockeyRink as Build],
+  ["football", FOOTBALL_LEAGUES, footballField as Build],
 ];
+/** toBeCloseTo(v, 9) ⇔ |Δ| < 5e-10; asserted once per layer (max over its points) to keep the suite fast. */
+const TOL = 5e-10;
 const csv = (p: URL) =>
   readFileSync(p, "utf8")
     .trim()
@@ -28,30 +33,57 @@ const csv = (p: URL) =>
 for (const [sport, leagues, build] of SURFACES)
   describe.each(leagues.filter((l) => l !== "custom"))(`${sport} %s`, (league) => {
     const dir = new URL(`../../../fixtures/sporty/${sport}/${league.replace(/ /g, "_")}/`, import.meta.url);
+    const files = (prefix: string) =>
+      existsSync(dir)
+        ? readdirSync(dir)
+            .filter((f) => f.startsWith(prefix))
+            .sort()
+        : [];
     test.skipIf(!existsSync(dir))(
       "every R polygon layer matches point-for-point",
       () => {
-        const scene = build(league, { arcResolution: 1000 });
-        const polys = scene.features.filter((f) => f.kind === "polygon");
-        const layers = readdirSync(dir)
-          .filter((f) => f.startsWith("layer_"))
-          .sort();
+        const polys = build(league, { arcResolution: 1000 }).features.filter((f) => f.kind === "polygon");
+        const layers = files("layer_");
         expect(polys.length).toBe(layers.length);
         layers.forEach((file, k) => {
           const rows = csv(new URL(file, dir));
           const p = polys[k]!;
           expect(p.points.length, `${file} point count`).toBe(rows.length);
+          let delta = 0;
+          const fills: string[] = [];
           rows.forEach(([x, y, fill], i) => {
-            expect(p.points[i]![0]).toBeCloseTo(Number(x), 9);
-            expect(p.points[i]![1]).toBeCloseTo(Number(y), 9);
-            if (fill && fill !== "NA") expect(p.fill.toLowerCase()).toBe(fill.toLowerCase());
+            const [px, py] = p.points[i]!;
+            delta = Math.max(delta, Math.abs(px - Number(x)), Math.abs(py - Number(y)));
+            if (fill && fill !== "NA" && p.fill.toLowerCase() !== fill.toLowerCase())
+              fills.push(`${i}: ${p.fill} != ${fill}`);
           });
+          expect(delta, `${file} max |Δ|`).toBeLessThan(TOL);
+          expect(fills, `${file} fills`).toEqual([]);
         });
       },
       60_000,
     );
+    test.skipIf(!existsSync(dir))("every R ggfittext layer matches box centre, label and angle", () => {
+      const texts = build(league).features.filter((f) => f.kind === "text");
+      const rows = files("text_").flatMap((file) => csv(new URL(file, dir)));
+      expect(texts.length).toBe(rows.length);
+      let delta = 0;
+      const labels: string[] = [];
+      rows.forEach(([x, y, label, angle], k) => {
+        const t = texts[k]!;
+        delta = Math.max(
+          delta,
+          Math.abs(t.x - Number(x)),
+          Math.abs(t.y - Number(y)),
+          Math.abs(t.rotation - Number(angle)),
+        );
+        if (t.text !== label) labels.push(`${k}: ${t.text} != ${label}`);
+      });
+      expect(delta, "max |Δ| over x, y, angle").toBeLessThan(TOL);
+      expect(labels).toEqual([]);
+    });
     test.skipIf(!existsSync(dir))("display range bboxes match coord_fixed limits", () => {
-      for (const file of readdirSync(dir).filter((f) => f.startsWith("bbox_") && !f.includes("rot90"))) {
+      for (const file of files("bbox_").filter((f) => !f.includes("rot90"))) {
         const range = file.slice(5, -4).replace(/_/g, " ");
         const [x0, y0, x1, y1] = csv(new URL(file, dir))[0]!.map(Number);
         expect(build(league, { displayRange: range as never }).bbox).toEqual(

@@ -109,7 +109,7 @@ export function hockeyRink(
   const crease = {
     featureRadius: p.goal_crease_radius,
     featureThickness: minor,
-    creaseStyle: p.goal_crease_style,
+    creaseStyle: p.goal_crease_style ?? "",
     creaseLength: p.goal_crease_length,
     creaseWidth: p.goal_crease_width,
     notchDistX: p.goal_crease_notch_dist_x,

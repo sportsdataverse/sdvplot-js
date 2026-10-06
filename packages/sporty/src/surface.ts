@@ -1,4 +1,4 @@
-import type { Color, Feature, Point, Scene, Units } from "./scene.js";
+import type { Color, Feature, Point, Scene, TextFeature, Units } from "./scene.js";
 import { createRectangle } from "./shapes.js";
 import { asArray } from "./specs/_normalize.js";
 import { type Placement, placeFeature, rotateCoords, strokeFor } from "./transform.js";
@@ -75,6 +75,33 @@ export function addFeature(
       ...(height === undefined ? {} : { height }),
     });
   }
+}
+
+/** R `vec %or% d`: an empty vector becomes the length-1 default. */
+export const orVec = <T>(v: readonly T[] | undefined, d: T): readonly T[] =>
+  v !== undefined && v.length > 0 ? v : [d];
+
+/** R `data.frame()`: every column is recycled to the longest one. */
+export function frame<T extends Record<string, readonly unknown[]>>(
+  cols: T,
+): { [K in keyof T]: T[K][number] }[] {
+  const n = Math.max(...Object.values(cols).map((c) => c.length));
+  return Array.from(
+    { length: n },
+    (_, i) =>
+      Object.fromEntries(Object.entries(cols).map(([k, c]) => [k, c[i % c.length]])) as {
+        [K in keyof T]: T[K][number];
+      },
+  );
+}
+
+/** A ggfittext label, already placed (R positions it directly, not via `add_feature`); zIndex = position in `features`. */
+export function addText(
+  features: Feature[],
+  name: string,
+  t: Omit<TextFeature, "kind" | "name" | "zIndex">,
+): void {
+  features.push({ kind: "text", name, zIndex: features.length, ...t });
 }
 
 /** R `geom_*` tail: rotate the corners of the xlims × ylims box, then take min/max. */
