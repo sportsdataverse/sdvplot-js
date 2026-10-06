@@ -66,7 +66,7 @@ test("text features: upright, escaped, font-size from fitBox; non-finite text sk
     ],
   });
   expect(svg).toContain("A &amp; B &lt;c&gt;");
-  expect(svg).toContain('transform="scale(1,-1) rotate(-90)"');
+  expect(svg).toContain('transform="scale(1,-1) rotate(-90 1 -2)"');
   expect(svg).toContain('font-size="0.5"');
   expect(svg).toContain('viewBox="0 -5 10 5"');
   expect(svg).not.toContain(">no<");
@@ -111,4 +111,33 @@ test("non-finite polygons skipped; -0 prints 0; background first; stroke-only hi
   expect(svg).toContain('d="M 0 0 L 1 0 L 1 1 Z"');
   expect(svg).toContain('<rect x="0" y="0" width="10" height="5" fill="#395d33"/>');
   expect(svg.indexOf("<rect")).toBeLessThan(svg.indexOf("<path"));
+});
+
+test("text rotation pivots on its own anchor (pivot equals emitted x/y)", () => {
+  const svg = toSVG({
+    ...base,
+    features: [
+      {
+        kind: "text",
+        name: "t",
+        zIndex: 1,
+        fill: "#000000",
+        x: 10,
+        y: 5,
+        text: "x",
+        fontFamily: "Arial",
+        fitBox: [1, 1],
+        rotation: 180,
+      },
+    ],
+  });
+  expect(svg).toContain('x="10" y="-5"');
+  expect(svg).toContain("rotate(-180 10 -5)");
+});
+
+test("precision 0 keeps integers intact", () => {
+  const svg = toSVG(basketballCourt("nba"), { precision: 0 });
+  expect(svg).toContain('viewBox="-55 -30 110 60"');
+  expect(svg).toMatch(/d="M -?\d{2,3} -?\d{2,3} /);
+  expect(svg).toContain('width="800"');
 });

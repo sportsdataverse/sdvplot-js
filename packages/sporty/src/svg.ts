@@ -17,7 +17,8 @@ export function toSVG(scene: Scene, o: SvgOptions = {}): string {
   const [x0, y0, x1, y1] = scene.bbox;
   const p = o.precision ?? 4;
   const n = (v: number): string => {
-    const t = v.toFixed(p).replace(/\.?0+$/, "");
+    const t0 = v.toFixed(p);
+    const t = t0.includes(".") ? t0.replace(/\.?0+$/, "") : t0;
     return t === "-0" || t === "" ? "0" : t;
   };
   const w = o.width ?? 800;
@@ -43,7 +44,7 @@ export function toSVG(scene: Scene, o: SvgOptions = {}): string {
       if (!Number.isFinite(f.x) || !Number.isFinite(f.y) || hidden(f.fill)) continue;
       // ponytail: font-size = fit-box height, no width fitting; refine in Phase 6
       body.push(
-        `<text x="${n(f.x)}" y="${n(f.y)}" font-family="${esc(f.fontFamily)}" font-size="${n(f.fitBox[1])}" fill="${esc(f.fill)}" text-anchor="middle" dominant-baseline="central" transform="scale(1,-1) rotate(${n(-f.rotation)})">${esc(f.text)}</text>`,
+        `<text x="${n(f.x)}" y="${n(-f.y)}" font-family="${esc(f.fontFamily)}" font-size="${n(f.fitBox[1])}" fill="${esc(f.fill)}" text-anchor="middle" dominant-baseline="central" transform="scale(1,-1) rotate(${n(-f.rotation)} ${n(f.x)} ${n(-f.y)})">${esc(f.text)}</text>`,
       );
     }
   }
