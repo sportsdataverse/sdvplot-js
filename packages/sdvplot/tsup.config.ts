@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, readdirSync, unlinkSync, writeFileSync } from "node:fs";
 import { defineConfig } from "tsup";
 import pkg from "./package.json" with { type: "json" };
 
@@ -19,5 +19,13 @@ export default defineConfig({
     const map = JSON.parse(readFileSync("dist/react.js.map", "utf8"));
     map.mappings = `;${map.mappings}`; // shift the source map down the one prepended line
     writeFileSync("dist/react.js.map", JSON.stringify(map));
+    // No source maps for the generated data chunks (src/data/**): nothing to debug there, and they would be most of the tarball.
+    for (const f of readdirSync("dist").filter((n) => n.endsWith(".js.map"))) {
+      const sources: string[] = JSON.parse(readFileSync(`dist/${f}`, "utf8")).sources;
+      if (!sources.length || !sources.every((s) => s.includes("/src/data/"))) continue;
+      unlinkSync(`dist/${f}`);
+      const js = `dist/${f.slice(0, -4)}`;
+      writeFileSync(js, readFileSync(js, "utf8").replace(/\n\/\/# sourceMappingURL=\S+\s*$/, "\n"));
+    }
   },
 });
