@@ -10,6 +10,24 @@ const PY = resolve(process.env.SDVPLOT_PY_REPO ?? "../sdvplot");
 const OUT = resolve("packages/sdvplot/src/data");
 const MANIFEST_URL = "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/manifest/marks.csv";
 const PLAYERS_URL = "https://github.com/nflverse/nflverse-data/releases/download/players/players.parquet";
+const MIN_MANIFEST_ROWS = 10_000; // sanity floor: today 44,462; below this the fetch is truncated/empty
+const MIN_GSIS_IDS = 1_000; // sanity floor: today ~3k+
+const MANIFEST_COLUMNS = [
+  "level",
+  "league",
+  "entity_id",
+  "mark_type",
+  "variant",
+  "valid_from",
+  "valid_to",
+  "source",
+  "sha256",
+  "ext",
+  "width",
+  "height",
+  "archive_url",
+  "first_seen",
+];
 const check = process.argv.includes("--check");
 
 type Row = Record<string, unknown>;
@@ -44,7 +62,14 @@ async function main() {
   const manifestText = process.env.SDVPLOT_MANIFEST
     ? readFileSync(process.env.SDVPLOT_MANIFEST, "utf8")
     : new TextDecoder().decode(await fetchBytes(MANIFEST_URL));
-  const manifest = Papa.parse<ManifestRow>(manifestText, { header: true, skipEmptyLines: true }).data;
+  const parsed = Papa.parse<ManifestRow>(manifestText, { header: true, skipEmptyLines: true });
+  if (parsed.errors.length)
+    throw new Error(`manifest CSV parse errors: ${JSON.stringify(parsed.errors.slice(0, 3))}`);
+  const manifest = parsed.data;
+  const missing = MANIFEST_COLUMNS.filter((c) => !(c in (manifest[0] ?? {})));
+  if (missing.length) throw new Error(`manifest missing columns: ${missing.join(", ")}`);
+  if (manifest.length < MIN_MANIFEST_ROWS)
+    throw new Error(`manifest has ${manifest.length} rows (< ${MIN_MANIFEST_ROWS})`);
   const leagues = [...new Set(teams.map((t) => String(t.league)))].sort();
 
   const meta: Record<string, { latestSeason: number | null; firstSeason: number | null }> = {};
