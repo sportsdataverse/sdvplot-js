@@ -11,3 +11,9 @@ Python `sdvplot` answers for real inputs sampled from its own index; the TS port
   for the first 25 `inputs` rows of each league (700 cases, 5 expected errors); keys are the caller values as strings
 - run date: 2026-10-06
 - command: `SDVPLOT_PY_REPO=/mnt/sdv_repos/sdvplot pnpm oracle:sdvplot`
+
+## manifest_sample.csv
+
+- source: the CDN `marks.csv` as cached 2026-10-05 (`/root/.cache/sdvplot/manifest/marks.csv`, 44,462 rows, the file the committed shards were built from; CRLF line endings kept)
+- selection: header + every `level == team` row whose `source:entity_id` is a `mark` alias of nfl team 13 (LV) or 14 (LA Rams), or of nhl team 37 (VGK), across every source; 66 rows, byte-exact (quoted fields preserved)
+- regenerate: select those rows from the cached manifest (python `csv` to classify, copy the original lines), then re-run `pnpm --filter sdvplot test manifest`

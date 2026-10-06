@@ -2,6 +2,7 @@ import { VARIANTS } from "./data/index.js";
 import type { League, LeagueData, MarkRow } from "./data/index.js";
 import { InputError, UnresolvedTeamError, warn } from "./errors.js";
 import { getLeagueSync, loadLeague } from "./index-data.js";
+import { fetchManifest, manifestMarks } from "./manifest.js";
 import { normSeason } from "./normalize.js";
 import { type ResolveOptions, type Value, resolveSync } from "./resolve.js";
 import type { IdSystem, MarkType, SeasonInput, Variant } from "./types.js";
@@ -102,16 +103,20 @@ export async function logoUrl(
 
 /**
  * Every archived mark for one team, best first (logos and wordmarks, every variant and source).
- * Reads the committed shard (deduped, ranked rows); the FULL-manifest listing is a later phase.
+ * Default: the committed shard (deduped, ranked rows). `full: true` fetches the CDN manifest lazily (once per process)
+ * and returns every manifest row for the team, including rows the shard dedupe dropped; a failed download throws
+ * `DownloadError`. Both paths filter on the team only. `fetch` overrides the global fetch for the manifest download.
  * Throws `UnresolvedTeamError` when the team is null or does not resolve (strict, as Python).
  */
 export async function marks(
   team: Value,
   league: League,
-  o: { season?: SeasonInput; idSystem?: IdSystem } = {},
+  o: { season?: SeasonInput; idSystem?: IdSystem; full?: boolean; fetch?: typeof fetch } = {},
 ): Promise<readonly MarkRow[]> {
   const d = await loadLeague(league);
   const teamId = resolveSync(team, league, ro({ season: o.season, idSystem: o.idSystem, strict: true }));
   if (teamId === undefined) throw new UnresolvedTeamError(`marks() needs a team, got ${String(team)}`);
-  return d.marks.filter((r) => r.team_id === teamId);
+  if (!o.full) return d.marks.filter((r) => r.team_id === teamId);
+  const fo = o.fetch === undefined ? {} : { fetch: o.fetch };
+  return manifestMarks(league, await fetchManifest(fo), d.aliases).filter((r) => r.team_id === teamId);
 }

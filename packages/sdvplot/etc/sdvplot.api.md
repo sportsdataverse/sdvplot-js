@@ -34,6 +34,9 @@ export interface ColorOptions extends ResolveOptions {
 export type ColorResult<T> = T extends readonly Value[] ? (string | undefined)[] : string | undefined;
 
 // @public
+export function compareMarks(a: Rankable, b: Rankable): number;
+
+// @public
 export function contrast(a: string, b: string): number;
 
 // @public (undocumented)
@@ -62,6 +65,11 @@ export type EspnHeadshotLeague = keyof typeof ESPN_HEADSHOT_LEAGUES;
 
 // @public (undocumented)
 export const EXPLICIT_ONLY: readonly ["nhl_id"];
+
+// @public
+export function fetchManifest(o?: {
+    fetch?: typeof fetch;
+}): Promise<ManifestRow[]>;
 
 // @public
 export const HEADSHOT_ASPECT: number;
@@ -135,6 +143,44 @@ export function logoUrlSync(team: Value, league: League, o?: LogoUrlOptions): st
 export function luminance(color: string): number;
 
 // @public (undocumented)
+export const MANIFEST_URL = "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/manifest/marks.csv";
+
+// @public
+export function manifestMarks(league: string, rows: readonly ManifestRow[], aliases: readonly Alias[]): MarkRow[];
+
+// @public (undocumented)
+export interface ManifestRow {
+    // (undocumented)
+    archive_url: string;
+    // (undocumented)
+    entity_id: string;
+    // (undocumented)
+    ext: string;
+    // (undocumented)
+    first_seen: string;
+    // (undocumented)
+    height: string;
+    // (undocumented)
+    league: string;
+    // (undocumented)
+    level: string;
+    // (undocumented)
+    mark_type: string;
+    // (undocumented)
+    sha256: string;
+    // (undocumented)
+    source: string;
+    // (undocumented)
+    valid_from: string;
+    // (undocumented)
+    valid_to: string;
+    // (undocumented)
+    variant: string;
+    // (undocumented)
+    width: string;
+}
+
+// @public (undocumented)
 export interface MarkRow {
     // (undocumented)
     archive_url: string;
@@ -168,6 +214,8 @@ export interface MarkRow {
 export function marks(team: Value, league: League, o?: {
     season?: SeasonInput;
     idSystem?: IdSystem;
+    full?: boolean;
+    fetch?: typeof fetch;
 }): Promise<readonly MarkRow[]>;
 
 // @public (undocumented)
@@ -200,6 +248,9 @@ export function onColor(background: string): string;
 
 // @public
 export function palette(league: League, teams?: Value | readonly Value[], opts?: ColorOptions): Promise<Record<string, string>>;
+
+// @public
+export function parseManifestCsv(text: string): ManifestRow[];
 
 // @public (undocumented)
 export function place(xs: readonly Value[], ys: readonly Value[], teams: readonly Value[], o: PlaceOptions): Promise<Placement[]>;
@@ -245,6 +296,23 @@ export function preloadAll(): Promise<void>;
 
 // @public (undocumented)
 export const PRIORITY: readonly ["team_id", "espn", "espn_abbr", "nhl", "nflverse", "mlbstats", "nba_api", "hockeytech", "ncaa", "pff", "cricinfo", "cfbd", "bref", "sportsipy", "fangraphs", "sdvplotr", "name"];
+
+// @public (undocumented)
+export interface Rankable {
+    // (undocumented)
+    first_seen: string;
+    // (undocumented)
+    sha256: string;
+    // (undocumented)
+    source_rank: number;
+    // (undocumented)
+    valid_from: number | null;
+    // (undocumented)
+    valid_to: number | null;
+}
+
+// @public (undocumented)
+export function resetManifestCache(): void;
 
 // @public (undocumented)
 export function resetWarnings(): void;
