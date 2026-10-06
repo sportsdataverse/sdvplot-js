@@ -1,0 +1,28 @@
+{
+  "name": "@sportsdataverse/sporty",
+  "version": "0.0.0",
+  "description": "Sport surfaces (geometry and dimensions) for SportsDataverse plots — TypeScript port of sportyR/sportypy",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "engines": { "node": ">=20.18.1" },
+  "files": ["dist"],
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "api:report": "api-extractor run --local",
+    "api:check": "api-extractor run",
+    "pack:check": "pnpm pack --pack-destination temp >/dev/null && attw temp/*.tgz --profile esm-only && publint --strict"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sportsdataverse/sdvplot-js",
+    "directory": "packages/sporty"
+  },
+  "publishConfig": { "access": "public", "provenance": true }
+}
