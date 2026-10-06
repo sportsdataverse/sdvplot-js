@@ -1,1 +1,8 @@
-{ "name": "tools", "private": true, "type": "module", "scripts": { "test": "vitest run" } }
+{
+  "name": "tools",
+  "private": true,
+  "type": "module",
+  "scripts": { "test": "vitest run" },
+  "dependencies": { "hyparquet": "^1.8.0", "hyparquet-compressors": "^1.1.0", "papaparse": "^5.4.1" },
+  "devDependencies": { "@types/papaparse": "^5.3.14" }
+}
