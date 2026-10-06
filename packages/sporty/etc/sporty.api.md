@@ -4,6 +4,674 @@
 
 ```ts
 
+// @public
+export const BASKETBALL_COLOR_KEYS: readonly ["plot_background", "defensive_half_court", "offensive_half_court", "court_apron", "center_circle_outline", "center_circle_fill", "division_line", "endline", "sideline", "two_point_range", "three_point_line", "painted_area", "lane_boundary", "free_throw_circle_outline", "free_throw_circle_fill", "free_throw_circle_dash", "lane_space_mark", "inbounding_line", "substitution_line", "baseline_lower_defensive_box", "lane_lower_defensive_box", "team_bench_line", "restricted_arc", "backboard", "basket_ring", "net"];
+
+// @public
+export const BASKETBALL_DISPLAY_RANGES: readonly ["full", "in_bounds_only", "in bounds only", "offense", "offence", "offensivehalfcourt", "offensive_half_court", "offensive half court", "defense", "defence", "defensivehalfcourt", "defensive_half_court", "defensive half court", "offensivekey", "offensive_key", "offensive key", "attackingkey", "attacking_key", "attacking key", "defensivekey", "defensive_key", "defensive key", "defendingkey", "defending_key", "defending key", "offensivepaint", "offensive_paint", "offensive paint", "attackingpaint", "attacking_paint", "attacking paint", "offensivelane", "offensive_lane", "offensive lane", "attackinglane", "attacking_lane", "attacking lane", "defensivepaint", "defensive_paint", "defensive paint", "defendingpaint", "defending_paint", "defending paint", "defensivelane", "defensive_lane", "defensive lane", "defendinglane", "defending_lane", "defending lane"];
+
+// @public (undocumented)
+export const BASKETBALL_FEATURES: readonly ["half_court", "court_apron", "center_circle_outline", "center_circle_fill", "division_line", "endline", "sideline", "two_point_range", "three_point_line", "painted_area", "free_throw_lane_boundary", "lane_space_mark", "free_throw_circle_fill", "free_throw_circle", "free_throw_circle_dash", "restricted_arc", "lower_defensive_box_mark", "inbounding_line", "substitution_line", "team_bench_line", "backboard", "basket_ring", "net"];
+
+// @public (undocumented)
+export const BASKETBALL_LEAGUES: readonly ["custom", "fiba", "nba", "nba g league", "ncaa", "nfhs", "wnba"];
+
+// @public (undocumented)
+export const BASKETBALL_SPECS: Readonly<Record<BasketballLeague, BasketballParams>>;
+
+// @public (undocumented)
+export type BasketballColorKey = (typeof BASKETBALL_COLOR_KEYS)[number];
+
+// @public
+export function basketballCourt(league: BasketballLeague | (string & {}), opts?: SurfaceOptions<BasketballParamUpdates, BasketballColorKey, BasketballDisplayRange>): Scene;
+
+// @public (undocumented)
+export type BasketballDisplayRange = (typeof BASKETBALL_DISPLAY_RANGES)[number];
+
+// @public (undocumented)
+export type BasketballFeature = (typeof BASKETBALL_FEATURES)[number];
+
+// @public (undocumented)
+export type BasketballLeague = (typeof BASKETBALL_LEAGUES)[number];
+
+// @public (undocumented)
+export type BasketballLoosen<T> = T extends readonly (readonly number[])[] ? readonly number[] | readonly (readonly number[])[] : T extends readonly number[] ? number | readonly number[] : T extends readonly boolean[] ? boolean | readonly boolean[] : T extends readonly string[] ? string | readonly string[] : T;
+
+// @public (undocumented)
+export interface BasketballParams {
+    // (undocumented)
+    backboard_face_to_baseline: number;
+    // (undocumented)
+    backboard_thickness: number;
+    // (undocumented)
+    backboard_width: number;
+    // (undocumented)
+    baseline_lower_defensive_box_marks_int_sep?: number;
+    // (undocumented)
+    baseline_to_lane_lower_defensive_box_marks?: number;
+    // (undocumented)
+    basket_center_to_baseline: number;
+    // (undocumented)
+    basket_center_to_corner_three: readonly number[];
+    // (undocumented)
+    basket_center_to_three_point_arc: readonly number[];
+    // (undocumented)
+    basket_ring_connector_extension: number;
+    // (undocumented)
+    basket_ring_connector_width: number;
+    // (undocumented)
+    basket_ring_inner_radius: number;
+    // (undocumented)
+    basket_ring_thickness: number;
+    // (undocumented)
+    bench_side: string;
+    // (undocumented)
+    center_circle_radius: readonly number[];
+    // (undocumented)
+    court_apron_endline: number;
+    // (undocumented)
+    court_apron_sideline: number;
+    // (undocumented)
+    court_apron_to_boundary: number;
+    // (undocumented)
+    court_length: number;
+    // (undocumented)
+    court_units: "" | "m" | "ft";
+    // (undocumented)
+    court_width: number;
+    // (undocumented)
+    division_line_extension?: number;
+    // (undocumented)
+    free_throw_circle_overhang?: number;
+    // (undocumented)
+    free_throw_circle_radius: number;
+    // (undocumented)
+    free_throw_dash_length?: number;
+    // (undocumented)
+    free_throw_dash_spacing?: number;
+    // (undocumented)
+    free_throw_line_to_backboard: number;
+    // (undocumented)
+    inbounding_line_anchor_side?: readonly number[];
+    // (undocumented)
+    inbounding_line_in_play_ext?: readonly number[];
+    // (undocumented)
+    inbounding_line_out_of_bounds_ext?: readonly number[];
+    // (undocumented)
+    inbounding_line_to_baseline?: readonly number[];
+    // (undocumented)
+    lane_boundary_visibility: readonly boolean[];
+    // (undocumented)
+    lane_length: readonly number[];
+    // (undocumented)
+    lane_lower_defensive_box_marks_int_sep?: number;
+    // (undocumented)
+    lane_lower_defensive_box_marks_visibility?: boolean;
+    // (undocumented)
+    lane_space_mark_lengths: readonly (readonly number[])[];
+    // (undocumented)
+    lane_space_mark_separations: readonly (readonly number[])[];
+    // (undocumented)
+    lane_space_mark_visibility: readonly boolean[];
+    // (undocumented)
+    lane_space_mark_widths: readonly number[];
+    // (undocumented)
+    lane_width: readonly number[];
+    // (undocumented)
+    line_thickness: number;
+    // (undocumented)
+    lower_defensive_box_mark_extension?: number;
+    // (undocumented)
+    n_free_throw_circle_dashes?: number;
+    // (undocumented)
+    paint_margin: readonly number[];
+    // (undocumented)
+    painted_area_visibility: readonly boolean[];
+    // (undocumented)
+    restricted_arc_radius?: number;
+    // (undocumented)
+    substitution_line_ext_sep?: number;
+    // (undocumented)
+    substitution_line_width?: number;
+    // (undocumented)
+    symmetric_inbounding_line?: readonly boolean[];
+    // (undocumented)
+    team_bench_line_ext?: number;
+}
+
+// @public (undocumented)
+export type BasketballParamUpdates = {
+    [K in keyof BasketballParams]?: BasketballLoosen<BasketballParams[K]>;
+};
+
+// @public
+export type Color = string;
+
+// @public
+export function colorKeys(sport: "basketball"): typeof BASKETBALL_COLOR_KEYS;
+
+// @public (undocumented)
+export function colorKeys(sport: "hockey"): typeof HOCKEY_COLOR_KEYS;
+
+// @public (undocumented)
+export function colorKeys(sport: "football"): typeof FOOTBALL_COLOR_KEYS;
+
+// @public (undocumented)
+export function colorKeys(sport: Sport): readonly string[];
+
+// @public (undocumented)
+export const convertPoints: (pts: readonly Point[], from: Units, to: Units) => Point[];
+
+// @public (undocumented)
+export const convertUnits: (value: number, from: Units, to: Units) => number;
+
+// @public
+export function createCircle(input?: {
+    center?: Point;
+    npoints?: number;
+    r?: number;
+    start?: number;
+    end?: number;
+}): Point[];
+
+// @public (undocumented)
+export const createDiamond: (h: number, w: number, c?: Point) => Point[];
+
+// @public (undocumented)
+export const createRectangle: (xMin: number, xMax: number, yMin: number, yMax: number) => Point[];
+
+// @public (undocumented)
+export const createSquare: (side: number, c?: Point) => Point[];
+
+// @public (undocumented)
+export function createXShape(barLength: number, barWidth: number, rotationDeg?: number): Point[];
+
+// @public
+export function displayRanges(sport: "basketball"): typeof BASKETBALL_DISPLAY_RANGES;
+
+// @public (undocumented)
+export function displayRanges(sport: "hockey"): typeof HOCKEY_DISPLAY_RANGES;
+
+// @public (undocumented)
+export function displayRanges(sport: "football"): typeof FOOTBALL_DISPLAY_RANGES;
+
+// @public (undocumented)
+export function displayRanges(sport: Sport): readonly string[];
+
+// @public (undocumented)
+export type Feature = PolygonFeature | TextFeature;
+
+// @public
+export function features(sport: "basketball"): typeof BASKETBALL_FEATURES;
+
+// @public (undocumented)
+export function features(sport: "hockey"): typeof HOCKEY_FEATURES;
+
+// @public (undocumented)
+export function features(sport: "football"): typeof FOOTBALL_FEATURES;
+
+// @public (undocumented)
+export function features(sport: Sport): readonly string[];
+
+// @public
+export const FOOTBALL_COLOR_KEYS: readonly ["plot_background", "field_apron", "offensive_half", "defensive_half", "offensive_endzone", "defensive_endzone", "end_line", "sideline", "field_border", "field_border_outline", "red_zone_border", "red_zone_border_outline", "major_yard_line", "goal_line", "minor_yard_line", "directional_arrow", "try_mark", "yardage_marker", "restricted_area", "coaching_box", "team_bench_area", "team_bench_area_outline", "coaching_box_line"];
+
+// @public
+export const FOOTBALL_DISPLAY_RANGES: readonly ["full", "in_bounds_only", "in bounds only", "offense", "offence", "offensivehalffield", "offensive_half_field", "offensive half field", "defense", "defence", "defensivehalffield", "defensive_half_field", "defensive half field", "redzone", "red_zone", "red zone", "oredzone", "offensive_red_zone", "offensive red zone", "dredzone", "defensive_red_zone", "defensive red zone"];
+
+// @public
+export const FOOTBALL_FEATURES: readonly ["half_field", "endzone", "field_apron", "end_line", "sideline", "field_border", "field_border_outline", "red_zone_border", "red_zone_border_outline", "goal_line", "major_yard_line", "minor_yard_line", "try_mark", "coaching_box_line", "directional_arrow", "restricted_area", "coaching_box", "team_bench_area", "team_bench_area_outline", "yardage_marker", "yardage_marker_box"];
+
+// @public (undocumented)
+export const FOOTBALL_LEAGUES: readonly ["cfl", "custom", "ncaa", "nfhs11", "nfhs6", "nfhs8", "nfhs9", "nfl"];
+
+// @public (undocumented)
+export const FOOTBALL_SPECS: Readonly<Record<FootballLeague, FootballParams>>;
+
+// @public (undocumented)
+export type FootballColorKey = (typeof FOOTBALL_COLOR_KEYS)[number];
+
+// @public (undocumented)
+export type FootballDisplayRange = (typeof FOOTBALL_DISPLAY_RANGES)[number];
+
+// @public (undocumented)
+export type FootballFeature = (typeof FOOTBALL_FEATURES)[number];
+
+// @public
+export function footballField(league: FootballLeague | (string & {}), opts?: SurfaceOptions<FootballParamUpdates, FootballColorKey, FootballDisplayRange>): Scene;
+
+// @public (undocumented)
+export type FootballLeague = (typeof FOOTBALL_LEAGUES)[number];
+
+// @public (undocumented)
+export type FootballLoosen<T> = T extends readonly (readonly number[])[] ? readonly number[] | readonly (readonly number[])[] : T extends readonly number[] ? number | readonly number[] : T extends readonly boolean[] ? boolean | readonly boolean[] : T extends readonly string[] ? string | readonly string[] : T;
+
+// @public (undocumented)
+export interface FootballParams {
+    // (undocumented)
+    additional_minor_yard_lines?: readonly number[];
+    // (undocumented)
+    arrow_base: number;
+    // (undocumented)
+    arrow_length: number;
+    // (undocumented)
+    arrow_line_dist: number;
+    // (undocumented)
+    bench_shape: string;
+    // (undocumented)
+    boundary_line_thickness: number;
+    // (undocumented)
+    coaching_box_width: number;
+    // (undocumented)
+    endzone_length: number;
+    // (undocumented)
+    extra_apron_padding: number;
+    // (undocumented)
+    field_border_behind_bench?: boolean;
+    // (undocumented)
+    field_border_thickness?: number;
+    // (undocumented)
+    field_bordered: boolean;
+    // (undocumented)
+    field_length: number;
+    // (undocumented)
+    field_units: "" | "yd";
+    // (undocumented)
+    field_width: number;
+    // (undocumented)
+    goal_line_thickness: number;
+    // (undocumented)
+    inbound_cross_hashmark_length: number;
+    // (undocumented)
+    inbound_cross_hashmark_separation: number;
+    // (undocumented)
+    inbound_hashmark_separation: number;
+    // (undocumented)
+    major_yard_line_distance: number;
+    // (undocumented)
+    minor_line_thickness: number;
+    // (undocumented)
+    minor_yard_line_height: number;
+    // (undocumented)
+    number_font: string;
+    // (undocumented)
+    number_height: number;
+    // (undocumented)
+    number_to_yard_line: number;
+    // (undocumented)
+    number_width: number;
+    // (undocumented)
+    numbers_bottom: readonly string[];
+    // (undocumented)
+    numbers_top: readonly string[];
+    // (undocumented)
+    restricted_area_width: number;
+    // (undocumented)
+    sideline_to_bottom_of_numbers: number;
+    // (undocumented)
+    sideline_to_major_yard_line: number;
+    // (undocumented)
+    sideline_to_outer_yard_line: number;
+    // (undocumented)
+    team_bench_area_border_thickness: number;
+    // (undocumented)
+    team_bench_length_back_side: number;
+    // (undocumented)
+    team_bench_length_field_side: number;
+    // (undocumented)
+    team_bench_width: number;
+    // (undocumented)
+    top_number_to_arrow: number;
+    // (undocumented)
+    try_mark_distance?: number;
+    // (undocumented)
+    try_mark_width?: number;
+    // (undocumented)
+    yard_line_to_arrow: number;
+}
+
+// @public (undocumented)
+export type FootballParamUpdates = {
+    [K in keyof FootballParams]?: FootballLoosen<FootballParams[K]>;
+};
+
+// @public
+export interface Frame {
+    // (undocumented)
+    description: string;
+    // (undocumented)
+    x: (r: Row) => number | null;
+    // (undocumented)
+    y: (r: Row) => number | null;
+}
+
+// @public
+export function frameBottomLeft(length: number, width: number): Frame;
+
+// @public (undocumented)
+export type FrameName = keyof typeof FRAMES;
+
+// @public
+export const FRAMES: {
+    readonly "nba-legacy": Frame;
+    readonly "hockeytech-a": Frame;
+    readonly "hockeytech-b": Frame;
+    readonly "espn-football-0-100": Frame;
+};
+
+// @public
+export const FT_PER_UNIT: Readonly<Record<Units, number>>;
+
+// @public
+export const HOCKEY_COLOR_KEYS: readonly ["plot_background", "boards", "ozone_ice", "nzone_ice", "dzone_ice", "center_line", "zone_line", "goal_line", "restricted_trapezoid", "goal_crease_outline", "goal_crease_fill", "referee_crease", "center_faceoff_spot", "faceoff_spot_ring", "faceoff_spot_stripe", "center_faceoff_circle", "odzone_faceoff_circle", "faceoff_line", "goal_frame", "goal_fill", "team_a_bench", "team_b_bench", "team_a_penalty_box", "team_b_penalty_box", "off_ice_officials_box"];
+
+// @public
+export const HOCKEY_DISPLAY_RANGES: readonly ["full", "in_bounds_only", "in bounds only", "offense", "offence", "defense", "defence", "nzone", "neutral", "neutral_zone", "neutral zone", "ozone", "offensive_zone", "offensive zone", "attacking_zone", "attacking zone", "dzone", "defensive_zone", "defensive zone", "defending_zone", "defending zone"];
+
+// @public
+export const HOCKEY_FEATURES: readonly ["defensive_zone", "neutral_zone", "offensive_zone", "boards", "center_line", "referee_crease", "zone_line", "goal_line", "goaltenders_restricted_area", "odzone_faceoff_lines", "center_faceoff_spot", "goal_crease_outline", "goal_crease_fill", "center_faceoff_circle", "odzone_faceoff_circle", "nodzone_faceoff_spot_ring", "nodzone_faceoff_spot_stripe", "goal_frame", "goal_frame_fill", "player_bench_outline", "player_bench_area_fill", "penalty_box_outline", "penalty_box_fill", "off_ice_officials_box"];
+
+// @public (undocumented)
+export const HOCKEY_LEAGUES: readonly ["ahl", "custom", "echl", "iihf", "ncaa", "nhl", "nwhl", "ohl", "phf", "pwhl", "qmjhl", "ushl"];
+
+// @public (undocumented)
+export const HOCKEY_SPECS: Readonly<Record<HockeyLeague, HockeyParams>>;
+
+// @public (undocumented)
+export type HockeyColorKey = (typeof HOCKEY_COLOR_KEYS)[number];
+
+// @public (undocumented)
+export type HockeyDisplayRange = (typeof HOCKEY_DISPLAY_RANGES)[number];
+
+// @public (undocumented)
+export type HockeyFeature = (typeof HOCKEY_FEATURES)[number];
+
+// @public (undocumented)
+export type HockeyLeague = (typeof HOCKEY_LEAGUES)[number];
+
+// @public (undocumented)
+export type HockeyLoosen<T> = T extends readonly (readonly number[])[] ? readonly number[] | readonly (readonly number[])[] : T extends readonly number[] ? number | readonly number[] : T extends readonly boolean[] ? boolean | readonly boolean[] : T extends readonly string[] ? string | readonly string[] : T;
+
+// @public (undocumented)
+export interface HockeyParams {
+    // (undocumented)
+    bench_depth: number;
+    // (undocumented)
+    bench_length: number;
+    // (undocumented)
+    bench_separation: number;
+    // (undocumented)
+    board_thickness: number;
+    // (undocumented)
+    center_faceoff_spot_gap?: number;
+    // (undocumented)
+    center_faceoff_spot_radius: number;
+    // (undocumented)
+    corner_radius: number;
+    // (undocumented)
+    faceoff_circle_radius: number;
+    // (undocumented)
+    faceoff_line_dist_x: number;
+    // (undocumented)
+    faceoff_line_dist_y: number;
+    // (undocumented)
+    faceoff_line_length: number;
+    // (undocumented)
+    faceoff_line_width: number;
+    // (undocumented)
+    goal_back_width: number;
+    // (undocumented)
+    goal_crease_length: number;
+    // (undocumented)
+    goal_crease_notch_dist_x: number;
+    // (undocumented)
+    goal_crease_notch_width: number;
+    // (undocumented)
+    goal_crease_radius: number;
+    // (undocumented)
+    goal_crease_style: string;
+    // (undocumented)
+    goal_crease_width: number;
+    // (undocumented)
+    goal_depth: number;
+    // (undocumented)
+    goal_line_to_boards: number;
+    // (undocumented)
+    goal_mouth_width: number;
+    // (undocumented)
+    goal_post_diameter: number;
+    // (undocumented)
+    goal_radius: number;
+    // (undocumented)
+    has_trapezoid: boolean;
+    // (undocumented)
+    hashmark_ext_spacing: number;
+    // (undocumented)
+    hashmark_width: number;
+    // (undocumented)
+    long_base_width: number;
+    // (undocumented)
+    major_line_thickness: number;
+    // (undocumented)
+    minor_line_thickness: number;
+    // (undocumented)
+    noncenter_faceoff_spot_gap_width: number;
+    // (undocumented)
+    noncenter_faceoff_spot_radius: number;
+    // (undocumented)
+    noncenter_faceoff_spot_y: number;
+    // (undocumented)
+    nzone_faceoff_spot_to_zone_line: number;
+    // (undocumented)
+    nzone_length: number;
+    // (undocumented)
+    odzone_faceoff_spot_to_boards: number;
+    // (undocumented)
+    penalty_box_depth: number;
+    // (undocumented)
+    penalty_box_length: number;
+    // (undocumented)
+    penalty_box_separation: number;
+    // (undocumented)
+    referee_crease_radius: number;
+    // (undocumented)
+    rink_length: number;
+    // (undocumented)
+    rink_units: "" | "ft" | "m";
+    // (undocumented)
+    rink_width: number;
+    // (undocumented)
+    short_base_width: number;
+}
+
+// @public (undocumented)
+export type HockeyParamUpdates = {
+    [K in keyof HockeyParams]?: HockeyLoosen<HockeyParams[K]>;
+};
+
+// @public
+export function hockeyRink(league: HockeyLeague | (string & {}), opts?: SurfaceOptions<HockeyParamUpdates, HockeyColorKey, HockeyDisplayRange>): Scene;
+
+// @public
+export function leagues(sport: "basketball"): typeof BASKETBALL_LEAGUES;
+
+// @public (undocumented)
+export function leagues(sport: "hockey"): typeof HOCKEY_LEAGUES;
+
+// @public (undocumented)
+export function leagues(sport: "football"): typeof FOOTBALL_LEAGUES;
+
+// @public (undocumented)
+export function leagues(sport: Sport): readonly string[];
+
+// @public
+export function placeFeature(points: readonly Point[], p: Placement): Point[][];
+
+// @public (undocumented)
+export interface Placement {
+    // (undocumented)
+    reflectX?: boolean;
+    // (undocumented)
+    reflectY?: boolean;
+    // (undocumented)
+    rotation?: number;
+    // (undocumented)
+    xAnchor: number;
+    // (undocumented)
+    xTrans?: number;
+    // (undocumented)
+    yAnchor: number;
+    // (undocumented)
+    yTrans?: number;
+}
+
+// @public (undocumented)
+export type Point = readonly [x: number, y: number];
+
+// @public (undocumented)
+export type Polygon = readonly Point[];
+
+// @public (undocumented)
+export interface PolygonFeature {
+    // (undocumented)
+    elevation?: number;
+    // (undocumented)
+    fill: Color;
+    // (undocumented)
+    height?: number;
+    // (undocumented)
+    kind: "polygon";
+    // (undocumented)
+    name: string;
+    // (undocumented)
+    points: Polygon;
+    // (undocumented)
+    stroke?: Color;
+    // (undocumented)
+    zIndex: number;
+}
+
+// @public
+export const reflectCoords: (pts: readonly Point[], input: {
+    overX?: boolean;
+    overY?: boolean;
+}) => Point[];
+
+// @public (undocumented)
+export function rotateCoords(pts: readonly Point[], angleDeg: number): Point[];
+
+// @public
+export type Row = Record<string, unknown>;
+
+// @public (undocumented)
+export interface Scene {
+    background?: Color;
+    // (undocumented)
+    bbox: readonly [x0: number, y0: number, x1: number, y1: number];
+    // (undocumented)
+    features: readonly Feature[];
+    // (undocumented)
+    league: string;
+    // (undocumented)
+    origin: "center" | "home_plate";
+    // (undocumented)
+    sport: Sport;
+    // (undocumented)
+    units: Units;
+}
+
+// @public (undocumented)
+export type Sport = "baseball" | "basketball" | "curling" | "football" | "hockey" | "lacrosse" | "soccer" | "tennis" | "volleyball";
+
+// @public (undocumented)
+export class SportyError extends Error {
+    constructor(message: string, options?: ErrorOptions);
+}
+
+// @public
+export function surface(sport: "basketball", league: string, opts?: SurfaceOptions<BasketballParamUpdates, BasketballColorKey, BasketballDisplayRange>): Scene;
+
+// @public (undocumented)
+export function surface(sport: "hockey", league: string, opts?: SurfaceOptions<HockeyParamUpdates, HockeyColorKey, HockeyDisplayRange>): Scene;
+
+// @public (undocumented)
+export function surface(sport: "football", league: string, opts?: SurfaceOptions<FootballParamUpdates, FootballColorKey, FootballDisplayRange>): Scene;
+
+// @public (undocumented)
+export function surface(sport: Sport, league: string, opts?: object): Scene;
+
+// @public (undocumented)
+export interface SurfaceOptions<U, C extends string, D extends string> {
+    // (undocumented)
+    arcResolution?: number;
+    // (undocumented)
+    colorUpdates?: Partial<Record<C, Color | readonly Color[]>>;
+    // (undocumented)
+    displayRange?: D;
+    // (undocumented)
+    rotation?: number;
+    // (undocumented)
+    units?: Units;
+    // (undocumented)
+    updates?: U;
+    // (undocumented)
+    xlim?: readonly [number, number];
+    // (undocumented)
+    xTrans?: number;
+    // (undocumented)
+    ylim?: readonly [number, number];
+    // (undocumented)
+    yTrans?: number;
+}
+
+// @public (undocumented)
+export interface TextFeature {
+    // (undocumented)
+    fill: Color;
+    fitBox: readonly [w: number, h: number];
+    // (undocumented)
+    fontFamily: string;
+    // (undocumented)
+    kind: "text";
+    // (undocumented)
+    name: string;
+    // (undocumented)
+    rotation: number;
+    // (undocumented)
+    text: string;
+    // (undocumented)
+    x: number;
+    // (undocumented)
+    y: number;
+    // (undocumented)
+    zIndex: number;
+}
+
+// @public
+export function toSurfaceFrame<R extends Row>(rows: readonly R[], o: {
+    from: FrameName | Frame;
+    x?: string;
+    y?: string;
+    out?: {
+        x?: string;
+        y?: string;
+    };
+}): (R & {
+    surface_x: number | null;
+    surface_y: number | null;
+})[];
+
+// @public (undocumented)
+export type Units = "ft" | "m" | "yd" | "in" | "cm" | "mm";
+
+// @public (undocumented)
+export class UnknownDisplayRangeError extends SportyError {
+}
+
+// @public (undocumented)
+export class UnknownLeagueError extends SportyError {
+}
+
 // @public (undocumented)
 export const VERSION: string;
 

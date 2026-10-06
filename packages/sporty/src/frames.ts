@@ -12,7 +12,7 @@ export interface Frame {
   description: string;
 }
 
-/** `null`/`undefined`/`NaN` -> null; numbers as-is; numeric strings parsed (blank -> null); anything else -> null. */
+/** `null`/`undefined`/`NaN` to null; numbers as-is; numeric strings parsed (blank gives null); anything else gives null. */
 const num = (v: unknown): number | null => {
   if (typeof v === "string") {
     const s = v.trim();
@@ -78,7 +78,7 @@ export const FRAMES: {
 
 export type FrameName = keyof typeof FRAMES;
 
-/** Origin bottom-left corner of a `length` x `width` surface -> centre origin. */
+/** Origin bottom-left corner of a `length` x `width` surface to centre origin. */
 export function frameBottomLeft(length: number, width: number): Frame {
   return {
     x: (r) => {

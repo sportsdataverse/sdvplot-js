@@ -87,7 +87,7 @@ const LINE = "#000000";
 /**
  * The 26 argument names of `basketball_features_set_colors()`, in R's declaration order.
  * Colour keys are NOT feature names: e.g. the `half_court` feature is drawn twice, coloured
- * by `offensive_half_court` / `defensive_half_court`; Task 13 maps colour -> feature at `addFeature`.
+ * by `offensive_half_court` / `defensive_half_court`; Task 13 maps colour to feature at `addFeature`.
  */
 export const BASKETBALL_COLOR_KEYS = [
   "plot_background",
