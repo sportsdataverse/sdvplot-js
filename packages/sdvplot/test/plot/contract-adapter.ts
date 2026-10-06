@@ -23,8 +23,8 @@ export const makeAxisTarget = (categories: readonly string[]): Target => ({
     ),
   ],
 });
-const rows = (x: readonly Value[], y: readonly Value[], t: readonly Value[]) =>
-  x.map((xi, i) => ({ x: xi, y: y[i], t: t[i] }));
+const rows = (x: ArrayLike<Value>, y: ArrayLike<Value>, t: readonly Value[]) =>
+  Array.from(t, (ti, i) => ({ x: x[i], y: y[i], t: ti }));
 /** Drops undefined keys (exactOptionalPropertyTypes). */
 const defined = <O extends object>(o: O): O =>
   Object.fromEntries(Object.entries(o).filter(([, v]) => v !== undefined)) as O;

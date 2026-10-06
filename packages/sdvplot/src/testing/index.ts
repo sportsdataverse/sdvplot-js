@@ -43,27 +43,28 @@ export interface ContractMarkOptions {
   height?: number;
   alpha?: number;
 }
+/** Adapters must accept typed arrays (e.g. `Float64Array`) for the x and y positions: rule 3 passes them. */
 export interface ContractAdapter<T> {
   name: string;
   addLogos(
     target: T,
-    x: readonly Value[],
-    y: readonly Value[],
+    x: ArrayLike<Value>,
+    y: ArrayLike<Value>,
     teams: readonly Value[],
     o: ContractMarkOptions,
   ): T | Promise<T>;
   addWordmarks(
     target: T,
-    x: readonly Value[],
-    y: readonly Value[],
+    x: ArrayLike<Value>,
+    y: ArrayLike<Value>,
     teams: readonly Value[],
     o: ContractMarkOptions,
   ): T | Promise<T>;
   /** `league` is narrowed to the ESPN-headshot leagues: the contract checks that before calling, so adapters need no cast. */
   addHeadshots(
     target: T,
-    x: readonly Value[],
-    y: readonly Value[],
+    x: ArrayLike<Value>,
+    y: ArrayLike<Value>,
     players: readonly Value[],
     o: Omit<ContractMarkOptions, "league"> & { league: EspnHeadshotLeague },
   ): T | Promise<T>;
@@ -105,13 +106,15 @@ async function counted<R>(fn: () => R | Promise<R>): Promise<[R, number]> {
     setWarningHandler(null);
   }
 }
-async function throwsInput(fn: () => unknown): Promise<boolean> {
+/** null when `fn` threw InputError; otherwise what went wrong, for the failure message. */
+async function notInputError(fn: () => unknown): Promise<string | null> {
   try {
     await fn();
   } catch (e) {
-    return e instanceof InputError;
+    if (e instanceof InputError) return null;
+    return `threw ${e instanceof Error ? `${e.name}: ${e.message}` : String(e)}`;
   }
-  return false;
+  return "did not throw";
 }
 
 export interface ContractOptions<T> {
@@ -150,8 +153,8 @@ export async function checkAdapterContract<T>(a: ContractAdapter<T>, o: Contract
 
   type Verb = (
     t: T,
-    x: readonly Value[],
-    y: readonly Value[],
+    x: ArrayLike<Value>,
+    y: ArrayLike<Value>,
     v: readonly Value[],
     opts: { height?: number; alpha?: number },
   ) => T | Promise<T>;
@@ -192,9 +195,10 @@ export async function checkAdapterContract<T>(a: ContractAdapter<T>, o: Contract
       for (const d of a.drawnMarks(t))
         if (Math.abs(d.height - h) / h > 0.01) fail(r[2], `asked height ${h}, drew ${d.height}`);
     }
-    for (const bad of [0, 1.5, 40])
-      if (!(await throwsInput(() => verb(o.makeTarget(), xs, ys, vals, { height: bad }))))
-        fail(r[2], `height ${bad} must throw InputError when the verb is called`);
+    for (const bad of [0, 1.5, 40]) {
+      const why = await notInputError(() => verb(o.makeTarget(), xs, ys, vals, { height: bad }));
+      if (why) fail(r[2], `height ${bad} must throw InputError when the verb is called, ${why}`);
+    }
   };
   const [ia = "", ib = ""] = resolveSync([ka, kb], league);
   await checkVerb(
@@ -204,13 +208,11 @@ export async function checkAdapterContract<T>(a: ContractAdapter<T>, o: Contract
     [logoUrlSync(ka, league), logoUrlSync(kb, league)],
     ["rule 1 (resolution)", "rule 2 (unknown team: warn and skip)", "rule 4 (height semantics)"],
   );
-  // rule 3: columnar parity (Float64Array positions draw what plain arrays draw)
-  const [tA] = await counted(() => a.addLogos(o.makeTarget(), xs, ys, [ka, kb], { league }));
-  const [tB] = await counted(() =>
-    a.addLogos(o.makeTarget(), Array.from(new Float64Array(xs)), Array.from(new Float64Array(ys)), [ka, kb], {
-      league,
-    }),
-  );
+  // rule 3: columnar parity (real Float64Array positions draw what plain arrays draw)
+  const tA = await a.addLogos(o.makeTarget(), xs, ys, [ka, kb], { league });
+  const tB = await a.addLogos(o.makeTarget(), new Float64Array(xs), new Float64Array(ys), [ka, kb], {
+    league,
+  });
   if (!same(xyz(a.drawnMarks(tA)), xyz(a.drawnMarks(tB))))
     fail("rule 3 (columnar parity)", "typed-array positions drew different marks");
   // rule 5: wordmarks
@@ -277,8 +279,9 @@ export async function checkAdapterContract<T>(a: ContractAdapter<T>, o: Contract
     ["addHeadshots", (alpha) => a.addHeadshots(o.makeTarget(), [10], [-3], [p], { league: hl, alpha })],
   ];
   for (const [name, call] of alphaVerbs)
-    for (const bad of [-0.1, 1.1])
-      if (!(await throwsInput(() => call(bad))))
-        fail("rule 8 (alpha)", `${name} with alpha ${bad} must throw InputError`);
+    for (const bad of [-0.1, 1.1]) {
+      const why = await notInputError(() => call(bad));
+      if (why) fail("rule 8 (alpha)", `${name} with alpha ${bad} must throw InputError, ${why}`);
+    }
   setWarningHandler(null);
 }
