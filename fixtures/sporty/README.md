@@ -27,3 +27,7 @@ Polygon / text layers per league (each also has 8 `bbox_*.csv`): cfl 496 / 42, n
 ## soccer
 
 Polygon layers per league (each also has 7 `bbox_*.csv`): epl 35, fifa 35, mls 35, ncaa 31, nwsl 35. Generated 2026-10-07.
+
+## tennis
+
+Polygon layers per league (each also has 7 `bbox_*.csv`): atp 23, ita 23, itf 23, ncaa 23, usta 23, wta 23. Generated 2026-10-07 (`Rscript tools/oracle/sporty.R tennis`). The display-range fixtures use sportyR's own `receivicehalf` spelling; the correct `receive half` is not in its `switch` (R falls back to full), so it has no fixture (documented divergence 4).
