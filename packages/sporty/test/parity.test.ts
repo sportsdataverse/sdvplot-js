@@ -16,8 +16,8 @@ import { HOCKEY_LEAGUES } from "../src/specs/hockey.js";
 import { LACROSSE_LEAGUES } from "../src/specs/lacrosse.js";
 import { SOCCER_LEAGUES } from "../src/specs/soccer.js";
 import { TENNIS_LEAGUES } from "../src/specs/tennis.js";
-import { tennisCourt } from "../src/tennis/court.js";
 import { VOLLEYBALL_LEAGUES } from "../src/specs/volleyball.js";
+import { tennisCourt } from "../src/tennis/court.js";
 import { volleyballCourt } from "../src/volleyball/court.js";
 type Build = (
   league: string,
