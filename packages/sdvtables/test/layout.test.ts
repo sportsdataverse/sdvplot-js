@@ -90,7 +90,7 @@ test("themePreview: one HTML per theme, n rows, compact; subset", () => {
   for (const [name, html] of Object.entries(all)) {
     expect(html, name).toContain(`data-sdvt-theme="${name}"`);
     expect(html).toContain('data-sdvt-density="compact"');
-    expect(html.match(/<tr class="sdvt-row"/g)?.length).toBe(5);
+    expect(html.match(/<tr class="sdvt-row[ "]/g)?.length).toBe(5); // striped themes add " sdvt-stripe"
   }
   expect(
     Object.keys(themePreview(spec, STANDINGS, ["midnight", "tufte"], { n: 2, density: "social" })),

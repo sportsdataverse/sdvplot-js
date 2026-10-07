@@ -114,3 +114,33 @@ test.each([...THEME_NAMES])("theme %s: HTML snapshot (spec §7)", (name) => {
     ),
   ).toMatchSnapshot();
 });
+test("row striping (I-1): almanac/ncaa/savant mark every second DISPLAYED data row, counted across groups; group headers never; kenpom keeps its own banding", () => {
+  // great_tables _utils_render_html.py:696-702: j % 2 == 1 over the body rows in display order, group heading rows not counted
+  const rows = [STANDINGS[0]!, STANDINGS[1]!, STANDINGS[2]!, STANDINGS[4]!, STANDINGS[5]!]; // West 3, East 2
+  for (const name of ["almanac", "ncaa", "savant"]) {
+    const html = renderHTML(base.theme(name).groupBy("division").build(), rows);
+    const trs = [...html.matchAll(/<tr class="([^"]*)"/g)].map((m) => m[1] ?? "");
+    expect(trs, name).toEqual([
+      "sdvt-group-row",
+      "sdvt-row",
+      "sdvt-row sdvt-stripe",
+      "sdvt-row",
+      "sdvt-group-row",
+      "sdvt-row sdvt-stripe", // BUF: 4th displayed data row, first of its group
+      "sdvt-row",
+    ]);
+    expect(styleSheet(base.theme(name).build())).toContain(
+      "tr.sdvt-stripe td.sdvt-cell{background:var(--sdvt-stripe)}",
+    );
+  }
+  const marked = /class="[^"]*sdvt-stripe/; // the class on a row, not the base sheet's rule
+  expect(renderHTML(base.theme("almanac", { options: { stripe: "none" } }).build(), rows)).not.toMatch(
+    marked,
+  );
+  expect(renderHTML(base.theme("kenpom").groupBy("division").build(), rows)).not.toMatch(marked);
+});
+test("athletic: the dotted top rule is on the first body row too (_themes.py:1371, important on loc.body())", () => {
+  expect(styleSheet(base.theme("athletic").build())).toContain(
+    "tbody tr:first-child td.sdvt-cell{border-top:1.5px dotted black}",
+  );
+});

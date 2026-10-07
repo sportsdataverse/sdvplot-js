@@ -137,8 +137,11 @@ export function renderHTML<Row>(
           `<td class="sdvt-cell sdvt-kind-${escapeAttr(c.kind)} sdvt-${escapeAttr(alignOf(c))}" data-col="${escapeAttr(c.key)}"${styleOf([kindCellStyle(c, row, i, ctx), deco.cellStyle(i, c.key)])}>${renderCell(c, row, i, ctx)}${deco.cellSuffix(i, c.key)}</td>`,
       )
       .join("");
+  // opt_row_striping: great_tables marks every second DISPLAYED data row (j % 2 == 1 over the body in display order, group headers not counted)
+  const striped = theme.tokens.stripe !== "transparent";
+  let shown = 0;
   const trOf = (i: number, cells: string): string =>
-    `<tr class="sdvt-row${deco.rowClass(i)}" data-row="${i}"${styleOf([deco.rowStyle(i)])}>${cells}</tr>`;
+    `<tr class="sdvt-row${striped && shown++ % 2 === 1 ? " sdvt-stripe" : ""}${deco.rowClass(i)}" data-row="${i}"${styleOf([deco.rowStyle(i)])}>${cells}</tr>`;
   let body: string[] = [];
   const snake = spec.decorations.find(
     (d): d is Extract<Decoration<Row>, { type: "snake" }> => d.type === "snake",

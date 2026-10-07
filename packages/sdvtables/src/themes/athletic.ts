@@ -17,6 +17,7 @@ export const athletic = (ref: ThemeRef): Theme => {
   const sz = (n: number, role: Role): string => px(n * k[role]);
   const bg = "#FFFFFF";
   const work = fontStack("Work Sans");
+  const hline = border(1.5, "black", "dotted");
   return {
     name: "athletic",
     tokens: {
@@ -24,7 +25,7 @@ export const athletic = (ref: ThemeRef): Theme => {
       fontLabel: work,
       fontTitle: work,
       bg,
-      hline: border(1.5, "black", "dotted"),
+      hline,
       titleWeight: "650",
       titleSize: sz(22, "title"),
       subtitleWeight: "500",
@@ -56,6 +57,7 @@ export const athletic = (ref: ThemeRef): Theme => {
     rules: (s) =>
       [
         `${s} td.sdvt-cell:not(:first-child){border-left:0.5px solid black}`,
+        `${s} tbody tr:first-child td.sdvt-cell{border-top:${hline}}`, // _themes.py:1371: the dotted top rule is on EVERY body cell, the first row too
         `${s} td.sdvt-cell,${s} th.sdvt-label{text-align:center}`,
         `${s} caption{padding-top:6px;padding-bottom:0}`,
         `${s} .sdvt-subtitle{display:block;padding:0 0 4px}`,
