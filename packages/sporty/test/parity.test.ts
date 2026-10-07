@@ -4,9 +4,11 @@ import { basketballCourt } from "../src/basketball/court.js";
 import { footballField } from "../src/football/field.js";
 import { hockeyRink } from "../src/hockey/rink.js";
 import type { Scene } from "../src/scene.js";
+import { soccerPitch } from "../src/soccer/pitch.js";
 import { BASKETBALL_LEAGUES } from "../src/specs/basketball.js";
 import { FOOTBALL_LEAGUES } from "../src/specs/football.js";
 import { HOCKEY_LEAGUES } from "../src/specs/hockey.js";
+import { SOCCER_LEAGUES } from "../src/specs/soccer.js";
 type Build = (
   league: string,
   opts?: {
@@ -21,6 +23,7 @@ const SURFACES: [sport: string, leagues: readonly string[], build: Build][] = [
   ["basketball", BASKETBALL_LEAGUES, basketballCourt as Build],
   ["hockey", HOCKEY_LEAGUES, hockeyRink as Build],
   ["football", FOOTBALL_LEAGUES, footballField as Build],
+  ["soccer", SOCCER_LEAGUES, soccerPitch as Build],
 ];
 /** toBeCloseTo(v, 9) ⇔ |Δ| < 5e-10; asserted once per layer (max over its points) to keep the suite fast. */
 const TOL = 5e-10;
