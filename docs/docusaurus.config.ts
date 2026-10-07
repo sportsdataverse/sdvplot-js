@@ -20,6 +20,22 @@ const config: Config = {
 
   onBrokenLinks: "throw",
 
+  // brand assets from `pnpm brand` (tools/brand/hex-logo.ts)
+  headTags: [
+    {
+      tagName: "link",
+      attributes: { rel: "apple-touch-icon", sizes: "180x180", href: "/img/apple-touch-icon.png" },
+    },
+    {
+      tagName: "link",
+      attributes: { rel: "icon", type: "image/png", sizes: "192x192", href: "/img/favicon-192.png" },
+    },
+    {
+      tagName: "link",
+      attributes: { rel: "icon", type: "image/png", sizes: "512x512", href: "/img/favicon-512.png" },
+    },
+  ],
+
   i18n: { defaultLocale: "en", locales: ["en"] },
 
   presets: [
@@ -69,9 +85,11 @@ const config: Config = {
   ],
 
   themeConfig: {
+    image: "img/social-card.png",
     colorMode: { respectPrefersColorScheme: true },
     navbar: {
       title: "sdvplot-js",
+      logo: { alt: "sdvplot-js hex mark", src: "img/sdvplot-js-mark.svg" },
       items: [
         { type: "docSidebar", sidebarId: "docsSidebar", position: "left", label: "Docs" },
         { href: "https://github.com/sportsdataverse/sdvplot-js", label: "GitHub", position: "right" },
