@@ -30,9 +30,14 @@
     "directory": "packages/sporty"
   },
   "publishConfig": { "access": "public", "provenance": true },
-  "peerDependencies": { "@observablehq/plot": ">=0.6.16", "d3": ">=7" },
-  "peerDependenciesMeta": { "@observablehq/plot": { "optional": true }, "d3": { "optional": true } },
+  "peerDependencies": { "@observablehq/plot": ">=0.6.16", "d3": ">=7", "@napi-rs/canvas": ">=0.1.50" },
+  "peerDependenciesMeta": {
+    "@observablehq/plot": { "optional": true },
+    "d3": { "optional": true },
+    "@napi-rs/canvas": { "optional": true }
+  },
   "devDependencies": {
+    "@napi-rs/canvas": "^1.0.10",
     "@observablehq/plot": "^0.6.17",
     "@types/d3": "^7.4.3",
     "d3": "^7.9.0",

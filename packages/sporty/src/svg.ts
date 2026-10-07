@@ -1,4 +1,4 @@
-import type { Color, Feature, Scene } from "./scene.js";
+import { type Color, type Feature, type Scene, hidden, isVisiblePolygon, isVisibleText } from "./scene.js";
 
 export interface SvgOptions {
   width?: number;
@@ -10,7 +10,6 @@ export interface SvgOptions {
 
 const esc = (s: string): string =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-const hidden = (c: Color): boolean => c.length === 9 && c.endsWith("00");
 
 /** Render a Scene to an SVG string (no DOM; Node and browser). Y is flipped via a `<g>` transform. */
 export function toSVG(scene: Scene, o: SvgOptions = {}): string {
@@ -32,16 +31,14 @@ export function toSVG(scene: Scene, o: SvgOptions = {}): string {
   const sorted: Feature[] = [...scene.features].sort((a, b) => a.zIndex - b.zIndex); // stable
   for (const f of sorted) {
     if (f.kind === "polygon") {
-      if (f.points.length === 0 || f.points.some(([x, y]) => !Number.isFinite(x) || !Number.isFinite(y)))
-        continue;
+      if (!isVisiblePolygon(f)) continue;
       const noFill = hidden(f.fill);
-      if (noFill && f.stroke === undefined) continue;
       const d = `${f.points.map(([x, y], i) => `${i === 0 ? "M" : "L"} ${n(x)} ${n(y)}`).join(" ")} Z`;
       const stroke =
         f.stroke === undefined ? "" : ` stroke="${esc(f.stroke)}" vector-effect="non-scaling-stroke"`;
       body.push(`<path d="${d}" fill="${noFill ? "none" : esc(f.fill)}"${stroke}/>`);
     } else {
-      if (!Number.isFinite(f.x) || !Number.isFinite(f.y) || hidden(f.fill)) continue;
+      if (!isVisibleText(f)) continue;
       // ponytail: font-size = fit-box height, no width fitting; refine in Phase 6
       body.push(
         `<text x="${n(f.x)}" y="${n(-f.y)}" font-family="${esc(f.fontFamily)}" font-size="${n(f.fitBox[1])}" fill="${esc(f.fill)}" text-anchor="middle" dominant-baseline="central" transform="scale(1,-1) rotate(${n(-f.rotation)} ${n(f.x)} ${n(-f.y)})">${esc(f.text)}</text>`,
