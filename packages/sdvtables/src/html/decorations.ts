@@ -2,13 +2,14 @@
 // Later tasks only POPULATE hooks; none adds one. Style hooks return bare declarations — index.ts builds the one style="" (styleOf).
 import { hex6, onColor } from "@sportsdataverse/sdvplot";
 import { TableSpecError } from "../errors.js";
-import { isBlank } from "../format.js";
+import { formatNumber, isBlank, naturalDigits } from "../format.js";
 import { selectRows } from "../predicate.js";
-import type { ColumnSpec, Decoration, TableSpec } from "../spec.js";
+import type { ColumnSpec, Decoration, TableSpec, TextStyle } from "../spec.js";
 import { secondaryOn } from "../themes/sdv.js";
-import type { GoogleFont } from "../themes/tokens.js";
+import { type GoogleFont, fontStack } from "../themes/tokens.js";
 import { type RenderContext, cellValue } from "./cells.js";
-import { escapeHtml, styleAttr } from "./escape.js";
+import { escapeAttr, escapeHtml, styleAttr } from "./escape.js";
+import { SOCIAL_ICONS } from "./social-icons.js";
 export interface DecorationOutput<Row> {
   caption: string;
   headRows: string;
@@ -88,9 +89,66 @@ export function cutlineSvg(text: string, color: string, size: number): string {
     return String(Math.abs(x % 1) === 0.5 && r % 2 !== 0 ? r - 1 : r);
   }; // Python :.0f rounds half to even
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${f0(t.length * (size * 0.8 + tracking) + 4)}" height="${f0(size + 4)}"><text x="0" y="${(size + 0.5).toFixed(1)}" font-family="Helvetica,Arial,sans-serif" font-size="${size}" font-weight="700" letter-spacing="${tracking}" fill="${color}">${esc}</text></svg>`;
-  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg).replace(/[!'()*]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`)}`;
+  return `data:image/svg+xml;charset=utf-8,${pyQuote(svg)}`;
 }
+/** Python `urllib.parse.quote(s, safe="")`: encodeURIComponent also leaves `!'()*` alone. */
+const pyQuote = (x: string): string =>
+  encodeURIComponent(x).replace(/[!'()*]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`);
 const isList = (p: unknown): p is readonly string[] => Array.isArray(p);
+
+// ---- Task 10
+export function textStyleAttr(ts: TextStyle | undefined): string {
+  if (!ts) return "";
+  const s = styleAttr({
+    color: ts.color,
+    "font-size": ts.size,
+    "font-weight": ts.weight,
+    "font-family": ts.font ? fontStack(checkFamily(ts.font)) : undefined,
+    "text-transform": ts.transform === "uppercase" ? "uppercase" : undefined,
+    "font-style": ts.style === "italic" ? "italic" : undefined,
+  });
+  return s ? ` style="${s}"` : "";
+}
+/** A family name lands inside `'…'` in CSS: letters, digits, spaces, `.`, `-`, `_` only. */
+function checkFamily(f: string): string {
+  if (!/^[\w .-]+$/.test(f))
+    throw new TableSpecError(`font family "${f}" may only hold letters, digits, spaces, "." "-" "_"`);
+  return f;
+}
+const ALIGN = new Set(["left", "center", "right"]);
+const checkAlign = (a: string, arg: string): string => {
+  if (!ALIGN.has(a)) throw new TableSpecError(`${arg} must be left, center or right, not "${a}"`);
+  return a;
+};
+/** Python _SCALE_NAMES (_layout.py:1442-1447): only these four divisors have names. */
+const SCALE_NAMES: Readonly<Record<number, readonly [string, string]>> = {
+  1e3: ["thousands", "(000s)"],
+  1e6: ["millions", "(millions)"],
+  1e9: ["billions", "(billions)"],
+  1e12: ["trillions", "(trillions)"],
+};
+/** Python _watermark_svg (_layout.py:251-268): returns the data URI and whether the rotated box is taller than wide. */
+function watermarkSvg(
+  text: string,
+  color: string,
+  opacity: number,
+  angle: number,
+  font: string,
+): [string, boolean] {
+  const label = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const size = 100;
+  const textW = Math.max(label.length * size * 0.62, size);
+  const textH = size * 1.3;
+  const rad = (Math.abs(angle) * Math.PI) / 180;
+  const w = Math.ceil(textW * Math.cos(rad) + textH * Math.sin(rad)) + 4;
+  const h = Math.ceil(textW * Math.sin(rad) + textH * Math.cos(rad)) + 4;
+  const rot = angle !== 0 ? ` transform="rotate(${angle} ${w / 2} ${h / 2})"` : "";
+  const attr = (v: string): string => v.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}"><text x="50%" y="50%" text-anchor="middle" dominant-baseline="central" font-family="${attr(font)}" font-size="${size}" font-weight="700" fill="${attr(color)}" fill-opacity="${opacity}"${rot}>${label}</text></svg>`;
+  return [`data:image/svg+xml,${pyQuote(svg)}`, h > w];
+}
+/** A CSS string body: backslash-escape what could end the string or the <style> element. */
+const cssStr = (v: string): string => v.replace(/[\\"\n\r<]/g, (c) => `\\${c.charCodeAt(0).toString(16)} `);
 
 export function applyDecorations<Row>(
   spec: TableSpec<Row>,
@@ -293,9 +351,145 @@ export function applyDecorations<Row>(
         if (d.includeLabels) out.css.push(`${ctx.sel} th.sdvt-label:not(:last-child){${b}}`);
         break;
       }
+      // ---- Task 10
+      case "titleHeader": {
+        // gt_title_header (_layout.py:121-215): kicker / title / subtitle / date, each with its own style; Python's kicker and date defaults live in the rules below
+        for (const ts of [d.kickerStyle, d.titleStyle, d.subtitleStyle, d.dateStyle])
+          if (ts?.font)
+            out.fonts.push({
+              family: checkFamily(ts.font),
+              weights: [typeof ts.weight === "number" ? ts.weight : 400],
+            });
+        out.css.push(
+          `${ctx.sel} .sdvt-kicker{font-size:0.75em;font-weight:700;color:#C84630;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.15em}`,
+          `${ctx.sel} .sdvt-date{font-size:0.85em;font-weight:400;color:#8A8A8A;margin-top:0.15em}`,
+        );
+        out.caption = `${d.kicker ? `<div class="sdvt-kicker"${textStyleAttr(d.kickerStyle)}>${escapeHtml(d.kicker)}</div>` : ""}<span class="sdvt-title"${textStyleAttr(d.titleStyle)}>${escapeHtml(d.title)}</span>${d.subtitle ? `<span class="sdvt-subtitle"${textStyleAttr(d.subtitleStyle)}>${escapeHtml(d.subtitle)}</span>` : ""}${d.date ? `<div class="sdvt-date"${textStyleAttr(d.dateStyle)}>${escapeHtml(d.date)}</div>` : ""}`;
+        break;
+      }
+      case "caption538": {
+        // gt_538_caption (_cells.py:482-535): the TOP note carries the rule + size, the BOTTOM note the alignment
+        const align = checkAlign(d.align, "caption538 align");
+        if (!d.top && !d.bottom)
+          throw new TableSpecError("caption538: nothing to caption; pass top, bottom, or both");
+        const rule = d.ruleColor ?? ctx.theme.tokens.text;
+        if (d.top)
+          out.foot.push(
+            `<div class="sdvt-cap538" style="${styleAttr({ "border-bottom": `${d.ruleWidth}px solid ${rule}`, "font-size": `${d.size}px` })}">${escapeHtml(d.top)}</div>`,
+          );
+        if (d.bottom)
+          out.foot.push(
+            `<div class="sdvt-cap538" style="${styleAttr({ "text-align": align })}">${escapeHtml(d.bottom)}</div>`,
+          );
+        break;
+      }
+      case "socialTag": {
+        // gt_social_tag (_layout.py:1553-1620): handles behind icons; a caption is a gt_538_caption TOP note (rule + size), the handle line the bottom
+        const align = checkAlign(d.align, "socialTag align");
+        const entries = Object.entries(d.accounts);
+        if (entries.length === 0)
+          throw new TableSpecError("socialTag accounts must be a non-empty {platform: handle} object");
+        const parts = entries.map(([k, handle]) => {
+          const svg = SOCIAL_ICONS[k.toLowerCase()];
+          if (!svg)
+            throw new TableSpecError(
+              `socialTag: unknown platform "${k}"; one of ${Object.keys(SOCIAL_ICONS).join(", ")}`,
+            );
+          return `<span class="sdvt-handle">${svg.replace("<svg ", `<svg style="${styleAttr({ height: d.iconHeight, "vertical-align": "-0.125em", fill: d.iconColor ?? "currentColor" })}" `)}${escapeHtml(handle)}</span>`;
+        });
+        out.css.push(
+          `${ctx.sel} .sdvt-handle{display:inline-flex;align-items:center;gap:0.3em;white-space:nowrap}`,
+        );
+        if (d.caption)
+          out.foot.push(
+            `<div class="sdvt-cap538" style="${styleAttr({ "border-bottom": `1px solid ${ctx.theme.tokens.text}`, "font-size": "12px" })}">${escapeHtml(d.caption)}</div>`,
+          );
+        out.foot.push(
+          `<div class="sdvt-social" style="text-align:${align}">${parts.join(d.stack ? "<br>" : escapeHtml(d.separator))}</div>`,
+        );
+        break;
+      }
+      case "scaleNote": {
+        // gt_scale_note (_layout.py:1495-1515)
+        if (!(Number.isFinite(d.divisor) && d.divisor !== 0))
+          throw new TableSpecError(`scaleNote divisor must be a single non-zero number, got ${d.divisor}`);
+        if (d.columns.length === 0) throw new TableSpecError("scaleNote columns matched no columns");
+        for (const k of d.columns) ctx.scaled.set(k, { divisor: d.divisor, decimals: d.decimals });
+        const named = SCALE_NAMES[d.divisor];
+        const shown = Number.isInteger(d.divisor)
+          ? formatNumber(d.divisor, { digits: 0, big: true })
+          : naturalDigits(d.divisor, true);
+        const note = d.note ?? (named ? `Figures in ${named[0]}.` : `Figures divided by ${shown}.`);
+        const suffix = d.labelSuffix ?? (named ? named[1] : `(÷${shown})`);
+        if (d.where !== "label") out.foot.push(escapeHtml(note));
+        if (d.where !== "sourceNote") {
+          const prev = out.labelSuffix;
+          out.labelSuffix = (key) =>
+            (d.columns as readonly string[]).includes(key) ? ` ${suffix}` : prev(key);
+        }
+        break;
+      }
+      case "borderBars": {
+        // _bars (_cells.py:560-594): no text/img = one full-width bar per color; either = ONE flex bar in the first color holding the text and image (Python)
+        checkAlign(d.barAlign, "borderBars barAlign");
+        if (d.textAlign !== "left" && d.textAlign !== "right")
+          throw new TableSpecError(`borderBars textAlign must be left or right, not "${d.textAlign}"`);
+        const margin = {
+          left: "margin-left:0;margin-right:auto",
+          center: "margin-left:auto;margin-right:auto",
+          right: "margin-left:auto;margin-right:0",
+        }[d.barAlign as "left" | "center" | "right"];
+        let block: string;
+        if (!d.text && !d.img) {
+          const bars = d.colors
+            .map(
+              (c) =>
+                `<div class="sdvt-bar" style="height:${d.barHeight}px;background-color:${escapeAttr(c)}"></div>`,
+            )
+            .join("");
+          block = `<div class="sdvt-bars-box" style="background-color:transparent;width:${escapeAttr(d.barWidth)};${margin}">${bars}</div>`;
+        } else {
+          const text = d.text
+            ? `<span class="sdvt-bars-text" style="${styleAttr({ "font-weight": d.textWeight, color: d.textColor, "font-size": `${d.textSize}px`, [`padding-${d.textAlign}`]: `${d.textPadding}px`, "font-family": "inherit" })}">${escapeHtml(d.text)}</span>`
+            : "<span></span>";
+          const img = d.img
+            ? `<img class="sdvt-bars-img" src="${escapeAttr(d.img)}" alt="" style="${styleAttr({ width: `${d.imgWidth}px`, height: `${d.imgHeight}px`, [`padding-${d.imgAlign}`]: `${d.imgPadding}px` })}">`
+            : "";
+          block = `<div class="sdvt-bars-row" style="display:flex;justify-content:space-between;align-items:center;height:${d.barHeight}px;background-color:${escapeAttr(d.colors[0] ?? "#000")};width:${escapeAttr(d.barWidth)};${margin}">${text}${img}</div>`;
+        }
+        const wrapped = `<div class="sdvt-bars sdvt-bars-${d.side}">${block}</div>`;
+        if (d.side === "top") out.before += wrapped;
+        else out.after += wrapped;
+        break;
+      }
+      case "watermark": {
+        // gt_watermark (_layout.py:271-340); Python reads a local image into a base64 URI, here `image` is a URL used as is
+        if (!d.text === !d.image) throw new TableSpecError("watermark: supply exactly one of text or image");
+        let url: string;
+        let tall = false;
+        let extra = "";
+        if (d.image) {
+          url = cssStr(d.image);
+          extra = `;opacity:${d.opacity}`;
+        } else [url, tall] = watermarkSvg(d.text ?? "", d.color, d.opacity, d.angle, d.font);
+        out.css.push(
+          `${ctx.sel} tbody{background-image:url("${url}");background-repeat:no-repeat;background-position:${d.position};background-size:${tall ? `auto ${d.size}` : `${d.size} auto`}${extra}}`,
+        );
+        break;
+      }
+      case "font": {
+        const stack = fontStack(checkFamily(d.family));
+        if (d.google)
+          out.fonts.push({ family: d.family, weights: [typeof d.weight === "number" ? d.weight : 400] });
+        out.css.push(
+          `${ctx.sel}{--sdvt-font-body:${stack};--sdvt-font-label:${stack};--sdvt-font-title:${stack}${d.weight ? `;--sdvt-body-weight:${d.weight}` : ""}${d.style ? `;font-style:${d.style}` : ""}}`,
+        );
+        break;
+      }
       default:
         break; // title/subtitle (above), groupBy (index.ts); Tasks 9-12 add their cases above this line
     }
+  out.css = out.css.map((r) => r.replace(/</g, "\\3c ")); // nothing a spec says can close the <style> element
   out.rowClass = (i) => (rowClasses.get(i) ?? []).map((c) => ` ${c}`).join("");
   out.rowStyle = (i) => {
     const s = rowStyles.get(i);
