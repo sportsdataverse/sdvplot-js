@@ -76,7 +76,7 @@ test("delta (Python gt_delta: arrows lead the unsigned magnitude; percent divide
     STANDINGS.slice(0, 1),
     { css: "none" },
   );
-  expect(cell(pct, "pf")).toBe("-15.3%"); // (326 − 385) / 385 = −0.1532 → −15.3%
+  expect(cell(pct, "pf")).toBe("−15.3%"); // (326 − 385) / 385 = −0.1532 → −15.3%
   const gap = renderHTML(
     defineTable<Standing>()
       .columns((c) => [c.tally(["wins", "losses"])])
@@ -103,4 +103,20 @@ test("subheader and wrapLabels (Python _strwrap / _balanced)", () => {
   expect(wrapLabel("Points allowed per game", 12, true)).toEqual(["Points", "allowed", "per game"]);
   expect(wrapLabel("Points allowed per game", 12, false)).toEqual(["Points", "allowed per", "game"]);
   expect(wrapLabel("Short", 12, true)).toEqual(["Short"]);
+});
+
+test("int rounds ties half-even like fmt_integer; NaN text never leaks", () => {
+  const html = renderHTML(
+    defineTable<Standing>()
+      .columns((c) => [c.int("pf"), c.text("team")])
+      .build(),
+    [
+      { ...STANDINGS[0]!, pf: 2.5, team: Number.NaN as unknown as string },
+      { ...STANDINGS[0]!, pf: 3.5 },
+    ],
+    { css: "none" },
+  );
+  expect(cell(html, "pf")).toBe("2");
+  expect(cell(html, "pf", 1)).toBe("4");
+  expect(cell(html, "team")).toBe("");
 });

@@ -27,7 +27,7 @@ test("natural digits and format types", () => {
   expect(formatValue(1234, 0, "currency", "")).toBe("$1,234");
   expect(formatValue(null, 1, "number", "M")).toBe("NAM");
   expect(formatNumber(0.071, { digits: 3, forceSign: true })).toBe("+0.071");
-  expect(formatNumber(-3, { digits: 0 })).toBe("-3");
+  expect(formatNumber(-3, { digits: 0 })).toBe("−3");
   expect(formatNumber(0, { digits: 1, forceSign: true })).toBe("0.0");
 });
 test("exact ties round half to even like Python (ruling R2)", () => {
@@ -37,12 +37,12 @@ test("exact ties round half to even like Python (ruling R2)", () => {
   expect(f(0.125, 2)).toBe("0.12");
   expect(f(0.375, 2)).toBe("0.38");
   expect(f(38.5, 0)).toBe("38");
-  expect(f(-2.5, 0)).toBe("-2");
+  expect(f(-2.5, 0)).toBe("−2");
   expect(f(2.675, 2)).toBe("2.67"); // not an exact tie in binary
   expect(f(1234.5, 0)).toBe("1234");
   expect(formatNumber(1234.5, { digits: 0, big: true })).toBe("1,234");
   expect(f(1e21, 2)).toBe("1000000000000000000000.00"); // toFixed would switch to exponent form
-  expect(f(-0.04, 1)).toBe("-0.0"); // Python keeps the sign (_cells.py f-format)
+  expect(f(-0.04, 1)).toBe("−0.0"); // Python keeps the sign (_cells.py f-format)
   expect(pxOf(0.25)).toBe("0.2px");
   expect(pxOf(0.35)).toBe("0.3px"); // Python round(0.35, 1) == 0.3: 0.35 is below the tie in binary
   expect(pxOf(0.15)).toBe("0.1px");
@@ -69,4 +69,9 @@ test("ordinals: 1st 2nd 3rd 4th 11th 12th 13th 21st 22nd 23rd 111th", () => {
     "23rd",
     "111th",
   ]);
+});
+
+test("display minus is U+2212 but CSS px stays ASCII", () => {
+  expect(pxOf(-1.5)).toBe("-1.5px");
+  expect(formatValue(-3, 2, "currency", "M")).toBe("$−3.00M");
 });

@@ -132,3 +132,22 @@ test("mergeStackTeamColor (Python markup); teamColorBar/Bg put their color on th
   // both fail (1.73, 1.19): mix(#000000, #ffb81c, w) for w = 0.95, 0.90, …; the first to clear 4.5:1 is w = 0.60 → #996e11 (4.57:1)
   expect(readableInk("#ffb81c", "#fff000", "#ffffff")).toBe("#996e11");
 });
+
+test("NaN in a team column renders empty in every team-aware kind", async () => {
+  const nan = Number.NaN as unknown as string;
+  const rows = [
+    { ...STANDINGS[0]!, team: nan, division: nan, conf: nan as never, qb: nan, result_last: nan as never },
+  ];
+  const html = await render(
+    defineTable<Standing>()
+      .columns((c) => [
+        c.logo("team", { league: "nfl" }),
+        c.teamColorBar("division", { league: "nfl" }),
+        c.teamColorBg("conf", { league: "nfl" }),
+        c.mergeStackTeamColor("qb", "result_last", "team", { league: "nfl" }),
+      ])
+      .build(),
+    rows,
+  );
+  expect(html).not.toMatch(/NaN/);
+});

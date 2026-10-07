@@ -65,6 +65,12 @@ export function naturalDigits(v: number, big = false): string {
   return fixed(v, frac.length, big);
 }
 
+/**
+ * Sign-glyph rule: great_tables prints negatives from fmt_number/fmt_percent with U+2212, so `formatValue`/`formatNumber`
+ * (display text) swap the ASCII "-" for it. `fixed()`/`naturalDigits()` stay ASCII on purpose: `pxOf` feeds CSS via Number(fixed(...)).
+ */
+const minus = (s: string): string => s.replace(/-/g, "−");
+
 export type FormatType = "number" | "comma" | "currency" | "percent";
 
 /** Python `_format_value` (_cells.py:983-998): a missing value prints `NA`. */
@@ -83,7 +89,7 @@ export function formatValue(
         : fixed(v, digits, big);
   if (formatType === "currency") core = `$${core}`;
   else if (formatType === "percent") core += "%";
-  return core + suffix;
+  return minus(core) + suffix;
 }
 
 export function formatNumber(
@@ -92,7 +98,7 @@ export function formatNumber(
 ): string {
   const body = o.digits === undefined ? naturalDigits(v, o.big ?? false) : fixed(v, o.digits, o.big ?? false);
   const sign = o.forceSign && !body.startsWith("-") && Number(body.replace(/,/g, "")) !== 0 ? "+" : "";
-  return `${o.prefix ?? ""}${sign}${body}${o.suffix ?? ""}`;
+  return `${o.prefix ?? ""}${sign}${minus(body)}${o.suffix ?? ""}`;
 }
 
 /** Python `_ordinal_suffix` (_cells.py:1460) on the truncated integer. */

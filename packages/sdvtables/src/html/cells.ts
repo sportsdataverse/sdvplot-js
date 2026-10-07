@@ -44,6 +44,8 @@ export interface RenderContext<Row> {
   readonly scaled: Map<string, { readonly divisor: number; readonly decimals: number }>;
 }
 export const cellValue = <Row>(row: Row, key: string): unknown => (row as Record<string, unknown>)[key];
+/** Cell text: null/undefined/NaN/blank string render empty, never "NaN". */
+const blankOr = (v: unknown): string => (isBlank(v) ? "" : escapeHtml(v));
 const tableBg = <Row>(ctx: RenderContext<Row>): string =>
   ctx.theme.tokens.bg === "transparent" ? "#ffffff" : hex6(ctx.theme.tokens.bg);
 
@@ -106,7 +108,7 @@ export function teamIdsOf<Row>(
 export function renderCell<Row>(col: ColumnSpec<Row>, row: Row, i: number, ctx: RenderContext<Row>): string {
   switch (col.kind) {
     case "text":
-      return escapeHtml(cellValue(row, col.key));
+      return blankOr(cellValue(row, col.key));
     // ---- Task 6
     case "num":
     case "int": {
@@ -116,7 +118,7 @@ export function renderCell<Row>(col: ColumnSpec<Row>, row: Row, i: number, ctx: 
       if (sc) return escapeHtml(formatNumber(n / sc.divisor, { digits: sc.decimals, big: true }));
       return escapeHtml(
         col.kind === "int"
-          ? formatNumber(Math.round(n), { digits: 0, big: true })
+          ? formatNumber(n, { digits: 0, big: true })
           : formatNumber(n, {
               ...(col.digits !== undefined ? { digits: col.digits } : {}),
               big: col.big ?? false,
@@ -162,7 +164,7 @@ export function renderCell<Row>(col: ColumnSpec<Row>, row: Row, i: number, ctx: 
       const ns = col.keys.map((k) => toNumber(cellValue(row, k)));
       if (ns.some((n) => n === null)) {
         const v = cellValue(row, col.key);
-        return isBlank(v) ? "" : escapeHtml(v);
+        return blankOr(v);
       }
       const xs = ns as number[];
       if (col.share && !(Number.isInteger(col.shareOf) && col.shareOf >= 0 && col.shareOf < xs.length))
@@ -178,7 +180,7 @@ export function renderCell<Row>(col: ColumnSpec<Row>, row: Row, i: number, ctx: 
     case "logo":
     case "wordmark": {
       const raw = cellValue(row, col.key);
-      const text = escapeHtml(raw);
+      const text = blankOr(raw);
       const id = ctx.teamIds.get(col.key)?.[i];
       if (id === undefined) return text; // blank or unknown: text kept; the column's one resolveSync already warned (J28)
       const url = logoUrlSync(id, col.league, {
@@ -197,7 +199,7 @@ export function renderCell<Row>(col: ColumnSpec<Row>, row: Row, i: number, ctx: 
       const raw = cellValue(row, col.key);
       if (isBlank(raw)) return "";
       const url = headshotUrl(String(raw).trim(), col.league, { idSystem: col.idSystem });
-      return url ? markImg(url, String(raw).trim(), checkHeight(col.height, "headshot")) : escapeHtml(raw);
+      return url ? markImg(url, String(raw).trim(), checkHeight(col.height, "headshot")) : blankOr(raw);
     }
     case "mergeStackTeamColor": {
       // gt_merge_stack_team_color (_marks.py:451-475): two divs; the bottom in the team's readable color, #bebebe when unresolved
@@ -209,11 +211,11 @@ export function renderCell<Row>(col: ColumnSpec<Row>, row: Row, i: number, ctx: 
           ? undefined
           : teamColorsSync(col.league, id, { which: "secondary", idSystem: "team_id" });
       const ink = readableInk(p ?? "#bebebe", s, bg);
-      return `<div style="line-height:${col.fontSizeTop - 2}px"><span style="${styleAttr({ "font-weight": "bold", "font-variant": "small-caps", color: col.color, "font-size": `${col.fontSizeTop}px` })}">${escapeHtml(cellValue(row, col.key))}</span></div>\n<div style="line-height:${col.fontSizeBottom - 2}px"><span style="${styleAttr({ "font-weight": "bold", color: ink, "font-size": `${col.fontSizeBottom}px` })}">${escapeHtml(cellValue(row, col.stack))}</span></div>`;
+      return `<div style="line-height:${col.fontSizeTop - 2}px"><span style="${styleAttr({ "font-weight": "bold", "font-variant": "small-caps", color: col.color, "font-size": `${col.fontSizeTop}px` })}">${blankOr(cellValue(row, col.key))}</span></div>\n<div style="line-height:${col.fontSizeBottom - 2}px"><span style="${styleAttr({ "font-weight": "bold", color: ink, "font-size": `${col.fontSizeBottom}px` })}">${blankOr(cellValue(row, col.stack))}</span></div>`;
     }
     case "teamColorBar":
     case "teamColorBg":
-      return escapeHtml(cellValue(row, col.key)); // the color lives on the <td> (kindCellStyle)
+      return blankOr(cellValue(row, col.key)); // the color lives on the <td> (kindCellStyle)
     default:
       throw new TableSpecError(`renderCell: kind ${col.kind} not yet implemented (Tasks 6–8)`); // Task 8 replaces this with the exhaustive `never` check
   }
