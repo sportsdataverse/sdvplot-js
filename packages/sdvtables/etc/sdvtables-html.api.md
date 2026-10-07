@@ -4,6 +4,97 @@
 
 ```ts
 
+import { EspnHeadshotLeague } from '@sportsdataverse/sdvplot';
+import { HeadshotIdSystem } from '@sportsdataverse/sdvplot';
+import { IdSystem } from '@sportsdataverse/sdvplot';
+import { League } from '@sportsdataverse/sdvplot';
+import { SeasonInput } from '@sportsdataverse/sdvplot';
+import { Variant } from '@sportsdataverse/sdvplot';
+import { Which } from '@sportsdataverse/sdvplot';
+
+// @public
+export interface ColumnScale {
+    // (undocumented)
+    readonly color: (v: number) => string | null;
+    // (undocumented)
+    readonly domain: readonly [number, number];
+    // (undocumented)
+    readonly palette: readonly string[];
+    // (undocumented)
+    readonly reverse: boolean;
+    // (undocumented)
+    readonly values: readonly (number | null)[];
+}
+
+// Warning: (ae-forgotten-export) The symbol "ColumnSpec" needs to be exported by the entry point html.d.ts
+//
+// @public (undocumented)
+function labelOf<Row>(col: ColumnSpec<Row>): string;
+export { labelOf as columnLabel }
+export { labelOf }
+
+// Warning: (ae-forgotten-export) The symbol "TableSpec" needs to be exported by the entry point html.d.ts
+//
+// @public
+export function leaguesOf<Row>(spec: TableSpec<Row>): League[];
+
+// @public
+export function prepare<Row>(spec: TableSpec<Row>): Promise<void>;
+
+// @public
+export interface RenderContext<Row> {
+    // (undocumented)
+    readonly columns: readonly ColumnSpec<Row>[];
+    // (undocumented)
+    readonly groupKey: string | undefined;
+    // (undocumented)
+    readonly id: string;
+    readonly recorded: ColumnScale | undefined;
+    // (undocumented)
+    readonly rows: readonly Row[];
+    readonly scaled: Map<string, {
+        readonly divisor: number;
+        readonly decimals: number;
+    }>;
+    readonly scales: ReadonlyMap<string, ColumnScale>;
+    // (undocumented)
+    readonly sel: string;
+    // (undocumented)
+    readonly spec: TableSpec<Row>;
+    readonly teamIds: ReadonlyMap<string, readonly (string | undefined)[]>;
+    // Warning: (ae-forgotten-export) The symbol "Theme" needs to be exported by the entry point html.d.ts
+    //
+    // (undocumented)
+    readonly theme: Theme;
+    // (undocumented)
+    readonly warn: (key: string, message: string) => void;
+}
+
+// @public (undocumented)
+export function renderHTML<Row>(spec: TableSpec<Row>, rows: readonly Row[], opts?: RenderOptions): string;
+
+// @public (undocumented)
+export function renderHTMLAsync<Row>(spec: TableSpec<Row>, rows: readonly Row[], opts?: RenderOptions): Promise<string>;
+
+// @public (undocumented)
+export interface RenderOptions {
+    // (undocumented)
+    readonly css?: "inline" | "none";
+    // (undocumented)
+    readonly fonts?: boolean;
+}
+
+// @public
+export function styleSheet<Row>(spec: TableSpec<Row>, theme?: Theme): string;
+
+// Warning: (ae-forgotten-export) The symbol "ThemeRef" needs to be exported by the entry point html.d.ts
+//
+// @public
+export function themeKey(ref: ThemeRef): string;
+
+// @public (undocumented)
+export function toElement<Row>(spec: TableSpec<Row>, rows: readonly Row[], opts?: RenderOptions): HTMLElement;
+
 // (No @packageDocumentation comment for this package)
 
 ```

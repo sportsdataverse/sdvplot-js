@@ -1,0 +1,91 @@
+// test/html.test.ts
+import { preloadAll, setWarningHandler } from "@sportsdataverse/sdvplot";
+import { beforeAll, expect, test } from "vitest";
+import { defineTable } from "../src/define.js";
+import { TableSpecError } from "../src/errors.js";
+import { renderHTML, styleSheet } from "../src/html/index.js";
+import { THEME_NAMES } from "../src/themes/index.js";
+import { STANDINGS, type Standing } from "./fixtures/standings.js";
+beforeAll(async () => {
+  setWarningHandler(() => {});
+  await preloadAll();
+});
+const base = defineTable<Standing>().columns((c) => [
+  c.text("team"),
+  c.text("qb", { label: "Quarterback", align: "left" }),
+]);
+test("skeleton: wrapper id, scoped style once, caption, th scope, data hooks, escaping (Review Focus 1); no empty tfoot", () => {
+  const html = renderHTML(
+    base.title("AFC <West>").subtitle("Through week 18").build(),
+    STANDINGS.slice(0, 2),
+  );
+  expect(html).toMatch(
+    /^<link rel="stylesheet" href="https:\/\/fonts\.googleapis\.com\/css2\?family=Chivo:wght@500;800&amp;family=Lato:wght@400;700&amp;display=swap">\n<div class="sdvt sdvt-theme-sdv sdvt-t-[0-9a-f]{8}" id="sdvt-[0-9a-f]{8}" data-sdvt-theme="sdv" data-sdvt-density="comfortable"><style>/,
+  );
+  expect(html.match(/<style>/g)?.length).toBe(1);
+  expect(html).toContain(
+    '<caption><span class="sdvt-title">AFC &lt;West&gt;</span><span class="sdvt-subtitle">Through week 18</span></caption>',
+  );
+  expect(html).toContain(
+    '<th scope="col" class="sdvt-label sdvt-left" data-col="team" data-kind="text">Team</th>',
+  );
+  expect(html).toContain(
+    '<th scope="col" class="sdvt-label sdvt-left" data-col="qb" data-kind="text">Quarterback</th>',
+  );
+  expect(html).toContain(
+    '<tr class="sdvt-row" data-row="0"><td class="sdvt-cell sdvt-kind-text sdvt-left" data-col="team">KC</td>',
+  );
+  expect(html).not.toContain("<caption></caption>");
+  expect(html).not.toContain("<tfoot>");
+  expect(renderHTML(base.sourceNote("Source: nflverse").build(), STANDINGS.slice(0, 1))).toContain(
+    '<tfoot><tr><td colspan="2">Source: nflverse</td></tr></tfoot>',
+  );
+  const bad = renderHTML(base.build(), [
+    { ...STANDINGS[0]!, qb: `<img src=x onerror=alert(1)> O'Neal & "Shaq"` },
+  ]);
+  expect(bad).toContain("&lt;img src=x onerror=alert(1)&gt; O&#39;Neal &amp; &quot;Shaq&quot;");
+  expect(bad).not.toContain("<img src=x");
+});
+test("deterministic: same inputs → identical string; JSON round-trip of the spec renders the same", () => {
+  const spec = base.theme("terminal", { density: "compact" }).build();
+  expect(renderHTML(spec, STANDINGS)).toBe(renderHTML(spec, STANDINGS));
+  expect(renderHTML(JSON.parse(JSON.stringify(spec)), STANDINGS)).toBe(renderHTML(spec, STANDINGS));
+});
+test("empty rows render header + empty tbody (Review Focus 4): six themes with last-row/odd-even rules × 0, 1 and 8 rows", () => {
+  for (const name of ["sdv", "midnight", "kenpom", "gtutils", "pl", "tier"])
+    for (const rows of [[], STANDINGS.slice(0, 1), STANDINGS]) {
+      const html = renderHTML(base.theme(name).title("x").build(), rows);
+      expect(html).toContain("<tbody>");
+      expect((html.match(/<tr class="sdvt-row"/g) ?? []).length).toBe(rows.length);
+    }
+});
+test("missing key is TableSpecError before any HTML (Review Focus 5); css:'none' omits style and fonts; styleSheet() is keyed by theme + density + options", () => {
+  expect(() => renderHTML(base.build(), [{ team: "KC" } as unknown as Standing])).toThrow(TableSpecError);
+  expect(() => renderHTML(base.build(), [{ team: "KC" } as unknown as Standing])).toThrow(/column "qb"/);
+  const bare = renderHTML(base.build(), STANDINGS, { css: "none", fonts: false });
+  expect(bare.startsWith("<div class=")).toBe(true);
+  expect(bare).not.toContain("<style>");
+  expect(styleSheet(base.theme("midnight").build())).toContain("--sdvt-bg:#0C0D10;");
+  const kc = styleSheet(base.theme("sdvTeam", { options: { league: "nfl", team: "KC" } }).build());
+  const buf = styleSheet(base.theme("sdvTeam", { options: { league: "nfl", team: "BUF" } }).build());
+  expect(kc.slice(0, kc.indexOf("{"))).not.toBe(buf.slice(0, buf.indexOf("{"))); // two teams on one page do not share a selector
+});
+test("groupBy emits rowgroup headers in first-appearance order", () => {
+  const html = renderHTML(base.groupBy("division").build(), STANDINGS);
+  expect(html).toContain(
+    '<tr class="sdvt-group-row"><th scope="rowgroup" colspan="2" class="sdvt-group">West</th></tr>',
+  );
+  expect(html.indexOf("West")).toBeLessThan(html.indexOf("East"));
+});
+// spec §7: one HTML snapshot per theme (file snapshot: test/__snapshots__/html.test.ts.snap, committed). A later task that
+// changes these snapshots must say why in its commit message.
+test.each([...THEME_NAMES])("theme %s: HTML snapshot (spec §7)", (name) => {
+  const themed =
+    name === "sdvTeam" ? base.theme(name, { options: { league: "nfl", team: "KC" } }) : base.theme(name);
+  expect(
+    renderHTML(
+      themed.title("AFC").subtitle("2024").groupBy("division").sourceNote("Source: nflverse").build(),
+      STANDINGS.slice(3, 6),
+    ),
+  ).toMatchSnapshot();
+});
