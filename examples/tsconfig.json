@@ -1,0 +1,34 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "isolatedDeclarations": false,
+    "declaration": false,
+    "declarationMap": false,
+    "baseUrl": ".",
+    "paths": {
+      "@sportsdataverse/sdvplot": ["../packages/sdvplot/src/index.ts"],
+      "@sportsdataverse/sdvplot/plot": ["../packages/sdvplot/src/plot/index.ts"],
+      "@sportsdataverse/sdvplot/d3": ["../packages/sdvplot/src/d3/index.ts"],
+      "@sportsdataverse/sdvplot/react": ["../packages/sdvplot/src/react/index.tsx"],
+      "@sportsdataverse/sdvplot/testing": ["../packages/sdvplot/src/testing/index.ts"],
+      "@sportsdataverse/sporty": ["../packages/sporty/src/index.ts"],
+      "@sportsdataverse/sporty/svg": ["../packages/sporty/src/svg.ts"],
+      "@sportsdataverse/sporty/specs": ["../packages/sporty/src/specs/index.ts"],
+      "@sportsdataverse/sporty/plot": ["../packages/sporty/src/plot.ts"],
+      "@sportsdataverse/sporty/d3": ["../packages/sporty/src/d3.ts"],
+      "@sportsdataverse/sdvtables": ["../packages/sdvtables/src/index.ts"],
+      "@sportsdataverse/examples/data": ["../examples/src/data.ts"]
+    }
+  },
+  "include": [
+    "sources.ts",
+    "vitest.config.ts",
+    "src",
+    "scripts",
+    "test",
+    "../packages/sdvplot/src/globals.d.ts",
+    "../packages/sporty/src/globals.d.ts",
+    "../packages/sdvtables/src/globals.d.ts"
+  ]
+}
