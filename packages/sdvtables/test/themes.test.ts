@@ -45,7 +45,14 @@ test("every registered theme defines every token at every density (completeness)
         density,
         ...(name === "sdvTeam" ? { options: { league: "nfl" } } : {}),
       });
-      for (const k of TOKEN_KEYS) expect(t.tokens[k], `${name}/${density}/${k}`).toMatch(/\S/);
+      for (const k of TOKEN_KEYS) {
+        const v = t.tokens[k];
+        expect(v, `${name}/${density}/${k}`).toMatch(/\S/);
+        expect(v, `${name}/${density}/${k}`).not.toMatch(/undefined|NaN/);
+        // border tokens (and hline) may legitimately be "none"
+        if (/^(bg|text|muted|accent|rule|pad)$|(Bg|Color|Size|Pad)$/.test(k))
+          expect(v, `${name}/${density}/${k}`).not.toBe("none");
+      }
       expect(t.fonts.every((f) => f.weights.length > 0)).toBe(true);
     }
 });
@@ -146,4 +153,50 @@ test("sdvTeam without a team uses the SportsDataverse colors; dark sdv keeps the
   expect(
     resolveTheme({ name: "sdv", density: "comfortable", options: { style: "dark" } }).tokens.horizon,
   ).toBe("linear-gradient(90deg, #3346F0, #7FE6DC)");
+});
+test("sdvTeam tokens at compact and social density are _marks.size(n, role)'s (KC)", async () => {
+  await preloadAll();
+  const kc = (density: "compact" | "social") =>
+    resolveTheme({ name: "sdvTeam", density, options: { league: "nfl", team: "KC" } }).tokens;
+  const pick = (t: ReturnType<typeof kc>) => [
+    t.titleSize,
+    t.subtitleSize,
+    t.labelSize,
+    t.groupSize,
+    t.sourceSize,
+    t.bodySize,
+    t.headingPad,
+    t.labelPad,
+    t.pad,
+    t.groupPad,
+    t.sourcePad,
+  ];
+  // values from `round(n * k[role], 1):g` with n = 22/14/13/13/12/15 and pad 4/6/7/8/4
+  expect(pick(kc("compact"))).toEqual([
+    "18.6px",
+    "12.1px",
+    "11.7px",
+    "11.8px",
+    "10.9px",
+    "12.9px",
+    "2px",
+    "3px",
+    "3.5px",
+    "4px",
+    "2px",
+  ]);
+  expect(pick(kc("social"))).toEqual([
+    "28.8px",
+    "17.7px",
+    "15.6px",
+    "15.4px",
+    "14.2px",
+    "18.2px",
+    "6px",
+    "9px",
+    "10.5px",
+    "12px",
+    "6px",
+  ]);
+  expect(kc("compact").headingBg).toBe("#e31837");
 });
