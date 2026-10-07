@@ -1,8 +1,9 @@
 // src/html/cells.ts — Task 5 version: the context types + dispatcher + text; Tasks 6–8 add the other kinds in this file
 import { TableSpecError } from "../errors.js";
+import { formatNumber, isBlank, naturalDigits, ordinal, toNumber } from "../format.js";
 import type { ColumnSpec, TableSpec } from "../spec.js";
 import type { Theme } from "../themes/tokens.js";
-import { escapeHtml } from "./escape.js";
+import { escapeAttr, escapeHtml } from "./escape.js";
 /** One scaled column (pills, ranks, percentile), computed once per column by Task 8's columnScales. */
 export interface ColumnScale {
   readonly domain: readonly [number, number];
@@ -31,15 +32,77 @@ export interface RenderContext<Row> {
   readonly scaled: Map<string, { readonly divisor: number; readonly decimals: number }>;
 }
 export const cellValue = <Row>(row: Row, key: string): unknown => (row as Record<string, unknown>)[key];
-export function renderCell<Row>(
-  col: ColumnSpec<Row>,
-  row: Row,
-  _i: number,
-  _ctx: RenderContext<Row>,
-): string {
+export function renderCell<Row>(col: ColumnSpec<Row>, row: Row, i: number, ctx: RenderContext<Row>): string {
   switch (col.kind) {
     case "text":
       return escapeHtml(cellValue(row, col.key));
+    // ---- Task 6
+    case "num":
+    case "int": {
+      const n = toNumber(cellValue(row, col.key));
+      if (n === null) return "";
+      const sc = ctx.scaled.get(col.key); // scaleNote (Task 10): Python fmt_number(scale_by = 1/divisor, decimals) replaces the column's own format
+      if (sc) return escapeHtml(formatNumber(n / sc.divisor, { digits: sc.decimals, big: true }));
+      return escapeHtml(
+        col.kind === "int"
+          ? formatNumber(Math.round(n), { digits: 0, big: true })
+          : formatNumber(n, {
+              ...(col.digits !== undefined ? { digits: col.digits } : {}),
+              big: col.big ?? false,
+              prefix: col.prefix ?? "",
+              suffix: col.suffix ?? "",
+              forceSign: col.forceSign ?? false,
+            }),
+      );
+    }
+    case "pct": {
+      const n = toNumber(cellValue(row, col.key));
+      return n === null
+        ? ""
+        : escapeHtml(`${formatNumber(col.scale ? n * 100 : n, { digits: col.digits })}%`);
+    }
+    case "rank": {
+      const n = toNumber(cellValue(row, col.key));
+      if (n === null) return "";
+      const o = ordinal(n);
+      const num = String(Math.trunc(n));
+      return col.superscript
+        ? `${num}<sup style="font-size:${escapeAttr(col.suffixSize)}">${o.slice(num.length)}</sup>`
+        : escapeHtml(o);
+    }
+    case "delta": {
+      const a = toNumber(cellValue(row, col.key));
+      const b = toNumber(cellValue(row, col.to));
+      if (a === null || b === null) return "";
+      const d = col.percent ? (a === 0 ? null : (b - a) / a) : b - a;
+      if (d === null || !Number.isFinite(d)) return "";
+      const shown = col.arrows ? Math.abs(d) : d;
+      const text = `${col.arrows ? (d > 0 ? "▲ " : d < 0 ? "▼ " : "") : ""}${formatNumber(col.percent ? shown * 100 : shown, { digits: col.decimals, forceSign: col.forceSign && !col.arrows })}${col.percent ? "%" : ""}`;
+      const color = !col.color
+        ? null
+        : d > 0
+          ? col.colorPositive
+          : d < 0
+            ? col.colorNegative
+            : (col.colorNeutral ?? null);
+      return color ? `<span style="color:${escapeAttr(color)}">${escapeHtml(text)}</span>` : escapeHtml(text);
+    }
+    case "tally": {
+      const ns = col.keys.map((k) => toNumber(cellValue(row, k)));
+      if (ns.some((n) => n === null)) {
+        const v = cellValue(row, col.key);
+        return isBlank(v) ? "" : escapeHtml(v);
+      }
+      const xs = ns as number[];
+      if (col.share && !(Number.isInteger(col.shareOf) && col.shareOf >= 0 && col.shareOf < xs.length))
+        throw new TableSpecError(`tally shareOf must index (from 0) one of ${col.keys.join(", ")}`);
+      const text = xs.map((n) => naturalDigits(n)).join(col.separator);
+      const total = xs.reduce((s, n) => s + n, 0);
+      if (!col.share || total === 0) return escapeHtml(text);
+      return escapeHtml(
+        `${text}${col.sharePrefix}${formatNumber(((xs[col.shareOf] ?? 0) / total) * 100, { digits: col.shareDecimals })}%${col.shareSuffix}`,
+      );
+    }
     default:
       throw new TableSpecError(`renderCell: kind ${col.kind} not yet implemented (Tasks 6–8)`); // Task 8 replaces this with the exhaustive `never` check
   }

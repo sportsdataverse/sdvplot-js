@@ -32,6 +32,38 @@ export interface DecorationOutput<Row> {
   /** HTML appended after the rendered cell (significance stars, outlier symbol — Task 11) */
   cellSuffix(i: number, key: string): string;
 }
+// ---- Task 6: R strwrap via Python textwrap.wrap(width - 1) (_layout.py:1813-1815) and _balanced (:1818-1833)
+function strwrap(words: readonly string[], width: number): string[] {
+  const w = Math.max(width - 1, 1);
+  const out: string[] = [];
+  let cur = "";
+  for (const word of words) {
+    if (cur && cur.length + 1 + word.length > w) {
+      out.push(cur);
+      cur = word;
+    } else cur = cur ? `${cur} ${word}` : word;
+  }
+  return cur ? [...out, cur] : out;
+}
+export function wrapLabel(text: string, width: number, balance: boolean): string[] {
+  const words = text.split(/\s+/).filter((x) => x !== "");
+  if (words.length <= 1) return [text];
+  const greedy = strwrap(words, width);
+  if (greedy.length <= 1) return [text];
+  if (!balance) return greedy;
+  const target = Math.ceil(words.reduce((s, x) => s + x.length + 1, 0) / greedy.length);
+  const lines: string[] = [];
+  let cur = "";
+  for (const word of words) {
+    const cand = cur ? `${cur} ${word}` : word;
+    if (cand.length > target && cur) {
+      lines.push(cur);
+      cur = word;
+    } else cur = cand;
+  }
+  return cur ? [...lines, cur] : lines;
+}
+
 export function applyDecorations<Row>(
   spec: TableSpec<Row>,
   _rows: readonly Row[],
@@ -66,6 +98,20 @@ export function applyDecorations<Row>(
   if (title || subtitle)
     out.caption = `${title ? `<span class="sdvt-title">${escapeHtml(title.text)}</span>` : ""}${subtitle ? `<span class="sdvt-subtitle">${escapeHtml(subtitle.text)}</span>` : ""}`;
   for (const d of spec.decorations)
-    if (d.type === "sourceNote") out.foot.push(d.unsafe ? d.html : escapeHtml(d.html));
+    switch (d.type) {
+      case "sourceNote":
+        out.foot.push(d.unsafe ? d.html : escapeHtml(d.html));
+        break;
+      case "wrapLabels": {
+        const prev = out.label;
+        out.label = (col, text) =>
+          !d.columns || d.columns.includes(col.key)
+            ? wrapLabel(text, d.width, d.balance).map(escapeHtml).join("<br>")
+            : prev(col, text);
+        break;
+      }
+      default:
+        break; // title/subtitle (above), groupBy (index.ts); Tasks 9-12 add their cases above this line
+    }
   return out;
 }
