@@ -196,6 +196,11 @@ export function applyDecorations<Row>(
   const addCell = (i: number, key: string, decl: Record<string, string | undefined>): void => {
     cellStyles.set(`${i}:${key}`, { ...cellStyles.get(`${i}:${key}`), ...decl });
   };
+  // Fills go on every <td> (Python applies them as !important cell styles, _cells.py:221): a <tr> background is hidden by the stripe and theme band rules on td
+  const fillCells = (i: number, decl: Record<string, string | undefined>): void => {
+    for (const c of ctx.columns) addCell(i, c.key, decl);
+  };
+  let cutCount = 0; // one id per .cutline() call so two calls never share a class
   const bg = ctx.theme.tokens.bg === "transparent" ? "#ffffff" : hex6(ctx.theme.tokens.bg);
   // colorResults is a column kind (spec §6.1) whose effect is a row fill: gt_color_results (_cells.py:203-222), exact W/L or 1/0
   for (const c of spec.columns)
@@ -206,10 +211,10 @@ export function applyDecorations<Row>(
       rows.forEach((r, i) => {
         const v = cellValue(r, c.key);
         if (isBlank(v)) return;
-        if (eq(v, win)) addRow(i, { "background-color": c.winColor, color: c.winTextColor });
-        else if (eq(v, loss)) addRow(i, { "background-color": c.lossColor, color: c.lossTextColor });
+        if (eq(v, win)) fillCells(i, { "background-color": c.winColor, color: c.winTextColor });
+        else if (eq(v, loss)) fillCells(i, { "background-color": c.lossColor, color: c.lossTextColor });
         else if (c.tieColor !== undefined && eq(v, c.tieValue))
-          addRow(i, { "background-color": c.tieColor, color: c.tieTextColor });
+          fillCells(i, { "background-color": c.tieColor, color: c.tieTextColor });
       });
     }
   for (const d of spec.decorations)
@@ -238,6 +243,8 @@ export function applyDecorations<Row>(
       }
       case "rowAccent": {
         // gt_row_accent (_layout.py:1123-1156): no palette = the column holds the colors; a list maps sorted levels, recycled
+        if (d.side !== "left" && d.side !== "right")
+          throw new TableSpecError(`rowAccent side must be left or right, not ${JSON.stringify(d.side)}`);
         const keys = rows.map((r) => {
           const v = cellValue(r, d.key);
           return isBlank(v) ? null : String(v);
@@ -267,12 +274,13 @@ export function applyDecorations<Row>(
         break;
       }
       case "boldRows":
-        for (const i of selectRows(d.rows, rows))
-          addRow(i, {
-            "font-weight": "bold",
+        for (const i of selectRows(d.rows, rows)) {
+          addRow(i, { "font-weight": "bold" });
+          fillCells(i, {
             color: d.textColor,
             ...(d.highlightColor ? { "background-color": d.highlightColor } : {}),
           });
+        }
         break;
       case "spotlight": {
         // gt_spotlight (_layout.py:1036-1074): no rows → unchanged + warning; `columns` narrows the lit cells, the rest of a lit row dims
@@ -282,11 +290,11 @@ export function applyDecorations<Row>(
           break;
         }
         const dim = d.dimColor === "auto" ? secondaryOn(bg, onColor(bg)) : d.dimColor;
-        const look: Record<string, string> = {
+        const fill: Record<string, string> = {
           ...(d.fill ? { "background-color": d.fill } : {}),
           ...(d.textColor ? { color: d.textColor } : {}),
-          ...(d.bold ? { "font-weight": "bold" } : {}),
         };
+        const look: Record<string, string> = { ...fill, ...(d.bold ? { "font-weight": "bold" } : {}) };
         rows.forEach((_, i) => {
           if (!lit.has(i)) {
             if (dim) addRow(i, { color: dim });
@@ -294,7 +302,8 @@ export function applyDecorations<Row>(
           }
           if (d.accentColor) addRow(i, { "box-shadow": `inset ${d.accentWidth}px 0 0 ${d.accentColor}` });
           if (!d.columns) {
-            addRow(i, look);
+            fillCells(i, fill);
+            if (d.bold) addRow(i, { "font-weight": "bold" });
             return;
           }
           for (const c of ctx.columns)
@@ -316,6 +325,7 @@ export function applyDecorations<Row>(
             `sdvtables:cutline:${ctx.id}:${dropped.join(",")}`,
             `dropped ${dropped.length} cut line(s) at ${dropped.join(", ")}: after must be between 0 and ${n - 1}; a line after the last row is just the table border`,
           );
+        const cn = cutCount++;
         const above = d.gap[0] ?? 0;
         const below = d.gap[d.gap.length - 1] ?? 0;
         d.after.forEach((a, j) => {
@@ -323,19 +333,21 @@ export function applyDecorations<Row>(
           const label = d.label && d.label.length > 0 ? (d.label[j % d.label.length] ?? null) : null;
           const top = d.labelPosition === "below" || a === 0;
           const labelRow = top ? a : a - 1;
-          addClass(a, `sdvt-cut-${j}`);
-          out.css.push(`${ctx.sel} tr.sdvt-cut-${j} td{border-top:${d.weight}px ${d.style} ${d.color}}`);
+          addClass(a, `sdvt-cut-${cn}-${j}`);
+          out.css.push(
+            `${ctx.sel} tr.sdvt-cut-${cn}-${j} td{border-top:${d.weight}px ${d.style} ${d.color}}`,
+          );
           if (above > 0 && a > 0 && !(label && labelRow === a - 1)) {
-            addClass(a - 1, `sdvt-cut-${j}-above`);
-            out.css.push(`${ctx.sel} tr.sdvt-cut-${j}-above td{padding-bottom:${above}px}`);
+            addClass(a - 1, `sdvt-cut-${cn}-${j}-above`);
+            out.css.push(`${ctx.sel} tr.sdvt-cut-${cn}-${j}-above td{padding-bottom:${above}px}`);
           }
           if (below > 0 && !(label && labelRow === a))
-            out.css.push(`${ctx.sel} tr.sdvt-cut-${j} td{padding-top:${below}px}`);
+            out.css.push(`${ctx.sel} tr.sdvt-cut-${cn}-${j} td{padding-top:${below}px}`);
           if (label) {
-            addClass(labelRow, `sdvt-cut-${j}-label`);
+            addClass(labelRow, `sdvt-cut-${cn}-${j}-label`);
             out.css.push(
-              `${ctx.sel} tr.sdvt-cut-${j}-label td{padding-${top ? "top" : "bottom"}:${d.labelSize + 13 + (top ? below : above)}px;background-color:transparent}`,
-              `${ctx.sel} tr.sdvt-cut-${j}-label{background-image:url("${cutlineSvg(label, d.labelColor ?? d.color, d.labelSize)}");background-repeat:no-repeat;background-position:${top ? "left 5px" : "left bottom 5px"}}`,
+              `${ctx.sel} tr.sdvt-cut-${cn}-${j}-label td{padding-${top ? "top" : "bottom"}:${d.labelSize + 13 + (top ? below : above)}px;background-color:transparent}`,
+              `${ctx.sel} tr.sdvt-cut-${cn}-${j}-label{background-image:url("${cutlineSvg(label, d.labelColor ?? d.color, d.labelSize)}");background-repeat:no-repeat;background-position:${top ? "left 5px" : "left bottom 5px"}}`,
             );
           }
         });
@@ -432,6 +444,15 @@ export function applyDecorations<Row>(
       case "borderBars": {
         // _bars (_cells.py:560-594): no text/img = one full-width bar per color; either = ONE flex bar in the first color holding the text and image (Python)
         checkAlign(d.barAlign, "borderBars barAlign");
+        if (d.imgAlign !== "left" && d.imgAlign !== "right")
+          throw new TableSpecError(
+            `borderBars imgAlign must be left or right, not ${JSON.stringify(d.imgAlign)}`,
+          );
+        const barHeight = Number(d.barHeight);
+        if (!Number.isFinite(barHeight))
+          throw new TableSpecError(
+            `borderBars barHeight must be a number, got ${JSON.stringify(d.barHeight)}`,
+          );
         if (d.textAlign !== "left" && d.textAlign !== "right")
           throw new TableSpecError(`borderBars textAlign must be left or right, not "${d.textAlign}"`);
         const margin = {
@@ -444,7 +465,7 @@ export function applyDecorations<Row>(
           const bars = d.colors
             .map(
               (c) =>
-                `<div class="sdvt-bar" style="height:${d.barHeight}px;background-color:${escapeAttr(c)}"></div>`,
+                `<div class="sdvt-bar" style="height:${barHeight}px;background-color:${escapeAttr(c)}"></div>`,
             )
             .join("");
           block = `<div class="sdvt-bars-box" style="background-color:transparent;width:${escapeAttr(d.barWidth)};${margin}">${bars}</div>`;
@@ -455,7 +476,7 @@ export function applyDecorations<Row>(
           const img = d.img
             ? `<img class="sdvt-bars-img" src="${escapeAttr(d.img)}" alt="" style="${styleAttr({ width: `${d.imgWidth}px`, height: `${d.imgHeight}px`, [`padding-${d.imgAlign}`]: `${d.imgPadding}px` })}">`
             : "";
-          block = `<div class="sdvt-bars-row" style="display:flex;justify-content:space-between;align-items:center;height:${d.barHeight}px;background-color:${escapeAttr(d.colors[0] ?? "#000")};width:${escapeAttr(d.barWidth)};${margin}">${text}${img}</div>`;
+          block = `<div class="sdvt-bars-row" style="display:flex;justify-content:space-between;align-items:center;height:${barHeight}px;background-color:${escapeAttr(d.colors[0] ?? "#000")};width:${escapeAttr(d.barWidth)};${margin}">${text}${img}</div>`;
         }
         const wrapped = `<div class="sdvt-bars sdvt-bars-${d.side}">${block}</div>`;
         if (d.side === "top") out.before += wrapped;
