@@ -146,4 +146,60 @@ test("hostile JSON-parsed style fields throw instead of reaching the attribute",
   expect(() => renderHTML(T.borderBars("top", ["#000"], { barHeight: evil }).build(), STANDINGS)).toThrow(
     /barHeight/,
   );
+  // I-2: borderBars side and the six numeric pill / percentile-bar fields reach attributes, so they are checked too
+  expect(() => renderHTML(T.borderBars(evil, ["#000"]).build(), STANDINGS)).toThrow(/borderBars side/);
+  const markup = '1px"><img src=x onerror=alert(2)>';
+  const cols = defineTable<Standing>()
+    .columns((c) => [
+      c.colorPills("wins", { domain: [0, 17], outlineColor: "#000" }),
+      c.percentileBar("srs_rank", { domain: [0, 32], ringColor: "#000" }),
+    ])
+    .build();
+  for (const [j, field] of [
+    [0, "pillHeight"],
+    [0, "outlineWidth"],
+    [1, "trackHeight"],
+    [1, "markerSize"],
+    [1, "fontSize"],
+    [1, "ringWidth"],
+  ] as const) {
+    const spec = JSON.parse(JSON.stringify(cols));
+    spec.columns[j][field] = markup;
+    expect(() => renderHTML(spec, STANDINGS), field).toThrow(new RegExp(`${field} must be a finite number`));
+  }
+});
+test("CSS values (I-3): a spec value cannot leave its declaration or rule; a DATA color in rowAccent warns once and skips its row", () => {
+  const rule = "red}body{display:none}x{";
+  const decl = "red;position:fixed";
+  const throws = (b: typeof T, re: RegExp): void => {
+    expect(() => renderHTML(b.build(), STANDINGS), String(re)).toThrow(re);
+  };
+  throws(T.groupBy("division").groupStripes({ color: rule }), /groupStripes color/);
+  throws(T.cutline(2, { color: rule }), /cutline color/);
+  throws(T.borderGrid({ color: rule }), /borderGrid color/);
+  throws(T.watermark({ text: "x", position: rule }), /watermark position/);
+  throws(T.font("Inter", { weight: rule }), /font weight/);
+  throws(T.borderBars("top", ["#000"], { barWidth: decl }), /borderBars barWidth/);
+  throws(T.boldRows([0], { textColor: decl }), /CSS color/); // a styleAttr value
+  const wide = JSON.parse(JSON.stringify(T.build()));
+  wide.columns[0].width = decl;
+  expect(() => renderHTML(wide, STANDINGS)).toThrow(/column team width/);
+  // DATA: rowAccent without a palette reads its colors from the rows; a bad one is skipped, never thrown
+  const rows = STANDINGS.map((r, i) => ({
+    ...r,
+    accent: i === 1 ? "red;position:fixed;inset:0" : "#123456",
+  }));
+  const spec = defineTable<Standing & { accent: string }>()
+    .columns((c) => [c.text("team")])
+    .rowAccent("accent")
+    .build();
+  const html = renderHTML(spec, rows);
+  expect(html).not.toContain("position:fixed");
+  expect(tr(html, 1)).not.toContain("border-left");
+  expect(tr(html, 0)).toContain("border-left:4px solid #123456");
+  expect(tr(html, 2)).toContain("border-left:4px solid #123456");
+  expect(warnings).toHaveLength(1);
+  expect(warnings[0]).toContain('"red;position:fixed;inset:0" in "accent"');
+  renderHTML(spec, rows);
+  expect(warnings).toHaveLength(1); // J28: the same set again is silent
 });

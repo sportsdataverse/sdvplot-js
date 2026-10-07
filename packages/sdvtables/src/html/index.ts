@@ -10,7 +10,7 @@ import { THEME_NAMES, resolveTheme } from "../themes/index.js";
 import type { GoogleFont, Theme } from "../themes/tokens.js";
 import { type RenderContext, columnScales, kindCellStyle, renderCell, teamIdsOf } from "./cells.js";
 import { applyDecorations } from "./decorations.js";
-import { escapeAttr, escapeHtml, styleOf } from "./escape.js";
+import { cssValue, escapeAttr, escapeHtml, styleOf } from "./escape.js";
 import { fontsLink } from "./fonts.js";
 import { expandTiers, snakeLayout } from "./layout.js";
 
@@ -127,7 +127,7 @@ export function renderHTML<Row>(
   let head = visible
     .map(
       (c) =>
-        `<th scope="col" class="sdvt-label sdvt-${escapeAttr(alignOf(c))}" data-col="${escapeAttr(c.key)}" data-kind="${escapeAttr(c.kind)}"${styleOf([c.width ? `width:${escapeAttr(c.width)}` : "", deco.labelStyle(c.key)])}>${deco.label(c, (deco.labelText.get(c.key) ?? labelOf(c)) + deco.labelSuffix(c.key))}${c.subheader ? `<span class="sdvt-subheader">${escapeHtml(c.subheader)}</span>` : ""}</th>`,
+        `<th scope="col" class="sdvt-label sdvt-${escapeAttr(alignOf(c))}" data-col="${escapeAttr(c.key)}" data-kind="${escapeAttr(c.kind)}"${styleOf([c.width ? `width:${escapeAttr(cssValue(c.width, `column ${c.key} width`))}` : "", deco.labelStyle(c.key)])}>${deco.label(c, (deco.labelText.get(c.key) ?? labelOf(c)) + deco.labelSuffix(c.key))}${c.subheader ? `<span class="sdvt-subheader">${escapeHtml(c.subheader)}</span>` : ""}</th>`,
     )
     .join("");
   const cellsOf = (row: Row, i: number): string =>

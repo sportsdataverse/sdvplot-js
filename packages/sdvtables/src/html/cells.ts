@@ -17,7 +17,7 @@ import { averageRanks, domainOf, ramp } from "../scale.js";
 import type { ColumnSpec, TableSpec } from "../spec.js";
 import { teamNameSync } from "../team-name.js";
 import type { Theme } from "../themes/tokens.js";
-import { escapeAttr, escapeHtml, styleAttr } from "./escape.js";
+import { checkPx, cssValue, escapeAttr, escapeHtml, styleAttr } from "./escape.js";
 /** One scaled column (pills, ranks, percentile), computed once per column by Task 8's columnScales. */
 export interface ColumnScale {
   readonly domain: readonly [number, number];
@@ -212,7 +212,7 @@ export function renderCell<Row>(col: ColumnSpec<Row>, row: Row, i: number, ctx: 
       const o = ordinal(n);
       const num = String(Math.trunc(n));
       return col.superscript
-        ? `${num}<sup style="font-size:${escapeAttr(col.suffixSize)}">${o.slice(num.length)}</sup>`
+        ? `${num}<sup style="font-size:${escapeAttr(cssValue(col.suffixSize, "rank suffixSize"))}">${o.slice(num.length)}</sup>`
         : escapeHtml(o);
     }
     case "delta": {
@@ -230,7 +230,9 @@ export function renderCell<Row>(col: ColumnSpec<Row>, row: Row, i: number, ctx: 
           : d < 0
             ? col.colorNegative
             : (col.colorNeutral ?? null);
-      return color ? `<span style="color:${escapeAttr(color)}">${escapeHtml(text)}</span>` : escapeHtml(text);
+      return color
+        ? `<span style="color:${escapeAttr(cssValue(color, "delta color"))}">${escapeHtml(text)}</span>`
+        : escapeHtml(text);
     }
     case "tally": {
       const ns = col.keys.map((k) => toNumber(cellValue(row, k)));
@@ -293,6 +295,8 @@ export function renderCell<Row>(col: ColumnSpec<Row>, row: Row, i: number, ctx: 
       // gt_color_pills (_cells.py:1203-1225)
       const sc = ctx.scales.get(col.key);
       if (!sc) return "";
+      const pillHeight = checkPx(col.pillHeight, "colorPills pillHeight");
+      const outlineWidth = checkPx(col.outlineWidth, "colorPills outlineWidth");
       const s = sc.values[i] ?? null;
       const width = sc.labelWidth;
       let fill: string;
@@ -308,9 +312,9 @@ export function renderCell<Row>(col: ColumnSpec<Row>, row: Row, i: number, ctx: 
       const ink = col.textColor ?? onColor(solid(fill, tableBg(ctx)));
       const outline =
         col.outlineColor !== undefined
-          ? `;border:${col.outlineWidth}px solid ${escapeAttr(col.outlineColor)}`
+          ? `;border:${outlineWidth}px solid ${escapeAttr(cssValue(col.outlineColor, "colorPills outlineColor"))}`
           : "";
-      return `<span style="display:inline-block;width:${width}ch;padding-left:3px;padding-right:3px;height:${col.pillHeight}px;line-height:${col.pillHeight}px;background-color:${escapeAttr(fill)};color:${escapeAttr(ink)};border-radius:10px;text-align:center${outline}">${escapeHtml(text)}</span>`;
+      return `<span style="display:inline-block;width:${width}ch;padding-left:3px;padding-right:3px;height:${pillHeight}px;line-height:${pillHeight}px;background-color:${escapeAttr(cssValue(fill, "colorPills naColor"))};color:${escapeAttr(cssValue(ink, "colorPills textColor"))};border-radius:10px;text-align:center${outline}">${escapeHtml(text)}</span>`;
     }
     case "colorRanks":
     case "highlight":
@@ -322,26 +326,30 @@ export function renderCell<Row>(col: ColumnSpec<Row>, row: Row, i: number, ctx: 
     case "percentileBar": {
       const sc = ctx.scales.get(col.key);
       const v = sc?.values[i] ?? null;
-      const th = col.trackHeight;
-      const m = col.markerSize;
+      const th = checkPx(col.trackHeight, "percentileBar trackHeight");
+      const m = checkPx(col.markerSize, "percentileBar markerSize");
+      const fontSize = col.fontSize === undefined ? m / 2 : checkPx(col.fontSize, "percentileBar fontSize");
+      const ringWidth = checkPx(col.ringWidth, "percentileBar ringWidth");
+      const trackColor = escapeAttr(cssValue(col.trackColor, "percentileBar trackColor"));
+      const textColor = escapeAttr(cssValue(col.textColor, "percentileBar textColor"));
       if (sc === undefined || v === null) {
         // broken track: flex, so no `left:` anywhere
-        const seg = `<div style="flex:1;height:${th}px;background:${escapeAttr(col.naTrackColor ?? col.trackColor)};border-radius:${th}px"></div>`;
-        return `<div class="sdvt-pbar" style="display:flex;align-items:center;height:${m}px;width:100%">${seg}<span style="margin:0 6px;color:${escapeAttr(col.naTextColor)};font-size:${col.fontSize ?? m / 2}px">${escapeHtml(col.naLabel ?? "")}</span>${seg}</div>`;
+        const seg = `<div style="flex:1;height:${th}px;background:${escapeAttr(cssValue(col.naTrackColor ?? col.trackColor, "percentileBar naTrackColor"))};border-radius:${th}px"></div>`;
+        return `<div class="sdvt-pbar" style="display:flex;align-items:center;height:${m}px;width:100%">${seg}<span style="margin:0 6px;color:${escapeAttr(cssValue(col.naTextColor, "percentileBar naTextColor"))};font-size:${fontSize}px">${escapeHtml(col.naLabel ?? "")}</span>${seg}</div>`;
       }
       const [lo, hi] = sc.domain;
       const clamped = Math.min(hi, Math.max(lo, v));
       const p = Number((hi === lo ? 50 : ((clamped - lo) / (hi - lo)) * 100).toFixed(4));
-      const color = escapeAttr(sc.color(clamped) ?? col.trackColor);
-      const track = `<div style="position:absolute;top:50%;left:0;right:0;height:${th}px;margin-top:-${th / 2}px;background:${escapeAttr(col.trackColor)};border-radius:${th}px"></div>`;
+      const color = sc.color(clamped) ?? trackColor; // ramp output is hex
+      const track = `<div style="position:absolute;top:50%;left:0;right:0;height:${th}px;margin-top:-${th / 2}px;background:${trackColor};border-radius:${th}px"></div>`;
       const fill = col.fullTrack
         ? ""
         : `<div style="position:absolute;top:50%;left:0;width:${p}%;height:${th}px;margin-top:-${th / 2}px;background:${color};border-radius:${th}px"></div>`;
       const ring =
         col.ringColor !== undefined
-          ? `;box-shadow:0 0 0 ${col.ringWidth}px ${escapeAttr(col.ringColor)}`
+          ? `;box-shadow:0 0 0 ${ringWidth}px ${escapeAttr(cssValue(col.ringColor, "percentileBar ringColor"))}`
           : "";
-      const marker = `<div style="position:absolute;top:0;left:${p}%;margin-left:-${m / 2}px;width:${m}px;height:${m}px;border-radius:50%;background:${color};color:${escapeAttr(col.textColor)};font-size:${col.fontSize ?? m / 2}px;line-height:${m}px;text-align:center;font-weight:700;letter-spacing:-0.02em${ring}">${escapeHtml(formatValue(v, col.decimals, "number", ""))}</div>`;
+      const marker = `<div style="position:absolute;top:0;left:${p}%;margin-left:-${m / 2}px;width:${m}px;height:${m}px;border-radius:50%;background:${color};color:${textColor};font-size:${fontSize}px;line-height:${m}px;text-align:center;font-weight:700;letter-spacing:-0.02em${ring}">${escapeHtml(formatValue(v, col.decimals, "number", ""))}</div>`;
       return `<div class="sdvt-pbar" style="position:relative;height:${m}px;width:100%">${track}${fill}${marker}</div>`;
     }
     case "indicatorBox": {

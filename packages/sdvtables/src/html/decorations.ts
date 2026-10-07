@@ -10,7 +10,7 @@ import type { ColumnSpec, Decoration, TableSpec, TextStyle } from "../spec.js";
 import { secondaryOn } from "../themes/sdv.js";
 import { type GoogleFont, fontStack } from "../themes/tokens.js";
 import { type RenderContext, cellValue } from "./cells.js";
-import { escapeAttr, escapeHtml, styleAttr } from "./escape.js";
+import { checkPx, cssValue, escapeAttr, escapeHtml, isCssValue, styleAttr } from "./escape.js";
 import { SOCIAL_ICONS } from "./social-icons.js";
 import { cssStr, cutlineSvg, watermarkSvg } from "./svg.js";
 export interface DecorationOutput<Row> {
@@ -107,12 +107,6 @@ const checkLocation = (l: string, arg: string): "top" | "bottom" => {
   if (l !== "top" && l !== "bottom")
     throw new TableSpecError(`${arg} location must be top or bottom, not ${JSON.stringify(l)}`);
   return l;
-};
-const checkPx = (v: unknown, arg: string): number => {
-  const n = Number(v);
-  if (!Number.isFinite(n))
-    throw new TableSpecError(`${arg} must be a finite number, got ${JSON.stringify(v)}`);
-  return n;
 };
 const ALIGN = new Set(["left", "center", "right"]);
 const checkAlign = (a: string, arg: string): string => {
@@ -218,7 +212,9 @@ export function applyDecorations<Row>(
           if (on(g)) addClass(i, "sdvt-gstripe");
         });
         // Python gt_group_stripes (_cells.py:421-424, 458-463) styles body (+stub) rows only: "Group heading rows are left alone" - the brief striped the header too; Python wins
-        out.css.push(`${ctx.sel} tr.sdvt-gstripe td{background-color:${d.color}}`);
+        out.css.push(
+          `${ctx.sel} tr.sdvt-gstripe td{background-color:${cssValue(d.color, "groupStripes color")}}`,
+        );
         break;
       }
       case "rowAccent": {
@@ -238,18 +234,28 @@ export function applyDecorations<Row>(
               ? k
               : isList(pal)
                 ? pal[levels.indexOf(k) % pal.length]
-                : pal[k],
+                : Object.hasOwn(pal, k)
+                  ? pal[k]
+                  : undefined,
         );
         const keep = d.rows ? new Set(selectRows(d.rows, rows)) : null;
         if (keep && keep.size === 0) {
           ctx.warn(`sdvtables:rowAccent:${ctx.id}`, "rows matched no rows; the table is unchanged");
           break;
         }
+        const unsafe = new Set<string>();
         colors.forEach((c, i) => {
           const fill = c ?? d.naColor;
-          if (fill !== "transparent" && (!keep || keep.has(i)))
-            addRow(i, { [`border-${d.side}`]: `${d.width}px solid ${fill}` });
+          if (fill === "transparent" || (keep && !keep.has(i))) return;
+          // a color read from the DATA (no palette) never throws: warn once per call and skip that row's accent
+          if (pal === undefined && c !== undefined && !isCssValue(c)) unsafe.add(c);
+          else addRow(i, { [`border-${d.side}`]: `${d.width}px solid ${fill}` });
         });
+        if (unsafe.size > 0)
+          ctx.warn(
+            `sdvtables:rowAccent:${ctx.id}:css:${[...unsafe].join(",")}`,
+            `${[...unsafe].map((c) => JSON.stringify(c)).join(", ")} in "${d.key}" cannot be a CSS color, so ${unsafe.size === 1 ? "that row gets" : "those rows get"} no accent`,
+          );
         if (d.hide) out.hiddenColumns.add(d.key);
         break;
       }
@@ -305,6 +311,10 @@ export function applyDecorations<Row>(
             `sdvtables:cutline:${ctx.id}:${dropped.join(",")}`,
             `dropped ${dropped.length} cut line(s) at ${dropped.join(", ")}: after must be between 0 and ${n - 1}; a line after the last row is just the table border`,
           );
+        const color = cssValue(d.color, "cutline color");
+        const style = cssValue(d.style, "cutline style");
+        const weight = checkPx(d.weight, "cutline weight");
+        const labelSize = checkPx(d.labelSize, "cutline labelSize");
         const cn = cutCount++;
         const above = d.gap[0] ?? 0;
         const below = d.gap[d.gap.length - 1] ?? 0;
@@ -314,9 +324,7 @@ export function applyDecorations<Row>(
           const top = d.labelPosition === "below" || a === 0;
           const labelRow = top ? a : a - 1;
           addClass(a, `sdvt-cut-${cn}-${j}`);
-          out.css.push(
-            `${ctx.sel} tr.sdvt-cut-${cn}-${j} td{border-top:${d.weight}px ${d.style} ${d.color}}`,
-          );
+          out.css.push(`${ctx.sel} tr.sdvt-cut-${cn}-${j} td{border-top:${weight}px ${style} ${color}}`);
           if (above > 0 && a > 0 && !(label && labelRow === a - 1)) {
             addClass(a - 1, `sdvt-cut-${cn}-${j}-above`);
             out.css.push(`${ctx.sel} tr.sdvt-cut-${cn}-${j}-above td{padding-bottom:${above}px}`);
@@ -326,8 +334,8 @@ export function applyDecorations<Row>(
           if (label) {
             addClass(labelRow, `sdvt-cut-${cn}-${j}-label`);
             out.css.push(
-              `${ctx.sel} tr.sdvt-cut-${cn}-${j}-label td{padding-${top ? "top" : "bottom"}:${d.labelSize + 13 + (top ? below : above)}px;background-color:transparent}`,
-              `${ctx.sel} tr.sdvt-cut-${cn}-${j}-label{background-image:url("${cutlineSvg(label, d.labelColor ?? d.color, d.labelSize)}");background-repeat:no-repeat;background-position:${top ? "left 5px" : "left bottom 5px"}}`,
+              `${ctx.sel} tr.sdvt-cut-${cn}-${j}-label td{padding-${top ? "top" : "bottom"}:${labelSize + 13 + (top ? below : above)}px;background-color:transparent}`,
+              `${ctx.sel} tr.sdvt-cut-${cn}-${j}-label{background-image:url("${cutlineSvg(label, d.labelColor ?? color, labelSize)}");background-repeat:no-repeat;background-position:${top ? "left 5px" : "left bottom 5px"}}`,
             );
           }
         });
@@ -335,10 +343,11 @@ export function applyDecorations<Row>(
       }
       case "borderGrid": {
         // _cells.py:793-803
-        const b = `border-right:${d.weight}px solid ${d.color}`;
+        const color = cssValue(d.color, "borderGrid color");
+        const b = `border-right:${checkPx(d.weight, "borderGrid weight")}px solid ${color}`;
         out.css.push(
           `${ctx.sel} td.sdvt-cell:not(:last-child){${b}}`,
-          `${ctx.sel} td.sdvt-cell{border-top-color:${d.color}}`,
+          `${ctx.sel} td.sdvt-cell{border-top-color:${color}}`,
         );
         if (d.includeLabels) out.css.push(`${ctx.sel} th.sdvt-label:not(:last-child){${b}}`);
         break;
@@ -423,7 +432,11 @@ export function applyDecorations<Row>(
       }
       case "borderBars": {
         // _bars (_cells.py:560-594): no text/img = one full-width bar per color; either = ONE flex bar in the first color holding the text and image (Python)
+        if (d.side !== "top" && d.side !== "bottom")
+          throw new TableSpecError(`borderBars side must be top or bottom, not ${JSON.stringify(d.side)}`);
         checkAlign(d.barAlign, "borderBars barAlign");
+        const barWidth = escapeAttr(cssValue(d.barWidth, "borderBars barWidth"));
+        const colors = d.colors.map((c) => escapeAttr(cssValue(c, "borderBars colors")));
         if (d.imgAlign !== "left" && d.imgAlign !== "right")
           throw new TableSpecError(
             `borderBars imgAlign must be left or right, not ${JSON.stringify(d.imgAlign)}`,
@@ -442,13 +455,10 @@ export function applyDecorations<Row>(
         }[d.barAlign as "left" | "center" | "right"];
         let block: string;
         if (!d.text && !d.img) {
-          const bars = d.colors
-            .map(
-              (c) =>
-                `<div class="sdvt-bar" style="height:${barHeight}px;background-color:${escapeAttr(c)}"></div>`,
-            )
+          const bars = colors
+            .map((c) => `<div class="sdvt-bar" style="height:${barHeight}px;background-color:${c}"></div>`)
             .join("");
-          block = `<div class="sdvt-bars-box" style="background-color:transparent;width:${escapeAttr(d.barWidth)};${margin}">${bars}</div>`;
+          block = `<div class="sdvt-bars-box" style="background-color:transparent;width:${barWidth};${margin}">${bars}</div>`;
         } else {
           const text = d.text
             ? `<span class="sdvt-bars-text" style="${styleAttr({ "font-weight": d.textWeight, color: d.textColor, "font-size": `${d.textSize}px`, [`padding-${d.textAlign}`]: `${d.textPadding}px`, "font-family": "inherit" })}">${escapeHtml(d.text)}</span>`
@@ -456,7 +466,7 @@ export function applyDecorations<Row>(
           const img = d.img
             ? `<img class="sdvt-bars-img" src="${escapeAttr(d.img)}" alt="" style="${styleAttr({ width: `${d.imgWidth}px`, height: `${d.imgHeight}px`, [`padding-${d.imgAlign}`]: `${d.imgPadding}px` })}">`
             : "";
-          block = `<div class="sdvt-bars-row" style="display:flex;justify-content:space-between;align-items:center;height:${barHeight}px;background-color:${escapeAttr(d.colors[0] ?? "#000")};width:${escapeAttr(d.barWidth)};${margin}">${text}${img}</div>`;
+          block = `<div class="sdvt-bars-row" style="display:flex;justify-content:space-between;align-items:center;height:${barHeight}px;background-color:${colors[0] ?? "#000"};width:${barWidth};${margin}">${text}${img}</div>`;
         }
         const wrapped = `<div class="sdvt-bars sdvt-bars-${d.side}">${block}</div>`;
         if (d.side === "top") out.before += wrapped;
@@ -469,12 +479,14 @@ export function applyDecorations<Row>(
         let url: string;
         let tall = false;
         let extra = "";
+        const opacity = checkPx(d.opacity, "watermark opacity");
         if (d.image) {
           url = cssStr(d.image);
-          extra = `;opacity:${d.opacity}`;
-        } else [url, tall] = watermarkSvg(d.text ?? "", d.color, d.opacity, d.angle, d.font);
+          extra = `;opacity:${opacity}`;
+        } else [url, tall] = watermarkSvg(d.text ?? "", d.color, opacity, d.angle, d.font);
+        const size = cssValue(d.size, "watermark size");
         out.css.push(
-          `${ctx.sel} tbody{background-image:url("${url}");background-repeat:no-repeat;background-position:${d.position};background-size:${tall ? `auto ${d.size}` : `${d.size} auto`}${extra}}`,
+          `${ctx.sel} tbody{background-image:url("${url}");background-repeat:no-repeat;background-position:${cssValue(d.position, "watermark position")};background-size:${tall ? `auto ${size}` : `${size} auto`}${extra}}`,
         );
         break;
       }
@@ -483,7 +495,7 @@ export function applyDecorations<Row>(
         if (d.google)
           out.fonts.push({ family: d.family, weights: [typeof d.weight === "number" ? d.weight : 400] });
         out.css.push(
-          `${ctx.sel}{--sdvt-font-body:${stack};--sdvt-font-label:${stack};--sdvt-font-title:${stack}${d.weight ? `;--sdvt-body-weight:${d.weight}` : ""}${d.style ? `;font-style:${d.style}` : ""}}`,
+          `${ctx.sel}{--sdvt-font-body:${stack};--sdvt-font-label:${stack};--sdvt-font-title:${stack}${d.weight ? `;--sdvt-body-weight:${cssValue(d.weight, "font weight")}` : ""}${d.style ? `;font-style:${cssValue(d.style, "font style")}` : ""}}`,
         );
         break;
       }
@@ -632,7 +644,10 @@ export function applyDecorations<Row>(
         for (const k of d.columns) {
           out.labelText.set(k, d.label);
           if (d.width !== undefined)
-            labelStyles.set(k, `width:${typeof d.width === "number" ? `${d.width}px` : escapeAttr(d.width)}`);
+            labelStyles.set(
+              k,
+              `width:${typeof d.width === "number" ? `${d.width}px` : escapeAttr(cssValue(d.width, "marginalia width"))}`,
+            );
           rows.forEach((_, i) =>
             addCell(i, k, {
               "font-style": d.italic ? "italic" : "normal",
