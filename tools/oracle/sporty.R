@@ -2,9 +2,14 @@
 # Writes fixtures/sporty/<sport>/<league>/layer_<k>.csv (x,y of each geom_polygon layer, in draw order), text_<k>.csv (each
 # ggfittext layer: box centre x,y + label + angle; its own counter) + bbox_<range>.csv
 suppressPackageStartupMessages({ library(sportyR); library(ggplot2) })
+# LF on every OS: a text-mode file on Windows gets CRLF, and parity.test.ts (which splits on LF) would keep the CR in the fill column.
+write.csv <- function(x, file, ...) { con <- base::file(file, "wb"); on.exit(close(con)); utils::write.csv(x, con, ...) }
+writeLines <- function(text, con) { f <- base::file(con, "wb"); on.exit(close(f)); base::writeLines(text, f) }
 args <- commandArgs(trailingOnly = TRUE); sports <- if (length(args)) args else c("basketball", "hockey", "football")
 root <- file.path(dirname(dirname(dirname(normalizePath(sub("--file=", "", grep("--file=", commandArgs(), value = TRUE)))))), "fixtures", "sporty")
-geoms <- list(basketball = geom_basketball, hockey = geom_hockey, football = geom_football)
+geoms <- list(basketball = geom_basketball, hockey = geom_hockey, football = geom_football,
+              soccer = geom_soccer, baseball = geom_baseball, tennis = geom_tennis,
+              volleyball = geom_volleyball, curling = geom_curling, lacrosse = geom_lacrosse)
 dims <- sportyR:::surface_dimensions
 # Gate (spec §7): the installed sportyR's data must equal the vendored JSON the TS specs are generated from. Every
 # ported sport is checked (not only the requested ones) because VERSION records the sha256 of the whole file.
@@ -18,6 +23,13 @@ for (sport in union(sports, names(geoms))) {
 ranges <- list(basketball = c("full", "in bounds only", "offense", "defense", "offensive key", "defensive paint"),
                hockey = c("full", "in bounds only", "offense", "defense", "nzone", "ozone", "dzone"),
                football = c("full", "in bounds only", "offense", "defense", "red zone", "offensive red zone", "defensive red zone"))
+ranges$volleyball <- c("full", "in bounds only", "offense", "defense")
+ranges$soccer <- c("full", "in bounds only", "offense", "defense", "offensive half pitch", "defensive half pitch")
+# "receivicehalf" is sportyR's own spelling; the correct "receive half" is not in its switch (R maps it to full), so it gets no fixture
+ranges$tennis <- c("full", "in bounds only", "serve", "receive", "receivicehalf", "receiving half")
+ranges$baseball <- c("full", "infield")
+ranges$curling <- c("full", "in bounds only", "house")
+ranges$lacrosse <- c("full", "in bounds only", "offense", "defense")
 for (sport in sports) for (league in setdiff(names(dims[[sport]]), "custom")) {
   dir <- file.path(root, sport, gsub(" ", "_", league)); dir.create(dir, recursive = TRUE, showWarnings = FALSE)
   g <- geoms[[sport]](league = league)
