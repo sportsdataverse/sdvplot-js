@@ -1,0 +1,6 @@
+x,y,fill
+ 0.5,-42.5,#ffffff
+-0.5,-42.5,#ffffff
+-0.5, 42.5,#ffffff
+ 0.5, 42.5,#ffffff
+ 0.5,-42.5,#ffffff
