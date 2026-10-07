@@ -44,7 +44,16 @@ test("exact ties round half to even like Python (ruling R2)", () => {
   expect(f(1e21, 2)).toBe("1000000000000000000000.00"); // toFixed would switch to exponent form
   expect(f(-0.04, 1)).toBe("-0.0"); // Python keeps the sign (_cells.py f-format)
   expect(pxOf(0.25)).toBe("0.2px");
+  expect(pxOf(0.35)).toBe("0.3px"); // Python round(0.35, 1) == 0.3: 0.35 is below the tie in binary
+  expect(pxOf(0.15)).toBe("0.1px");
+  expect(pxOf(0.45)).toBe("0.5px");
   expect(pxOf(10.04)).toBe("10px");
+});
+test("more than 100 decimals never throws and matches Python", () => {
+  expect(naturalDigits(1e-101)).toBe(`0.${"0".repeat(100)}1`);
+  expect(naturalDigits(5e-324)).toMatch(/^0\.0{300,}4940656$/);
+  expect(formatNumber(1.5, { digits: 101 })).toBe(`1.5${"0".repeat(100)}`);
+  expect(formatNumber(1e-101, { digits: 101 })).toBe(`0.${"0".repeat(100)}1`);
 });
 test("ordinals: 1st 2nd 3rd 4th 11th 12th 13th 21st 22nd 23rd 111th", () => {
   expect([1, 2, 3, 4, 11, 12, 13, 21, 22, 23, 111].map(ordinal)).toEqual([

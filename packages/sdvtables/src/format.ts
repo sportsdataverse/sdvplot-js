@@ -23,36 +23,37 @@ export function toNumber(v: unknown): number | null {
   return Number.isNaN(n) ? null : n;
 }
 
-/** Round half to even (an exact `x.5` goes to the even neighbour), as Python's `round`. */
-export function roundHalfEven(x: number): number {
-  const f = Math.floor(x);
-  const d = x - f;
-  return d < 0.5 ? f : d > 0.5 ? f + 1 : f % 2 === 0 ? f : f + 1;
-}
-
 const group = (s: string): string => s.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
+/** `|x|` rounded to `digits` decimals as an integer string of `x * 10^digits`, exact on the double's binary value, ties to even. */
+function scaledDigits(a: number, digits: number): string {
+  const dv = new DataView(new ArrayBuffer(8));
+  dv.setFloat64(0, a);
+  const bits = dv.getBigUint64(0);
+  const biased = Number((bits >> 52n) & 0x7ffn);
+  const frac = bits & ((1n << 52n) - 1n);
+  const m = biased === 0 ? frac : frac | (1n << 52n);
+  const e = (biased === 0 ? 1 : biased) - 1075; // a = m * 2^e
+  const num = m * 10n ** BigInt(digits);
+  if (e >= 0) return (num << BigInt(e)).toString();
+  const k = BigInt(-e);
+  let q = num >> k;
+  const r = num & ((1n << k) - 1n);
+  const half = 1n << (k - 1n);
+  if (r > half || (r === half && (q & 1n) === 1n)) q += 1n;
+  return q.toString();
+}
+
 /**
- * Python `f"{v:,.{digits}f}"`: fixed decimals, exact ties to even, sign kept even when the result rounds to zero (`-0.04` -> `-0.0`).
- * ponytail: tie detection reads the exact expansion to `digits + 60` places, which is exact while `digits` stays below ~13 (an
- * unrounded double has at most ~53 + 3.4 * digits significant decimals); raise the cap or go BigInt if wider output is ever needed.
+ * Python `f"{v:,.{digits}f}"`: fixed decimals for any `digits`, exact ties to even, sign kept even when the result rounds to zero
+ * (`-0.04` -> `-0.0`). Pure BigInt on the double's exact binary value, so no `toFixed` 100-digit cap or exponent form at 1e21.
  */
 function fixed(v: number, digits: number, big: boolean): string {
   if (!Number.isFinite(v)) return Number.isNaN(v) ? "nan" : v > 0 ? "inf" : "-inf";
-  const a = Math.abs(v);
-  let s: string;
-  if (a >= 1e21) {
-    s = BigInt(a).toString() + (digits > 0 ? `.${"0".repeat(digits)}` : ""); // toFixed switches to exponent form here; these doubles are integers
-  } else {
-    s = a.toFixed(digits); // ties go up
-    const [ti = "0", tf = ""] = a.toFixed(Math.min(100, digits + 60)).split(".");
-    if (tf[digits] === "5" && /^0*$/.test(tf.slice(digits + 1))) {
-      const down = digits > 0 ? `${ti}.${tf.slice(0, digits)}` : ti; // truncation = the round-down neighbour
-      if (Number(down.slice(-1)) % 2 === 0) s = down;
-    }
-  }
-  const [i = "0", f] = s.split(".");
-  return (v < 0 || Object.is(v, -0) ? "-" : "") + (big ? group(i) : i) + (f ? `.${f}` : "");
+  const s = scaledDigits(Math.abs(v), digits).padStart(digits + 1, "0");
+  const i = s.slice(0, s.length - digits);
+  const f = s.slice(s.length - digits);
+  return (v < 0 || Object.is(v, -0) ? "-" : "") + (big ? group(i) : i) + (digits > 0 ? `.${f}` : "");
 }
 
 /** Python `_natural` (_cells.py:974-980): decimals = what `f"{v:.7g}"` needs (up to 7 significant figures), then `v` itself is printed with them. */
@@ -102,4 +103,4 @@ export function ordinal(n: number): string {
   return `${Math.trunc(n)}${suf}`;
 }
 
-export const pxOf = (n: number): string => `${roundHalfEven(n * 10) / 10}px`;
+export const pxOf = (n: number): string => `${Number(fixed(n, 1, false))}px`;
