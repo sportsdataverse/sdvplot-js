@@ -24,6 +24,8 @@ ranges <- list(basketball = c("full", "in bounds only", "offense", "defense", "o
                hockey = c("full", "in bounds only", "offense", "defense", "nzone", "ozone", "dzone"),
                football = c("full", "in bounds only", "offense", "defense", "red zone", "offensive red zone", "defensive red zone"))
 ranges$soccer <- c("full", "in bounds only", "offense", "defense", "offensive half pitch", "defensive half pitch")
+# "receivicehalf" is sportyR's own spelling; the correct "receive half" is not in its switch (R maps it to full), so it gets no fixture
+ranges$tennis <- c("full", "in bounds only", "serve", "receive", "receivicehalf", "receiving half")
 for (sport in sports) for (league in setdiff(names(dims[[sport]]), "custom")) {
   dir <- file.path(root, sport, gsub(" ", "_", league)); dir.create(dir, recursive = TRUE, showWarnings = FALSE)
   g <- geoms[[sport]](league = league)

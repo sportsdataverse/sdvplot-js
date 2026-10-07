@@ -9,6 +9,8 @@ import { BASKETBALL_LEAGUES } from "../src/specs/basketball.js";
 import { FOOTBALL_LEAGUES } from "../src/specs/football.js";
 import { HOCKEY_LEAGUES } from "../src/specs/hockey.js";
 import { SOCCER_LEAGUES } from "../src/specs/soccer.js";
+import { TENNIS_LEAGUES } from "../src/specs/tennis.js";
+import { tennisCourt } from "../src/tennis/court.js";
 type Build = (
   league: string,
   opts?: {
@@ -24,6 +26,7 @@ const SURFACES: [sport: string, leagues: readonly string[], build: Build][] = [
   ["hockey", HOCKEY_LEAGUES, hockeyRink as Build],
   ["football", FOOTBALL_LEAGUES, footballField as Build],
   ["soccer", SOCCER_LEAGUES, soccerPitch as Build],
+  ["tennis", TENNIS_LEAGUES, tennisCourt as Build],
 ];
 /** toBeCloseTo(v, 9) ⇔ |Δ| < 5e-10; asserted once per layer (max over its points) to keep the suite fast. */
 const TOL = 5e-10;
