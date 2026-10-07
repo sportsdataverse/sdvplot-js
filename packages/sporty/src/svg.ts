@@ -1,4 +1,5 @@
 import { type Color, type Feature, type Scene, hidden, isVisiblePolygon, isVisibleText } from "./scene.js";
+import { fmt, pathData } from "./svg-arcs.js";
 
 export interface SvgOptions {
   width?: number;
@@ -6,6 +7,8 @@ export interface SvgOptions {
   background?: Color;
   precision?: number;
   id?: string;
+  /** `"sampled"` (default) emits every point as `L`; `"svg"` replaces detected circle runs with `A` commands. */
+  arcs?: "sampled" | "svg";
 }
 
 const esc = (s: string): string =>
@@ -15,11 +18,7 @@ const esc = (s: string): string =>
 export function toSVG(scene: Scene, o: SvgOptions = {}): string {
   const [x0, y0, x1, y1] = scene.bbox;
   const p = o.precision ?? 4;
-  const n = (v: number): string => {
-    const t0 = v.toFixed(p);
-    const t = t0.includes(".") ? t0.replace(/\.?0+$/, "") : t0;
-    return t === "-0" || t === "" ? "0" : t;
-  };
+  const n = (v: number): string => fmt(v, p);
   const w = o.width ?? 800;
   const h = o.height ?? Math.round((w * (y1 - y0)) / (x1 - x0));
   const bg = o.background ?? scene.background;
@@ -33,7 +32,7 @@ export function toSVG(scene: Scene, o: SvgOptions = {}): string {
     if (f.kind === "polygon") {
       if (!isVisiblePolygon(f)) continue;
       const noFill = hidden(f.fill);
-      const d = `${f.points.map(([x, y], i) => `${i === 0 ? "M" : "L"} ${n(x)} ${n(y)}`).join(" ")} Z`;
+      const d = pathData(f.points, o.arcs ?? "sampled", p);
       const stroke =
         f.stroke === undefined ? "" : ` stroke="${esc(f.stroke)}" vector-effect="non-scaling-stroke"`;
       body.push(`<path d="${d}" fill="${noFill ? "none" : esc(f.fill)}"${stroke}/>`);
