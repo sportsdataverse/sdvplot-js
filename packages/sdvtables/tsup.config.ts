@@ -1,7 +1,8 @@
 import { defineConfig } from "tsup";
 import pkg from "./package.json" with { type: "json" };
 export default defineConfig({
-  entry: { index: "src/index.ts" },
+  entry: { index: "src/index.ts", html: "src/html/index.ts" },
+  external: ["@sportsdataverse/sdvplot"],
   format: ["esm"],
   dts: true,
   sourcemap: true,

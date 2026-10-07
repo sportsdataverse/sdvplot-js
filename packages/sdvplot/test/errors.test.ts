@@ -7,6 +7,7 @@ import {
   setWarningHandler,
   warn,
 } from "../src/errors.js";
+import * as barrel from "../src/index.js";
 
 beforeEach(() => {
   resetWarnings();
@@ -28,4 +29,7 @@ test("warn fires once per key", () => {
   warn("nfl:XXX", "1 value(s) did not resolve");
   warn("nfl:YYY", "other");
   expect(spy).toHaveBeenCalledTimes(2);
+});
+test("warn is public: sdvtables shares the once-per-key channel", () => {
+  expect(barrel.warn).toBe(warn);
 });
