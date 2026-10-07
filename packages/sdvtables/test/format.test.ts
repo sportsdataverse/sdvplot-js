@@ -71,7 +71,7 @@ test("ordinals: 1st 2nd 3rd 4th 11th 12th 13th 21st 22nd 23rd 111th", () => {
   ]);
 });
 
-test("display minus is U+2212 but CSS px stays ASCII", () => {
+test("formatNumber minus is U+2212, formatValue and CSS px stay ASCII", () => {
   expect(pxOf(-1.5)).toBe("-1.5px");
-  expect(formatValue(-3, 2, "currency", "M")).toBe("$−3.00M");
+  expect(formatValue(-3, 2, "currency", "M")).toBe("$-3.00M");
 });

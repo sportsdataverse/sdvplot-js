@@ -66,8 +66,8 @@ export function naturalDigits(v: number, big = false): string {
 }
 
 /**
- * Sign-glyph rule: great_tables prints negatives from fmt_number/fmt_percent with U+2212, so `formatValue`/`formatNumber`
- * (display text) swap the ASCII "-" for it. `fixed()`/`naturalDigits()` stay ASCII on purpose: `pxOf` feeds CSS via Number(fixed(...)).
+ * Sign-glyph rule: great_tables prints negatives from fmt_number/fmt_percent with U+2212, so `formatNumber` (num/int/pct/delta cells)
+ * swaps the ASCII "-" for it. `formatValue` ports Python `_format_value` (pill/box/bar labels), which prints a plain "-", and does NOT. `fixed()`/`naturalDigits()` stay ASCII on purpose: `pxOf` feeds CSS via Number(fixed(...)).
  */
 const minus = (s: string): string => s.replace(/-/g, "−");
 
@@ -89,7 +89,7 @@ export function formatValue(
         : fixed(v, digits, big);
   if (formatType === "currency") core = `$${core}`;
   else if (formatType === "percent") core += "%";
-  return minus(core) + suffix;
+  return core + suffix; // ASCII minus on purpose (_cells.py:983-998); only formatNumber uses U+2212
 }
 
 export function formatNumber(
