@@ -23,6 +23,7 @@ for (sport in union(sports, names(geoms))) {
 ranges <- list(basketball = c("full", "in bounds only", "offense", "defense", "offensive key", "defensive paint"),
                hockey = c("full", "in bounds only", "offense", "defense", "nzone", "ozone", "dzone"),
                football = c("full", "in bounds only", "offense", "defense", "red zone", "offensive red zone", "defensive red zone"))
+ranges$volleyball <- c("full", "in bounds only", "offense", "defense")
 ranges$soccer <- c("full", "in bounds only", "offense", "defense", "offensive half pitch", "defensive half pitch")
 # "receivicehalf" is sportyR's own spelling; the correct "receive half" is not in its switch (R maps it to full), so it gets no fixture
 ranges$tennis <- c("full", "in bounds only", "serve", "receive", "receivicehalf", "receiving half")

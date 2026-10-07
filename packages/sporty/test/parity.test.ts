@@ -17,6 +17,8 @@ import { LACROSSE_LEAGUES } from "../src/specs/lacrosse.js";
 import { SOCCER_LEAGUES } from "../src/specs/soccer.js";
 import { TENNIS_LEAGUES } from "../src/specs/tennis.js";
 import { tennisCourt } from "../src/tennis/court.js";
+import { VOLLEYBALL_LEAGUES } from "../src/specs/volleyball.js";
+import { volleyballCourt } from "../src/volleyball/court.js";
 type Build = (
   league: string,
   opts?: {
@@ -36,6 +38,7 @@ const SURFACES: [sport: string, leagues: readonly string[], build: Build][] = [
   ["baseball", BASEBALL_LEAGUES, baseballField as Build],
   ["curling", CURLING_LEAGUES, curlingSheet as Build],
   ["lacrosse", LACROSSE_LEAGUES, lacrosseField as Build],
+  ["volleyball", VOLLEYBALL_LEAGUES, volleyballCourt as Build],
 ];
 /** toBeCloseTo(v, 9) ⇔ |Δ| < 5e-10; asserted once per layer (max over its points) to keep the suite fast. */
 const TOL = 5e-10;
