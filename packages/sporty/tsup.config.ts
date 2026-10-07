@@ -7,6 +7,7 @@ export default defineConfig({
     svg: "src/svg.ts",
     plot: "src/plot.ts",
     d3: "src/d3.ts",
+    canvas: "src/canvas.ts",
     "specs/index": "src/specs/index.ts",
   },
   external: ["@observablehq/plot", "d3"],

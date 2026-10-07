@@ -40,6 +40,7 @@ import { appendSurface } from "@sportsdataverse/sporty/d3";
 | `@sportsdataverse/sporty/svg` | `toSVG` |
 | `@sportsdataverse/sporty/specs` | generated parameter specs for all sports |
 | `@sportsdataverse/sporty/plot` | `surfaceMark`, `surfaceScales`, `sceneToGeoJSON` (optional peer `@observablehq/plot`) |
+| `@sportsdataverse/sporty/canvas` | `drawScene`, `SceneCanvasContext` (DOM-free; takes a browser 2D context or an `@napi-rs/canvas` one in Node) |
 | `@sportsdataverse/sporty/d3` | `appendSurface` (optional peer `d3`) |
 
 ## Ported sports

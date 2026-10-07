@@ -12,6 +12,7 @@
     "./svg": { "types": "./dist/svg.d.ts", "import": "./dist/svg.js" },
     "./specs": { "types": "./dist/specs/index.d.ts", "import": "./dist/specs/index.js" },
     "./plot": { "types": "./dist/plot.d.ts", "import": "./dist/plot.js" },
+    "./canvas": { "types": "./dist/canvas.d.ts", "import": "./dist/canvas.js" },
     "./d3": { "types": "./dist/d3.d.ts", "import": "./dist/d3.js" },
     "./package.json": "./package.json"
   },
