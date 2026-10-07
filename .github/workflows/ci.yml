@@ -21,3 +21,4 @@ jobs:
       - run: pnpm api:check
       - run: pnpm pack:check
       - run: pnpm docs:build
+        env: { NODE_OPTIONS: "--max-old-space-size=6144" }

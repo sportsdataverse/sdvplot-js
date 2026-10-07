@@ -2,7 +2,7 @@
 title: Basketball (NBA / WNBA / NCAA)
 ---
 
-Both snippets run unchanged in an Observable notebook (`import {…} from "@sportsdataverse/sdvplot/plot"`) and in Node (`Plot.plot({document, …})`).
+These snippets run as written in an Observable notebook, where `Plot` is preloaded (drop the `import * as Plot` line there). In Node, pass a DOM `document` to `Plot.plot({ document, … })`; see [Node and SSR](../intro.mdx#node-and-ssr).
 
 ## Shot chart — court in team colours, dots, team colour scale
 
@@ -13,8 +13,13 @@ import { logos, surface, teamColor } from "@sportsdataverse/sdvplot/plot";
 import { toSurfaceFrame } from "@sportsdataverse/sporty";
 
 await loadLeague("nba");
+
 // stats.nba.com shots: columns x_legacy/y_legacy (the frame's defaults), tenths of a foot from the hoop.
 // Every shot lands on the -x half, so draw the defensive half only: displayRange "defense".
+const rawShots = [
+  { x_legacy: 10, y_legacy: 120, team: "LAL", made: true },
+  { x_legacy: -50, y_legacy: 230, team: "BOS", made: false },
+];
 const shots = toSurfaceFrame(rawShots, { from: "nba-legacy" });
 const court = surface("nba", { team: "LAL", displayRange: "defense" });
 Plot.plot({
@@ -37,6 +42,11 @@ import { loadLeague } from "@sportsdataverse/sdvplot";
 import { axisLogos, teamColor } from "@sportsdataverse/sdvplot/plot";
 
 await loadLeague("nba");
+const standings = [
+  { team: "LAL", wins: 14 },
+  { team: "BOS", wins: 11 },
+  { team: "GSW", wins: 7 },
+];;
 Plot.plot({
   height: 300,
   marks: [
