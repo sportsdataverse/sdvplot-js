@@ -59,3 +59,18 @@ export interface SurfaceOptions<U, C extends string, D extends string> {
   ylim?: readonly [number, number];
   arcResolution?: number;
 }
+
+/** `#rrggbb00`-style colors (alpha 00) hide a feature. */
+export const hidden = (c: Color): boolean => c.length === 9 && c.endsWith("00");
+
+/** Mirrors toSVG's polygon skips: no points, a non-finite point, or a hidden fill with no stroke. */
+export function isVisiblePolygon(f: PolygonFeature): boolean {
+  if (f.points.length === 0 || f.points.some(([x, y]) => !Number.isFinite(x) || !Number.isFinite(y)))
+    return false;
+  return !(hidden(f.fill) && f.stroke === undefined);
+}
+
+/** Mirrors toSVG's text skips: a non-finite anchor or a hidden fill. */
+export function isVisibleText(f: TextFeature): boolean {
+  return Number.isFinite(f.x) && Number.isFinite(f.y) && !hidden(f.fill);
+}

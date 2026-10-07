@@ -3,13 +3,13 @@ import { join, resolve, sep } from "node:path";
 import { parquetReadObjects } from "hyparquet";
 import { compressors } from "hyparquet-compressors";
 import Papa from "papaparse";
+import { MANIFEST_URL } from "../../packages/sdvplot/src/manifest.js";
 import { CHECKSUMS, checksumsText, verifyChecksums } from "./checksums.js";
 import { ARCHIVE_BASE, HEADER, emitConstModule, leagueFirstSeason } from "./emit.js";
 import { type ManifestRow, leagueMarks, manifestVariants, safeArchive } from "./marks.js";
 
 const PY = resolve(process.env.SDVPLOT_PY_REPO ?? "../sdvplot");
 const OUT = resolve("packages/sdvplot/src/data");
-const MANIFEST_URL = "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/manifest/marks.csv";
 const PLAYERS_URL = "https://github.com/nflverse/nflverse-data/releases/download/players/players.parquet";
 const MIN_MANIFEST_ROWS = 10_000; // sanity floor: today 44,462; below this the fetch is truncated/empty
 const MIN_GSIS_IDS = 1_000; // sanity floor: today ~3k+

@@ -3,8 +3,8 @@ import { type ColorOptions, palette } from "../colors.js";
 import { type EspnHeadshotLeague, HEADSHOT_ASPECT, headshotUrl, loadGsis } from "../headshots.js";
 import { getLeagueSync, loadLeague } from "../index-data.js";
 import { type LogoUrlOptions, logoUrlSync } from "../marks.js";
-import { type Value, resolveSync } from "../resolve.js";
-import type { HeadshotIdSystem, League, MarkType, Variant } from "../types.js";
+import { type ResolveOptions, type Value, resolveSync } from "../resolve.js";
+import type { HeadshotIdSystem, League, MarkType, TeamId, Variant } from "../types.js";
 
 type ImgProps = Omit<ImgHTMLAttributes<HTMLImageElement>, "src" | "alt" | "height" | "width">;
 
@@ -129,4 +129,26 @@ export function useTeamColors(
     };
   }, [league, which]);
   return colors;
+}
+
+/** Sync resolver `(value, opts?) => TeamId | undefined` once the league is loaded (`undefined` before); reloads when `league` changes. */
+export function useResolve(
+  league: League,
+): ((value: Value, opts?: ResolveOptions) => TeamId | undefined) | undefined {
+  const [ready, setReady] = useState<League | undefined>();
+  useEffect(() => {
+    let live = true;
+    setReady(undefined);
+    loadLeague(league)
+      .then(() => {
+        if (live) setReady(league);
+      })
+      .catch(() => {
+        if (live) setReady(undefined);
+      });
+    return () => {
+      live = false;
+    };
+  }, [league]);
+  return ready === undefined ? undefined : (value, opts) => resolveSync(value, ready, opts);
 }

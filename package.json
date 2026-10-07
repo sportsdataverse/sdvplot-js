@@ -13,6 +13,7 @@
     "typecheck": "pnpm -r --filter './packages/*' typecheck",
     "api:check": "pnpm -r --filter './packages/*' api:check",
     "pack:check": "pnpm -r --filter './packages/*' pack:check",
+    "docs:build": "pnpm --filter docs build",
     "build:index": "tsx tools/build-index/index.ts",
     "vendor": "tsx tools/vendor/index.ts",
     "codegen": "tsx tools/codegen/index.ts",

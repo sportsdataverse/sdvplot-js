@@ -13,6 +13,36 @@ const url = await logoUrl("KC", "nfl"); // CDN logo URL
 // React: import { TeamLogo } from "@sportsdataverse/sdvplot/react"; <TeamLogo team="KC" league="nfl" size={32} />
 ```
 
+A shot chart with Observable Plot (needs `@observablehq/plot` and `@sportsdataverse/sporty`, both optional peers):
+
+```js
+import * as Plot from "@observablehq/plot";
+import { loadLeague } from "@sportsdataverse/sdvplot";
+import { logos, surface, teamColor } from "@sportsdataverse/sdvplot/plot";
+import { toSurfaceFrame } from "@sportsdataverse/sporty";
+
+await loadLeague("nba");
+
+// stats.nba.com shots: columns x_legacy/y_legacy (the frame's defaults), tenths of a foot from the hoop.
+// Every shot lands on the -x half, so draw the defensive half only: displayRange "defense".
+const rawShots = [
+  { x_legacy: 10, y_legacy: 120, team: "LAL", made: true },
+  { x_legacy: -50, y_legacy: 230, team: "BOS", made: false },
+];
+const shots = toSurfaceFrame(rawShots, { from: "nba-legacy" });
+const court = surface("nba", { team: "LAL", displayRange: "defense" });
+Plot.plot({
+  ...court.scales,
+  width: 940,
+  color: teamColor("nba", { values: shots.map((s) => s.team) }),
+  marks: [
+    ...court.marks,
+    Plot.dot(shots, { x: "surface_x", y: "surface_y", fill: "team", r: 5 }),
+    logos(shots, { league: "nba", x: "surface_x", y: "surface_y", team: "team", height: 0.08 }),
+  ],
+});
+```
+
 `resolveSync`, `teamColorsSync`, `logoUrlSync` and `selectMarkSync` are available once `loadLeague(league)` (or `preloadAll()`) has run.
 `headshotUrl` is sync; gsis ids additionally need `loadGsis()` (or `preloadAll()`) first — the nflverse map is its own ~3 MB chunk, loaded only on demand. Mark rows never store `archive_url`: it is derived from `sha256` + `ext` at load time, so only the content-addressed CDN URL can ever reach a page.
 
@@ -20,8 +50,11 @@ const url = await logoUrl("KC", "nfl"); // CDN logo URL
 
 | Import | Contents |
 | --- | --- |
-| `@sportsdataverse/sdvplot` | `resolve`, `suggest`, `teams`, `palette`, `teamColors`, `logoUrl`, `marks`, `selectMark`, `selectMarkSync`, `headshotUrl`, `loadGsis`, contrast helpers (`hex6`, `luminance`, `contrast`, `onColor`, `mix`, `solid`), `versions`, errors, types |
-| `@sportsdataverse/sdvplot/react` | `TeamLogo`, `Wordmark`, `Headshot`, `useTeamColors` (React >= 18, optional peer) |
+| `@sportsdataverse/sdvplot` | `resolve`, `suggest`, `teams`, `rowsFrom`, `palette`, `teamColors`, `logoUrl`, `marks` (`full: true` fetches the whole manifest lazily), `selectMark`, `selectMarkSync`, `place`, `placeSync`, `prepareTiers`, `headshotUrl`, `loadGsis`, contrast helpers (`hex6`, `luminance`, `contrast`, `onColor`, `mix`, `solid`), `versions`, errors, types |
+| `@sportsdataverse/sdvplot/react` | `TeamLogo`, `Wordmark`, `Headshot`, `useTeamColors`, `useResolve` (React >= 18, optional peer) |
+| `@sportsdataverse/sdvplot/plot` | Observable Plot marks and scales: `logos`, `wordmarks`, `headshots`, `axisLogos`, `teamColor`/`teamFill`, `meanLines`/`medianLines`, `titleImage`, `teamTiers`, `surface` (optional peers `@observablehq/plot`, `@sportsdataverse/sporty`) |
+| `@sportsdataverse/sdvplot/d3` | `appendLogos`, `appendWordmarks`, `appendHeadshots`, `teamColorScale`, `appendSurface` (optional peers `d3`, `@sportsdataverse/sporty`) |
+| `@sportsdataverse/sdvplot/testing` | Adapter-contract suite for renderer adapters: `checkAdapterContract`, `drawnMarks`, `drawnAxisMarks`, `visibleAxisLabels` |
 
 ## Data provenance
 

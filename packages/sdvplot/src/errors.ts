@@ -6,6 +6,7 @@ export class SdvplotError extends Error {
 }
 export class InputError extends SdvplotError {}
 export class UnresolvedTeamError extends SdvplotError {}
+export class UnsupportedTargetError extends SdvplotError {}
 export class OfflineError extends SdvplotError {}
 export class DownloadError extends OfflineError {
   constructor(

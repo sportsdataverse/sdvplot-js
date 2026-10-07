@@ -94,6 +94,19 @@ export function teamColorsSync<T extends Value | readonly Value[]>(
   ) as ColorResult<T>;
 }
 
+/** Both colours for ONE team from a single resolve (one warning if unresolved). Internal: not in the barrel. */
+export function teamColorPairSync(
+  league: League,
+  team: Value,
+  opts: Omit<ColorOptions, "which"> = {},
+): { primary: string | undefined; secondary: string | undefined } {
+  checkLeague(league);
+  const id = resolveSync(team, league, opts) as string | undefined;
+  const pick = (col: "color_primary" | "color_secondary") =>
+    id === undefined ? undefined : colorMap(league, col).get(id);
+  return { primary: pick("color_primary"), secondary: pick("color_secondary") };
+}
+
 export async function teamColors<T extends Value | readonly Value[]>(
   league: League,
   teams: T,

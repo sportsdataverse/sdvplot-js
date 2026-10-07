@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import type { Alias } from "../../packages/sdvplot/src/data/index.js";
+import { type Alias, archiveUrl } from "../../packages/sdvplot/src/data/index.js";
 import { type ManifestRow, leagueMarks, manifestVariants, markAliases, safeArchive } from "./marks.js";
 
 const al = (value: string, team_id: string, valid_from: number | null, valid_to: number | null): Alias => ({
@@ -18,13 +18,18 @@ const mf = (o: Partial<ManifestRow>): ManifestRow => ({
   valid_from: "",
   valid_to: "",
   source: "espn",
-  sha256: "a",
+  sha256: "a".repeat(64),
   ext: "png",
   width: "",
   height: "",
-  archive_url: "u",
+  archive_url: archiveUrl("a".repeat(64), "png"),
   first_seen: "2024-01-01",
   ...o,
+});
+/** A row whose sha/url are the 64-hex repeat of one hex digit (rows must pass safeArchive). */
+const sha = (c: string): Pick<ManifestRow, "sha256" | "archive_url"> => ({
+  sha256: c.repeat(64),
+  archive_url: archiveUrl(c.repeat(64), "png"),
 });
 
 test("markAliases drops ambiguous values and keeps unique ones", () => {
@@ -53,7 +58,7 @@ test("leagueMarks intersects manifest and alias ranges", () => {
 test("leagueMarks dedups per (team,type,variant,range), keeping the best-ranked source", () => {
   const rows = leagueMarks(
     "nfl",
-    [mf({ source: "wayback", sha256: "w" }), mf({ source: "espn", sha256: "e" })],
+    [mf({ source: "wayback", ...sha("b") }), mf({ source: "espn", ...sha("c") })],
     [al("espn:1", "A", null, null), al("wayback:1", "A", null, null)],
   );
   expect(rows).toHaveLength(1);

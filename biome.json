@@ -8,7 +8,10 @@
       "**/src/specs/**",
       "packages/sporty/data/**",
       "fixtures/**",
-      "**/*.api.md"
+      "**/*.api.md",
+      "docs/build/**",
+      "docs/.docusaurus/**",
+      "docs/docs/api/**"
     ]
   },
   "formatter": { "indentStyle": "space", "indentWidth": 2, "lineWidth": 110 },

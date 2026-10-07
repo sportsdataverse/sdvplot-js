@@ -1,5 +1,13 @@
 {
   "extends": "../../tsconfig.base.json",
-  "compilerOptions": { "jsx": "react-jsx" },
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "@sportsdataverse/sporty": ["../sporty/src/index.ts"],
+      "@sportsdataverse/sporty/plot": ["../sporty/src/plot.ts"],
+      "@sportsdataverse/sporty/d3": ["../sporty/src/d3.ts"]
+    }
+  },
   "include": ["src", "test"]
 }

@@ -2,7 +2,14 @@ import { defineConfig } from "tsup";
 import pkg from "./package.json" with { type: "json" };
 
 export default defineConfig({
-  entry: { index: "src/index.ts", svg: "src/svg.ts", "specs/index": "src/specs/index.ts" },
+  entry: {
+    index: "src/index.ts",
+    svg: "src/svg.ts",
+    plot: "src/plot.ts",
+    d3: "src/d3.ts",
+    "specs/index": "src/specs/index.ts",
+  },
+  external: ["@observablehq/plot", "d3"],
   format: ["esm"],
   dts: true,
   sourcemap: true,

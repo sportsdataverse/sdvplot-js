@@ -6,7 +6,20 @@
     "reportFolder": "<projectFolder>/etc",
     "reportTempFolder": "<projectFolder>/temp"
   },
-  "docModel": { "enabled": false },
-  "dtsRollup": { "enabled": false },
-  "messages": { "extractorMessageReporting": { "ae-missing-release-tag": { "logLevel": "none" } } }
+  "docModel": {
+    "enabled": false
+  },
+  "dtsRollup": {
+    "enabled": false
+  },
+  "messages": {
+    "extractorMessageReporting": {
+      "ae-missing-release-tag": {
+        "logLevel": "none"
+      }
+    }
+  },
+  "compiler": {
+    "tsconfigFilePath": "<projectFolder>/tsconfig.api.json"
+  }
 }

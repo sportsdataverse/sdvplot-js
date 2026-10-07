@@ -19,6 +19,12 @@ export interface Alias {
 }
 
 // @public (undocumented)
+export function checkAlpha(alpha: unknown): number;
+
+// @public (undocumented)
+export function checkHeight(height: unknown): number;
+
+// @public (undocumented)
 export interface ColorOptions extends ResolveOptions {
     // (undocumented)
     which?: Which;
@@ -26,6 +32,9 @@ export interface ColorOptions extends ResolveOptions {
 
 // @public (undocumented)
 export type ColorResult<T> = T extends readonly Value[] ? (string | undefined)[] : string | undefined;
+
+// @public
+export function compareMarks(a: Rankable, b: Rankable): number;
 
 // @public
 export function contrast(a: string, b: string): number;
@@ -58,6 +67,11 @@ export type EspnHeadshotLeague = keyof typeof ESPN_HEADSHOT_LEAGUES;
 export const EXPLICIT_ONLY: readonly ["nhl_id"];
 
 // @public
+export function fetchManifest(o?: {
+    fetch?: typeof fetch;
+}): Promise<ManifestRow[]>;
+
+// @public
 export const HEADSHOT_ASPECT: number;
 
 // @public (undocumented)
@@ -82,6 +96,9 @@ export const INDEX_VERSION: string;
 // @public (undocumented)
 export class InputError extends SdvplotError {
 }
+
+// @public (undocumented)
+export type Kind = "logo" | "wordmark" | "headshot";
 
 // @public (undocumented)
 export const latestSeason: (league: League) => number | null;
@@ -126,6 +143,44 @@ export function logoUrlSync(team: Value, league: League, o?: LogoUrlOptions): st
 export function luminance(color: string): number;
 
 // @public (undocumented)
+export const MANIFEST_URL = "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/manifest/marks.csv";
+
+// @public
+export function manifestMarks(league: string, rows: readonly ManifestRow[], aliases: readonly Alias[]): MarkRow[];
+
+// @public (undocumented)
+export interface ManifestRow {
+    // (undocumented)
+    archive_url: string;
+    // (undocumented)
+    entity_id: string;
+    // (undocumented)
+    ext: string;
+    // (undocumented)
+    first_seen: string;
+    // (undocumented)
+    height: string;
+    // (undocumented)
+    league: string;
+    // (undocumented)
+    level: string;
+    // (undocumented)
+    mark_type: string;
+    // (undocumented)
+    sha256: string;
+    // (undocumented)
+    source: string;
+    // (undocumented)
+    valid_from: string;
+    // (undocumented)
+    valid_to: string;
+    // (undocumented)
+    variant: string;
+    // (undocumented)
+    width: string;
+}
+
+// @public (undocumented)
 export interface MarkRow {
     // (undocumented)
     archive_url: string;
@@ -159,6 +214,8 @@ export interface MarkRow {
 export function marks(team: Value, league: League, o?: {
     season?: SeasonInput;
     idSystem?: IdSystem;
+    full?: boolean;
+    fetch?: typeof fetch;
 }): Promise<readonly MarkRow[]>;
 
 // @public (undocumented)
@@ -193,10 +250,74 @@ export function onColor(background: string): string;
 export function palette(league: League, teams?: Value | readonly Value[], opts?: ColorOptions): Promise<Record<string, string>>;
 
 // @public
+export function parseManifestCsv(text: string): ManifestRow[];
+
+// @public (undocumented)
+export function place(xs: readonly Value[], ys: readonly Value[], teams: readonly Value[], o: PlaceOptions): Promise<Placement[]>;
+
+// @public
+export interface Placement {
+    // (undocumented)
+    aspect: number | null;
+    // (undocumented)
+    id: string;
+    // (undocumented)
+    index: number;
+    // (undocumented)
+    mark: MarkRow | null;
+    // (undocumented)
+    url: string;
+    // (undocumented)
+    x: Value;
+    // (undocumented)
+    y: Value;
+}
+
+// @public (undocumented)
+export interface PlaceOptions {
+    idSystem?: IdSystem | HeadshotIdSystem;
+    // (undocumented)
+    kind?: Kind;
+    // (undocumented)
+    league: League;
+    // (undocumented)
+    season?: SeasonInput | readonly SeasonInput[];
+    // (undocumented)
+    strict?: boolean;
+    // (undocumented)
+    variant?: Variant;
+    // (undocumented)
+    warn?: boolean;
+}
+
+// @public
+export function placeSync(xs: readonly Value[], ys: readonly Value[], teams: readonly Value[], o: PlaceOptions): Placement[];
+
+// @public
 export function preloadAll(): Promise<void>;
+
+// @public
+export function prepareTiers(rows: readonly TierRow[], league: League, o?: TiersOptions): Tiers;
 
 // @public (undocumented)
 export const PRIORITY: readonly ["team_id", "espn", "espn_abbr", "nhl", "nflverse", "mlbstats", "nba_api", "hockeytech", "ncaa", "pff", "cricinfo", "cfbd", "bref", "sportsipy", "fangraphs", "sdvplotr", "name"];
+
+// @public (undocumented)
+export interface Rankable {
+    // (undocumented)
+    first_seen: string;
+    // (undocumented)
+    sha256: string;
+    // (undocumented)
+    source_rank: number;
+    // (undocumented)
+    valid_from: number | null;
+    // (undocumented)
+    valid_to: number | null;
+}
+
+// @public (undocumented)
+export function resetManifestCache(): void;
 
 // @public (undocumented)
 export function resetWarnings(): void;
@@ -219,6 +340,9 @@ export interface ResolveOptions {
 
 // @public (undocumented)
 export function resolveSync<T extends Value | readonly Value[]>(values: T, league: League, opts?: ResolveOptions): Resolved<T>;
+
+// @public
+export function rowsFrom(columns: Record<string, readonly unknown[]>): Record<string, unknown>[];
 
 // @public (undocumented)
 export class SdvplotError extends Error {
@@ -301,7 +425,104 @@ export type TeamId = string & {
 export function teams(league?: League): Promise<readonly Team[]>;
 
 // @public (undocumented)
+export const TIER_DESC: Readonly<Record<number, string>>;
+
+// @public (undocumented)
+export const TIER_THEMES: {
+    readonly dark: {
+        readonly bg: "#1e1e1e";
+        readonly line: "#e0e0e0";
+        readonly text: "#ffffff";
+        readonly muted: "#8e8e93";
+    };
+    readonly light: {
+        readonly bg: "#ffffff";
+        readonly line: "#3a3a3c";
+        readonly text: "#1e1e1e";
+        readonly muted: "#636366";
+    };
+};
+
+// @public (undocumented)
+export interface TierRow {
+    // (undocumented)
+    team: Value;
+    // (undocumented)
+    tier_no?: Value;
+    // (undocumented)
+    tier_rank?: Value;
+    // (undocumented)
+    tierNo?: Value;
+    // (undocumented)
+    tierRank?: Value;
+}
+
+// @public (undocumented)
+export interface Tiers {
+    // (undocumented)
+    alpha: number;
+    // (undocumented)
+    breakLabels: string[];
+    // (undocumented)
+    breaks: number[];
+    // (undocumented)
+    caption: string | null;
+    // (undocumented)
+    height: number;
+    // (undocumented)
+    labels: string[];
+    // (undocumented)
+    lines: number[];
+    // (undocumented)
+    subtitle: string | null;
+    // (undocumented)
+    teamIds: TeamId[];
+    // (undocumented)
+    theme: (typeof TIER_THEMES)[keyof typeof TIER_THEMES];
+    // (undocumented)
+    title: string;
+    // (undocumented)
+    variant: Variant;
+    // (undocumented)
+    x: number[];
+    // (undocumented)
+    xlim: [number, number];
+    // (undocumented)
+    y: number[];
+    // (undocumented)
+    ylim: [number, number];
+}
+
+// @public (undocumented)
+export const TIERS_SUBTITLE = "created with the #sdvplot Tiermaker";
+
+// @public (undocumented)
+export interface TiersOptions {
+    // (undocumented)
+    alpha?: number;
+    // (undocumented)
+    caption?: string | null;
+    height?: number;
+    // (undocumented)
+    noLineBelowTier?: number | readonly number[];
+    // (undocumented)
+    presort?: boolean;
+    subtitle?: string | null;
+    // (undocumented)
+    theme?: "dark" | "light";
+    // (undocumented)
+    tierDesc?: Readonly<Record<number, string>>;
+    title?: string | null;
+    // (undocumented)
+    variant?: Variant | "auto";
+}
+
+// @public (undocumented)
 export class UnresolvedTeamError extends SdvplotError {
+}
+
+// @public (undocumented)
+export class UnsupportedTargetError extends SdvplotError {
 }
 
 // @public (undocumented)
@@ -331,6 +552,9 @@ export type Which = "primary" | "secondary";
 
 // @public (undocumented)
 export function wnbaHeadshotUrl(id: string | number): string;
+
+// @public
+export function wrapLabel(text: string): string;
 
 // (No @packageDocumentation comment for this package)
 
