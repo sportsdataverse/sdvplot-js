@@ -1,0 +1,48 @@
+---
+title: Basketball (NBA / WNBA / NCAA)
+---
+
+Both snippets run unchanged in an Observable notebook (`import {…} from "@sportsdataverse/sdvplot/plot"`) and in Node (`Plot.plot({document, …})`).
+
+## Shot chart — court in team colours, dots, team colour scale
+
+```js
+import * as Plot from "@observablehq/plot";
+import { loadLeague } from "@sportsdataverse/sdvplot";
+import { logos, surface, teamColor } from "@sportsdataverse/sdvplot/plot";
+import { toSurfaceFrame } from "@sportsdataverse/sporty";
+
+await loadLeague("nba");
+// stats.nba.com shots: columns x_legacy/y_legacy (the frame's defaults), tenths of a foot from the hoop.
+// Every shot lands on the -x half, so draw the defensive half only: displayRange "defense".
+const shots = toSurfaceFrame(rawShots, { from: "nba-legacy" });
+const court = surface("nba", { team: "LAL", displayRange: "defense" });
+Plot.plot({
+  ...court.scales,
+  width: 940,
+  color: teamColor("nba", { values: shots.map((s) => s.team) }),
+  marks: [
+    ...court.marks,
+    Plot.dot(shots, { x: "surface_x", y: "surface_y", fill: "team", r: 5 }),
+    logos(shots, { league: "nba", x: "surface_x", y: "surface_y", team: "team", height: 0.08 }),
+  ],
+});
+```
+
+## Standings — bars with logos on the axis
+
+```js
+import * as Plot from "@observablehq/plot";
+import { loadLeague } from "@sportsdataverse/sdvplot";
+import { axisLogos, teamColor } from "@sportsdataverse/sdvplot/plot";
+
+await loadLeague("nba");
+Plot.plot({
+  height: 300,
+  marks: [
+    Plot.barY(standings, { x: "team", y: "wins", fill: "team" }),
+    axisLogos("x", { league: "nba", height: 0.12 }),
+  ],
+  color: teamColor("nba", { values: standings.map((s) => s.team) }),
+});
+```

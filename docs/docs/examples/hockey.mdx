@@ -1,0 +1,47 @@
+---
+title: Hockey (NHL / PWHL)
+---
+
+Both snippets run unchanged in an Observable notebook (`import {…} from "@sportsdataverse/sdvplot/plot"`) and in Node (`Plot.plot({document, …})`).
+
+## Shot chart — rink in team colours, dots, team colour scale
+
+```js
+import * as Plot from "@observablehq/plot";
+import { loadLeague } from "@sportsdataverse/sdvplot";
+import { logos, surface, teamColor } from "@sportsdataverse/sdvplot/plot";
+import { toSurfaceFrame } from "@sportsdataverse/sporty";
+
+await loadLeague("nhl");
+// HockeyTech events: default input columns x/y on the 850x400 canvas; the frame maps onto the whole rink.
+const shots = toSurfaceFrame(events, { from: "hockeytech-a" });
+const court = surface("nhl", { team: "BOS" });
+Plot.plot({
+  ...court.scales,
+  width: 940,
+  color: teamColor("nhl", { values: shots.map((s) => s.team) }),
+  marks: [
+    ...court.marks,
+    Plot.dot(shots, { x: "surface_x", y: "surface_y", fill: "team", r: 5 }),
+    logos(shots, { league: "nhl", x: "surface_x", y: "surface_y", team: "team", height: 0.08 }),
+  ],
+});
+```
+
+## Standings — bars with logos on the axis
+
+```js
+import * as Plot from "@observablehq/plot";
+import { loadLeague } from "@sportsdataverse/sdvplot";
+import { axisLogos, teamColor } from "@sportsdataverse/sdvplot/plot";
+
+await loadLeague("nhl");
+Plot.plot({
+  height: 300,
+  marks: [
+    Plot.barY(standings, { x: "team", y: "wins", fill: "team" }),
+    axisLogos("x", { league: "nhl", height: 0.12 }),
+  ],
+  color: teamColor("nhl", { values: standings.map((s) => s.team) }),
+});
+```
