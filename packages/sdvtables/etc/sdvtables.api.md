@@ -13,6 +13,19 @@ import { SeasonInput } from '@sportsdataverse/sdvplot';
 import { Variant } from '@sportsdataverse/sdvplot';
 import { Which } from '@sportsdataverse/sdvplot';
 
+// @public
+export interface Alias {
+    // (undocumented)
+    readonly note?: string;
+    // (undocumented)
+    readonly status: "ported" | "phase-5" | "not-ported";
+    // (undocumented)
+    readonly target: string;
+}
+
+// @public
+export const aliasFor: (name: string) => Alias | undefined;
+
 // @public (undocumented)
 export type Align = "left" | "center" | "right";
 
@@ -463,11 +476,29 @@ export type DecorationType = Decoration<never>["type"];
 // @public (undocumented)
 export function defineTable<Row>(): TableBuilder<Row>;
 
+// Warning: (ae-forgotten-export) The symbol "DensitySizes" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export const DENSITY: Readonly<Record<Density, DensitySizes>>;
+
 // @public (undocumented)
 export type Density = "comfortable" | "compact" | "social";
 
 // @public (undocumented)
 export type FormatType = "number" | "comma" | "currency" | "percent";
+
+// @public (undocumented)
+export interface GoogleFont {
+    // (undocumented)
+    readonly family: string;
+    // (undocumented)
+    readonly italic?: boolean;
+    // (undocumented)
+    readonly weights: readonly number[];
+}
+
+// @public
+export const GT_ALIASES: Readonly<Record<string, Alias>>;
 
 // @public (undocumented)
 export function matches<Row>(p: Predicate<Row>, row: Row): boolean;
@@ -476,6 +507,9 @@ export function matches<Row>(p: Predicate<Row>, row: Row): boolean;
 export type NumericKey<Row> = {
     [K in keyof Row]-?: Row[K] extends number | null | undefined ? K : never;
 }[keyof Row] & keyof Row & string;
+
+// @public
+export const PAL_MIDNIGHT: readonly string[];
 
 // @public (undocumented)
 export interface Predicate<Row> {
@@ -494,7 +528,13 @@ export type PredicateOp = "==" | "!=" | ">" | ">=" | "<" | "<=" | "in" | "notIn"
 export const RANK_PALETTE: readonly string[];
 
 // @public (undocumented)
+export function resolveTheme(ref: ThemeRef): Theme;
+
+// @public (undocumented)
 export type RowSelector<Row> = readonly number[] | Predicate<Row>;
+
+// @public
+export function secondaryOn(bg: string, fg: string, target?: number): string;
 
 // @public (undocumented)
 export function selectRows<Row>(sel: RowSelector<Row>, rows: readonly Row[]): number[];
@@ -629,6 +669,24 @@ export interface TextStyle {
 }
 
 // @public (undocumented)
+export interface Theme {
+    // (undocumented)
+    readonly fonts: readonly GoogleFont[] /** extra scoped rules; `sel` is `#<tableId>` */;
+    // (undocumented)
+    readonly name: string;
+    // (undocumented)
+    readonly rules: (sel: string) => string;
+    // (undocumented)
+    readonly tokens: ThemeTokens;
+}
+
+// @public (undocumented)
+export const THEME_NAMES: readonly string[];
+
+// @public (undocumented)
+export type ThemeDef = (ref: ThemeRef) => Theme;
+
+// @public (undocumented)
 export interface ThemeRef {
     // (undocumented)
     readonly density: Density;
@@ -637,6 +695,122 @@ export interface ThemeRef {
     // (undocumented)
     readonly options?: Readonly<Record<string, string>>;
 }
+
+// @public (undocumented)
+export const THEMES: Readonly<Record<string, ThemeDef>>;
+
+// @public (undocumented)
+export interface ThemeTokens {
+    // (undocumented)
+    accent: string;
+    // (undocumented)
+    bg: string;
+    // (undocumented)
+    bodyBorderBottom: string;
+    // (undocumented)
+    bodySize: string;
+    // (undocumented)
+    bodyWeight: string;
+    // (undocumented)
+    fontBody: string;
+    // (undocumented)
+    fontLabel: string;
+    // (undocumented)
+    fontTitle: string;
+    // (undocumented)
+    groupBg: string;
+    // (undocumented)
+    groupBorderBottom: string;
+    // (undocumented)
+    groupBorderTop: string;
+    // (undocumented)
+    groupColor: string;
+    // (undocumented)
+    groupPad: string;
+    // (undocumented)
+    groupSize: string;
+    // (undocumented)
+    groupTransform: string;
+    // (undocumented)
+    groupWeight: string;
+    // (undocumented)
+    headingAlign: "left" | "center";
+    // (undocumented)
+    headingBg: string;
+    // (undocumented)
+    headingPad: string;
+    // (undocumented)
+    hline: string;
+    // (undocumented)
+    horizon: string;
+    // (undocumented)
+    labelBg: string;
+    // (undocumented)
+    labelBorderBottom: string;
+    // (undocumented)
+    labelBorderTop: string;
+    // (undocumented)
+    labelColor: string;
+    // (undocumented)
+    labelPad: string;
+    // (undocumented)
+    labelSize: string;
+    // (undocumented)
+    labelStyle: string;
+    // (undocumented)
+    labelTracking: string;
+    // (undocumented)
+    labelTransform: string;
+    // (undocumented)
+    labelWeight: string;
+    // (undocumented)
+    lineHeight: string;
+    // (undocumented)
+    muted: string;
+    // (undocumented)
+    pad: string;
+    // (undocumented)
+    rule: string;
+    // (undocumented)
+    sourceColor: string;
+    // (undocumented)
+    sourcePad: string;
+    // (undocumented)
+    sourceSize: string;
+    // (undocumented)
+    sourceStyle: string;
+    // (undocumented)
+    stripe: string;
+    // (undocumented)
+    subtitleColor: string;
+    // (undocumented)
+    subtitleSize: string;
+    // (undocumented)
+    subtitleStyle: string;
+    // (undocumented)
+    subtitleWeight: string;
+    // (undocumented)
+    tableBorderBottom: string;
+    // (undocumented)
+    tableBorderTop: string;
+    // (undocumented)
+    tableBorderX: string;
+    // (undocumented)
+    text: string;
+    // (undocumented)
+    titleColor: string;
+    // (undocumented)
+    titleSize: string;
+    // (undocumented)
+    titleTracking: string;
+    // (undocumented)
+    titleTransform: string;
+    // (undocumented)
+    titleWeight: string;
+}
+
+// @public (undocumented)
+export const TOKEN_KEYS: readonly (keyof ThemeTokens)[];
 
 // @public
 export const VERSION: string;

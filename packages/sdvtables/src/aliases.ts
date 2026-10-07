@@ -1,0 +1,96 @@
+// src/aliases.ts — every sdvplotR gt_* / pal_* / reactable_sdv_* export (74, sdvplotR NAMESPACE) → its sdvtables target.
+// Target forms: "c.<kind>" (column factory), "builder.<method>" (TableBuilder), "theme.<name>" (THEME_NAMES),
+// "html.<export>" (the ./html subpath), a bare root export ("snakeAlign", "PAL_MIDNIGHT"), or a Phase 5 name.
+/** One sdvplotR/gtUtils name and where it lives in sdvtables. */
+export interface Alias {
+  readonly target: string;
+  readonly status: "ported" | "phase-5" | "not-ported";
+  readonly note?: string;
+}
+const T = (target: string, note?: string): Alias =>
+  note ? { target, status: "ported", note } : { target, status: "ported" };
+/** sdvplotR/gtUtils function name → sdvtables equivalent. */
+export const GT_ALIASES: Readonly<Record<string, Alias>> = {
+  gt_sdv_logos: T("c.logo"),
+  gt_sdv_wordmarks: T("c.wordmark"),
+  gt_sdv_headshots: T("c.headshot"),
+  gt_sdv_cols_label: {
+    target: "labelHtml",
+    status: "not-ported",
+    note: "labels are text in Phase 4; use .titleHeader() or subheader",
+  },
+  gt_merge_stack_team_color: T("c.mergeStackTeamColor"),
+  gt_theme_sdv: T("theme.sdv"),
+  gt_theme_sdv_team: T("theme.sdvTeam"),
+  gt_theme_almanac: T("theme.almanac"),
+  gt_theme_athletic: T("theme.athletic"),
+  gt_theme_booktabs: T("theme.booktabs"),
+  gt_theme_broadsheet: T("theme.broadsheet"),
+  gt_theme_brutalist: T("theme.brutalist"),
+  gt_theme_drench: T("theme.drench"),
+  gt_theme_gtutils: T("theme.gtutils"),
+  gt_theme_kenpom: T("theme.kenpom"),
+  gt_theme_midnight: T("theme.midnight"),
+  gt_theme_ncaa: T("theme.ncaa"),
+  gt_theme_pl: T("theme.pl"),
+  gt_theme_savant: T("theme.savant"),
+  gt_theme_scoreboard: T("theme.scoreboard"),
+  gt_theme_sofa: T("theme.sofa"),
+  gt_theme_swiss: T("theme.swiss"),
+  gt_theme_terminal: T("theme.terminal"),
+  gt_theme_tier: T("theme.tier"),
+  gt_theme_tufte: T("theme.tufte"),
+  gt_theme_preview: T("html.themePreview", "a Record<name, html>, not a grid"),
+  pal_midnight: T("PAL_MIDNIGHT"),
+  gt_538_caption: T("builder.caption538"),
+  gt_bold_rows: T("builder.boldRows"),
+  gt_border_bars_top: T("builder.borderBars"),
+  gt_border_bars_bottom: T("builder.borderBars"),
+  gt_border_grid: T("builder.borderGrid"),
+  gt_color_pills: T("c.colorPills"),
+  gt_color_ranks: T("c.colorRanks"),
+  gt_color_results: T("c.colorResults", "a column kind (spec §6.1) that fills its row"),
+  gt_column_subheaders: T("builder.columns", "the per-column subheader option of every c.* kind"),
+  gt_cutline: T("builder.cutline"),
+  gt_delta: T("c.delta"),
+  gt_fmt_rank: T("c.rank"),
+  gt_fmt_tally: T("c.tally"),
+  gt_group_stripes: T("builder.groupStripes"),
+  gt_highlight_cells: T("c.highlight", "data predicate, not a formula"),
+  gt_highlight_na: T("c.highlightNa"),
+  gt_indicator_boxes: T("c.indicatorBox", "value list, not a rule"),
+  gt_legend_continuous: T("builder.legendContinuous"),
+  gt_legend_discrete: T("builder.legendDiscrete"),
+  gt_color_legend: T("builder.legendContinuous", "deprecated gtUtils name (sdvplotR deprecated.R:20)"),
+  gt_centered_legend: T("builder.legendDiscrete", "deprecated gtUtils name (sdvplotR deprecated.R:27)"),
+  gt_marginalia: T("builder.marginalia"),
+  gt_outliers: T("builder.outliers"),
+  gt_percentile_bar: T("c.percentileBar"),
+  gt_row_accent: T("builder.rowAccent"),
+  gt_scale_note: T("builder.scaleNote"),
+  gt_set_font: T("builder.font"),
+  gt_significance: T("builder.significance"),
+  gt_snake: T("builder.snake"),
+  gt_snake_align: T("snakeAlign"),
+  gt_social_tag: T("builder.socialTag"),
+  gt_spotlight: T("builder.spotlight"),
+  gt_tiers: T("builder.tiers"),
+  gt_title_header: T("builder.titleHeader"),
+  gt_watermark: T("builder.watermark"),
+  gt_wrap_labels: T("builder.wrapLabels"),
+  gt_save_crop: { target: "tableToPNG", status: "phase-5" },
+  gt_save_batch: { target: "tableToPNG", status: "phase-5" },
+  gt_social_crop: { target: "socialCrop", status: "phase-5" },
+  gt_grid: { target: "gridTables", status: "phase-5" },
+  gt_stack_tables: { target: "stackTables", status: "phase-5" },
+  reactable_sdv_logos: T("c.logo"),
+  reactable_sdv_wordmarks: T("c.wordmark"),
+  reactable_sdv_headshots: T("c.headshot"),
+  reactable_sdv_cols_label: { target: "labelHtml", status: "not-ported", note: "as gt_sdv_cols_label" },
+  reactable_sdv_team_color_bar: T("c.teamColorBar"),
+  reactable_sdv_team_color_bg: T("c.teamColorBg"),
+};
+/** Look up the sdvtables equivalent of an sdvplotR/gtUtils function name. */
+export const aliasFor = (name: string): Alias | undefined => GT_ALIASES[name];
+/** The five-colour midnight palette (same values as sdvplotR `pal_midnight()`). */
+export const PAL_MIDNIGHT: readonly string[] = ["#5B8DEF", "#3FBF87", "#E8E9ED", "#9498A3", "#24272E"];
