@@ -96,6 +96,10 @@ function build(name: string, ref: ThemeRef, pal: Pal): Theme {
     groupSize: sz(13, "group"),
     bodySize: sz(15, "body"),
     pad: sz(7, "pad"),
+    headingPad: sz(4, "pad"),
+    labelPad: sz(6, "pad"),
+    groupPad: sz(8, "pad"),
+    sourcePad: sz(4, "pad"),
     sourceColor: pal.muted,
     sourceSize: sz(12, "source"),
     horizon: pal.horizon,
@@ -109,7 +113,7 @@ function build(name: string, ref: ThemeRef, pal: Pal): Theme {
     ],
     rules: (s) =>
       [
-        `${s} .sdvt-label{padding-bottom:10px}`,
+        `${s} th.sdvt-label{padding-bottom:10px}`,
         `${s} caption,${s} tfoot td,${s} th.sdvt-label:first-child,${s} td.sdvt-cell:first-child{padding-left:14px}`,
         `${s} caption,${s} tfoot td,${s} th.sdvt-label:last-child,${s} td.sdvt-cell:last-child{padding-right:14px}`,
         `${s} .sdvt-title{padding-top:12px;display:block}${s} .sdvt-subtitle{padding-bottom:12px;display:block}`,

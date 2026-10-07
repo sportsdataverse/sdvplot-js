@@ -2,6 +2,7 @@ import { preloadAll } from "@sportsdataverse/sdvplot";
 import { expect, test } from "vitest";
 import { fontsLink } from "../src/html/fonts.js";
 import { THEMES, THEME_NAMES, resolveTheme } from "../src/themes/index.js";
+import { secondaryOn } from "../src/themes/sdv.js";
 import { DENSITY, TOKEN_KEYS, densitySizes, scaleFor } from "../src/themes/tokens.js";
 test("density sizes are sdvplotR's .theme_density() values and multipliers", () => {
   expect(DENSITY.comfortable).toEqual({
@@ -92,4 +93,57 @@ test("Google Fonts link requests every weight once, alphabetical, display=swap",
     '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chivo:wght@500;800&amp;family=Lato:wght@400;700&amp;display=swap">',
   );
   expect(fontsLink([])).toBe("");
+});
+test("53 tokens (49 + four padding roles)", () => {
+  expect(TOKEN_KEYS.length).toBe(53);
+  expect(new Set(TOKEN_KEYS).size).toBe(53);
+});
+test("sdv padding roles are _marks._build_theme's, scaled by density (_marks.py:662-682)", () => {
+  const pads = (density: "comfortable" | "compact" | "social") => {
+    const t = resolveTheme({ name: "sdv", density }).tokens;
+    return [t.headingPad, t.labelPad, t.pad, t.groupPad, t.sourcePad];
+  };
+  expect(pads("comfortable")).toEqual(["4px", "6px", "7px", "8px", "4px"]);
+  expect(pads("compact")).toEqual(["2px", "3px", "3.5px", "4px", "2px"]);
+  expect(pads("social")).toEqual(["6px", "9px", "10.5px", "12px", "6px"]);
+});
+test("sdv theme rules out-specify the base label padding (th.sdvt-label)", () => {
+  expect(resolveTheme({ name: "sdv", density: "comfortable" }).rules("#t")).toContain(
+    "#t th.sdvt-label{padding-bottom:10px}",
+  );
+});
+test("secondaryOn matches _marks._secondary_on", () => {
+  expect(secondaryOn("#003594", "#ffffff")).toBe("#99aed4");
+  expect(secondaryOn("#d3bc8d", "#000000")).toBe("#544b38");
+  expect(secondaryOn("#007bc7", "#000000")).toBe("#00060a");
+  expect(secondaryOn("#e31837", "#ffffff")).toBe("#ffffff");
+});
+test("sdvTeam branches match gt_theme_sdv_team (real teams)", async () => {
+  await preloadAll();
+  const team = (t: string) =>
+    resolveTheme({ name: "sdvTeam", density: "comfortable", options: { league: "nfl", team: t } }).tokens;
+  const kc = team("KC");
+  expect(kc.horizon).toBe("#ffb612");
+  expect(kc.labelColor).toBe("#e31837");
+  expect(kc.subtitleColor).toBe("#ffffff");
+  const lar = team("LAR"); // pale secondary (contrast 1.46 < 1.5): horizon falls back to primary
+  expect(lar.horizon).toBe("#003594");
+  expect(lar.subtitleColor).toBe("#99aed4");
+  const no = team("NO"); // light primary (1.85 < 3): label falls back to navy; ink is black
+  expect(no.labelColor).toBe("#0B1A33");
+  expect(no.titleColor).toBe("#000000");
+  expect(no.subtitleColor).toBe("#544b38");
+  expect(no.headingBg).toBe("#d3bc8d");
+  const lac = team("LAC");
+  expect(lac.titleColor).toBe("#000000");
+  expect(lac.subtitleColor).toBe("#00060a");
+});
+test("sdvTeam without a team uses the SportsDataverse colors; dark sdv keeps the gradient", () => {
+  const d = resolveTheme({ name: "sdvTeam", density: "comfortable", options: { league: "nfl" } }).tokens;
+  expect(d.headingBg).toBe("#0B1A33");
+  expect(d.titleColor).toBe("#ffffff");
+  expect(d.horizon).toBe("#0B1A33"); // cyan is pale (contrast < 1.5): horizon falls back to primary
+  expect(
+    resolveTheme({ name: "sdv", density: "comfortable", options: { style: "dark" } }).tokens.horizon,
+  ).toBe("linear-gradient(90deg, #3346F0, #7FE6DC)");
 });

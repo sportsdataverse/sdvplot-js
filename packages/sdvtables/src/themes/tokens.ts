@@ -86,6 +86,10 @@ export interface ThemeTokens {
   bodySize: string;
   bodyWeight: string;
   pad: string;
+  headingPad: string;
+  labelPad: string;
+  groupPad: string;
+  sourcePad: string;
   lineHeight: string;
   bodyBorderBottom: string;
   tableBorderTop: string;
@@ -137,6 +141,10 @@ export const TOKEN_KEYS: readonly (keyof ThemeTokens)[] = [
   "bodySize",
   "bodyWeight",
   "pad",
+  "headingPad",
+  "labelPad",
+  "groupPad",
+  "sourcePad",
   "lineHeight",
   "bodyBorderBottom",
   "tableBorderTop",
@@ -197,6 +205,10 @@ export function baseTokens(d: DensitySizes, font: string): ThemeTokens {
     bodySize: px(d.body),
     bodyWeight: "400",
     pad: px(d.pad),
+    headingPad: px(d.pad),
+    labelPad: px(d.pad),
+    groupPad: px(d.pad),
+    sourcePad: px(d.pad),
     lineHeight: "normal",
     bodyBorderBottom: "none",
     tableBorderTop: "none",
