@@ -72,7 +72,7 @@ export interface RenderContext<Row> {
 }
 
 // @public (undocumented)
-export function renderHTML<Row>(spec: TableSpec<Row>, rows: readonly Row[], opts?: RenderOptions): string;
+export function renderHTML<Row>(input: TableSpec<Row>, rows: readonly Row[], opts?: RenderOptions): string;
 
 // @public (undocumented)
 export function renderHTMLAsync<Row>(spec: TableSpec<Row>, rows: readonly Row[], opts?: RenderOptions): Promise<string>;
@@ -93,8 +93,18 @@ export function styleSheet<Row>(spec: TableSpec<Row>, theme?: Theme): string;
 // @public
 export function themeKey(ref: ThemeRef): string;
 
+// @public
+export function themePreview<Row>(spec: TableSpec<Row>, rows: readonly Row[], themes?: readonly string[], o?: {
+    n?: number;
+    density?: Density;
+}): Record<string, string>;
+
 // @public (undocumented)
 export function toElement<Row>(spec: TableSpec<Row>, rows: readonly Row[], opts?: RenderOptions): HTMLElement;
+
+// Warnings were encountered during analysis:
+//
+// dist/html.d.ts:124:5 - (ae-forgotten-export) The symbol "Density" needs to be exported by the entry point html.d.ts
 
 // (No @packageDocumentation comment for this package)
 

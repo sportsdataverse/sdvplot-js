@@ -5,3 +5,4 @@ export type * from "./spec.js";
 export { TableSpecError } from "./errors.js";
 export { type ColumnFactory, RANK_PALETTE, TableBuilder, columnFactory, defineTable } from "./define.js";
 export { matches, selectRows } from "./predicate.js";
+export { snakeAlign } from "./snake.js";

@@ -179,9 +179,7 @@ export function applyDecorations<Row>(
   };
   const suffixes = new Map<string, string>(); // Task 11, key `${i}:${col}`
   const labelStyles = new Map<string, string>(); // Task 11
-  const recordedKey: Readonly<Record<string, string>> | undefined = undefined as
-    | Readonly<Record<string, string>>
-    | undefined; // Task 12: tiers sets it for legendDiscrete("recorded")
+  let recordedKey: Readonly<Record<string, string>> | undefined; // tiers sets it for legendDiscrete("recorded")
   let cutCount = 0; // one id per .cutline() call so two calls never share a class
   const bg = ctx.theme.tokens.bg === "transparent" ? "#ffffff" : hex6(ctx.theme.tokens.bg);
   // colorResults is a column kind (spec §6.1) whose effect is a row fill: gt_color_results (_cells.py:203-222), exact W/L or 1/0
@@ -647,8 +645,36 @@ export function applyDecorations<Row>(
         }
         break;
       }
+      case "tiers": {
+        // gt_tiers (_layout.py:870-913): colors required; each level's tier cells filled, bold readable ink; recorded for legendDiscrete("recorded")
+        if (!d.colors)
+          throw new TableSpecError("tiers colors is missing; pass levels and colors as two lists");
+        if (d.colors.length !== d.levels.length)
+          throw new TableSpecError(
+            `tiers levels and colors must be the same length: got ${d.levels.length} levels and ${d.colors.length} colors`,
+          );
+        const fills = d.colors.map((c) => hex6(c));
+        const tierOf = (r: Row): string | null => {
+          const v = cellValue(r, d.tierKey);
+          return isBlank(v) ? null : String(v);
+        };
+        const held = [...new Set(rows.map(tierOf).filter((t): t is string => t !== null))];
+        const missing = d.levels.filter((l) => !held.includes(l));
+        if (missing.length > 0)
+          ctx.warn(
+            `sdvtables:tiers:${ctx.id}`,
+            `tier(s) ${missing.join(", ")} are not in "${d.tierKey}", so they get no rows; it holds ${held.join(", ")}`,
+          );
+        rows.forEach((r, i) => {
+          const t = tierOf(r);
+          const f = t === null ? undefined : fills[d.levels.indexOf(t)];
+          if (f) addCell(i, d.tierKey, { "background-color": f, color: onColor(f), "font-weight": "bold" });
+        });
+        recordedKey = Object.fromEntries(d.levels.map((l, j) => [l, fills[j] ?? ""]));
+        break;
+      }
       default:
-        break; // title/subtitle (above), groupBy (index.ts); Tasks 9-12 add their cases above this line
+        break; // title/subtitle (above), groupBy and snake (index.ts)
     }
   out.cellSuffix = (i, key) => suffixes.get(`${i}:${key}`) ?? "";
   out.labelStyle = (key) => labelStyles.get(key) ?? "";

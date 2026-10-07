@@ -2,16 +2,17 @@
 import { loadGsis, loadLeague, warn } from "@sportsdataverse/sdvplot";
 import type { League } from "@sportsdataverse/sdvplot";
 import { TableSpecError } from "../errors.js";
-import type { ColumnSpec, Decoration, TableSpec, ThemeRef } from "../spec.js";
+import type { ColumnSpec, Decoration, Density, TableSpec, ThemeRef } from "../spec.js";
 import { fnv1a32, tableId } from "../table-id.js";
 import { loadTeamNames } from "../team-name.js";
 import { BASE_CSS, tokensCSS } from "../themes/base-css.js";
-import { resolveTheme } from "../themes/index.js";
+import { THEME_NAMES, resolveTheme } from "../themes/index.js";
 import type { GoogleFont, Theme } from "../themes/tokens.js";
 import { type RenderContext, columnScales, kindCellStyle, renderCell, teamIdsOf } from "./cells.js";
 import { applyDecorations } from "./decorations.js";
 import { escapeAttr, escapeHtml, styleOf } from "./escape.js";
 import { fontsLink } from "./fonts.js";
+import { expandTiers, snakeLayout } from "./layout.js";
 
 export interface RenderOptions {
   readonly css?: "inline" | "none";
@@ -89,13 +90,14 @@ export function styleSheet<Row>(spec: TableSpec<Row>, theme: Theme = resolveThem
 }
 
 export function renderHTML<Row>(
-  spec: TableSpec<Row>,
+  input: TableSpec<Row>,
   rows: readonly Row[],
   opts: RenderOptions = {},
 ): string {
-  checkKeys(spec, rows);
+  checkKeys(input, rows);
+  const id = tableId(input); // the spec as built, before tier expansion
+  const spec = expandTiers(input);
   const theme = resolveTheme(spec.theme);
-  const id = tableId(spec);
   if (!/^[A-Za-z][\w-]*$/.test(id))
     throw new TableSpecError(
       `table id ${JSON.stringify(id)} must match /^[A-Za-z][\\w-]*$/ (it becomes a CSS selector)`,
@@ -122,45 +124,69 @@ export function renderHTML<Row>(
   const deco = applyDecorations(spec, rows, ctx);
   const visible = spec.columns.filter((c) => !deco.hiddenColumns.has(c.key));
   const ncol = visible.length;
-  const head = visible
+  let head = visible
     .map(
       (c) =>
         `<th scope="col" class="sdvt-label sdvt-${escapeAttr(alignOf(c))}" data-col="${escapeAttr(c.key)}" data-kind="${escapeAttr(c.kind)}"${styleOf([c.width ? `width:${escapeAttr(c.width)}` : "", deco.labelStyle(c.key)])}>${deco.label(c, (deco.labelText.get(c.key) ?? labelOf(c)) + deco.labelSuffix(c.key))}${c.subheader ? `<span class="sdvt-subheader">${escapeHtml(c.subheader)}</span>` : ""}</th>`,
     )
     .join("");
-  const body: string[] = [];
-  // Stable partition by first-appearance group (gt groupname_col): one header per group, rows keep their original index.
-  const groups = new Map<unknown, number[]>();
-  if (ctx.groupKey === undefined)
-    groups.set(
-      undefined,
-      rows.map((_, i) => i),
-    );
-  else
-    rows.forEach((row, i) => {
-      const g = (row as Record<string, unknown>)[ctx.groupKey as string];
-      const list = groups.get(g);
-      if (list) list.push(i);
-      else groups.set(g, [i]);
-    });
-  let groupIndex = -1;
-  for (const [g, idxs] of groups) {
-    groupIndex++;
-    if (ctx.groupKey !== undefined)
-      body.push(
-        `<tr class="sdvt-group-row${deco.groupRowClass(groupIndex)}"><th scope="rowgroup" colspan="${ncol}" class="sdvt-group">${escapeHtml(g)}</th></tr>`,
+  const cellsOf = (row: Row, i: number): string =>
+    visible
+      .map(
+        (c) =>
+          `<td class="sdvt-cell sdvt-kind-${escapeAttr(c.kind)} sdvt-${escapeAttr(alignOf(c))}" data-col="${escapeAttr(c.key)}"${styleOf([kindCellStyle(c, row, i, ctx), deco.cellStyle(i, c.key)])}>${renderCell(c, row, i, ctx)}${deco.cellSuffix(i, c.key)}</td>`,
+      )
+      .join("");
+  const trOf = (i: number, cells: string): string =>
+    `<tr class="sdvt-row${deco.rowClass(i)}" data-row="${i}"${styleOf([deco.rowStyle(i)])}>${cells}</tr>`;
+  let body: string[] = [];
+  const snake = spec.decorations.find(
+    (d): d is Extract<Decoration<Row>, { type: "snake" }> => d.type === "snake",
+  );
+  if (snake && ctx.groupKey !== undefined) throw new TableSpecError("snake cannot be combined with groupBy");
+  const gap = snake && snake.gap > 0 ? `style="width:${snake.gap}px;border:none"` : "";
+  const snaked = snake
+    ? snakeLayout(
+        snake,
+        rows,
+        head,
+        ncol,
+        cellsOf,
+        trOf,
+        gap ? `<th class="sdvt-gap" ${gap}></th>` : "",
+        gap ? `<td class="sdvt-gap" ${gap}></td>` : "",
+      )
+    : null;
+  if (snake && snaked) {
+    head = snaked.head;
+    body = snaked.body;
+    if (snake.cleanGaps)
+      deco.css.push(
+        `${sel} .sdvt-gap,${sel} td.sdvt-blank{border:none!important;background:transparent!important;box-shadow:none!important}`,
       );
-    for (const i of idxs) {
-      const row = rows[i] as Row;
-      const cells = visible
-        .map(
-          (c) =>
-            `<td class="sdvt-cell sdvt-kind-${escapeAttr(c.kind)} sdvt-${escapeAttr(alignOf(c))}" data-col="${escapeAttr(c.key)}"${styleOf([kindCellStyle(c, row, i, ctx), deco.cellStyle(i, c.key)])}>${renderCell(c, row, i, ctx)}${deco.cellSuffix(i, c.key)}</td>`,
-        )
-        .join("");
-      body.push(
-        `<tr class="sdvt-row${deco.rowClass(i)}" data-row="${i}"${styleOf([deco.rowStyle(i)])}>${cells}</tr>`,
+  } else {
+    // Stable partition by first-appearance group (gt groupname_col): one header per group, rows keep their original index.
+    const groups = new Map<unknown, number[]>();
+    if (ctx.groupKey === undefined)
+      groups.set(
+        undefined,
+        rows.map((_, i) => i),
       );
+    else
+      rows.forEach((row, i) => {
+        const g = (row as Record<string, unknown>)[ctx.groupKey as string];
+        const list = groups.get(g);
+        if (list) list.push(i);
+        else groups.set(g, [i]);
+      });
+    let groupIndex = -1;
+    for (const [g, idxs] of groups) {
+      groupIndex++;
+      if (ctx.groupKey !== undefined)
+        body.push(
+          `<tr class="sdvt-group-row${deco.groupRowClass(groupIndex)}"><th scope="rowgroup" colspan="${ncol}" class="sdvt-group">${escapeHtml(g)}</th></tr>`,
+        );
+      for (const i of idxs) body.push(trOf(i, cellsOf(rows[i] as Row, i)));
     }
   }
   const caption = deco.caption ? `<caption>${deco.caption}</caption>` : "";
@@ -196,5 +222,29 @@ export function toElement<Row>(
   const el = t.content.querySelector("div.sdvt");
   if (!(el instanceof HTMLElement)) throw new TableSpecError("renderHTML produced no wrapper");
   return el;
+}
+/** gt_theme_preview (_themes.py:2058-2064): one HTML string per theme, first n rows, compact; sdvTeam shown with league nfl and no team. */
+export function themePreview<Row>(
+  spec: TableSpec<Row>,
+  rows: readonly Row[],
+  themes?: readonly string[],
+  o: { n?: number; density?: Density } = {},
+): Record<string, string> {
+  const n = o.n ?? 5;
+  if (!Number.isInteger(n) || n < 1) throw new TableSpecError(`n must be a positive whole number, got ${n}`);
+  const out: Record<string, string> = {};
+  for (const name of themes ?? THEME_NAMES)
+    out[name] = renderHTML(
+      {
+        ...spec,
+        theme: {
+          name,
+          density: o.density ?? "compact",
+          ...(name === "sdvTeam" ? { options: { league: "nfl" } } : {}),
+        },
+      },
+      rows.slice(0, n),
+    );
+  return out;
 }
 export { labelOf as columnLabel };

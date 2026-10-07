@@ -500,6 +500,13 @@ export type RowSelector<Row> = readonly number[] | Predicate<Row>;
 export function selectRows<Row>(sel: RowSelector<Row>, rows: readonly Row[]): number[];
 
 // @public (undocumented)
+export function snakeAlign<Row>(rows: readonly Row[], o?: {
+    nCols?: number;
+    rowsPerCol?: number;
+    fill?: Row | null;
+}): (Row | null)[][];
+
+// @public (undocumented)
 export type StringKey<Row> = {
     [K in keyof Row]-?: Row[K] extends string | null | undefined ? K : never;
 }[keyof Row] & keyof Row & string;
