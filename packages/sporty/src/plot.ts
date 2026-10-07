@@ -10,8 +10,6 @@ import {
 
 export { isVisiblePolygon }; // re-exported so existing importers keep working
 
-export const SPORTY_PLOT_SUBPATH = "@sportsdataverse/sporty/plot";
-
 export interface SurfaceFeatureProps {
   name: string;
   zIndex: number;

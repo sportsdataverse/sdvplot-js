@@ -16,7 +16,31 @@ const shots = toSurfaceFrame([{ x_legacy: 120, y_legacy: 35 }], { from: "nba-leg
 // [{ x_legacy: 120, y_legacy: 35, surface_x: -38.25, surface_y: 12 }] -> plot (surface_x, surface_y) in feet
 ```
 
+Draw a surface with Observable Plot or d3 (optional peers):
+
+```js
+import * as Plot from "@observablehq/plot";
+import { basketballCourt } from "@sportsdataverse/sporty";
+import { surfaceMark, surfaceScales } from "@sportsdataverse/sporty/plot";
+
+const scene = basketballCourt("nba");
+Plot.plot({ ...surfaceScales(scene), marks: surfaceMark(scene) });
+
+// d3: appendSurface(selection, scene, x, y) draws the same Scene through your scale functions.
+import { appendSurface } from "@sportsdataverse/sporty/d3";
+```
+
 `surface(sport, league, opts)` dispatches by sport; `leagues`, `features`, `displayRanges` and `colorKeys` list what each sport accepts. Options mirror sportyR: `updates` (parameter overrides), `colorUpdates`, `rotation`, `xTrans`, `yTrans`, `units` (`ft`, `m`, `yd`, `in`, `cm`, `mm`, any case, or a full name such as `"feet"`; anything else throws `UnknownUnitError`), `displayRange`, `xlim`, `ylim`, `arcResolution` (points per arc, an integer >= 2, default 200). Options are typed per sport, so a misspelled option or key is a compile error.
+
+## Subpaths
+
+| Import | Contents |
+| --- | --- |
+| `@sportsdataverse/sporty` | `surface`, `basketballCourt`, `hockeyRink`, `footballField`, `Scene`, `toSurfaceFrame`, `FRAMES`, errors |
+| `@sportsdataverse/sporty/svg` | `toSVG` |
+| `@sportsdataverse/sporty/specs` | generated parameter specs for all sports |
+| `@sportsdataverse/sporty/plot` | `surfaceMark`, `surfaceScales`, `sceneToGeoJSON` (optional peer `@observablehq/plot`) |
+| `@sportsdataverse/sporty/d3` | `appendSurface` (optional peer `d3`) |
 
 ## Ported sports
 
@@ -57,7 +81,7 @@ Drift gates in CI: `pnpm codegen --check` (specs match the vendored JSON) and `t
 
 ## Roadmap
 
-Soccer, baseball, tennis, volleyball, curling and lacrosse (Phase 6); canvas, plot and d3 renderers (Phases 3 and 6).
+Soccer, baseball, tennis, volleyball, curling and lacrosse (Phase 6); the canvas renderer (Phase 6).
 
 ## Owner steps (before the first publish)
 

@@ -8,8 +8,6 @@ import { type SurfaceSceneOptions, surfaceScene } from "../surfaces.js";
 import { teamColorDomain } from "../team-color-domain.js";
 import type { HeadshotIdSystem, IdSystem, League, SeasonInput, Variant, Which } from "../types.js";
 
-export const D3_SUBPATH = "@sportsdataverse/sdvplot/d3";
-
 type Sel<G extends Element> = Selection<G, unknown, null, undefined>;
 /** Where d3 draws: the caller's scales, plus the pixel height the `height` fraction refers to (d3 has no figure). */
 interface Frame {

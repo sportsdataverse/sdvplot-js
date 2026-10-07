@@ -341,6 +341,9 @@ export interface ResolveOptions {
 // @public (undocumented)
 export function resolveSync<T extends Value | readonly Value[]>(values: T, league: League, opts?: ResolveOptions): Resolved<T>;
 
+// @public
+export function rowsFrom(columns: Record<string, readonly unknown[]>): Record<string, unknown>[];
+
 // @public (undocumented)
 export class SdvplotError extends Error {
     constructor(message: string, options?: ErrorOptions);

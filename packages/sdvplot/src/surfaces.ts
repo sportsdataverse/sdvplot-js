@@ -25,7 +25,7 @@ import type { Value } from "./resolve.js";
 import type { League, SeasonInput } from "./types.js";
 
 export type SurfaceSport = "basketball" | "football" | "hockey";
-/** sdv league -> [sporty sport, sporty league key]. Baseball and soccer surfaces arrive in Phase 6; Python's team-less `fiba` is omitted (not an sdv League). */
+/** Maps an sdv league to `[sporty sport, sporty league key]`. Baseball and soccer surfaces arrive in Phase 6; Python's team-less `fiba` is omitted (not an sdv League). */
 export const SURFACES: Readonly<Record<string, readonly [SurfaceSport, string]>> = {
   nfl: ["football", "nfl"],
   aaf: ["football", "nfl"],

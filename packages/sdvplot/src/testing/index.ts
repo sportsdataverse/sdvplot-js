@@ -13,8 +13,6 @@ import {
 import type { Axis } from "../plot/axis.js";
 import type { Value } from "../resolve.js";
 
-export const TESTING_SUBPATH = "@sportsdataverse/sdvplot/testing";
-
 export interface DrawnMark {
   id: string;
   x: Value;

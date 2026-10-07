@@ -1,8 +1,6 @@
 import type { Selection } from "d3";
 import { type Scene, hidden, isVisiblePolygon, isVisibleText } from "./scene.js";
 
-export const SPORTY_D3_SUBPATH = "@sportsdataverse/sporty/d3";
-
 type Sel<G extends Element> = Selection<G, unknown, null, undefined>;
 
 /**

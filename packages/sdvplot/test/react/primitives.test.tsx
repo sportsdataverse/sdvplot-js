@@ -2,7 +2,7 @@
 import "@testing-library/jest-dom/vitest";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, expect, test } from "vitest";
-import { Headshot, TeamLogo, useTeamColors } from "../../src/react/index.js";
+import { Headshot, TeamLogo, useResolve, useTeamColors } from "../../src/react/index.js";
 
 afterEach(cleanup);
 
@@ -63,4 +63,14 @@ test("TeamLogo with an unknown league renders nothing (rejection handled)", asyn
 test("Headshot renders null for a league without ESPN headshots instead of throwing", () => {
   const { container } = render(<Headshot playerId="3139477" league={"ahl" as never} />);
   expect(container.innerHTML).toBe("");
+});
+
+test("useResolve is undefined before the league loads, then resolves sync", async () => {
+  function P() {
+    const r = useResolve("nfl");
+    return <i data-testid="r">{r === undefined ? "none" : (r("Kansas City Chiefs") ?? "?")}</i>;
+  }
+  render(<P />);
+  expect(screen.getByTestId("r").textContent).toBe("none");
+  await waitFor(() => expect(screen.getByTestId("r").textContent).toBe("12"));
 });

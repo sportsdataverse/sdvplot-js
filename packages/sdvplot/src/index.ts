@@ -32,6 +32,7 @@ export { normSeason, normValue } from "./normalize.js";
 export { latestSeason, loadLeague, preloadAll, seasonBounds } from "./index-data.js";
 export { resolve, resolveSync, suggest } from "./resolve.js";
 export { teams } from "./teams.js";
+export { rowsFrom } from "./rows.js";
 export { palette, teamColors, teamColorsSync } from "./colors.js";
 export { checkAlpha, checkHeight, place, placeSync } from "./placement.js";
 export { compareMarks } from "./rank.js";
