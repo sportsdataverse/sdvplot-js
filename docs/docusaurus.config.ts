@@ -13,7 +13,7 @@ const config: Config = {
   favicon: "img/favicon.ico",
   future: { v4: true },
 
-  url: "https://plot.sportsdataverse.org", // owner: confirm host
+  url: "https://plot.sportsdataverse.org",
   baseUrl: "/",
   organizationName: "sportsdataverse",
   projectName: "sdvplot-js",
