@@ -94,3 +94,51 @@ test("legendDiscrete key swatches; significance stars (strictest first) with not
     ),
   ).toThrow(/ascending/);
 });
+test("legend labels use ASCII minus (Python f-string, not fmt_number)", () => {
+  const html = renderHTML(
+    defineTable<Standing>()
+      .columns((c) => [c.text("team")])
+      .legendContinuous({ palette: ["#000", "#fff"], domain: [-1, 1], nBins: 2 })
+      .build(),
+    STANDINGS,
+    { css: "none" },
+  );
+  expect(html).toContain(">-1<");
+  expect(html).not.toContain("−");
+});
+test("significance appends after an outlier symbol on the same cell, in decoration order", () => {
+  const rows = STANDINGS.map((r, i) => ({ ...r, p: i === 4 ? 0.004 : 0.9 }));
+  type R = (typeof rows)[number];
+  const html = renderHTML(
+    defineTable<R>()
+      .columns((c) => [c.text("team"), c.num("pf"), c.num("p")])
+      .outliers(["pf"], { method: "iqr", threshold: 1.0, symbol: "†" })
+      .significance([{ estimate: "pf", p: "p" }])
+      .build(),
+    rows,
+    { css: "none" },
+  );
+  expect(html).toMatch(/>525†<sup style="font-size:0\.7em">\*\*\*<\/sup></);
+});
+test("hostile location and numeric legend fields are rejected", () => {
+  const run = (o: Record<string, unknown>, discrete = false): string => {
+    const b = defineTable<Standing>().columns((c) => [c.text("team")]);
+    return renderHTML(
+      (discrete
+        ? b.legendDiscrete({ A: "#000" }, o as never)
+        : b.legendContinuous({ palette: ["#000", "#fff"], domain: [0, 1], ...(o as object) })
+      ).build(),
+      STANDINGS,
+    );
+  };
+  const bad = JSON.parse('{"loc":"x\\" onmouseover=\\"1","n":"1px;background:url(x)"}') as {
+    loc: string;
+    n: string;
+  };
+  expect(() => run({ location: bad.loc })).toThrow(/location/);
+  expect(() => run({ swatchWidth: bad.n })).toThrow(/swatchWidth/);
+  expect(() => run({ swatchHeight: bad.n })).toThrow(/swatchHeight/);
+  expect(() => run({ location: bad.loc }, true)).toThrow(/location/);
+  expect(() => run({ swatchSize: bad.n }, true)).toThrow(/swatchSize/);
+  expect(() => run({ gap: bad.n }, true)).toThrow(/gap/);
+});

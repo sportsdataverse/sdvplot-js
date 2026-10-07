@@ -3,7 +3,7 @@
 import { contrast, hex6, mix, onColor, solid } from "@sportsdataverse/sdvplot";
 import { RANK_PALETTE } from "../define.js";
 import { TableSpecError } from "../errors.js";
-import { formatNumber, isBlank, naturalDigits, toNumber } from "../format.js";
+import { formatNumber, formatValue, isBlank, naturalDigits, toNumber } from "../format.js";
 import { selectRows } from "../predicate.js";
 import { domainOf, quantile7, ramp, sampleSd } from "../scale.js";
 import type { ColumnSpec, Decoration, TableSpec, TextStyle } from "../spec.js";
@@ -103,6 +103,17 @@ function checkFamily(f: string): string {
     throw new TableSpecError(`font family "${f}" may only hold letters, digits, spaces, "." "-" "_"`);
   return f;
 }
+const checkLocation = (l: string, arg: string): "top" | "bottom" => {
+  if (l !== "top" && l !== "bottom")
+    throw new TableSpecError(`${arg} location must be top or bottom, not ${JSON.stringify(l)}`);
+  return l;
+};
+const checkPx = (v: unknown, arg: string): number => {
+  const n = Number(v);
+  if (!Number.isFinite(n))
+    throw new TableSpecError(`${arg} must be a finite number, got ${JSON.stringify(v)}`);
+  return n;
+};
 const ALIGN = new Set(["left", "center", "right"]);
 const checkAlign = (a: string, arg: string): string => {
   if (!ALIGN.has(a)) throw new TableSpecError(`${arg} must be left, center or right, not "${a}"`);
@@ -491,17 +502,20 @@ export function applyDecorations<Row>(
             "legendContinuous: no recorded scale (color a column with colorPills/colorRanks/percentileBar first) and no domain or columns given",
           );
         if (d.nBins < 1) throw new TableSpecError("legendContinuous nBins must be at least 1");
+        const loc = checkLocation(d.location, "legendContinuous");
+        const swW = checkPx(d.swatchWidth, "legendContinuous swatchWidth");
+        const swH = checkPx(d.swatchHeight, "legendContinuous swatchHeight");
         const rev = d.reverse ?? rec?.reverse ?? false;
         const r = ramp(rev ? [...palette].reverse() : palette, domain);
         const [lo, hi] = domain;
         const sw = Array.from(
           { length: d.nBins },
           (_, b) =>
-            `<span class="sdvt-swatch" style="display:inline-block;width:${d.swatchWidth}px;height:${d.swatchHeight}px;background-color:${r(lo + ((b + 0.5) / d.nBins) * (hi - lo)) ?? "#808080"}"></span>`,
+            `<span class="sdvt-swatch" style="display:inline-block;width:${swW}px;height:${swH}px;background-color:${r(lo + ((b + 0.5) / d.nBins) * (hi - lo)) ?? "#808080"}"></span>`,
         );
-        const labels = d.labels ?? [lo, hi].map((v) => formatNumber(v, { digits: d.digits, big: true }));
-        const block = `<div class="sdvt-legend sdvt-legend-${d.location}" style="display:flex;flex-direction:${d.titlePosition === "left" ? "row" : "column"};align-items:center;gap:6px;justify-content:center">${d.title ? `<div class="sdvt-legend-title">${escapeHtml(d.title)}</div>` : ""}<div class="sdvt-legend-bar" style="display:flex;align-items:center;gap:4px"><span class="sdvt-legend-lab">${escapeHtml(labels[0] ?? "")}</span>${sw.join("")}<span class="sdvt-legend-lab">${escapeHtml(labels[labels.length - 1] ?? "")}</span></div></div>`;
-        if (d.location === "top") out.before += block;
+        const labels = d.labels ?? [lo, hi].map((v) => formatValue(v, d.digits, "comma", ""));
+        const block = `<div class="sdvt-legend sdvt-legend-${loc}" style="display:flex;flex-direction:${d.titlePosition === "left" ? "row" : "column"};align-items:center;gap:6px;justify-content:center">${d.title ? `<div class="sdvt-legend-title">${escapeHtml(d.title)}</div>` : ""}<div class="sdvt-legend-bar" style="display:flex;align-items:center;gap:4px"><span class="sdvt-legend-lab">${escapeHtml(labels[0] ?? "")}</span>${sw.join("")}<span class="sdvt-legend-lab">${escapeHtml(labels[labels.length - 1] ?? "")}</span></div></div>`;
+        if (loc === "top") out.before += block;
         else out.after += block;
         break;
       }
@@ -511,13 +525,16 @@ export function applyDecorations<Row>(
           throw new TableSpecError(
             'legendDiscrete("recorded") needs a .tiers() decoration before it (no recorded key)',
           );
+        const loc = checkLocation(d.location, "legendDiscrete");
+        const size = checkPx(d.swatchSize, "legendDiscrete swatchSize");
+        const gap = checkPx(d.gap, "legendDiscrete gap");
         const items = Object.entries(key).map(
           ([label, color]) =>
-            `<span class="sdvt-key-item" style="display:inline-flex;align-items:center;gap:6px"><span class="sdvt-swatch" style="${styleAttr({ display: "inline-block", width: `${d.swatchSize}px`, height: `${d.swatchSize}px`, "background-color": color, border: d.border ? `1px solid ${d.borderColor ?? "currentColor"}` : undefined, "border-radius": d.shape === "circle" ? "50%" : undefined })}"></span>${escapeHtml(label)}</span>`,
+            `<span class="sdvt-key-item" style="display:inline-flex;align-items:center;gap:6px"><span class="sdvt-swatch" style="${styleAttr({ display: "inline-block", width: `${size}px`, height: `${size}px`, "background-color": color, border: d.border ? `1px solid ${d.borderColor ?? "currentColor"}` : undefined, "border-radius": d.shape === "circle" ? "50%" : undefined })}"></span>${escapeHtml(label)}</span>`,
         );
         const align = checkAlign(d.align, "legendDiscrete align") as "left" | "center" | "right";
-        const block = `<div class="sdvt-legend sdvt-legend-${d.location}" style="display:flex;flex-direction:column;align-items:${{ left: "flex-start", center: "center", right: "flex-end" }[align]};gap:4px">${d.heading ? `<div class="sdvt-legend-title">${escapeHtml(d.heading)}</div>` : ""}${d.subtitle ? `<div class="sdvt-legend-sub">${escapeHtml(d.subtitle)}</div>` : ""}<div style="display:flex;flex-direction:${d.direction === "vertical" ? "column" : "row"};flex-wrap:wrap;gap:${d.gap}px">${items.join("")}</div></div>`;
-        if (d.location === "top") out.before += block;
+        const block = `<div class="sdvt-legend sdvt-legend-${loc}" style="display:flex;flex-direction:column;align-items:${{ left: "flex-start", center: "center", right: "flex-end" }[align]};gap:4px">${d.heading ? `<div class="sdvt-legend-title">${escapeHtml(d.heading)}</div>` : ""}${d.subtitle ? `<div class="sdvt-legend-sub">${escapeHtml(d.subtitle)}</div>` : ""}<div style="display:flex;flex-direction:${d.direction === "vertical" ? "column" : "row"};flex-wrap:wrap;gap:${gap}px">${items.join("")}</div></div>`;
+        if (loc === "top") out.before += block;
         else out.after += block;
         break;
       }
@@ -532,11 +549,13 @@ export function applyDecorations<Row>(
             const p = toNumber(cellValue(r, pair.p));
             if (p === null) return;
             const s = d.symbols[d.levels.findIndex((x) => p < x)];
-            if (s)
+            if (s) {
+              const k = `${i}:${pair.estimate}`;
               suffixes.set(
-                `${i}:${pair.estimate}`,
-                d.superscript ? `<sup style="font-size:0.7em">${escapeHtml(s)}</sup>` : escapeHtml(s),
+                k,
+                `${suffixes.get(k) ?? ""}${d.superscript ? `<sup style="font-size:0.7em">${escapeHtml(s)}</sup>` : escapeHtml(s)}`,
               );
+            }
           });
           if (d.hideP) out.hiddenColumns.add(pair.p);
         }
