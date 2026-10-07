@@ -5,6 +5,7 @@ export default defineConfig({
   resolve: { alias: ALIASES },
   define: DEFINES,
   test: {
+    globalSetup: ["./test/global-setup.ts"],
     environment: "jsdom",
     testTimeout: 120_000,
     hookTimeout: 120_000,

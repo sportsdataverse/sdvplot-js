@@ -11,7 +11,7 @@
   "scripts": {
     "gen": "tsx scripts/gen.ts",
     "test": "vitest run",
-    "typecheck": "tsc -p tsconfig.json",
+    "typecheck": "tsx scripts/gen.ts && tsc -p tsconfig.json",
     "prerender": "tsx scripts/prerender.ts",
     "check-build": "tsx scripts/check-build.ts"
   },
