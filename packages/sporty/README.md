@@ -80,7 +80,8 @@ Drift gates in CI: `pnpm codegen --check` (specs match the vendored JSON) and `t
 - Vector colours recycle per copy of a feature (`colorAt`), as R `data.frame()` does. Curling's `house_rings` recycles too, so a single colour fills every ring; R indexes it per ring and leaves rings 2 and 3 `NA`.
 - A lane space mark takes its own set's colour; R reads row `i` (the lane index) of the set instead, which is `NA` once a court has more lanes than marks per set. Default leagues are unaffected.
 - An `undefined`/`null` entry in `updates` or `colorUpdates` keeps the default.
-- The `custom` league builds a surface from its all-zero defaults instead of erroring. Its empty native units read as feet, so `units` converts it; R errors (`geom_curling("custom", sheet_units = "m")`: `" is not a viable unit"`).
+- The `custom` league builds a surface from its all-zero defaults in every sport. R builds it for baseball, curling, hockey, soccer, tennis and volleyball, and errors for basketball, football and lacrosse.
+- A `custom` league with empty native units (every sport except volleyball, whose `custom` is in metres) reads them as feet, so `units` converts it. R errors with `" is not a viable unit"` for the five of those sports it can build (e.g. `geom_curling("custom", sheet_units = "m")`).
 - Tennis accepts R's misspelt receiving-half keys (`receivicehalf`, `receivice_half`, `receivice half`) and the correct spellings (`receivehalf`, `receive_half`, `receive half`); R has only the misspelling and draws the full court for the correct one.
 - Lacrosse: a user's `center_face_off_marker` colour wins over the contrasting `#ffcb05` default (ncaam, `custom`); R overwrites it.
 - Lacrosse: the five parameters R reads but no league defines (`nzone_length`, `board_thickness`, `center_face_off_marker_radius`, `corner_face_off_marker_bar_width`, `corner_face_off_marker_bar_length`) are fixed at 0 as R draws them, and `updates` cannot set them.
