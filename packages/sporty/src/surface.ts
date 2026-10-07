@@ -31,7 +31,7 @@ export function mergeParams<P extends object>(
 
 /** R `utils::modifyList(<set_colors()>, color_updates)`; an `undefined`/`null` colour keeps the default (as `mergeParams`). */
 export function mergeColors<F extends string>(
-  defaults: Readonly<Record<F, Color>>,
+  defaults: Readonly<Record<F, Color | readonly Color[]>>,
   updates?: Partial<Record<F, Color | readonly Color[]>>,
 ): Record<F, Color | readonly Color[]> {
   const out: Record<F, Color | readonly Color[]> = { ...defaults };
