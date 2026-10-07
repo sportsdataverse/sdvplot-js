@@ -120,3 +120,22 @@ test("indicatorBox (Python defaults: #FCCF10 / #EEEEEE, 20px), highlight, highli
   );
   expect(cellOf(html, "qb_espn_id")).toBe('<img class="sdvt-mark" src="3139477" alt="" style="height:20px">');
 });
+test("percentileBar auto scale follows _layout.py:806: lo offset, only when hi > 1", () => {
+  const at = (domain: [number, number], v: number): string =>
+    cellOf(
+      renderHTML(
+        defineTable<Standing>()
+          .columns((c) => [c.percentileBar("net_epa", { domain })])
+          .build(),
+        [{ ...STANDINGS[0]!, net_epa: v }],
+        { css: "none" },
+      ),
+      "net_epa",
+    );
+  const a = at([20, 80], 0.5);
+  expect(a).toContain("left:50%");
+  expect(a).toContain(">50<");
+  const b = at([0, 0.5], 0.25);
+  expect(b).toContain("left:50%");
+  expect(b).toContain(">0<"); // unscaled: 0.25 on [0, 0.5], text 0 at 0 decimals
+});

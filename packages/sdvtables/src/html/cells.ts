@@ -25,6 +25,8 @@ export interface ColumnScale {
   readonly reverse: boolean;
   readonly values: readonly (number | null)[];
   readonly color: (v: number) => string | null;
+  /** colorPills: the widest label in `ch`, computed once per column (gt_color_pills); 1 otherwise. */
+  readonly labelWidth: number;
 }
 /** Decided once here; Tasks 7, 8 and 10 fill the maps (index.ts passes them empty until then). */
 export interface RenderContext<Row> {
@@ -107,6 +109,17 @@ export function teamIdsOf<Row>(
   return out;
 }
 
+type PillsCol = Pick<
+  Extract<ColumnSpec<never>, { kind: "colorPills" }>,
+  "formatType" | "scalePercent" | "digits" | "suffix"
+>;
+const pillLabel = (col: PillsCol, v: number | null): string =>
+  formatValue(
+    v !== null && col.formatType === "percent" && col.scalePercent ? v * 100 : v,
+    col.digits,
+    col.formatType,
+    col.suffix,
+  );
 type HighlightNaCol = Extract<ColumnSpec<never>, { kind: "highlightNa" }>;
 const isNa = (col: HighlightNaCol, v: unknown): boolean =>
   isBlank(v) ||
@@ -126,15 +139,20 @@ export function columnScales<Row>(
     if (col.kind === "colorPills" && col.fillType === "rank")
       values = averageRanks(nums, col.rankOrder === "desc");
     if (col.kind === "percentileBar") {
-      const k =
-        col.scale === "auto"
-          ? nums.every((n) => n === null || (n >= 0 && n <= 1))
-            ? col.domain[1] - col.domain[0]
-            : 1
-          : col.scale === "none"
-            ? 1
-            : col.scale;
-      values = nums.map((n) => (n === null ? null : n * k));
+      const present = nums.filter((n): n is number => n !== null);
+      const [lo, hi] = col.domain;
+      // _layout.py:772-779,806: numeric scale multiplies; "auto" maps proportions only when every value is in [0, 1] and hi > 1
+      const proportion =
+        col.scale === "auto" && present.length > 0 && present.every((n) => n >= 0 && n <= 1) && hi > 1;
+      values = nums.map((n) =>
+        n === null
+          ? null
+          : typeof col.scale === "number"
+            ? n * col.scale
+            : proportion
+              ? lo + n * (hi - lo)
+              : n,
+      );
     }
     const domain: readonly [number, number] = col.domain ?? domainOf([values]);
     const fmt = (): string => `(${naturalDigits(domain[0])} to ${naturalDigits(domain[1])})`;
@@ -151,7 +169,9 @@ export function columnScales<Row>(
         `sdvtables:outside:${col.key}:${outside}:${domain.join(",")}`,
         `${outside} value(s) fall outside the domain ${fmt()} and are drawn grey`,
       ); // _cells.py:1226-1227
-    out.set(col.key, { domain, palette, reverse: col.reverse, values, color });
+    const labelWidth =
+      col.kind === "colorPills" ? Math.max(1, ...nums.map((n) => pillLabel(col, n).length)) : 1;
+    out.set(col.key, { domain, palette, reverse: col.reverse, values, color, labelWidth });
   }
   return out;
 }
@@ -274,14 +294,7 @@ export function renderCell<Row>(col: ColumnSpec<Row>, row: Row, i: number, ctx: 
       const sc = ctx.scales.get(col.key);
       if (!sc) return "";
       const s = sc.values[i] ?? null;
-      const label = (v: number | null): string =>
-        formatValue(
-          v !== null && col.formatType === "percent" && col.scalePercent ? v * 100 : v,
-          col.digits,
-          col.formatType,
-          col.suffix,
-        );
-      const width = Math.max(1, ...ctx.rows.map((r) => label(toNumber(cellValue(r, col.key))).length));
+      const width = sc.labelWidth;
       let fill: string;
       let text: string;
       if (s === null) {
@@ -290,7 +303,7 @@ export function renderCell<Row>(col: ColumnSpec<Row>, row: Row, i: number, ctx: 
         text = "";
       } else {
         fill = sc.color(s) ?? "#808080";
-        text = label(toNumber(cellValue(row, col.key)));
+        text = pillLabel(col, toNumber(cellValue(row, col.key)));
       }
       const ink = col.textColor ?? onColor(solid(fill, tableBg(ctx)));
       const outline =

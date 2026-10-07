@@ -18,6 +18,7 @@ export interface ColumnScale {
     readonly color: (v: number) => string | null;
     // (undocumented)
     readonly domain: readonly [number, number];
+    readonly labelWidth: number;
     // (undocumented)
     readonly palette: readonly string[];
     // (undocumented)
