@@ -8,7 +8,7 @@ import { loadTeamNames } from "../team-name.js";
 import { BASE_CSS, tokensCSS } from "../themes/base-css.js";
 import { resolveTheme } from "../themes/index.js";
 import type { GoogleFont, Theme } from "../themes/tokens.js";
-import { type RenderContext, kindCellStyle, renderCell, teamIdsOf } from "./cells.js";
+import { type RenderContext, columnScales, kindCellStyle, renderCell, teamIdsOf } from "./cells.js";
 import { applyDecorations } from "./decorations.js";
 import { escapeAttr, escapeHtml, styleOf } from "./escape.js";
 import { fontsLink } from "./fonts.js";
@@ -104,6 +104,7 @@ export function renderHTML<Row>(
   const groupBy = spec.decorations.find(
     (d): d is Extract<Decoration<Row>, { type: "groupBy" }> => d.type === "groupBy",
   );
+  const scales = columnScales(spec, rows, warn);
   const ctx: RenderContext<Row> = {
     spec,
     rows,
@@ -114,8 +115,8 @@ export function renderHTML<Row>(
     groupKey: groupBy?.key,
     warn,
     teamIds: teamIdsOf(spec, rows),
-    scales: new Map(),
-    recorded: undefined,
+    scales,
+    recorded: [...scales.values()].at(-1),
     scaled: new Map(),
   };
   const deco = applyDecorations(spec, rows, ctx);

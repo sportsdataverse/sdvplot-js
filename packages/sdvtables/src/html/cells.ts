@@ -11,7 +11,9 @@ import {
   teamColorsSync,
 } from "@sportsdataverse/sdvplot";
 import { TableSpecError } from "../errors.js";
-import { formatNumber, isBlank, naturalDigits, ordinal, toNumber } from "../format.js";
+import { formatNumber, formatValue, isBlank, naturalDigits, ordinal, toNumber } from "../format.js";
+import { matches } from "../predicate.js";
+import { averageRanks, domainOf, ramp } from "../scale.js";
 import type { ColumnSpec, TableSpec } from "../spec.js";
 import { teamNameSync } from "../team-name.js";
 import type { Theme } from "../themes/tokens.js";
@@ -105,9 +107,59 @@ export function teamIdsOf<Row>(
   return out;
 }
 
+type HighlightNaCol = Extract<ColumnSpec<never>, { kind: "highlightNa" }>;
+const isNa = (col: HighlightNaCol, v: unknown): boolean =>
+  isBlank(v) ||
+  col.naStrings.some((n) => (col.ignoreCase ? n.toLowerCase() === String(v).toLowerCase() : n === String(v)));
+
+/** One pass per scaled column (pills, ranks, percentile): numbers, ranks, domain, ramp — gt computes these per column, not per cell. */
+export function columnScales<Row>(
+  spec: TableSpec<Row>,
+  rows: readonly Row[],
+  warnFn: (key: string, m: string) => void,
+): Map<string, ColumnScale> {
+  const out = new Map<string, ColumnScale>();
+  for (const col of spec.columns) {
+    if (col.kind !== "colorPills" && col.kind !== "colorRanks" && col.kind !== "percentileBar") continue;
+    const nums = rows.map((r) => toNumber(cellValue(r, col.key)));
+    let values: (number | null)[] = nums;
+    if (col.kind === "colorPills" && col.fillType === "rank")
+      values = averageRanks(nums, col.rankOrder === "desc");
+    if (col.kind === "percentileBar") {
+      const k =
+        col.scale === "auto"
+          ? nums.every((n) => n === null || (n >= 0 && n <= 1))
+            ? col.domain[1] - col.domain[0]
+            : 1
+          : col.scale === "none"
+            ? 1
+            : col.scale;
+      values = nums.map((n) => (n === null ? null : n * k));
+    }
+    const domain: readonly [number, number] = col.domain ?? domainOf([values]);
+    const fmt = (): string => `(${naturalDigits(domain[0])} to ${naturalDigits(domain[1])})`;
+    if (col.kind === "colorPills" && col.domain === undefined)
+      warnFn(
+        `sdvtables:domain:${col.key}:${domain.join(",")}`,
+        `no domain given, so the colors span the observed range ${fmt()}; set domain to compare colors across tables or columns`,
+      ); // _cells.py:1197-1201
+    const palette = col.palette.map((c) => hex6(c));
+    const color = ramp(col.reverse ? [...palette].reverse() : palette, domain);
+    const outside = values.filter((v) => v !== null && color(v) === null).length;
+    if (col.kind === "colorPills" && outside > 0)
+      warnFn(
+        `sdvtables:outside:${col.key}:${outside}:${domain.join(",")}`,
+        `${outside} value(s) fall outside the domain ${fmt()} and are drawn grey`,
+      ); // _cells.py:1226-1227
+    out.set(col.key, { domain, palette, reverse: col.reverse, values, color });
+  }
+  return out;
+}
+
 export function renderCell<Row>(col: ColumnSpec<Row>, row: Row, i: number, ctx: RenderContext<Row>): string {
   switch (col.kind) {
     case "text":
+    case "colorResults": // colorResults fills its row (decorations.ts, Task 9); the cell is its text
       return blankOr(cellValue(row, col.key));
     // ---- Task 6
     case "num":
@@ -216,14 +268,95 @@ export function renderCell<Row>(col: ColumnSpec<Row>, row: Row, i: number, ctx: 
     case "teamColorBar":
     case "teamColorBg":
       return blankOr(cellValue(row, col.key)); // the color lives on the <td> (kindCellStyle)
-    default:
-      throw new TableSpecError(`renderCell: kind ${col.kind} not yet implemented (Tasks 6–8)`); // Task 8 replaces this with the exhaustive `never` check
+    // ---- Task 8
+    case "colorPills": {
+      // gt_color_pills (_cells.py:1203-1225)
+      const sc = ctx.scales.get(col.key);
+      if (!sc) return "";
+      const s = sc.values[i] ?? null;
+      const label = (v: number | null): string =>
+        formatValue(
+          v !== null && col.formatType === "percent" && col.scalePercent ? v * 100 : v,
+          col.digits,
+          col.formatType,
+          col.suffix,
+        );
+      const width = Math.max(1, ...ctx.rows.map((r) => label(toNumber(cellValue(r, col.key))).length));
+      let fill: string;
+      let text: string;
+      if (s === null) {
+        if (col.naColor === undefined) return "";
+        fill = col.naColor;
+        text = "";
+      } else {
+        fill = sc.color(s) ?? "#808080";
+        text = label(toNumber(cellValue(row, col.key)));
+      }
+      const ink = col.textColor ?? onColor(solid(fill, tableBg(ctx)));
+      const outline =
+        col.outlineColor !== undefined
+          ? `;border:${col.outlineWidth}px solid ${escapeAttr(col.outlineColor)}`
+          : "";
+      return `<span style="display:inline-block;width:${width}ch;padding-left:3px;padding-right:3px;height:${col.pillHeight}px;line-height:${col.pillHeight}px;background-color:${escapeAttr(fill)};color:${escapeAttr(ink)};border-radius:10px;text-align:center${outline}">${escapeHtml(text)}</span>`;
+    }
+    case "colorRanks":
+    case "highlight":
+      return blankOr(cellValue(row, col.key)); // the fill lives on the <td> (kindCellStyle)
+    case "highlightNa":
+      return isNa(col, cellValue(row, col.key))
+        ? escapeHtml(col.missingText ?? "")
+        : blankOr(cellValue(row, col.key));
+    case "percentileBar": {
+      const sc = ctx.scales.get(col.key);
+      const v = sc?.values[i] ?? null;
+      const th = col.trackHeight;
+      const m = col.markerSize;
+      if (sc === undefined || v === null) {
+        // broken track: flex, so no `left:` anywhere
+        const seg = `<div style="flex:1;height:${th}px;background:${escapeAttr(col.naTrackColor ?? col.trackColor)};border-radius:${th}px"></div>`;
+        return `<div class="sdvt-pbar" style="display:flex;align-items:center;height:${m}px;width:100%">${seg}<span style="margin:0 6px;color:${escapeAttr(col.naTextColor)};font-size:${col.fontSize ?? m / 2}px">${escapeHtml(col.naLabel ?? "")}</span>${seg}</div>`;
+      }
+      const [lo, hi] = sc.domain;
+      const clamped = Math.min(hi, Math.max(lo, v));
+      const p = Number((hi === lo ? 50 : ((clamped - lo) / (hi - lo)) * 100).toFixed(4));
+      const color = escapeAttr(sc.color(clamped) ?? col.trackColor);
+      const track = `<div style="position:absolute;top:50%;left:0;right:0;height:${th}px;margin-top:-${th / 2}px;background:${escapeAttr(col.trackColor)};border-radius:${th}px"></div>`;
+      const fill = col.fullTrack
+        ? ""
+        : `<div style="position:absolute;top:50%;left:0;width:${p}%;height:${th}px;margin-top:-${th / 2}px;background:${color};border-radius:${th}px"></div>`;
+      const ring =
+        col.ringColor !== undefined
+          ? `;box-shadow:0 0 0 ${col.ringWidth}px ${escapeAttr(col.ringColor)}`
+          : "";
+      const marker = `<div style="position:absolute;top:0;left:${p}%;margin-left:-${m / 2}px;width:${m}px;height:${m}px;border-radius:50%;background:${color};color:${escapeAttr(col.textColor)};font-size:${col.fontSize ?? m / 2}px;line-height:${m}px;text-align:center;font-weight:700;letter-spacing:-0.02em${ring}">${escapeHtml(formatValue(v, col.decimals, "number", ""))}</div>`;
+      return `<div class="sdvt-pbar" style="position:relative;height:${m}px;width:100%">${track}${fill}${marker}</div>`;
+    }
+    case "indicatorBox": {
+      // gt_indicator_boxes (_cells.py:1428-1449): box only (no show_text in Phase 4)
+      const on = col.truthy.includes(cellValue(row, col.key));
+      if ((col.showOnly === "filled" && !on) || (col.showOnly === "neutral" && on)) return "";
+      return `<span style="${styleAttr({ display: "inline-block", width: `${col.size}px`, height: `${col.size}px`, "background-color": on ? col.fill : col.neutral, "vertical-align": "middle", margin: "4px 1px" })}"></span>`;
+    }
+    case "image": {
+      const v = cellValue(row, col.key);
+      if (isBlank(v)) return "";
+      const alt = col.alt ? cellValue(row, col.alt) : "";
+      return markImg(
+        String(v),
+        isBlank(alt) ? "" : String(alt),
+        checkHeight(Number.parseFloat(col.height), "image"),
+      );
+    }
+    default: {
+      const bad: never = col;
+      throw new TableSpecError(`unknown column kind ${String((bad as { kind: string }).kind)}`); // exhaustive over the 21 kinds
+    }
   }
 }
 /** Bare `prop:value` declarations a column kind puts on its own `<td>` (Task 7 team colors; Task 8 colorRanks/highlight/highlightNa); "" otherwise. */
 export function kindCellStyle<Row>(
   col: ColumnSpec<Row>,
-  _row: Row,
+  row: Row,
   i: number,
   ctx: RenderContext<Row>,
 ): string {
@@ -243,7 +376,31 @@ export function kindCellStyle<Row>(
         .padStart(2, "0");
       return styleAttr({ "background-color": `${hex6(color, { dropAlpha: true })}${a}` }); // scales::alpha(): replace any alpha the color had
     }
+    case "colorRanks": {
+      // data_color on the <td>; null or outside the domain -> na_color "white" (gt_color_ranks default)
+      const sc = ctx.scales.get(col.key);
+      const s = sc?.values[i] ?? null;
+      const fill = (s === null ? null : sc?.color(s)) ?? "#ffffff";
+      return styleAttr({ "background-color": fill, color: onColor(solid(fill, tableBg(ctx))) });
+    }
+    case "highlight":
+      return matches(col.when, row)
+        ? styleAttr({
+            "background-color": col.fill,
+            color: col.textColor,
+            "font-weight": col.bold ? "bold" : undefined,
+          })
+        : "";
+    case "highlightNa":
+      return isNa(col, cellValue(row, col.key))
+        ? styleAttr({
+            "background-color": col.fill,
+            color: col.textColor,
+            "font-weight": col.bold ? "bold" : undefined,
+            "font-style": col.italic ? "italic" : undefined,
+          })
+        : "";
     default:
-      return ""; // Task 8 adds colorRanks / highlight / highlightNa above this line
+      return "";
   }
 }
