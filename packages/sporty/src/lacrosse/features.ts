@@ -1,3 +1,4 @@
+import { SportyError } from "../errors.js";
 import type { Point } from "../scene.js";
 import { createCircle, createRectangle, createSquare, createXShape } from "../shapes.js";
 import { reflectCoords, rotateCoords } from "../transform.js";
@@ -536,7 +537,7 @@ export function offFieldOfficialsBox({
   return createRectangle(-l / 2, l / 2, -t, -(t + d));
 }
 
-/** lacrosse_face_off_marker (R 1485): `tolower(shape)` "o" → disc, "x" → X (14 points), "square" → square (5), else empty. */
+/** lacrosse_face_off_marker (R 1485): `tolower(shape)` "o" → disc, "x" → X (14 points), "square" → square (5); any other shape throws `SportyError` (R's 0-row frame makes `add_feature` error). */
 export function faceOffMarker({
   shape = "O",
   featureThickness = 0,
@@ -557,7 +558,7 @@ export function faceOffMarker({
     case "square":
       return createSquare(sideLength);
     default:
-      return [];
+      throw new SportyError(`Unknown face-off marker shape "${shape}"; expected O, X or square`);
   }
 }
 

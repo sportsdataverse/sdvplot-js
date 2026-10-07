@@ -7,6 +7,7 @@ import {
   goalCircle,
   neutralZone,
 } from "../../src/lacrosse/features.js";
+import { SportyError } from "../../src/surface.js";
 test("goalCircle full-360 is two mirrored half rings (2·(2n+5) points); clipped variant starts at acos(depth/r)", () => {
   const full = goalCircle({
     goalCircleRadius: 3,
@@ -71,5 +72,5 @@ test("boards: 4 quarter arcs + 7 seam points; face-off markers O/X/square", () =
   expect(faceOffMarker({ shape: "X", featureThickness: 0.1, sideLength: 1, npoints: 10 })).toHaveLength(14);
   expect(faceOffMarker({ shape: "square", sideLength: 0.1111, npoints: 10 })).toHaveLength(5);
   expect(faceOffMarker({ shape: "o", featureRadius: 0.5, npoints: 10 })).toHaveLength(10);
-  expect(faceOffMarker({ shape: "triangle", npoints: 10 })).toEqual([]);
+  expect(() => faceOffMarker({ shape: "triangle", npoints: 10 })).toThrow(SportyError);
 });

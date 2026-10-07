@@ -1,5 +1,6 @@
 import { expect, test } from "vitest";
 import { lacrosseField } from "../../src/lacrosse/field.js";
+import { SportyError } from "../../src/surface.js";
 test("NCAAM: yards, 73 polygons in R order, contrasting centre marker #ffcb05, bbox = half dims + apron", () => {
   const s = lacrosseField("ncaam");
   expect(s.units).toBe("yd");
@@ -54,4 +55,7 @@ test("PLL goal arc has the inner arc (thickness present); usam marker stays whit
     )!.fill,
   ).toBe("#123456"); // R: #ffcb05
   expect(lacrosseField("world lacrosse", { units: "yd" }).bbox[2]).toBeCloseTo(105 / 3, 9);
+  expect(() => lacrosseField("ncaam", { updates: { center_face_off_marker_shape: "triangle" } })).toThrow(
+    SportyError,
+  ); // R: add_feature errors on the 0-row frame
 });
