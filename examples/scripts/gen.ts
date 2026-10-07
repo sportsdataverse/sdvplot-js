@@ -6,12 +6,33 @@ import type { ExampleEntry, ExamplePackage } from "../src/contract.js";
 import {
   type GenFile,
   codeOf,
+  discoverSporty,
   docModule,
   extractDocExamples,
   familyModules,
   metaOf,
   registryModules,
 } from "./lib.js";
+
+/** Sports whose surfaces the gallery draws: discovered, with every omitted sport or league logged. */
+function sportySurfaces(): Record<string, string[]> {
+  const dir = abs("packages/sporty/src/specs");
+  if (!existsSync(dir)) return {};
+  const specs: Record<string, string> = {};
+  for (const f of readdirSync(dir)) {
+    const sport = f.replace(/\.ts$/, "");
+    if (/^[a-z]+\.ts$/.test(f) && sport !== "index") specs[sport] = readFileSync(join(dir, f), "utf8");
+  }
+  const { all, dispatched } = discoverSporty(specs, readFileSync(abs("packages/sporty/src/api.ts"), "utf8"));
+  for (const [sport, leagues] of Object.entries(all)) {
+    const missing = sport in dispatched ? [] : leagues;
+    if (missing.length > 0)
+      console.log(
+        `examples: sporty ${sport} has no surface() dispatch yet; no gallery surfaces for: ${missing.join(", ")}`,
+      );
+  }
+  return dispatched;
+}
 
 const EX = abs("examples");
 const PACKAGES: readonly ExamplePackage[] = ["sdvplot", "sporty", "sdvtables"];
@@ -52,7 +73,7 @@ export function generate(): readonly ExampleEntry[] {
   // The theme family needs Phase 4's html renderer; until its SOURCES row exists the family is skipped, not thrown.
   const html = "@sportsdataverse/sdvtables/html" in SOURCES;
   if (!html) console.log("examples: sdvtables/html not wired yet (Phase 4); skipping the theme family");
-  const out: GenFile[] = familyModules().filter(
+  const out: GenFile[] = familyModules(sportySurfaces()).filter(
     (f) => html || !f.path.startsWith("src/generated/sdvtables/"),
   );
   for (const p of PACKAGES) {

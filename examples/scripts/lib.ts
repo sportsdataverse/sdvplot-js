@@ -81,14 +81,31 @@ export interface DocExample {
   readonly lang: "ts" | "tsx";
   readonly code: string;
 }
+const COMMENT = /\/\*\*(?:[^*]|\*(?!\/))*\*\//g;
 // A doc comment that cannot contain "*/", then the exported declaration it documents.
 const DOC =
-  /\/\*\*((?:[^*]|\*(?!\/))*)\*\/\s*export\s+(?:declare\s+)?(?:default\s+)?(?:async\s+)?(?:function\*?|const|let|class|interface|type|enum)\s+([A-Za-z_$][\w$]*)/g;
+  /\/\*\*((?:[^*]|\*(?!\/))*)\*\/\s*export\s+(?:declare\s+)?(?:default\s+)?(?:async\s+)?(?:function\*?|const|let|(?:abstract\s+)?class|interface|type|enum|namespace)\s+([A-Za-z_$][\w$]*)/g;
 
-/** Every fenced block under an `@example` tag of an exported declaration, in source order. */
+/**
+ * Every fenced block under an `@example` tag of an exported declaration, in source order.
+ *
+ * The authoring contract (each rule below throws, naming the file):
+ * - An `@example` is a fenced ```ts or ```tsx block under the tag (`@example Caption` on the tag line is fine).
+ * - Imports come first; the block ends with the expression it shows, which becomes the example's default export
+ *   (a trailing declaration or statement is refused).
+ * - One block per example; several on one symbol get ids `<symbol>`, `<symbol>-2`, ... (see gen.ts).
+ * - Only a doc comment placed directly on a top-level `export [declare|default|async|abstract] function|const|let|
+ *   class|interface|type|enum|namespace` is read. An `@example` on a class member, an overload, an `export { x }`
+ *   or any other shape throws, so an example can never vanish silently. A column-0 comment on a NON-exported
+ *   declaration is ignored.
+ * - Hand-written example modules (not docstrings) need `export const meta = { title, tags }` with literal
+ *   strings, a default export for the output and imports first; see `metaOf`.
+ */
 export function extractDocExamples(source: string, fileName: string): DocExample[] {
   const found: DocExample[] = [];
+  const read = new Set<number>();
   for (const m of source.matchAll(DOC)) {
+    read.add(m.index);
     const symbol = m[2] ?? "";
     const lines = (m[1] ?? "").split("\n").map((l) => l.replace(/^\s*\* ?/, ""));
     for (let i = 0; i < lines.length; i++) {
@@ -103,6 +120,25 @@ export function extractDocExamples(source: string, fileName: string): DocExample
       found.push({ symbol, lang, code: `${lines.slice(open + 1, close).join("\n")}\n` });
       i = close;
     }
+  }
+  for (const c of source.matchAll(COMMENT)) {
+    if (read.has(c.index) || !/^\s*\*?\s*@example(?![\w-])/m.test(c[0])) continue;
+    const after = source.slice(c.index + c[0].length);
+    const topLevel = c.index === 0 || source.charAt(c.index - 1) === String.fromCharCode(10);
+    if (
+      topLevel &&
+      /^\s*(?:declare\s+)?(?:async\s+)?(?:function|const|let|var|class|interface|type|enum)(?![\w$])/.test(
+        after,
+      )
+    )
+      continue;
+    const first = c[0]
+      .split(/\r?\n/)
+      .map((l) => l.replace(/^\s*(?:\/\*\*|\*) ?/, "").trim())
+      .find((l) => l !== "");
+    throw new Error(
+      `${fileName}: @example in the doc comment "${first ?? ""}" is not on a top-level exported declaration (put it on the export, not on a member, overload or \`export { x }\`)`,
+    );
   }
   return found;
 }
@@ -162,17 +198,43 @@ export const THEMES = [
 const THEME_OPTIONS: Readonly<Record<string, string>> = {
   sdvTeam: `, { options: { league: "nfl", team: "KC" } }`,
 };
-export const SURFACE_LEAGUES = {
+export const SURFACE_LEAGUES: Readonly<Record<string, readonly string[]>> = {
   basketball: ["fiba", "nba", "nba g league", "ncaa", "nfhs", "wnba"],
   hockey: ["ahl", "echl", "iihf", "ncaa", "nhl", "nwhl", "ohl", "phf", "pwhl", "qmjhl", "ushl"],
   football: ["cfl", "ncaa", "nfhs11", "nfhs6", "nfhs8", "nfhs9", "nfl"],
-} as const;
+};
+
+/**
+ * sporty's leagues per sport, read from `specs/<sport>.ts` (`export const X_LEAGUES = [...] as const`), minus
+ * `custom`; and which sports `surface()` dispatches today (a `case "<sport>":` in api.ts). Only dispatched sports
+ * can be drawn through the public API, so only they get gallery surfaces; every other sport is reported so an
+ * omission is visible in the generator output. When the dispatcher lands, the sport joins automatically.
+ */
+export function discoverSporty(
+  specs: Readonly<Record<string, string>>,
+  apiSource: string,
+): { readonly all: Record<string, string[]>; readonly dispatched: Record<string, string[]> } {
+  const all: Record<string, string[]> = {};
+  const dispatched: Record<string, string[]> = {};
+  for (const [sport, text] of Object.entries(specs)) {
+    const m = /_LEAGUES\s*=\s*\[([^\]]*)\]/.exec(text);
+    if (!m) throw new Error(`specs/${sport}.ts: no \`*_LEAGUES = [...]\` list found`);
+    const leagues = [...(m[1] ?? "").matchAll(/"([^"]+)"/g)]
+      .map((x) => x[1] ?? "")
+      .filter((l) => l !== "custom");
+    all[sport] = leagues;
+    if (new RegExp(`case "${sport}":`).test(apiSource)) dispatched[sport] = leagues;
+  }
+  return { all, dispatched };
+}
 const slug = (s: string): string => s.replace(/[^A-Za-z0-9]+/g, "-");
 const HEADER = "// generated by examples/scripts/gen.ts (a gallery family) - do not edit";
 const CONTRACT = `import type { ExampleMeta } from "../../../contract.js";`;
 const q = (v: unknown): string => JSON.stringify(v);
 
-export function familyModules(): GenFile[] {
+export function familyModules(
+  sports: Readonly<Record<string, readonly string[]>> = SURFACE_LEAGUES,
+): GenFile[] {
   const themes = THEMES.map((name) => ({
     path: `src/generated/sdvtables/themes/${name}.ts`,
     text: `${HEADER}
@@ -198,7 +260,7 @@ const spec = defineTable<(typeof STANDINGS)[number]>()
 export default await renderHTMLAsync(spec, STANDINGS);
 `,
   }));
-  const surfaces = Object.entries(SURFACE_LEAGUES).flatMap(([sport, leagues]) =>
+  const surfaces = Object.entries(sports).flatMap(([sport, leagues]) =>
     leagues.map((league) => ({
       path: `src/generated/sporty/surfaces/${sport}-${slug(league)}.ts`,
       text: `${HEADER}
