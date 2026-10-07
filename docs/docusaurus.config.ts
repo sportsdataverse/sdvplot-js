@@ -1,6 +1,8 @@
+import { resolve } from "node:path";
 import type * as Preset from "@docusaurus/preset-classic";
 import type { Config } from "@docusaurus/types";
 import { themes as prismThemes } from "prism-react-renderer";
+import remarkLive from "../examples/scripts/remark-live";
 
 // This runs in Node.js - no browser APIs here.
 
@@ -42,7 +44,11 @@ const config: Config = {
     [
       "classic",
       {
-        docs: { sidebarPath: "./sidebars.ts", routeBasePath: "/" },
+        docs: {
+          sidebarPath: "./sidebars.ts",
+          routeBasePath: "/",
+          remarkPlugins: [[remarkLive, { outDir: resolve("../examples/out") }]],
+        },
         blog: false,
         theme: { customCss: "./src/css/custom.css" },
       } satisfies Preset.Options,
@@ -50,6 +56,7 @@ const config: Config = {
   ],
 
   plugins: [
+    "./plugins/sdv-examples.ts",
     [
       "docusaurus-plugin-typedoc",
       {
@@ -92,6 +99,7 @@ const config: Config = {
       logo: { alt: "sdvplot-js hex mark", src: "img/sdvplot-js-mark.svg" },
       items: [
         { type: "docSidebar", sidebarId: "docsSidebar", position: "left", label: "Docs" },
+        { href: "pathname:///notebooks/", label: "Notebooks", position: "left" },
         { href: "https://github.com/sportsdataverse/sdvplot-js", label: "GitHub", position: "right" },
       ],
     },

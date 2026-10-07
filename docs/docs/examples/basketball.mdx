@@ -2,57 +2,12 @@
 title: Basketball (NBA / WNBA / NCAA)
 ---
 
-These snippets run as written in an Observable notebook, where `Plot` is preloaded (drop the `import * as Plot` line there). In Node, pass a DOM `document` to `Plot.plot({ document, … })`; see [Node and SSR](../intro.mdx#node-and-ssr).
+Each figure is drawn by the code under it; the same code runs in CI on every pull request. In Node, pass a DOM `document` to `Plot.plot({ document, … })`; see [Node and SSR](../intro.mdx#node-and-ssr).
 
 ## Shot chart — court in team colours, dots, team colour scale
 
-```js
-import * as Plot from "@observablehq/plot";
-import { loadLeague } from "@sportsdataverse/sdvplot";
-import { logos, surface, teamColor } from "@sportsdataverse/sdvplot/plot";
-import { toSurfaceFrame } from "@sportsdataverse/sporty";
-
-await loadLeague("nba");
-
-// stats.nba.com shots: columns x_legacy/y_legacy (the frame's defaults), tenths of a foot from the hoop.
-// Every shot lands on the -x half, so draw the defensive half only: displayRange "defense".
-const rawShots = [
-  { x_legacy: 10, y_legacy: 120, team: "LAL", made: true },
-  { x_legacy: -50, y_legacy: 230, team: "BOS", made: false },
-];
-const shots = toSurfaceFrame(rawShots, { from: "nba-legacy" });
-const court = surface("nba", { team: "LAL", displayRange: "defense" });
-Plot.plot({
-  ...court.scales,
-  width: 940,
-  color: teamColor("nba", { values: shots.map((s) => s.team) }),
-  marks: [
-    ...court.marks,
-    Plot.dot(shots, { x: "surface_x", y: "surface_y", fill: "team", r: 5 }),
-    logos(shots, { league: "nba", x: "surface_x", y: "surface_y", team: "team", height: 0.08 }),
-  ],
-});
-```
+<Live id="sdvplot/plot/nba-shot-chart" />
 
 ## Standings — bars with logos on the axis
 
-```js
-import * as Plot from "@observablehq/plot";
-import { loadLeague } from "@sportsdataverse/sdvplot";
-import { axisLogos, teamColor } from "@sportsdataverse/sdvplot/plot";
-
-await loadLeague("nba");
-const standings = [
-  { team: "LAL", wins: 14 },
-  { team: "BOS", wins: 11 },
-  { team: "GSW", wins: 7 },
-];
-Plot.plot({
-  height: 300,
-  marks: [
-    Plot.barY(standings, { x: "team", y: "wins", fill: "team" }),
-    axisLogos("x", { league: "nba", height: 0.12 }),
-  ],
-  color: teamColor("nba", { values: standings.map((s) => s.team) }),
-});
-```
+<Live id="sdvplot/plot/nba-standings" />
