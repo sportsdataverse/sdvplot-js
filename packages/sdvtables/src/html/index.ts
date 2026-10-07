@@ -4,10 +4,11 @@ import type { League } from "@sportsdataverse/sdvplot";
 import { TableSpecError } from "../errors.js";
 import type { ColumnSpec, Decoration, TableSpec, ThemeRef } from "../spec.js";
 import { fnv1a32, tableId } from "../table-id.js";
+import { loadTeamNames } from "../team-name.js";
 import { BASE_CSS, tokensCSS } from "../themes/base-css.js";
 import { resolveTheme } from "../themes/index.js";
 import type { GoogleFont, Theme } from "../themes/tokens.js";
-import { type RenderContext, kindCellStyle, renderCell } from "./cells.js";
+import { type RenderContext, kindCellStyle, renderCell, teamIdsOf } from "./cells.js";
 import { applyDecorations } from "./decorations.js";
 import { escapeAttr, escapeHtml, styleOf } from "./escape.js";
 import { fontsLink } from "./fonts.js";
@@ -48,6 +49,7 @@ export function leaguesOf<Row>(spec: TableSpec<Row>): League[] {
 export async function prepare<Row>(spec: TableSpec<Row>): Promise<void> {
   const gsis = spec.columns.some((c) => c.kind === "headshot" && c.idSystem === "gsis");
   await Promise.all([...leaguesOf(spec).map((l) => loadLeague(l)), ...(gsis ? [loadGsis()] : [])]);
+  await loadTeamNames(leaguesOf(spec));
 }
 
 function alignOf<Row>(col: ColumnSpec<Row>): "left" | "center" | "right" {
@@ -111,7 +113,7 @@ export function renderHTML<Row>(
     columns: spec.columns,
     groupKey: groupBy?.key,
     warn,
-    teamIds: new Map(),
+    teamIds: teamIdsOf(spec, rows),
     scales: new Map(),
     recorded: undefined,
     scaled: new Map(),
