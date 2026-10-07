@@ -171,12 +171,9 @@ export function tennisCourt(
   );
   add("net", F.net({ featureThickness: t, netLength: p.net_length }), col("net"), 0, 0, false, false);
   // Display range (geom-tennis.R 485-560) in native units (the +5 and 1.5 are NOT scaled, as in R); then converted, translated, rotated.
-  // R's `%or% 20` / `%or% 10` fallbacks only fire for `custom` (NULL there); the vendored custom spec holds 0, so key off "not updated".
-  const custom = key === "custom";
-  const back = custom && opts.updates?.backstop_distance === undefined ? 20 : p.backstop_distance;
-  const sidestop = custom && opts.updates?.sidestop_distance === undefined ? 10 : p.sidestop_distance;
-  const hcl = L / 2 + back + 5;
-  const hcw = D / 2 + sidestop + 5;
+  // R's `%or% 20` / `%or% 10` never fire: the vendored custom spec holds 0, not NULL (measured: custom without backstop = +-44).
+  const hcl = L / 2 + p.backstop_distance + 5;
+  const hcw = D / 2 + p.sidestop_distance + 5;
   const kind = SIDE[range];
   const xr: readonly [number, number] =
     kind === "in"

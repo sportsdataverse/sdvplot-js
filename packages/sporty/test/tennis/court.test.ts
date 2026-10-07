@@ -33,3 +33,9 @@ test("ad court colour update applies to both ad quadrants only", () => {
   const s = tennisCourt("wta", { colorUpdates: { ad_court: "#1e90ff" } });
   expect(s.features.filter((f) => f.kind === "polygon" && f.fill === "#1e90ff")).toHaveLength(2);
 });
+test("custom uses its 0 backstop/sidestop as-is (R %or% never fires; R-measured)", () => {
+  const base = { court_length: 78, doubles_width: 36 };
+  expect(tennisCourt("custom", { updates: base }).bbox).toEqual([-44, -23, 44, 23]);
+  const s = tennisCourt("custom", { updates: { ...base, backstop_distance: 21, sidestop_distance: 12 } });
+  expect(s.bbox).toEqual([-65, -35, 65, 35]);
+});
