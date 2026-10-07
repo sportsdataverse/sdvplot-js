@@ -20,8 +20,6 @@ test("surface() rejects misspelled options per sport (spec §2)", () => {
   surface("hockey", "nhl", { colorUpdates: { court_apron: "#000000" } });
   // @ts-expect-error misspelled football option
   surface("football", "nfl", { rotaton: 90 });
-  // @ts-expect-error an unported sport accepts no options
-  surface("soccer", "fifa", { rotation: 90 });
   expectTypeOf(surface("basketball", "nba", { displayRange: "offense" })).toEqualTypeOf<Scene>();
   expectTypeOf(surface("hockey", "my league")).toEqualTypeOf<Scene>(); // league stays an open string
 });
