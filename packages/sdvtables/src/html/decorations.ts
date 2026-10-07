@@ -1,9 +1,11 @@
 // src/html/decorations.ts — Task 5 version: every hook exists (defaults are no-ops); title, subtitle, sourceNote here; groupBy is read by index.ts.
 // Later tasks only POPULATE hooks; none adds one. Style hooks return bare declarations — index.ts builds the one style="" (styleOf).
-import { hex6, onColor } from "@sportsdataverse/sdvplot";
+import { contrast, hex6, mix, onColor, solid } from "@sportsdataverse/sdvplot";
+import { RANK_PALETTE } from "../define.js";
 import { TableSpecError } from "../errors.js";
-import { formatNumber, isBlank, naturalDigits } from "../format.js";
+import { formatNumber, isBlank, naturalDigits, toNumber } from "../format.js";
 import { selectRows } from "../predicate.js";
+import { domainOf, quantile7, ramp, sampleSd } from "../scale.js";
 import type { ColumnSpec, Decoration, TableSpec, TextStyle } from "../spec.js";
 import { secondaryOn } from "../themes/sdv.js";
 import { type GoogleFont, fontStack } from "../themes/tokens.js";
@@ -164,6 +166,11 @@ export function applyDecorations<Row>(
   const fillCells = (i: number, decl: Record<string, string | undefined>): void => {
     for (const c of ctx.columns) addCell(i, c.key, decl);
   };
+  const suffixes = new Map<string, string>(); // Task 11, key `${i}:${col}`
+  const labelStyles = new Map<string, string>(); // Task 11
+  const recordedKey: Readonly<Record<string, string>> | undefined = undefined as
+    | Readonly<Record<string, string>>
+    | undefined; // Task 12: tiers sets it for legendDiscrete("recorded")
   let cutCount = 0; // one id per .cutline() call so two calls never share a class
   const bg = ctx.theme.tokens.bg === "transparent" ? "#ffffff" : hex6(ctx.theme.tokens.bg);
   // colorResults is a column kind (spec §6.1) whose effect is a row fill: gt_color_results (_cells.py:203-222), exact W/L or 1/0
@@ -471,9 +478,161 @@ export function applyDecorations<Row>(
         );
         break;
       }
+      // ---- Task 11
+      case "legendContinuous": {
+        // gt_legend_continuous (_layout.py:395-470), type "steps": nBins swatches sampled at bin midpoints (k + 0.5) / nBins (:471)
+        const rec = ctx.recorded;
+        const palette = (d.palette ?? rec?.palette ?? RANK_PALETTE).map((c) => hex6(c));
+        let domain = d.domain ?? rec?.domain;
+        if (!domain && d.columns)
+          domain = domainOf(d.columns.map((k) => rows.map((r) => toNumber(cellValue(r, k)))));
+        if (!domain)
+          throw new TableSpecError(
+            "legendContinuous: no recorded scale (color a column with colorPills/colorRanks/percentileBar first) and no domain or columns given",
+          );
+        if (d.nBins < 1) throw new TableSpecError("legendContinuous nBins must be at least 1");
+        const rev = d.reverse ?? rec?.reverse ?? false;
+        const r = ramp(rev ? [...palette].reverse() : palette, domain);
+        const [lo, hi] = domain;
+        const sw = Array.from(
+          { length: d.nBins },
+          (_, b) =>
+            `<span class="sdvt-swatch" style="display:inline-block;width:${d.swatchWidth}px;height:${d.swatchHeight}px;background-color:${r(lo + ((b + 0.5) / d.nBins) * (hi - lo)) ?? "#808080"}"></span>`,
+        );
+        const labels = d.labels ?? [lo, hi].map((v) => formatNumber(v, { digits: d.digits, big: true }));
+        const block = `<div class="sdvt-legend sdvt-legend-${d.location}" style="display:flex;flex-direction:${d.titlePosition === "left" ? "row" : "column"};align-items:center;gap:6px;justify-content:center">${d.title ? `<div class="sdvt-legend-title">${escapeHtml(d.title)}</div>` : ""}<div class="sdvt-legend-bar" style="display:flex;align-items:center;gap:4px"><span class="sdvt-legend-lab">${escapeHtml(labels[0] ?? "")}</span>${sw.join("")}<span class="sdvt-legend-lab">${escapeHtml(labels[labels.length - 1] ?? "")}</span></div></div>`;
+        if (d.location === "top") out.before += block;
+        else out.after += block;
+        break;
+      }
+      case "legendDiscrete": {
+        const key = d.key === "recorded" ? recordedKey : d.key;
+        if (!key)
+          throw new TableSpecError(
+            'legendDiscrete("recorded") needs a .tiers() decoration before it (no recorded key)',
+          );
+        const items = Object.entries(key).map(
+          ([label, color]) =>
+            `<span class="sdvt-key-item" style="display:inline-flex;align-items:center;gap:6px"><span class="sdvt-swatch" style="${styleAttr({ display: "inline-block", width: `${d.swatchSize}px`, height: `${d.swatchSize}px`, "background-color": color, border: d.border ? `1px solid ${d.borderColor ?? "currentColor"}` : undefined, "border-radius": d.shape === "circle" ? "50%" : undefined })}"></span>${escapeHtml(label)}</span>`,
+        );
+        const align = checkAlign(d.align, "legendDiscrete align") as "left" | "center" | "right";
+        const block = `<div class="sdvt-legend sdvt-legend-${d.location}" style="display:flex;flex-direction:column;align-items:${{ left: "flex-start", center: "center", right: "flex-end" }[align]};gap:4px">${d.heading ? `<div class="sdvt-legend-title">${escapeHtml(d.heading)}</div>` : ""}${d.subtitle ? `<div class="sdvt-legend-sub">${escapeHtml(d.subtitle)}</div>` : ""}<div style="display:flex;flex-direction:${d.direction === "vertical" ? "column" : "row"};flex-wrap:wrap;gap:${d.gap}px">${items.join("")}</div></div>`;
+        if (d.location === "top") out.before += block;
+        else out.after += block;
+        break;
+      }
+      case "significance": {
+        // gt_significance (_layout.py:1342-1369): levels ascending (strictest first), the first level p is below wins; p columns hidden
+        if (d.levels.length !== d.symbols.length)
+          throw new TableSpecError("significance levels and symbols must be the same length");
+        if (d.levels.some((x, j) => j > 0 && x < (d.levels[j - 1] ?? x)))
+          throw new TableSpecError("significance levels must be in ascending order, strictest first");
+        for (const pair of d.pairs) {
+          rows.forEach((r, i) => {
+            const p = toNumber(cellValue(r, pair.p));
+            if (p === null) return;
+            const s = d.symbols[d.levels.findIndex((x) => p < x)];
+            if (s)
+              suffixes.set(
+                `${i}:${pair.estimate}`,
+                d.superscript ? `<sup style="font-size:0.7em">${escapeHtml(s)}</sup>` : escapeHtml(s),
+              );
+          });
+          if (d.hideP) out.hiddenColumns.add(pair.p);
+        }
+        if (d.note)
+          out.foot.push(
+            escapeHtml(d.levels.map((x, j) => `${d.symbols[j] ?? ""} p < ${naturalDigits(x)}`).join(", ")),
+          );
+        break;
+      }
+      case "outliers": {
+        // gt_outliers (_layout.py:1240-1290); limits = _limits (:1165-1180): fewer than 2 values or zero spread flags nothing
+        if (d.method === "bounds" && !d.bounds)
+          throw new TableSpecError("outliers bounds must be [lower, upper] when method is 'bounds'");
+        const t = d.threshold ?? (d.method === "sd" ? 3 : 1.5);
+        const shown = d.fill === undefined ? null : solid(d.fill, bg);
+        const ink =
+          d.color ?? (shown === null || contrast("#B3261E", shown) >= 4.5 ? "#B3261E" : onColor(shown));
+        let flagged = false;
+        for (const k of d.columns) {
+          const xs = rows.map((r) => toNumber(cellValue(r, k)));
+          const nums = xs.filter((v): v is number => v !== null);
+          let lo = Number.NEGATIVE_INFINITY;
+          let hi = Number.POSITIVE_INFINITY;
+          if (d.method === "bounds") {
+            lo = d.bounds?.[0] ?? lo;
+            hi = d.bounds?.[1] ?? hi;
+          } else if (nums.length >= 2 && d.method === "sd") {
+            const m = nums.reduce((a, b) => a + b, 0) / nums.length;
+            const s = sampleSd(nums);
+            if (s !== 0) {
+              lo = m - t * s;
+              hi = m + t * s;
+            }
+          } else if (nums.length >= 2) {
+            const q1 = quantile7(nums, 0.25);
+            const q3 = quantile7(nums, 0.75);
+            if (q3 !== q1) {
+              lo = q1 - t * (q3 - q1);
+              hi = q3 + t * (q3 - q1);
+            }
+          }
+          xs.forEach((v, i) => {
+            if (v === null || !((v < lo && d.side !== "high") || (v > hi && d.side !== "low"))) return;
+            flagged = true;
+            addCell(i, k, {
+              color: ink,
+              "font-weight": d.bold ? "bold" : undefined,
+              "background-color": d.fill,
+            });
+            if (d.symbol)
+              suffixes.set(`${i}:${k}`, `${suffixes.get(`${i}:${k}`) ?? ""}${escapeHtml(d.symbol)}`);
+          });
+        }
+        if (flagged && d.note) {
+          const tail = { both: "", high: " (high side only)", low: " (low side only)" }[d.side];
+          out.foot.push(
+            escapeHtml(
+              typeof d.note === "string"
+                ? d.note
+                : d.method === "sd"
+                  ? `Marked values fall more than ${naturalDigits(t)} standard deviation${t === 1 ? "" : "s"} from the column mean${tail}.`
+                  : d.method === "iqr"
+                    ? `Marked values fall outside ${naturalDigits(t)} × IQR of the column quartiles${tail}.`
+                    : `Marked values fall outside ${d.bounds?.[0] ?? "NA"}–${d.bounds?.[1] ?? "NA"}${tail}.`,
+            ),
+          );
+        }
+        break;
+      }
+      case "marginalia": {
+        // gt_marginalia (_layout.py:1420-1434): muted ink = secondaryOn(bg, onColor(bg)); hairline = mix(bg, ink, 0.18)
+        const ink = onColor(bg);
+        const color = d.color ?? secondaryOn(bg, ink);
+        const rule = d.ruleColor ?? mix(bg, ink, 0.18);
+        const align = checkAlign(d.align, "marginalia align");
+        for (const k of d.columns) {
+          out.labelText.set(k, d.label);
+          if (d.width !== undefined)
+            labelStyles.set(k, `width:${typeof d.width === "number" ? `${d.width}px` : escapeAttr(d.width)}`);
+          rows.forEach((_, i) =>
+            addCell(i, k, {
+              "font-style": d.italic ? "italic" : "normal",
+              "font-size": d.size,
+              color,
+              "border-left": d.rule ? `1px solid ${rule}` : undefined,
+              "text-align": align,
+            }),
+          );
+        }
+        break;
+      }
       default:
         break; // title/subtitle (above), groupBy (index.ts); Tasks 9-12 add their cases above this line
     }
+  out.cellSuffix = (i, key) => suffixes.get(`${i}:${key}`) ?? "";
+  out.labelStyle = (key) => labelStyles.get(key) ?? "";
   out.css = out.css.map((r) => r.replace(/</g, "\\3c ")); // nothing a spec says can close the <style> element
   out.rowClass = (i) => (rowClasses.get(i) ?? []).map((c) => ` ${c}`).join("");
   out.rowStyle = (i) => {
