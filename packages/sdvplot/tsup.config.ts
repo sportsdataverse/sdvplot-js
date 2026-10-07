@@ -20,7 +20,17 @@ export default defineConfig({
     "@sportsdataverse/sporty/d3",
   ],
   format: ["esm"],
-  dts: true,
+  // Declarations come from `tsc -p tsconfig.dts.json` (see the build script) so tsup's dts step only bundles .d.ts: its own
+  // TS program would load all ~20 MB of src/data shards (reached via import()) and exceed a CI runner's default heap.
+  dts: {
+    entry: {
+      index: ".dts/index.d.ts",
+      react: ".dts/react/index.d.ts",
+      plot: ".dts/plot/index.d.ts",
+      d3: ".dts/d3/index.d.ts",
+      testing: ".dts/testing/index.d.ts",
+    },
+  },
   sourcemap: true,
   clean: true,
   target: "es2022",

@@ -53,7 +53,7 @@
     }
   },
   "scripts": {
-    "build": "tsup",
+    "build": "tsc -p tsconfig.dts.json && tsup",
     "typecheck": "tsc -p tsconfig.json",
     "test": "vitest run",
     "api:report": "node ../../tools/api-extractor-all.mjs --local",

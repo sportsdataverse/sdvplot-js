@@ -5,3 +5,4 @@ temp/
 coverage/
 .DS_Store
 .omc/
+.dts/
