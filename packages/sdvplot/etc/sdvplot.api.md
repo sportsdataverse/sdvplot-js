@@ -544,6 +544,9 @@ export function versions(): {
     manifestLastModified: string;
 };
 
+// @public
+export function warn(key: string, message: string): void;
+
 // @public (undocumented)
 export type WarningHandler = (message: string) => void;
 
