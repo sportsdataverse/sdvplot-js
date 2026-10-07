@@ -38,6 +38,10 @@ export interface HeadshotOptions<R> {
   ariaLabel?: string;
 }
 
+/** Materialise a one-shot iterable once (it is read several times); arrays and Arrow-like tables pass through. */
+const once = <R>(data: Data<R>): Data<R> =>
+  Symbol.iterator in data && !Array.isArray(data) && !("numRows" in data) ? Array.from(data) : data;
+
 const values = <R>(data: Data<R>, c: Channel<R>): Value[] =>
   Plot.valueof(data as Plot.Data, c as Plot.ChannelValue) as Value[];
 
@@ -101,7 +105,8 @@ function imageMark<R>(
   });
 }
 
-function build<R>(data: Data<R>, o: MarkOptions<R>, kind: "logo" | "wordmark"): Plot.Markish {
+function build<R>(input: Data<R>, o: MarkOptions<R>, kind: "logo" | "wordmark"): Plot.Markish {
+  const data = once(input);
   const height = checkHeight(o.height ?? 0.1);
   const alpha = checkAlpha(o.alpha ?? 1);
   const xs = values(data, o.x);
@@ -129,17 +134,18 @@ export function wordmarks<R>(data: Data<R>, o: MarkOptions<R>): Plot.Markish {
   return build(data, o, "wordmark");
 }
 export function headshots<R>(data: Data<R>, o: HeadshotOptions<R>): Plot.Markish {
+  const rows = once(data);
   const height = checkHeight(o.height ?? 0.1);
   const alpha = checkAlpha(o.alpha ?? 1);
-  const xs = values(data, o.x);
-  const ys = values(data, o.y);
-  const ids = values(data, o.player);
+  const xs = values(rows, o.x);
+  const ys = values(rows, o.y);
+  const ids = values(rows, o.player);
   const placed = placeSync(xs, ys, ids, {
     league: o.league,
     kind: "headshot",
     idSystem: o.idSystem ?? "espn",
   });
-  return imageMark(data, xs.length, placed, {
+  return imageMark(rows, xs.length, placed, {
     height,
     alpha,
     kind: "headshot",

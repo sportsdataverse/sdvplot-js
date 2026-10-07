@@ -67,7 +67,7 @@ export function axisLogos(axis: Axis, o: AxisLogosOptions): Plot.Markish {
       const tick = pos ?? (sc ? (sc(labels[k]) ?? Number.NaN) + (sc.bandwidth?.() ?? 0) / 2 : undefined);
       if (tick === undefined || Number.isNaN(tick)) return;
       const w = px * (p.aspect ?? 1);
-      const gap = tickSize + 3;
+      const gap = 3; // Plot already translated this <g> by tickSize + tickPadding
       const c =
         side === "bottom"
           ? [tick, dimensions.height - dimensions.marginBottom + gap + px / 2]

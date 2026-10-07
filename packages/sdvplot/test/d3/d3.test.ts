@@ -38,6 +38,15 @@ test("appendLogos draws data-stamped images sized by frameHeight", () => {
   expect(Number(svg.select("image").attr("height"))).toBeCloseTo(70, 6);
 });
 
+test("frameHeight must be a finite number > 0", () => {
+  for (const bad of [0, -5, Number.NaN, Number.POSITIVE_INFINITY]) {
+    const svg = select(document.body).append("svg");
+    expect(() => appendLogos(svg, [10], [-3], ["LV"], { league: "nfl", ...pos, frameHeight: bad })).toThrow(
+      /frameHeight is the plot height in px/,
+    );
+  }
+});
+
 test("a null or NaN position draws no image and writes no NaN", () => {
   const svg = select(document.body).append("svg");
   appendLogos(svg, [10, null, Number.NaN], [-3, -7, -5], ["LV", "LAR", "LAC"], {

@@ -24,6 +24,11 @@ test("parseManifestCsv maps columns by header and keeps every row", () => {
   expect(rows[0]).toHaveProperty("archive_url");
   expect(rows[0]!.level).toBe("team");
 });
+test("parseManifestCsv strips a leading BOM so the first header still matches", () => {
+  const rows = parseManifestCsv(`\uFEFF${text}`);
+  expect(rows.length).toBe(parseManifestCsv(text).length);
+  expect(rows[0]!.level).toBe("team");
+});
 test("parseManifestCsv handles RFC 4180 quoting and CRLF", () => {
   const csv =
     'level,entity_name,league\r\nteam,"A, B",nfl\r\nteam,"say ""hi""",nfl\r\nteam,"two\r\nlines",nfl\r\n';

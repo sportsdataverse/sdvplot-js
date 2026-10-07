@@ -28,6 +28,15 @@ test("known categories become images in tick order; the unknown one stays text; 
   expect(visibleAxisLabels(svg, "x")).toEqual(["XXX"]);
   expect(warned).toHaveLength(1);
 });
+test("default x axis: image top sits tickSize + tickPadding + 3 below the frame", () => {
+  const svg = Plot.plot({ height: 400, marks: [bars(["LV", "LAR"]), axisLogos("x", { league: "nfl" })] });
+  const img = svg.querySelector('image[data-sdv-axis="x"]') as Element;
+  const t = /translate\(([-\d.]+)[ ,]+([-\d.]+)\)/.exec(img.parentElement?.getAttribute("transform") ?? "");
+  const dy = Number(t?.[2]);
+  const frameBottom = 400 - (Math.round(0.1 * 400) + 6 + 8);
+  expect(Number(img.getAttribute("y")) + dy).toBeGreaterThan(frameBottom + 6 + 3 + 3 - 1);
+  expect(Number(img.getAttribute("y")) + dy).toBeLessThan(frameBottom + 6 + 3 + 3 + 1);
+});
 test("y axis and wordmarks", () => {
   const svg = Plot.plot({
     height: 400,

@@ -29,6 +29,7 @@ export const safeArchive = (m: Pick<ManifestRow, "archive_url" | "sha256" | "ext
 
 /** RFC 4180 over the whole text (quoted commas, doubled quotes, embedded newlines; CRLF or LF); rows keyed by header name. */
 export function parseManifestCsv(text: string): ManifestRow[] {
+  const src = text.replace(/^\uFEFF/, ""); // a BOM would make the first header "\uFEFFlevel" and drop every row
   const records: string[][] = [];
   let rec: string[] = [];
   let cur = "";
@@ -39,11 +40,11 @@ export function parseManifestCsv(text: string): ManifestRow[] {
     if (rec.length > 1 || rec[0] !== "") records.push(rec);
     rec = [];
   };
-  for (let i = 0; i < text.length; i++) {
-    const c = text[i] as string;
+  for (let i = 0; i < src.length; i++) {
+    const c = src[i] as string;
     if (q) {
       if (c !== '"') cur += c;
-      else if (text[i + 1] === '"') {
+      else if (src[i + 1] === '"') {
         cur += '"';
         i++;
       } else q = false;
@@ -52,7 +53,7 @@ export function parseManifestCsv(text: string): ManifestRow[] {
       rec.push(cur);
       cur = "";
     } else if (c === "\n") endRecord();
-    else if (c === "\r" && text[i + 1] === "\n") continue;
+    else if (c === "\r" && src[i + 1] === "\n") continue;
     else cur += c;
   }
   if (cur !== "" || rec.length > 0) endRecord();

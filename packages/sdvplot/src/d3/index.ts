@@ -1,5 +1,6 @@
 import { appendSurface as sportyAppendSurface } from "@sportsdataverse/sporty/d3";
 import { type ScaleOrdinal, type Selection, scaleOrdinal } from "d3";
+import { InputError } from "../errors.js";
 import type { EspnHeadshotLeague } from "../headshots.js";
 import { type Kind, checkAlpha, checkHeight, placeSync } from "../placement.js";
 import type { Value } from "../resolve.js";
@@ -40,6 +41,9 @@ function draw<G extends SVGElement>(
 ): Sel<SVGGElement> {
   const h = checkHeight(o.height ?? 0.1);
   const alpha = checkAlpha(o.alpha ?? 1);
+  if (!(Number.isFinite(o.frameHeight) && o.frameHeight > 0)) {
+    throw new InputError(`frameHeight is the plot height in px, got ${String(o.frameHeight)}`);
+  }
   const px = h * o.frameHeight;
   const placed = placeSync(Array.from(xs), Array.from(ys), ids, place);
   const g = sel.append("g").attr("class", `sdv-${kind}s`).attr("opacity", alpha);

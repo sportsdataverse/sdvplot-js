@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import * as Plot from "@observablehq/plot";
-import { beforeAll, expect, test } from "vitest";
-import { InputError, loadLeague, placeSync } from "../../src/index.js";
+import { beforeAll, beforeEach, expect, test } from "vitest";
+import { InputError, loadLeague, placeSync, resetWarnings, setWarningHandler } from "../../src/index.js";
 import { headshots, logos, wordmarks } from "../../src/plot/index.js";
 import { drawnMarks } from "../../src/testing/index.js";
 
@@ -18,6 +18,10 @@ const base = {
 } as const;
 const o = { league: "nfl", x: "epa", y: "sr", team: "team" } as const;
 beforeAll(() => loadLeague("nfl"));
+beforeEach(() => {
+  resetWarnings();
+  setWarningHandler(() => {});
+});
 
 test("logos draws each team at its own x/y at 0.1 of the frame height, with the archive url", () => {
   const svg = Plot.plot({ ...base, marks: [logos(rows, { ...o, height: 0.1 })] });
@@ -115,4 +119,12 @@ test("wordmarks and headshots stamp their kind; headshots keep 600:436", () => {
 });
 test("a mark built before the league is loaded throws InputError", () => {
   expect(() => logos(rows, { ...o, league: "mlb" })).toThrow(/not loaded/);
+});
+test("a one-shot iterable (generator) is materialised once and draws every row", () => {
+  function* gen() {
+    yield* rows;
+  }
+  const svg = Plot.plot({ ...base, marks: [logos(gen(), o)] });
+  expect(svg.querySelectorAll("image")).toHaveLength(2);
+  expect(drawnMarks(svg)).toHaveLength(2);
 });
