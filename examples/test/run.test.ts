@@ -78,3 +78,47 @@ test("Review Focus 4: a clipped figure prerenders to the same bytes whatever ren
     "plot-clip-a-b-1 plot-marker-a-b-2 plot-clip-a-b-1",
   );
 });
+
+test("I1/I3: a swallowed fetch, an Image src, an XHR and a network example that never fetched are problems", async () => {
+  const draws = Plot.plot({ marks: [Plot.dot(STANDINGS, { x: "pf", y: "pa" })] });
+  const swallowed = entry("t/swallow");
+  const r = await runExample(swallowed, async () => {
+    await fetch("https://example.com/a.csv").catch(() => undefined);
+    return { default: draws };
+  });
+  expect(problems(swallowed, r).join()).toContain('fetched without the "network" tag');
+  const imgEntry = entry("t/img");
+  const ri = await runExample(imgEntry, async () => {
+    new Image().src = "https://example.com/x.png";
+    return { default: draws };
+  });
+  expect(ri.fetched).toEqual(["https://example.com/x.png"]);
+  expect(problems(imgEntry, ri).join()).toContain("fetched without");
+  const xhrEntry = entry("t/xhr");
+  const rx = await runExample(xhrEntry, async () => {
+    new XMLHttpRequest().open("GET", "https://example.com/y.json");
+    return { default: draws };
+  });
+  expect(rx.fetched).toEqual(["https://example.com/y.json"]);
+  const idle = entry("t/idle", ["network"]);
+  expect(problems(idle, await runExample(idle, out(draws)))).toContain(
+    'has the "network" tag but did not fetch',
+  );
+});
+
+test("I2: axes alone are not a drawing; a data mark is", async () => {
+  const none = entry("t/none");
+  const empty = await runExample(none, out(Plot.plot({ marks: [Plot.dot([], { x: "a", y: "b" })] })));
+  expect(problems(none, empty)).toContain(
+    "drew no mark (no path/image/circle/rect/line/polygon/text/img/table)",
+  );
+  const some = await runExample(none, out(Plot.plot({ marks: [Plot.dot(STANDINGS, { x: "pf", y: "pa" })] })));
+  expect(problems(none, some)).toEqual([]);
+  const bare = await runExample(
+    none,
+    out("<div><svg><g aria-label='x-axis tick label'><text>1</text></g></svg></div>"),
+  );
+  expect(problems(none, bare)).toContain(
+    "drew no mark (no path/image/circle/rect/line/polygon/text/img/table)",
+  );
+});

@@ -86,6 +86,34 @@ export async function toMarkup(out: unknown, id: string): Promise<{ kind: Output
   return { kind: "value", markup: `<pre class="sdv-value">${escapeHtml(text)}</pre>` };
 }
 
+/**
+ * jsdom never loads an <img> or sends an XHR, so those paths would be silent: record them into `fetched` too
+ * (problems() then flags them like a fetch). data: URIs carry their bytes and are not network.
+ */
+function recordOtherNetworkPaths(fetched: string[]): () => void {
+  const img = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, "src");
+  const open = XMLHttpRequest.prototype.open;
+  if (img?.set !== undefined && img.get !== undefined) {
+    const { get, set } = img;
+    Object.defineProperty(HTMLImageElement.prototype, "src", {
+      ...img,
+      set(this: HTMLImageElement, v: string) {
+        if (!String(v).startsWith("data:")) fetched.push(String(v));
+        set.call(this, v);
+      },
+      get,
+    });
+  }
+  XMLHttpRequest.prototype.open = function (this: XMLHttpRequest, ...args: unknown[]) {
+    fetched.push(String(args[1]));
+    return (open as (...a: unknown[]) => void).apply(this, args);
+  } as typeof open;
+  return () => {
+    if (img) Object.defineProperty(HTMLImageElement.prototype, "src", img);
+    XMLHttpRequest.prototype.open = open;
+  };
+}
+
 /** Load (= run) one example offline, collecting sdvplot warnings and every fetch it attempted. */
 export async function runExample(
   entry: ExampleEntry,
@@ -95,6 +123,7 @@ export async function runExample(
   const fetched: string[] = [];
   const realFetch = globalThis.fetch;
   globalThis.fetch = offlineFetch(entry, fetched);
+  const restoreSinks = recordOtherNetworkPaths(fetched);
   resetWarnings();
   setWarningHandler((m) => warnings.push(m));
   try {
@@ -102,6 +131,7 @@ export async function runExample(
     return { ...(await toMarkup(value, entry.id)), value, warnings, fetched };
   } finally {
     globalThis.fetch = realFetch;
+    restoreSinks();
     setWarningHandler(null);
   }
 }
@@ -113,12 +143,37 @@ const isEmpty = (v: unknown): boolean =>
   (Array.isArray(v) && v.length === 0) ||
   (typeof v === "object" && v !== null && !Array.isArray(v) && Object.keys(v).length === 0);
 
+const MARK = "path,circle,image,rect,polygon,polyline,line,text,img";
+const FURNITURE = /^(x|y|fx|fy)-(axis|grid)( |$)|^frame$/;
+
+/** A DATA mark: not an axis, tick, label or grid (Plot's `g[aria-label]` groups), or any non-svg table/img. */
+function drewMark(markup: string): boolean {
+  const host = document.createElement("div");
+  host.innerHTML = markup;
+  if (host.querySelector("table") !== null) return true;
+  const hasSvg = host.querySelector("svg") !== null;
+  for (const el of Array.from(host.querySelectorAll(MARK))) {
+    let furniture = false;
+    for (
+      let g = el.closest("g[aria-label]");
+      g !== null;
+      g = g.parentElement?.closest("g[aria-label]") ?? null
+    )
+      if (FURNITURE.test(g.getAttribute("aria-label") ?? "")) furniture = true;
+    if (!furniture || !hasSvg) return true;
+  }
+  return false;
+}
+
 /** The gate's notion of "rendered something": a throw is not the only failure; blank output is one too. */
 export function problems(entry: ExampleEntry, r: RunResult): string[] {
   const p: string[] = [];
   if (r.markup.trim() === "" || (r.kind === "value" && isEmpty(r.value))) p.push("rendered nothing");
-  if (r.kind === "node" && !/<(path|image|circle|rect|line|polygon|polyline|text|img|table)\b/.test(r.markup))
+  if (r.kind !== "value" && !drewMark(r.markup))
     p.push("drew no mark (no path/image/circle/rect/line/polygon/text/img/table)");
+  const network = entry.tags.includes("network");
+  if (!network && r.fetched.length > 0) p.push(`fetched without the "network" tag: ${r.fetched.join(" | ")}`);
+  if (network && r.fetched.length === 0) p.push(`has the "network" tag but did not fetch`);
   if (/\bNaN\b/.test(r.markup)) p.push("output contains NaN");
   const warns = entry.tags.includes("warns");
   if (!warns && r.warnings.length > 0) p.push(`warned without the "warns" tag: ${r.warnings.join(" | ")}`);
