@@ -32,10 +32,19 @@ Every themed value is a `--sdvt-*` custom property on the table wrapper, and eac
 emit the stylesheet once per theme and render the tables with `css: "none"`:
 
 ```ts
-import { styleSheet, themeKey } from "@sportsdataverse/sdvtables/html";
-// one <style> per distinct themeKey(spec.theme), then:
-renderHTML(spec, rows, { css: "none" });
+import { renderHTML, styleSheet, themeKey } from "@sportsdataverse/sdvtables/html";
+const seen = new Set<string>();
+const parts = specs.map((spec) => {
+  const key = themeKey(spec.theme);
+  const sheet = seen.has(key) ? "" : `<style>${styleSheet(spec)}</style>`; // once per themeKey
+  seen.add(key);
+  return sheet + renderHTML(spec, rows, { css: "none" });
+});
 ```
+
+`css: "none"` drops only the shared theme sheet. Each table still carries its own `#id`-scoped decoration `<style>`
+and the Google Fonts `<link>` for its theme and `.font()` faces; pass `fonts: false` to drop the link and load the
+fonts yourself (`fontsLink(fonts)` builds the same tag). `toElement` moves the link into `document.head`, once per URL.
 
 Decoration CSS is scoped to the table `#id`. Two renders of the same spec on one page therefore need distinct ids:
 call `.id("a")` / `.id("b")` on the builder.

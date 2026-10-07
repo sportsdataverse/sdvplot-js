@@ -1,4 +1,5 @@
 import type { GoogleFont } from "../themes/tokens.js";
+/** The Google Fonts css2 `<link>` for these faces (weights merged per family, families sorted); "" when there are none. */
 export function fontsLink(fonts: readonly GoogleFont[]): string {
   const byFamily = new Map<string, Set<number>>();
   for (const f of fonts) {

@@ -3,8 +3,8 @@ import { preloadAll, setWarningHandler } from "@sportsdataverse/sdvplot";
 import { beforeAll, expect, test } from "vitest";
 import { defineTable } from "../src/define.js";
 import { TableSpecError } from "../src/errors.js";
-import { renderHTML, styleSheet } from "../src/html/index.js";
-import { THEME_NAMES } from "../src/themes/index.js";
+import { fontsLink, renderHTML, styleSheet } from "../src/html/index.js";
+import { THEME_NAMES, resolveTheme } from "../src/themes/index.js";
 import { STANDINGS, type Standing } from "./fixtures/standings.js";
 beforeAll(async () => {
   setWarningHandler(() => {});
@@ -143,4 +143,13 @@ test("athletic: the dotted top rule is on the first body row too (_themes.py:137
   expect(styleSheet(base.theme("athletic").build())).toContain(
     "tbody tr:first-child td.sdvt-cell{border-top:1.5px dotted black}",
   );
+});
+test("fonts (I-4/A100): css:'none' keeps the Google Fonts <link>; fonts:false drops it; fontsLink is exported from ./html", () => {
+  const spec = base.theme("athletic").build();
+  const html = renderHTML(spec, STANDINGS, { css: "none" });
+  expect(html.startsWith(`${fontsLink(resolveTheme(spec.theme).fonts)}\n<div`)).toBe(true);
+  expect(html).toContain(
+    '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spline+Sans+Mono',
+  );
+  expect(renderHTML(spec, STANDINGS, { css: "none", fonts: false })).not.toContain("<link");
 });

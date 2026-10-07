@@ -19,6 +19,8 @@ export interface RenderOptions {
   readonly fonts?: boolean;
 }
 export type { ColumnScale, RenderContext } from "./cells.js";
+export { fontsLink } from "./fonts.js";
+export type { GoogleFont } from "../themes/tokens.js";
 
 function checkKeys<Row>(spec: TableSpec<Row>, rows: readonly Row[]): void {
   const first = rows[0];
@@ -201,7 +203,7 @@ export function renderHTML<Row>(
   const own = deco.css.length > 0 ? `<style>${deco.css.join("\n")}</style>` : "";
   const css = shared + own;
   const fonts: GoogleFont[] = [...theme.fonts, ...deco.fonts];
-  const link = opts.fonts === false || opts.css === "none" ? "" : fontsLink(fonts);
+  const link = opts.fonts === false ? "" : fontsLink(fonts); // css:"none" drops only the shared theme sheet (A98, A100)
   const name = escapeAttr(spec.theme.name);
   return `${link ? `${link}\n` : ""}<div class="sdvt sdvt-theme-${name} ${themeKey(spec.theme)}" id="${escapeAttr(id)}" data-sdvt-theme="${name}" data-sdvt-density="${escapeAttr(spec.theme.density)}">${css}${deco.before}<table>${caption}<thead>${deco.headRows}<tr>${head}</tr></thead><tbody>${body.join("")}</tbody>${foot}</table>${deco.after}</div>`;
 }
@@ -224,6 +226,15 @@ export function toElement<Row>(
   t.innerHTML = renderHTML(spec, rows, opts).trim();
   const el = t.content.querySelector("div.sdvt");
   if (!(el instanceof HTMLElement)) throw new TableSpecError("renderHTML produced no wrapper");
+  // the fonts <link> goes to <head> once per href (A100), so the theme fonts load without a duplicate per table
+  const link = t.content.querySelector("link");
+  const href = link?.getAttribute("href");
+  if (
+    link &&
+    href &&
+    !Array.from(document.head.querySelectorAll("link")).some((l) => l.getAttribute("href") === href)
+  )
+    document.head.append(link);
   return el;
 }
 /** gt_theme_preview (_themes.py:2058-2064): one HTML string per theme, first n rows, compact; sdvTeam shown with league nfl and no team. */
