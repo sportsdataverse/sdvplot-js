@@ -1,9 +1,8 @@
 import type * as Plot from "@observablehq/plot";
-import { teamColorsSync } from "../colors.js";
 import { hex6 } from "../contrast.js";
-import { getLeagueSync } from "../index-data.js";
 import { checkAlpha } from "../placement.js";
 import type { Value } from "../resolve.js";
+import { teamColorDomain } from "../team-color-domain.js";
 import type { IdSystem, League, SeasonInput, Which } from "../types.js";
 
 export interface TeamColorOptions {
@@ -22,8 +21,6 @@ export interface TeamColorOptions {
   legend?: boolean;
 }
 
-const has = (v: Value): v is string | number => v !== null && v !== undefined && !Number.isNaN(v);
-
 /**
  * Plot colour-scale options that colour a team column by team colour. The same scale serves `fill` and
  * `stroke` (Plot has one colour scale), so `teamFill` is this function. Without `values` the domain is every
@@ -38,14 +35,12 @@ export function teamColor(league: League, o: TeamColorOptions = {}): Plot.ScaleO
       : Math.round(checkAlpha(o.alpha) * 255)
           .toString(16)
           .padStart(2, "0");
-  const domain = o.values
-    ? [...new Set(o.values.filter(has).map(String))]
-    : [...new Set(getLeagueSync(league).teams.flatMap((t) => (t.abbr ? [t.team_id, t.abbr] : [t.team_id])))];
-  const colors = teamColorsSync(league, domain, {
-    which: o.which ?? "primary",
-    idSystem: o.idSystem ?? "auto",
-    strict: o.strict ?? false,
-    ...(o.season !== undefined ? { season: o.season } : {}),
+  const { domain, colors } = teamColorDomain(league, {
+    which: o.which,
+    idSystem: o.idSystem,
+    strict: o.strict,
+    season: o.season,
+    values: o.values,
   });
   const range = colors.map((c) => (c === undefined ? naValue : hex6(c) + suffix));
   return { type: "ordinal", domain, range, unknown: naValue, ...(o.legend ? { legend: true } : {}) };

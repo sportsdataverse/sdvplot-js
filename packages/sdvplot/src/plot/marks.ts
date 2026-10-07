@@ -2,6 +2,7 @@ import * as Plot from "@observablehq/plot";
 import type { EspnHeadshotLeague } from "../headshots.js";
 import { type Kind, type Placement, checkAlpha, checkHeight, placeSync } from "../placement.js";
 import type { Value } from "../resolve.js";
+import { stampImage } from "../stamp.js";
 import type { HeadshotIdSystem, IdSystem, League, SeasonInput, Variant } from "../types.js";
 
 /** A column name, an accessor, or an array of values (one per row). */
@@ -39,29 +40,6 @@ export interface HeadshotOptions<R> {
 
 const values = <R>(data: Data<R>, c: Channel<R>): Value[] =>
   Plot.valueof(data as Plot.Data, c as Plot.ChannelValue) as Value[];
-
-/**
- * Size an `<image>` to `px` tall (width from the mark's aspect), centre it on (cx, cy) and stamp the
- * `data-sdv-id/kind/frame` attributes the testing hooks read. Shared by `sizeRender` and `axisLogos`.
- */
-export function stampImage(
-  img: Element,
-  p: Placement,
-  kind: Kind,
-  px: number,
-  frame: number,
-  cx: number,
-  cy: number,
-): void {
-  const w = px * (p.aspect ?? 1);
-  img.setAttribute("width", String(w));
-  img.setAttribute("height", String(px));
-  img.setAttribute("x", String(cx - w / 2));
-  img.setAttribute("y", String(cy - px / 2));
-  img.setAttribute("data-sdv-id", p.id);
-  img.setAttribute("data-sdv-kind", kind);
-  img.setAttribute("data-sdv-frame", String(frame));
-}
 
 /**
  * Plot `render` transform: size each `<image>` to `height` x the (facet) frame height, keep the mark's

@@ -1,7 +1,7 @@
 import * as Plot from "@observablehq/plot";
 import { checkHeight, placeSync } from "../placement.js";
+import { stampImage } from "../stamp.js";
 import type { IdSystem, League, MarkType, SeasonInput, Variant } from "../types.js";
-import { stampImage } from "./marks.js";
 
 export type Axis = "x" | "y" | "fx" | "fy";
 export interface AxisLogosOptions {
