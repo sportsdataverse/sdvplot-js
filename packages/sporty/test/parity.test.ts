@@ -2,12 +2,14 @@ import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { describe, expect, test } from "vitest";
 import { baseballField } from "../src/baseball/field.js";
 import { basketballCourt } from "../src/basketball/court.js";
+import { curlingSheet } from "../src/curling/sheet.js";
 import { footballField } from "../src/football/field.js";
 import { hockeyRink } from "../src/hockey/rink.js";
 import type { Scene } from "../src/scene.js";
 import { soccerPitch } from "../src/soccer/pitch.js";
 import { BASEBALL_LEAGUES } from "../src/specs/baseball.js";
 import { BASKETBALL_LEAGUES } from "../src/specs/basketball.js";
+import { CURLING_LEAGUES } from "../src/specs/curling.js";
 import { FOOTBALL_LEAGUES } from "../src/specs/football.js";
 import { HOCKEY_LEAGUES } from "../src/specs/hockey.js";
 import { SOCCER_LEAGUES } from "../src/specs/soccer.js";
@@ -30,6 +32,7 @@ const SURFACES: [sport: string, leagues: readonly string[], build: Build][] = [
   ["soccer", SOCCER_LEAGUES, soccerPitch as Build],
   ["tennis", TENNIS_LEAGUES, tennisCourt as Build],
   ["baseball", BASEBALL_LEAGUES, baseballField as Build],
+  ["curling", CURLING_LEAGUES, curlingSheet as Build],
 ];
 /** toBeCloseTo(v, 9) ⇔ |Δ| < 5e-10; asserted once per layer (max over its points) to keep the suite fast. */
 const TOL = 5e-10;
