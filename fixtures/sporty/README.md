@@ -34,3 +34,6 @@ Polygon layers per league (each also has 7 `bbox_*.csv`): atp 23, ita 23, itf 23
 ## baseball
 
 Polygon layers per league (each also has 3 `bbox_*.csv`): little_league 14, milb 14, mlb 14, ncaa 14, nfhs 14, pony 14. Generated 2026-10-07.
+## curling
+
+Polygon layers per league (each also has 4 `bbox_*.csv`): curling canada 30, wcf 30. Generated 2026-10-07.
