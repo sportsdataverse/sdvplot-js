@@ -28,6 +28,7 @@ ranges$soccer <- c("full", "in bounds only", "offense", "defense", "offensive ha
 ranges$tennis <- c("full", "in bounds only", "serve", "receive", "receivicehalf", "receiving half")
 ranges$baseball <- c("full", "infield")
 ranges$curling <- c("full", "in bounds only", "house")
+ranges$lacrosse <- c("full", "in bounds only", "offense", "defense")
 for (sport in sports) for (league in setdiff(names(dims[[sport]]), "custom")) {
   dir <- file.path(root, sport, gsub(" ", "_", league)); dir.create(dir, recursive = TRUE, showWarnings = FALSE)
   g <- geoms[[sport]](league = league)

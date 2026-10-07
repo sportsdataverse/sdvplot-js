@@ -37,3 +37,6 @@ Polygon layers per league (each also has 3 `bbox_*.csv`): little_league 14, milb
 ## curling
 
 Polygon layers per league (each also has 4 `bbox_*.csv`): curling canada 30, wcf 30. Generated 2026-10-07.
+## lacrosse
+
+Polygon layers per league (each also has 5 `bbox_*.csv`): ncaam 73, ncaaw 89, nll 73, pll 73, usam 73, usaw 89, world_lacrosse 73 (ncaaw/usaw add 4 goal-fan hash-mark separations × 4 copies). Native units differ by league (ncaam/pll/usam yd, ncaaw/usaw m, nll/world_lacrosse ft). Generated 2026-10-07 with `Rscript tools/oracle/sporty.R lacrosse`.
