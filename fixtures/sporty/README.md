@@ -40,3 +40,6 @@ Polygon layers per league (each also has 4 `bbox_*.csv`): curling canada 30, wcf
 ## lacrosse
 
 Polygon layers per league (each also has 5 `bbox_*.csv`): ncaam 73, ncaaw 89, nll 73, pll 73, usam 73, usaw 89, world_lacrosse 73 (ncaaw/usaw add 4 goal-fan hash-mark separations × 4 copies). Native units differ by league (ncaam/pll/usam yd, ncaaw/usaw m, nll/world_lacrosse ft). Generated 2026-10-07 with `Rscript tools/oracle/sporty.R lacrosse`.
+## volleyball
+
+Polygon layers per league (each also has 5 `bbox_*.csv`): fivb 39, ncaa 39, usa_volleyball 39 (the league `usa volleyball` is stored as `usa_volleyball`). The substitution-zone dash site loops `substitution_zone_rep_pattern` (5) times, 4 reflected copies each. Generated 2026-10-07.
