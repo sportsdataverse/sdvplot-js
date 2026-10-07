@@ -53,3 +53,15 @@ test("the plain surface, rotation passes through, unsupported league lists the s
   expect(() => surface("mls" as never)).toThrow(InputError);
   expect(() => surface("mls" as never)).toThrow(/nba/);
 });
+test("centerLogo without a team draws no image", () => {
+  const s = surface("nhl", { centerLogo: true });
+  const svg = Plot.plot({ ...s.scales, marks: s.marks });
+  expect(svg.querySelector("image[data-sdv-id]")).toBeNull();
+});
+test("centerLogo as a number is that fraction of the frame; 0 is rejected", () => {
+  const s = surface("nhl", { team: "BOS", centerLogo: 0.1 });
+  const svg = Plot.plot({ ...s.scales, height: 425, marginTop: 0, marginBottom: 0, marks: s.marks });
+  const img = svg.querySelector("image[data-sdv-id]") as Element;
+  expect(Number(img.getAttribute("height"))).toBeCloseTo(0.1 * 425, 3);
+  expect(() => surface("nhl", { team: "BOS", centerLogo: 0 })).toThrow(InputError);
+});

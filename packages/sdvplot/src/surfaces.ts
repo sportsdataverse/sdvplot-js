@@ -18,7 +18,7 @@ import type {
   FootballDisplayRange,
   HockeyDisplayRange,
 } from "@sportsdataverse/sporty";
-import { teamColorsSync } from "./colors.js";
+import { teamColorPairSync } from "./colors.js";
 import { contrast, onColor } from "./contrast.js";
 import { InputError } from "./errors.js";
 import type { Value } from "./resolve.js";
@@ -139,8 +139,7 @@ export function surfaceScene(league: League, o: SurfaceSceneOptions = {}): Scene
   let secondary: string | undefined;
   if (team !== undefined && team !== null) {
     const at = season !== undefined ? { season } : {};
-    [primary] = teamColorsSync(league, [team], { which: "primary", ...at });
-    [secondary] = teamColorsSync(league, [team], { which: "secondary", ...at });
+    ({ primary, secondary } = teamColorPairSync(league, team, at));
   }
   const dr = <const L extends readonly string[]>(list: L) => {
     const v = pickRange(list, displayRange);

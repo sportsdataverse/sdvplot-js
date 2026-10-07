@@ -10,7 +10,10 @@ export { SURFACES, SURFACE_BASE, colorUpdates } from "../surfaces.js";
 
 /** Sporty's surface options plus `team` painting; `colorUpdates` overrides are keyed by sporty colour keys. */
 export interface SurfaceOpts extends SurfaceSceneOptions {
-  /** A team logo at the surface centre: `true` is 0.25 of the frame height, a number is that fraction in (0, 1]. */
+  /**
+   * A team logo at the surface centre (0, 0): `true` is 0.25 of the frame height, a number is that fraction in (0, 1] (0 or
+   * out of range throws InputError). Ignored without a `team`. xTrans/yTrans or a half-court displayRange can move (0, 0) off-frame.
+   */
   centerLogo?: boolean | number;
 }
 
@@ -26,7 +29,7 @@ export function surface(
   const scene = surfaceScene(league, opts);
   const marks = surfaceMark(scene);
   const { team, season } = o;
-  if (centerLogo && team !== undefined && team !== null) {
+  if (centerLogo !== undefined && centerLogo !== false && team !== undefined && team !== null) {
     const height = centerLogo === true ? 0.25 : checkHeight(centerLogo);
     marks.push(
       logos([{ x: 0, y: 0, team }], {
