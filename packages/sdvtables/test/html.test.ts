@@ -77,6 +77,31 @@ test("groupBy emits rowgroup headers in first-appearance order", () => {
   );
   expect(html.indexOf("West")).toBeLessThan(html.indexOf("East"));
 });
+test("hostile id/align/kind from a JSON spec cannot inject; bad id throws", () => {
+  const spec = JSON.parse(JSON.stringify(base.build()));
+  spec.columns[0].align = 'left" onmouseover="alert(1)';
+  spec.columns[0].kind = 'text" onmouseover="alert(2)';
+  const html = renderHTML(spec, []);
+  expect(html).not.toContain('" onmouseover="');
+  expect(() =>
+    renderHTML({ ...base.build(), id: "x</style><img src=x onerror=alert(1)>" }, STANDINGS),
+  ).toThrow(TableSpecError);
+  expect(() => renderHTML({ ...base.build(), id: "standings.2024" }, STANDINGS)).toThrow(/standings\.2024/);
+});
+test("groupBy gathers non-contiguous groups: one header per group, original data-row indices kept", () => {
+  const html = renderHTML(base.groupBy("division").build(), [STANDINGS[0]!, STANDINGS[4]!, STANDINGS[1]!]);
+  expect((html.match(/sdvt-group-row/g) ?? []).length).toBe(2);
+  expect((html.match(/<tr class="sdvt-row"/g) ?? []).length).toBe(3);
+  expect(html.indexOf('data-row="2"')).toBeLessThan(html.indexOf('data-row="1"'));
+});
+test("styleSheet carries theme rules; css:none drops the shared sheet but renders", () => {
+  const spec = base.theme("kenpom").build();
+  expect(styleSheet(spec)).toContain("nth-child");
+  const html = renderHTML(spec, STANDINGS, { css: "none" });
+  expect(html).not.toContain(".sdvt-t-");
+  expect(html).toContain("<tbody>");
+  expect(renderHTML(spec, STANDINGS)).toContain("nth-child");
+});
 // spec §7: one HTML snapshot per theme (file snapshot: test/__snapshots__/html.test.ts.snap, committed). A later task that
 // changes these snapshots must say why in its commit message.
 test.each([...THEME_NAMES])("theme %s: HTML snapshot (spec §7)", (name) => {

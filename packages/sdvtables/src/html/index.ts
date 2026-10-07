@@ -80,10 +80,10 @@ export function labelOf<Row>(col: ColumnSpec<Row>): string {
 export function themeKey(ref: ThemeRef): string {
   return `sdvt-t-${fnv1a32(JSON.stringify([ref.name, ref.density, Object.entries(ref.options ?? {}).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))]))}`;
 }
-/** The `<style>` body without the tag: token block + base sheet, scoped to `.sdvt-t-<key>`. A host page emits it once per key. */
+/** The `<style>` body without the tag: token block + base sheet + the theme's own rules, scoped to `.sdvt-t-<key>`. A host page emits it once per key. */
 export function styleSheet<Row>(spec: TableSpec<Row>, theme: Theme = resolveTheme(spec.theme)): string {
   const sel = `.${themeKey(spec.theme)}`;
-  return `${tokensCSS(sel, theme.tokens)}\n${BASE_CSS(sel)}`;
+  return `${tokensCSS(sel, theme.tokens)}\n${BASE_CSS(sel)}\n${theme.rules(sel)}`;
 }
 
 export function renderHTML<Row>(
@@ -94,6 +94,10 @@ export function renderHTML<Row>(
   checkKeys(spec, rows);
   const theme = resolveTheme(spec.theme);
   const id = tableId(spec);
+  if (!/^[A-Za-z][\w-]*$/.test(id))
+    throw new TableSpecError(
+      `table id ${JSON.stringify(id)} must match /^[A-Za-z][\\w-]*$/ (it becomes a CSS selector)`,
+    );
   const sel = `#${id}`;
   const groupBy = spec.decorations.find(
     (d): d is Extract<Decoration<Row>, { type: "groupBy" }> => d.type === "groupBy",
@@ -118,46 +122,56 @@ export function renderHTML<Row>(
   const head = visible
     .map(
       (c) =>
-        `<th scope="col" class="sdvt-label sdvt-${alignOf(c)}" data-col="${escapeAttr(c.key)}" data-kind="${c.kind}"${styleOf([c.width ? `width:${escapeAttr(c.width)}` : "", deco.labelStyle(c.key)])}>${deco.label(c, (deco.labelText.get(c.key) ?? labelOf(c)) + deco.labelSuffix(c.key))}${c.subheader ? `<span class="sdvt-subheader">${escapeHtml(c.subheader)}</span>` : ""}</th>`,
+        `<th scope="col" class="sdvt-label sdvt-${escapeAttr(alignOf(c))}" data-col="${escapeAttr(c.key)}" data-kind="${escapeAttr(c.kind)}"${styleOf([c.width ? `width:${escapeAttr(c.width)}` : "", deco.labelStyle(c.key)])}>${deco.label(c, (deco.labelText.get(c.key) ?? labelOf(c)) + deco.labelSuffix(c.key))}${c.subheader ? `<span class="sdvt-subheader">${escapeHtml(c.subheader)}</span>` : ""}</th>`,
     )
     .join("");
   const body: string[] = [];
-  let lastGroup: unknown = Symbol("none");
-  let groupIndex = -1;
-  rows.forEach((row, i) => {
-    if (ctx.groupKey !== undefined) {
-      const g = (row as Record<string, unknown>)[ctx.groupKey];
-      if (g !== lastGroup) {
-        groupIndex++;
-        body.push(
-          `<tr class="sdvt-group-row${deco.groupRowClass(groupIndex)}"><th scope="rowgroup" colspan="${ncol}" class="sdvt-group">${escapeHtml(g)}</th></tr>`,
-        );
-        lastGroup = g;
-      }
-    }
-    const cells = visible
-      .map(
-        (c) =>
-          `<td class="sdvt-cell sdvt-kind-${c.kind} sdvt-${alignOf(c)}" data-col="${escapeAttr(c.key)}"${styleOf([kindCellStyle(c, row, i, ctx), deco.cellStyle(i, c.key)])}>${renderCell(c, row, i, ctx)}${deco.cellSuffix(i, c.key)}</td>`,
-      )
-      .join("");
-    body.push(
-      `<tr class="sdvt-row${deco.rowClass(i)}" data-row="${i}"${styleOf([deco.rowStyle(i)])}>${cells}</tr>`,
+  // Stable partition by first-appearance group (gt groupname_col): one header per group, rows keep their original index.
+  const groups = new Map<unknown, number[]>();
+  if (ctx.groupKey === undefined)
+    groups.set(
+      undefined,
+      rows.map((_, i) => i),
     );
-  });
+  else
+    rows.forEach((row, i) => {
+      const g = (row as Record<string, unknown>)[ctx.groupKey as string];
+      const list = groups.get(g);
+      if (list) list.push(i);
+      else groups.set(g, [i]);
+    });
+  let groupIndex = -1;
+  for (const [g, idxs] of groups) {
+    groupIndex++;
+    if (ctx.groupKey !== undefined)
+      body.push(
+        `<tr class="sdvt-group-row${deco.groupRowClass(groupIndex)}"><th scope="rowgroup" colspan="${ncol}" class="sdvt-group">${escapeHtml(g)}</th></tr>`,
+      );
+    for (const i of idxs) {
+      const row = rows[i] as Row;
+      const cells = visible
+        .map(
+          (c) =>
+            `<td class="sdvt-cell sdvt-kind-${escapeAttr(c.kind)} sdvt-${escapeAttr(alignOf(c))}" data-col="${escapeAttr(c.key)}"${styleOf([kindCellStyle(c, row, i, ctx), deco.cellStyle(i, c.key)])}>${renderCell(c, row, i, ctx)}${deco.cellSuffix(i, c.key)}</td>`,
+        )
+        .join("");
+      body.push(
+        `<tr class="sdvt-row${deco.rowClass(i)}" data-row="${i}"${styleOf([deco.rowStyle(i)])}>${cells}</tr>`,
+      );
+    }
+  }
   const caption = deco.caption ? `<caption>${deco.caption}</caption>` : "";
   const foot =
     deco.foot.length > 0
       ? `<tfoot>${deco.foot.map((f) => `<tr><td colspan="${ncol}">${f}</td></tr>`).join("")}</tfoot>`
       : "";
-  const css =
-    opts.css === "none"
-      ? ""
-      : `<style>${styleSheet(spec, theme)}\n${theme.rules(sel)}\n${deco.css.join("\n")}</style>`;
+  const shared = opts.css === "none" ? "" : `<style>${styleSheet(spec, theme)}</style>`;
+  const own = deco.css.length > 0 ? `<style>${deco.css.join("\n")}</style>` : "";
+  const css = shared + own;
   const fonts: GoogleFont[] = [...theme.fonts, ...deco.fonts];
   const link = opts.fonts === false || opts.css === "none" ? "" : fontsLink(fonts);
   const name = escapeAttr(spec.theme.name);
-  return `${link ? `${link}\n` : ""}<div class="sdvt sdvt-theme-${name} ${themeKey(spec.theme)}" id="${escapeAttr(id)}" data-sdvt-theme="${name}" data-sdvt-density="${spec.theme.density}">${css}${deco.before}<table>${caption}<thead>${deco.headRows}<tr>${head}</tr></thead><tbody>${body.join("")}</tbody>${foot}</table>${deco.after}</div>`;
+  return `${link ? `${link}\n` : ""}<div class="sdvt sdvt-theme-${name} ${themeKey(spec.theme)}" id="${escapeAttr(id)}" data-sdvt-theme="${name}" data-sdvt-density="${escapeAttr(spec.theme.density)}">${css}${deco.before}<table>${caption}<thead>${deco.headRows}<tr>${head}</tr></thead><tbody>${body.join("")}</tbody>${foot}</table>${deco.after}</div>`;
 }
 export async function renderHTMLAsync<Row>(
   spec: TableSpec<Row>,
