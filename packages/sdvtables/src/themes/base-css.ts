@@ -40,6 +40,10 @@ export function BASE_CSS(sel: string): string {
     `${s} .sdvt-page[aria-disabled="true"]{opacity:.4;cursor:default}`, // M1: aria-disabled, so focus stays on an edge button
     `${s} tr.sdvt-selected>td{box-shadow:inset 0 0 0 9999px rgba(127,127,127,.18)}`,
     `${s} tr.sdvt-selected>td:first-child{box-shadow:inset 3px 0 0 var(--sdvt-text),inset 0 0 0 9999px rgba(127,127,127,.18)}`, // I4: the tint is 1.2:1; a text-coloured bar gives the state 3:1
+    // J31 (A29): a hovered row (its own pointer, or a linked figure's) gets a text-coloured underline, 3:1 like I4's bar.
+    // A background image: it sits beside the selected overlay (box-shadow) and moves no layout; after the stripe rule,
+    // whose `background` shorthand would otherwise reset it
+    `${s} tr.sdvt-hover>td.sdvt-cell{background-image:linear-gradient(var(--sdvt-text),var(--sdvt-text));background-size:100% 2px;background-position:0 100%;background-repeat:no-repeat}`,
     `${s} tr.sdvt-row:focus-visible{outline:2px solid currentColor;outline-offset:-2px}`, // Task 10: the grid's tab stop (WCAG 2.4.7)
     `${s} th.sdvt-col-current .sdvt-sort{text-decoration:underline;text-underline-offset:4px}`, // Task 10: the column `s` sorts
   ].join("\n");

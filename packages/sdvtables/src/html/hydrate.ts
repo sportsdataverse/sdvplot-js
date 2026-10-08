@@ -1,6 +1,13 @@
 import type { Table } from "../engine.js";
 import { TableSpecError } from "../errors.js";
-import { captureFocus, handleClick, handleHover, handleInput, handleKeydown } from "./controls.js";
+import {
+  applyHover,
+  captureFocus,
+  handleClick,
+  handleHover,
+  handleInput,
+  handleKeydown,
+} from "./controls.js";
 import { pagerLabel, renderToolbar, tableRenderOptions } from "./interactive.js";
 import { renderParts, tableHTML } from "./parts.js";
 
@@ -17,6 +24,8 @@ const edge = (button: Element | null, atEdge: boolean): void => {
  * engine; each change re-renders ONLY the table block (`[data-sdv-body]`) and the pager, at most once per animation
  * frame (the engine state itself moves synchronously). Toolbar inputs are rebuilt only when a column is hidden or
  * shown; otherwise their values are synced from the engine state, so an external filter change shows in the box.
+ * A row hover (the pointer's, or a linked figure's through `linkSelection`) re-renders nothing: the row gets the
+ * `sdvt-hover` class, which survives the next re-render.
  * A focused control, or a focusable element inside a rendered cell, that the re-render replaced gets focus back
  * (shadow-root mounts included). Attaching does NOT reconcile the SSR markup against the engine state: render the
  * markup from the same table state you hydrate. Hydrating an element again replaces its previous binding (HMR,
@@ -32,6 +41,7 @@ export function hydrate<Row>(el: Element, table: Table<Row>): () => void {
   live.get(el)?.();
 
   let hidden = table.state.hidden; // the engine replaces this array only when a column is hidden or shown
+  let hovered: string | null = null; // J31 (A29): the last hover event's row id, re-applied after each render
   const render = (): void => {
     cancel = undefined;
     const root = el.getRootNode() as Document | ShadowRoot;
@@ -57,6 +67,7 @@ export function hydrate<Row>(el: Element, table: Table<Row>): () => void {
       const want = typeof f === "string" ? f : "";
       if (input.value !== want) input.value = want;
     }
+    applyHover(el, table, hovered); // the body was rebuilt: a linked figure's hover survives it
     restore();
   };
   // M6: one render per animation frame however many changes land in it (typing in an unpaged 1000-row table
@@ -82,9 +93,14 @@ export function hydrate<Row>(el: Element, table: Table<Row>): () => void {
   el.addEventListener("mouseover", onHover);
   el.addEventListener("mouseleave", onHover);
   el.addEventListener("keydown", onKeydown);
-  // J31: a hover changes no state, and re-rendering on it would replace the row under the pointer
+  // J31: a hover changes no state, and re-rendering on it would replace the row under the pointer: a class toggle
   const unsubscribe = table.subscribe((e) => {
     if (e.type !== "hover") schedule();
+    else {
+      hovered = e.id;
+      // a pending render means the DOM still shows the old rows, which data-row would misread: render applies it
+      if (cancel === undefined) applyHover(el, table, hovered);
+    }
   });
   const teardown = (): void => {
     if (live.get(el) === teardown) live.delete(el);

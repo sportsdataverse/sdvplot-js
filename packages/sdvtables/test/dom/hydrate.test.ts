@@ -160,7 +160,11 @@ test("J31: row hover emits once per row and never re-renders the body; a row cli
   kc?.dispatchEvent(new MouseEvent("mouseover", { bubbles: true })); // same row: silent
   await frame();
   expect(seen).toEqual([{ type: "hover", id: "KC" }]);
-  expect(body(el)).toBe(before);
+  // A29: the hovered row only gains the sdvt-hover class; the body is not re-rendered
+  expect(body(el)).toBe(
+    before.replace('<tr class="sdvt-row" data-row="0"', '<tr class="sdvt-row sdvt-hover" data-row="0"'),
+  );
+  expect(kc?.isConnected).toBe(true);
   kc?.click();
   await frame();
   expect(t.getSelection()).toEqual(new Set(["KC"]));

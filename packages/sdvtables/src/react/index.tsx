@@ -13,7 +13,14 @@ import {
   useSyncExternalStore,
 } from "react";
 import { type Sort, type Table, type TableOptions, type TableSnapshot, createTable } from "../engine.js";
-import { captureFocus, handleClick, handleHover, handleInput, handleKeydown } from "../html/controls.js";
+import {
+  applyHover,
+  captureFocus,
+  handleClick,
+  handleHover,
+  handleInput,
+  handleKeydown,
+} from "../html/controls.js";
 import { SR_ONLY, filterInputs, pagerLabel, tableRenderOptions } from "../html/interactive.js";
 import { type RenderOptions, type RenderedParts, renderParts, tableHTML } from "../html/parts.js";
 import type { TableSpec } from "../spec.js";
@@ -187,18 +194,23 @@ function TableView<Row>({
 }): ReactElement {
   const ref = useRef<HTMLDivElement>(null);
   const restore = useRef<(() => void) | null>(null);
-  // A50: remember the focused control while the DOM still holds it (the engine notifies before React re-renders)
+  const hovered = useRef<string | null>(null); // J31 (A29): the last hover event's row id
+  // A50: remember the focused control while the DOM still holds it (the engine notifies before React re-renders).
+  // A hover is a class toggle on the rendered rows, never a re-render (that would replace the row under the pointer).
   const subscribe = useCallback(
     (onChange: () => void) =>
       table.subscribe((e) => {
-        if (e.type !== "hover" && restore.current === null && ref.current)
-          restore.current = captureFocus(ref.current);
+        if (e.type === "hover") {
+          hovered.current = e.id;
+          if (ref.current) applyHover(ref.current, table, e.id);
+        } else if (restore.current === null && ref.current) restore.current = captureFocus(ref.current);
         onChange();
       }),
     [table],
   );
   useSyncExternalStore(subscribe, table.getSnapshot, table.getSnapshot); // J31: an external engine re-renders us too
   useIsoLayoutEffect(() => {
+    if (ref.current) applyHover(ref.current, table, hovered.current); // a render may have rebuilt the body rows
     restore.current?.();
     restore.current = null;
   });
