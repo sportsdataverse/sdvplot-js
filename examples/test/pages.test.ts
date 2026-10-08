@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, relative } from "node:path";
 import { STANDINGS } from "@sportsdataverse/examples/data";
@@ -49,23 +49,34 @@ const tree = (dir: string): Record<string, string> => {
   return files;
 };
 
+const a = mkdtempSync(join(tmpdir(), "sdv-docs-"));
+const TREE = [
+  "docs/gallery/_category_.json",
+  "docs/gallery/index.mdx",
+  "docs/gallery/sdvplot/index.mdx",
+  "docs/gallery/sdvtables/html/_category_.json",
+  "docs/gallery/sdvtables/html/t.mdx",
+  "docs/gallery/sdvtables/index.mdx",
+  "docs/gallery/sporty/index.mdx",
+  "docs/gallery/sporty/svg/_category_.json",
+  "docs/gallery/sporty/svg/rink.mdx",
+];
+
 test("Review Focus 4: the gallery is a pure function of examples/out (two runs, identical bytes)", () => {
-  const a = mkdtempSync(join(tmpdir(), "sdv-docs-"));
   const b = mkdtempSync(join(tmpdir(), "sdv-docs-"));
   writePages(out, a);
   writePages(out, b);
   expect(tree(b)).toEqual(tree(a));
-  expect(Object.keys(tree(a)).sort()).toEqual([
-    "docs/gallery/_category_.json",
-    "docs/gallery/index.mdx",
-    "docs/gallery/sdvplot/index.mdx",
-    "docs/gallery/sdvtables/html/_category_.json",
-    "docs/gallery/sdvtables/html/t.mdx",
-    "docs/gallery/sdvtables/index.mdx",
-    "docs/gallery/sporty/index.mdx",
-    "docs/gallery/sporty/svg/_category_.json",
-    "docs/gallery/sporty/svg/rink.mdx",
-    "static/examples/sporty/svg/rink.svg",
-  ]);
+  expect(Object.keys(tree(a)).sort()).toEqual(TREE);
   expect(tree(a)["docs/gallery/sdvtables/html/t.mdx"]).toContain('title: "<sdvtables/html/t>"');
+  expect(tree(a)["docs/gallery/sporty/index.mdx"]).toContain(
+    '<Live id="sporty/svg/rink" thumb href="/gallery/sporty/svg/rink" />',
+  );
+});
+
+test("a removed example leaves no stale page, card or category behind on a rerun into the same dir", () => {
+  rmSync(join(out, "sporty/svg/rink.json"));
+  writePages(out, a);
+  expect(Object.keys(tree(a)).sort()).toEqual(TREE.filter((f) => !f.includes("sporty/svg")));
+  expect(tree(a)["docs/gallery/sporty/index.mdx"]).not.toContain("sporty/svg/rink");
 });

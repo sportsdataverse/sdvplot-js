@@ -1,7 +1,6 @@
 import { mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import type { ExamplePackage, Prerendered } from "../src/contract.js";
-import { overLimit, staticFile, svgDocument } from "./remark-live.js";
 
 /** Section folder (second path segment of a gallery page) → sidebar label. Unknown sections use their folder name. */
 const SECTIONS: Readonly<Record<string, string>> = {
@@ -50,23 +49,17 @@ function write(file: string, text: string): void {
   writeFileSync(file, text);
 }
 
-/** Write the gallery (an index per package, a page per example) and the static files for large outputs. */
+/** Write the gallery: an index per package, a page per example. (The gate owns docs/static/examples.) */
 export function writePages(outDir: string, docsDir: string): void {
   const rows = readRows(outDir);
   const gallery = join(docsDir, "docs/gallery");
   rmSync(gallery, { recursive: true, force: true });
-  rmSync(join(docsDir, "static/examples"), { recursive: true, force: true });
   write(join(gallery, "_category_.json"), `${JSON.stringify({ label: "Gallery", position: 4 })}\n`);
   write(
     join(gallery, "index.mdx"),
     `---\ntitle: Gallery\nsidebar_position: 0\n---\n\n${GENERATED}\n\nEvery example on this site runs in CI before it is published. Pick a package:\n\n${(Object.keys(PACKAGES) as ExamplePackage[]).map((p) => `- [${PACKAGES[p]}](/gallery/${p}/) (${rows.filter((r) => r.package === p).length} examples)`).join("\n")}\n`,
   );
   for (const r of rows) {
-    // The same file the gate writes (remark-live points <Live src> at it): an SVG served as a document needs xmlns.
-    if (overLimit(r.markup)) {
-      const file = staticFile(r);
-      write(join(docsDir, "static", file), file.endsWith(".svg") ? svgDocument(r.markup) : r.markup);
-    }
     const tags = r.tags.map((t) => `\`${t}\``).join(" · ");
     write(
       join(gallery, `${pagePath(r)}.mdx`),

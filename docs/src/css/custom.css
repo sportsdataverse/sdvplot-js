@@ -39,6 +39,7 @@
   overflow-x: auto;
 }
 .sdv-live-static svg,
+.sdv-live-static > img,
 .sdv-live-output svg {
   max-width: 100%;
   height: auto;
@@ -79,7 +80,11 @@
 .sdv-card .sdv-live-static {
   max-height: 12rem;
   overflow: hidden;
-  pointer-events: none;
+}
+/* a static file's thumbnail fits the card whole: both axes capped, aspect kept (width: auto drops the attribute's width) */
+.sdv-card .sdv-live-static > img {
+  width: auto;
+  max-height: 12rem;
 }
 .sdv-value {
   max-height: 12rem;
