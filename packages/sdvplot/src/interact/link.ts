@@ -52,6 +52,8 @@ const markAt = (plot: Element, e: Event): Element | null => {
   const mark = t?.nodeType === 1 ? (t as Element).closest(MARK) : null;
   return mark && plot.contains(mark) ? mark : null;
 };
+/** Figures already warned about a join-key mismatch: once per figure, not once per hovered id. */
+const warned = new WeakSet<Element>();
 
 /**
  * Wire a figure and/or a table to a selection store (J31). Figure: pointer hover → `hover` (see
@@ -128,7 +130,8 @@ export function linkSelection<Row, Datum = unknown>(
     if (plot) {
       const focus = focusIds(s);
       const missing = highlight(plot, focus);
-      if (focus !== null && focus.size > 0 && missing.length === focus.size) {
+      if (focus !== null && focus.size > 0 && missing.length === focus.size && !warned.has(plot)) {
+        warned.add(plot);
         const shown = missing.slice(0, 5).join(", ");
         warn(
           `link:missing:${shown}`,

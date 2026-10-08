@@ -2,7 +2,7 @@
 import * as Plot from "@observablehq/plot";
 import { beforeAll, expect, test, vi } from "vitest";
 import { STANDINGS, type Standing } from "../../../sdvtables/test/fixtures/standings.js";
-import { loadLeague } from "../../src/index.js";
+import { loadLeague, resetWarnings, setWarningHandler } from "../../src/index.js";
 import { linkSelection } from "../../src/interact/index.js";
 import { axisLogos, linkIds } from "../../src/plot/index.js";
 import { createSelection } from "../../src/selection.js";
@@ -200,4 +200,20 @@ test("a stamped element around the figure is never read as a mark: closest(MARK)
   expect(hover(store)).toEqual([]);
   tick?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
   expect(store.getState().selected.size).toBe(0);
+});
+test("a join-key mismatch warns once per figure, not once per hovered id", () => {
+  const warnings: string[] = [];
+  resetWarnings();
+  setWarningHandler((m) => warnings.push(m));
+  try {
+    const store = createSelection<Standing>();
+    linkSelection(store, { plot: scatter() });
+    for (const id of ["12", "4", "15"]) store.set({ hover: [id] }); // ESPN team ids against abbreviation stamps
+    expect(warnings).toHaveLength(1);
+    linkSelection(store, { plot: scatter() }); // another figure with the same mismatch gets its own warning
+    store.set({ hover: ["26"] });
+    expect(warnings).toHaveLength(2);
+  } finally {
+    setWarningHandler(null);
+  }
 });
