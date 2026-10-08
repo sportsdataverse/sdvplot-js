@@ -165,10 +165,12 @@ export function renderParts<Row>(
     throw new TableSpecError(
       `hidden names no column ${bad.map((k) => JSON.stringify(k)).join(", ")}; columns are ${spec.columns.map((c) => c.key).join(", ")}`,
     );
-  const scales = columnScales(spec, rows, warn, (opts.domainRows ?? rows) as readonly Row[]); // J31 (A4)
+  const domainRows = (opts.domainRows ?? rows) as readonly Row[]; // J31 (A4)
+  const scales = columnScales(spec, rows, warn, domainRows);
   const ctx: RenderContext<Row> = {
     spec,
     rows,
+    domainRows,
     theme,
     id,
     sel,
@@ -212,6 +214,12 @@ export function renderParts<Row>(
     (d): d is Extract<Decoration<Row>, { type: "snake" }> => d.type === "snake",
   );
   if (snake && ctx.groupKey !== undefined) throw new TableSpecError("snake cannot be combined with groupBy");
+  // a snaked <tr> holds one row per block but carries only the first block's data-row, so a click or hover in
+  // another block would select the wrong row, and every block repeats the sort buttons
+  if (snake && opts.interactive === true)
+    throw new TableSpecError(
+      "snake cannot be combined with an interactive table (renderHTML(table), hydrate, SdvTable); render it statically with renderHTML(spec, rows)",
+    );
   const gap = snake && snake.gap > 0 ? `style="width:${snake.gap}px;border:none"` : "";
   const snaked = snake
     ? snakeLayout(

@@ -23,6 +23,7 @@ export function BASE_CSS(sel: string): string {
     `${s} .sdvt-left{text-align:left}${s} .sdvt-center{text-align:center}${s} .sdvt-right{text-align:right}`,
     `${s} tfoot td{font-size:var(--sdvt-source-size);font-style:var(--sdvt-source-style);color:var(--sdvt-source-color);padding:var(--sdvt-source-pad) 5px;text-align:left}`,
     `${s} img.sdvt-mark{vertical-align:middle}`,
+    `${s} img{max-width:none}`, // A47: a host img{max-width:100%} reset (Docusaurus, Tailwind preflight) squashed cell logos
     `${s} table{--bs-table-bg:transparent;--bs-table-color:currentcolor}`, // utils-theme.R .theme_bs_host: Bootstrap hosts repaint td
     // Phase 5 controls: renderHTML(table), hydrate and <SdvTable/> (the last rule is J31 A5, a neutral selected-row overlay)
     `${s} .sdvt-sort{all:unset;cursor:pointer;display:inline-block;width:100%}`,

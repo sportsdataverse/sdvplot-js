@@ -32,6 +32,8 @@ export interface ColumnScale {
 export interface RenderContext<Row> {
   readonly spec: TableSpec<Row>;
   readonly rows: readonly Row[];
+  /** J31 (A4): the rows scale and legend domains come from (`RenderOptions.domainRows`, default `rows`). */
+  readonly domainRows: readonly Row[];
   readonly theme: Theme;
   readonly id: string;
   readonly sel: string;

@@ -87,3 +87,29 @@ test("J31: selected rows carry sdvt-selected; under an EXTERNAL filter colour sc
   t.setSelection(new Set(["BUF"]));
   expect(renderHTML(t)).toContain('<tr class="sdvt-row sdvt-selected" data-row="1"');
 });
+test("a continuous legend with columns: spans domainRows, so its range holds still across pages", () => {
+  const legend = defineTable<Standing>()
+    .columns((c) => [c.text("team"), c.int("wins")])
+    .legendContinuous({ columns: ["wins"] })
+    .build();
+  const t = createTable(legend, many, { pageSize: 10 });
+  t.setExternalFilter((r) => r.wins > 1); // a brush: cells and legend take their domain from all 25 rows
+  const legendOf = (html: string): string | undefined =>
+    html.match(/<div class="sdvt-legend[\s\S]*?<\/div><\/div>/)?.[0];
+  const page1 = legendOf(renderHTML(t));
+  t.setPage(1);
+  const page2 = legendOf(renderHTML(t));
+  expect(page1).toContain('<span class="sdvt-legend-lab">1</span>');
+  expect(page1).toContain('<span class="sdvt-legend-lab">25</span>');
+  expect(page2).toBe(page1);
+});
+test("snake is rejected for an interactive table: one <tr> holds several rows, so sort, selection and hover would miss", () => {
+  const snaked = defineTable<Standing>()
+    .columns((c) => [c.text("team"), c.int("wins")])
+    .snake({ nCols: 2 })
+    .build();
+  expect(() => renderHTML(snaked, rows)).not.toThrow(); // static snake is unchanged
+  expect(() => renderHTML(createTable(snaked, rows))).toThrow(
+    /snake cannot be combined with an interactive table/,
+  );
+});

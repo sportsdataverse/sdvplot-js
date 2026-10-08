@@ -85,6 +85,7 @@ export function prepare<Row>(spec: TableSpec<Row>): Promise<void>;
 export interface RenderContext<Row> {
     // (undocumented)
     readonly columns: readonly ColumnSpec<Row>[];
+    readonly domainRows: readonly Row[];
     // (undocumented)
     readonly groupKey: string | undefined;
     // (undocumented)
@@ -192,7 +193,7 @@ export function toElement<Row>(spec: TableSpec<Row>, rows: readonly Row[], opts?
 
 // Warnings were encountered during analysis:
 //
-// dist/html.d.ts:141:5 - (ae-forgotten-export) The symbol "Density" needs to be exported by the entry point html.d.ts
+// dist/html.d.ts:143:5 - (ae-forgotten-export) The symbol "Density" needs to be exported by the entry point html.d.ts
 
 // (No @packageDocumentation comment for this package)
 

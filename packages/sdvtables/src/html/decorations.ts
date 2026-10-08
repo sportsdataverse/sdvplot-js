@@ -505,10 +505,11 @@ export function applyDecorations<Row>(
         const rec = ctx.recorded;
         const palette = (d.palette ?? rec?.palette ?? RANK_PALETTE).map((c) => hex6(c));
         let domain = d.domain ?? rec?.domain;
-        if (!domain && d.columns && rows.length > 0)
-          domain = domainOf(d.columns.map((k) => rows.map((r) => toNumber(cellValue(r, k)))));
-        // zero rows: a data-derived domain does not exist yet (an empty page, fontsLinkFor), so no legend; a spec with no source still throws
-        if (!domain && rows.length === 0 && (d.columns || ctx.columns.some(isScaled))) break;
+        if (!domain && d.columns && ctx.domainRows.length > 0)
+          domain = domainOf(d.columns.map((k) => ctx.domainRows.map((r) => toNumber(cellValue(r, k)))));
+        // J31 (A4): the domain comes from domainRows like the cell scales, so a paged or brushed legend holds still.
+        // No domain rows: a data-derived domain does not exist yet (an empty page, fontsLinkFor), so no legend; a spec with no source still throws
+        if (!domain && ctx.domainRows.length === 0 && (d.columns || ctx.columns.some(isScaled))) break;
         if (!domain)
           throw new TableSpecError(
             "legendContinuous: no recorded scale (color a column with colorPills/colorRanks/percentileBar first) and no domain or columns given",
