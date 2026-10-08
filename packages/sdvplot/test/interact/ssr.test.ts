@@ -10,7 +10,7 @@ import { linkIds, logos } from "../../src/plot/index.js";
 import { createSelection } from "../../src/selection.js";
 
 beforeAll(() => loadLeague("nfl"));
-// The logos stamp resolved ESPN team ids; their `id` option (abbreviations) arrives with Phase 11's image marks (A27).
+// The dots and the logos both carry abbreviations: the logos through their `id` option (A27).
 const chart = (): ReturnType<typeof Plot.plot> =>
   Plot.plot({
     document: new JSDOM("").window.document,
@@ -18,7 +18,7 @@ const chart = (): ReturnType<typeof Plot.plot> =>
     y: { domain: [-0.2, 0.2] },
     marks: [
       Plot.dot(STANDINGS, { x: "wins", y: "net_epa", tip: true, render: linkIds(STANDINGS, "team") }),
-      logos(STANDINGS, { league: "nfl", x: "wins", y: "net_epa", team: "team", height: 0.06 }),
+      logos(STANDINGS, { league: "nfl", x: "wins", y: "net_epa", team: "team", id: "team", height: 0.06 }),
     ],
   });
 
@@ -38,7 +38,8 @@ test("SSR: the server string is byte-identical with or without a store (Review F
   offTip();
   expect(svg.outerHTML).toBe(before);
   expect([...store.getState().selected]).toEqual(["KC"]); // the inert brush never wrote to the store
-  expect(before).toContain('data-sdv-id="KC"'); // the stamps ARE server output: the client links to SSR markup
+  // the stamps ARE server output, so the client links to SSR markup: KC's dot and KC's logo
+  expect(before.match(/data-sdv-id="KC"/g)).toHaveLength(2);
   expect(before).toContain('aria-label="tip"'); // and the tip's one empty group is there with or without a store
 });
 test("SSR: argument errors still throw in Node (a band scale cannot be brushed)", () => {
