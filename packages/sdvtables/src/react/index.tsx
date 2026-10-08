@@ -144,6 +144,12 @@ function searchBox(
  * controlled by the engine state, so a filter set from outside (another component, a linked selection) shows in its
  * box. A control or focusable cell element that a re-render replaces gets focus back, as in `hydrate`. The
  * Google-Fonts link is NOT rendered: put `fontsLinkFor(spec)` in the page head.
+ *
+ * Two cases remount the owned engine (`{ spec, rows }` form only; an engine passed as `table` is yours and is kept):
+ * toggling `interactive` remounts it, losing the user's sort, filters, page and selection, since a static render
+ * builds no engine. And the engine is keyed by the spec's JSON, which drops functions, so a deliberately changed
+ * formatter or comparator under an otherwise equal spec does NOT take effect: change the element's React `key` to
+ * rebuild the engine from the new spec.
  */
 export function SdvTable<Row>(props: SdvTableProps<Row>): ReactElement {
   const { interactive = false, css } = props;
