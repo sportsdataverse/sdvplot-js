@@ -52,8 +52,14 @@ call `.id("a")` / `.id("b")` on the builder.
 ## TanStack Table interop (recipe)
 
 sdvtables has its own headless engine and takes no TanStack dependency. If your app already renders tables with
-`@tanstack/react-table` 8, map a `TableSpec` to `ColumnDef`s: the header and sorting come from the spec, and each
+`@tanstack/react-table` 8, map a `TableSpec` to `ColumnDef`s: the header comes from the spec, and each
 cell reuses the markup `renderHTML` draws (logos, pills, bars), read back from `toElement()` by `data-row` / `data-col`.
+Sorting uses the spec's `sortable` and `compare`, the [Phase 5 fields](#reserved-for-phase-5): a column without
+`compare` falls back to TanStack's default sort, and `compare` stays ascending because TanStack inverts it for
+descending itself.
+
+`toElement` needs a `document`, and a `"use client"` component is still server-rendered in Next, so build the columns
+only after mount: in a `useEffect` (below), or load the table component with `next/dynamic(..., { ssr: false })`.
 
 ```tsx
 import type { TableSpec } from "@sportsdataverse/sdvtables";
@@ -67,7 +73,7 @@ export function toTanStackColumns<Row>(
   rows: readonly Row[],
 ): ColumnDef<Row, unknown>[] {
   const cells = new Map<string, Element>(); // "row|col" -> sdvtables' <td>
-  // needs a DOM: build it client-side (useMemo in a "use client" component)
+  // needs a DOM (throws TableSpecError without a document): call this after mount, never during render
   for (const td of Array.from(toElement(spec, rows).querySelectorAll("tr[data-row] > td[data-col]")))
     cells.set(`${td.parentElement?.getAttribute("data-row")}|${td.getAttribute("data-col")}`, td);
   return spec.columns.map(
@@ -95,19 +101,57 @@ export function toTanStackColumns<Row>(
 
 ```tsx
 "use client";
-import { styleSheet, themeKey } from "@sportsdataverse/sdvtables/html";
-import { flexRender, getCoreRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
-import { useMemo } from "react";
+import type { TableSpec } from "@sportsdataverse/sdvtables";
+import { prepare, styleSheet, themeKey } from "@sportsdataverse/sdvtables/html";
+import { type ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
+import { type ReactElement, useEffect, useState } from "react";
+import { toTanStackColumns } from "./to-tanstack-columns"; // the first fence
 
-// after `await prepare(spec)`, as for renderHTML
-const columns = useMemo(() => toTanStackColumns(spec, rows), [spec, rows]);
-const table = useReactTable({ data: rows, columns, getCoreRowModel: getCoreRowModel(), getSortedRowModel: getSortedRowModel() });
-return (
-  <div className={themeKey(spec.theme)}>
-    <style>{styleSheet(spec)}</style>
-    <table>{/* thead/tbody as usual: flexRender(cell.column.columnDef.cell, cell.getContext()) */}</table>
-  </div>
-);
+export function StandingsTable<Row>({ spec, rows }: { spec: TableSpec<Row>; rows: Row[] }): ReactElement {
+  // empty on the server and on the first client render; filled once the effect has run
+  const [columns, setColumns] = useState<ColumnDef<Row, unknown>[]>([]);
+  useEffect(() => {
+    let live = true;
+    void prepare(spec).then(() => {
+      if (live) setColumns(toTanStackColumns(spec, rows));
+    });
+    return () => {
+      live = false;
+    };
+  }, [spec, rows]);
+
+  const table = useReactTable({
+    data: rows, // keep this reference stable: a new array every render makes TanStack loop
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+  });
+  return (
+    <div className={themeKey(spec.theme)}>
+      <style>{styleSheet(spec)}</style>
+      <table>
+        <thead>
+          {table.getHeaderGroups().map((g) => (
+            <tr key={g.id}>
+              {g.headers.map((h) => (
+                <th key={h.id}>{flexRender(h.column.columnDef.header, h.getContext())}</th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody>
+          {table.getRowModel().rows.map((r) => (
+            <tr key={r.id}>
+              {r.getVisibleCells().map((c) => (
+                <td key={c.id}>{flexRender(c.column.columnDef.cell, c.getContext())}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
 ```
 
 Limits: `snake` and tier layouts change which `<tr>` holds which row, so the recipe covers plain specs; table-level
