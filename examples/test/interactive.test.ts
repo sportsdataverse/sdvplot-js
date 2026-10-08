@@ -131,4 +131,22 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
     expect(errors).toEqual([]);
     await page.close();
   });
+
+  // A drawing that fails (here plotly.js never arrives) shows the alert over the static copy, leaves nothing drawn,
+  // and drops the note that plotly.js draws the figure here.
+  test("a Plotly chart whose library fails keeps its static copy, under the alert", async () => {
+    const id = "sdvplot/plotly/axis-logos";
+    const entry = EXAMPLES.find((e) => e.id === id);
+    if (entry === undefined) throw new Error(`${id} is not in the registry`);
+    const page = await browser.newPage();
+    await page.route("**/lib-plotly.*.js", (r) => r.abort());
+    await page.goto(`${base}/gallery/${pagePath(entry)}/`);
+    const figure = page.locator(`figure[data-example="${id}"]`);
+    await figure.scrollIntoViewIfNeeded();
+    await figure.locator(".sdv-live-error").waitFor({ timeout: 30_000 });
+    expect(await figure.locator(".sdv-live-static").count(), "the static copy is back").toBe(1);
+    expect(await figure.locator(".sdv-live-output > *").count(), "nothing drawn is left").toBe(0);
+    expect(await figure.locator(".sdv-live-note").count(), "no note promising a drawing").toBe(0);
+    await page.close();
+  });
 });
