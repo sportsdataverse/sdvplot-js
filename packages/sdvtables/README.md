@@ -49,6 +49,115 @@ fonts yourself (`fontsLink(fonts)` builds the same tag). `toElement` moves the l
 Decoration CSS is scoped to the table `#id`. Two renders of the same spec on one page therefore need distinct ids:
 call `.id("a")` / `.id("b")` on the builder.
 
+## TanStack Table interop (recipe)
+
+sdvtables has its own headless engine and takes no TanStack dependency. If your app already renders tables with
+`@tanstack/react-table` 8, map a `TableSpec` to `ColumnDef`s: the header comes from the spec, and each
+cell reuses the markup `renderHTML` draws (logos, pills, bars), read back from `toElement()` by `data-row` / `data-col`.
+Sorting uses the spec's `sortable` and `compare`, the [Phase 5 fields](#reserved-for-phase-5): a column without
+`compare` falls back to TanStack's default sort, and `compare` stays ascending because TanStack inverts it for
+descending itself.
+
+`toElement` needs a `document`, and a `"use client"` component is still server-rendered in Next, so build the columns
+only after mount: in a `useEffect` (below), or load the table component with `next/dynamic(..., { ssr: false })`.
+
+```tsx
+import type { TableSpec } from "@sportsdataverse/sdvtables";
+import { columnLabel, toElement } from "@sportsdataverse/sdvtables/html";
+import type { ColumnDef } from "@tanstack/react-table";
+
+/** sdvtables columns -> TanStack column defs. Cells reuse renderHTML's own markup (logos, pills, bars); wrap the
+ *  table in `<div className={themeKey(spec.theme)}>` and emit `<style>{styleSheet(spec)}</style>` once. */
+export function toTanStackColumns<Row>(
+  spec: TableSpec<Row>,
+  rows: readonly Row[],
+): ColumnDef<Row, unknown>[] {
+  const cells = new Map<string, Element>(); // "row|col" -> sdvtables' <td>
+  // needs a DOM (throws TableSpecError without a document): call this after mount, never during render
+  for (const td of Array.from(toElement(spec, rows).querySelectorAll("tr[data-row] > td[data-col]")))
+    cells.set(`${td.parentElement?.getAttribute("data-row")}|${td.getAttribute("data-col")}`, td);
+  return spec.columns.map(
+    (c): ColumnDef<Row, unknown> => ({
+      id: c.key,
+      accessorFn: (row) => row[c.key],
+      header: columnLabel(c),
+      enableSorting: c.sortable !== false,
+      ...(c.compare ? { sortingFn: (a, b, id) => c.compare?.(a.getValue(id), b.getValue(id)) ?? 0 } : {}),
+      cell: (ctx) => {
+        const cell = cells.get(`${ctx.row.index}|${c.key}`); // row.index is the input order, as data-row is
+        // pill / rank fills live on sdvtables' own <td style>, so carry that over too
+        return (
+          <div
+            ref={(n) => n?.setAttribute("style", cell?.getAttribute("style") ?? "")}
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: sdvtables escapes every value it renders
+            dangerouslySetInnerHTML={{ __html: cell?.innerHTML ?? "" }}
+          />
+        );
+      },
+    }),
+  );
+}
+```
+
+```tsx
+"use client";
+import type { TableSpec } from "@sportsdataverse/sdvtables";
+import { prepare, styleSheet, themeKey } from "@sportsdataverse/sdvtables/html";
+import { type ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
+import { type ReactElement, useEffect, useState } from "react";
+import { toTanStackColumns } from "./to-tanstack-columns"; // the first fence
+
+export function StandingsTable<Row>({ spec, rows }: { spec: TableSpec<Row>; rows: Row[] }): ReactElement {
+  // empty on the server and on the first client render; filled once the effect has run
+  const [columns, setColumns] = useState<ColumnDef<Row, unknown>[]>([]);
+  useEffect(() => {
+    let live = true;
+    void prepare(spec).then(() => {
+      if (live) setColumns(toTanStackColumns(spec, rows));
+    });
+    return () => {
+      live = false;
+    };
+  }, [spec, rows]);
+
+  const table = useReactTable({
+    data: rows, // keep this reference stable: a new array every render makes TanStack loop
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+  });
+  return (
+    <div className={themeKey(spec.theme)}>
+      <style>{styleSheet(spec)}</style>
+      <table>
+        <thead>
+          {table.getHeaderGroups().map((g) => (
+            <tr key={g.id}>
+              {g.headers.map((h) => (
+                <th key={h.id}>{flexRender(h.column.columnDef.header, h.getContext())}</th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody>
+          {table.getRowModel().rows.map((r) => (
+            <tr key={r.id}>
+              {r.getVisibleCells().map((c) => (
+                <td key={c.id}>{flexRender(c.column.columnDef.cell, c.getContext())}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+```
+
+Limits: `snake` and tier layouts change which `<tr>` holds which row, so the recipe covers plain specs; table-level
+decorations (title, caption, stripes) are not cells and are not carried over. Written for `@tanstack/react-table` 8
+(sdv-web pins `^8.21.3`); v9 is a breaking major and is not covered.
+
 ## Themes
 
 20 themes: the 18 gtUtils themes plus `sdv` (light/dark) and `sdvTeam`. Set one with
