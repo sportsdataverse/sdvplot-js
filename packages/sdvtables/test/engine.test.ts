@@ -126,14 +126,34 @@ describe("filtering", () => {
     expect(() => t.toggleColumn("nope")).toThrow(TableSpecError);
     expect(() => createTable(spec, rows, { sort: { col: "nope", dir: "asc" } })).toThrow(TableSpecError);
   });
-  test("filter resets page (Review Focus 2)", () => {
-    const t = createTable(spec, many, { pageSize: 10 });
+  // Review Focus 2: a filter change resets the page to 0. Each filter leaves at least 3 pages and the table starts on
+  // page 3, so update()'s clamp alone would keep page 3 (2 when exactly 3 are left): only `page: 0` passes these.
+  const onPage3 = () => {
+    const t = createTable(spec, many, { pageSize: 4 }); // 32 teams, 8 pages
     t.setPage(2);
     expect(t.state.page).toBe(2);
-    t.setGlobalFilter("ny"); // NYG, NYJ
+    return t;
+  };
+  test("setGlobalFilter resets the page, though 3+ pages remain (Review Focus 2)", () => {
+    const t = onPage3();
+    t.setGlobalFilter("j"); // 14 rows: a team, or a quarterback's name, holding a j
+    expect(t.pageCount).toBe(4);
     expect(t.state.page).toBe(0);
-    expect(t.filteredCount).toBe(2);
-    expect(t.pageCount).toBe(1);
+    expect(teams(t)).toEqual(["BAL", "BUF", "CIN", "CLE"]);
+  });
+  test("setFilter resets the page, though 3+ pages remain (Review Focus 2)", () => {
+    const t = onPage3();
+    t.setFilter("team", "a"); // ARI ATL BAL CAR DAL JAX LA LAC MIA SEA WAS
+    expect(t.pageCount).toBe(3);
+    expect(t.state.page).toBe(0);
+    expect(teams(t)).toEqual(["ARI", "ATL", "BAL", "CAR"]);
+  });
+  test("setExternalFilter resets the page, though 3+ pages remain (Review Focus 2)", () => {
+    const t = onPage3();
+    t.setExternalFilter((r) => r.conf === "AFC"); // 16 rows
+    expect(t.pageCount).toBe(4);
+    expect(t.state.page).toBe(0);
+    expect(teams(t)).toEqual(["BAL", "BUF", "CIN", "CLE"]);
   });
 });
 
