@@ -1,0 +1,28 @@
+// Real 2026 NBA shots (spec §7), from fixtures/shots (provenance: fixtures/shots/README.md). JSON imports, no
+// node:fs, so the examples registry can re-export these rows to the browser too.
+import columns from "../../../../fixtures/shots/nba-2026-bkn-2000-columns.json" with { type: "json" };
+import square from "../../../../fixtures/shots/nba-2026-league-square.json" with { type: "json" };
+import league from "../../../../fixtures/shots/nba-2026-league.json" with { type: "json" };
+import type { LeagueIndex, ShotRow } from "../../src/shots/index.js";
+
+/** The 2000 BKN shots of blazing-the-nets' own fixture (first 2000 BKN rows of shots_2026.parquet), as release rows. */
+export const BKN: readonly ShotRow[] = columns.x_legacy.map((x, i) => ({
+  x_legacy: x,
+  y_legacy: columns.y_legacy[i] as number,
+  shot_distance: columns.shot_distance[i] as number,
+  shot_value: columns.shot_value[i] as number,
+  shot_result: columns.made[i] === 1 ? "Made" : "Missed",
+}));
+
+export interface LeagueFixture {
+  readonly hex10: LeagueIndex;
+  readonly hex15: LeagueIndex;
+}
+/** The 2026 regular-season league context, computed by blazing-the-nets' own code (tools/oracle/shots.ts). */
+export const LEAGUE: LeagueFixture = league as LeagueFixture;
+
+/**
+ * The same league on squares of a radius-10 hexagon's area, binned by sdvplot's OWN squarebin: context data, not an
+ * oracle (J38 S16; fixtures/shots/README.md).
+ */
+export const LEAGUE_SQUARE: LeagueIndex = square.square10 as LeagueIndex;

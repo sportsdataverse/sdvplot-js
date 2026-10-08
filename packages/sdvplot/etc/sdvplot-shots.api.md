@@ -4,6 +4,8 @@
 
 ```ts
 
+import { BasketballZone } from '@sportsdataverse/sporty';
+
 // @public
 export interface Binner {
     bins<T>(points: readonly T[], o: {
@@ -42,10 +44,40 @@ export type BinOf<T> = T[] & {
 export type BinShape = "hex" | "square";
 
 // @public
+export function binShots(shots: readonly ShotRow[], cell: number | BinnerOptions): CellBin[];
+
+// @public (undocumented)
+export interface CellBin extends Split {
+    // (undocumented)
+    readonly meanDistance: number;
+    readonly x: number;
+    // (undocumented)
+    readonly y: number;
+    readonly zone: BasketballZone;
+}
+
+// @public
 export function cellPath(shape: BinShape, size: number): string;
 
 // @public
 export function cellPoints(shape: BinShape, size: number): [number, number][];
+
+// @public (undocumented)
+export interface CellSizes {
+    readonly cap: number;
+    readonly r: readonly number[];
+    readonly size: (attempts: number) => number;
+    readonly steps: readonly number[];
+}
+
+// @public
+export function cellsVsLeague(player: readonly ShotRow[], league: LeagueIndex, minLeague?: number): CellVsLeague[];
+
+// @public (undocumented)
+export interface CellVsLeague extends CellBin {
+    // (undocumented)
+    readonly leagueFgPct: number | null;
+}
 
 // @public (undocumented)
 export type DiffPalette = "rdbu" | "master";
@@ -99,6 +131,65 @@ export type Lattice = {
 };
 
 // @public
+export const LEAGUE_PRIOR_ATTEMPTS = 25;
+
+// @public (undocumented)
+export interface LeagueCell {
+    // (undocumented)
+    readonly attempts: number;
+    // (undocumented)
+    readonly fgPct: number | null;
+    // (undocumented)
+    readonly x: number;
+    // (undocumented)
+    readonly y: number;
+}
+
+// @public
+export type LeagueIndex = Lattice & {
+    readonly hexes: readonly LeagueCell[];
+    readonly zones: Readonly<Record<BasketballZone, Split>>;
+};
+
+// @public
+export function leagueIndex(league: readonly ShotRow[], cell: number | BinnerOptions): LeagueIndex;
+
+// @public
+export interface ShotRow {
+    // (undocumented)
+    readonly shot_distance: number;
+    readonly shot_result: string;
+    readonly shot_value: number;
+    // (undocumented)
+    readonly x_legacy: number;
+    // (undocumented)
+    readonly y_legacy: number;
+}
+
+// @public
+export function shrunkDiff(makes: number, attempts: number, league: number, k?: number): number;
+
+// @public
+export function sizeCells(cells: readonly {
+    readonly attempts: number;
+}[], o: BinnerOptions & {
+    readonly rule?: SizeRule;
+}): CellSizes;
+
+// @public
+export type SizeRule = "sqrt-p95" | "linear-cap";
+
+// @public (undocumented)
+export interface Split {
+    // (undocumented)
+    readonly attempts: number;
+    // (undocumented)
+    readonly fgPct: number | null;
+    // (undocumented)
+    readonly makes: number;
+}
+
+// @public
 export function squarebin<T>(points: readonly T[], o: {
     side: number;
     x: (p: T) => number;
@@ -107,6 +198,9 @@ export function squarebin<T>(points: readonly T[], o: {
 
 // @public
 export function squarePath(s: number): string;
+
+// @public
+export function statsByZone(shots: readonly ShotRow[]): Record<BasketballZone, Split>;
 
 // (No @packageDocumentation comment for this package)
 
