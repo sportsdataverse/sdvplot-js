@@ -1,9 +1,14 @@
 import * as echarts from "echarts";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import {
+  type EChartsAxis,
   type EChartsOption,
   type LogoSeries,
+  drawnAxisMarks,
   drawnMarks,
+  teamColorPalette,
+  visibleAxisLabels,
+  withAxisLogos,
   withHeadshots,
   withLogos,
   withWordmarks,
@@ -183,5 +188,131 @@ describe("withLogos", () => {
         z: 5,
       },
     );
+  });
+});
+
+describe("withAxisLogos", () => {
+  const bars = (labels: string[]): EChartsOption => ({
+    xAxis: { type: "category", data: labels },
+    yAxis: { type: "value" },
+    series: [{ type: "bar", data: labels.map((_, i) => i + 1) }],
+  });
+
+  test("x axis: resolved labels become rich image labels, unknown stay text with one warning", () => {
+    const spy = vi.fn();
+    setWarningHandler(spy);
+    const out = withAxisLogos(bars(["KC", "XXX", "BUF"]), "x", {
+      league: "nfl",
+      height: 0.1,
+      chartHeight: 400,
+    });
+    setWarningHandler(null);
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(drawnAxisMarks(out, "x")).toEqual([
+      [ID(KC), 0, 0.1],
+      [ID(BUF), 2, 0.1],
+    ]);
+    expect(visibleAxisLabels(out, "x")).toEqual(["XXX"]);
+    const label = (
+      out.xAxis as {
+        axisLabel: {
+          formatter: (v: string) => string;
+          rich: Record<string, { height: number; backgroundColor: { image: string } }>;
+        };
+      }
+    ).axisLabel;
+    expect(label.formatter("KC")).toBe("{t_0|}");
+    expect(label.formatter("XXX")).toBe("XXX");
+    expect(label.rich.t_0!.height).toBe(40);
+    expect(label.rich.t_0!.backgroundColor.image).toMatch(/^https:/);
+    const imgs = renderImages(out, 600, 400);
+    expect(imgs.length).toBeGreaterThanOrEqual(2); // the rich backgrounds render as <image>
+    expect(imgs.some((i) => Math.abs(i.height - 40) < 1)).toBe(true);
+  });
+
+  test("y axis on a horizontal bar chart; an existing string formatter is kept for unresolved labels", () => {
+    const opt: EChartsOption = {
+      yAxis: { type: "category", data: ["KC", "XXX"], axisLabel: { formatter: "[{value}]" } },
+      xAxis: { type: "value" },
+      series: [{ type: "bar", data: [1, 2] }],
+    };
+    const out = withAxisLogos(opt, "y", { league: "nfl", height: 0.1, chartHeight: 300 });
+    const label = (out.yAxis as { axisLabel: { formatter: (v: string) => string } }).axisLabel;
+    expect(label.formatter("XXX")).toBe("[XXX]");
+    expect(label.formatter("KC")).toBe("{t_0|}");
+    expect(drawnAxisMarks(out, "y")).toEqual([[ID(KC), 0, 0.1]]);
+    // a function formatter still gets ECharts' own (value, index) arguments for an unresolved label
+    const fn = withAxisLogos(
+      {
+        ...opt,
+        yAxis: {
+          type: "category",
+          data: ["KC", "XXX"],
+          axisLabel: { formatter: (v: string, i: number) => `${i}:${v}` },
+        },
+      },
+      "y",
+      { league: "nfl" },
+    );
+    expect(
+      (fn.yAxis as { axisLabel: { formatter: (v: string, i: number) => string } }).axisLabel.formatter(
+        "XXX",
+        1,
+      ),
+    ).toBe("1:XXX");
+  });
+
+  test("needs a category axis with data; axis must be x or y; default chartHeight is 400", () => {
+    expect(() => withAxisLogos(scatter(), "x", { league: "nfl" })).toThrow(
+      /needs a category x axis with data/,
+    );
+    expect(() => withAxisLogos(bars(["KC"]), "q" as "x", { league: "nfl" })).toThrow(InputError);
+    expect(
+      (
+        withAxisLogos(bars(["KC"]), "x", { league: "nfl", height: 0.1 }).xAxis as {
+          axisLabel: { rich: Record<string, { height: number }> };
+        }
+      ).axisLabel.rich.t_0!.height,
+    ).toBe(40);
+  });
+
+  test("the axis bookkeeping leaves the value axis alone (horizontal and vertical bars on a scale: true axis)", () => {
+    const bars = (option: EChartsOption): string[] => {
+      const chart = echarts.init(null, null, { renderer: "svg", ssr: true, width: 600, height: 400 });
+      chart.setOption({ ...option, animation: false } as echarts.EChartsOption);
+      const svg = chart.renderToSVGString();
+      chart.dispose();
+      return [...svg.matchAll(/<path d="([^"]*)"[^>]*ecmeta_series_index="0"/g)].map((m) => m[1]!);
+    };
+    const value = { type: "value", scale: true } as EChartsAxis; // an axis whose extent does NOT include 0
+    const cases: ["x" | "y", EChartsOption][] = [
+      [
+        "x",
+        {
+          xAxis: { type: "category", data: ["KC", "BUF"] },
+          yAxis: value,
+          series: [{ type: "bar", data: [7, 9] }],
+        },
+      ],
+      [
+        "y",
+        {
+          yAxis: { type: "category", data: ["KC", "BUF"] },
+          xAxis: value,
+          series: [{ type: "bar", data: [7, 9] }],
+        },
+      ],
+    ];
+    for (const [letter, option] of cases) {
+      expect(bars(option)).toHaveLength(2);
+      expect(bars(withAxisLogos(option, letter, { league: "nfl" }))).toEqual(bars(option));
+    }
+  });
+
+  test("teamColorPalette: one colour per team for option.color", () => {
+    const c = teamColorPalette("nfl", [KC, "XXX", BUF], { fallback: "#999999" });
+    expect(c).toHaveLength(3);
+    expect(c[0]).toMatch(/^#/);
+    expect(c[1]).toBe("#999999");
   });
 });
