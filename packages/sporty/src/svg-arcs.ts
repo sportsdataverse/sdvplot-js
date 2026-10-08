@@ -45,6 +45,10 @@ export function detectArcs(points: Polygon, opts: DetectArcsOptions = {}): ArcRu
     const [ax, ay] = points[i]!;
     const [bx, by] = points[i + 1]!;
     const [qx, qy] = points[i + 2]!;
+    if (![ax, ay, bx, by, qx, qy].every(Number.isFinite)) {
+      i++; // a NaN/Infinity coordinate must not seed (or poison) a run
+      continue;
+    }
     const d = 2 * (ax * (by - qy) + bx * (qy - ay) + qx * (ay - by));
     const scale = Math.max(
       1,
@@ -71,16 +75,20 @@ export function detectArcs(points: Polygon, opts: DetectArcsOptions = {}): ArcRu
     const rTol = tol * Math.max(1, r);
     let j = i + 1;
     let prev = angle(points[j]!);
+    let total = step; // the unwrapped sweep actually traversed (extrapolating `step` drifts ~1e-9 over 200 points)
     while (j + 1 < n) {
       const q = points[j + 1]!;
-      if (Math.abs(Math.hypot(q[0] - cx, q[1] - cy) - r) > rTol) break;
+      // negated `<=` so a NaN coordinate breaks the run instead of being swallowed
+      if (!(Math.abs(Math.hypot(q[0] - cx, q[1] - cy) - r) <= rTol)) break;
       const a = angle(q);
-      if (Math.abs(norm(a - prev) - step) > tol) break;
+      const da = norm(a - prev);
+      if (!(Math.abs(da - step) <= tol)) break;
+      total += da;
       prev = a;
       j++;
     }
     if (j - i + 1 >= minPoints) {
-      runs.push({ start: i, end: j, cx, cy, r, a0, a1: a0 + step * (j - i) });
+      runs.push({ start: i, end: j, cx, cy, r, a0, a1: a0 + total });
       i = j; // the run's last point may start the next run (R's outer/inner arc seam)
     } else i++;
   }
@@ -100,8 +108,9 @@ export function resampleArc(run: ArcRun): Point[] {
 
 /**
  * Path data for one polygon: "M x y L … Z" when arcs is "sampled"; with "svg" each ArcRun becomes
- * `A r r 0 large sweep x y` (a run spanning ≥ 2π − 1e-9 is split into two half arcs because an SVG arc
- * cannot have coincident endpoints).
+ * `A r r 0 large sweep x y`. A run spanning ≥ 2π − 1e-9, or whose formatted endpoints coincide, is split
+ * into two half arcs (a renderer drops an `A` with identical endpoints); a run spanning more than one
+ * turn cannot be drawn with arcs and is emitted as `L` segments.
  */
 export function pathData(points: Polygon, arcs: "sampled" | "svg", precision: number): string {
   const f = (v: number): string => fmt(v, precision);
@@ -115,13 +124,17 @@ export function pathData(points: Polygon, arcs: "sampled" | "svg", precision: nu
   let i = 0;
   while (i < n - 1) {
     const run = runs[ri];
+    if (run !== undefined && run.start === i && Math.abs(run.a1 - run.a0) > TWO_PI + 1e-9) {
+      ri++; // more than one turn (custom scenes only; sportyR never emits one): fall through to L segments
+      continue;
+    }
     if (run !== undefined && run.start === i) {
       const span = run.a1 - run.a0;
       const sweep = span > 0 ? 1 : 0;
       const rr = `${f(run.r)} ${f(run.r)}`;
+      const [sx, sy] = points[run.start]!;
       const [ex, ey] = points[run.end]!;
-      // ponytail: spans > 2π cannot be drawn as arcs; sportyR never emits one
-      if (Math.abs(span) >= TWO_PI - 1e-9) {
+      if (Math.abs(span) >= TWO_PI - 1e-9 || (f(sx) === f(ex) && f(sy) === f(ey))) {
         const am = run.a0 + span / 2;
         parts.push(
           `A ${rr} 0 0 ${sweep} ${f(run.cx + run.r * Math.cos(am))} ${f(run.cy + run.r * Math.sin(am))}`,
