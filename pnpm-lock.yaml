@@ -96,6 +96,9 @@ importers:
 
   examples:
     devDependencies:
+      '@napi-rs/canvas':
+        specifier: ^1.0.10
+        version: 1.0.10
       '@observablehq/plot':
         specifier: ^0.6.17
         version: 0.6.17

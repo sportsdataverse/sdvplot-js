@@ -2,16 +2,21 @@ import { mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "nod
 import { dirname, join } from "node:path";
 import type { ExamplePackage, Prerendered } from "../src/contract.js";
 
-/** Section folder (second path segment of a gallery page) → sidebar label. Unknown sections use their folder name. */
+/**
+ * Section folder (second path segment of a gallery page) → sidebar label; a `<package>/<folder>` key wins over
+ * the bare folder. Unknown sections use their folder name.
+ */
 const SECTIONS: Readonly<Record<string, string>> = {
   core: "Identity, colours, marks",
+  "sporty/core": "Surfaces, options, units, shapes",
   plot: "Observable Plot",
   d3: "D3",
   react: "React",
   node: "Node and SSR",
   svg: "SVG renderer",
+  canvas: "Canvas renderer",
   surfaces: "Every surface",
-  frames: "Frames, units, transforms",
+  frames: "Coordinate frames",
   spec: "Table spec",
   themes: "Every theme",
   kinds: "Every cell kind",
@@ -19,6 +24,7 @@ const SECTIONS: Readonly<Record<string, string>> = {
   html: "HTML renderer",
   api: "From the API docs",
 };
+const label = (p: string, s: string): string => SECTIONS[`${p}/${s}`] ?? SECTIONS[s] ?? s;
 const PACKAGES: Readonly<Record<ExamplePackage, string>> = {
   sdvplot: "@sportsdataverse/sdvplot",
   sporty: "@sportsdataverse/sporty",
@@ -81,9 +87,9 @@ export function writePages(outDir: string, docsDir: string): void {
         .map((r) => `<Live id=${yaml(r.id)} thumb href=${yaml(`/gallery/${pagePath(r)}`)} />`);
       write(
         join(gallery, p, s, "_category_.json"),
-        `${JSON.stringify({ label: SECTIONS[s] ?? s, collapsed: true })}\n`,
+        `${JSON.stringify({ label: label(p, s), collapsed: true })}\n`,
       );
-      return `## ${SECTIONS[s] ?? s}\n\n<div className="sdv-gallery">\n${cards.join("\n")}\n</div>`;
+      return `## ${label(p, s)}\n\n<div className="sdv-gallery">\n${cards.join("\n")}\n</div>`;
     });
     write(
       join(gallery, p, "index.mdx"),

@@ -1,0 +1,44 @@
+import {
+  SportyError,
+  UnknownDisplayRangeError,
+  UnknownLeagueError,
+  UnknownUnitError,
+  normalizeUnit,
+  surface,
+} from "@sportsdataverse/sporty";
+import type { ExampleMeta } from "../../contract.js";
+
+export const meta = {
+  title: "Errors: one class per mistake, all SportyError",
+  tags: ["errors", "SportyError", "UnknownLeagueError", "UnknownDisplayRangeError", "UnknownUnitError"],
+} satisfies ExampleMeta;
+
+const caught = (f: () => unknown) => {
+  try {
+    f();
+    return "no error";
+  } catch (e) {
+    if (!(e instanceof SportyError)) throw e;
+    return {
+      name: e.name,
+      "instanceof SportyError": e instanceof SportyError,
+      "instanceof UnknownLeagueError": e instanceof UnknownLeagueError,
+      "instanceof UnknownDisplayRangeError": e instanceof UnknownDisplayRangeError,
+      "instanceof UnknownUnitError": e instanceof UnknownUnitError,
+      message: e.message.length > 110 ? `${e.message.slice(0, 110)}…` : e.message,
+    };
+  }
+};
+
+// A league name is any string at compile time (new leagues need no release), so a typo surfaces here.
+export default {
+  'surface("hockey", "khl")': caught(() => surface("hockey", "khl")),
+  'surface("hockey", "nhl", { displayRange: "slot" })': caught(() =>
+    // @ts-expect-error: the display range is checked at compile time too
+    surface("hockey", "nhl", { displayRange: "slot" }),
+  ),
+  'normalizeUnit("furlong")': caught(() => normalizeUnit("furlong")),
+  'surface("soccer", "epl", { arcResolution: 1 })': caught(() =>
+    surface("soccer", "epl", { arcResolution: 1 }),
+  ),
+};
