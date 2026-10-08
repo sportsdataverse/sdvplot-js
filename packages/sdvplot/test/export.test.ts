@@ -316,6 +316,8 @@ describe("toPNG fonts", () => {
     await expect(toPNG(TEXT, { fonts: { files: "a.ttf" as never } })).rejects.toThrow(InputError);
     await expect(toPNG(TEXT, { fonts: { defaultFamily: 1 as never } })).rejects.toThrow(InputError);
     await expect(toPNG(TEXT, { fonts: { system: "no" as never } })).rejects.toThrow(InputError);
+    for (const bad of [null, [], "a.ttf"])
+      await expect(toPNG(TEXT, { fonts: bad as never })).rejects.toThrow(InputError);
   });
 });
 

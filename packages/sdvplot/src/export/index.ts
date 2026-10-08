@@ -379,7 +379,12 @@ export async function toPNG(
 const NO_FONTS = { font: { loadSystemFonts: false } };
 
 /** `fonts` as resvg's `font` option; a missing font file is an InputError (resvg would skip it, drawing no text). */
-async function fontOptions({ files = [], defaultFamily, system = true }: NonNullable<ToPNGOptions["fonts"]>) {
+async function fontOptions(fonts: ToPNGOptions["fonts"]) {
+  if (typeof fonts !== "object" || fonts === null || Array.isArray(fonts))
+    throw new InputError(
+      `fonts must be an object { files, defaultFamily, system }, got ${JSON.stringify(fonts)}`,
+    );
+  const { files = [], defaultFamily, system = true } = fonts;
   if (!Array.isArray(files) || files.some((f) => typeof f !== "string"))
     throw new InputError(`fonts.files must be an array of font file paths, got ${JSON.stringify(files)}`);
   if (defaultFamily !== undefined && typeof defaultFamily !== "string")
