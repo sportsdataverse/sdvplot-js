@@ -12,9 +12,8 @@ import {
   LEAGUES,
   createSelection,
   loadLeague,
-  logoUrlSync,
   marks,
-  setWarningHandler,
+  selectMarkSync,
   teams,
 } from "./_sdv/sdvplot.js";
 import { axisLogos, headshots, logos, meanLines, medianLines, teamColor, wordmarks } from "./_sdv/sdvplot-plot.js";
@@ -26,7 +25,7 @@ import { note, range, scroller, select } from "./components/controls.js";
 
 ## Every team in a league
 
-Pick a league and a season: the page loads that league's shard only. **Mark** switches between the logo and the wordmark, and **Variant** between the default mark and the one drawn for a dark background (shown on a dark panel, so you can see why it exists). A team with no archived mark for that choice is left out; the count below the grid says how many.
+Pick a league and a season: the page loads that league's shard only. **Mark** switches between the logo and the wordmark, and **Variant** between the default mark and the one drawn for a dark background (shown on a dark panel, so you can see why it exists). When a team has no mark that matches exactly, sdvplot falls back: to the default variant (or one drawn for that background), and to a mark from other seasons when none covers this one. A team is left out only when it has no archived mark of that type at all: the NBA and the NHL have no wordmarks. The line under the grid counts how many teams got exactly what you asked for.
 
 ```js
 const league = view(select(LEAGUES, { label: "League", value: "nfl" }));
@@ -36,13 +35,16 @@ const variant = view(select(["default", "dark"], { label: "Variant", value: "def
 ```
 
 ```js
-// sdvplot warns (once per team) when it has no mark for a team; the count below says the same, so keep the console quiet
-setWarningHandler(() => {});
-invalidation.then(() => setWarningHandler(null));
+// selectMarkSync is the selection logoUrlSync makes (its archive_url is logoUrlSync's answer), with the row's metadata:
+// which variant it is and which seasons it covers, so the page can tell an exact match from a fallback
 const all = await teams(league);
 const rows = all
-  .map((t) => ({ name: t.name ?? t.team_id, src: logoUrlSync(t.team_id, league, { season, markType, variant }) }))
-  .filter((t) => t.src !== undefined);
+  .map((t) => ({ name: t.name ?? t.team_id, mark: selectMarkSync(t.team_id, league, { season, markType, variant }) }))
+  .filter((t) => t.mark !== undefined)
+  .map((t) => ({ ...t, src: t.mark.archive_url }));
+const exact = rows.filter(
+  ({ mark: m }) => m.variant === variant && (m.valid_from ?? -Infinity) <= season && season <= (m.valid_to ?? Infinity),
+).length;
 ```
 
 ```js
@@ -73,7 +75,7 @@ display(
 );
 ```
 
-${rows.length} of ${all.length} ${league} teams have a ${variant} ${markType} for ${season}.
+${rows.length} of ${all.length} ${league} teams have a ${markType} to show; ${exact} of them are the ${variant} variant and cover ${season} (an undated mark covers every season), and the other ${rows.length - exact} are sdvplot's fallback.
 
 ## One franchise across its eras
 

@@ -72,7 +72,7 @@ ${shots.length} shots from ${kept.size} games: ${made} made (${pct(shots.length 
 
 ## The court
 
-Each cell is sized by how many shots Brooklyn took there and coloured by its FG% minus the league's, shrunk toward the league by 25 attempts so a 1-for-1 cell does not shout. **Cells** picks the shape: hexagons of 1.5 ft (blazing-the-nets `main`) or 1 ft, squares of a 1 ft hexagon's area, or the court's zones. **Compare with** picks the league figure: the league in the same cell (`cellsVsLeague`), or the league at the same distance in its own palette, unshrunk (`cellsVsDistance`, blazing-the-nets `master`; hexagons only). Hover a cell for its four lines: zone, makes and attempts, the league's FG% and the difference, and the mean distance. The ring around the hoop follows the distance the charts below are pointing at.
+Each hexagon or square is sized by how many shots Brooklyn took there and coloured by its FG% minus the league's, shrunk toward the league by 25 attempts so a 1-for-1 cell does not shout. **Cells** picks the shape: hexagons of 1.5 ft (blazing-the-nets `main`) or 1 ft, squares of a 1 ft hexagon's area, or the court's zones. **Compare with** picks the league figure: the league in the same cell (`cellsVsLeague`), or the league at the same distance in its own palette, unshrunk (`cellsVsDistance`, blazing-the-nets `master`; hexagons only). Hover a hexagon or square for its four lines: zone, makes and attempts, the league's FG% and the difference, and the mean distance. The zones are coloured the same way but not sized, and each is labelled with its makes and attempts; a zone's tip gives its name, makes and attempts, and FG%. The ring around the hoop follows the distance the charts below are pointing at.
 
 ```js
 const cellShape = view(
