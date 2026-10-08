@@ -3,6 +3,7 @@ import * as Plot from "@observablehq/plot";
 import { scaleLinear, select } from "d3";
 import { expect, test } from "vitest";
 import { appendLegend, appendSignature } from "../../src/d3/index.js";
+import { InputError } from "../../src/errors.js";
 import { shootingSignature } from "../../src/plot/index.js";
 import {
   diffScale,
@@ -115,4 +116,86 @@ test("appendSignature draws Plot's shootingSignature: same ribbon, league lines,
   for (const a of ["offset", "stop-color"])
     expect(attr(dg?.querySelectorAll("stop") ?? [], a)).toEqual(attr(pg?.querySelectorAll("stop") ?? [], a));
   expect(dg?.querySelectorAll("stop")).toHaveLength(61);
+});
+
+test("the d3 legend and the signature's league lines take the page's ink: var(--sdv-muted, currentColor)", () => {
+  const ink = "var(--sdv-muted, currentColor)";
+  const svg = select(document.body).append("svg");
+  const s = sizeCells([{ attempts: 1 }, { attempts: 30 }, { attempts: 60 }], { radius: 15 });
+  appendLegend(svg.append("g"), diffScale(), { width: 476, size: { px: s.size, steps: s.steps } });
+  const root = svg.node() as SVGSVGElement;
+  const fills = [...root.querySelectorAll<SVGElement>("text, path")].map((n) => n.style.fill);
+  expect(fills.length).toBe(3 + 2 + 3 + 3 + 1); // ticks, caption, key cells, key counts, key note
+  expect(new Set(fills)).toEqual(new Set([ink]));
+  const pts = signaturePoints(vsLeague(fgPctByDistance(BKN), LEAGUE.byFoot));
+  const g = appendSignature(newG(), pts, {
+    x: scaleLinear([0, 35], [40, 488]),
+    y: scaleLinear([0, 1], [226, 36]),
+  });
+  expect(
+    [...(g.node() as SVGGElement).querySelectorAll<SVGPathElement>("path")].map((p) => p.style.stroke),
+  ).toEqual([ink, ink, "currentColor"]);
+});
+
+test("appendLegend default ticks stay on the bar: 0 only when the domain holds it inside", () => {
+  const ticks = (domain: readonly [number, number]) => {
+    const svg = select(document.body).append("svg");
+    appendLegend(svg.append("g"), diffScale({ palette: "master" }), { domain, caption: null, width: 240 });
+    return [...(svg.node() as SVGSVGElement).querySelectorAll("text")].map((n) => [
+      Number(n.getAttribute("x")),
+      n.textContent,
+    ]);
+  };
+  expect(ticks([-0.3, 0.3])).toEqual([
+    [0, "−30.0"],
+    [120, "0"],
+    [240, "+30.0"],
+  ]);
+  expect(ticks([0.1, 0.3])).toEqual([
+    [0, "+10.0"],
+    [240, "+30.0"],
+  ]);
+  expect(ticks([-0.3, 0])).toEqual([
+    [0, "−30.0"],
+    [240, "0"],
+  ]);
+});
+
+test("appendLegend rejects a domain end that is not finite", () => {
+  const g = newG();
+  for (const domain of [
+    [0, Number.POSITIVE_INFINITY],
+    [Number.NEGATIVE_INFINITY, 0],
+    [Number.NaN, 0.3],
+  ] as const)
+    expect(() => appendLegend(g, diffScale(), { domain })).toThrow(InputError);
+});
+
+test("the size-key note wraps like main's drawNotes (theme.ts:94-106) to width - 118, 8 characters at the least", () => {
+  const s = sizeCells([{ attempts: 1 }, { attempts: 30 }, { attempts: 60 }], { radius: 15 });
+  const legend = (width: number) => {
+    const svg = select(document.body).append("svg");
+    const used = appendLegend(svg.append("g"), diffScale(), {
+      width,
+      caption: null,
+      size: { px: s.size, steps: s.steps },
+    });
+    const note = [...(svg.node() as SVGSVGElement).querySelectorAll("g > g > text")].filter(
+      (n) => n.getAttribute("x") === "118",
+    );
+    return { used, note: note.map((n) => [n.getAttribute("y"), n.textContent]) };
+  };
+  expect(legend(476)).toEqual({ used: 8 + 11 + 6 + 8 + 42, note: [["15", "hex size: attempts"]] });
+  expect(legend(200).note).toEqual([
+    ["15", "hex size:"],
+    ["30", "attempts"],
+  ]); // 82 px: 13 characters a line
+  expect(legend(100)).toEqual({
+    used: 8 + 11 + 6 + 8 + 3 * 15 + 8, // three lines outgrow the 42 px key, so the height follows them
+    note: [
+      ["15", "hex"],
+      ["30", "size:"],
+      ["45", "attempts"],
+    ],
+  });
 });

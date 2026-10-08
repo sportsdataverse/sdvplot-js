@@ -11,7 +11,7 @@ type G = Selection<SVGGElement, unknown, null, undefined>;
 const FONT_PX = 11; // blazing-the-nets main lib/charts/theme.ts:24
 const CHAR_PX = 6.2; // theme.ts:26
 const LINE_H = 15; // theme.ts:92
-const MUTED = "var(--sdv-muted, #525252)";
+const MUTED = "var(--sdv-muted, currentColor)"; // main's TOKENS.muted where the page sets it, else the page's ink
 
 /** Signed points from a fraction (blazing-the-nets `main` `lib/format.ts:8`): 0.042 → "+4.2", -0.042 → "−4.2". */
 const fmtPts = (v: number): string => `${v >= 0 ? "+" : "−"}${Math.abs(v * 100).toFixed(1)}`;
@@ -44,7 +44,7 @@ export interface AppendLegendOptions {
    * (`ShootingSignature/Legend.js:36-38`): `{ domain: [-0.3, 0.3], ticks: [-0.3, -0.15, 0, 0.15, 0.3] }`.
    */
   domain?: readonly [lo: number, hi: number];
-  /** Tick diffs; default the domain's ends and 0. */
+  /** Tick diffs; default the domain's ends, and 0 when it lies inside them. */
   ticks?: readonly number[];
   /** Tick text; default signed points, "0" at 0 (theme.ts:140). */
   format?: (d: number) => string;
@@ -87,7 +87,8 @@ export function appendLegend(g: G, scale: DiffScale = diffScale(), o: AppendLege
   const maxWidth = o.width ?? 240;
   const width = Math.min(maxWidth, 240);
   const [lo, hi] = o.domain ?? [scale.stops[0] ?? 0, scale.stops.at(-1) ?? 0];
-  if (!(hi > lo)) throw new InputError(`appendLegend domain must run low to high, got [${lo}, ${hi}]`);
+  if (!(Number.isFinite(lo) && Number.isFinite(hi) && hi > lo))
+    throw new InputError(`appendLegend domain must be finite and run low to high, got [${lo}, ${hi}]`);
   // The domain's ends plus every scale stop inside it: exact for a piecewise-linear scale (master), 5 samples of RdBu.
   const at = [lo, ...scale.stops.filter((d) => d > lo && d < hi), hi];
   const stops = at.map((d) => [((d - lo) / (hi - lo)) * 100, scale(d)] as const);
@@ -103,7 +104,7 @@ export function appendLegend(g: G, scale: DiffScale = diffScale(), o: AppendLege
     .attr("rx", 2)
     .style("fill", `url(#${id})`);
   const format = o.format ?? ((d: number) => (d === 0 ? "0" : fmtPts(d)));
-  for (const d of o.ticks ?? [lo, 0, hi]) {
+  for (const d of o.ticks ?? (lo < 0 && hi > 0 ? [lo, 0, hi] : [lo, hi])) {
     g.append("text")
       .attr("x", x + ((d - lo) / (hi - lo)) * width)
       .attr("y", y + 8 + FONT_PX + 2)
@@ -147,14 +148,18 @@ export function appendLegend(g: G, scale: DiffScale = diffScale(), o: AppendLege
         .style("fill", MUTED)
         .text(i === size.steps.length - 1 ? `${n}+` : String(n));
     });
-    key
-      .append("text")
-      .attr("x", 118)
-      .attr("y", 4 + FONT_PX)
-      .style("font-size", `${FONT_PX}px`)
-      .style("fill", MUTED)
-      .text(size.note ?? `${shape} size: attempts`);
-    used += 8 + 42;
+    // main's drawNotes(key, 118, 4, width - 24 - 118, …) (hexShotChart.ts:212): wrapped, 8 characters a line at the least
+    const note = wrap(size.note ?? `${shape} size: attempts`, maxWidth - 118);
+    note.forEach((t, i) => {
+      key
+        .append("text")
+        .attr("x", 118)
+        .attr("y", 4 + FONT_PX + i * LINE_H)
+        .style("font-size", `${FONT_PX}px`)
+        .style("fill", MUTED)
+        .text(t);
+    });
+    used += 8 + Math.max(42, 8 + note.length * LINE_H);
   }
   return used;
 }
