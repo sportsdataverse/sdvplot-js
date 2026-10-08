@@ -4,6 +4,7 @@ import {
   aspect,
   axisLetter,
   axisPlacements,
+  colorList,
   column,
   embedSources,
   imageSource,
@@ -11,8 +12,8 @@ import {
   place,
   seasons,
 } from "../src/_web.js";
-import { InputError } from "../src/errors.js";
-import { HEADSHOT_ASPECT } from "../src/index.js";
+import { DownloadError, InputError } from "../src/errors.js";
+import { HEADSHOT_ASPECT, teamColorsSync } from "../src/index.js";
 
 test("aspect: the manifest's width/height, HEADSHOT_ASPECT for a headshot", () => {
   const [p] = place([1], [2], ["KC"], { league: "nfl", kind: "logo" });
@@ -89,4 +90,15 @@ test("markPlacements places the row columns; axisPlacements puts label i at inde
     [0, 0],
     [0, 1],
   ]);
+});
+
+test("embedSources raises DownloadError (url + status) on a non-ok answer", async () => {
+  const fetchFn = vi.fn(async () => new Response("", { status: 404 }));
+  await expect(embedSources(["https://a/x.png"], fetchFn as unknown as typeof fetch)).rejects.toThrow(
+    DownloadError,
+  );
+});
+
+test("colorList resolves every team in one pass, matching teamColorsSync", () => {
+  expect(colorList("nfl", ["KC", "BUF"])).toEqual(teamColorsSync("nfl", ["KC", "BUF"]));
 });

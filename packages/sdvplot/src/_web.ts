@@ -1,6 +1,6 @@
 /** What the spec adapters (Plotly, Vega-Lite, ECharts) share: image sources, aspect ratios, row access, team colours. */
 import { teamColorsSync } from "./colors.js";
-import { InputError } from "./errors.js";
+import { DownloadError, InputError } from "./errors.js";
 import { HEADSHOT_ASPECT } from "./headshots.js";
 import { type Kind, type PlaceOptions, type Placement, placeSync as place } from "./placement.js";
 import type { Value } from "./resolve.js";
@@ -9,7 +9,7 @@ import type { IdSystem, League, MarkType, SeasonInput, Variant } from "./types.j
 export type { Placement } from "./placement.js";
 export { checkAlpha, checkHeight, placeSync as place } from "./placement.js";
 
-/** What the module-level test hooks return. Positional on purpose (cheap to assert); the contract shim in test/adapters.contract.test.ts converts. */
+/** What the module-level test hooks return. Positional on purpose (cheap to assert); the contract shim in test/web.test.ts (the contract test lands with Task 9) converts. */
 export type DrawnMark = readonly [id: string, x: unknown, y: unknown, height: number, url: string];
 export type DrawnAxisMark = readonly [id: string, index: number, height: number];
 
@@ -19,7 +19,7 @@ export interface MarkOptions {
   y: string;
   team: string;
   league: League;
-  season?: SeasonInput | string;
+  season?: SeasonInput;
   height?: number;
   alpha?: number;
   variant?: Variant;
@@ -74,7 +74,7 @@ export async function embedSources(
   const out = new Map<string, string>();
   for (const url of new Set(urls)) {
     const res = await fetchFn(url);
-    if (!res.ok) throw new InputError(`embed: ${url} answered ${res.status}`);
+    if (!res.ok) throw new DownloadError(`embed: ${url} answered ${res.status}`, url, res.status);
     const mime =
       res.headers.get("content-type")?.split(";")[0] ??
       (url.toLowerCase().endsWith(".svg") ? "image/svg+xml" : "application/octet-stream");
@@ -119,7 +119,8 @@ export function markPlacements(
     });
   }
   const m = o as MarkOptions;
-  const po: PlaceOptions = { league: m.league, kind, season: seasons(rows, m.season) };
+  const po: PlaceOptions = { league: m.league, kind };
+  if (m.season !== undefined) po.season = seasons(rows, m.season);
   if (m.variant !== undefined) po.variant = m.variant;
   if (m.idSystem !== undefined) po.idSystem = m.idSystem;
   return place(xs, ys, column(rows, m.team, "team"), po);
@@ -128,7 +129,8 @@ export function markPlacements(
 export function axisPlacements(labels: readonly string[], letter: "x" | "y", o: AxisOptions): Placement[] {
   const index = labels.map((_, i) => i);
   const across = labels.map(() => 0);
-  const po: PlaceOptions = { league: o.league, kind: o.markType ?? "logo", season: o.season };
+  const po: PlaceOptions = { league: o.league, kind: o.markType ?? "logo" };
+  if (o.season !== undefined) po.season = o.season;
   if (o.variant !== undefined) po.variant = o.variant;
   if (o.idSystem !== undefined) po.idSystem = o.idSystem;
   return place(letter === "x" ? index : across, letter === "x" ? across : index, labels, po);
@@ -139,5 +141,5 @@ export function colorList(
   teams: readonly unknown[],
   o: { which?: "primary" | "secondary"; season?: SeasonInput; idSystem?: IdSystem } = {},
 ): (string | null)[] {
-  return teams.map((t) => teamColorsSync(league, t as never, o) ?? null);
+  return teamColorsSync(league, teams as readonly Value[], o).map((c) => c ?? null);
 }
