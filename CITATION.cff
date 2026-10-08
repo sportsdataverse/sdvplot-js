@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use sdvplot-js in your work, please cite it as below."
+title: "sdvplot-js: Team identity, colors, logos, surfaces and tables for JavaScript and TypeScript plots"
+type: software
+authors:
+  - family-names: Gilani
+    given-names: Saiem
+    orcid: "https://orcid.org/0000-0002-7194-9067"
+version: 0.1.0
+date-released: "2026-10-08"
+url: "https://plot.sportsdataverse.org"
+repository-code: "https://github.com/sportsdataverse/sdvplot-js"
+license: MIT
+keywords:
+  - sports
+  - logos
+  - team colors
+  - sports surfaces
+  - tables
+  - data visualization
+  - typescript
+  - sportsdataverse
