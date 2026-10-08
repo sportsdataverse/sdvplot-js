@@ -2,6 +2,9 @@
 // Phase 11 (J39, J40): the image marks compute only src / size / skip-and-warn; every other Plot option passes through.
 import * as Plot from "@observablehq/plot";
 import { beforeAll, beforeEach, expect, test } from "vitest";
+import TDS from "../../../../fixtures/examples/espn_nfl_summary_401671889_offense_tds.json" with {
+  type: "json",
+};
 import { STANDINGS, type Standing } from "../../../sdvtables/test/fixtures/standings.js";
 import { InputError, loadLeague, resetWarnings, setWarningHandler } from "../../src/index.js";
 import { headshots, logos } from "../../src/plot/index.js";
@@ -212,4 +215,77 @@ test("headshots open too: tip with a title names the quarterback", () => {
   const [x, y] = centreOf(svg.querySelector("image") as Element);
   pointAt(svg, x, y);
   expect(tipText(svg)).toContain("Patrick Mahomes");
+});
+
+test("a string ariaLabel is a column name (Plot's channel): each image reads its row's value, not the string", () => {
+  const svg = Plot.plot({
+    marks: [logos(STANDINGS, { league: "nfl", x: "wins", y: "pf", team: "team", ariaLabel: "qb" })],
+  });
+  const labels = Array.from(svg.querySelectorAll("image"), (i) => i.getAttribute("aria-label"));
+  expect(labels).toEqual(STANDINGS.map((s) => s.qb));
+});
+
+test("dodge's r below half the drawn height overlaps the logos, by design: never clipped, never shrunk", () => {
+  const frame = 240 - 20 - 30;
+  const height = 0.12;
+  const r = 4; // well under half the drawn height (11.4 px)
+  const svg = Plot.plot({
+    height: 240,
+    width: 760,
+    marginTop: 20,
+    marginBottom: 30,
+    marks: [logos(TEAMS, Plot.dodgeY({ league: "nfl", team: "team", x: "net", r, height }))],
+  });
+  const imgs = Array.from(svg.querySelectorAll("image"));
+  expect(imgs).toHaveLength(32);
+  expect(imgs.every((i) => i.getAttribute("clip-path") === null)).toBe(true);
+  expect(imgs.every((i) => Math.abs(box(i).h - height * frame) < 1e-9)).toBe(true);
+  const c = imgs.map(centreOf);
+  let min = Number.POSITIVE_INFINITY;
+  for (let a = 0; a < c.length; a++)
+    for (let b = a + 1; b < c.length; b++) {
+      const [ax, ay] = c[a] as [number, number];
+      const [bx, by] = c[b] as [number, number];
+      min = Math.min(min, Math.hypot(ax - bx, ay - by));
+    }
+  expect(min).toBeGreaterThanOrEqual(2 * r - 1e-6); // dodge still separates the centres by 2r
+  expect(min).toBeLessThan(height * frame); // ...which is less than a logo: neighbours overlap
+});
+
+test("drawnMarks reports a Date x as its time in ms (Super Bowl LIX touchdowns by wall clock)", () => {
+  const competitors = TDS.header.competitions[0]?.competitors ?? [];
+  const abbr = new Map(competitors.map((c) => [c.team.id, c.team.abbreviation]));
+  const tds = TDS.plays.map((p) => {
+    const offense = p.teamParticipants.find((t) => t.type === "offense")?.id ?? "";
+    return { at: new Date(p.wallclock), team: abbr.get(offense) ?? offense, lead: p.homeScore - p.awayScore };
+  });
+  expect(tds).toHaveLength(6);
+  const svg = Plot.plot({ marks: [logos(tds, { league: "nfl", x: "at", y: "lead", team: "team" })] });
+  const dm = drawnMarks(svg);
+  expect(dm.map((m) => m.x)).toEqual(tds.map((t) => t.at.getTime()));
+  expect(dm.map((m) => m.y)).toEqual(tds.map((t) => t.lead));
+});
+
+test("compose order: a caller's render wraps sdvplot's sizing (it sees the sized image) and Plot.pointer stays outermost", () => {
+  const px = 0.2 * (400 - 20 - 30);
+  // the caller's render records the height it sees after sdvplot's sizing has run
+  const tag: Plot.RenderFunction = (index, scales, values, dimensions, context, next) => {
+    const g = next?.(index, scales, values, dimensions, context) ?? null;
+    for (const img of Array.from(g?.querySelectorAll("image") ?? []))
+      img.setAttribute("data-caller-saw", img.getAttribute("height") ?? "");
+    return g;
+  };
+  const o = { league: "nfl", x: "wins", y: "pf", team: "team", height: 0.2, render: tag } as const;
+  const plain = Plot.plot({ width: 640, height: 400, marks: [logos(STANDINGS, o)] });
+  const seen = Array.from(plain.querySelectorAll("image"), (i) => Number(i.getAttribute("data-caller-saw")));
+  expect(seen.map((h) => h.toFixed(6))).toEqual(Array(8).fill(px.toFixed(6)));
+
+  const svg = Plot.plot({ width: 640, height: 400, marks: [logos(STANDINGS, Plot.pointer(o))] });
+  expect(svg.querySelectorAll("image")).toHaveLength(0); // the pointer draws nothing until pointed
+  const [x, y] = centreOf(plain.querySelector('image[data-sdv-id="12"]') as Element);
+  pointAt(svg, x, y);
+  const shown = Array.from(svg.querySelectorAll("image"));
+  expect(shown).toHaveLength(1);
+  expect(shown[0]?.getAttribute("data-sdv-id")).toBe("12");
+  expect(Number(shown[0]?.getAttribute("data-caller-saw"))).toBeCloseTo(px, 9);
 });

@@ -30,7 +30,8 @@ export interface ImageMarkOptions extends ImagePassThrough {
   alpha?: number;
   /**
    * Read by `Plot.dodgeX` / `Plot.dodgeY` as the collision radius in pixels (dodge's own option); the image is never
-   * clipped or sized by it. Half the drawn height (`height` × frame height / 2) makes neighbours just touch.
+   * clipped or sized by it. Half the drawn height (`height` × frame height / 2) makes neighbours just touch; a smaller
+   * `r` lets them overlap (by design: the images keep their size).
    */
   r?: Plot.ChannelValue;
 }
@@ -65,12 +66,15 @@ function given<R>(data: Data<R>, c: unknown): Value[] | null {
 }
 
 type Source = { value: ArrayLike<unknown>; scale?: unknown; source?: Source | null };
-/** The data value behind a channel at row i (a dodge keeps x's source; its y is screen space, so none). */
+/**
+ * The data value behind a channel at row i (a dodge keeps x's source; its y is screen space, so none), as the
+ * `data-sdv-x`/`-y` text `drawnMarks` reads back: a Date as its time in ms, so it reads back as a number.
+ */
 function dataValue(values: Plot.ChannelValues, key: "x" | "y", i: number): string | null {
   const ch = (values.channels as Record<string, Source | undefined>)[key];
   const src = ch?.source ?? (ch?.scale == null ? undefined : ch);
   const v = src?.value[i];
-  return v === undefined || v === null ? null : String(v);
+  return v === undefined || v === null ? null : String(v instanceof Date ? v.getTime() : v);
 }
 
 /**
@@ -218,6 +222,8 @@ function imageMark<R>(
  * option passes through (`tip`, `href`, `fx`/`fy`, `sort`, `filter`, `dx`/`dy`, `className`, `clip`, …), and Plot's
  * row-preserving transforms wrap it (`Plot.dodgeY`, `Plot.stackY`, `Plot.windowY`, `Plot.selectLast`, `Plot.pointer`);
  * an aggregating transform (`bin`, `group`, `hexbin`) throws `InputError`. Each image is named for its team ("KC logo").
+ * `ariaLabel` is Plot's per-image channel, so a string is a COLUMN name (`ariaLabel: "qb"` names each image by its
+ * row's `qb`); pass an accessor or an array for any other text.
  *
  * @example
  * ```ts
