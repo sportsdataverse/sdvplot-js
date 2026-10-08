@@ -2,7 +2,32 @@ import Link from "@docusaurus/Link";
 import useBaseUrl from "@docusaurus/useBaseUrl";
 import { LOADERS } from "@sportsdataverse/examples/loaders";
 import CodeBlock from "@theme/CodeBlock";
-import { type ReactElement, isValidElement, useEffect, useRef, useState } from "react";
+import {
+  Component,
+  type ReactElement,
+  type ReactNode,
+  isValidElement,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+
+/** A React example that throws while rendering in the browser reports to its <Live>, not to the page's crash screen. */
+class Boundary extends Component<
+  { onError: (e: unknown) => void; children: ReactNode },
+  { failed: boolean }
+> {
+  override state = { failed: false };
+  static getDerivedStateFromError(): { failed: boolean } {
+    return { failed: true };
+  }
+  override componentDidCatch(e: unknown): void {
+    this.props.onError(e);
+  }
+  override render(): ReactNode {
+    return this.state.failed ? null : this.props.children;
+  }
+}
 
 /** Props: `id` (+ `thumb`/`href` on gallery cards) come from the MDX; the rest are injected by remark-live at build. */
 export interface LiveProps {
@@ -71,13 +96,19 @@ export default function Live(p: LiveProps): ReactElement {
         setMounted(true);
       },
       (e: unknown) => {
-        if (!cancelled) setError(e instanceof Error ? e.message : String(e));
+        if (!cancelled) fail(e);
       },
     );
     return () => {
       cancelled = true;
     };
   }, [near, p.id]);
+  // A load or a render that throws: drop the live output and bring the static copy back under the alert.
+  function fail(e: unknown): void {
+    setError(e instanceof Error ? e.message : String(e));
+    setElement(null);
+    setMounted(false);
+  }
   // A static file is embedded as a document (never <img>: that would not load the external logo <image>s); the
   // wrapper is the scrolling container that keeps the fixed-size frame inside the column. A card shows a static
   // SVG as an <img> instead: it scales to the card (a fixed-size frame would be a crop), and losing the logos in a
@@ -113,7 +144,7 @@ export default function Live(p: LiveProps): ReactElement {
     <figure className="sdv-live" data-example={p.id} ref={figure}>
       {output}
       <div className="sdv-live-output" ref={host}>
-        {element}
+        <Boundary onError={fail}>{element}</Boundary>
       </div>
       {error !== null && (
         <p role="alert" className="sdv-live-error">
