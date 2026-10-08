@@ -21,7 +21,8 @@ const roots = new WeakMap<Element, Lit>();
  * ```ts
  * import { hasDom } from "@sportsdataverse/sdvplot/interact";
  *
- * hasDom();
+ * // it depends on where this runs: a browser (or the jsdom that prerendered this page) has a DOM, Node has none
+ * `this ran ${hasDom() ? "with a DOM: interact functions work" : "without a DOM: interact functions are no-ops"}`;
  * ```
  */
 export function hasDom(): boolean {
