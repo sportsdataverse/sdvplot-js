@@ -10,6 +10,7 @@ import sdvExamples from "./plugins/sdv-examples";
 
 const sdvplot = "../packages/sdvplot";
 const sporty = "../packages/sporty";
+const sdvtables = "../packages/sdvtables";
 
 const config: Config = {
   title: "sdvplot-js",
@@ -88,6 +89,16 @@ const config: Config = {
         ],
         tsconfig: `${sporty}/tsconfig.json`,
         out: "docs/api/sporty",
+        readme: "none",
+      },
+    ],
+    [
+      "docusaurus-plugin-typedoc",
+      {
+        id: "sdvtables",
+        entryPoints: [`${sdvtables}/src/index.ts`, `${sdvtables}/src/html/index.ts`],
+        tsconfig: `${sdvtables}/tsconfig.json`,
+        out: "docs/api/sdvtables",
         readme: "none",
       },
     ],
