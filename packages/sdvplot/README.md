@@ -23,14 +23,15 @@ import { toSurfaceFrame } from "@sportsdataverse/sporty";
 
 await loadLeague("nba");
 
-// stats.nba.com shots: columns x_legacy/y_legacy (the frame's defaults), tenths of a foot from the hoop.
+// stats.nba.com shots (shotchartdetail LOC_X/LOC_Y as x_legacy/y_legacy, the frame's defaults): tenths of a foot
+// from the hoop. Two real ones, Lakers at Nuggets on 2023-10-24 (game 0022300061, events 510 and 530).
 // Every shot lands on the -x half, so draw the defensive half only: displayRange "defense".
 const rawShots = [
-  { x_legacy: 10, y_legacy: 120, team: "LAL", made: true },
-  { x_legacy: -50, y_legacy: 230, team: "BOS", made: false },
+  { x_legacy: -53, y_legacy: 285, team: "LAL", made: true },
+  { x_legacy: -136, y_legacy: 214, team: "DEN", made: true },
 ];
 const shots = toSurfaceFrame(rawShots, { from: "nba-legacy" });
-const court = surface("nba", { team: "LAL", displayRange: "defense" });
+const court = surface("nba", { team: "DEN", displayRange: "defense" });
 Plot.plot({
   ...court.scales,
   width: 940,

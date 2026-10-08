@@ -201,3 +201,64 @@ export const SUPER_BOWL_LIX_WP: readonly { readonly minute: number; readonly hom
     [60, 1],
   ] satisfies [number, number][]
 ).map(([minute, home_wp]) => ({ minute, home_wp }));
+
+/** One shot from stats.nba.com `shotchartdetail`, its columns renamed (LOC_X/LOC_Y become the nba-legacy frame's names). */
+// a type, not an interface: toSurfaceFrame takes rows with an index signature, which only a type literal satisfies
+export type NbaShot = {
+  readonly game_event_id: number;
+  readonly player: string;
+  readonly team: "DEN" | "LAL";
+  readonly shot_type: "2PT Field Goal" | "3PT Field Goal";
+  readonly made: boolean;
+  /** LOC_X: tenths of a foot from the hoop, across the court. */
+  readonly x_legacy: number;
+  /** LOC_Y: tenths of a foot from the hoop, toward half court. */
+  readonly y_legacy: number;
+};
+/**
+ * Every field-goal attempt of the fourth quarter of the Lakers at the Nuggets, 24 October 2023 (game 0022300061,
+ * opening night of 2023-24; Denver won 119-107): 38 shots, 22 Denver and 16 Los Angeles. Real: stats.nba.com
+ * `shotchartdetail` (GameID 0022300061, PlayerID 0, TeamID 0, ContextMeasure FGA), captured 2026-10-08 and committed as
+ * fixtures/examples/nba_shotchartdetail_0022300061_q4.json; examples/test/sample-data.test.ts checks these rows equal it.
+ */
+// biome-ignore format: one captured shot per line
+export const NBA_SHOTS: readonly NbaShot[] = [
+  { game_event_id: 495, player: "LeBron James", team: "LAL", shot_type: "2PT Field Goal", made: true, x_legacy: 29, y_legacy: 5 },
+  { game_event_id: 498, player: "Reggie Jackson", team: "DEN", shot_type: "2PT Field Goal", made: false, x_legacy: 126, y_legacy: 147 },
+  { game_event_id: 500, player: "Christian Wood", team: "LAL", shot_type: "2PT Field Goal", made: true, x_legacy: -12, y_legacy: 13 },
+  { game_event_id: 502, player: "Aaron Gordon", team: "DEN", shot_type: "3PT Field Goal", made: true, x_legacy: 227, y_legacy: 109 },
+  { game_event_id: 504, player: "D'Angelo Russell", team: "LAL", shot_type: "3PT Field Goal", made: false, x_legacy: 0, y_legacy: 267 },
+  { game_event_id: 506, player: "Cam Reddish", team: "LAL", shot_type: "2PT Field Goal", made: false, x_legacy: 22, y_legacy: 12 },
+  { game_event_id: 508, player: "Cam Reddish", team: "LAL", shot_type: "2PT Field Goal", made: true, x_legacy: 0, y_legacy: 0 },
+  { game_event_id: 509, player: "Jamal Murray", team: "DEN", shot_type: "2PT Field Goal", made: true, x_legacy: 118, y_legacy: 132 },
+  { game_event_id: 510, player: "LeBron James", team: "LAL", shot_type: "3PT Field Goal", made: true, x_legacy: -53, y_legacy: 285 },
+  { game_event_id: 512, player: "Christian Braun", team: "DEN", shot_type: "3PT Field Goal", made: false, x_legacy: 15, y_legacy: 253 },
+  { game_event_id: 514, player: "Christian Braun", team: "DEN", shot_type: "2PT Field Goal", made: false, x_legacy: -21, y_legacy: 10 },
+  { game_event_id: 516, player: "Christian Braun", team: "DEN", shot_type: "2PT Field Goal", made: true, x_legacy: 0, y_legacy: 0 },
+  { game_event_id: 528, player: "Anthony Davis", team: "LAL", shot_type: "3PT Field Goal", made: false, x_legacy: -116, y_legacy: 239 },
+  { game_event_id: 530, player: "Nikola Jokić", team: "DEN", shot_type: "3PT Field Goal", made: true, x_legacy: -136, y_legacy: 214 },
+  { game_event_id: 541, player: "Gabe Vincent", team: "LAL", shot_type: "2PT Field Goal", made: false, x_legacy: 33, y_legacy: 12 },
+  { game_event_id: 543, player: "Kentavious Caldwell-Pope", team: "DEN", shot_type: "2PT Field Goal", made: true, x_legacy: 104, y_legacy: 152 },
+  { game_event_id: 546, player: "Nikola Jokić", team: "DEN", shot_type: "2PT Field Goal", made: true, x_legacy: 62, y_legacy: 150 },
+  { game_event_id: 548, player: "Gabe Vincent", team: "LAL", shot_type: "3PT Field Goal", made: false, x_legacy: -170, y_legacy: 196 },
+  { game_event_id: 550, player: "Christian Braun", team: "DEN", shot_type: "2PT Field Goal", made: false, x_legacy: -20, y_legacy: 6 },
+  { game_event_id: 566, player: "Christian Braun", team: "DEN", shot_type: "2PT Field Goal", made: true, x_legacy: -32, y_legacy: 6 },
+  { game_event_id: 574, player: "Austin Reaves", team: "LAL", shot_type: "3PT Field Goal", made: false, x_legacy: -161, y_legacy: 242 },
+  { game_event_id: 576, player: "Jamal Murray", team: "DEN", shot_type: "2PT Field Goal", made: false, x_legacy: 25, y_legacy: 13 },
+  { game_event_id: 578, player: "Taurean Prince", team: "LAL", shot_type: "3PT Field Goal", made: true, x_legacy: 161, y_legacy: 190 },
+  { game_event_id: 581, player: "LeBron James", team: "LAL", shot_type: "2PT Field Goal", made: true, x_legacy: -31, y_legacy: 15 },
+  { game_event_id: 585, player: "Jamal Murray", team: "DEN", shot_type: "3PT Field Goal", made: true, x_legacy: 76, y_legacy: 248 },
+  { game_event_id: 587, player: "LeBron James", team: "LAL", shot_type: "3PT Field Goal", made: false, x_legacy: 151, y_legacy: 210 },
+  { game_event_id: 590, player: "Kentavious Caldwell-Pope", team: "DEN", shot_type: "2PT Field Goal", made: true, x_legacy: -112, y_legacy: 161 },
+  { game_event_id: 594, player: "Aaron Gordon", team: "DEN", shot_type: "2PT Field Goal", made: true, x_legacy: 2, y_legacy: 1 },
+  { game_event_id: 596, player: "Austin Reaves", team: "LAL", shot_type: "3PT Field Goal", made: true, x_legacy: 4, y_legacy: 278 },
+  { game_event_id: 598, player: "Michael Porter Jr.", team: "DEN", shot_type: "3PT Field Goal", made: true, x_legacy: 234, y_legacy: 27 },
+  { game_event_id: 601, player: "LeBron James", team: "LAL", shot_type: "2PT Field Goal", made: true, x_legacy: -25, y_legacy: 16 },
+  { game_event_id: 608, player: "Nikola Jokić", team: "DEN", shot_type: "2PT Field Goal", made: true, x_legacy: -2, y_legacy: 21 },
+  { game_event_id: 625, player: "Aaron Gordon", team: "DEN", shot_type: "2PT Field Goal", made: false, x_legacy: -88, y_legacy: 16 },
+  { game_event_id: 629, player: "Michael Porter Jr.", team: "DEN", shot_type: "3PT Field Goal", made: false, x_legacy: -207, y_legacy: 135 },
+  { game_event_id: 646, player: "Nikola Jokić", team: "DEN", shot_type: "3PT Field Goal", made: false, x_legacy: -54, y_legacy: 247 },
+  { game_event_id: 648, player: "Michael Porter Jr.", team: "DEN", shot_type: "2PT Field Goal", made: true, x_legacy: 0, y_legacy: 0 },
+  { game_event_id: 649, player: "Gabe Vincent", team: "LAL", shot_type: "2PT Field Goal", made: true, x_legacy: -26, y_legacy: 16 },
+  { game_event_id: 662, player: "Jalen Pickett", team: "DEN", shot_type: "2PT Field Goal", made: true, x_legacy: 88, y_legacy: 143 },
+];

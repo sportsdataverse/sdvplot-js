@@ -108,11 +108,12 @@ export function frameBottomLeft(length: number, width: number): Frame {
  * ```ts
  * import { toSurfaceFrame } from "@sportsdataverse/sporty";
  *
- * // stats.nba.com shots: x_legacy / y_legacy are tenths of a foot from the hoop
+ * // two stats.nba.com shots (shotchartdetail, Lakers at Nuggets, 2023-10-24, game 0022300061, events 510 and 530):
+ * // x_legacy / y_legacy are LOC_X / LOC_Y, tenths of a foot from the hoop
  * toSurfaceFrame(
  *   [
- *     { x_legacy: 10, y_legacy: 120, team: "LAL" },
- *     { x_legacy: -50, y_legacy: 230, team: "BOS" },
+ *     { x_legacy: -53, y_legacy: 285, team: "LAL", player: "LeBron James" },
+ *     { x_legacy: -136, y_legacy: 214, team: "DEN", player: "Nikola Jokić" },
  *   ],
  *   { from: "nba-legacy" },
  * );
