@@ -256,7 +256,9 @@ export interface ShotZonesOptions extends GeoPassThrough {
   fill: (zone: BasketballZone) => string;
   /**
    * A label per zone at its anchor, haloed so it reads over any fill (`hexShotChart.ts:83-95`); omit for none. Labels
-   * take no pointer events, so a click or hover on one reaches the zone under it.
+   * take no pointer events, so a click or hover on one reaches the zone under it. They are hidden from assistive
+   * technology, so each zone's accessible name carries its label's text after the zone's name ("Paint (non-RA),
+   * 136/326").
    */
   text?: (zone: BasketballZone) => string;
   /** The SAME frame as the shots (zones built with `scale: 10` are in legacy tenths); default `"nba-legacy"`. */
@@ -280,12 +282,12 @@ export interface ShotZonesOptions extends GeoPassThrough {
  * `defensive_half_court`, `offensive_half_court`, `court_apron`, `two_point_range`, `painted_area`,
  * `center_circle_fill` and `free_throw_circle_fill` to `"#00000000"` so only the lines remain:
  * `const [paths, ...rest] = shotZones(areas, o)`, then `marks: [...court.marks, paths, ...lines.marks, ...rest]`.
- * The areas are the mark's data and each path is named by its zone. `tip: true` adds a `Plot.tip` mark that names
- * the zone under the pointer and, with `stats` (`statsByZone(shots)`), its makes/attempts and FG%. It follows the
- * nearest of a grid of anchors inside the zones (a fortieth of their extent apart, 1.25 ft on an NBA half court), so
- * within about that of a zone edge it may name the neighbour. The tip's data is the areas, so `channels` (shown in
- * the tip) read the caller's fields; a `tip` object's `format` overrides sdvplot's key by key. Every other
- * `Plot.geo` option passes through to the zone paths.
+ * The areas are the mark's data and each path is named by its zone (with `text`, then its label's text). `tip: true`
+ * adds a `Plot.tip` mark that names the zone under the pointer and, with `stats` (`statsByZone(shots)`), its
+ * makes/attempts and FG%. It follows the nearest of a grid of anchors inside the zones (a fortieth of their extent
+ * apart, 1.25 ft on an NBA half court), so within about that of a zone edge it may name the neighbour. The tip's data
+ * is the areas, so `channels` (shown in the tip) read the caller's fields; a `tip` object's `format` overrides
+ * sdvplot's key by key. Every other `Plot.geo` option passes through to the zone paths.
  *
  * @example
  * ```ts
@@ -316,7 +318,12 @@ export function shotZones(areas: readonly BasketballZoneArea[], o: ShotZonesOpti
   const rings = areas.map((a) => ring(a.points, f));
   const marks: Plot.Markish[] = [
     Plot.geo(areas as BasketballZoneArea[], {
-      ariaLabel: (a: BasketballZoneArea) => BASKETBALL_ZONE_LABELS[a.zone], // each path names its zone
+      // each path's accessible name: its zone, then what its label shows ("Paint (non-RA), 136/326"); a caller's
+      // ariaLabel wins
+      ariaLabel: (a: BasketballZoneArea) =>
+        text === undefined
+          ? BASKETBALL_ZONE_LABELS[a.zone]
+          : `${BASKETBALL_ZONE_LABELS[a.zone]}, ${text(a.zone)}`,
       ...pass,
       ...(transform === undefined ? {} : { transform: sameRows(transform) }),
       ...(initializer === undefined ? {} : { initializer: sameRows(initializer) }),
@@ -345,7 +352,7 @@ export function shotZones(areas: readonly BasketballZoneArea[], o: ShotZonesOpti
         strokeWidth: 3,
         strokeLinejoin: "round",
         paintOrder: "stroke",
-        ariaHidden: "true", // the zone paths carry the names; the labels repeat them
+        ariaHidden: "true", // the zone paths' names carry the labels' text, so a screen reader hears each once
         pointerEvents: "none", // a label sits inside its zone: a click or hover on it is the zone's
       }),
     );

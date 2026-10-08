@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import * as Plot from "@observablehq/plot";
-import { basketballZones } from "@sportsdataverse/sporty";
+import { BASKETBALL_ZONE_LABELS, basketballZones } from "@sportsdataverse/sporty";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { highlight } from "../../src/interact/index.js";
 import { shootingSignature, shotCells, shotZones, surface } from "../../src/plot/index.js";
@@ -99,6 +99,37 @@ test("shotZones: six zone areas with zone ids and six haloed labels", () => {
   expect(g?.getAttribute("pointer-events")).toBe("none"); // a label never takes the click or hover meant for its zone
   // the corner strips' labels run vertically
   expect(labels.filter((t) => /rotate\(-90\)/.test(t.getAttribute("transform") ?? ""))).toHaveLength(2);
+});
+
+test("shotZones names each zone path by its zone and, with text, by what its label shows; a caller's ariaLabel wins", () => {
+  const z = statsByZone(BKN);
+  const areas = basketballZones("nba", { scale: 10 });
+  const names = (o: Partial<Parameters<typeof shotZones>[1]>): Record<string, string | null> => {
+    const fig = Plot.plot({
+      x: { domain: [-47, 0] },
+      y: { domain: [-25, 25] },
+      marks: shotZones(areas, { fill: () => "#dddddd", ...o }),
+    });
+    return Object.fromEntries(
+      [...fig.querySelectorAll("path[data-sdv-id]")].map((p) => [
+        p.getAttribute("data-sdv-id"),
+        p.getAttribute("aria-label"),
+      ]),
+    );
+  };
+  // the labels are aria-hidden, so a screen reader hears the zone's name plus the label's text, as a reader sees it
+  const labelled = names({ text: (k) => `${z[k].makes}/${z[k].attempts}` });
+  expect(labelled.paint).toBe("Paint (non-RA), 136/326");
+  expect(labelled).toEqual(
+    Object.fromEntries(
+      areas.map((a) => [
+        a.zone,
+        `${BASKETBALL_ZONE_LABELS[a.zone]}, ${z[a.zone].makes}/${z[a.zone].attempts}`,
+      ]),
+    ),
+  );
+  expect(names({})).toEqual(Object.fromEntries(areas.map((a) => [a.zone, BASKETBALL_ZONE_LABELS[a.zone]])));
+  expect(names({ text: () => "x", ariaLabel: () => "mine" }).paint).toBe("mine");
 });
 
 /** What highlight's appended dimming rule matches: its own selector, run against the figure (as highlight.test does). */
