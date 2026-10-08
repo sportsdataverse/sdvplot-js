@@ -69,6 +69,8 @@ The backgrounds default to `#ffffff` (light) and `#181a1b` (dark); pass `theme: 
 | `@sportsdataverse/sdvplot/react` | `TeamLogo`, `Wordmark`, `Headshot`, `useTeamColors`, `useResolve` (React >= 18, optional peer) |
 | `@sportsdataverse/sdvplot/plot` | Observable Plot marks and scales: `logos`, `wordmarks`, `headshots`, `axisLogos`, `teamColor`/`teamFill`, `meanLines`/`medianLines`, `titleImage`, `teamTiers`, `surface` (optional peers `@observablehq/plot`, `@sportsdataverse/sporty`) |
 | `@sportsdataverse/sdvplot/d3` | `appendLogos`, `appendWordmarks`, `appendHeadshots`, `teamColorScale`, `appendSurface` (optional peers `d3`, `@sportsdataverse/sporty`) |
+| `@sportsdataverse/sdvplot/chartjs` | Chart.js 4: `logoPoints`, `wordmarkPoints`, `headshotPoints`, `pointImages`, `axisLogos`, `logoWatermarks`, `teamColor`/`teamFill` (optional peer `chart.js` >= 4.4; no sporty needed) |
+| `@sportsdataverse/sdvplot/chartjs/surface` | Chart.js 4 court, field or rink background: `surface` (optional peers `chart.js` >= 4.4, `@sportsdataverse/sporty`) |
 | `@sportsdataverse/sdvplot/testing` | Adapter-contract suite for renderer adapters: `checkAdapterContract`, `drawnMarks`, `drawnAxisMarks`, `visibleAxisLabels` |
 | `@sportsdataverse/sdvplot/plotly` | `withLogos`, `withWordmarks`, `withHeadshots`, `withAxisLogos`, `teamColorway`, `embedSources` (no runtime dependency) |
 | `@sportsdataverse/sdvplot/vega` | `withLogos`, `withWordmarks`, `withHeadshots`, `logoLayer`, `withAxisLogos`, `teamColorScale`, `embedSources` (no runtime dependency) |
@@ -160,6 +162,167 @@ Mark images are `height` × the grid's height at render time (they follow zoom a
 Axis images are `height` of the axis' grid on a `chartHeight` px canvas: `grid.height`, else `chartHeight` less
 `grid.top` and `grid.bottom` (ECharts' 65 and 80 px when unset); `containLabel` can shrink the drawn grid a little
 below that. The helper series have no `name`, so a default `legend: {}` lists only your series.
+
+## Chart.js (Astro, Svelte, React, plain scripts)
+
+`@sportsdataverse/sdvplot/chartjs` returns Chart.js 4 dataset options and plugin objects, so no framework needs a
+wrapper. Load the league first, and build point styles and plugins in the browser (they create `<img>`/`<canvas>`).
+
+An Astro page with a Svelte 5 island (Game on Paper's stack):
+
+```astro
+---
+// src/pages/teams.astro
+import TeamScatter from "../components/TeamScatter.svelte";
+const rows = await getTeamRows(); // [{ team: "UGA", epa: 0.21, sr: 0.48 }, …]
+---
+<TeamScatter client:only="svelte" rows={rows} />
+```
+
+```svelte
+<!-- src/components/TeamScatter.svelte -->
+<script lang="ts">
+  import Chart from "chart.js/auto";
+  import { loadLeague } from "@sportsdataverse/sdvplot";
+  import { logoPoints, pointImages } from "@sportsdataverse/sdvplot/chartjs";
+
+  let { rows }: { rows: { team: string; epa: number; sr: number }[] } = $props();
+  let canvas: HTMLCanvasElement;
+
+  $effect(() => { // runs in the browser only, never during SSR
+    // read `rows` here, synchronously: Svelte 5 tracks only what an effect reads before it awaits, so this re-runs on a new `rows`
+    const data = rows.map((r) => ({ x: r.epa, y: r.sr }));
+    const teams = rows.map((r) => r.team);
+    let chart: Chart | undefined;
+    let live = true;
+    loadLeague("cfb").then(() => {
+      if (!live) return;
+      chart = new Chart(canvas, {
+        type: "scatter",
+        data: { datasets: [{ data, ...logoPoints(teams, { league: "cfb", radius: 14 }) }] },
+        plugins: [pointImages],
+      });
+    });
+    return () => { live = false; chart?.destroy(); };
+  });
+</script>
+
+<canvas bind:this={canvas}></canvas>
+```
+
+A line per team with its logo at the line's end (the per-point logos of Game on Paper's trends chart, team colours from
+sdvplot):
+
+```ts
+new Chart(canvas, {
+  type: "scatter",
+  data: {
+    datasets: Object.entries(series).map(([team, pts]) => ({ // series: { KC: [{ x, y }, …], BUF: […] }
+      label: team,
+      data: pts,
+      showLine: true,
+      borderWidth: 3,
+      borderColor: teamColor(team, "nfl"),
+      backgroundColor: teamColor(team, "nfl", { alpha: 0.5 }),
+      pointStyle: logoPoints([team], { league: "nfl", radius: 14 }).pointStyle, // one style, repeated per point
+      pointRadius: pts.map((_, i) => (i === pts.length - 1 ? 14 : 0)), // drawn only at the line's end
+    })),
+  },
+  plugins: [pointImages],
+});
+```
+
+A radar in team colours (the datasets Game on Paper's `utils/radar.ts` builds for `TeamRadarChart.svelte` and
+`MatchupRadarChart.svelte`):
+
+```ts
+import { teamColor, teamFill } from "@sportsdataverse/sdvplot/chartjs";
+const pct = { UGA: [91, 80, 67], ALA: [85, 88, 54] };
+const data = {
+  labels: ["EPA/Play", "Success %", "Explosive %"],
+  datasets: Object.entries(pct).map(([team, values]) => ({
+    label: team,
+    data: values,
+    fill: true,
+    backgroundColor: teamFill(team, "cfb"), // rgba(r, g, b, 0.2)
+    borderColor: teamColor(team, "cfb"),
+    pointBackgroundColor: teamColor(team, "cfb"),
+    pointBorderColor: "#fff", // radar.ts:70-80 rings each point in white
+    pointHoverBackgroundColor: "#fff",
+    pointHoverBorderColor: teamColor(team, "cfb"),
+  })),
+};
+```
+
+Faint team logos behind a line (Game on Paper's win-probability chart). Pass `[home, away]`: the line is the home win
+probability, so the home logo sits top-left of the chart area and the away logo bottom-left, at 0.4 opacity and 75 px
+tall by default:
+
+```ts
+import { logoWatermarks, teamColor } from "@sportsdataverse/sdvplot/chartjs";
+const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+new Chart(canvas, {
+  type: "line",
+  data: { labels: seconds, datasets: [{ data: homeWp, borderColor: teamColor("UGA", "cfb"), pointRadius: 0 }] },
+  plugins: [logoWatermarks(["UGA", "ALA"], { league: "cfb", variant: dark ? "dark" : "default" })],
+});
+```
+
+Two teams' win-probability (or EP) lines in colours that tell them apart, per theme:
+
+```ts
+const { light, dark: darkPair } = await matchupColors("UGA", "ALA", { league: "cfb" });
+const [home, away] = (dark ? darkPair : light);
+// datasets: [{ label: "UGA", data: homeWp, borderColor: home }, { label: "ALA", data: awayWp, borderColor: away }]
+```
+
+Logos on a category axis:
+
+```ts
+new Chart(canvas, {
+  type: "bar",
+  data: { labels: ["KC", "BUF", "BAL"], datasets: [{ data: [0.21, 0.18, 0.15], backgroundColor: teamColor(["KC", "BUF", "BAL"], "nfl") }] },
+  plugins: [axisLogos("x", { league: "nfl", size: 28 })],
+});
+```
+
+A shot chart over a court (and a hexbin as bubbles at the hex centres):
+
+```ts
+import { toSurfaceFrame } from "@sportsdataverse/sporty";
+import { surface } from "@sportsdataverse/sdvplot/chartjs/surface";
+import { hexbin } from "d3-hexbin";
+const court = surface("nba", { team: "BOS", displayRange: "defense" });
+const pts = toSurfaceFrame(shots, { from: "nba-legacy", x: "loc_x", y: "loc_y" })
+  .map((s) => ({ x: s.surface_x ?? Number.NaN, y: s.surface_y ?? Number.NaN }));
+const bins = hexbin<{ x: number; y: number }>().x((d) => d.x).y((d) => d.y).radius(1.5)(pts); // radius in feet
+const [x0, y0, x1, y1] = court.scene.bbox;
+new Chart(canvas, {
+  type: "bubble",
+  data: { datasets: [{ data: bins.map((b) => ({ x: b.x, y: b.y, r: 2 * Math.sqrt(b.length) })) }] },
+  options: { scales: court.scales, aspectRatio: (x1 - x0) / (y1 - y0), plugins: { legend: { display: false } } },
+  plugins: [court.plugin],
+});
+```
+
+- Plugins are fixed when the chart is created (`new Chart`): to change the watermark teams or the court, destroy the chart and create a new one.
+- Sizes are pixels: `radius` (point styles), `size` (axis logos, watermarks) — Chart.js draws an image at its own size.
+- Add `pointImages` to `plugins` with any `*Points`: Chart.js does not redraw when an `<img>` finishes loading.
+- An unknown team draws its own label as text (or pass `fallback: "circle"`), with one warning per call; the text is
+  grey on a light chart and light grey on a dark one (`background`, default white, or black with `variant: "dark"`).
+- Dark theme: `variant: "dark"` (read `prefers-color-scheme` as Game on Paper does); a team with no dark mark falls back to a light one by polarity, so no `onerror` retry is needed.
+- Two teams on one chart: `teamColor(team, league, { which: "secondary" })` is the alternate. For a two-team chart use `matchupColors` (above).
+- `axisLogos` needs a category axis (any other scale is left as it is, with one warning); on `y` the axis widens to the widest mark, so wordmarks fit; unresolved labels keep their text; your own scale options are not modified, and replacing `chart.options` (`chart.options = next; chart.update()`) keeps the logos.
+- `surface` paints before the datasets, clipped to the chart area, through the chart's own scales (so it follows
+  resizes and a reversed axis); keep both axes linear (`court.scales`; any other scale is left unpainted, with one
+  warning). An `xlim` or `ylim` of zero width throws `InputError` when the surface is built. With `logoWatermarks` on the
+  same chart, list `court.plugin` first: both paint before the datasets, in `plugins` order (the wrong order warns once).
+  `aspectRatio` sizes the canvas, not the chart area, so the axes and the legend skew the court's proportions by a few
+  percent: hide the legend (as above) and match the court's aspect through layout padding for undistorted circles. On a
+  reversed x axis the football field's yard numbers render mirrored; courts and rinks are unaffected (limitation: a
+  follow-up in sporty so `drawScene` keeps text upright). It needs
+  `@sportsdataverse/sporty`, as `sdvplot/d3` does.
+- Destroying a chart drops its pending image listeners, so unmounting before the logos arrive is safe.
 
 ## Data provenance
 

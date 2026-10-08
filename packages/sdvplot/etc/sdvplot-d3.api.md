@@ -87,7 +87,7 @@ export function teamColorScale(league: League, o?: {
 
 // Warnings were encountered during analysis:
 //
-// dist/d3.d.ts:36:5 - (ae-forgotten-export) The symbol "Which" needs to be exported by the entry point d3.d.ts
+// dist/d3.d.ts:37:5 - (ae-forgotten-export) The symbol "Which" needs to be exported by the entry point d3.d.ts
 
 // (No @packageDocumentation comment for this package)
 
