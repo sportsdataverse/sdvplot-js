@@ -36,14 +36,16 @@ export async function prerender(o: PrerenderOptions): Promise<void> {
   });
   if (vitest === undefined) throw new Error("prerender: vitest did not start");
   const files = vitest.state.getFiles();
+  // Not "failed" but "did not pass": when a native crash kills the worker, its remaining tests have no result at all.
   const failed = files
     .flatMap((f) => f.tasks.flatMap(tests))
-    .filter((t) => t.result?.state === "fail").length;
+    .filter((t) => t.mode !== "skip" && t.mode !== "todo" && t.result?.state !== "pass").length;
+  const errors = vitest.state.getUnhandledErrors().length; // "Worker exited unexpectedly" is one
   const broken = vitest.state.getFailedFilepaths().length;
   await vitest.close();
-  if (failed > 0 || broken > 0 || process.exitCode)
+  if (failed > 0 || errors > 0 || broken > 0 || process.exitCode)
     throw new Error(
-      `prerender: ${failed} example(s) failed in ${broken} file(s); the docs are never built from a failing gate`,
+      `prerender: ${failed} example(s) failed or did not run, ${errors} unhandled error(s), in ${broken} file(s); the docs are never built from a failing gate`,
     );
   // Over-limit outputs become static files (the directory staticFile() names); stale ones go first.
   rmSync(join(o.static, "examples"), { recursive: true, force: true });

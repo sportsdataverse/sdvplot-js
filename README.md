@@ -53,7 +53,8 @@ pnpm docs:build && pnpm --filter docs serve
 ```
 
 On Windows set `SKIP_HTML_MINIFICATION=true` for the build: the HTML minifier's native addon fails there (CI on Linux
-is unaffected).
+is unaffected). Keep the checkout path short there too: under a deep path `@napi-rs/canvas` cannot find its ICU data
+and aborts, which kills the examples gate's worker (the gate then fails, counting the examples that never ran).
 
 ## Owner steps
 

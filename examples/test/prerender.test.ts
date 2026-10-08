@@ -53,3 +53,16 @@ test("a process.exitCode left by an earlier failing run does not fail a passing 
   await prerender({ root, files: ["big.test.ts"], out: join(root, "out"), static: join(root, "static") });
   expect(process.exitCode).toBeFalsy();
 });
+
+// A native crash (skia aborting in @napi-rs/canvas at a deep Windows path) kills the worker mid-file: its examples
+// have no result at all, and the gate once reported "0 example(s) failed" for such a run.
+test("a worker that dies mid-run fails the gate, counting the examples that never finished", async () => {
+  writeFileSync(
+    join(root, "crash.test.ts"),
+    'import { test } from "vitest";\ntest("kills its worker", () => {\n  process.kill(process.pid, "SIGKILL");\n});\ntest("never runs", () => {});\n',
+  );
+  await expect(
+    prerender({ root, files: ["crash.test.ts"], out: join(root, "out"), static: join(root, "static") }),
+  ).rejects.toThrow(/2 example\(s\) failed or did not run, [1-9]\d* unhandled error/);
+  process.exitCode = undefined; // the crashed inner run set it; this worker is fine
+});
