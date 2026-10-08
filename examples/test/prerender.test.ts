@@ -37,7 +37,7 @@ test("svgDocument leaves a declared namespace alone and adds xlink only when use
   expect(svgDocument("<p>not svg</p>")).toBe("<p>not svg</p>");
 });
 
-// Last: the failing inner run leaves process.exitCode = 1 in this worker, which the gate also reads.
+// The failing inner run leaves process.exitCode = 1 in this worker, which the gate also reads (the next test).
 test("the prerender throws when an example fails: the docs are never built from a failing gate", async () => {
   writeFileSync(
     join(root, "fail.test.ts"),
@@ -46,4 +46,10 @@ test("the prerender throws when an example fails: the docs are never built from 
   await expect(
     prerender({ root, files: ["fail.test.ts"], out: join(root, "out"), static: join(root, "static") }),
   ).rejects.toThrow("1 example(s) failed");
+});
+
+test("a process.exitCode left by an earlier failing run does not fail a passing gate", async () => {
+  expect(process.exitCode).toBe(1); // the test above
+  await prerender({ root, files: ["big.test.ts"], out: join(root, "out"), static: join(root, "static") });
+  expect(process.exitCode).toBeFalsy();
 });

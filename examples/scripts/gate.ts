@@ -26,6 +26,8 @@ const tests = (t: Task): Task[] => (t.type === "suite" ? t.tasks.flatMap(tests) 
  */
 export async function prerender(o: PrerenderOptions): Promise<void> {
   rmSync(o.out, { recursive: true, force: true });
+  // vitest sets process.exitCode when a run fails; one left by an earlier run must not fail this one.
+  process.exitCode = undefined;
   const vitest = await startVitest("test", [...o.files], {
     root: o.root,
     run: true,
