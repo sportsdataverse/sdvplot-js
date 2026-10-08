@@ -85,13 +85,7 @@ export type Data<R> = Iterable<R> | {
 };
 
 // @public (undocumented)
-export interface HeadshotOptions<R> {
-    // (undocumented)
-    alpha?: number;
-    // (undocumented)
-    ariaLabel?: string;
-    // (undocumented)
-    height?: number;
+export interface HeadshotOptions<R> extends ImageMarkOptions {
     // Warning: (ae-forgotten-export) The symbol "HeadshotIdSystem" needs to be exported by the entry point plot.d.ts
     idSystem?: HeadshotIdSystem;
     // Warning: (ae-forgotten-export) The symbol "EspnHeadshotLeague" needs to be exported by the entry point plot.d.ts
@@ -100,26 +94,26 @@ export interface HeadshotOptions<R> {
     league: EspnHeadshotLeague;
     // (undocumented)
     player: Channel<R>;
-    // (undocumented)
-    title?: Channel<R>;
-    // (undocumented)
-    x: Channel<R>;
-    // (undocumented)
-    y: Channel<R>;
 }
 
-// @public (undocumented)
+// @public
 export function headshots<R>(data: Data<R>, o: HeadshotOptions<R>): Plot.Markish;
 
-// @public (undocumented)
+// @public
+export interface ImageMarkOptions extends ImagePassThrough {
+    alpha?: number;
+    height?: number;
+    r?: Plot.ChannelValue;
+}
+
+// @public
+export type ImagePassThrough = Omit<Plot.ImageOptions, "src" | "width" | "height" | "r" | "preserveAspectRatio">;
+
+// @public
 export function logos<R>(data: Data<R>, o: MarkOptions<R>): Plot.Markish;
 
 // @public (undocumented)
-export interface MarkOptions<R> {
-    alpha?: number;
-    // (undocumented)
-    ariaLabel?: string;
-    height?: number;
+export interface MarkOptions<R> extends ImageMarkOptions {
     // (undocumented)
     idSystem?: IdSystem;
     // (undocumented)
@@ -128,13 +122,7 @@ export interface MarkOptions<R> {
     // (undocumented)
     team: Channel<R>;
     // (undocumented)
-    title?: Channel<R>;
-    // (undocumented)
     variant?: Variant;
-    // (undocumented)
-    x: Channel<R>;
-    // (undocumented)
-    y: Channel<R>;
 }
 
 // @public
@@ -281,7 +269,7 @@ export interface TitleImageOptions {
     title?: string;
 }
 
-// @public (undocumented)
+// @public
 export function wordmarks<R>(data: Data<R>, o: MarkOptions<R>): Plot.Markish;
 
 // (No @packageDocumentation comment for this package)
