@@ -199,7 +199,6 @@ const meta = {
   schedule_seasons: `${files.at(-1)?.slice(13, 17)}-${files[0]?.slice(13, 17)}`,
   schedule_commit: git(scheduleDir, "log", "-1", "--format=%H", "--", "."),
   index_version: INDEX_VERSION,
-  run_date: new Date().toISOString().slice(0, 10),
   matchups: games.length,
   deep_matchups: games.filter((g) => g.deep).length,
   pairs: cases.length,

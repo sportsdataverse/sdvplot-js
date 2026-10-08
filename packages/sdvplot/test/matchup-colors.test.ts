@@ -135,6 +135,10 @@ describe("matchupColors", () => {
       setWarningHandler(null);
     }
   });
+  test("an unloaded league throws the loadLeague/preloadAll error", () => {
+    // this file loads only cfb; vitest isolates modules per file
+    expect(() => matchupColorsSync("Lakers", "Celtics", { league: "nba" })).toThrow(/loadLeague.*preloadAll/);
+  });
   test("strict rejects an unresolved team", () => {
     expect(() => matchupColorsSync("Nowhere State", "Alabama", { league: "cfb", strict: true })).toThrow();
   });
