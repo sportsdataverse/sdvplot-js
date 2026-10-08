@@ -28,3 +28,65 @@
   --ifm-color-primary-lightest: #4fddbf;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
+
+/* <Live> examples (src/components/Live.tsx) and gallery cards */
+.sdv-live {
+  margin: 0 0 2rem;
+}
+.sdv-live-static,
+.sdv-live-output {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.sdv-live-static svg,
+.sdv-live-static > img,
+.sdv-live-output svg {
+  max-width: 100%;
+  height: auto;
+}
+/* a static file embedded as a document; an SVG one keeps its own width/height attributes */
+.sdv-live-static iframe {
+  display: block;
+  border: 0;
+}
+/* an .html output has no intrinsic size */
+.sdv-live-static iframe:not([width]) {
+  width: 100%;
+  height: 32rem;
+}
+.sdv-live-error {
+  color: var(--ifm-color-danger);
+  font-weight: 600;
+}
+.sdv-gallery {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  margin-bottom: 2rem;
+}
+.sdv-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 6px;
+  padding: 0.5rem;
+  color: inherit;
+}
+.sdv-card:hover {
+  border-color: var(--ifm-color-primary);
+  text-decoration: none;
+}
+.sdv-card .sdv-live-static {
+  max-height: 12rem;
+  overflow: hidden;
+}
+/* a static file's thumbnail fits the card whole: both axes capped, aspect kept (width: auto drops the attribute's width) */
+.sdv-card .sdv-live-static > img {
+  width: auto;
+  max-height: 12rem;
+}
+.sdv-value {
+  max-height: 12rem;
+  overflow: auto;
+}

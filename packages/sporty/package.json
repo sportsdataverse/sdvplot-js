@@ -22,7 +22,7 @@
     "test": "vitest run",
     "api:report": "node ../../tools/api-extractor-all.mjs --local",
     "api:check": "node ../../tools/api-extractor-all.mjs",
-    "pack:check": "pnpm pack --pack-destination temp >/dev/null && attw temp/*.tgz --profile esm-only && publint --strict"
+    "pack:check": "node ../../tools/pack-check.mjs"
   },
   "repository": {
     "type": "git",

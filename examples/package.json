@@ -1,0 +1,35 @@
+{
+  "name": "@sportsdataverse/examples",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./data": "./src/data.ts",
+    "./loaders": "./src/loaders.gen.ts",
+    "./sources": "./sources.ts"
+  },
+  "scripts": {
+    "gen": "tsx scripts/gen.ts",
+    "test": "tsx scripts/gen.ts && vitest run",
+    "typecheck": "tsx scripts/gen.ts && tsc -p tsconfig.json",
+    "prerender": "tsx scripts/prerender.ts",
+    "check-build": "tsx scripts/check-build.ts"
+  },
+  "devDependencies": {
+    "@napi-rs/canvas": "^1.0.10",
+    "@observablehq/plot": "^0.6.17",
+    "@types/d3": "^7.4.3",
+    "@types/jsdom": "^21.1.7",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "chart.js": "4.5.1",
+    "d3": "^7.9.0",
+    "echarts": "^6.1.0",
+    "jsdom": "^26.1.0",
+    "linkedom": "^0.18",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "vega": "^6.4.0",
+    "vega-lite": "^6.4.3"
+  }
+}

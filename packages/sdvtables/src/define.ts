@@ -493,6 +493,27 @@ export class TableBuilder<Row> {
     return this.s;
   }
 }
+/**
+ * Start a table spec for rows of type `Row`: chain `.columns(...)`, decorations and `.theme(...)`, then `.build()`.
+ * The spec is plain data: render it with `renderHTML` (`@sportsdataverse/sdvtables/html`).
+ *
+ * @example
+ * ```ts
+ * import { defineTable } from "@sportsdataverse/sdvtables";
+ * import { renderHTML } from "@sportsdataverse/sdvtables/html";
+ *
+ * const rows = [
+ *   { team: "KC", wins: 15, losses: 2 },
+ *   { team: "BUF", wins: 13, losses: 4 },
+ *   { team: "LAC", wins: 11, losses: 6 },
+ * ];
+ * const spec = defineTable<(typeof rows)[number]>()
+ *   .columns((c) => [c.text("team"), c.int("wins"), c.int("losses")])
+ *   .title("AFC, 2024")
+ *   .build();
+ * renderHTML(spec, rows);
+ * ```
+ */
 export function defineTable<Row>(): TableBuilder<Row> {
   return new TableBuilder<Row>({
     columns: [],

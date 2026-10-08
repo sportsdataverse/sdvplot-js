@@ -68,9 +68,14 @@ export interface CellBin extends Split {
  * ```ts
  * import { binShots } from "@sportsdataverse/sdvplot/shots";
  *
- * const shot = { x_legacy: 0, y_legacy: 5, shot_distance: 0, shot_value: 2, shot_result: "Made" };
- * binShots([shot], 15);
- * binShots([shot], { shape: "square", side: 15 });
+ * // Brooklyn shots from the sportsdataverse-data nba_stats_shots release, 2025-26
+ * const shots = [
+ *   { x_legacy: -1, y_legacy: 7, shot_distance: 1, shot_value: 2, shot_result: "Made" },
+ *   { x_legacy: 0, y_legacy: 0, shot_distance: 0, shot_value: 2, shot_result: "Missed" },
+ *   { x_legacy: -44, y_legacy: 252, shot_distance: 26, shot_value: 3, shot_result: "Made" },
+ * ];
+ * binShots(shots, 15);
+ * binShots(shots, { shape: "square", side: 15 });
  * ```
  */
 export function binShots(shots: readonly ShotRow[], cell: number | BinnerOptions): CellBin[] {
@@ -116,7 +121,8 @@ export const LEAGUE_PRIOR_ATTEMPTS = 25;
  * ```ts
  * import { LEAGUE_PRIOR_ATTEMPTS, shrunkDiff } from "@sportsdataverse/sdvplot/shots";
  *
- * shrunkDiff(20, 20, 0.5, LEAGUE_PRIOR_ATTEMPTS); // 20-for-20 against a 50% league: hot, but +0.22, not +0.5
+ * // Brooklyn 2025-26, the radius-15 hexagon centred (77.9, 45): 4 of 4, where the league made 270 of 636
+ * shrunkDiff(4, 4, 270 / 636, LEAGUE_PRIOR_ATTEMPTS); // +0.08, not the raw +0.58
  * ```
  */
 export function shrunkDiff(
@@ -157,7 +163,13 @@ export interface CellVsLeague extends CellBin {
  * ```ts
  * import { leagueIndex } from "@sportsdataverse/sdvplot/shots";
  *
- * leagueIndex([{ x_legacy: 0, y_legacy: 5, shot_distance: 0, shot_value: 2, shot_result: "Made" }], 15).cells;
+ * // Brooklyn shots from the sportsdataverse-data nba_stats_shots release, 2025-26
+ * const shots = [
+ *   { x_legacy: -1, y_legacy: 7, shot_distance: 1, shot_value: 2, shot_result: "Made" },
+ *   { x_legacy: 0, y_legacy: 0, shot_distance: 0, shot_value: 2, shot_result: "Missed" },
+ *   { x_legacy: -44, y_legacy: 252, shot_distance: 26, shot_value: 3, shot_result: "Made" },
+ * ];
+ * leagueIndex(shots, 15).cells;
  * ```
  */
 export function leagueIndex(league: readonly ShotRow[], cell: number | BinnerOptions): LeagueIndex {
@@ -179,8 +191,10 @@ const centres = new WeakMap<LeagueIndex, Map<string, LeagueCell>>();
  * ```ts
  * import { cellsVsLeague, leagueIndex } from "@sportsdataverse/sdvplot/shots";
  *
- * const shot = { x_legacy: 0, y_legacy: 5, shot_distance: 0, shot_value: 2, shot_result: "Made" };
- * cellsVsLeague([shot], leagueIndex([shot, shot], 15));
+ * // Brooklyn shots from the sportsdataverse-data nba_stats_shots release, 2025-26
+ * const made = { x_legacy: 0, y_legacy: 0, shot_distance: 0, shot_value: 2, shot_result: "Made" };
+ * const missed = { ...made, shot_result: "Missed" };
+ * cellsVsLeague([made], leagueIndex([made, missed], 15));
  * ```
  */
 export function cellsVsLeague(
@@ -238,9 +252,15 @@ function quantile(values: readonly number[], p: number): number | undefined {
  *
  * @example
  * ```ts
- * import { sizeCells } from "@sportsdataverse/sdvplot/shots";
+ * import { binShots, sizeCells } from "@sportsdataverse/sdvplot/shots";
  *
- * sizeCells([{ attempts: 1 }, { attempts: 4 }, { attempts: 40 }], { radius: 15 }).r;
+ * // Brooklyn shots from the sportsdataverse-data nba_stats_shots release, 2025-26
+ * const shots = [
+ *   { x_legacy: -1, y_legacy: 7, shot_distance: 1, shot_value: 2, shot_result: "Made" },
+ *   { x_legacy: 0, y_legacy: 0, shot_distance: 0, shot_value: 2, shot_result: "Missed" },
+ *   { x_legacy: -44, y_legacy: 252, shot_distance: 26, shot_value: 3, shot_result: "Made" },
+ * ];
+ * sizeCells(binShots(shots, 15), { radius: 15 }).r; // the 2-attempt rim cell is full size, the 1-attempt three smaller
  * ```
  */
 export function sizeCells(
@@ -281,7 +301,8 @@ export function sizeCells(
  * ```ts
  * import { statsByZone } from "@sportsdataverse/sdvplot/shots";
  *
- * statsByZone([{ x_legacy: -224, y_legacy: 20, shot_distance: 22, shot_value: 3, shot_result: "Made" }]);
+ * // a Brooklyn corner three, 2025-26 (sportsdataverse-data nba_stats_shots)
+ * statsByZone([{ x_legacy: 237, y_legacy: 34, shot_distance: 24, shot_value: 3, shot_result: "Made" }]);
  * ```
  */
 export function statsByZone(shots: readonly ShotRow[]): Record<BasketballZone, Split> {

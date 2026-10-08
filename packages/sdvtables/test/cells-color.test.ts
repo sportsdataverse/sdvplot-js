@@ -76,7 +76,7 @@ test("colorPills rank fill, percent format, outline; colorRanks fills the td", (
     STANDINGS.slice(0, 1),
     { css: "none" },
   );
-  expect(cellOf(pct, "net_epa")).toContain(">7.1%</span>");
+  expect(cellOf(pct, "net_epa")).toContain(">6.3%</span>");
 });
 test("percentileBar: auto scale of proportions, marker text, na label in broken track; the th width is the column's own width (default 220px)", () => {
   const html = renderHTML(

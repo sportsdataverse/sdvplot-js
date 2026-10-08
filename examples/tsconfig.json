@@ -1,0 +1,44 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "isolatedDeclarations": false,
+    "declaration": false,
+    "declarationMap": false,
+    "baseUrl": ".",
+    "paths": {
+      "@sportsdataverse/sdvplot": ["../packages/sdvplot/src/index.ts"],
+      "@sportsdataverse/sdvplot/plot": ["../packages/sdvplot/src/plot/index.ts"],
+      "@sportsdataverse/sdvplot/d3": ["../packages/sdvplot/src/d3/index.ts"],
+      "@sportsdataverse/sdvplot/bins": ["../packages/sdvplot/src/bins/index.ts"],
+      "@sportsdataverse/sdvplot/shots": ["../packages/sdvplot/src/shots/index.ts"],
+      "@sportsdataverse/sdvplot/react": ["../packages/sdvplot/src/react/index.tsx"],
+      "@sportsdataverse/sdvplot/testing": ["../packages/sdvplot/src/testing/index.ts"],
+      "@sportsdataverse/sdvplot/chartjs": ["../packages/sdvplot/src/chartjs.ts"],
+      "@sportsdataverse/sdvplot/chartjs/surface": ["../packages/sdvplot/src/chartjs-surface.ts"],
+      "@sportsdataverse/sdvplot/plotly": ["../packages/sdvplot/src/plotly.ts"],
+      "@sportsdataverse/sdvplot/vega": ["../packages/sdvplot/src/vega.ts"],
+      "@sportsdataverse/sdvplot/echarts": ["../packages/sdvplot/src/echarts.ts"],
+      "@sportsdataverse/sporty": ["../packages/sporty/src/index.ts"],
+      "@sportsdataverse/sporty/svg": ["../packages/sporty/src/svg.ts"],
+      "@sportsdataverse/sporty/specs": ["../packages/sporty/src/specs/index.ts"],
+      "@sportsdataverse/sporty/plot": ["../packages/sporty/src/plot.ts"],
+      "@sportsdataverse/sporty/canvas": ["../packages/sporty/src/canvas.ts"],
+      "@sportsdataverse/sporty/d3": ["../packages/sporty/src/d3.ts"],
+      "@sportsdataverse/sdvtables": ["../packages/sdvtables/src/index.ts"],
+      "@sportsdataverse/sdvtables/html": ["../packages/sdvtables/src/html/index.ts"],
+      "@sportsdataverse/examples/data": ["../examples/src/data.ts"]
+    }
+  },
+  "include": [
+    "sources.ts",
+    "vitest.config.ts",
+    "src",
+    "scripts",
+    "test",
+    "snippets",
+    "../packages/sdvplot/src/globals.d.ts",
+    "../packages/sporty/src/globals.d.ts",
+    "../packages/sdvtables/src/globals.d.ts"
+  ]
+}

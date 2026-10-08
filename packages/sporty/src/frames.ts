@@ -122,6 +122,21 @@ export function frameBottomLeft(length: number, width: number): Frame {
  * `x`/`y` name the input columns (default `x`/`y`, or `x_legacy`/`y_legacy` for `"nba-legacy"` and
  * `"nba-legacy-vertical"`). The frame sees
  * a view `{ x: row[xCol], y: row[yCol] }`.
+ *
+ * @example
+ * ```ts
+ * import { toSurfaceFrame } from "@sportsdataverse/sporty";
+ *
+ * // two stats.nba.com shots (shotchartdetail, Lakers at Nuggets, 2023-10-24, game 0022300061, events 510 and 530):
+ * // x_legacy / y_legacy are LOC_X / LOC_Y, tenths of a foot from the hoop
+ * toSurfaceFrame(
+ *   [
+ *     { x_legacy: -53, y_legacy: 285, team: "LAL", player: "LeBron James" },
+ *     { x_legacy: -136, y_legacy: 214, team: "DEN", player: "Nikola Jokić" },
+ *   ],
+ *   { from: "nba-legacy" },
+ * );
+ * ```
  */
 export function toSurfaceFrame<R extends Row>(
   rows: readonly R[],

@@ -69,8 +69,10 @@ export interface SignatureOptions {
  * ```ts
  * import { fgPctByDistance, signaturePoints, vsLeague } from "@sportsdataverse/sdvplot/shots";
  *
- * const shot = { x_legacy: 0, y_legacy: 5, shot_distance: 0, shot_value: 2, shot_result: "Made" };
- * signaturePoints(vsLeague(fgPctByDistance([shot]), fgPctByDistance([shot])), { minAttempts: 1 })[0];
+ * // Brooklyn shots from the sportsdataverse-data nba_stats_shots release, 2025-26
+ * const made = { x_legacy: 0, y_legacy: 0, shot_distance: 0, shot_value: 2, shot_result: "Made" };
+ * const missed = { ...made, shot_result: "Missed" };
+ * signaturePoints(vsLeague(fgPctByDistance([made]), fgPctByDistance([made, missed])), { minAttempts: 1 })[0];
  * ```
  */
 export function signaturePoints(

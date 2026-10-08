@@ -1,0 +1,477 @@
+{
+ "header": {
+  "id": "401671889",
+  "competitions": [
+   {
+    "competitors": [
+     {
+      "homeAway": "home",
+      "team": {
+       "id": "21",
+       "abbreviation": "PHI"
+      }
+     },
+     {
+      "homeAway": "away",
+      "team": {
+       "id": "12",
+       "abbreviation": "KC"
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "plays": [
+  {
+   "id": "401671889594",
+   "sequenceNumber": "59400",
+   "type": {
+    "id": "68",
+    "text": "Rushing Touchdown",
+    "abbreviation": "TD"
+   },
+   "text": "J.Hurts up the middle for 1 yard, TOUCHDOWN. J.Elliott extra point is GOOD, Center-R.Lovato, Holder-B.Mann.",
+   "awayScore": 0,
+   "homeScore": 7,
+   "period": {
+    "number": 1
+   },
+   "clock": {
+    "displayValue": "6:15"
+   },
+   "scoringPlay": true,
+   "priority": false,
+   "modified": "2025-02-10T04:26Z",
+   "wallclock": "2025-02-10T00:04:48Z",
+   "teamParticipants": [
+    {
+     "team": {
+      "$ref": "http://sports.core.api.espn.pvt/v2/sports/football/leagues/nfl/seasons/2024/teams/21?lang=en&region=us"
+     },
+     "id": "21",
+     "order": 1,
+     "type": "offense"
+    },
+    {
+     "team": {
+      "$ref": "http://sports.core.api.espn.pvt/v2/sports/football/leagues/nfl/seasons/2024/teams/12?lang=en&region=us"
+     },
+     "id": "12",
+     "order": 2,
+     "type": "defense"
+    }
+   ],
+   "isPenalty": false,
+   "statYardage": 1,
+   "start": {
+    "down": 1,
+    "distance": 1,
+    "yardLine": 99,
+    "yardsToEndzone": 1,
+    "downDistanceText": "1st & Goal at KC 1",
+    "shortDownDistanceText": "1st & Goal",
+    "possessionText": "KC 1",
+    "team": {
+     "id": "21"
+    }
+   },
+   "end": {
+    "down": -1,
+    "distance": 10,
+    "yardLine": 100,
+    "yardsToEndzone": 0,
+    "team": {
+     "id": "21"
+    }
+   },
+   "scoringType": {
+    "name": "touchdown",
+    "displayName": "Touchdown",
+    "abbreviation": "TD"
+   },
+   "pointAfterAttempt": {
+    "id": 61,
+    "text": "Extra Point Good",
+    "abbreviation": "Extra Point Good",
+    "value": 1
+   },
+   "isTurnover": false
+  },
+  {
+   "id": "4016718891935",
+   "sequenceNumber": "193500",
+   "type": {
+    "id": "67",
+    "text": "Passing Touchdown",
+    "abbreviation": "TD"
+   },
+   "text": "(Shotgun) J.Hurts pass short left to A.Brown for 12 yards, TOUCHDOWN. J.Elliott extra point is GOOD, Center-R.Lovato, Holder-B.Mann.",
+   "awayScore": 0,
+   "homeScore": 24,
+   "period": {
+    "number": 2
+   },
+   "clock": {
+    "displayValue": "1:35"
+   },
+   "scoringPlay": true,
+   "priority": false,
+   "modified": "2025-02-10T04:26Z",
+   "wallclock": "2025-02-10T01:06:59Z",
+   "teamParticipants": [
+    {
+     "team": {
+      "$ref": "http://sports.core.api.espn.pvt/v2/sports/football/leagues/nfl/seasons/2024/teams/21?lang=en&region=us"
+     },
+     "id": "21",
+     "order": 1,
+     "type": "offense"
+    },
+    {
+     "team": {
+      "$ref": "http://sports.core.api.espn.pvt/v2/sports/football/leagues/nfl/seasons/2024/teams/12?lang=en&region=us"
+     },
+     "id": "12",
+     "order": 2,
+     "type": "defense"
+    }
+   ],
+   "isPenalty": false,
+   "statYardage": 12,
+   "start": {
+    "down": 2,
+    "distance": 8,
+    "yardLine": 88,
+    "yardsToEndzone": 12,
+    "downDistanceText": "2nd & 8 at KC 12",
+    "shortDownDistanceText": "2nd & 8",
+    "possessionText": "KC 12",
+    "team": {
+     "id": "21"
+    }
+   },
+   "end": {
+    "down": -1,
+    "distance": 10,
+    "yardLine": 100,
+    "yardsToEndzone": 0,
+    "team": {
+     "id": "21"
+    }
+   },
+   "scoringType": {
+    "name": "touchdown",
+    "displayName": "Touchdown",
+    "abbreviation": "TD"
+   },
+   "pointAfterAttempt": {
+    "id": 61,
+    "text": "Extra Point Good",
+    "abbreviation": "Extra Point Good",
+    "value": 1
+   },
+   "isTurnover": false
+  },
+  {
+   "id": "4016718892858",
+   "sequenceNumber": "285800",
+   "type": {
+    "id": "67",
+    "text": "Passing Touchdown",
+    "abbreviation": "TD"
+   },
+   "text": "(Shotgun) J.Hurts pass deep middle to D.Smith for 46 yards, TOUCHDOWN. J.Elliott extra point is GOOD, Center-R.Lovato, Holder-B.Mann.",
+   "awayScore": 0,
+   "homeScore": 34,
+   "period": {
+    "number": 3
+   },
+   "clock": {
+    "displayValue": "2:40"
+   },
+   "scoringPlay": true,
+   "priority": false,
+   "modified": "2025-02-10T04:26Z",
+   "wallclock": "2025-02-10T02:18:38Z",
+   "teamParticipants": [
+    {
+     "team": {
+      "$ref": "http://sports.core.api.espn.pvt/v2/sports/football/leagues/nfl/seasons/2024/teams/21?lang=en&region=us"
+     },
+     "id": "21",
+     "order": 1,
+     "type": "offense"
+    },
+    {
+     "team": {
+      "$ref": "http://sports.core.api.espn.pvt/v2/sports/football/leagues/nfl/seasons/2024/teams/12?lang=en&region=us"
+     },
+     "id": "12",
+     "order": 2,
+     "type": "defense"
+    }
+   ],
+   "isPenalty": false,
+   "statYardage": 46,
+   "start": {
+    "down": 1,
+    "distance": 10,
+    "yardLine": 54,
+    "yardsToEndzone": 46,
+    "downDistanceText": "1st & 10 at KC 46",
+    "shortDownDistanceText": "1st & 10",
+    "possessionText": "KC 46",
+    "team": {
+     "id": "21"
+    }
+   },
+   "end": {
+    "down": -1,
+    "distance": 10,
+    "yardLine": 100,
+    "yardsToEndzone": 0,
+    "team": {
+     "id": "21"
+    }
+   },
+   "scoringType": {
+    "name": "touchdown",
+    "displayName": "Touchdown",
+    "abbreviation": "TD"
+   },
+   "pointAfterAttempt": {
+    "id": 61,
+    "text": "Extra Point Good",
+    "abbreviation": "Extra Point Good",
+    "value": 1
+   },
+   "isTurnover": false
+  },
+  {
+   "id": "4016718893030",
+   "sequenceNumber": "303000",
+   "type": {
+    "id": "67",
+    "text": "Passing Touchdown",
+    "abbreviation": "TD"
+   },
+   "text": "P.Mahomes pass deep right to X.Worthy for 24 yards, TOUCHDOWN. TWO-POINT CONVERSION ATTEMPT. P.Mahomes pass to T.Kelce is incomplete. ATTEMPT FAILS.",
+   "awayScore": 6,
+   "homeScore": 34,
+   "period": {
+    "number": 3
+   },
+   "clock": {
+    "displayValue": "0:34"
+   },
+   "scoringPlay": true,
+   "priority": false,
+   "modified": "2025-02-10T04:26Z",
+   "wallclock": "2025-02-10T02:24:59Z",
+   "teamParticipants": [
+    {
+     "team": {
+      "$ref": "http://sports.core.api.espn.pvt/v2/sports/football/leagues/nfl/seasons/2024/teams/12?lang=en&region=us"
+     },
+     "id": "12",
+     "order": 1,
+     "type": "offense"
+    },
+    {
+     "team": {
+      "$ref": "http://sports.core.api.espn.pvt/v2/sports/football/leagues/nfl/seasons/2024/teams/21?lang=en&region=us"
+     },
+     "id": "21",
+     "order": 2,
+     "type": "defense"
+    }
+   ],
+   "isPenalty": false,
+   "statYardage": 24,
+   "start": {
+    "down": 1,
+    "distance": 10,
+    "yardLine": 24,
+    "yardsToEndzone": 24,
+    "downDistanceText": "1st & 10 at PHI 24",
+    "shortDownDistanceText": "1st & 10",
+    "possessionText": "PHI 24",
+    "team": {
+     "id": "12"
+    }
+   },
+   "end": {
+    "down": -1,
+    "distance": 10,
+    "yardLine": 0,
+    "yardsToEndzone": 0,
+    "team": {
+     "id": "12"
+    }
+   },
+   "scoringType": {
+    "name": "touchdown",
+    "displayName": "Touchdown",
+    "abbreviation": "TD"
+   },
+   "pointAfterAttempt": {
+    "id": 15,
+    "text": "Two Point Pass",
+    "abbreviation": "Two Point Pass",
+    "value": 0
+   },
+   "isTurnover": false
+  },
+  {
+   "id": "4016718893932",
+   "sequenceNumber": "393200",
+   "type": {
+    "id": "67",
+    "text": "Passing Touchdown",
+    "abbreviation": "TD"
+   },
+   "text": "(Shotgun) P.Mahomes pass short left to D.Hopkins for 7 yards, TOUCHDOWN. TWO-POINT CONVERSION ATTEMPT. P.Mahomes pass to Ju.Watson is complete. ATTEMPT SUCCEEDS.PENALTY on PHI-R.Blankenship, Illegal Use of Hands, 5 yards, enforced between downs.",
+   "awayScore": 14,
+   "homeScore": 40,
+   "period": {
+    "number": 4
+   },
+   "clock": {
+    "displayValue": "2:54"
+   },
+   "scoringPlay": true,
+   "priority": false,
+   "modified": "2025-02-10T04:26Z",
+   "wallclock": "2025-02-10T03:01:57Z",
+   "teamParticipants": [
+    {
+     "team": {
+      "$ref": "http://sports.core.api.espn.pvt/v2/sports/football/leagues/nfl/seasons/2024/teams/12?lang=en&region=us"
+     },
+     "id": "12",
+     "order": 1,
+     "type": "offense"
+    },
+    {
+     "team": {
+      "$ref": "http://sports.core.api.espn.pvt/v2/sports/football/leagues/nfl/seasons/2024/teams/21?lang=en&region=us"
+     },
+     "id": "21",
+     "order": 2,
+     "type": "defense"
+    }
+   ],
+   "isPenalty": false,
+   "statYardage": 7,
+   "start": {
+    "down": 3,
+    "distance": 6,
+    "yardLine": 7,
+    "yardsToEndzone": 7,
+    "downDistanceText": "3rd & 6 at PHI 7",
+    "shortDownDistanceText": "3rd & 6",
+    "possessionText": "PHI 7",
+    "team": {
+     "id": "12"
+    }
+   },
+   "end": {
+    "down": -1,
+    "distance": 10,
+    "yardLine": 0,
+    "yardsToEndzone": 0,
+    "team": {
+     "id": "12"
+    }
+   },
+   "scoringType": {
+    "name": "touchdown",
+    "displayName": "Touchdown",
+    "abbreviation": "TD"
+   },
+   "pointAfterAttempt": {
+    "id": 15,
+    "text": "Two Point Pass",
+    "abbreviation": "Two Point Pass",
+    "value": 2
+   },
+   "isTurnover": false
+  },
+  {
+   "id": "4016718894124",
+   "sequenceNumber": "412400",
+   "type": {
+    "id": "67",
+    "text": "Passing Touchdown",
+    "abbreviation": "TD"
+   },
+   "text": "(Shotgun) P.Mahomes pass deep middle to X.Worthy for 50 yards, TOUCHDOWN. TWO-POINT CONVERSION ATTEMPT. P.Mahomes pass to D.Hopkins is complete. ATTEMPT SUCCEEDS.",
+   "awayScore": 22,
+   "homeScore": 40,
+   "period": {
+    "number": 4
+   },
+   "clock": {
+    "displayValue": "1:48"
+   },
+   "scoringPlay": true,
+   "priority": false,
+   "modified": "2025-02-10T04:26Z",
+   "wallclock": "2025-02-10T03:12:32Z",
+   "teamParticipants": [
+    {
+     "team": {
+      "$ref": "http://sports.core.api.espn.pvt/v2/sports/football/leagues/nfl/seasons/2024/teams/12?lang=en&region=us"
+     },
+     "id": "12",
+     "order": 1,
+     "type": "offense"
+    },
+    {
+     "team": {
+      "$ref": "http://sports.core.api.espn.pvt/v2/sports/football/leagues/nfl/seasons/2024/teams/21?lang=en&region=us"
+     },
+     "id": "21",
+     "order": 2,
+     "type": "defense"
+    }
+   ],
+   "isPenalty": false,
+   "statYardage": 50,
+   "start": {
+    "down": 1,
+    "distance": 10,
+    "yardLine": 50,
+    "yardsToEndzone": 50,
+    "downDistanceText": "1st & 10 at 50",
+    "shortDownDistanceText": "1st & 10",
+    "possessionText": "50",
+    "team": {
+     "id": "12"
+    }
+   },
+   "end": {
+    "down": -1,
+    "distance": 10,
+    "yardLine": 0,
+    "yardsToEndzone": 0,
+    "team": {
+     "id": "12"
+    }
+   },
+   "scoringType": {
+    "name": "touchdown",
+    "displayName": "Touchdown",
+    "abbreviation": "TD"
+   },
+   "pointAfterAttempt": {
+    "id": 15,
+    "text": "Two Point Pass",
+    "abbreviation": "Two Point Pass",
+    "value": 2
+   },
+   "isTurnover": false
+  }
+ ]
+}

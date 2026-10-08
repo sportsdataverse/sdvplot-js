@@ -24,6 +24,7 @@ jobs:
       - run: pnpm api:check
       - run: pnpm pack:check
       - run: pnpm docs:build
+      - run: pnpm --filter docs typecheck
   # Non-gating: real-browser renders of sdvtables/export (playwright + chromium). No build: vitest runs sdvtables and
   # sdvplot from source (vitest.config.ts aliases); the root has no playwright bin, so chromium installs via sdvtables.
   render-tests:

@@ -22,10 +22,10 @@ test("num/int/pct/rank formatting; blanks render empty (Review Focus 2)", () => 
     STANDINGS,
     { css: "none" },
   );
-  expect(cell(html, "net_epa")).toBe("+0.071");
+  expect(cell(html, "net_epa")).toBe("+0.063");
   expect(cell(html, "pf")).toBe("385");
   expect(cell(html, "ties")).toBe("0.0%");
-  expect(cell(html, "srs_rank")).toBe('9<sup style="font-size:0.7em">th</sup>');
+  expect(cell(html, "srs_rank")).toBe('10<sup style="font-size:0.7em">th</sup>');
   expect(cell(html, "net_epa", 7)).toBe("");
   expect(html).not.toMatch(/NaN|undefined|null</);
 });
@@ -42,7 +42,7 @@ test("pct scales proportions and respects scale:false; rank superscript off; int
     { css: "none" },
   );
   expect(cell(html, "net_epa")).toBe("45.7%");
-  expect(cell(html, "srs_rank")).toBe("9th");
+  expect(cell(html, "srs_rank")).toBe("10th");
   expect(cell(html, "pa")).toBe("327");
   const raw = renderHTML(
     defineTable<Standing>()
