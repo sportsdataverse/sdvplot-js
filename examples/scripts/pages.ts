@@ -28,6 +28,8 @@ const SECTIONS: Readonly<Record<string, string>> = {
   kinds: "Every cell kind",
   decorations: "Every decoration",
   html: "HTML renderer",
+  interactive: "Interactive tables",
+  export: "Export (Node)",
   layout: "Layout",
   api: "From the API docs",
 };

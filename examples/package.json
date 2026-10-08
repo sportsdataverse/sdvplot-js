@@ -14,7 +14,8 @@
     "test": "tsx scripts/gen.ts && vitest run",
     "typecheck": "tsx scripts/gen.ts && tsc -p tsconfig.json",
     "prerender": "tsx scripts/prerender.ts",
-    "check-build": "tsx scripts/check-build.ts"
+    "check-build": "tsx scripts/check-build.ts",
+    "render:export-png": "tsx scripts/export-png.ts"
   },
   "devDependencies": {
     "@napi-rs/canvas": "^1.0.10",

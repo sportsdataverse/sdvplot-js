@@ -1,5 +1,6 @@
 import { compile } from "vega-lite";
 import { beforeEach, describe, expect, test, vi } from "vitest";
+import { STANDINGS } from "../../sdvtables/test/fixtures/standings.js";
 import { InputError, UnsupportedTargetError } from "../src/errors.js";
 import { resetWarnings, resolveSync, setWarningHandler } from "../src/index.js";
 import {
@@ -567,6 +568,34 @@ describe("accessible descriptions", () => {
       for (const t of ["KC", "BUF", "SF", "DAL", "PHI", "BAL"])
         expect(ls.some((l) => l.includes(`${t} logo`))).toBe(true);
     }
+  });
+
+  const byId = () => {
+    const ids = STANDINGS.map((r) => ID(r.team));
+    expect(ids[0]).toBe("12"); // KC's team_id: the key really is an id
+    return STANDINGS.map((r, i) => ({ team_id: ids[i], wins: r.wins, pf: r.pf }));
+  };
+  const named = STANDINGS.map((r) => `${r.team} logo`).sort();
+
+  test("rows keyed by team_id are described by the team, not the id (J41)", async () => {
+    const rows = byId();
+    const scatter: VegaLiteSpec = {
+      data: { values: rows },
+      mark: "point",
+      encoding: { x: { field: "wins", type: "quantitative" }, y: { field: "pf", type: "quantitative" } },
+    };
+    const o = { x: "wins", y: "pf", team: "team_id", idSystem: "team_id", league: "nfl" } as const;
+    expect(imageLabels((await svgOf(withLogos(scatter, rows, o))).svg).sort()).toEqual(named);
+  });
+
+  test("axis categories keyed by team_id are described by the team, not the id (J41)", async () => {
+    const bars: VegaLiteSpec = {
+      data: { values: byId() },
+      mark: "bar",
+      encoding: { x: { field: "team_id", type: "nominal" }, y: { field: "wins", type: "quantitative" } },
+    };
+    const r = await svgOf(withAxisLogos(bars, "x", { league: "nfl", idSystem: "team_id" }));
+    expect(imageLabels(r.svg).sort()).toEqual(named);
   });
 
   test("axis logos too, and compile() emits no warnings", async () => {

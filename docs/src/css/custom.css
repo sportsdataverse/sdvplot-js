@@ -99,3 +99,14 @@
   max-height: 12rem;
   overflow: auto;
 }
+/* a data source's credit under its figure (StatsBomb's logo) */
+.sdv-credit {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  margin: 0.25rem 0 0.75rem;
+}
+.sdv-credit img {
+  display: block;
+}

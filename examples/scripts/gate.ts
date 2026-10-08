@@ -55,6 +55,12 @@ export async function prerender(o: PrerenderOptions): Promise<void> {
     if (!overLimit(row.markup)) continue;
     const file = join(o.static, staticFile(row));
     mkdirSync(dirname(file), { recursive: true });
-    writeFileSync(file, file.endsWith(".svg") ? svgDocument(row.markup) : row.markup);
+    // An .html file is an iframe document: without a doctype it renders in quirks mode.
+    writeFileSync(
+      file,
+      file.endsWith(".svg")
+        ? svgDocument(row.markup)
+        : `<!doctype html>\n<meta charset="utf-8">\n${row.markup}`,
+    );
   }
 }

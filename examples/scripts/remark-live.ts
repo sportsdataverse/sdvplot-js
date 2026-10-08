@@ -110,6 +110,7 @@ export default function remarkLive(o: {
           attr("code", row.code),
           attr("lang", row.lang),
           attr("title", row.title),
+          attr("tags", row.tags.join(" ")),
         ];
       }
       for (const c of n.children ?? []) visit(c);

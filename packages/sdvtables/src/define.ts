@@ -253,6 +253,10 @@ export class TableBuilder<Row> {
   id(id: string): TableBuilder<Row> {
     return new TableBuilder({ ...this.s, id });
   }
+  /** J31: the link id column (see `TableSpec.rowKey`). */
+  rowKey(key: keyof Row & string): TableBuilder<Row> {
+    return new TableBuilder({ ...this.s, rowKey: key });
+  }
   columns(fn: (c: ColumnFactory<Row>) => readonly ColumnSpec<Row>[]): TableBuilder<Row> {
     return new TableBuilder({ ...this.s, columns: fn(columnFactory<Row>()) });
   }

@@ -62,6 +62,9 @@ const config: Config = {
 
   plugins: [
     sdvExamples,
+    // sanitizeComments escapes { } < > outside code in doc comments, so the pages are MDX-safe. sdvplot's open marks
+    // inherit Plot's own option docs, and Plot's "a {value, order} object" would otherwise be read as a JSX expression
+    // and fail the build.
     [
       "docusaurus-plugin-typedoc",
       {
@@ -79,9 +82,11 @@ const config: Config = {
           `${sdvplot}/src/vega.ts`,
           `${sdvplot}/src/echarts.ts`,
           `${sdvplot}/src/testing/index.ts`,
+          `${sdvplot}/src/export/index.ts`,
         ],
         tsconfig: `${sdvplot}/tsconfig.json`,
         out: "docs/api/sdvplot",
+        sanitizeComments: true,
         readme: "none",
       },
     ],
@@ -99,6 +104,7 @@ const config: Config = {
         ],
         tsconfig: `${sporty}/tsconfig.json`,
         out: "docs/api/sporty",
+        sanitizeComments: true,
         readme: "none",
       },
     ],
@@ -106,9 +112,15 @@ const config: Config = {
       "docusaurus-plugin-typedoc",
       {
         id: "sdvtables",
-        entryPoints: [`${sdvtables}/src/index.ts`, `${sdvtables}/src/html/index.ts`],
+        entryPoints: [
+          `${sdvtables}/src/index.ts`,
+          `${sdvtables}/src/html/index.ts`,
+          `${sdvtables}/src/react/index.tsx`,
+          `${sdvtables}/src/export/index.ts`,
+        ],
         tsconfig: `${sdvtables}/tsconfig.json`,
         out: "docs/api/sdvtables",
+        sanitizeComments: true,
         readme: "none",
       },
     ],

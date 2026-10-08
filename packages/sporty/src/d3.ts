@@ -8,15 +8,20 @@ type Sel<G extends Element, D> = Selection<G, D, BaseType, unknown>;
  * Append a Scene to a d3 selection as `<g class="sporty-surface">`, drawn through the caller's x/y
  * scale functions: optional background rect, then polygons and text in zIndex order. Applies the
  * same skips as `toSVG` (see `isVisiblePolygon` / `isVisibleText`). Text font size is the number
- * height (`fitBox[1] / 1.5`) mapped through `y`.
+ * height (`fitBox[1] / 1.5`) mapped through `y`. `ariaDescription` (default: the scene's league and sport, then
+ * "surface", such as "nba basketball surface", as `surfaceMark`) describes the group for assistive technology.
  */
 export function appendSurface<G extends SVGGElement | SVGSVGElement, D>(
   selection: Sel<G, D>,
   scene: Scene,
   x: (v: number) => number,
   y: (v: number) => number,
+  o: { ariaDescription?: string } = {},
 ): Sel<SVGGElement, D> {
-  const g = selection.append("g").attr("class", "sporty-surface");
+  const g = selection
+    .append("g")
+    .attr("class", "sporty-surface")
+    .attr("aria-description", o.ariaDescription ?? `${scene.league} ${scene.sport} surface`);
   const [x0, y0, x1, y1] = scene.bbox;
   if (scene.background !== undefined)
     g.append("rect")

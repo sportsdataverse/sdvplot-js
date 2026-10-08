@@ -25,6 +25,43 @@ jobs:
       - run: pnpm pack:check
       - run: pnpm docs:build
       - run: pnpm --filter docs typecheck
+  # Non-gating: real-browser renders of sdvtables/export (playwright + chromium). No build: vitest runs sdvtables and
+  # sdvplot from source (vitest.config.ts aliases); the root has no playwright bin, so chromium installs via sdvtables.
+  render-tests:
+    runs-on: ubuntu-latest
+    needs: [check]
+    continue-on-error: true
+    # measured: theme pass ~1 min, export renders ~1 min, plus install and chromium; a hung browser stops here, not at 6 h
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20.18.1, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @sportsdataverse/sdvtables exec playwright install --with-deps chromium
+      # spec §7 (A46): every registered theme's themePreview through the tableToPNG path, one PNG each, uploaded below.
+      # Non-gating: a theme that fails to render fails only this step (an annotation per theme, and the summary line);
+      # the other themes still render, the export tests still run, and the artifact still uploads.
+      - id: themes
+        continue-on-error: true
+        run: pnpm --filter @sportsdataverse/sdvtables render:themes
+      - run: pnpm --filter @sportsdataverse/sdvtables test test/export-render.test.ts
+        env: { SDV_RENDER_TESTS: "1" }
+      - if: ${{ !cancelled() }}
+        run: |
+          dir=packages/sdvtables/theme-pass
+          {
+            echo "### sdvtables theme visual pass (spec §7, non-gating): ${{ steps.themes.outcome }}"
+            if [ -d "$dir" ]; then
+              for f in "$dir"/*.error.txt; do if [ -f "$f" ]; then echo "- **failed: $(basename "$f" .error.txt)**: $(head -n 1 "$f")"; fi; done
+              find "$dir" -name '*.png' -printf '- %f\n' | sort
+            else echo "- no PNG written"; fi
+          } >> "$GITHUB_STEP_SUMMARY"
+      - if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        # overwrite: a "Re-run jobs" uploads under the same name instead of failing with a conflict
+        with: { name: sdvtables-theme-pass, path: packages/sdvtables/theme-pass/, if-no-files-found: warn, overwrite: true }
   # Non-gating: real Chromium on the built docs (examples/test/interactive.test.ts) proves each Plotly, Vega, ECharts
   # and Chart.js example is drawn by its library in the browser, with an accessible name and no console error. Its
   # own job, as sdvtables' render tests: Chromium stays out of `check` and out of the Vercel build. It needs the

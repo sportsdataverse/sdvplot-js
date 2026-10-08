@@ -36,6 +36,8 @@ export interface LiveProps {
   readonly code: string;
   readonly lang: "ts" | "tsx";
   readonly title: string;
+  /** The example's tags, space-separated: a data source's tag adds the credit its terms ask for. */
+  readonly tags?: string;
   /** The prerendered output, inline (≤ 64 KB) … */
   readonly markup?: string;
   /** … or the URL of the prerendered file, with the root <svg>'s size when it is an SVG. */
@@ -64,6 +66,7 @@ export default function Live(p: LiveProps): ReactElement {
   const [element, setElement] = useState<ReactElement | null>(null);
   const [error, setError] = useState<string | null>(null);
   const src = useBaseUrl(p.src ?? "");
+  const statsbombLogo = useBaseUrl("/img/statsbomb-logo.png");
   const live =
     !p.thumb &&
     (p.browser === true || (LOADERS[p.id] !== undefined && (p.kind === "node" || p.kind === "react")));
@@ -166,10 +169,22 @@ export default function Live(p: LiveProps): ReactElement {
         <iframe src={src} title={p.title} width={p.width} height={p.height} loading="lazy" />
       </div>
     );
+  // StatsBomb's open-data terms: published analysis of their data carries the StatsBomb logo with the credit. A card is
+  // already a link, so its logo is not one.
+  const credit = (linked: boolean): ReactElement | null => {
+    if (!(p.tags ?? "").split(" ").includes("statsbomb")) return null;
+    const logo = <img src={statsbombLogo} alt="StatsBomb" width={100} height={16} />;
+    return (
+      <span className="sdv-credit">
+        {linked ? <a href="https://statsbomb.com">{logo}</a> : logo} Data: StatsBomb open data
+      </span>
+    );
+  };
   if (p.thumb)
     return (
       <Link className="sdv-card" to={p.href ?? "/gallery/"}>
         {output}
+        {credit(false)}
         <span>{p.title}</span>
       </Link>
     );
@@ -183,6 +198,7 @@ export default function Live(p: LiveProps): ReactElement {
       <div className="sdv-live-output" ref={host}>
         <Boundary onError={fail}>{element}</Boundary>
       </div>
+      {credit(true)}
       {error !== null && (
         <p role="alert" className="sdv-live-error">
           This example threw in your browser: {error}

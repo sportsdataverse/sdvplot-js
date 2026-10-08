@@ -66,6 +66,8 @@ test("Review Focus 2: <Live> receives the table markup byte for byte; a 450 KB r
   const t = live("sdvtables/html/t");
   remarkLive({ outDir: out })(t, { path: "a.mdx" });
   expect(props(t).markup).toBe(table);
+  // the tags, space-separated: Live credits a data source by its tag (StatsBomb's logo for "statsbomb")
+  expect(props(t).tags).toBe("t");
   const r = live("sporty/svg/rink");
   remarkLive({ outDir: out })(r, { path: "a.mdx" });
   expect(props(r)).toMatchObject({ src: "/examples/sporty/svg/rink.svg", kind: "markup", lang: "ts" });

@@ -17,6 +17,9 @@ only whole records (rows, plays, events) are dropped, except in the win-probabil
 - espn_nfl_summary_401671889_wp.json: espn/summary_nfl.json, every winprobability entry, unchanged, and every play
   (from drives.previous[].plays[]) cut to its id, period.number and clock.displayValue: what the rows join on.
 - pwhl_pbp_42_shots.json: hockeytech/pwhl_pbp_42.json, the events whose event is shot or goal.
+- spadl_8658_france_h1_passes.csv: socceraction/8658_spadl.csv (StatsBomb open-data match 8658, France v Croatia, the
+  2018 World Cup final, as socceraction 1.5.3 SPADL), the rows of France (team_id 771) in period 1 whose type_name is
+  pass and result_name is success: 75 rows, each line unchanged, with the header.
 
 Run: `uv run tools/sample-data/sdv_py_captures.py` (reads ../sdv-py), or `--sdv-py <path to a sportsdataverse-py
 checkout>`.
@@ -103,6 +106,25 @@ def main() -> None:
     pwhl = [e for e in read(fx, "hockeytech/pwhl_pbp_42.json") if e["event"] in ("shot", "goal")]
     assert len(pwhl) == 70, len(pwhl)
     write("pwhl_pbp_42_shots.json", pwhl)
+
+    spadl = (fx / "socceraction" / "8658_spadl.csv").read_text(encoding="utf-8").splitlines()
+    cols = spadl[0].split(",")  # no quoted fields in this file
+    at = {c: cols.index(c) for c in ("team_id", "period_id", "type_name", "result_name")}
+
+    def france_h1_pass(line: str) -> bool:
+        f = line.split(",")
+        return (
+            f[at["team_id"]] == "771"
+            and f[at["period_id"]] == "1"
+            and f[at["type_name"]] == "pass"
+            and f[at["result_name"]] == "success"
+        )
+
+    kept = [line for line in spadl[1:] if france_h1_pass(line)]
+    assert len(kept) == 75, len(kept)
+    (OUT / "spadl_8658_france_h1_passes.csv").write_text(
+        "\n".join([spadl[0], *kept]) + "\n", encoding="utf-8", newline="\n"
+    )
 
 
 if __name__ == "__main__":

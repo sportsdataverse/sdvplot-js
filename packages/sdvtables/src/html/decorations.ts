@@ -6,10 +6,10 @@ import { TableSpecError } from "../errors.js";
 import { formatNumber, formatValue, isBlank, naturalDigits, toNumber } from "../format.js";
 import { selectRows } from "../predicate.js";
 import { domainOf, quantile7, ramp, sampleSd } from "../scale.js";
-import type { ColumnSpec, Decoration, TableSpec, TextStyle } from "../spec.js";
+import type { ColumnSpec, Decoration, RowSelector, TableSpec, TextStyle } from "../spec.js";
 import { secondaryOn } from "../themes/sdv.js";
 import { type GoogleFont, fontStack } from "../themes/tokens.js";
-import { type RenderContext, cellValue } from "./cells.js";
+import { type RenderContext, cellValue, isScaled } from "./cells.js";
 import { checkPx, cssValue, escapeAttr, escapeHtml, isCssValue, styleAttr } from "./escape.js";
 import { SOCIAL_ICONS } from "./social-icons.js";
 import { cssStr, cutlineSvg, watermarkSvg } from "./svg.js";
@@ -176,6 +176,8 @@ export function applyDecorations<Row>(
   let recordedKey: Readonly<Record<string, string>> | undefined; // tiers sets it for legendDiscrete("recorded")
   let cutCount = 0; // one id per .cutline() call so two calls never share a class
   const bg = ctx.theme.tokens.bg === "transparent" ? "#ffffff" : hex6(ctx.theme.tokens.bg);
+  // "matched no rows" asks the source rows (A49): a page or filter that hides the picked rows still dims / skips the rest
+  const matchesNone = (sel: RowSelector<Row>): boolean => selectRows(sel, ctx.domainRows).length === 0;
   // colorResults is a column kind (spec §6.1) whose effect is a row fill: gt_color_results (_cells.py:203-222), exact W/L or 1/0
   for (const c of spec.columns)
     if (c.kind === "colorResults") {
@@ -221,11 +223,13 @@ export function applyDecorations<Row>(
         // gt_row_accent (_layout.py:1123-1156): no palette = the column holds the colors; a list maps sorted levels, recycled
         if (d.side !== "left" && d.side !== "right")
           throw new TableSpecError(`rowAccent side must be left or right, not ${JSON.stringify(d.side)}`);
-        const keys = rows.map((r) => {
+        const keyOf = (r: Row): string | null => {
           const v = cellValue(r, d.key);
           return isBlank(v) ? null : String(v);
-        });
-        const levels = [...new Set(keys.filter((k): k is string => k !== null))].sort();
+        };
+        const keys = rows.map(keyOf);
+        // A49: levels from the source rows, so a row keeps its accent colour under paging, filtering and brushing
+        const levels = [...new Set(ctx.domainRows.map(keyOf).filter((k): k is string => k !== null))].sort();
         const pal = d.palette;
         const colors = keys.map((k) =>
           k === null
@@ -238,8 +242,8 @@ export function applyDecorations<Row>(
                   ? pal[k]
                   : undefined,
         );
-        const keep = d.rows ? new Set(selectRows(d.rows, rows)) : null;
-        if (keep && keep.size === 0) {
+        const keep = d.rows ? new Set(selectRows(d.rows, rows, ctx.domainRows)) : null;
+        if (d.rows && keep?.size === 0 && matchesNone(d.rows)) {
           ctx.warn(`sdvtables:rowAccent:${ctx.id}`, "rows matched no rows; the table is unchanged");
           break;
         }
@@ -260,7 +264,7 @@ export function applyDecorations<Row>(
         break;
       }
       case "boldRows":
-        for (const i of selectRows(d.rows, rows)) {
+        for (const i of selectRows(d.rows, rows, ctx.domainRows)) {
           addRow(i, { "font-weight": "bold" });
           fillCells(i, {
             color: d.textColor,
@@ -270,8 +274,8 @@ export function applyDecorations<Row>(
         break;
       case "spotlight": {
         // gt_spotlight (_layout.py:1036-1074): no rows → unchanged + warning; `columns` narrows the lit cells, the rest of a lit row dims
-        const lit = new Set(selectRows(d.rows, rows));
-        if (lit.size === 0) {
+        const lit = new Set(selectRows(d.rows, rows, ctx.domainRows));
+        if (lit.size === 0 && matchesNone(d.rows)) {
           ctx.warn(`sdvtables:spotlight:${ctx.id}`, "rows matched no rows, so the table is unchanged");
           break;
         }
@@ -505,8 +509,11 @@ export function applyDecorations<Row>(
         const rec = ctx.recorded;
         const palette = (d.palette ?? rec?.palette ?? RANK_PALETTE).map((c) => hex6(c));
         let domain = d.domain ?? rec?.domain;
-        if (!domain && d.columns)
-          domain = domainOf(d.columns.map((k) => rows.map((r) => toNumber(cellValue(r, k)))));
+        if (!domain && d.columns && ctx.domainRows.length > 0)
+          domain = domainOf(d.columns.map((k) => ctx.domainRows.map((r) => toNumber(cellValue(r, k)))));
+        // J31 (A4): the domain comes from domainRows like the cell scales, so a paged or brushed legend holds still.
+        // No domain rows: a data-derived domain does not exist yet (an empty page, fontsLinkFor), so no legend; a spec with no source still throws
+        if (!domain && ctx.domainRows.length === 0 && (d.columns || ctx.columns.some(isScaled))) break;
         if (!domain)
           throw new TableSpecError(
             "legendContinuous: no recorded scale (color a column with colorPills/colorRanks/percentileBar first) and no domain or columns given",
@@ -586,7 +593,10 @@ export function applyDecorations<Row>(
         let flagged = false;
         for (const k of d.columns) {
           const xs = rows.map((r) => toNumber(cellValue(r, k)));
-          const nums = xs.filter((v): v is number => v !== null);
+          // A49: the limits come from the source rows, so a page or filter never flags a value the whole column does not
+          const nums = ctx.domainRows
+            .map((r) => toNumber(cellValue(r, k)))
+            .filter((v): v is number => v !== null);
           let lo = Number.NEGATIVE_INFINITY;
           let hi = Number.POSITIVE_INFINITY;
           if (d.method === "bounds") {
@@ -673,7 +683,8 @@ export function applyDecorations<Row>(
           const v = cellValue(r, d.tierKey);
           return isBlank(v) ? null : String(v);
         };
-        const held = [...new Set(rows.map(tierOf).filter((t): t is string => t !== null))];
+        // A49: the levels the SOURCE rows hold, so a page or filter without a level warns nothing
+        const held = [...new Set(ctx.domainRows.map(tierOf).filter((t): t is string => t !== null))];
         const missing = d.levels.filter((l) => !held.includes(l));
         if (missing.length > 0)
           ctx.warn(

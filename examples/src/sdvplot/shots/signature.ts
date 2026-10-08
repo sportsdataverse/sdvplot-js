@@ -21,7 +21,7 @@ figure.append(
     width: 640,
     x: { label: "Distance (ft)" },
     y: { domain: [0, 1], label: "FG%", tickFormat: "%" },
-    marks: shootingSignature(points),
+    marks: shootingSignature(points, { tip: true }),
   }),
   Plot.legend({ color: { ...diffScale().plot, label: "FG% vs league (points)", tickFormat: pts } }),
 );

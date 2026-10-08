@@ -1,0 +1,671 @@
+// @vitest-environment jsdom
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import { inflateSync } from "node:zlib";
+import * as Plot from "@observablehq/plot";
+import { afterEach, beforeAll, describe, expect, test, vi } from "vitest";
+import {
+  DownloadError,
+  InputError,
+  OptionalDependencyError,
+  resetWarnings,
+  setWarningHandler,
+} from "../src/errors.js";
+import {
+  canvasFor,
+  checkColor,
+  offsetFor,
+  parseAspect,
+  parseGravity,
+  socialCard,
+  svgSize,
+  toPNG,
+} from "../src/export/index.js";
+import { loadLeague } from "../src/index.js";
+import { logos } from "../src/plot/index.js";
+
+const png = (b: Uint8Array): { width: number; height: number } => {
+  const dv = new DataView(b.buffer, b.byteOffset, b.byteLength);
+  return { width: dv.getUint32(16), height: dv.getUint32(20) };
+};
+/** RGBA pixels of a resvg PNG (8-bit RGBA, non-interlaced): just enough PNG to look inside a logo's box. */
+const pixels = (b: Uint8Array) => {
+  const buf = Buffer.from(b);
+  const w = buf.readUInt32BE(16);
+  const h = buf.readUInt32BE(20);
+  expect([buf[24], buf[25], buf[28]]).toEqual([8, 6, 0]); // bit depth 8, RGBA, not interlaced
+  const idat: Buffer[] = [];
+  for (let o = 8; o < buf.length; o += 12 + buf.readUInt32BE(o))
+    if (buf.toString("latin1", o + 4, o + 8) === "IDAT")
+      idat.push(buf.subarray(o + 8, o + 8 + buf.readUInt32BE(o)));
+  const raw = inflateSync(Buffer.concat(idat));
+  const s = w * 4;
+  const px = Buffer.alloc(h * s);
+  for (let y = 0; y < h; y++) {
+    const f = raw[y * (s + 1)];
+    for (let i = 0; i < s; i++) {
+      const a = i >= 4 ? px[y * s + i - 4]! : 0;
+      const u = y > 0 ? px[(y - 1) * s + i]! : 0;
+      const c = y > 0 && i >= 4 ? px[(y - 1) * s + i - 4]! : 0;
+      const pa = Math.abs(u - c);
+      const pb = Math.abs(a - c);
+      const pc = Math.abs(a + u - 2 * c);
+      const paeth = pa <= pb && pa <= pc ? a : pb <= pc ? u : c;
+      const pred = f === 1 ? a : f === 2 ? u : f === 3 ? (a + u) >> 1 : f === 4 ? paeth : 0;
+      px[y * s + i] = (raw[y * (s + 1) + 1 + i]! + pred) & 255;
+    }
+  }
+  const at = (x: number, y: number): number[] => [...px.subarray((y * w + x) * 4, (y * w + x) * 4 + 4)];
+  return { w, h, at };
+};
+/** Share of pixels inside the inner 60% of `box` that are not plain white. */
+const inked = (b: Uint8Array, box: { x: number; y: number; width: number; height: number }): number => {
+  const { at } = pixels(b);
+  let n = 0;
+  let hit = 0;
+  for (let y = Math.ceil(box.y + 0.2 * box.height); y < box.y + 0.8 * box.height; y++)
+    for (let x = Math.ceil(box.x + 0.2 * box.width); x < box.x + 0.8 * box.width; x++) {
+      n++;
+      if (
+        at(x, y)
+          .slice(0, 3)
+          .some((v) => v < 245)
+      )
+        hit++;
+    }
+  return hit / n;
+};
+const fixture = (name: string): Uint8Array<ArrayBuffer> =>
+  // jsdom runs this file in vite web mode, where import.meta.url is a /@fs/ URL; __dirname stays a real path
+  new Uint8Array(readFileSync(join(__dirname, "../../../fixtures/sdvplot/logos", name)));
+const NYG = fixture("62e361850e7ba3a50dfd09cbb38429e994d1c23b0f999c74421f10e37c7067e7.png");
+const MTL = fixture("1ecd86fe8f7cdf0c3e19b040525786210e3aab8ffad67ef5b6c39b4b23516eaa.svg");
+/** A real Plot scatter of one team's logo, mid-frame (away from the axes), plus the drawn image's box. */
+const logoScatter = (league: "nfl" | "nhl", team: string) => {
+  const fig = Plot.plot({
+    width: 640,
+    height: 400,
+    x: { domain: [0, 2] },
+    y: { domain: [0, 2] },
+    marks: [logos([{ x: 1, y: 1, team }], { league, x: "x", y: "y", team: "team", height: 0.3 })],
+  });
+  const img = fig.querySelector("image") as Element;
+  const t = /translate\(([-\d.]+)[ ,]+([-\d.]+)\)/.exec(img.parentElement?.getAttribute("transform") ?? "");
+  const n = (k: string) => Number(img.getAttribute(k));
+  const box = {
+    x: n("x") + Number(t?.[1] ?? 0),
+    y: n("y") + Number(t?.[2] ?? 0),
+    width: n("width"),
+    height: n("height"),
+  };
+  return { fig, href: img.getAttribute("href") as string, box };
+};
+const serve = (body: Uint8Array<ArrayBuffer>, type: string) =>
+  vi.fn(async (_url: string) => new Response(body, { status: 200, headers: { "content-type": type } }));
+beforeAll(async () => {
+  await loadLeague("nfl");
+  await loadLeague("nhl");
+});
+afterEach(() => {
+  vi.unstubAllGlobals();
+  setWarningHandler(null);
+  resetWarnings();
+});
+const sized = `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300"><rect width="300" height="300" fill="red"/></svg>`;
+const vbOnly = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480"><circle cx="320" cy="240" r="100"/></svg>`;
+
+describe("pure helpers", () => {
+  test("parseAspect mirrors Python _ratio", () => {
+    expect(parseAspect("16:9")).toBeCloseTo(16 / 9);
+    expect(parseAspect("4x5")).toBe(0.8);
+    expect(parseAspect(1.91)).toBe(1.91);
+    expect(parseAspect("1.91")).toBe(1.91); // Python float("1.91"); R as.numeric("1.91")
+    for (const bad of ["abc", "1:0", "1:2:3", "", 0, -1, Number.NaN])
+      expect(() => parseAspect(bad as never)).toThrow(InputError);
+  });
+  test("parseAspect reads digit underscores as Python float() does (sdvplot .venv, _ratio)", () => {
+    const python: [string, number | null][] = [
+      ["1_0", 10],
+      ["1__0", null],
+      ["_10", null],
+      ["10_", null],
+      ["1_0.5", 10.5],
+      ["1.0_5", 1.05],
+      ["1e1_0", 1e10],
+      ["1_.5", null],
+      ["1._5", null],
+      ["16:9_0", 16 / 90],
+      ["1_6:9", 16 / 9],
+      ["1_6x9", 16 / 9],
+      ["_1:2", null],
+      ["1:2_", null],
+      [" 1_0 ", 10],
+      ["1_000", 1000],
+    ];
+    for (const [a, want] of python) {
+      if (want === null) expect(() => parseAspect(a), a).toThrow(InputError);
+      else expect(parseAspect(a), a).toBeCloseTo(want, 12);
+    }
+  });
+  test("canvasFor grows the short side", () => {
+    expect(canvasFor(420, 420, 16 / 9)).toEqual([747, 420]);
+    expect(canvasFor(420, 420, 0.8)).toEqual([420, 525]);
+    expect(canvasFor(1000, 500, 2)).toEqual([1000, 500]);
+    expect(canvasFor(5, 1, 2)).toEqual([5, 2]); // round(2.5) is 2 in Python and R (half to even), not 3
+  });
+  test("offsetFor follows gravity", () => {
+    expect(offsetFor(100, 50, "center")).toEqual([50, 25]);
+    expect(offsetFor(100, 50, "northwest")).toEqual([0, 0]);
+    expect(offsetFor(100, 50, "southeast")).toEqual([100, 50]);
+    expect(offsetFor(100, 50, "north")).toEqual([50, 0]);
+    expect(parseGravity("NorthWest")).toBe("northwest"); // Python _check_gravity lower-cases
+    expect(() => parseGravity("centre")).toThrow(InputError);
+  });
+  test("svgSize: width/height attrs, else viewBox (Review Focus 4)", () => {
+    expect(svgSize(sized)).toEqual({ width: 300, height: 300, viewBox: "0 0 300 300" });
+    expect(svgSize(vbOnly)).toEqual({ width: 640, height: 480, viewBox: "0 0 640 480" });
+    expect(() => svgSize("<div/>")).toThrow(InputError);
+    expect(() => svgSize("<svg></svg>")).toThrow(InputError);
+  });
+  test("svgSize: percent (or other relative) sizes fall back to the viewBox", () => {
+    const pct = `<svg width="100%" height="100%" viewBox="0 0 800 400"></svg>`;
+    expect(svgSize(pct)).toEqual({ width: 800, height: 400, viewBox: "0 0 800 400" });
+    expect(svgSize(`<svg width="50%" height="2em" viewBox="0 0 640 480"></svg>`)).toMatchObject({
+      width: 640,
+      height: 480,
+    });
+    expect(svgSize(`<svg width="300px" height="200" viewBox="0 0 640 480"></svg>`)).toMatchObject({
+      width: 300,
+      height: 200,
+    });
+    expect(() => svgSize(`<svg width="100%" height="100%"></svg>`)).toThrow(InputError);
+  });
+  test("checkColor: modern rgb()/hsl() with a slash alpha; still no quote, bracket, semicolon or equals", () => {
+    for (const ok of ["rgb(0 0 0 / 50%)", "hsl(210 40% 20% / 0.5)", "#0C0D10", "white", "rgba(1, 2, 3, 0.5)"])
+      expect(checkColor("c", ok)).toBe(ok);
+    for (const bad of ['red"', "red'", "<b>", "a>b", "red;x", "a=b", "red\nx"])
+      expect(() => checkColor("c", bad), bad).toThrow(InputError);
+  });
+});
+
+describe("socialCard", () => {
+  test("1:1 with default padding 60 frames a 300x300 figure on a 420x420 canvas, centered", () => {
+    const out = socialCard(sized);
+    expect(out).toContain(
+      `<svg xmlns="http://www.w3.org/2000/svg" width="420" height="420" viewBox="0 0 420 420">`,
+    );
+    expect(out).toContain(`<rect width="420" height="420" fill="white"/>`);
+    expect(out).toContain(`<svg x="60" y="60" width="300" height="300" viewBox="0 0 300 300"`);
+    expect(out).not.toContain("NaN");
+    expect(socialCard(sized, { padding: 60.9 })).toContain(`width="420" height="420"`); // Python _pixels: int()
+  });
+  test("16:9 widens, 4:5 heightens, gravity northwest pins the padded box", () => {
+    expect(socialCard(sized, { aspect: "16:9" })).toContain(`width="747" height="420"`);
+    expect(socialCard(sized, { aspect: "4:5", background: "#0C0D10" })).toContain(
+      `width="420" height="525" viewBox="0 0 420 525"><rect width="420" height="525" fill="#0C0D10"/>`,
+    );
+    expect(socialCard(sized, { aspect: "16:9", gravity: "northwest" })).toContain(`<svg x="60" y="60"`);
+    expect(socialCard(sized, { aspect: "16:9", gravity: "center" })).toContain(`<svg x="223" y="60"`);
+  });
+  test("viewBox-only input gets explicit size and keeps its content", () => {
+    const out = socialCard(vbOnly, { padding: 0 });
+    expect(out).toContain(`<svg x="0" y="80" width="640" height="480" viewBox="0 0 640 480"`); // 1:1 canvas 640x640, centered
+    expect(out).toContain(`<circle cx="320"`);
+    expect(() => socialCard(sized, { padding: -1 })).toThrow(InputError);
+    expect(() => socialCard(sized, { background: '"/><script>' })).toThrow(InputError);
+    expect(() => socialCard(sized, { gravity: "centre" as never })).toThrow(InputError);
+  });
+  test("root attributes holding $&, $' or $` are copied literally, not as replacement patterns", () => {
+    const tricky = `<svg xmlns="http://www.w3.org/2000/svg" data-t="a$&b" data-u="c$'d" data-v="e$\`f" width="10" height="10"><rect width="10" height="10"/></svg>`;
+    const out = socialCard(tricky, { padding: 0 });
+    expect(out).toContain(`data-t="a$&b" data-u="c$'d" data-v="e$\`f"`);
+    expect(out.match(/<svg/g)).toHaveLength(2);
+    expect(out.endsWith('<rect width="10" height="10"/></svg></svg>')).toBe(true);
+  });
+  test("the card root carries a color that contrasts with a hex background (Plot axes use currentColor)", () => {
+    expect(socialCard(sized, { background: "#0C0D10" })).toMatch(/^<svg [^>]*color="#ffffff"/);
+    expect(socialCard(sized, { background: "#f5f5f5" })).toMatch(/^<svg [^>]*color="#000000"/);
+    expect(socialCard(sized, { background: "#0C0D10", color: "red" })).toMatch(/^<svg [^>]*color="red"/);
+    expect(() => socialCard(sized, { color: '"/><x' })).toThrow(InputError);
+  });
+});
+
+describe("toPNG", () => {
+  test("renders via resvg at width × scale", async () => {
+    const out = await toPNG(sized, { width: 100, scale: 2 });
+    expect(Array.from(out.slice(0, 4))).toEqual([0x89, 0x50, 0x4e, 0x47]);
+    expect(png(out)).toEqual({ width: 200, height: 200 });
+    expect(png(await toPNG(socialCard(sized, { aspect: "16:9" }))).width).toBe(747);
+  });
+  test("a real Plot figure (HTML-serialized, no xmlns) renders, as the element and as its outerHTML", async () => {
+    const fig = Plot.plot({
+      width: 640,
+      height: 400,
+      marks: [
+        Plot.dot(
+          [
+            { x: 1, y: 2 },
+            { x: 3, y: 1 },
+          ],
+          { x: "x", y: "y" },
+        ),
+        Plot.frame(),
+      ],
+    });
+    expect(fig.outerHTML).toMatch(/^<svg (?![^>]*xmlns=)[^>]*>/); // the bug's precondition: Plot's root has no xmlns
+    for (const input of [fig, fig.outerHTML]) {
+      const out = await toPNG(input);
+      expect(Array.from(out.slice(0, 4))).toEqual([0x89, 0x50, 0x4e, 0x47]);
+      expect(png(out)).toEqual({ width: 640, height: 400 });
+    }
+  });
+  test("an undeclared xlink: prefix gets its namespace", async () => {
+    const href = `data:image/png;base64,${Buffer.from(NYG).toString("base64")}`;
+    const svg = `<svg width="100" height="100"><image xlink:href="${href}" width="100" height="100"/></svg>`;
+    const out = await toPNG(svg, { background: "white" });
+    expect(inked(out, { x: 0, y: 0, width: 100, height: 100 })).toBeGreaterThan(0.1);
+  });
+  test("currentColor follows a contrasting root color: on a dark background the Plot axes are light", async () => {
+    const fig = Plot.plot({
+      width: 320,
+      height: 200,
+      marks: [Plot.dot([{ x: 1, y: 2 }], { x: "x", y: "y" })],
+    });
+    const light = (b: Uint8Array) => {
+      const { w, h, at } = pixels(b);
+      let n = 0;
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (at(x, y)[0]! > 160) n++;
+      return n;
+    };
+    expect(light(await toPNG(fig, { background: "#0C0D10" }))).toBeGreaterThan(100);
+    const swatch = (o: object) =>
+      toPNG(`<svg width="4" height="4"><rect width="4" height="4" fill="currentColor"/></svg>`, o);
+    expect(pixels(await swatch({ background: "navy" })).at(1, 1)).toEqual([255, 255, 255, 255]); // a named dark color
+    expect(pixels(await swatch({ background: "#f5f5f5" })).at(1, 1)).toEqual([0, 0, 0, 255]);
+    expect(pixels(await swatch({ background: "navy", color: "rgb(255 0 0)" })).at(1, 1)).toEqual([
+      255, 0, 0, 255,
+    ]);
+    const own = `<svg width="4" height="4" color="lime"><rect width="4" height="4" fill="currentColor"/></svg>`;
+    expect(pixels(await toPNG(own, { background: "navy" })).at(1, 1)).toEqual([0, 255, 0, 255]); // the figure's own color stays
+    await expect(toPNG(own, { color: "red;x" })).rejects.toThrow(InputError);
+  });
+});
+
+describe("toPNG remote images", () => {
+  test("a logos scatter's remote PNG is fetched and drawn inside the logo's box", async () => {
+    const { fig, href, box } = logoScatter("nfl", "NYG");
+    expect(href).toBe(
+      "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/62/62e361850e7ba3a50dfd09cbb38429e994d1c23b0f999c74421f10e37c7067e7.png",
+    );
+    const fetch = serve(NYG, "image/png");
+    vi.stubGlobal("fetch", fetch);
+    const out = await toPNG(fig, { background: "white" });
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(fetch.mock.calls[0]![0]).toBe(href);
+    expect(inked(out, box)).toBeGreaterThan(0.1);
+    // outside the logo: background. Right of the logo, in its row: the top-left corner holds Plot's inferred "↑ y" label
+    const beside = pixels(out).at(Math.round(box.x + box.width + 40), Math.round(box.y + box.height / 2));
+    expect(beside).toEqual([255, 255, 255, 255]);
+  });
+  test("an SVG logo (MTL, nhl) is inlined too; a repeated href is fetched once", async () => {
+    const { fig, box } = logoScatter("nhl", "MTL");
+    const twice = Plot.plot({
+      width: 640,
+      height: 400,
+      x: { domain: [0, 2] },
+      y: { domain: [0, 2] },
+      marks: [
+        logos(
+          [
+            { x: 1, y: 1, team: "MTL" },
+            { x: 1.8, y: 1.8, team: "MTL" },
+          ],
+          { league: "nhl", x: "x", y: "y", team: "team", height: 0.3 },
+        ),
+      ],
+    });
+    const fetch = serve(MTL, "image/svg+xml");
+    vi.stubGlobal("fetch", fetch);
+    expect(inked(await toPNG(fig, { background: "white" }), box)).toBeGreaterThan(0.1);
+    fetch.mockClear();
+    expect(inked(await toPNG(twice, { background: "white" }), box)).toBeGreaterThan(0.1);
+    expect(fetch).toHaveBeenCalledTimes(1);
+  });
+  test("a 404 or a network failure throws DownloadError naming the url", async () => {
+    const { fig, href } = logoScatter("nfl", "NYG");
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response("gone", { status: 404 })),
+    );
+    await expect(toPNG(fig)).rejects.toSatisfy(
+      (e: unknown) => e instanceof DownloadError && e.url === href && e.status === 404,
+    );
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => {
+        throw new TypeError("fetch failed");
+      }),
+    );
+    await expect(toPNG(fig)).rejects.toSatisfy(
+      (e: unknown) => e instanceof DownloadError && e.url === href && e.status === undefined,
+    );
+  });
+  test('images: "skip" draws no logo, fetches nothing and warns once listing the hrefs', async () => {
+    const { fig, href, box } = logoScatter("nfl", "NYG");
+    const fetch = vi.fn();
+    vi.stubGlobal("fetch", fetch);
+    const warned: string[] = [];
+    resetWarnings();
+    setWarningHandler((m) => warned.push(m));
+    const out = await toPNG(fig, { background: "white", images: "skip" });
+    await toPNG(fig, { background: "white", images: "skip" });
+    expect(fetch).not.toHaveBeenCalled();
+    expect(inked(out, box)).toBe(0);
+    expect(warned).toHaveLength(1);
+    expect(warned[0]).toContain(href);
+    await expect(toPNG(fig, { images: "inline" as never })).rejects.toThrow(InputError);
+  });
+  test("50 unique hrefs: at most 8 downloads in flight, every image drawn from its own body", async () => {
+    const { Resvg } = await import("@resvg/resvg-js");
+    const colour = (i: number): number[] => [i * 5, 100, 255 - i * 5];
+    const solid = (i: number) =>
+      new Uint8Array(
+        new Resvg(
+          `<svg xmlns="http://www.w3.org/2000/svg" width="4" height="4"><rect width="4" height="4" fill="rgb(${colour(i).join(",")})"/></svg>`,
+          { font: { loadSystemFonts: false } }, // no text; skipping the system-font scan keeps 50 renders fast
+        )
+          .render()
+          .asPng(),
+      );
+    const href = (i: number) => `https://example.test/img/${i}.png`;
+    const images = Array.from(
+      { length: 50 },
+      (_, i) =>
+        `<image href="${href(i)}" x="${(i % 10) * 40}" y="${Math.floor(i / 10) * 40}" width="40" height="40"/>`,
+    ).join("");
+    let inFlight = 0;
+    let peak = 0;
+    const fetch = vi.fn(async (url: string) => {
+      inFlight++;
+      peak = Math.max(peak, inFlight);
+      const i = Number(/(\d+)\.png$/.exec(url)?.[1]);
+      await new Promise((r) => setTimeout(r, (i * 7) % 11)); // uneven delays: completions arrive out of order
+      inFlight--;
+      return new Response(solid(i), { status: 200, headers: { "content-type": "image/png" } });
+    });
+    vi.stubGlobal("fetch", fetch);
+    const out = await toPNG(
+      `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200">${images}</svg>`,
+      { background: "white" },
+    );
+    expect(peak).toBe(8);
+    expect(fetch).toHaveBeenCalledTimes(50);
+    expect(new Set(fetch.mock.calls.map((c) => c[0]))).toEqual(
+      new Set(Array.from({ length: 50 }, (_, i) => href(i))),
+    );
+    const { at } = pixels(out);
+    for (let i = 0; i < 50; i++)
+      expect(at((i % 10) * 40 + 20, Math.floor(i / 10) * 40 + 20)).toEqual([...colour(i), 255]);
+  });
+  test("a failed download: the first error wins, no new download starts, no unhandled rejection", async () => {
+    const href = (i: number) => `https://example.test/img/${i}.png`;
+    const images = Array.from(
+      { length: 20 },
+      (_, i) => `<image href="${href(i)}" width="4" height="4"/>`,
+    ).join("");
+    const unhandled: unknown[] = [];
+    const onUnhandled = (e: unknown) => unhandled.push(e);
+    process.on("unhandledRejection", onUnhandled);
+    try {
+      const fetch = vi.fn(async (url: string) => {
+        const i = Number(/(\d+)\.png$/.exec(url)?.[1]);
+        // href 1 fails first, href 3 fails later while the rest of the first eight are still downloading
+        await new Promise((r) => setTimeout(r, i === 1 ? 1 : i === 3 ? 10 : 30));
+        if (i === 1 || i === 3) return new Response("gone", { status: 404 });
+        return new Response(NYG.slice(), { status: 200, headers: { "content-type": "image/png" } });
+      });
+      vi.stubGlobal("fetch", fetch);
+      await expect(
+        toPNG(`<svg xmlns="http://www.w3.org/2000/svg" width="80" height="4">${images}</svg>`),
+      ).rejects.toSatisfy((e: unknown) => e instanceof DownloadError && e.url === href(1));
+      await new Promise((r) => setTimeout(r, 60)); // let the in-flight downloads (and href 3's failure) settle
+      expect(fetch).toHaveBeenCalledTimes(8);
+      expect(unhandled).toEqual([]);
+    } finally {
+      process.off("unhandledRejection", onUnhandled);
+    }
+  });
+  test("an href written with a numeric entity (not inlined by the attribute match) is still drawn", async () => {
+    const fetch = serve(NYG, "image/png");
+    vi.stubGlobal("fetch", fetch);
+    const out = await toPNG(
+      `<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><image href="https://example.test/a&#38;b.png" width="80" height="80"/></svg>`,
+      { background: "white" },
+    );
+    expect(fetch.mock.calls[0]![0]).toBe("https://example.test/a&b.png");
+    expect(inked(out, { x: 0, y: 0, width: 80, height: 80 })).toBeGreaterThan(0.1);
+  });
+  test("32 unique real logos render with one resvg pass in under 2 s, every logo drawn", async () => {
+    const href = (i: number) => `https://example.test/logo/${i}.${i % 2 === 1 ? "svg" : "png"}`;
+    const box = (i: number) => ({ x: (i % 8) * 80, y: Math.floor(i / 8) * 80, width: 80, height: 80 });
+    const images = Array.from({ length: 32 }, (_, i) => {
+      const b = box(i);
+      return `<image href="${href(i)}" x="${b.x}" y="${b.y}" width="${b.width}" height="${b.height}"/>`;
+    }).join("");
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(
+        async (url: string) =>
+          new Response(url.endsWith(".svg") ? MTL.slice() : NYG.slice(), {
+            status: 200,
+            headers: { "content-type": url.endsWith(".svg") ? "image/svg+xml" : "image/png" },
+          }),
+      ),
+    );
+    const t0 = performance.now();
+    const out = await toPNG(
+      `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="320">${images}</svg>`,
+      {
+        background: "white",
+      },
+    );
+    const ms = performance.now() - t0;
+    console.log(`toPNG, 32 unique real logos: ${ms.toFixed(0)} ms`);
+    for (let i = 0; i < 32; i++) expect(inked(out, box(i))).toBeGreaterThan(0.1);
+    expect(ms).toBeLessThan(2000);
+  });
+  describe("an href used many times is decoded once, at the size it is drawn", () => {
+    // resvg decodes an <image> per element at its intrinsic size: 2000 uses of the 500 px NYG logo held 2 GB for 6 s
+    const serveLogos = () =>
+      vi.stubGlobal(
+        "fetch",
+        vi.fn(
+          async (url: string) =>
+            new Response(/\.svg(\?|$)/.test(url) ? MTL.slice() : NYG.slice(), { status: 200 }),
+        ),
+      );
+    const box = (i: number) => ({ x: (i % 50) * 20, y: Math.floor(i / 50) * 20, width: 20, height: 20 });
+    const grid = (n: number, href: (i: number) => string): string =>
+      `<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="${Math.ceil(n / 50) * 20}">${Array.from(
+        { length: n },
+        (_, i) => {
+          const b = box(i);
+          return `<image href="${href(i)}" x="${b.x}" y="${b.y}" width="${b.width}" height="${b.height}"/>`;
+        },
+      ).join("")}</svg>`;
+    test("2000 uses of one logo and 300 uses of four render fast, every use drawn", async () => {
+      serveLogos();
+      let t0 = performance.now();
+      const one = await toPNG(
+        grid(2000, () => "https://example.test/logo/nyg.png"),
+        { background: "white" },
+      );
+      const msOne = performance.now() - t0;
+      t0 = performance.now();
+      const four = await toPNG(
+        grid(300, (i) => `https://example.test/logo/${i % 4}.${i % 2 === 1 ? "svg" : "png"}`),
+        { background: "white" },
+      );
+      const msFour = performance.now() - t0;
+      console.log(
+        `toPNG, 2000 uses of 1 href: ${msOne.toFixed(0)} ms; 300 uses of 4: ${msFour.toFixed(0)} ms`,
+      );
+      for (const i of [0, 51, 777, 1999]) expect(inked(one, box(i))).toBeGreaterThan(0.1);
+      for (const i of [0, 1, 2, 3, 150, 299]) expect(inked(four, box(i))).toBeGreaterThan(0.1);
+      expect(msOne).toBeLessThan(1500);
+      expect(msFour).toBeLessThan(1000);
+    });
+    test("drawn as the full-size image would be: boxes of any shape, `preserveAspectRatio`, a scale", async () => {
+      serveLogos();
+      const shapes = [
+        `width="20" height="20"`,
+        `width="40" height="20"`,
+        `width="20" height="40"`,
+        `width="40" height="20" preserveAspectRatio="none"`,
+        `width="30" height="30" preserveAspectRatio="xMinYMin slice"`,
+      ];
+      // one href per logo (the shared path) against a distinct query per use (each drawn from the full image)
+      const fig = (href: (logo: string, i: number) => string): string =>
+        `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="100">${Array.from(
+          { length: 20 },
+          (_, i) =>
+            `<image href="${href(i % 2 ? "mtl.svg" : "nyg.png", i)}" x="${(i % 10) * 40}" y="${Math.floor(i / 10) * 50}" ${shapes[i % shapes.length]}/>`,
+        ).join("")}</svg>`;
+      for (const scale of [1, 2.5]) {
+        const shared = pixels(
+          await toPNG(
+            fig((logo) => `https://example.test/${logo}`),
+            { background: "white", scale },
+          ),
+        );
+        const full = pixels(
+          await toPNG(
+            fig((logo, i) => `https://example.test/${logo}?use=${i}`),
+            { background: "white", scale },
+          ),
+        );
+        // each logo's ink box (pixels darker than near-white) within its 40 x 50 cell: the same to a pixel
+        const ink = (p: typeof shared, i: number): number[] => {
+          let [x0, y0, x1, y1] = [Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY, -1, -1];
+          const [cx, cy] = [Math.round((i % 10) * 40 * scale), Math.round(Math.floor(i / 10) * 50 * scale)];
+          for (let y = cy; y < Math.min(cy + 50 * scale, p.h); y++)
+            for (let x = cx; x < Math.min(cx + 40 * scale, p.w); x++)
+              if (
+                p
+                  .at(x, y)
+                  .slice(0, 3)
+                  .some((v) => v < 250)
+              )
+                [x0, y0, x1, y1] = [Math.min(x0, x), Math.min(y0, y), Math.max(x1, x), Math.max(y1, y)];
+          return [x0, y0, x1, y1];
+        };
+        for (let i = 0; i < 20; i++) {
+          const [a, b] = [ink(shared, i), ink(full, i)];
+          for (let k = 0; k < 4; k++)
+            expect(Math.abs((a[k] as number) - (b[k] as number))).toBeLessThanOrEqual(1);
+        }
+        // and the pixels differ only by resampling (two steps instead of one): ~1.4 of 255 on average
+        let sum = 0;
+        for (let y = 0; y < shared.h; y++)
+          for (let x = 0; x < shared.w; x++) {
+            const [a, b] = [shared.at(x, y), full.at(x, y)];
+            for (let k = 0; k < 3; k++) sum += Math.abs((a[k] as number) - (b[k] as number));
+          }
+        expect(sum / (shared.w * shared.h * 3)).toBeLessThan(3);
+      }
+    });
+    test("the one raster is OVERSAMPLE (2) × the href's largest drawn box, in output pixels, rounded up", async () => {
+      // the 1-px ink test above cannot see the oversampling (a 1× raster draws the same ink box), so read the PNG
+      // each use inlines from the SVG handed to the final Resvg
+      serveLogos();
+      const seen: string[] = [];
+      vi.doMock("@resvg/resvg-js", async (importOriginal) => {
+        const m = await importOriginal<typeof import("@resvg/resvg-js")>();
+        const Resvg = new Proxy(m.Resvg, {
+          construct: (target, args: ConstructorParameters<typeof m.Resvg>) => {
+            seen.push(String(args[0]));
+            return Reflect.construct(target, args);
+          },
+        });
+        return { ...m, Resvg };
+      });
+      vi.resetModules();
+      const { toPNG: spied } = await import("../src/export/index.js"); // it imports resvg at call time
+      // NYG is 500 × 500, its largest use 45 user units; MTL's viewBox is 960 × 640, its largest use 40
+      const fig = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="100">${[
+        `href="https://example.test/nyg.png" width="30" height="20"`,
+        `href="https://example.test/nyg.png" x="100" width="20" height="45"`,
+        `href="https://example.test/mtl.svg" x="200" width="40" height="10"`,
+        `href="https://example.test/mtl.svg" x="300" width="10" height="10"`,
+      ]
+        .map((a) => `<image ${a}/>`)
+        .join("")}</svg>`;
+      const inlined = async (o: { scale?: number; width?: number }) => {
+        seen.length = 0;
+        await spied(fig, { background: "white", ...o });
+        return Array.from(
+          (seen.at(-1) ?? "").matchAll(/<image\b[^>]*\bhref="data:image\/png;base64,([^"]+)"/g),
+          (m) => png(Buffer.from(m[1] as string, "base64")),
+        );
+      };
+      // zoom = output px per user unit: `scale`, or `width` over the figure's 400
+      for (const [o, zoom] of [
+        [{ scale: 1 }, 1],
+        [{ scale: 2.5 }, 2.5],
+        [{ width: 290 }, 290 / 400], // 2 × 0.725 × 45 = 65.25 → 66: up, not to nearest
+      ] as const) {
+        const nyg = Math.ceil(2 * zoom * 45);
+        const mtl = Math.ceil(2 * zoom * 40);
+        expect(await inlined(o)).toEqual([
+          { width: nyg, height: nyg },
+          { width: nyg, height: nyg },
+          { width: mtl, height: Math.round((640 * mtl) / 960) },
+          { width: mtl, height: Math.round((640 * mtl) / 960) },
+        ]);
+      }
+      vi.doUnmock("@resvg/resvg-js");
+    });
+  });
+});
+
+describe("toPNG optional peer", () => {
+  // vitest wraps a throwing mock factory's error (the original becomes `cause`), as other loaders may
+  const failWith = async (boom: Error): Promise<Error & { cause?: unknown }> => {
+    vi.doMock("@resvg/resvg-js", () => {
+      throw boom;
+    });
+    vi.resetModules();
+    const { toPNG: fresh } = await import("../src/export/index.js");
+    const err = await fresh(sized).catch((e: Error) => e);
+    vi.doUnmock("@resvg/resvg-js");
+    return err as Error & { cause?: unknown };
+  };
+  const chain = (e: unknown): unknown[] => (e instanceof Error ? [e, ...chain(e.cause)] : []);
+  test("missing peer → OptionalDependencyError naming the install command", async () => {
+    const boom = Object.assign(
+      new Error("Cannot find package '@resvg/resvg-js' imported from /x/export.js"),
+      {
+        code: "ERR_MODULE_NOT_FOUND",
+      },
+    );
+    const err = await failWith(boom);
+    // resetModules re-evaluates errors.ts too, so match the class by name, not by the top-level import's identity
+    expect(err.name).toBe(OptionalDependencyError.name);
+    expect(err.message).toMatch(/not installed.*pnpm add @resvg\/resvg-js/);
+    expect(chain(err.cause)).toContain(boom);
+  });
+  test("an installed peer that fails to load (native binding) keeps its error as the cause", async () => {
+    for (const boom of [
+      new Error("Failed to load native binding"),
+      Object.assign(new Error("Cannot find module '@resvg/resvg-js-linux-x64-musl'"), {
+        code: "MODULE_NOT_FOUND",
+      }),
+    ]) {
+      const err = await failWith(boom);
+      expect(err.name).toBe(OptionalDependencyError.name);
+      expect(err.message).not.toMatch(/not installed/);
+      expect(err.message).toMatch(/failed to load/);
+      expect(chain(err.cause)).toContain(boom);
+    }
+  });
+});

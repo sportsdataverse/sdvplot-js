@@ -45,6 +45,9 @@ Written by `uv run tools/sample-data/nfl_2024.py` from nflverse-data release ass
   faced, from `pbp/play_by_play_2024.parquet` (regular season, `pass == 1 | rush == 1`, `epa` not null; sums rounded to
   6 decimals).
 
+`examples/src/data.ts` `NFL_TEAM_EPA_2024` is every row of `nfl_epa_2024_reg.csv`, and `KC_PHI_GAMES_2024` the 34 rows
+of `nfl_games_2024_reg.csv` with KC or PHI as the home or away team (id, week, teams and scores).
+
 ## Captures from sportsdataverse-py
 
 Written by `uv run tools/sample-data/sdv_py_captures.py` from fixtures committed in sportsdataverse-py
@@ -78,3 +81,26 @@ columns renamed, and `examples/test/sample-data.test.ts` checks the two are equa
   at PWHL Montreal, 2024-03-02 (Montreal won 3-1, per sportsdataverse-py's `hockeytech/pwhl_game_summary_42.json`).
   From `hockeytech/pwhl_pbp_42.json` (173 events). Trimmed: the 70 events whose `event` is `shot` or `goal`; the data
   module takes the 4 goals, and the test reads every event's `xLocation`/`yLocation` to pin the canvas size.
+
+## 2018 World Cup final passes (StatsBomb open data)
+
+`spadl_8658_france_h1_passes.csv` (`WC2018_FINAL_FRANCE_PASSES`): France's completed first-half passes in the 2018
+World Cup final (StatsBomb open-data match 8658, France 4-2 Croatia), trimmed by `tools/sample-data/sdv_py_captures.py`
+from sportsdataverse-py's `tests/fixtures/socceraction/8658_spadl.csv` (socceraction 1.5.3's direct StatsBomb
+converter, every action attacking left to right on a 105 x 68 m pitch; frozen 2026-10-07, sha256
+`aba3c8cbb4770631997828d9006ec5f68bac3525363521583d1a0c6228bbdd58`, last changed in sportsdataverse-py 35776ac; read at
+29d2006, 2026-10-08). Kept: `team_id` 771, `period_id` 1, `type_name` pass, `result_name` success (75 rows, each
+unchanged, with the header). StatsBomb's terms (<https://github.com/statsbomb/open-data>, README "Terms & Conditions" and
+`LICENSE.pdf` clause 1.4, read 2026-10-08) ask that published work state StatsBomb as the source and show the
+StatsBomb logo. The example that draws it (`sporty/plot/pass-map`) names StatsBomb in its caption, and its `statsbomb`
+tag makes the docs' `<Live>` show the logo, linked to <https://statsbomb.com>, with "Data: StatsBomb open data".
+
+`docs/static/img/statsbomb-logo.png`: StatsBomb's logo, from the open-data repository's
+`img/SB - Icon Lockup - Colour positive.png` (<https://github.com/statsbomb/open-data/tree/master/img>, last changed in
+3bfc16d, 2022-03-03; fetched 2026-10-08; 5885 x 943 PNG, 120,793 bytes, sha256
+`8ba5480785f0dc4be2342ec47c70509483eb79287f85f92be1dfba36fc2872a7`). That directory holds only this PNG, no SVG. The
+docs draw it at 100 x 16, so the committed copy is that file resized to twice that, 200 x 32 (the source's aspect,
+rounded to whole pixels), with Pillow 12.3's Lanczos filter (`reducing_gap=3.0`), then saved as an optimised RGBA PNG
+(`optimize=True`, `compress_level=9`; its 1,112 colours rule out a lossless palette): 9,986 bytes, sha256
+`23f55187241a7bf12f7c9711f449973379b2056e94ebbeb5bf79bbda723d81fe`. The artwork is unchanged. Used only as that
+credit, as the terms ask.

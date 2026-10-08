@@ -39,12 +39,12 @@ charts.style.cssText = "display: flex; flex-wrap: wrap; gap: 16px";
 charts.append(
   panel(
     "main: 1.5 ft hexagons against the league in the same hexagon",
-    shotCells(main, { r: mainSizes.r, frame }),
+    shotCells(main, { r: mainSizes.r, frame, tip: true }),
     diffScale(),
   ),
   panel(
     "master: 1 ft hexagons against the league at the same distance",
-    shotCells(master, { r: masterSizes.r, prior: 0, scale: masterScale, frame }),
+    shotCells(master, { r: masterSizes.r, prior: 0, scale: masterScale, frame, tip: true }),
     masterScale,
   ),
 );

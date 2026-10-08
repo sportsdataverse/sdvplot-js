@@ -1,7 +1,9 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
+import { STANDINGS } from "../../sdvtables/test/fixtures/standings.js";
 import { InputError, UnsupportedTargetError } from "../src/errors.js";
 import { resetWarnings, resolveSync, setWarningHandler } from "../src/index.js";
 import {
+  type PlotlyAxis,
   type PlotlyFigure,
   drawnAxisMarks,
   drawnMarks,
@@ -291,11 +293,7 @@ describe("withAxisLogos", () => {
       xanchor: "center",
       sizex: 6,
     });
-    expect(out.layout!.xaxis).toMatchObject({
-      tickmode: "array",
-      tickvals: ["KC", "XXX", "BUF"],
-      ticktext: ["", "XXX", ""],
-    });
+    expect(out.layout!.xaxis).toMatchObject({ tickmode: "array", tickvals: ["XXX"], ticktext: ["XXX"] });
   });
 
   test("y axis: images left of the plot, range pinned to the category bands, sizey = h × span", () => {
@@ -329,7 +327,11 @@ describe("withAxisLogos", () => {
     const out = withAxisLogos(fig, "x", { league: "nfl", xref: "x2", yref: "y2" });
     expect(out.layout!.images![0]).toMatchObject({ xref: "x2", yref: "y2 domain", y: 0, sizey: 0.1 });
     expect(out.layout!.margin).toBeUndefined(); // 0.1 of 0.7 hangs above the paper's bottom: nothing to make room for
-    expect(out.layout!.xaxis2).toMatchObject({ tickmode: "array", ticktext: ["", ""] });
+    expect(out.layout!.xaxis2).toMatchObject({
+      tickmode: "array",
+      ticktext: ["KC", "BUF"],
+      showticklabels: false,
+    });
     expect(() => withAxisLogos(fig, "x", { league: "nfl" })).toThrow(/x axis \(x\)/);
   });
 
@@ -360,7 +362,12 @@ describe("withAxisLogos", () => {
     const out = withAxisLogos(fig, "y", { league: "nfl", xref: "x2", yref: "y2" });
     expect(out.layout!.images).toHaveLength(2);
     expect(out.layout!.images![0]).toMatchObject({ xref: "paper", x: 0.3, yref: "y2", xanchor: "right" });
-    expect(out.layout!.yaxis2).toMatchObject({ tickmode: "array", ticktext: ["", ""], range: [-0.5, 1.5] });
+    expect(out.layout!.yaxis2).toMatchObject({
+      tickmode: "array",
+      ticktext: ["KC", "BUF"],
+      showticklabels: false,
+      range: [-0.5, 1.5],
+    });
     expect(drawnAxisMarks(out, "y")).toEqual([
       [ID(KC), 0, 0.1],
       [ID(BUF), 1, 0.1],
@@ -376,6 +383,70 @@ describe("withAxisLogos", () => {
     expect(() => withAxisLogos(bars(["KC"]), "z" as "x", { league: "nfl" })).toThrow(InputError);
     const out = withAxisLogos(bars(["KC"]), "x", { league: "nfl", markType: "wordmark" });
     expect(out.layout!.images![0]!.name).toBe(`sdvplot:axis:x:${ID(KC)}`);
+  });
+
+  // plotly.js (4.1.2, Axes.tickText) builds a category's hover label the way it builds its tick label: an array-mode tick
+  // reads its ticktext entry, so a blank entry blanks the hover too ("(, 15)"). Any other category's hover is its name,
+  // and it has no tick label when the tick values are an array that leaves it out. [hover, tick label drawn ("" = none)]
+  const plotlyShows = (ax: PlotlyAxis, c: string): [string, string] => {
+    const i = ax.tickmode === "array" ? (ax.tickvals ?? []).indexOf(c) : -1;
+    const text = i >= 0 && i < (ax.ticktext ?? []).length ? ax.ticktext![i]! : c;
+    return [text, (ax.tickmode !== "array" || i >= 0) && ax.showticklabels !== false ? text : ""];
+  };
+  // the docs' chart: 2024 AFC wins, best first
+  const teams = [...STANDINGS].sort((a, b) => b.wins - a.wins).map((s) => s.team);
+  const wins = (t: string) => STANDINGS.find((s) => s.team === t)?.wins ?? 0;
+
+  test("x axis: hover names every team (2024 AFC wins) while the tick labels stay blank; every tick is kept", () => {
+    const fig: PlotlyFigure = {
+      data: [{ type: "bar", x: teams, y: teams.map(wins) }],
+      layout: { width: 560, height: 360 },
+    };
+    const out = withAxisLogos(fig, "x", { league: "nfl", height: 0.1 });
+    expect(drawnAxisMarks(out, "x").map((m) => m[0])).toEqual(teams.map(ID));
+    expect(teams.map((t) => plotlyShows(out.layout!.xaxis!, t))).toEqual(teams.map((t) => [t, ""]));
+    expect(out.layout!.xaxis!.tickvals).toEqual(teams); // a tick (grid line, tick mark) per category, as before
+    expect(visibleAxisLabels(out, "x")).toEqual([]);
+  });
+
+  test("y axis: hover names every team (2024 AFC wins) while the tick labels stay blank", () => {
+    const fig: PlotlyFigure = {
+      data: [{ type: "bar", orientation: "h", y: teams, x: teams.map(wins) }],
+      layout: { width: 560, height: 360 },
+    };
+    const out = withAxisLogos(fig, "y", { league: "nfl", height: 0.1 });
+    expect(drawnAxisMarks(out, "y")).toHaveLength(teams.length);
+    expect(teams.map((t) => plotlyShows(out.layout!.yaxis!, t))).toEqual(teams.map((t) => [t, ""]));
+    expect(visibleAxisLabels(out, "y")).toEqual([]);
+  });
+
+  test("an unknown category keeps its label; hover still names every team", () => {
+    const cats = [teams[0]!, "XXX", teams[1]!, teams[2]!];
+    setWarningHandler(() => {});
+    const out = withAxisLogos({ data: [{ type: "bar", x: cats, y: cats.map(wins) }], layout: {} }, "x", {
+      league: "nfl",
+    });
+    setWarningHandler(null);
+    expect(cats.map((c) => plotlyShows(out.layout!.xaxis!, c))).toEqual(
+      cats.map((c) => [c, c === "XXX" ? c : ""]),
+    );
+    expect(visibleAxisLabels(out, "x")).toEqual(["XXX"]);
+  });
+
+  test("a second call that brings an unknown category shows its label again", () => {
+    const first = withAxisLogos({ data: [{ type: "bar", x: teams, y: teams.map(wins) }], layout: {} }, "x", {
+      league: "nfl",
+    });
+    const cats = [...teams, "XXX"];
+    setWarningHandler(() => {});
+    const out = withAxisLogos({ ...first, data: [{ type: "bar", x: cats, y: cats.map(wins) }] }, "x", {
+      league: "nfl",
+    });
+    setWarningHandler(null);
+    expect(cats.map((c) => plotlyShows(out.layout!.xaxis!, c))).toEqual(
+      cats.map((c) => [c, c === "XXX" ? c : ""]),
+    );
+    expect(visibleAxisLabels(out, "x")).toEqual(["XXX"]);
   });
 
   test("teamColorway: one colour per team, fallback for unknown", () => {
