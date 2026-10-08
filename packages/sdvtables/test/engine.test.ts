@@ -63,6 +63,12 @@ describe("sorting", () => {
     expect(cmp(null, undefined)).toBe(0);
     expect(cmp("", 1)).toBe(1);
   });
+  test('a non-numeric string in a numeric column (scraped "N/A", "—") compares equal, never NaN', () => {
+    expect(compareNum("N/A", 3)).toBeNaN(); // not missing, so only the guard stands between it and sort()
+    expect(isMissing("N/A")).toBe(false);
+    expect(withMissingLast(compareNum, "asc")("N/A", 3)).toBe(0);
+    expect(withMissingLast(compareNum, "desc")(3, "—")).toBe(0);
+  });
   test("custom compare wins over the kind comparator", () => {
     const bySecondLetter = defineSpecWithCompare();
     const t = createTable(bySecondLetter, rows);
