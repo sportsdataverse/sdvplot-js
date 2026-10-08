@@ -270,7 +270,11 @@ function toggles<Row>(figure: Element, store: SelectionStore<Row>, marks: readon
     m.setAttribute("aria-checked", String(shown.has(id)));
     // a checkbox needs a name: the mark's own (Plot's ariaLabel channel writes aria-label, its title channel a
     // <title> child), else its link id
-    if (!m.hasAttribute("aria-label") && !m.hasAttribute("aria-labelledby") && !m.querySelector(":scope > title"))
+    if (
+      !m.hasAttribute("aria-label") &&
+      !m.hasAttribute("aria-labelledby") &&
+      !m.querySelector(":scope > title")
+    )
       m.setAttribute("aria-label", id);
   }
   const flip = (e: Event): void => {

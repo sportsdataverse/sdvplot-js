@@ -152,11 +152,11 @@ test("teardown restores each mark's own role, tabindex and aria-checked, and un-
   const store = createSelection<BknGame>();
   const off = linkSelection(store, { figure: svg, select: "toggle" });
   click(cell(svg, IND));
-  expect([phi?.getAttribute("role"), phi?.getAttribute("tabindex"), svg.classList.contains("sdv-focus")]).toEqual([
-    "checkbox",
-    "0",
-    true,
-  ]);
+  expect([
+    phi?.getAttribute("role"),
+    phi?.getAttribute("tabindex"),
+    svg.classList.contains("sdv-focus"),
+  ]).toEqual(["checkbox", "0", true]);
   off();
   const attrs = (el: Element | null): (string | null)[] =>
     ["role", "tabindex", "aria-checked"].map((a) => el?.getAttribute(a) ?? null);

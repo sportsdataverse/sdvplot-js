@@ -73,14 +73,22 @@ test("a table unlinked mid-brush shows all its rows again and drops the hover it
     y: [0, 0.2],
   });
   store.set({ hover: ["LAC"] }); // another writer's hover
-  expect([table.filteredCount, table.getHover(), svg.classList.contains("sdv-focus")]).toEqual([4, "LAC", true]);
+  expect([table.filteredCount, table.getHover(), svg.classList.contains("sdv-focus")]).toEqual([
+    4,
+    "LAC",
+    true,
+  ]);
   const region = store.getState().predicate;
   offFigure(); // the figure is unlinked first: it un-dims while the table still follows the brush
   expect([svg.classList.contains("sdv-focus"), lit(svg), table.filteredCount]).toEqual([false, [], 4]);
   offTable();
   expect([table.filteredCount, table.getHover()]).toEqual([8, null]);
   const s = store.getState();
-  expect([s.predicate, [...s.hover], [...s.selected]]).toEqual([region, ["LAC"], ["KC", "LAC", "DEN", "BUF"]]);
+  expect([s.predicate, [...s.hover], [...s.selected]]).toEqual([
+    region,
+    ["LAC"],
+    ["KC", "LAC", "DEN", "BUF"],
+  ]);
   // one call linking both restores both
   const both = linked();
   brushFilter(both.svg, both.store, { data: STANDINGS, x: "wins", y: "net_epa", id: "team" }).move({
