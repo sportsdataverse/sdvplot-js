@@ -11,7 +11,7 @@ import {
 import { pagerLabel, renderToolbar, tableRenderOptions } from "./interactive.js";
 import { renderParts, tableHTML } from "./parts.js";
 
-/** I2: each element's live binding, so hydrating it again tears the old one down first. */
+/** I2: each element's live binding, so hydrating it again replaces the old one (see `replace`). */
 const live = new WeakMap<Element, () => void>();
 
 const edge = (button: Element | null, atEdge: boolean): void => {
@@ -136,7 +136,7 @@ export function hydrate<Row>(el: Element, table: Table<Row>): () => void {
   });
   applyHover(el, table, table.getHover()); // a hover set before this attached (a linked figure's) shows now
   const teardown = (): void => {
-    if (live.get(el) === teardown) live.delete(el);
+    if (live.get(el) === replace) live.delete(el);
     unsubscribe();
     cancel?.();
     cancel = undefined;
@@ -146,6 +146,15 @@ export function hydrate<Row>(el: Element, table: Table<Row>): () => void {
     el.removeEventListener("mouseleave", onHover);
     el.removeEventListener("keydown", onKeydown);
   };
-  live.set(el, teardown);
+  // M3: hydrating `el` again first draws a change this binding still owes, so the next one starts from a current body
+  // (its `drawn` is the engine's rows); a plain teardown drops it, since the element may no longer be ours to write
+  const replace = (): void => {
+    if (cancel) {
+      cancel();
+      render();
+    }
+    teardown();
+  };
+  live.set(el, replace);
   return teardown;
 }

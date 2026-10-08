@@ -143,6 +143,21 @@ test("I2: hydrating an element again replaces the first binding, so one click ac
   expect(t.state.sort).toEqual({ col: "wins", dir: "desc" }); // torn down: the click reached no listener
   hydrate(el, t)(); // a fresh binding after teardown works, and tears down
 });
+test("M3: hydrating again while a render is pending draws it first, so the body is never left stale", async () => {
+  const t = createTable({ ...spec, rowKey: "team" }, rows);
+  const el = mount(renderHTML(t));
+  const writes = countWrites(el.querySelector("[data-sdv-body]") as Element);
+  hydrate(el, t);
+  t.setExternalFilter((r) => r.wins >= 10); // KC LAC DEN BUF, owed on the next frame
+  hydrate(el, t); // HMR or a client navigation re-attaches first
+  const teams = (): (string | null | undefined)[] =>
+    Array.from(el.querySelectorAll("[data-sdv-body] tbody tr"), (tr) => tr.querySelector("td")?.textContent);
+  expect(teams()).toEqual(["KC", "LAC", "DEN", "BUF"]);
+  await frame();
+  expect(writes.n).toBe(1); // drawn once, by the replaced binding: its frame was cancelled
+  el.querySelector<HTMLElement>('[data-sdv-body] tr[data-row="3"] td')?.click(); // the row shown at 3: BUF
+  expect(t.getSelection()).toEqual(new Set(["BUF"]));
+});
 test("hydrate throws on markup without a body block", () => {
   document.body.innerHTML = "<div class='sdvt'></div>";
   const el = document.body.firstElementChild as HTMLElement;
