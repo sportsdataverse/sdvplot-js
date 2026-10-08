@@ -130,11 +130,14 @@ export function columnScales<Row>(
   spec: TableSpec<Row>,
   rows: readonly Row[],
   warnFn: (key: string, m: string) => void,
+  domainRows: readonly Row[] = rows,
 ): Map<string, ColumnScale> {
+  // J31 (A4): domain, ranks and the out-of-domain count come from domainRows; `values` and pill widths follow `rows`
+  const at = domainRows === rows ? null : new Map(domainRows.map((r, j) => [r, j] as const));
   const out = new Map<string, ColumnScale>();
   for (const col of spec.columns) {
     if (col.kind !== "colorPills" && col.kind !== "colorRanks" && col.kind !== "percentileBar") continue;
-    const nums = rows.map((r) => toNumber(cellValue(r, col.key)));
+    const nums = domainRows.map((r) => toNumber(cellValue(r, col.key)));
     let values: (number | null)[] = nums;
     if (col.kind === "colorPills" && col.fillType === "rank")
       values = averageRanks(nums, col.rankOrder === "desc");
@@ -169,9 +172,11 @@ export function columnScales<Row>(
         `sdvtables:outside:${col.key}:${outside}:${domain.join(",")}`,
         `${outside} value(s) fall outside the domain ${fmt()} and are drawn grey`,
       ); // _cells.py:1226-1227
+    const shown = at === null ? values : rows.map((r) => values[at.get(r) ?? -1] ?? null);
+    const shownNums = at === null ? nums : rows.map((r) => toNumber(cellValue(r, col.key)));
     const labelWidth =
-      col.kind === "colorPills" ? Math.max(1, ...nums.map((n) => pillLabel(col, n).length)) : 1;
-    out.set(col.key, { domain, palette, reverse: col.reverse, values, color, labelWidth });
+      col.kind === "colorPills" ? Math.max(1, ...shownNums.map((n) => pillLabel(col, n).length)) : 1;
+    out.set(col.key, { domain, palette, reverse: col.reverse, values: shown, color, labelWidth });
   }
   return out;
 }

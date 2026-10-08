@@ -5,7 +5,7 @@ const MAP: Readonly<Record<string, string>> = {
   "<": "&lt;",
   ">": "&gt;",
   '"': "&quot;",
-  "'": "&#39;",
+  "'": "&#x27;",
 };
 export const escapeHtml = (s: unknown): string =>
   String(s ?? "").replace(/[&<>"']/g, (c) => MAP[c] as string);
