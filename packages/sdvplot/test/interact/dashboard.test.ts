@@ -281,6 +281,35 @@ describe.each<Shape>(["hex", "square"])("%s cells", (shape) => {
   });
 });
 
+// main's side chart (lib/charts/sideChart.ts:20-22, :66-75): left and right grow from a FIXED centre column's edges
+test("the side chart: x < 0 shots grow left of a fixed centre column, x > 0 right; the axis reads attempts from its edges", () => {
+  const { d } = setup("hex");
+  const [left = [], centre = [], right = []] = Array.from(
+    d.side.querySelectorAll('g[aria-label="rect"]'),
+    (g) => Array.from(g.querySelectorAll("rect")),
+  );
+  const end = (r: Element): number => at(r, "x") + at(r, "width");
+  const inner = [...new Set(left.map(end)), ...new Set(right.map((r) => at(r, "x")))];
+  expect(inner).toHaveLength(2); // every row's left bar ends, and every right bar starts, at one x: the column's edges
+  const [l = Number.NaN, r = Number.NaN] = inner;
+  expect(r - l).toBeGreaterThan(0);
+  for (const c of centre) expect([at(c, "x") >= l, end(c) <= r]).toEqual([true, true]);
+  const k = px(d.side, "x", 1) - px(d.side, "x", 0); // px per attempt
+  const row = (b: Element): number =>
+    Math.floor(Number(d.side.scale("y")?.invert?.(at(b, "y") + at(b, "height") / 2)));
+  const n = (ft: number, on: (x: number) => boolean): number =>
+    BKN.filter((s) => s.shot_distance <= 35 && Math.floor(s.shot_distance) === ft && on(s.x_legacy)).length;
+  for (const b of left) expect(at(b, "width")).toBeCloseTo(n(row(b), (x) => x < 0) * k);
+  for (const b of right) expect(at(b, "width")).toBeCloseTo(n(row(b), (x) => x > 0) * k);
+  expect(left.some((b) => n(row(b), (x) => x < 0) !== n(row(b), (x) => x > 0))).toBe(true); // so a swap shows
+  const ticks = Array.from(d.side.querySelectorAll('g[aria-label="x-axis tick label"] text'));
+  expect(ticks.length).toBeGreaterThan(2);
+  for (const t of ticks) {
+    const x = Number(/translate\(([-\d.]+)/.exec(t.getAttribute("transform") ?? "")?.[1]);
+    expect(Number(t.textContent)).toBeCloseTo((Math.abs(x - (l + r) / 2) - (r - l) / 2) / k, 0);
+  }
+});
+
 // Found in the browser (docs/docs/examples/shot-dashboard.mdx): the menu swapped the hovered hex court for the square
 // one, the stale hex id stayed in the store, and the square court warned "none of the linked ids is drawn".
 test("redrawing the court while a cell is hovered: the old link's teardown clears its hover; the cursor survives", () => {

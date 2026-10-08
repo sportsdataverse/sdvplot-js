@@ -134,18 +134,26 @@ const fg = Plot.plot({
 });
 linkCursor(fg, store, { field: D, shape: { axis: "x", scale: fg.scale("x")! } });
 
-// Attempts by side, distance up the y axis: left grows leftward and right rightward from the centre column (x == 0)
-const half = (b: SideBin): number => b.centre.attempts / 2;
+// Attempts by side, distance up the y axis, as blazing-the-nets draws them: a FIXED centre column (x == 0) on its own
+// narrower scale, left growing leftward and right rightward from its edges, so the axis reads each side from its edge
+const top = Math.max(...sides.flatMap((b) => [b.left.attempts, b.centre.attempts, b.right.attempts]));
+const G = (top * 28) / 187; // half the column: main's 56 px beside 187 px a side at its 500 px width
+const mid = (b: SideBin): number => (G * b.centre.attempts) / top; // half a centre bar: `top` fills the column
 const band = { y1: "distance", y2: (b: SideBin) => b.distance + 1, insetTop: 0.5, insetBottom: 0.5 } as const;
 const side = Plot.plot({
   width: 300,
   height: 440,
-  x: { label: "← left   attempts   right →", tickFormat: Math.abs },
+  x: {
+    label: "← left   attempts   right →",
+    ticks: Array.from({ length: Math.floor(top / 50) + 1 }, (_, i) => [-G - 50 * i, G + 50 * i]).flat(),
+    tickFormat: (v: number) => String(Math.round(Math.abs(v) - G)),
+  },
   y: { label: "Shot distance (ft)" },
   marks: [
-    Plot.rect(sides, { ...band, x1: (b) => -half(b) - b.left.attempts, x2: (b) => -half(b) }),
-    Plot.rect(sides, { ...band, x1: (b) => -half(b), x2: half, fillOpacity: 0.5 }),
-    Plot.rect(sides, { ...band, x1: half, x2: (b) => half(b) + b.right.attempts }),
+    Plot.ruleX([-G, G], { strokeOpacity: 0.3 }), // the column's edges
+    Plot.rect(sides, { ...band, x1: (b) => -G - b.left.attempts, x2: -G }),
+    Plot.rect(sides, { ...band, x1: (b) => -mid(b), x2: mid, fillOpacity: 0.5 }),
+    Plot.rect(sides, { ...band, x1: G, x2: (b) => G + b.right.attempts }),
   ],
 });
 linkCursor(side, store, { field: D, shape: { axis: "y", scale: side.scale("y")!, width: 1 }, snap });

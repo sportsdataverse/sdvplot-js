@@ -101,8 +101,11 @@ export function dashboard(shape: Shape, document?: Document): Dashboard {
     y: { label: "FG%", percent: true, domain: [0, 100] }, // percent scales by 100 before the domain applies
     marks: [Plot.barY(by3, { x: "distance", y: "fgPct" })],
   });
-  // main's side chart: left grows leftward and right rightward from a centre column (lib/charts/sideChart.ts:55-71)
-  const half = (b: SideBin): number => b.centre.attempts / 2;
+  // main's side chart (lib/charts/sideChart.ts:20-22, :66-75): a FIXED centre column on its own narrower scale, left
+  // growing leftward and right rightward from its edges on one shared scale
+  const top = Math.max(...sides.flatMap((b) => [b.left.attempts, b.centre.attempts, b.right.attempts]));
+  const G = (top * 28) / 187; // half the column: main's 56 px beside 187 px a side at its 500 px width
+  const mid = (b: SideBin): number => (G * b.centre.attempts) / top; // half a centre bar: `top` fills the column
   const band = {
     y1: "distance",
     y2: (b: SideBin) => b.distance + 1,
@@ -113,12 +116,17 @@ export function dashboard(shape: Shape, document?: Document): Dashboard {
     ...doc,
     width: 320,
     height: 420,
-    x: { label: "← left   attempts   right →", tickFormat: Math.abs },
+    x: {
+      label: "← left   attempts   right →",
+      ticks: Array.from({ length: Math.floor(top / 50) + 1 }, (_, i) => [-G - 50 * i, G + 50 * i]).flat(),
+      tickFormat: (v: number) => String(Math.round(Math.abs(v) - G)),
+    },
     y: { label: "Shot distance (ft)" },
     marks: [
-      Plot.rect(sides, { ...band, x1: (b) => -half(b) - b.left.attempts, x2: (b) => -half(b) }),
-      Plot.rect(sides, { ...band, x1: (b) => -half(b), x2: half, fillOpacity: 0.5 }),
-      Plot.rect(sides, { ...band, x1: half, x2: (b) => half(b) + b.right.attempts }),
+      Plot.ruleX([-G, G], { strokeOpacity: 0.3 }), // the column's edges
+      Plot.rect(sides, { ...band, x1: (b) => -G - b.left.attempts, x2: -G }),
+      Plot.rect(sides, { ...band, x1: (b) => -mid(b), x2: mid, fillOpacity: 0.5 }),
+      Plot.rect(sides, { ...band, x1: G, x2: (b) => G + b.right.attempts }),
     ],
   });
   return { court, signature, share, fg, side, figures: [court, signature, share, fg, side], cells };
