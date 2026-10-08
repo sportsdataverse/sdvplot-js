@@ -238,3 +238,94 @@ test("M8: a hidden column's filter input leaves the toolbar and comes back with 
     mount(renderHTML(t)).querySelector(".sdvt-toolbar")?.outerHTML, // the same markup SSR writes
   );
 });
+test("I1: an external setGlobalFilter / setFilter / clear shows in the toolbar inputs", async () => {
+  const t = createTable(spec, rows);
+  const el = mount(renderHTML(t));
+  hydrate(el, t);
+  const g = el.querySelector<HTMLInputElement>("[data-sdv-global-filter]") as HTMLInputElement;
+  const f = el.querySelector<HTMLInputElement>('[data-sdv-filter="team"]') as HTMLInputElement;
+  t.setGlobalFilter("x");
+  t.setFilter("team", "y");
+  await frame();
+  expect(g.value).toBe("x");
+  expect(f.value).toBe("y");
+  expect(el.querySelector('[data-sdv-filter="team"]')).toBe(f); // synced in place, not rebuilt
+  t.setGlobalFilter("");
+  t.setFilter("team", "");
+  await frame();
+  expect(g.value).toBe("");
+  expect(f.value).toBe("");
+});
+test("focus on an element inside a custom cell survives a re-render (row id + cell key + index)", async () => {
+  const t = createTable(spec, rows);
+  const el = mount(renderHTML(t));
+  const bodyEl = el.querySelector("[data-sdv-body]") as Element;
+  // stand-in for custom cell html: two buttons in each team cell, added after every render
+  const addButtons = (): void => {
+    for (const td of Array.from(bodyEl.querySelectorAll('td[data-col="team"]')))
+      td.insertAdjacentHTML("beforeend", "<button>a</button><button>b</button>");
+  };
+  let proto: object | null = Object.getPrototypeOf(bodyEl);
+  while (proto && !Object.getOwnPropertyDescriptor(proto, "innerHTML")) proto = Object.getPrototypeOf(proto);
+  const d = Object.getOwnPropertyDescriptor(proto as object, "innerHTML") as PropertyDescriptor;
+  Object.defineProperty(bodyEl, "innerHTML", {
+    configurable: true,
+    get() {
+      return d.get?.call(this);
+    },
+    set(v: string) {
+      d.set?.call(this, v);
+      addButtons();
+    },
+  });
+  hydrate(el, t);
+  addButtons();
+  const pick = (): HTMLElement | undefined =>
+    bodyEl.querySelector('tr[data-row="1"] td[data-col="team"]')?.querySelectorAll("button")[1];
+  const old = pick() as HTMLElement;
+  old.focus();
+  expect(document.activeElement).toBe(old);
+  t.setGlobalFilter("");
+  await frame();
+  const now = pick();
+  expect(now).not.toBe(old);
+  expect(document.activeElement).toBe(now);
+});
+test("focus restore reads the shadow root's active element", async () => {
+  const t = createTable(spec, rows);
+  const host = document.createElement("div");
+  document.body.append(host);
+  const shadow = host.attachShadow({ mode: "open" });
+  shadow.innerHTML = renderHTML(t).replace(/^<link[^>]*>\n/, "");
+  const el = shadow.querySelector("div.sdvt") as HTMLElement;
+  hydrate(el, t);
+  const old = el.querySelector<HTMLButtonElement>('[data-sdv-sort="wins"]') as HTMLButtonElement;
+  old.focus();
+  expect(shadow.activeElement).toBe(old);
+  old.click();
+  await frame();
+  const now = el.querySelector('[data-sdv-sort="wins"]');
+  expect(now).not.toBe(old);
+  expect(shadow.activeElement).toBe(now);
+});
+test("hiding a column restores the caret of a focused filter input; teardown twice is harmless", async () => {
+  const s = defineTable<Standing>()
+    .columns((c) => [c.text("team", { filterable: true }), c.text("qb", { filterable: true }), c.int("wins")])
+    .build();
+  const t = createTable(s, rows);
+  const el = mount(renderHTML(t));
+  const off = hydrate(el, t);
+  const team = el.querySelector<HTMLInputElement>('[data-sdv-filter="team"]') as HTMLInputElement;
+  team.value = "abcdef";
+  team.dispatchEvent(new Event("input", { bubbles: true })); // the engine now holds the text
+  team.focus();
+  team.setSelectionRange(2, 4);
+  t.toggleColumn("qb");
+  await frame();
+  const now = el.querySelector<HTMLInputElement>('[data-sdv-filter="team"]') as HTMLInputElement;
+  expect(now).not.toBe(team);
+  expect(document.activeElement).toBe(now);
+  expect([now.selectionStart, now.selectionEnd]).toEqual([2, 4]);
+  off();
+  expect(() => off()).not.toThrow();
+});
