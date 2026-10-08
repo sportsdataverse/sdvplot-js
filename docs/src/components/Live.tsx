@@ -58,14 +58,17 @@ export default function Live(p: LiveProps): ReactElement {
   // wrapper is the scrolling container that keeps the fixed-size frame inside the column. A card shows a static
   // SVG as an <img> instead: it scales to the card (a fixed-size frame would be a crop), and losing the logos in a
   // thumbnail is fine.
+  // Once the re-run is in, the inline copy is removed, not hidden: it carries the same element ids (a gradient, a
+  // clipPath), and url(#id) resolves to the first one in the document, which inside a hidden subtree paints nothing.
   const output =
     p.src === undefined ? (
-      <div
-        className="sdv-live-static"
-        hidden={mounted}
-        // biome-ignore lint/security/noDangerouslySetInnerHtml: markup the gate produced at build time from our own examples
-        dangerouslySetInnerHTML={{ __html: p.markup ?? "" }}
-      />
+      mounted ? null : (
+        <div
+          className="sdv-live-static"
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: markup the gate produced at build time from our own examples
+          dangerouslySetInnerHTML={{ __html: p.markup ?? "" }}
+        />
+      )
     ) : p.thumb && p.src.endsWith(".svg") ? (
       <div className="sdv-live-static">
         <img src={src} alt={p.title} width={p.width} height={p.height} loading="lazy" />
