@@ -146,9 +146,43 @@ function byChannel(sort: string, u: VegaLiteSpec): Record<string, unknown> {
     ...(desc ? { order: "descending" } : {}),
   };
 }
+/** The rows a unit reads: its own inline values or named dataset, else the top-level ones; undefined for url data. */
+function inlineRows(spec: VegaLiteSpec, u: VegaLiteSpec): Record<string, unknown>[] | undefined {
+  const data = (u.data ?? spec.data ?? {}) as { name?: string; values?: Record<string, unknown>[] };
+  return data.name !== undefined
+    ? (spec.datasets?.[data.name] as Record<string, unknown>[] | undefined)
+    : data.values;
+}
+/** A count sort as the explicit list Vega-Lite orders the axis by: kept as a count, the image layer's own rows would add
+ *  to the counts (the layers share the scale). Ties keep their first appearance, as Vega's stable sort does. */
+function countOrder(
+  spec: VegaLiteSpec,
+  u: VegaLiteSpec,
+  enc: Enc,
+  order: unknown,
+  channel: string,
+): unknown[] {
+  const rows = inlineRows(spec, u);
+  const all = units(spec);
+  if (
+    rows === undefined ||
+    new Set(all.map((v) => v.data).filter((d) => d !== undefined)).size > 1 ||
+    all.some((v) => v.transform !== undefined)
+  )
+    throw new InputError(
+      `the ${channel} count sort is kept once a layer is added only on inline data with no transform (one data source); sort with an explicit list (sort: [...]), then add the marks`,
+    );
+  const key = unescapeField(String(enc.field));
+  const counts = new Map<unknown, number>();
+  for (const r of rows)
+    if (r[key] !== null && r[key] !== undefined) counts.set(r[key], (counts.get(r[key]) ?? 0) + 1);
+  const sign = order === "descending" ? -1 : 1;
+  return [...counts].sort((a, b) => (a[1] - b[1]) * sign).map(([c]) => c);
+}
 /** The discrete axis' sort, when Vega-Lite keeps it once another layer shares the scale (it drops the rest).
- *  `u` is the unit encoding the channel: the shorthand ("-y") reads its sibling channel and comes back as a field sort. */
-function sortOf(enc: Enc, channel: string, u: VegaLiteSpec): unknown {
+ *  `u` is the unit encoding the channel: the shorthand ("-y") reads its sibling channel and comes back as a field sort,
+ *  and a count sort comes back as the explicit list (`countOrder`), for both layers. */
+function sortOf(spec: VegaLiteSpec, enc: Enc, channel: string, u: VegaLiteSpec): unknown {
   const given = "sort" in enc ? enc.sort : "ascending";
   const sort =
     typeof given === "string" && given !== "ascending" && given !== "descending"
@@ -165,7 +199,7 @@ function sortOf(enc: Enc, channel: string, u: VegaLiteSpec): unknown {
     throw new InputError(
       `Vega-Lite drops the ${channel} sort ${JSON.stringify(given)}${given === sort ? "" : ` (${JSON.stringify(sort)})`} once a layer is added; sort with an explicit list (sort: [...]) or by a field with op "count", "min" or "max", then add the marks`,
     );
-  return sort;
+  return op === "count" ? countOrder(spec, u, enc, (sort as { order?: unknown }).order, channel) : sort;
 }
 /** The x and y encodings the layer copies: field, type, timeUnit and (discrete) sort. Aggregate/bin raise. */
 function encodings(spec: VegaLiteSpec): { x: Enc; y: Enc } {
@@ -181,7 +215,7 @@ function encodings(spec: VegaLiteSpec): { x: Enc; y: Enc } {
     }
     const e: Enc = { field: enc.field ?? ch, type: enc.type ?? "quantitative" };
     if (enc.timeUnit !== undefined) e.timeUnit = enc.timeUnit;
-    if (DISCRETE.has(String(e.type)) && "sort" in enc) e.sort = sortOf(enc, ch, u);
+    if (DISCRETE.has(String(e.type)) && "sort" in enc) e.sort = sortOf(spec, enc, ch, u);
     out[ch] = e;
   }
   return out;
@@ -234,7 +268,14 @@ function layered(spec: VegaLiteSpec, layer: ImageLayer): VegaLiteSpec {
 
 export function logoLayer(
   rows: readonly Row[],
-  o: MarkOptions & { chartHeight?: number; xType?: VlType; yType?: VlType },
+  o: MarkOptions & {
+    /** The chart height in px that `height` is a fraction of. Default 300 (Vega-Lite's continuous height). */
+    chartHeight?: number;
+    /** The layer's x encoding type (its field is "x"). Default "quantitative". */
+    xType?: VlType;
+    /** The layer's y encoding type (its field is "y"). Default "quantitative". */
+    yType?: VlType;
+  },
 ): ImageLayer {
   const h = checkHeight(o.height ?? 0.1);
   const a = checkAlpha(o.alpha ?? 1);
@@ -261,7 +302,10 @@ function add(
   const spec = specOf(target);
   const enc = encodings(spec);
   const ps = markPlacements(rows, kind, o);
-  return layered(structuredClone(spec), layerOf(ps, kind, h, chartHeight(spec), a, enc.x, enc.y, o.embed));
+  const base = structuredClone(spec);
+  for (const ch of ["x", "y"] as const)
+    if (Array.isArray(enc[ch].sort)) targetChannel(base, ch).sort = enc[ch].sort; // a count sort's list (sortOf)
+  return layered(base, layerOf(ps, kind, h, chartHeight(spec), a, enc.x, enc.y, o.embed));
 }
 export function withLogos(spec: VegaLiteSpec, rows: readonly Row[], o: MarkOptions): VegaLiteSpec;
 export function withLogos<F extends object>(spec: F, rows: readonly Row[], o: MarkOptions): F;
@@ -305,11 +349,7 @@ const BLANKED = /^indexof\((\[.*?\]), datum\.label\) >= 0/;
 function categoriesOf(spec: VegaLiteSpec, u: VegaLiteSpec, enc: Enc): unknown[] {
   if (Array.isArray(enc.scale?.domain)) return enc.scale.domain;
   const sort = "sort" in enc ? enc.sort : "ascending";
-  const data = (u.data ?? spec.data ?? {}) as { name?: string; values?: Record<string, unknown>[] };
-  const rows =
-    data.name !== undefined
-      ? (spec.datasets?.[data.name] as Record<string, unknown>[] | undefined)
-      : data.values;
+  const rows = inlineRows(spec, u);
   if (rows === undefined) {
     if (Array.isArray(sort)) return sort;
     throw new InputError(
@@ -345,7 +385,7 @@ export function withAxisLogos(spec: object, axis: "x" | "y", o: AxisOptions): ob
   if (!DISCRETE.has(String(enc.type)))
     throw new InputError(`withAxisLogos needs a nominal or ordinal ${letter} axis (team names on the axis)`);
   if (enc.axis === null) throw new InputError(`the chart's ${letter} axis is hidden (axis: null)`);
-  const sort = sortOf(enc, letter, u);
+  const sort = sortOf(s, enc, letter, u);
   const cats = categoriesOf(s, u, enc);
   const ps = axisPlacements(cats.map(String), letter, o);
   const chartH = chartHeight(s);
@@ -360,11 +400,13 @@ export function withAxisLogos(spec: object, axis: "x" | "y", o: AxisOptions): ob
   const room = (letter === "x" ? hPx : hPx * widest) + AXIS_GAP;
   const expr = `indexof(${blank}, datum.label) >= 0 ? '' : ${old.labelExpr !== undefined ? `(${old.labelExpr})` : "datum.label"}`;
   const base = structuredClone(s);
-  targetChannel(base, letter).axis = {
+  const target = targetChannel(base, letter);
+  target.axis = {
     ...old,
     labelExpr: expr,
     labelPadding: (old.labelPadding ?? LABEL_PADDING) + room,
   };
+  if (Array.isArray(sort)) target.sort = sort; // a count sort's list (sortOf)
   const key = unescapeField(String(enc.field));
   const sources = imageSources(ps, o.embed);
   const values = ps.map((p, i) => ({ [key]: cats[pos[i]!], [URL]: sources[i]!, [TEAM]: p.id }));

@@ -92,6 +92,13 @@ test("markPlacements places the row columns; axisPlacements puts label i at inde
   ]);
 });
 
+test("embedSources: an empty content-type header falls back to the type inferred from the url", async () => {
+  const fetchFn = vi.fn(async () => new Response(new Uint8Array([65]), { headers: { "content-type": " " } }));
+  const m = await embedSources(["https://a/x.svg", "https://a/y.png"], fetchFn as unknown as typeof fetch);
+  expect(m.get("https://a/x.svg")).toBe("data:image/svg+xml;base64,QQ==");
+  expect(m.get("https://a/y.png")).toBe("data:application/octet-stream;base64,QQ==");
+});
+
 test("embedSources raises DownloadError (url + status) on a non-ok answer", async () => {
   const fetchFn = vi.fn(async () => new Response("", { status: 404 }));
   await expect(embedSources(["https://a/x.png"], fetchFn as unknown as typeof fetch)).rejects.toThrow(

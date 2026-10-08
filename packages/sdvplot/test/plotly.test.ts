@@ -166,6 +166,16 @@ describe("withLogos on a scatter", () => {
     expect(empty.layout!.yaxis?.range).toBeUndefined();
   });
 
+  test("bigint positions draw as numbers", () => {
+    const out = withLogos(scatter(), [{ x: 10n, y: -3n, team: KC }], {
+      x: "x",
+      y: "y",
+      team: "team",
+      league: "nfl",
+    });
+    expect(drawnMarks(out).map((m) => m.slice(0, 3))).toEqual([[ID(KC), 10, -3]]);
+  });
+
   test("unmeasurable traces and unsupported axes raise InputError naming the fix", () => {
     const o = { x: "x", y: "y", team: "team", league: "nfl" } as const;
     expect(() => withLogos({ data: [{ type: "heatmap" }], layout: {} }, ROWS, o)).toThrow(
@@ -273,7 +283,7 @@ describe("withAxisLogos", () => {
     expect(visibleAxisLabels(out, "x")).toEqual(["XXX"]);
     expect(out.layout!.margin!.b).toBe(50 + Math.ceil((0.1 * 300) / 1.1));
     expect(out.layout!.images![0]).toMatchObject({
-      yref: "paper",
+      yref: "y domain",
       y: 0,
       sizey: 0.1,
       yanchor: "top",
@@ -311,15 +321,35 @@ describe("withAxisLogos", () => {
     expect(out.layout!.margin!.l).toBeGreaterThan(80);
   });
 
-  test("subplot: bar on xaxis2 gets xref x2 and paper y at that axis's domain; error names the checked axis", () => {
+  test("subplot: bar on xaxis2 hangs its images under that subplot, in its y domain; error names the checked axis", () => {
     const fig: PlotlyFigure = {
       data: [{ type: "bar", x: ["KC", "BUF"], y: [1, 2], xaxis: "x2", yaxis: "y2" }],
       layout: { xaxis2: { domain: [0.5, 1] }, yaxis2: { domain: [0.2, 0.9] } },
     };
     const out = withAxisLogos(fig, "x", { league: "nfl", xref: "x2", yref: "y2" });
-    expect(out.layout!.images![0]).toMatchObject({ xref: "x2", yref: "paper", y: 0.2 });
+    expect(out.layout!.images![0]).toMatchObject({ xref: "x2", yref: "y2 domain", y: 0, sizey: 0.1 });
+    expect(out.layout!.margin).toBeUndefined(); // 0.1 of 0.7 hangs above the paper's bottom: nothing to make room for
     expect(out.layout!.xaxis2).toMatchObject({ tickmode: "array", ticktext: ["", ""] });
     expect(() => withAxisLogos(fig, "x", { league: "nfl" })).toThrow(/x axis \(x\)/);
+  });
+
+  test("stacked subplots: x-axis images on the lower one are `height` of THAT subplot and fit the grown margin", () => {
+    const fig: PlotlyFigure = {
+      data: [
+        { type: "scatter", x: [0, 1], y: [0, 1] },
+        { type: "bar", x: ["KC", "BUF"], y: [1, 2], xaxis: "x2", yaxis: "y2" },
+      ],
+      layout: { yaxis: { domain: [0.55, 1] }, yaxis2: { domain: [0, 0.45] } },
+    };
+    const out = withAxisLogos(fig, "x", { league: "nfl", xref: "x2", yref: "y2", height: 0.1 });
+    expect(out.layout!.images![0]).toMatchObject({ yref: "y2 domain", y: 0, sizey: 0.1, yanchor: "top" });
+    const paper = 450 - 100 - 80; // plotly's default height less its default margins
+    const grown = out.layout!.margin!.b! - 80;
+    expect(grown).toBe(Math.ceil((0.1 * 0.45 * paper) / (1 + 0.1 * 0.45))); // 12 px
+    const logoPx = 0.1 * 0.45 * (paper - grown); // the subplot shrinks with the paper
+    expect(logoPx).toBeLessThanOrEqual(grown);
+    expect(grown - logoPx).toBeLessThan(1);
+    expect(drawnAxisMarks(out, "x").map((m) => m[2])).toEqual([0.1, 0.1]);
   });
 
   test("subplot y axis: bar on yaxis2 gets yref y2 and paper x at the xref axis's domain left", () => {

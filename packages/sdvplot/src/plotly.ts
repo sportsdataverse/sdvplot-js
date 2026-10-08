@@ -84,14 +84,22 @@ export interface PlotlyFigure {
   layout?: PlotlyLayout;
 }
 
+/** `withLogos` / `withWordmarks` options: the shared ones plus the subplot axes and the image layer. */
 export interface PlotlyMarkOptions extends MarkOptions {
+  /** The x axis the images are placed on, e.g. "x2" for a subplot. Default "x". */
   xref?: string;
+  /** The y axis the images are placed on, e.g. "y2" for a subplot. Default "y". */
   yref?: string;
+  /** Draw the images above (default) or below the traces. */
   layer?: "above" | "below";
 }
+/** `withHeadshots` options: the shared ones plus the subplot axes and the image layer. */
 export interface PlotlyHeadshotOptions extends HeadshotOptions {
+  /** The x axis the images are placed on, e.g. "x2" for a subplot. Default "x". */
   xref?: string;
+  /** The y axis the images are placed on, e.g. "y2" for a subplot. Default "y". */
   yref?: string;
+  /** Draw the images above (default) or below the traces. */
   layer?: "above" | "below";
 }
 
@@ -206,11 +214,13 @@ function unmeasurable(what: string, ref: string, letter: Letter): InputError {
 const num = (v: unknown): number | null =>
   typeof v === "number"
     ? v
-    : typeof v === "string" && v.trim() !== ""
+    : typeof v === "bigint"
       ? Number(v)
-      : v instanceof Date
-        ? v.getTime()
-        : null;
+      : typeof v === "string" && v.trim() !== ""
+        ? Number(v)
+        : v instanceof Date
+          ? v.getTime()
+          : null;
 
 /** Every coordinate the axis' traces span, plus the new marks: the data Plotly's autorange would fit. */
 function extent(
@@ -409,9 +419,10 @@ function span(layout: PlotlyLayout, ref: string): number {
   const r = layout[axisKey(ref, ref[0] as Letter)]?.range ?? [0, 1];
   return Math.abs(Number(r[1]) - Number(r[0]));
 }
-/** A layout image's emitted height as a fraction of the plot height: sizey over its y reference's span (1 for paper). */
+/** A layout image's emitted height as a fraction of its subplot's height: sizey over its y reference's span
+ *  (1 for "paper" and for an axis' "domain", whose 0..1 is that subplot's height). */
 function imageHeight(layout: PlotlyLayout, im: LayoutImage): number {
-  return im.sizey / (im.yref === "paper" ? 1 : span(layout, im.yref));
+  return im.sizey / (im.yref === "paper" || im.yref.endsWith(" domain") ? 1 : span(layout, im.yref));
 }
 
 /** Test hook: [teamId, x, y, height, source] for each image withLogos/withWordmarks/withHeadshots drew. */
@@ -425,8 +436,11 @@ export function drawnMarks(figure: PlotlyFigure): DrawnMark[] {
   });
 }
 
+/** `withAxisLogos` options: the shared ones plus the subplot axes. */
 export interface PlotlyAxisOptions extends AxisOptions {
+  /** The subplot's x axis, e.g. "x2". Default "x". */
   xref?: string;
+  /** The subplot's y axis, e.g. "y2". Default "y". */
   yref?: string;
 }
 
@@ -434,7 +448,8 @@ export interface PlotlyAxisOptions extends AxisOptions {
  *  `xref`/`yref` pick the subplot axes (default "x"/"y"); the category axis is the one named by `axis`.
  *  Pixel sizing uses `layout.width`/`layout.height`; when unset it assumes Plotly's 700x450 default, which is
  *  approximate under autosize (images stay correctly placed in paper/data units).
- *  x: images hang under the plot in paper y (`height` of the plot, exact), and `margin.b` grows to make room.
+ *  x: images hang under the subplot in its y domain units (`height` of that subplot, exact), and `margin.b` grows by
+ *  what they reach below the paper; under an upper subplot they hang into the subplot below.
  *  y: images sit left of the plot in data y; the range is pinned to the category bands so `sizey = h × span`. */
 export function withAxisLogos(figure: PlotlyFigure, axis: "x" | "y", o: PlotlyAxisOptions): PlotlyFigure;
 export function withAxisLogos<F extends object>(figure: F, axis: "x" | "y", o: PlotlyAxisOptions): F;
@@ -464,8 +479,15 @@ export function withAxisLogos(figure: object, axis: "x" | "y", o: PlotlyAxisOpti
   let lo = 0;
   let hi = 1;
   if (letter === "x") {
-    // make room under the plot; the plot shrinks by what the margin grows, so `h` of the shrunk plot is what it gained
-    layout.margin = { ...layout.margin, b: margin(layout, "b") + Math.ceil((h * plotH) / (1 + h)) };
+    // the images reach `over` (paper units) below the paper; the margin grows by that many px of the paper it
+    // shrinks: Δb = over × (P − Δb), so Δb = over·P / (1 + over), P the paper's plot height
+    const [y0, y1] = layout[axisKey(yref, "y")]?.domain ?? [0, 1];
+    const over = h * (y1 - y0) - y0;
+    if (over > 0)
+      layout.margin = {
+        ...layout.margin,
+        b: margin(layout, "b") + Math.ceil((over * plotH) / (y1 - y0) / (1 + over)),
+      };
   } else {
     [lo, hi] = range(fig, "y", yref, [], new Map(cats.map((c, i) => [c, i] as const)), 0);
     layout.margin = {
@@ -475,7 +497,6 @@ export function withAxisLogos(figure: object, axis: "x" | "y", o: PlotlyAxisOpti
   }
   const sources = imageSources(placements, o.embed);
   const xDom0 = layout[axisKey(xref, "x")]?.domain?.[0] ?? 0;
-  const yDom0 = layout[axisKey(yref, "y")]?.domain?.[0] ?? 0;
   const images: LayoutImage[] = placements.map((p, i) => {
     const loc = Number(letter === "x" ? p.x : p.y);
     const common = {
@@ -488,9 +509,9 @@ export function withAxisLogos(figure: object, axis: "x" | "y", o: PlotlyAxisOpti
       ? {
           ...common,
           x: loc,
-          y: yDom0,
+          y: 0,
           xref,
-          yref: "paper",
+          yref: `${yref} domain`, // 0..1 = the subplot's own height, so `sizey: h` is `h` of it
           sizex: 2 * cats.length,
           sizey: h,
           xanchor: "center",

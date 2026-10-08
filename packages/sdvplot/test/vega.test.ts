@@ -188,7 +188,7 @@ describe("withLogos", () => {
       encoding: { ...dots.encoding, y: { aggregate: "count", type: "quantitative" } },
     };
     const axis = withAxisLogos(counted, "x", { league: "nfl" });
-    expect(sortOfLayer(axis, "x")).toEqual({ op: "count", order: "descending" });
+    expect(sortOfLayer(axis, "x")).toEqual(["KC"]); // a count sort comes back as its order (see the count-sort test)
     expect(warningsOf(axis)).toEqual([]);
     const ticks: VegaLiteSpec = {
       ...dots,
@@ -247,6 +247,55 @@ describe("withLogos", () => {
     ];
     for (const name of fromImages) expect(JSON.stringify(color.domain)).not.toContain(`"data":"${name}"`);
     expect(JSON.stringify(color.domain)).toContain('"field":"k"');
+  });
+
+  test("a count sort keeps its order: the image layer's rows do not add to the counts (vega-lite compile)", () => {
+    const teams = ["XXX", "KC", "XXX", "BUF", "KC", "BUF", "XXX"]; // counts 3, 2, 2: KC is first of the tie
+    const ticks = (order: string): VegaLiteSpec => ({
+      height: 300,
+      data: { values: teams.map((t) => ({ t, v: 1 })) },
+      mark: "tick",
+      encoding: {
+        x: { field: "t", type: "nominal", sort: { op: "count", order } },
+        y: { field: "v", type: "quantitative" },
+      },
+    });
+    /** The x order the compiled Vega spec draws: its sort-index formula, and the domain sorts by that index. */
+    const compiledOrder = (s: VegaLiteSpec): string[] => {
+      const vg = compile(s as Parameters<typeof compile>[0]).spec as {
+        scales: { name: string; domain: { sort?: { op?: string; field?: string } } }[];
+        data: { transform?: { type: string; expr?: string; as?: string }[] }[];
+      };
+      const sort = vg.scales.find((sc) => sc.name === "x")!.domain.sort!;
+      expect(sort.op).toBe("min");
+      const f = vg.data.flatMap((d) => d.transform ?? []).find((t) => t.as === sort.field)!;
+      return [...f.expr!.matchAll(/==="([^"]+)" \? (\d+)/g)]
+        .sort((a, b) => Number(a[2]) - Number(b[2]))
+        .map((m) => m[1]!);
+    };
+    const o = { league: "nfl" } as const;
+    expect(compiledOrder(withAxisLogos(ticks("descending"), "x", o))).toEqual(["XXX", "KC", "BUF"]);
+    expect(compiledOrder(withAxisLogos(ticks("ascending"), "x", o))).toEqual(["KC", "BUF", "XXX"]);
+    const logos = withLogos(ticks("descending"), [{ x: "BUF", y: 1, team: BUF }], {
+      x: "x",
+      y: "y",
+      team: "team",
+      league: "nfl",
+    });
+    expect(compiledOrder(logos)).toEqual(["XXX", "KC", "BUF"]);
+    expect((logos.layer![0] as { encoding: { x: { sort: unknown } } }).encoding.x.sort).toEqual([
+      "XXX",
+      "KC",
+      "BUF",
+    ]);
+    // counts need the rows: url data or a transform raises, naming the fix
+    const { data: _, ...noData } = ticks("descending");
+    expect(() => withAxisLogos({ ...noData, data: { url: "t.csv" } }, "x", o)).toThrow(
+      /count sort.*sort: \[\.\.\.\]/,
+    );
+    expect(() =>
+      withAxisLogos({ ...ticks("descending"), transform: [{ filter: "datum.v > 0" }] }, "x", o),
+    ).toThrow(InputError);
   });
 
   test("a discrete y axis needs an explicit height; aggregate/bin encodings cannot be copied; facet/concat/repeat refused", () => {

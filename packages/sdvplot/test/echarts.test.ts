@@ -6,6 +6,7 @@ import {
   type LogoSeries,
   drawnAxisMarks,
   drawnMarks,
+  renderLogo,
   teamColorPalette,
   visibleAxisLabels,
   withAxisLogos,
@@ -36,7 +37,7 @@ const scatter = (): EChartsOption => ({
 
 /** Render an option headlessly (SSR SVG) and read back the <image> elements as { href, width, height, x, y }. */
 function renderImages(
-  option: EChartsOption,
+  option: object,
   width = 600,
   height = 400,
 ): { href: string; width: number; height: number; x: number; y: number }[] {
@@ -142,6 +143,54 @@ describe("withLogos", () => {
     expect(el.style.image).toBe(s.data[0]![2]);
   });
 
+  test("a second call on other axes gets its own series and draws inside its own grid (echarts SSR)", () => {
+    const value = (gridIndex: number, min: number, max: number) => ({ type: "value", gridIndex, min, max });
+    const twoGrids = {
+      grid: [
+        { top: 20, height: 150 },
+        { top: 220, height: 150 },
+      ],
+      xAxis: [value(0, 0, 30), value(1, 0, 30)],
+      yAxis: [value(0, -10, 0), value(1, -10, 0)],
+      series: [
+        { type: "scatter", data: [[10, -3]] },
+        { type: "scatter", xAxisIndex: 1, yAxisIndex: 1, data: [[20, -7]] },
+      ],
+    };
+    const o = { x: "x", y: "y", team: "team", league: "nfl" } as const;
+    const out = withLogos(withLogos(twoGrids, [ROWS[0]], o), [ROWS[1]], {
+      ...o,
+      xAxisIndex: 1,
+      yAxisIndex: 1,
+    });
+    expect(out.series.map((s) => (s as { id?: string }).id)).toEqual([
+      undefined,
+      undefined,
+      "sdvplot:logo",
+      "sdvplot:logo:1:1:100",
+    ]);
+    const centres = renderImages(out).map((i) => i.y + i.height / 2);
+    expect(centres).toHaveLength(2);
+    expect(centres[0]).toBeCloseTo(20 + 0.3 * 150, 0); // y = -3 in grid 0
+    expect(centres[1]).toBeCloseTo(220 + 0.7 * 150, 0); // y = -7 in grid 1, not in grid 0
+    // a repeat call on the same axes and z joins that series; another z gets its own
+    expect(withLogos(out, [ROWS[0]], { ...o, xAxisIndex: 1, yAxisIndex: 1 }).series).toHaveLength(4);
+    expect(withLogos(out, [ROWS[0]], { ...o, z: 5 }).series.at(-1)).toMatchObject({
+      id: "sdvplot:logo:0:0:5",
+      z: 5,
+    });
+  });
+
+  test("drawnMarks reads what the series' renderItem draws", () => {
+    const out = withLogos(scatter(), ROWS, { x: "x", y: "y", team: "team", league: "nfl", height: 0.1 });
+    const s = out.series![1] as LogoSeries;
+    s.renderItem = (p, api) => {
+      const el = renderLogo(p, api);
+      return { ...el, style: { ...el.style, height: 10 } }; // a fixed 10 px, whatever the grid
+    };
+    expect(drawnMarks(out).map((m) => m[3])).toEqual([0.01, 0.01]); // 10 px of the hooks' 1000 px grid
+  });
+
   test("unknown team: one warning, skipped; empty rows add no series", () => {
     const spy = vi.fn();
     setWarningHandler(spy);
@@ -223,11 +272,57 @@ describe("withAxisLogos", () => {
     ).axisLabel;
     expect(label.formatter("KC")).toBe("{t_0|}");
     expect(label.formatter("XXX")).toBe("XXX");
-    expect(label.rich.t_0!.height).toBe(40);
+    expect(label.rich.t_0!.height).toBe(25.5); // 0.1 of the default grid: 400 - 65 - 80 px
     expect(label.rich.t_0!.backgroundColor.image).toMatch(/^https:/);
     const imgs = renderImages(out, 600, 400);
     expect(imgs.length).toBeGreaterThanOrEqual(2); // the rich backgrounds render as <image>
-    expect(imgs.some((i) => Math.abs(i.height - 40) < 1)).toBe(true);
+    expect(imgs.some((i) => Math.abs(i.height - 25.5) < 1)).toBe(true);
+  });
+
+  test("axis images are `height` of the grid (the plot area), as the mark images are (echarts SSR)", () => {
+    const base: EChartsOption = {
+      xAxis: { type: "category", data: ["KC", "BUF"] },
+      yAxis: { type: "value" },
+      series: [{ type: "bar", data: [3, 5] }],
+    };
+    const marks = withLogos(base, [{ x: "KC", y: 3, team: KC }], {
+      x: "x",
+      y: "y",
+      team: "team",
+      league: "nfl",
+      height: 0.1,
+    });
+    const heights = renderImages(withAxisLogos(marks, "x", { league: "nfl", height: 0.1 })).map(
+      (i) => i.height,
+    );
+    expect(heights).toHaveLength(3); // one mark logo, two axis logos
+    for (const h of heights) expect(h).toBeCloseTo(0.1 * (400 - 65 - 80), 1);
+    const sized: [Record<string, unknown>, number][] = [
+      [{ top: 40, bottom: 40 }, 32],
+      [{ height: "50%" }, 20],
+    ];
+    for (const [grid, px] of sized) {
+      const imgs = renderImages(withAxisLogos({ ...base, grid }, "x", { league: "nfl", height: 0.1 }));
+      expect(imgs.map((i) => i.height)).toEqual([px, px]);
+    }
+    expect(() => withAxisLogos(base, "x", { league: "nfl", chartHeight: 100 })).toThrow(
+      /pass the canvas height/,
+    );
+  });
+
+  test("the axis test hooks read the option: what the formatter shows, the rich image height", () => {
+    const out = withAxisLogos(bars(["KC", "XXX", "BUF"]), "x", { league: "nfl", height: 0.1 });
+    const label = (
+      out.xAxis as {
+        axisLabel: { formatter: (v: string) => string; rich: Record<string, { height: number }> };
+      }
+    ).axisLabel;
+    expect(visibleAxisLabels(out, "x")).toEqual(["XXX"]);
+    expect(drawnAxisMarks(out, "x")[0]![2]).toBeCloseTo(0.1, 9);
+    label.formatter = (v) => `{t_0|}${v}`; // an image AND the text
+    expect(visibleAxisLabels(out, "x")).toEqual(["KC", "XXX", "BUF"]);
+    label.rich.t_0!.height *= 1.5;
+    expect(drawnAxisMarks(out, "x")[0]![2]).toBeCloseTo(0.15, 9);
   });
 
   test("y axis on a horizontal bar chart; an existing string formatter is kept for unresolved labels", () => {
@@ -273,7 +368,7 @@ describe("withAxisLogos", () => {
           axisLabel: { rich: Record<string, { height: number }> };
         }
       ).axisLabel.rich.t_0!.height,
-    ).toBe(40);
+    ).toBe(25.5);
   });
 
   test("the axis bookkeeping leaves the value axis alone (horizontal and vertical bars on a scale: true axis)", () => {

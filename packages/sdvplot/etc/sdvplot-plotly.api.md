@@ -4,31 +4,19 @@
 
 ```ts
 
-// @public (undocumented)
+// @public
 export interface AxisOptions {
-    // (undocumented)
     embed?: ReadonlyMap<string, string>;
-    // (undocumented)
     height?: number;
     // Warning: (ae-forgotten-export) The symbol "IdSystem" needs to be exported by the entry point plotly.d.ts
-    //
-    // (undocumented)
     idSystem?: IdSystem;
     // Warning: (ae-forgotten-export) The symbol "League" needs to be exported by the entry point plotly.d.ts
-    //
-    // (undocumented)
     league: League;
     // Warning: (ae-forgotten-export) The symbol "MarkType" needs to be exported by the entry point plotly.d.ts
-    //
-    // (undocumented)
     markType?: MarkType;
     // Warning: (ae-forgotten-export) The symbol "SeasonInput" needs to be exported by the entry point plotly.d.ts
-    //
-    // (undocumented)
     season?: SeasonInput;
     // Warning: (ae-forgotten-export) The symbol "Variant" needs to be exported by the entry point plotly.d.ts
-    //
-    // (undocumented)
     variant?: Variant;
 }
 
@@ -47,23 +35,15 @@ export function drawnMarks(figure: PlotlyFigure): DrawnMark[];
 // @public
 export function embedSources(urls: Iterable<string>, fetchFn?: typeof fetch): Promise<Map<string, string>>;
 
-// @public (undocumented)
+// @public
 export interface HeadshotOptions {
-    // (undocumented)
     alpha?: number;
-    // (undocumented)
     embed?: ReadonlyMap<string, string>;
-    // (undocumented)
     height?: number;
-    // (undocumented)
     idSystem?: "espn" | "gsis";
-    // (undocumented)
     league: League;
-    // (undocumented)
     player: string;
-    // (undocumented)
     x: string;
-    // (undocumented)
     y: string;
 }
 
@@ -97,27 +77,17 @@ export interface LayoutImage {
     yref: string;
 }
 
-// @public (undocumented)
+// @public
 export interface MarkOptions {
-    // (undocumented)
     alpha?: number;
-    // (undocumented)
     embed?: ReadonlyMap<string, string>;
-    // (undocumented)
     height?: number;
-    // (undocumented)
     idSystem?: IdSystem;
-    // (undocumented)
     league: League;
-    // (undocumented)
     season?: SeasonInput;
-    // (undocumented)
     team: string;
-    // (undocumented)
     variant?: Variant;
-    // (undocumented)
     x: string;
-    // (undocumented)
     y: string;
 }
 
@@ -143,11 +113,9 @@ export interface PlotlyAxis {
     type?: "-" | "linear" | "log" | "date" | "category";
 }
 
-// @public (undocumented)
+// @public
 export interface PlotlyAxisOptions extends AxisOptions {
-    // (undocumented)
     xref?: string;
-    // (undocumented)
     yref?: string;
 }
 
@@ -159,13 +127,10 @@ export interface PlotlyFigure {
     layout?: PlotlyLayout;
 }
 
-// @public (undocumented)
+// @public
 export interface PlotlyHeadshotOptions extends HeadshotOptions {
-    // (undocumented)
     layer?: "above" | "below";
-    // (undocumented)
     xref?: string;
-    // (undocumented)
     yref?: string;
 }
 
@@ -196,13 +161,10 @@ export interface PlotlyLayout {
     yaxis?: PlotlyAxis;
 }
 
-// @public (undocumented)
+// @public
 export interface PlotlyMarkOptions extends MarkOptions {
-    // (undocumented)
     layer?: "above" | "below";
-    // (undocumented)
     xref?: string;
-    // (undocumented)
     yref?: string;
 }
 

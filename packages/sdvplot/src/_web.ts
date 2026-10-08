@@ -9,40 +9,68 @@ import type { IdSystem, League, MarkType, SeasonInput, Variant } from "./types.j
 export type { Placement } from "./placement.js";
 export { checkAlpha, checkHeight, placeSync as place } from "./placement.js";
 
-/** What the module-level test hooks return. Positional on purpose (cheap to assert); the contract shim in test/web.test.ts (the contract test lands with Task 9) converts. */
+/** What the module-level test hooks return. Positional on purpose (cheap to assert); the contract shim in test/adapters.contract.test.ts converts. */
 export type DrawnMark = readonly [id: string, x: unknown, y: unknown, height: number, url: string];
 export type DrawnAxisMark = readonly [id: string, index: number, height: number];
 
 export type Row = Record<string, unknown>;
+/** Options of `withLogos` / `withWordmarks` (each adapter adds its own subplot options). */
 export interface MarkOptions {
+  /** Name of the row column holding each mark's x position. */
   x: string;
+  /** Name of the row column holding each mark's y position. */
   y: string;
+  /** Name of the row column holding the team (abbreviation, name or id; see `idSystem`). */
   team: string;
+  /** The league the teams (or players) belong to, e.g. "nfl". */
   league: League;
+  /** A season (number or string) for every row, or the name of a row column holding each row's season. */
   season?: SeasonInput;
+  /** Mark height as a fraction of the plot area's height, in (0, 1]. Default 0.1. */
   height?: number;
+  /** Opacity in [0, 1]. Default 1. */
   alpha?: number;
+  /** Logo variant, e.g. "dark". Default "default". */
   variant?: Variant;
+  /** How the `team` values are read. Default "auto". */
   idSystem?: IdSystem;
+  /** url → data URI map from `embedSources`, to inline the images. */
   embed?: ReadonlyMap<string, string>;
 }
+/** Options of `withHeadshots`. */
 export interface HeadshotOptions {
+  /** Name of the row column holding each headshot's x position. */
   x: string;
+  /** Name of the row column holding each headshot's y position. */
   y: string;
+  /** Name of the row column holding the player id. */
   player: string;
+  /** The league the teams (or players) belong to, e.g. "nfl". */
   league: League;
+  /** Headshot height as a fraction of the plot area's height, in (0, 1]. Default 0.1. */
   height?: number;
+  /** Opacity in [0, 1]. Default 1. */
   alpha?: number;
+  /** What the `player` ids are: ESPN athlete ids, or nflverse gsis ids (needs `loadGsis()` first). Default "espn". */
   idSystem?: "espn" | "gsis";
+  /** url → data URI map from `embedSources`, to inline the images. */
   embed?: ReadonlyMap<string, string>;
 }
+/** Options of `withAxisLogos`: the categories of the axis are the teams. */
 export interface AxisOptions {
+  /** The league the teams (or players) belong to, e.g. "nfl". */
   league: League;
+  /** The season the axis' teams are resolved for. */
   season?: SeasonInput;
+  /** Image height as a fraction of the plot area's height, in (0, 1]. Default 0.1. */
   height?: number;
+  /** Logo variant, e.g. "dark". Default "default". */
   variant?: Variant;
+  /** "logo" (default) or "wordmark". */
   markType?: MarkType;
+  /** How the axis categories are read. Default "auto". */
   idSystem?: IdSystem;
+  /** url → data URI map from `embedSources`, to inline the images. */
   embed?: ReadonlyMap<string, string>;
 }
 
@@ -75,8 +103,9 @@ export async function embedSources(
   for (const url of new Set(urls)) {
     const res = await fetchFn(url);
     if (!res.ok) throw new DownloadError(`embed: ${url} answered ${res.status}`, url, res.status);
+    // `||`: an empty content-type header falls back to the inferred type too
     const mime =
-      res.headers.get("content-type")?.split(";")[0] ??
+      res.headers.get("content-type")?.split(";")[0]?.trim() ||
       (url.toLowerCase().endsWith(".svg") ? "image/svg+xml" : "application/octet-stream");
     const bytes = new Uint8Array(await res.arrayBuffer());
     let bin = "";
