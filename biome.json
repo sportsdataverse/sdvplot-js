@@ -8,6 +8,7 @@
       "**/src/specs/**",
       "packages/sporty/data/**",
       "fixtures/**",
+      "notebooks/vendor/**",
       "**/*.api.md",
       "docs/build/**",
       "docs/.docusaurus/**",

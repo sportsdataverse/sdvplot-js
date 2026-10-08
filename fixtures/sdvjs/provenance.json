@@ -1,0 +1,147 @@
+{
+  "parser": {
+    "file": "notebooks/vendor/sdv-parsers.js",
+    "source": "https://github.com/sportsdataverse/sportsdataverse-js/blob/a9c7eb807ae1a6552ea4c7f4872329cf8a473984/docs/src/playground/parsers.bundle.mjs",
+    "sdv_js_commit": "a9c7eb807ae1a6552ea4c7f4872329cf8a473984",
+    "sha256": "48bef6fdc7ba9a61cf5a7e37cc1d5df92dfa22a7698fad2c0013be1d33c0fd72"
+  },
+  "snapshots": [
+    {
+      "name": "scoreboard_nba_20240317",
+      "page": "scoreboard",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard?dates=20240317",
+      "sdv_js": "sdv.nba.espnNbaScoreboard({ dates: '20240317', parsed: true })",
+      "keep": [
+        "leagues",
+        "events"
+      ],
+      "parsed": [
+        {
+          "endpoint": "scoreboard",
+          "rows": 7,
+          "rows_sha256": "cc2556a6c166b3da805830f39e9d9d1ccb4e57d2b8888430ccdcc5c29f8a09c7"
+        }
+      ],
+      "captured_at": "2026-10-08T23:31:12Z",
+      "bytes": 99102,
+      "sha256": "65ba07b29ea2a9711cf766800aa14b043388457b6af59c8e522e9fb5e459f168",
+      "file": "scoreboard_nba_20240317.json.gz"
+    },
+    {
+      "name": "summary_nfl_401671789",
+      "page": "win-probability",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=401671789",
+      "sdv_js": "sdv.nfl.espnNflSummary({ event_id: 401671789, parsed: true, section })",
+      "keep": [
+        "header",
+        "winprobability",
+        "drives"
+      ],
+      "parsed": [
+        {
+          "endpoint": "summary",
+          "section": "header",
+          "rows": 1,
+          "rows_sha256": "ec690405898c02bf6dc331eafd59f9c116045cc8c6578482c1581b25aa1ad068"
+        },
+        {
+          "endpoint": "summary",
+          "section": "winprobability",
+          "rows": 188,
+          "rows_sha256": "d5c825a54a3aac9e92500cba048fc8f7d299c83df3cd724132e4328e00f35d18"
+        },
+        {
+          "endpoint": "summary",
+          "section": "drive_plays",
+          "rows": 188,
+          "rows_sha256": "4d3c43618bdc443fdd6d8d6627bcafe8caed553c88070e15c1d18a8f2c6c407c"
+        }
+      ],
+      "captured_at": "2026-10-08T23:31:13Z",
+      "bytes": 471570,
+      "sha256": "dbd4ff54dda888f3598dba27da028214ecc33028421967f4f58d06133aa2cb5b",
+      "file": "summary_nfl_401671789.json.gz"
+    },
+    {
+      "name": "summary_nba_401585607",
+      "page": "game-dashboard",
+      "url": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=401585607",
+      "sdv_js": "sdv.nba.espnNbaSummary({ event_id: 401585607, parsed: true, section })",
+      "keep": [
+        "header",
+        "plays",
+        "boxscore"
+      ],
+      "parsed": [
+        {
+          "endpoint": "summary",
+          "section": "header",
+          "rows": 1,
+          "rows_sha256": "35055c0713b293cd113e3176efaacbb819d0f1fa7a821fc5c8a6f54a69e1df49"
+        },
+        {
+          "endpoint": "summary",
+          "section": "plays",
+          "rows": 450,
+          "rows_sha256": "728d928bc3800eb8e94cfae9546881072b85909900b238dd7adab4e534ff7324"
+        },
+        {
+          "endpoint": "summary",
+          "section": "boxscore_player",
+          "rows": 27,
+          "rows_sha256": "a04901dc8234506b2e02d408e60e1dec85052a98bffc19405e32a47d4fdb55a8"
+        }
+      ],
+      "captured_at": "2026-10-08T23:31:13Z",
+      "bytes": 370326,
+      "sha256": "4dcfa422ac929c0e8d6f70a02e608c366588019558b2a28af405aecc5ad7d346",
+      "file": "summary_nba_401585607.json.gz"
+    },
+    {
+      "name": "standings_nba_2025",
+      "page": "ratings",
+      "url": "https://site.api.espn.com/apis/v2/sports/basketball/nba/standings?season=2025",
+      "sdv_js": "sdv.nba.espnNbaStandings({ season: 2025, parsed: true })",
+      "keep": [
+        "children",
+        "season"
+      ],
+      "parsed": [
+        {
+          "endpoint": "standings",
+          "rows": 30,
+          "rows_sha256": "1607abc8905db0a9510ec188130229330b54baf3cd94b116acb8974621b90ff2"
+        }
+      ],
+      "captured_at": "2026-10-08T23:31:13Z",
+      "bytes": 171217,
+      "sha256": "bedd4e4269be0f4307f13e8e7d4298e0b5387c95521d2088ce996f4513b50d86",
+      "file": "standings_nba_2025.json.gz"
+    },
+    {
+      "name": "athlete_gamelog_nba_1966_2024",
+      "page": "player-trend",
+      "url": "https://site.web.api.espn.com/apis/common/v3/sports/basketball/nba/athletes/1966/gamelog?season=2024",
+      "sdv_js": "sdv.nba.espnNbaPlayerGamelog({ athlete_id: '1966', season: 2024, parsed: true })",
+      "keep": [
+        "names",
+        "labels",
+        "displayNames",
+        "events",
+        "seasonTypes"
+      ],
+      "cut_links": true,
+      "parsed": [
+        {
+          "endpoint": "athlete_gamelog",
+          "rows": 82,
+          "rows_sha256": "3cad4fb250965debb8f37ec86a89f143f6310ffab774d20ee5df28b27397c891"
+        }
+      ],
+      "captured_at": "2026-10-08T22:58:10Z",
+      "bytes": 787166,
+      "sha256": "a71cffd3cb45f6fcaadb6522abe396a10998842018092129d382b47152464695",
+      "file": "athlete_gamelog_nba_1966_2024.json.gz"
+    }
+  ]
+}

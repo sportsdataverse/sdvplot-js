@@ -1,7 +1,7 @@
 import { execSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, utimesSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { type Plugin, build } from "esbuild";
+import { type Plugin, build, transform } from "esbuild";
 import { DEFINES, SOURCES, abs } from "../../examples/sources.js";
 import {
   BKN_SHOTS_2026,
@@ -18,6 +18,7 @@ import {
   SUPER_BOWL_LIX_TDS,
 } from "../../examples/src/data.js";
 import { BKN_GAMES } from "../../packages/sdvplot/test/shots/fixture.js";
+import { checkVendored, provenance, rawText, trim, vendoredBody } from "./sdvjs.js";
 
 const NB = abs("notebooks");
 const ENTRIES: Readonly<Record<string, string>> = {
@@ -95,6 +96,18 @@ await build({
   logLevel: "warning",
 });
 
+// sportsdataverse-js's parser for the "Workflows with sdv-js" pages: the vendored bundle, refused unless it is the
+// pinned upstream bytes, then minified. The pages parse ESPN JSON with it, from a snapshot or a live fetch.
+const prov = provenance();
+checkVendored(prov);
+const parsers = await transform(vendoredBody(), {
+  format: "esm",
+  minify: true,
+  target: "es2022",
+  legalComments: "eof",
+});
+writeFileSync(join(NB, "src/_sdv/sdv-parsers.js"), parsers.code);
+
 // 2. Sample data the pages read with FileAttachment (real rows: spec §7; provenance in examples/src/data.ts).
 // Framework stamps each attachment with its file's mtime: a fixed one (the epoch) keeps two builds byte-identical.
 mkdirSync(join(NB, "src/data"), { recursive: true });
@@ -115,6 +128,15 @@ for (const [name, rows] of [
 ] as const) {
   const file = join(NB, `src/data/${name}.json`);
   writeFileSync(file, `${JSON.stringify(rows)}\n`);
+  utimesSync(file, 0, 0);
+}
+// The sdv-js snapshots (fixtures/sdvjs), each cut to the keys its page parses, and their provenance.
+for (const [name, value] of [
+  ...prov.snapshots.map((s) => [`sdvjs_${s.name}`, trim(JSON.parse(rawText(s)), s)] as const),
+  ["sdvjs_provenance", prov] as const,
+]) {
+  const file = join(NB, `src/data/${name}.json`);
+  writeFileSync(file, `${JSON.stringify(value)}\n`);
   utimesSync(file, 0, 0);
 }
 
