@@ -4,6 +4,7 @@ import { STANDINGS } from "../../sdvtables/test/fixtures/standings.js";
 import { InputError, UnsupportedTargetError } from "../src/errors.js";
 import { resetWarnings, resolveSync, setWarningHandler } from "../src/index.js";
 import {
+  type ImageLayer,
   type VegaLiteSpec,
   drawnAxisMarks,
   drawnMarks,
@@ -609,4 +610,84 @@ describe("accessible descriptions", () => {
     expect(labels(r.svg).join("|")).not.toMatch(/data:|https?:\/\//);
     expect(r.warnings).toEqual([]);
   });
+});
+
+describe("tooltips", () => {
+  // The 2024 AFC standings by wins, with a tooltip on every mark (config.mark.tooltip)
+  const byWins = [...STANDINGS].sort((a, b) => b.wins - a.wins);
+  const rows = byWins.map((s) => ({ team: s.team, wins: s.wins, qb_espn_id: s.qb_espn_id }));
+  const x = { field: "team", type: "nominal", sort: byWins.map((s) => s.team) };
+  const y = { field: "wins", type: "quantitative" };
+  const config = { mark: { tooltip: true } };
+  const bars = (): VegaLiteSpec => ({
+    height: 300,
+    data: { values: rows },
+    mark: "bar",
+    encoding: { x, y },
+    config,
+  });
+  const at = { x: "team", y: "wins", team: "team", league: "nfl" } as const;
+  const charts = (): Record<string, VegaLiteSpec> => ({
+    withLogos: withLogos(bars(), rows, at),
+    withWordmarks: withWordmarks(bars(), rows, at),
+    withHeadshots: withHeadshots(bars(), rows, { x: "team", y: "wins", player: "qb_espn_id", league: "nfl" }),
+    "withAxisLogos x": withAxisLogos(bars(), "x", { league: "nfl" }),
+    "withAxisLogos y": withAxisLogos({ ...bars(), encoding: { y: x, x: y } }, "y", { league: "nfl" }),
+    // dropped under the caller's top-level tooltip encoding, which every layer inherits
+    logoLayer: {
+      height: 300,
+      data: { values: rows },
+      encoding: { tooltip: [{ field: "team" }, { field: "wins" }] },
+      layer: [{ mark: "bar", encoding: { x, y } }, logoLayer(rows, { ...at, xType: "nominal" })],
+    },
+  });
+  const all = (s: VegaLiteSpec): VegaLiteSpec[] => [
+    s,
+    ...(s.layer ?? []).flatMap((l) => all(l as VegaLiteSpec)),
+  ];
+  const ours = (s: VegaLiteSpec) =>
+    all(s).filter((l): l is VegaLiteSpec & ImageLayer => String(l.name).startsWith("sdvplot_"));
+
+  test.each(Object.keys(charts()))(
+    "%s: the image layer sets tooltip null on its mark and encoding",
+    (name) => {
+      const layers = ours(charts()[name]!);
+      expect(layers).toHaveLength(1);
+      for (const l of layers) {
+        expect(l.mark.tooltip).toBeNull(); // outranks config.mark.tooltip and config.image.tooltip
+        expect(l.encoding.tooltip).toBeNull(); // outranks a parent layer's encoding.tooltip
+      }
+    },
+  );
+
+  test("the caller's marks and config are untouched", () => {
+    const s = withLogos(bars(), rows, at);
+    expect(s.layer?.[0]).toEqual({ mark: "bar", encoding: { x, y } });
+    expect(s.config).toEqual(config);
+  });
+
+  test.each(Object.keys(charts()))(
+    "%s: compiled, no image has a tooltip and the KC bar keeps its own",
+    async (name) => {
+      const { View, parse } = await import("vega");
+      const view = new View(parse(compile(charts()[name] as never).spec), { renderer: "none" });
+      await view.runAsync();
+      type Node = { marktype?: string; items?: Node[]; tooltip?: unknown; datum?: Record<string, unknown> };
+      const items: { type: string; item: Node }[] = [];
+      const walk = (node: Node) => {
+        for (const it of node.items ?? []) {
+          if (node.marktype) items.push({ type: node.marktype, item: it });
+          walk(it);
+        }
+      };
+      walk((view.scenegraph() as unknown as { root: Node }).root);
+      const images = items.filter((i) => i.type === "image");
+      expect(images).toHaveLength(8);
+      for (const i of images) expect(i.item.tooltip ?? null).toBeNull();
+      const kc = items.find((i) => i.type === "rect" && i.item.datum?.team === "KC")?.item.tooltip;
+      expect(kc).toMatchObject({ team: "KC" });
+      expect(Number((kc as { wins: unknown }).wins)).toBe(15);
+      view.finalize();
+    },
+  );
 });

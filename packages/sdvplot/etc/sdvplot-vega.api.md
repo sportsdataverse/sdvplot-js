@@ -47,7 +47,7 @@ export interface HeadshotOptions {
     y: string;
 }
 
-// @public (undocumented)
+// @public
 export interface ImageLayer {
     // (undocumented)
     data: {
@@ -62,6 +62,7 @@ export interface ImageLayer {
         width: number;
         height: number;
         aspect: true;
+        tooltip: null;
         opacity?: number;
         align?: "left" | "center" | "right";
         baseline?: "top" | "middle" | "bottom";
@@ -70,7 +71,7 @@ export interface ImageLayer {
     name: string;
 }
 
-// @public (undocumented)
+// @public
 export function logoLayer(rows: readonly Row[], o: MarkOptions & {
     chartHeight?: number;
     xType?: VlType;
@@ -129,19 +130,19 @@ export function withAxisLogos(spec: VegaLiteSpec, axis: "x" | "y", o: AxisOption
 // @public (undocumented)
 export function withAxisLogos<F extends object>(spec: F, axis: "x" | "y", o: AxisOptions): F;
 
-// @public (undocumented)
+// @public
 export function withHeadshots(spec: VegaLiteSpec, rows: readonly Row[], o: HeadshotOptions): VegaLiteSpec;
 
 // @public (undocumented)
 export function withHeadshots<F extends object>(spec: F, rows: readonly Row[], o: HeadshotOptions): F;
 
-// @public (undocumented)
+// @public
 export function withLogos(spec: VegaLiteSpec, rows: readonly Row[], o: MarkOptions): VegaLiteSpec;
 
 // @public (undocumented)
 export function withLogos<F extends object>(spec: F, rows: readonly Row[], o: MarkOptions): F;
 
-// @public (undocumented)
+// @public
 export function withWordmarks(spec: VegaLiteSpec, rows: readonly Row[], o: MarkOptions): VegaLiteSpec;
 
 // @public (undocumented)
