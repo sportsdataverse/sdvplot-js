@@ -47,6 +47,31 @@ export default function sdvExamples(_context: LoadContext): Plugin {
             },
           ],
         },
+        // Docusaurus turns the default cacheGroups off, so a module two example chunks share is copied into each
+        // (the 185 KB of shot JSON went into 118 chunks). The sample data gets one chunk of its own, and package
+        // source two example chunks share goes to a shared chunk. [\\/] so the tests match Windows paths too.
+        optimization: isServer
+          ? {}
+          : {
+              splitChunks: {
+                cacheGroups: {
+                  sdvData: {
+                    test: /[\\/](examples[\\/]src[\\/]data\.ts|fixtures[\\/]|packages[\\/][^\\/]+[\\/]test[\\/])/,
+                    name: "sdv-data",
+                    chunks: "async",
+                    enforce: true,
+                    priority: 30,
+                  },
+                  sdvSource: {
+                    test: /[\\/]packages[\\/][^\\/]+[\\/]src[\\/]/,
+                    chunks: "async",
+                    minChunks: 2,
+                    priority: 20,
+                    reuseExistingChunk: true,
+                  },
+                },
+              },
+            },
         plugins: [new utils.currentBundler.instance.DefinePlugin(DEFINES)],
       };
     },
