@@ -171,8 +171,11 @@ wordmarks are named by the resolved team whatever id system the rows use (`team_
 and `axisLogos`, the Vega image layers and d3's `appendLogos`, `appendWordmarks` and `appendHeadshots`. On the Plot
 marks `ariaLabel` is Plot's per-image channel, so a string is a column name (`ariaLabel: "qb"`) and an accessor or an
 array gives any other text; the d3 helpers take `ariaLabel: (value, i) => text`. `shotZones` names each path by its
-zone, a titled `teamTiers` figure is labelled by its title, `ariaDescription` passes through to a mark's group, and
-sporty's `surfaceMark` describes its surface. Plotly, ECharts and Chart.js draw to a canvas or to layout images, so
+zone and `shotCells` each cell by its makes, attempts and FG% ("147 of 181 made, 81.2%"), the shooting signature's
+ribbon is named in Plot and d3, `appendLegend` names its colour bar, a titled `teamTiers` figure is labelled by its
+title, and `ariaDescription` passes through to a mark's group. sporty describes every surface it draws ("nba
+basketball surface"; `ariaDescription` replaces it): `surfaceMark`, `toSVG` and d3's `appendSurface`, sdvplot's
+included. Plotly, ECharts and Chart.js draw to a canvas or to layout images, so
 the chart is named through each library (see each adapter below).
 
 ## Spec adapters (Plotly, Vega-Lite, ECharts) — zero runtime deps

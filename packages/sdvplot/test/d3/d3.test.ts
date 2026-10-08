@@ -106,6 +106,17 @@ test("appendSurface paints the lane for a team and draws through the scales", ()
   );
 });
 
+test("appendSurface describes the surface (sporty's default, or ariaDescription)", () => {
+  const xy = { x: (v: number) => v * 10 + 500, y: (v: number) => 250 - v * 10 };
+  const svg = select(document.body).append("svg");
+  expect(appendSurface(svg, "nba", { team: "BOS", ...xy }).attr("aria-description")).toBe(
+    "nba basketball surface",
+  );
+  expect(
+    appendSurface(svg, "nba", { ...xy, ariaDescription: "Celtics court" }).attr("aria-description"),
+  ).toBe("Celtics court");
+});
+
 test("appendSurface throws InputError for a league with no surface", () => {
   const svg = select(document.body).append("svg");
   expect(() => appendSurface(svg, "mlb", { x: (v) => v, y: (v) => v })).toThrow(InputError);

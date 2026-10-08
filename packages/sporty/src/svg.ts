@@ -9,6 +9,11 @@ export interface SvgOptions {
   id?: string;
   /** `"sampled"` (default) emits every point as `L`; `"svg"` replaces detected circle runs with `A` commands. */
   arcs?: "sampled" | "svg";
+  /**
+   * Describes the surface for assistive technology, on the `<g>` that holds it; default the scene's league and sport,
+   * then "surface", such as "nba basketball surface" (as `surfaceMark`).
+   */
+  ariaDescription?: string;
 }
 
 const esc = (s: string): string =>
@@ -56,5 +61,6 @@ export function toSVG(scene: Scene, o: SvgOptions = {}): string {
     }
   }
   const id = o.id === undefined ? "" : ` id="${esc(o.id)}"`;
-  return `<svg xmlns="http://www.w3.org/2000/svg"${id} viewBox="${n(x0)} ${n(-y1)} ${n(x1 - x0)} ${n(y1 - y0)}" width="${w}" height="${h}"><g transform="scale(1,-1)">${body.join("")}</g></svg>`;
+  const description = esc(o.ariaDescription ?? `${scene.league} ${scene.sport} surface`);
+  return `<svg xmlns="http://www.w3.org/2000/svg"${id} viewBox="${n(x0)} ${n(-y1)} ${n(x1 - x0)} ${n(y1 - y0)}" width="${w}" height="${h}"><g transform="scale(1,-1)" aria-description="${description}">${body.join("")}</g></svg>`;
 }

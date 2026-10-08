@@ -188,6 +188,8 @@ export function teamColorScale(
 export interface D3SurfaceOptions extends SurfaceSceneOptions {
   x: (v: number) => number;
   y: (v: number) => number;
+  /** Describes the surface for assistive technology; default sporty's ("nba basketball surface" and so on). */
+  ariaDescription?: string;
 }
 /** Paint a league's surface (in `team`'s colours) into `sel` through the caller's x/y scales. Throws InputError for a league with no surface. */
 export function appendSurface<G extends SVGGElement | SVGSVGElement, D>(
@@ -195,8 +197,14 @@ export function appendSurface<G extends SVGGElement | SVGSVGElement, D>(
   league: League,
   o: D3SurfaceOptions,
 ): Sel<SVGGElement, D> {
-  const { x, y, ...scene } = o;
-  return sportyAppendSurface(sel, surfaceScene(league, scene), x, y);
+  const { x, y, ariaDescription, ...scene } = o;
+  return sportyAppendSurface(
+    sel,
+    surfaceScene(league, scene),
+    x,
+    y,
+    ariaDescription === undefined ? {} : { ariaDescription },
+  );
 }
 export { appendLegend, appendSignature } from "./shots.js";
 export type { AppendLegendOptions, AppendSignatureOptions } from "./shots.js";

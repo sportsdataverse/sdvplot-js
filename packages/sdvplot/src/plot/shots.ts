@@ -13,7 +13,7 @@ import { type BinShape, cellPoints } from "../bins/index.js";
 import { InputError } from "../errors.js";
 import { type CellVsLeague, LEAGUE_PRIOR_ATTEMPTS, type Split, shrunkDiff } from "../shots/aggregate.js";
 import { type DiffScale, diffScale } from "../shots/diff.js";
-import { type SignaturePoint, signatureGradient } from "../shots/signature.js";
+import { SIGNATURE_NAME, type SignaturePoint, signatureGradient } from "../shots/signature.js";
 import { compose, sameRows } from "./marks.js";
 
 type Point = [number, number];
@@ -210,6 +210,9 @@ export function shotCells(cells: readonly CellVsLeague[], o: ShotCellsOptions): 
     return { data, facets: facets.map((I) => I.filter(keep)) };
   };
   const geo: Plot.GeoOptions = {
+    // each path's accessible name, in the tip's terms ("147 of 181 made, 81.2%"); a caller's ariaLabel wins
+    ariaLabel: (h: CellVsLeague) =>
+      `${h.makes} of ${h.attempts} made${h.fgPct === null ? "" : `, ${(h.fgPct * 100).toFixed(1)}%`}`,
     ...pass,
     // each path is stamped by its input row, so a transform that makes new rows throws (sameRows)
     ...(transform === undefined ? {} : { transform: sameRows(transform) }),
@@ -476,6 +479,7 @@ export function shootingSignature(
       stroke: "currentColor",
       strokeOpacity: 0.2,
       strokeWidth: 0.5,
+      ariaLabel: () => SIGNATURE_NAME,
       render(index, scales, values, dimensions, context, next) {
         const g = next?.(index, scales, values, dimensions, context) ?? null;
         if (g === null) return null;

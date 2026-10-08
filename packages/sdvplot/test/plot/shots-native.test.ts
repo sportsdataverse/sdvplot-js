@@ -249,6 +249,32 @@ test("the tip is the last mark shotZones and shootingSignature return: the zone 
   expect(sig.at(-1)).toBeInstanceOf(Plot.Tip);
 });
 
+test("accessible names: each cell reads its makes, attempts and FG% as the tip does; the signature ribbon is named", () => {
+  const cells = cellsVsLeague(BKN, LEAGUE.hex15);
+  const court = surface("nba", { displayRange: "defense" });
+  const fig = Plot.plot({
+    ...court.scales,
+    width: 500,
+    marks: [...court.marks, shotCells(cells, { r: 15 })],
+  });
+  expect(fig.querySelector('path[data-sdv-id="0,0"]')?.getAttribute("aria-label")).toBe(
+    "147 of 181 made, 81.2%",
+  );
+  const named = fig.querySelectorAll("path[data-sdv-id][aria-label]");
+  expect(named).toHaveLength(fig.querySelectorAll("path[data-sdv-id]").length);
+  // a caller's ariaLabel still wins (Plot's channel: a field name, an accessor or an array)
+  const own = Plot.plot({
+    ...court.scales,
+    marks: [shotCells(cells, { r: 15, ariaLabel: (c: CellVsLeague) => `cell ${c.x},${c.y}` })],
+  });
+  expect(own.querySelector('path[data-sdv-id="0,0"]')?.getAttribute("aria-label")).toBe("cell 0,0");
+  const pts = signaturePoints(vsLeague(fgPctByDistance(BKN), LEAGUE.byFoot));
+  const sig = Plot.plot({ y: { domain: [0, 1] }, marks: shootingSignature(pts) });
+  expect(sig.querySelector("g[aria-label=area] path")?.getAttribute("aria-label")).toBe(
+    "shooting signature: FG% by distance against the league",
+  );
+});
+
 type Pt = readonly [number, number];
 /** Winding number of `p` around a closed ring: an independent inside test (shotZones samples by even-odd). */
 function winding([x, y]: Pt, ring: readonly Pt[]): number {
