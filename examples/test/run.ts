@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { MANIFEST_URL, resetWarnings, setWarningHandler } from "@sportsdataverse/sdvplot";
+import { MANIFEST_URL, resetManifestCache, resetWarnings, setWarningHandler } from "@sportsdataverse/sdvplot";
 import { type ReactElement, act, isValidElement } from "react";
 import { createRoot } from "react-dom/client";
 import { abs } from "../sources.js";
@@ -116,7 +116,10 @@ function recordOtherNetworkPaths(fetched: string[]): () => void {
   };
 }
 
-/** Load (= run) one example offline, collecting sdvplot warnings and every fetch it attempted. */
+/**
+ * Load (= run) one example offline, collecting sdvplot warnings and every fetch it attempted. Per-process state is
+ * reset before and after, so an example sees the same state whatever ran before it (or whether it runs alone).
+ */
 export async function runExample(
   entry: ExampleEntry,
   load: () => Promise<{ default: unknown }> = () => import(/* @vite-ignore */ abs(`examples/${entry.file}`)),
@@ -127,6 +130,7 @@ export async function runExample(
   globalThis.fetch = offlineFetch(entry, fetched);
   const restoreSinks = recordOtherNetworkPaths(fetched);
   resetWarnings();
+  resetManifestCache();
   setWarningHandler((m) => warnings.push(m));
   try {
     const value = (await load()).default;
@@ -135,6 +139,8 @@ export async function runExample(
     globalThis.fetch = realFetch;
     restoreSinks();
     setWarningHandler(null);
+    resetWarnings();
+    resetManifestCache();
   }
 }
 

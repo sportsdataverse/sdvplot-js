@@ -4,7 +4,6 @@ import {
   loadLeague,
   manifestMarks,
   parseManifestCsv,
-  resetManifestCache,
 } from "@sportsdataverse/sdvplot";
 import type { ExampleMeta } from "../../contract.js";
 
@@ -19,7 +18,6 @@ const rows = await fetchManifest();
 const own = parseManifestCsv(await (await fetch(MANIFEST_URL)).text());
 // manifestMarks maps one league's rows onto its teams through the shard's aliases, best first.
 const nfl = manifestMarks("nfl", rows, (await loadLeague("nfl")).aliases);
-resetManifestCache(); // forget the cached copy: the next fetchManifest() downloads again
 
 export default {
   MANIFEST_URL,

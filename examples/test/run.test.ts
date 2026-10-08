@@ -1,5 +1,5 @@
 import * as Plot from "@observablehq/plot";
-import { loadLeague } from "@sportsdataverse/sdvplot";
+import { MANIFEST_URL, fetchManifest, loadLeague } from "@sportsdataverse/sdvplot";
 import { logos } from "@sportsdataverse/sdvplot/plot";
 import { expect, test } from "vitest";
 import type { ExampleEntry } from "../src/contract.js";
@@ -129,4 +129,12 @@ test("I2: axes alone are not a drawing; a data mark is", async () => {
   expect(problems(none, bare)).toContain(
     "drew no mark (no path/image/circle/rect/line/polygon/text/img/table)",
   );
+});
+
+test("every example starts with an empty manifest cache: a network example fetches whatever ran before it", async () => {
+  const e = entry("t/manifest", ["network"]);
+  const run = async () =>
+    (await runExample(e, async () => ({ default: (await fetchManifest()).length }))).fetched;
+  expect(await run()).toEqual([MANIFEST_URL]);
+  expect(await run()).toEqual([MANIFEST_URL]);
 });
