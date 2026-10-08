@@ -8,6 +8,7 @@ import { EspnHeadshotLeague } from '@sportsdataverse/sdvplot';
 import { HeadshotIdSystem } from '@sportsdataverse/sdvplot';
 import { IdSystem } from '@sportsdataverse/sdvplot';
 import { League } from '@sportsdataverse/sdvplot';
+import { RowFilter } from '@sportsdataverse/sdvplot';
 import { SeasonInput } from '@sportsdataverse/sdvplot';
 import { Variant } from '@sportsdataverse/sdvplot';
 import { Which } from '@sportsdataverse/sdvplot';

@@ -1,8 +1,9 @@
 import { InputError } from "./errors.js";
 
 /**
- * A row test: the brush region (or any caller's) as a predicate. The same shape as sdvtables' `RowFilter`, so a linked
- * table applies it with `setExternalFilter` as is (not a `ValuePredicate`, which tests one column's cell).
+ * A row test, true to keep the row: the brush region (or any caller's) as a predicate. The one definition: sdvtables
+ * re-exports this type for `setExternalFilter`, so a linked table applies a store's predicate as is (not a
+ * `ValuePredicate`, which tests one column's cell). Both compare it by identity: the same function again is a no-op.
  */
 export type RowFilter<Row> = (row: Row) => boolean;
 
