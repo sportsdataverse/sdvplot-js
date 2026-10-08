@@ -214,7 +214,7 @@ function imageMark<R>(
  * `loadLeague(league)` first; a team that does not resolve is left out, with one warning. Every other `Plot.image`
  * option passes through (`tip`, `href`, `fx`/`fy`, `sort`, `filter`, `dx`/`dy`, `className`, `clip`, …), and Plot's
  * row-preserving transforms wrap it (`Plot.dodgeY`, `Plot.stackY`, `Plot.windowY`, `Plot.selectLast`, `Plot.pointer`);
- * an aggregating transform (`bin`, `group`, `hexbin`) throws `InputError`. Each image is named "<team> logo".
+ * an aggregating transform (`bin`, `group`, `hexbin`) throws `InputError`. Each image is named for its team ("KC logo").
  *
  * @example
  * ```ts
@@ -250,11 +250,11 @@ function imageMark<R>(
 export function logos<R>(data: Data<R>, o: MarkOptions<R>): Plot.Markish {
   return imageMark(data, o, "logo", o.team);
 }
-/** Team wordmarks, as `logos` (same options and pass-through); each image is named "<team> wordmark". */
+/** Team wordmarks, as `logos` (same options and pass-through); each image is named for its team ("KC wordmark"). */
 export function wordmarks<R>(data: Data<R>, o: MarkOptions<R>): Plot.Markish {
   return imageMark(data, o, "wordmark", o.team);
 }
-/** ESPN player headshots, as `logos` with a `player` channel; each image is named "<player id> headshot" (pass `ariaLabel` for names). */
+/** ESPN player headshots, as `logos` with a `player` channel; each image is named for its player id ("3139477 headshot"; pass `ariaLabel` for names). */
 export function headshots<R>(data: Data<R>, o: HeadshotOptions<R>): Plot.Markish {
   return imageMark(data, o, "headshot", o.player);
 }
