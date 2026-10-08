@@ -6,7 +6,7 @@ import { ContractError, type ContractMarkOptions, checkAdapterContract } from ".
 import { makeAxisTarget, makeTarget, plotAdapter } from "./contract-adapter.js";
 
 beforeAll(() => loadLeague("nfl"));
-test("the Plot adapter passes rules 0-8", async () => {
+test("the Plot adapter passes rules 0-9", async () => {
   await checkAdapterContract(plotAdapter, { makeTarget, makeAxisTarget });
 });
 test("a broken adapter fails with the rule named", async () => {

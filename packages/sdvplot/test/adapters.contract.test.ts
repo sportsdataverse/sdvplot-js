@@ -55,27 +55,15 @@ function shim<T>(mod: SpecAdapterModule<T>, name: string): ContractAdapter<T> {
         y: y as Value,
         height,
         url,
-        kind: kindFromName(mod, t, url),
+        kind: "", // the positional hooks do not carry the kind, and no contract rule reads it
       })),
     drawnAxisMarks: (t, axis) =>
       mod.drawnAxisMarks(t, axis).map(([id, tick, height]) => ({ id, tick, height })),
     visibleAxisLabels: (t, axis) => mod.visibleAxisLabels(t, axis),
   };
 }
-/** The mark kind is in each adapter's own bookkeeping name ("sdvplot:<kind>:<id>" image name, "sdvplot_<kind>" layer, "sdvplot:<kind>" series). */
-function kindFromName<T>(mod: SpecAdapterModule<T>, t: T, url: string): string {
-  const json = JSON.stringify(t);
-  for (const kind of ["logo", "wordmark", "headshot"])
-    if (
-      json.includes(`sdvplot:${kind}:`) ||
-      json.includes(`"sdvplot_${kind}"`) ||
-      json.includes(`"sdvplot:${kind}"`)
-    )
-      if (json.includes(url)) return kind;
-  return "logo";
-}
 
-test("sdvplot/plotly passes the adapter contract (rules 0–8)", async () => {
+test("sdvplot/plotly passes the adapter contract (rules 0–9)", async () => {
   await expect(
     checkAdapterContract(shim(plotly, "plotly"), {
       makeTarget: () => ({
@@ -90,7 +78,32 @@ test("sdvplot/plotly passes the adapter contract (rules 0–8)", async () => {
     }),
   ).resolves.toBeUndefined();
 });
-test("sdvplot/vega passes the adapter contract (rules 0–8)", async () => {
+test("rule 9 fails an adapter that writes into its input", async () => {
+  const real = shim(plotly, "plotly");
+  const mutating: typeof real = {
+    ...real,
+    addLogos: (t, ...rest) => {
+      const out = real.addLogos(t, ...rest);
+      (t as { layout: Record<string, unknown> }).layout.title = "mine"; // rules 1-8 never look at the input again
+      return out;
+    },
+  };
+  await expect(
+    checkAdapterContract(mutating, {
+      makeTarget: () => ({
+        data: [{ type: "scatter", x: [0, 30], y: [-10, 0] }],
+        layout: { width: 700, height: 450 },
+      }),
+      makeAxisTarget: (cats) => ({
+        data: [{ type: "bar", x: [...cats], y: cats.map((_, i) => i + 1) }],
+        layout: {},
+      }),
+      league: "nfl",
+    }),
+  ).rejects.toThrow(/^rule 9 \(no input mutation\): addLogos threw on a frozen input/);
+});
+
+test("sdvplot/vega passes the adapter contract (rules 0–9)", async () => {
   await expect(
     checkAdapterContract(shim(vega, "vega"), {
       makeTarget: () => ({
@@ -117,7 +130,7 @@ test("sdvplot/vega passes the adapter contract (rules 0–8)", async () => {
     }),
   ).resolves.toBeUndefined();
 });
-test("sdvplot/echarts passes the adapter contract (rules 0–8)", async () => {
+test("sdvplot/echarts passes the adapter contract (rules 0–9)", async () => {
   await expect(
     checkAdapterContract(shim(echarts, "echarts"), {
       makeTarget: (): echarts.EChartsOption => ({
