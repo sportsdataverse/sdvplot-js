@@ -98,3 +98,26 @@ hexagon's area with sdvplot's `squarebin`; nothing outside sdvplot computes squa
 `fixtures/shots/README.md` records each file's source, hash and command.
 
 <Live id="sdvplot/shots/hex-chart" />
+
+## NFL_TEAM_EPA_2024: every team's EPA, 2024
+
+All 32 teams' 2024 regular season in expected points added (EPA), from nflverse's 2024 play-by-play: for each team,
+the number of its offensive rush and pass plays with an EPA and their summed EPA (`off_plays`, `off_epa`), and the
+same for the plays its defence faced (`def_plays`, `def_epa`). EPA per play is `off_epa / off_plays`; net EPA per play
+subtracts `def_epa / def_plays`. The rows are every row of `fixtures/examples/nfl_epa_2024_reg.csv`, which
+`tools/sample-data/nfl_2024.py` writes; `STANDINGS`' `net_epa` comes from the same table.
+
+## KC_PHI_GAMES_2024: two teams' seasons
+
+Every 2024 regular-season game of the Chiefs and the Eagles, the two teams that met in Super Bowl LIX: 34 games, 17
+each (they did not play each other until February). Each row is a game from nflverse `games.csv` (id, week, the away
+and home teams and their scores), taken unchanged from `fixtures/examples/nfl_games_2024_reg.csv`.
+
+## WC2018_FINAL_FRANCE_PASSES: one half of passes
+
+France's 75 completed passes in the first half of the 2018 World Cup final (France 4-2 Croatia, Moscow, 15 July 2018),
+from StatsBomb's open data (match 8658) as socceraction 1.5.3 converts it to SPADL: metres from the bottom-left corner
+of a 105 × 68 m pitch, every action attacking left to right. The capture is the one sportsdataverse-py commits for its
+socceraction tests, trimmed to France's successful first-half passes in `fixtures/examples/spadl_8658_france_h1_passes.csv`.
+StatsBomb open data is free for research and non-commercial use with attribution: data by
+[StatsBomb](https://github.com/statsbomb/open-data).
