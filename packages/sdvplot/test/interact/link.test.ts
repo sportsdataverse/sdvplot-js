@@ -83,6 +83,16 @@ test("teardown under the pointer clears the hover this figure wrote, never anoth
   store.set({ hover: ["KC"] }); // another writer's hover
   again();
   expect(hover(store)).toEqual(["KC"]);
+  const third = linkSelection(store, { plot: svg });
+  over(svg.querySelector('[data-sdv-id="LV"]')); // this link writes LV …
+  store.set({ hover: ["KC"] }); // … and another writer replaces it
+  third();
+  expect(hover(store)).toEqual(["KC"]);
+  const fourth = linkSelection(store, { plot: svg });
+  over(svg.querySelector('[data-sdv-id="LV"]'));
+  store.set({ hover: ["LV", "KC"] }); // holds this link's id, but is not exactly what it wrote
+  fourth();
+  expect(hover(store)).toEqual(["LV", "KC"]);
 });
 test("an axis logo is never a hover target: it carries an ESPN id, but it is a decoration (A39)", () => {
   const svg = Plot.plot({
