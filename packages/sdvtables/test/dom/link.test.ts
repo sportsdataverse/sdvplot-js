@@ -1,8 +1,13 @@
 // @vitest-environment jsdom
 import * as Plot from "@observablehq/plot";
-import { type SelectionStore, createSelection, setWarningHandler } from "@sportsdataverse/sdvplot";
+import {
+  type SelectionStore,
+  createSelection,
+  loadLeague,
+  setWarningHandler,
+} from "@sportsdataverse/sdvplot";
 import { type LinkableTable, brushFilter, linkSelection } from "@sportsdataverse/sdvplot/interact";
-import { linkIds } from "@sportsdataverse/sdvplot/plot";
+import { linkIds, logos } from "@sportsdataverse/sdvplot/plot";
 import { beforeAll, expect, expectTypeOf, test, vi } from "vitest";
 import { BKN, BKN_GAMES, type BknGame, type BknShot } from "../../../sdvplot/test/shots/fixture.js";
 import { defineTable } from "../../src/define.js";
@@ -12,7 +17,10 @@ import { STANDINGS, type Standing } from "../fixtures/standings.js";
 
 const keyed = { ...spec, rowKey: "team" } satisfies typeof spec;
 const warnings: string[] = [];
-beforeAll(() => setWarningHandler((m) => warnings.push(m)));
+beforeAll(async () => {
+  setWarningHandler((m) => warnings.push(m));
+  await loadLeague("nfl");
+});
 // 2024 AFC: wins x net EPA/play, one dot per team keyed by abbreviation (NE: net_epa null, so no dot)
 const figure = (): ReturnType<typeof Plot.plot> =>
   Plot.plot({
@@ -108,6 +116,22 @@ test("ids absent from one side (Review Focus 3): nothing throws, nothing is prun
   table.setHover(null);
   table.setHover("NE");
   expect(warnings.filter((w) => w.startsWith("none of the linked ids (NE)"))).toHaveLength(1);
+});
+test("logos stamped with ESPN team ids vs a table keyed by abbreviation: the mismatch warns; `id` fixes it", () => {
+  const table = createTable(keyed, STANDINGS);
+  const store = createSelection<Standing>();
+  const espn = Plot.plot({ marks: [logos(STANDINGS, { league: "nfl", x: "wins", y: "pf", team: "team" })] });
+  linkSelection(store, { plot: espn, table });
+  table.setHover("MIA");
+  expect(lit(espn)).toEqual([]); // MIA's logo is stamped "15"
+  expect(warnings.filter((w) => w.startsWith("none of the linked ids (MIA)"))).toHaveLength(1);
+  const abbr = Plot.plot({
+    marks: [logos(STANDINGS, { league: "nfl", x: "wins", y: "pf", team: "team", id: "team" })],
+  });
+  linkSelection(store, { plot: abbr });
+  expect(lit(abbr)).toEqual(["MIA"]);
+  table.setSelection(new Set(["KC", "BUF"]));
+  expect(lit(abbr)).toEqual(["KC", "BUF", "MIA"]); // document order: the rows' order
 });
 test("teardown detaches the figure and the table", () => {
   const { svg, table, store, off } = linked();
