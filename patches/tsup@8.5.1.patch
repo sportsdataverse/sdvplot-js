@@ -1,0 +1,22 @@
+diff --git a/dist/rollup.js b/dist/rollup.js
+index e128b61b9558318b9f86dc11d72c31f09a8eb7db..fd39e45c4ac44516e6ac748a209f93aef130e7d5 100644
+--- a/dist/rollup.js
++++ b/dist/rollup.js
+@@ -4907,6 +4907,7 @@ var require_rollup_plugin_dts = _chunkTWFEYLU4js.__commonJS.call(void 0, {
+         }
+         logCache("tsconfig", config);
+         const configContents = ts2.parseJsonConfigFileContent(config, ts2.sys, dirName);
++        configContents.dirName = dirName;
+         if (overrideConfigPath) {
+           cacheConfig([overrideConfigPath, overrideConfigPath], configContents);
+         } else {
+@@ -4914,6 +4915,9 @@ var require_rollup_plugin_dts = _chunkTWFEYLU4js.__commonJS.call(void 0, {
+         }
+       } else {
+         logCache("HIT", cacheKey);
++        // sdvplot-js patch: a cache hit left dirName = dirname(input), so createPrograms built one ts.Program
++        // (each re-checking every file) per entry directory. Use the tsconfig dir, as a cache miss does.
++        dirName = configByPath.get(cacheKey).dirName;
+       }
+       const { fileNames, options, errors } = configByPath.get(cacheKey);
+       dtsFiles = fileNames.filter((name) => DTS_EXTENSIONS.test(name));
