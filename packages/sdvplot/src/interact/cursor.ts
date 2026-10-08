@@ -127,6 +127,8 @@ export function linkCursor<R>(root: Element, store: SelectionStore<R>, o: LinkCu
   const { shape } = o;
   if (typeof o.field !== "string" || o.field === "")
     throw new InputError("linkCursor needs a non-empty cursor field");
+  if (typeof shape !== "object" || shape === null)
+    throw new InputError("linkCursor needs a shape: what to draw");
   if (shape.axis !== "x" && shape.axis !== "y" && shape.axis !== "ring")
     throw new InputError(`linkCursor shape.axis must be "x", "y" or "ring", got ${String(shape.axis)}`);
   if (o.flipAt !== undefined && !(o.flipAt > 0 && o.flipAt <= 1))
@@ -147,10 +149,10 @@ export function linkCursor<R>(root: Element, store: SelectionStore<R>, o: LinkCu
       `linkCursor: shape.${ring ? "x and shape.y" : line?.cross === undefined ? "scale" : "scale and shape.cross"} must be scales, a Plot figure's or d3's`,
     );
   if (ring) {
-    if (!ring.center.every(Number.isFinite))
-      throw new InputError(
-        `linkCursor ring center must be two finite numbers, got [${ring.center.join(", ")}]`,
-      );
+    // exactly two: every() is vacuously true on [], which would leave the ring hidden for good
+    const c: unknown = ring.center;
+    if (!Array.isArray(c) || c.length !== 2 || !c.every(Number.isFinite))
+      throw new InputError(`linkCursor ring center must be two finite numbers, got ${JSON.stringify(c)}`);
     if (o.emit === true) throw new InputError("linkCursor: a ring follows the cursor but never emits it");
     if (o.label || o.dot)
       throw new InputError("linkCursor: label and dot are for an x or y cursor, not a ring");

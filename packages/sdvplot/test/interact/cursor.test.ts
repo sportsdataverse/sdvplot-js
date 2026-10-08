@@ -304,6 +304,34 @@ test("a shape missing a required scale throws InputError, in Node too, never a T
   }
 });
 
+test("a missing shape, or a ring centre that is not exactly two finite numbers, throws InputError in Node too", () => {
+  const svg = share();
+  const store = createSelection();
+  const c = court();
+  const ring = { axis: "ring", x: scale(c, "x"), y: scale(c, "y") };
+  const bad = [
+    { field: D }, // no shape
+    { field: D, shape: null },
+    { field: D, shape: ring }, // no centre
+    { field: D, shape: { ...ring, center: [] } }, // every() is vacuously true on []
+    { field: D, shape: { ...ring, center: [0] } },
+    { field: D, shape: { ...ring, center: [0, -41.75, 3] } },
+    { field: D, shape: { ...ring, center: [0, Number.NaN] } },
+  ] as unknown as LinkCursorOptions[];
+  for (const node of [false, true]) {
+    if (node) vi.stubGlobal("window", undefined);
+    try {
+      for (const o of bad)
+        expect(() => linkCursor(svg, store, o), JSON.stringify(o.shape)).toThrow(InputError);
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  }
+  expect(() =>
+    linkCursor(c, store, { field: D, shape: { ...ring, center: HOOP } } as LinkCursorOptions),
+  ).not.toThrow();
+});
+
 test("a cursor naming another field hides this figure's cursor", () => {
   const svg = share();
   const store = createSelection();
