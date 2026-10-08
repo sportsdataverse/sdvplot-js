@@ -152,6 +152,21 @@ test("with href, the image mark's stamp lands on the <image> inside the <a> (A27
   expect(stamped(svg, "a > image")).toEqual(TEAMS);
   expect(svg.querySelectorAll("a[data-sdv-id]")).toHaveLength(0);
 });
+test("linkIds on an image mark with href restamps the <image>, never the <a>: one stamp per row (A27)", () => {
+  const svg = Plot.plot({
+    marks: [
+      logos(STANDINGS, {
+        league: "nfl",
+        ...pos,
+        team: "team",
+        href: (d: Standing) => `#${d.team}`,
+        render: linkIds(STANDINGS, "team"),
+      }),
+    ],
+  });
+  expect(stamped(svg, "a > image")).toEqual(TEAMS);
+  expect(svg.querySelectorAll("a[data-sdv-id]")).toHaveLength(0);
+});
 test("`id` is one value per row, like every channel: an array of another length throws InputError", () => {
   const twoTeams = STANDINGS.slice(0, 2).map((r) => r.team);
   expect(() => logos(STANDINGS, { league: "nfl", ...pos, team: "team", id: twoTeams })).toThrow(InputError);

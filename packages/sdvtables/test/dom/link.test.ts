@@ -133,6 +133,34 @@ test("logos stamped with ESPN team ids vs a table keyed by abbreviation: the mis
   table.setSelection(new Set(["KC", "BUF"]));
   expect(lit(abbr)).toEqual(["KC", "BUF", "MIA"]); // document order: the rows' order
 });
+test("linkIds on logos with href: selecting KC lights KC's logo, its hover writes KC, the abbreviation-keyed table lights", () => {
+  const table = createTable(keyed, STANDINGS);
+  const store = createSelection<Standing>();
+  const svg = Plot.plot({
+    marks: [
+      logos(STANDINGS, {
+        league: "nfl",
+        x: "wins",
+        y: "pf",
+        team: "team",
+        href: (d: Standing) => `#${d.team}`,
+        render: linkIds(STANDINGS, "team"),
+      }),
+    ],
+  });
+  linkSelection(store, { plot: svg, table });
+  const seen = hovers(table);
+  store.set({ selected: ["KC"] });
+  // the logo itself is lit: a lit <a> around an image stamped "12" left the selected logo dimmed
+  const litTags = Array.from(svg.querySelectorAll(".sdv-hl")).map(
+    (e) => `${e.tagName}:${e.getAttribute("data-sdv-id")}`,
+  );
+  expect(litTags).toEqual(["image:KC"]);
+  store.clear();
+  svg.querySelector('a[href="#KC"] > image')?.dispatchEvent(new MouseEvent("mouseover", { bubbles: true }));
+  expect([...store.getState().hover]).toEqual(["KC"]); // never KC's ESPN id "12"
+  expect(seen).toEqual(["KC"]); // what hydrate and <SdvTable/> paint as sdvt-hover
+});
 test("teardown detaches the figure and the table", () => {
   const { svg, table, store, off } = linked();
   off();

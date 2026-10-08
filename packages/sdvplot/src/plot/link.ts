@@ -5,7 +5,8 @@ import type { Channel, Data } from "./marks.js";
 
 /**
  * The one `data-sdv-id` stamping helper: a `render` transform that stamps the element `next` drew for each index
- * entry (a child of the mark's `<g>`, so a mark wrapped by `href` stamps its `<a>`). A mark that drew a different
+ * entry (a child of the mark's `<g>`, so a mark wrapped by `href` stamps its `<a>`, or the stamped `<image>` inside
+ * it for sdvplot's image marks: one stamp per row, and the outer render's id wins). A mark that drew a different
  * number of elements (lines and areas draw one path per series) is left unstamped, never mislabelled; `mismatch`
  * hears about it.
  */
@@ -24,7 +25,10 @@ export function stampRender(
       mismatch?.(els.length, index.length);
       return g;
     }
-    index.forEach((i, k) => els[k]?.setAttribute("data-sdv-id", idOf(i)));
+    // an sdvplot image mark stamps its <image> (sizeRender); `href` wraps it in the <a> drawn here: restamp that image
+    const at = (el: Element | undefined): Element | undefined =>
+      el?.tagName === "a" ? (el.querySelector("[data-sdv-id]") ?? el) : el;
+    index.forEach((i, k) => at(els[k])?.setAttribute("data-sdv-id", idOf(i)));
     return g;
   };
 }
