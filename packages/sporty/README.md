@@ -221,7 +221,7 @@ See the full ecosystem at [sportsdataverse.org](https://sportsdataverse.org/).
 
 To cite [**`@sportsdataverse/sporty`**](https://plot.sportsdataverse.org) in publications, cite sdvplot-js:
 
-BibTex Citation
+BibTeX Citation
 
 ```bibtex
 @misc{gilani_2026_sdvplot_js,

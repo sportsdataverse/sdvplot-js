@@ -32,17 +32,19 @@ ECharts. These are the TypeScript ports of [sdvplot](https://sdvplot.sportsdatav
 
 ## **Installation**
 
+Install the packages you use; the examples under [Usage](#usage) use all three:
+
 ```bash
-npm install @sportsdataverse/sdvplot
+npm install @sportsdataverse/sdvplot @sportsdataverse/sporty @sportsdataverse/sdvtables
 # or
-pnpm add @sportsdataverse/sdvplot
+pnpm add @sportsdataverse/sdvplot @sportsdataverse/sporty @sportsdataverse/sdvtables
 # or
-yarn add @sportsdataverse/sdvplot
+yarn add @sportsdataverse/sdvplot @sportsdataverse/sporty @sportsdataverse/sdvtables
 ```
 
-All three packages are ESM only and need Node >= 20.18.1. Each package's core needs no other package. The subpaths
-that draw on a library take it as an optional peer, which npm and pnpm do not install for you, so add the ones for the
-subpaths you import:
+All three packages are ESM only and need Node >= 20.18.1. The sdvplot and sporty cores need no other package;
+sdvtables needs sdvplot. The subpaths that draw on a library take it as an optional peer, which npm and pnpm do not
+install for you, so add the ones for the subpaths you import:
 
 | You import | Also install |
 | --- | --- |
@@ -261,7 +263,7 @@ See the full ecosystem at [sportsdataverse.org](https://sportsdataverse.org/).
 
 To cite [**sdvplot-js**](https://plot.sportsdataverse.org) in publications, use:
 
-BibTex Citation
+BibTeX Citation
 
 ```bibtex
 @misc{gilani_2026_sdvplot_js,
