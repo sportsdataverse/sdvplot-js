@@ -84,8 +84,10 @@ const box = (svg: Element): { x: [number, number]; y: [number, number] } => {
  * it: never one an app `store.set` or another figure wrote since. A cursor never dims marks or
  * filters a table (it is not an id). A store change moves attributes only: no element is added or removed, so a cursor
  * costs O(1) per figure. The pointer listeners capture, so a Plot `tip` that stops a press from reaching other
- * listeners does not stop this one. Styled by `--sdv-cursor-color` and `--sdv-cursor-width`. Returns a teardown that
- * removes the cursor and its listeners, and clears the store's cursor when it still holds the value this figure last
+ * listeners does not stop this one. Styled by `--sdv-cursor-color` and `--sdv-cursor-width`. Returns a teardown
+ * FUNCTION, not a handle, because teardown is all it has (as `linkSelection`'s; `brushFilter`, `nearestHover` and
+ * `tooltip` return a handle with `destroy()`). The scales' pixel ranges are read once, so after a resize, relink. The
+ * teardown removes the cursor and its listeners, and clears the store's cursor when it still holds the value this figure last
  * wrote (as `linkSelection`'s teardown does with its hover): a chart redrawn under the pointer leaves no cursor that no
  * pointer drives. Throws `InputError` on a bad option, in Node too; a no-op without a DOM.
  *

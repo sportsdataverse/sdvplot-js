@@ -1,10 +1,17 @@
 export { brushFilter } from "./brush.js";
-export type { BrushFilterOptions, BrushHandle, D3ScaleLike, Field, PlotFigure, ScaleLike } from "./brush.js";
+export type {
+  BrushFilterOptions,
+  BrushFilterHandle,
+  D3ScaleLike,
+  Field,
+  PlotFigure,
+  ScaleLike,
+} from "./brush.js";
 export { linkCursor } from "./cursor.js";
 export type { BandScaleLike, CursorShape, LinkCursorOptions } from "./cursor.js";
 export { hasDom, highlight } from "./highlight.js";
 export { linkSelection } from "./link.js";
-export type { LinkEvent, LinkTargets, LinkableTable } from "./link.js";
+export type { LinkEvent, LinkSelectionOptions, LinkableTable } from "./link.js";
 export { nearestHover } from "./nearest.js";
 export type { HoverPoint, NearestHoverHandle, NearestHoverOptions } from "./nearest.js";
 export { tooltip } from "./tooltip.js";

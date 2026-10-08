@@ -145,7 +145,7 @@ export function link(d: Dashboard, store: SelectionStore<BknShot>): () => void {
       field: D,
       shape: { axis: "ring", x: scale(d.court, "x"), y: scale(d.court, "y"), center: [0, HOOP] },
     }),
-    linkSelection(store, { plot: d.court, hover: { id: (h: CellVsLeague) => `${h.x},${h.y}` } }),
+    linkSelection(store, { figure: d.court, hover: { id: (h: CellVsLeague) => `${h.x},${h.y}` } }),
     linkCursor(d.signature, store, {
       field: D,
       shape: { axis: "x", scale: scale(d.signature, "x") },

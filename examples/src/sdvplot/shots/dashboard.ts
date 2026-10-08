@@ -84,7 +84,7 @@ const drawCourt = (shape: "hex" | "square"): { svg: SVGSVGElement | HTMLElement;
     shape: { axis: "ring", x: svg.scale("x")!, y: svg.scale("y")!, center: [0, -41.75] },
   });
   // the cell under Plot's tip lights, the rest dim
-  const offHover = linkSelection(store, { plot: svg, hover: { id: (h: CellVsLeague) => `${h.x},${h.y}` } });
+  const offHover = linkSelection(store, { figure: svg, hover: { id: (h: CellVsLeague) => `${h.x},${h.y}` } });
   return {
     svg,
     off: () => {

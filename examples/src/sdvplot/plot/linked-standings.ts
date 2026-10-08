@@ -38,7 +38,7 @@ const spec = defineTable<Standing>()
   .build();
 const table = createTable(spec, STANDINGS, { sort: { col: "wins", dir: "desc" } });
 const store = createSelection<Standing>();
-linkSelection(store, { plot: svg });
+linkSelection(store, { figure: svg });
 linkSelection(store, { table });
 brushFilter(svg, store, { data: STANDINGS, x: "wins", y: "net_epa", id: "team" }).move({
   x: [9.5, 16],

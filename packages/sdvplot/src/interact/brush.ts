@@ -33,7 +33,7 @@ export interface BrushFilterOptions<R> {
   scales?: { x?: ScaleLike | D3ScaleLike; y?: ScaleLike | D3ScaleLike };
 }
 /** A live brush: drive it programmatically, or remove it. */
-export interface BrushHandle {
+export interface BrushFilterHandle {
   /** Brush a region in DATA coordinates, one range per brushed axis (`null` clears), as if the user had dragged it. */
   move(region: { x?: readonly [unknown, unknown]; y?: readonly [unknown, unknown] } | null): void;
   /** Remove the overlay and stop following the store; clears its selection and predicate if this brush set them. */
@@ -74,7 +74,7 @@ const span = (a: unknown, b: unknown): [number, number] => {
   const q = num(b);
   return p <= q ? [p, q] : [q, p];
 };
-const NOOP: BrushHandle = { move: () => {}, destroy: () => {} };
+const NOOP: BrushFilterHandle = { move: () => {}, destroy: () => {} };
 /** A d3 scale is a function: its `range` is a method and its `apply` is Function.prototype's. Never read it as is. */
 const scaleOf = (s: ScaleLike | D3ScaleLike | undefined): ScaleLike | undefined => {
   if (typeof s !== "function") return s;
@@ -106,8 +106,9 @@ const boxOf = (svg: Element): [number, number, number, number] => {
  * second write. `empty` says what a brush holding no row means. The overlay is inserted BEHIND the marks, so hovering
  * a mark still reaches it. On a figure with a Plot `tip`, the press that starts a brush also pins the tip showing at
  * that moment (Plot's pointer toggles a sticky tip on `pointerdown`); the brush still works. Throws `InputError`
- * without `x` or `y`, or unless each brushed axis has a continuous (invertible) scale, in Node too. A no-op handle
- * without a DOM.
+ * without `x` or `y`, or unless each brushed axis has a continuous (invertible) scale, in Node too. Returns a HANDLE,
+ * not a teardown function, because a brush has more to do than tear down: `move` drives it and `destroy` removes it
+ * (`linkSelection` and `linkCursor`, whose teardown is all they have, return a function). A no-op handle without a DOM.
  *
  * @example
  * ```ts
@@ -195,7 +196,7 @@ export function brushFilter<R>(
   figure: PlotFigure,
   store: SelectionStore<R>,
   o: BrushFilterOptions<R>,
-): BrushHandle {
+): BrushFilterHandle {
   if (o.x === undefined && o.y === undefined)
     throw new InputError("brushFilter needs x, y or both: the fields its brushed axes encode");
   if (o.empty !== undefined && o.empty !== "dim" && o.empty !== "clear")

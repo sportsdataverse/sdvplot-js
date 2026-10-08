@@ -13,7 +13,16 @@ export interface BandScaleLike extends ScaleLike {
 // Warning: (ae-forgotten-export) The symbol "SelectionStore" needs to be exported by the entry point interact.d.ts
 //
 // @public
-export function brushFilter<R>(figure: PlotFigure, store: SelectionStore<R>, o: BrushFilterOptions<R>): BrushHandle;
+export function brushFilter<R>(figure: PlotFigure, store: SelectionStore<R>, o: BrushFilterOptions<R>): BrushFilterHandle;
+
+// @public
+export interface BrushFilterHandle {
+    destroy(): void;
+    move(region: {
+        x?: readonly [unknown, unknown];
+        y?: readonly [unknown, unknown];
+    } | null): void;
+}
 
 // @public
 export interface BrushFilterOptions<R> {
@@ -26,15 +35,6 @@ export interface BrushFilterOptions<R> {
     };
     x?: Field<R>;
     y?: Field<R>;
-}
-
-// @public
-export interface BrushHandle {
-    destroy(): void;
-    move(region: {
-        x?: readonly [unknown, unknown];
-        y?: readonly [unknown, unknown];
-    } | null): void;
 }
 
 // @public
@@ -108,14 +108,14 @@ export type LinkEvent = {
 };
 
 // @public
-export function linkSelection<Row, Datum = unknown>(store: SelectionStore<Row>, targets: LinkTargets<Row, Datum>): () => void;
+export function linkSelection<Row, Datum = unknown>(store: SelectionStore<Row>, o: LinkSelectionOptions<Row, Datum>): () => void;
 
 // @public
-export interface LinkTargets<Row, Datum = unknown> {
+export interface LinkSelectionOptions<Row, Datum = unknown> {
+    figure?: Element;
     hover?: boolean | {
         readonly id: (datum: Datum) => unknown;
     };
-    plot?: Element;
     select?: "toggle";
     table?: LinkableTable<Row>;
 }

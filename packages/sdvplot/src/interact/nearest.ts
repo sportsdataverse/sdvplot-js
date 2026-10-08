@@ -47,8 +47,10 @@ const DIMENSIONS: readonly unknown[] = ["x", "y", "xy"];
  * this is its only hover writer while `highlight` still follows the store. The pointer listeners capture,
  * so a handler registered earlier on the svg that stops the event (Plot's `tip` on `pointerdown`) cannot hide it.
  * A Plot figure hovers through its own `tip` instead (`linkSelection`'s `hover: { id }`). Throws `InputError` on a
- * negative `radius` or `padding` or an unknown `dimension`, in Node too, and when `root` is not an `<svg>`. A no-op
- * handle without a DOM.
+ * negative `radius` or `padding` or an unknown `dimension`, in Node too, and when `root` is not an `<svg>`. Returns a
+ * HANDLE, not a teardown function, because it has more to do than tear down: `update` re-targets it and `destroy`
+ * removes it (`linkSelection` and `linkCursor`, whose teardown is all they have, return a function). A no-op handle
+ * without a DOM.
  *
  * @example
  * ```ts
@@ -76,7 +78,7 @@ const DIMENSIONS: readonly unknown[] = ["x", "y", "xy"];
  *   .attr("fill", "currentColor");
  * const node = svg.node() as SVGSVGElement;
  * const store = createSelection();
- * linkSelection(store, { plot: node, hover: false }); // highlight follows the store; nearestHover writes hover
+ * linkSelection(store, { figure: node, hover: false }); // highlight follows the store; nearestHover writes hover
  * nearestHover(node, store, {
  *   points: rows.map((d) => ({ x: x(d.wins), y: y(d.net_epa), id: d.team })),
  *   radius: 18,

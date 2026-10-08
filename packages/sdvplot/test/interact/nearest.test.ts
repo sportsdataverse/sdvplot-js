@@ -185,10 +185,10 @@ test("update(points) after a rescale re-targets", () => {
   at(svg, "pointermove", hx, hy);
   expect(hovered(store)).toEqual([]);
 });
-test("with linkSelection(store, { plot, hover: false }), a mouseover on a mark writes nothing and nearestHover alone sets hover; highlight still follows", () => {
+test("with linkSelection(store, { figure, hover: false }), a mouseover on a mark writes nothing and nearestHover alone sets hover; highlight still follows", () => {
   const svg = shotChart();
   const store = createSelection<BknShot>();
-  linkSelection(store, { plot: svg, hover: false });
+  linkSelection(store, { figure: svg, hover: false });
   nearestHover(svg, store, { points: points(), radius: 18 });
   const fn = vi.fn();
   store.subscribe(fn);

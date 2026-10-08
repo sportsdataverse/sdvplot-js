@@ -62,7 +62,7 @@ const byTeam = (d: Standing): string => d.team;
 test("a figure mark hover writes store.hover; moving off every mark or leaving the figure clears it", () => {
   const svg = scatter();
   const store = createSelection<Standing>();
-  linkSelection(store, { plot: svg });
+  linkSelection(store, { figure: svg });
   over(svg.querySelector('[data-sdv-id="LV"]'));
   expect(hover(store)).toEqual(["LV"]);
   expect(lit(svg)).toEqual(["LV"]);
@@ -76,20 +76,20 @@ test("a figure mark hover writes store.hover; moving off every mark or leaving t
 test("teardown under the pointer clears the hover this figure wrote, never another writer's", () => {
   const svg = scatter();
   const store = createSelection<Standing>();
-  const off = linkSelection(store, { plot: svg });
+  const off = linkSelection(store, { figure: svg });
   over(svg.querySelector('[data-sdv-id="LV"]'));
   off(); // the figure is redrawn while hovered: no mouseleave will come
   expect(hover(store)).toEqual([]);
-  const again = linkSelection(store, { plot: svg });
+  const again = linkSelection(store, { figure: svg });
   store.set({ hover: ["KC"] }); // another writer's hover
   again();
   expect(hover(store)).toEqual(["KC"]);
-  const third = linkSelection(store, { plot: svg });
+  const third = linkSelection(store, { figure: svg });
   over(svg.querySelector('[data-sdv-id="LV"]')); // this link writes LV …
   store.set({ hover: ["KC"] }); // … and another writer replaces it
   third();
   expect(hover(store)).toEqual(["KC"]);
-  const fourth = linkSelection(store, { plot: svg });
+  const fourth = linkSelection(store, { figure: svg });
   over(svg.querySelector('[data-sdv-id="LV"]'));
   store.set({ hover: ["LV", "KC"] }); // holds this link's id, but is not exactly what it wrote
   fourth();
@@ -98,7 +98,7 @@ test("teardown under the pointer clears the hover this figure wrote, never anoth
 test("a figure unlinked under the pointer and kept is left undimmed; a second teardown writes nothing", () => {
   const svg = scatter();
   const store = createSelection<Standing>();
-  const off = linkSelection(store, { plot: svg });
+  const off = linkSelection(store, { figure: svg });
   over(svg.querySelector('[data-sdv-id="LV"]'));
   expect([svg.classList.contains("sdv-focus"), lit(svg)]).toEqual([true, ["LV"]]);
   off(); // "unlink and keep": the figure stays on the page
@@ -116,7 +116,7 @@ test("an axis logo is never a hover target: it carries an ESPN id, but it is a d
     ],
   });
   const store = createSelection<Standing>();
-  linkSelection(store, { plot: svg });
+  linkSelection(store, { figure: svg });
   const kcLogo = svg.querySelector('image[data-sdv-axis][data-sdv-id="12"]'); // KC's ESPN id
   expect(kcLogo).not.toBeNull();
   over(kcLogo);
@@ -129,7 +129,7 @@ test("a mark wrapped in <a href> hovers by its stamp on the <a> (closest matches
   const a = svg.querySelector('a[data-sdv-id="DEN"]');
   expect(a?.getAttribute("href")).toBe("#DEN"); // linkIds stamped the <a>, not the circle inside it
   const store = createSelection<Standing>();
-  linkSelection(store, { plot: svg });
+  linkSelection(store, { figure: svg });
   over(a?.querySelector("circle"));
   expect(hover(store)).toEqual(["DEN"]);
 });
@@ -138,7 +138,7 @@ test("a Plot tip hover writes the store once per datum; leaving writes [] (A20)"
   const store = createSelection<Standing>();
   const fn = vi.fn();
   store.subscribe(fn);
-  linkSelection(store, { plot: svg, hover: { id: byTeam } });
+  linkSelection(store, { figure: svg, hover: { id: byTeam } });
   svg.dispatchEvent(pointer(svg, "pointermove", 15, 0.063, 4)); // 4 px right of KC's dot: the tip points at KC
   expect(hover(store)).toEqual(["KC"]);
   svg.dispatchEvent(pointer(svg, "pointermove", 15, 0.063, -3)); // still nearest KC: no new datum, no update
@@ -153,7 +153,7 @@ test("a Plot tip hover writes the store once per datum; leaving writes [] (A20)"
 test("with hover: { id }, a mouseover writes nothing: Plot's pointer is the one hover writer (A20)", () => {
   const svg = scatter({ tip: true });
   const store = createSelection<Standing>();
-  linkSelection(store, { plot: svg, hover: { id: byTeam } });
+  linkSelection(store, { figure: svg, hover: { id: byTeam } });
   const fn = vi.fn();
   store.subscribe(fn);
   over(svg.querySelector('circle[data-sdv-id="LV"]')); // a mouseover alone: Plot's pointer saw no pointermove
@@ -166,7 +166,7 @@ test("with hover: { id }, a mouseover writes nothing: Plot's pointer is the one 
 test("nearest within a radius (Review Focus 9): tip maxRadius 18 hovers a dot 17 px away; 19 px away clears", () => {
   const svg = scatter({ tip: { maxRadius: 18 } });
   const store = createSelection<Standing>();
-  linkSelection(store, { plot: svg, hover: { id: byTeam } });
+  linkSelection(store, { figure: svg, hover: { id: byTeam } });
   svg.dispatchEvent(pointer(svg, "pointermove", 15, 0.063, 17)); // KC's nearest neighbour, BUF, is ~70 px away
   expect(hover(store)).toEqual(["KC"]);
   svg.dispatchEvent(pointer(svg, "pointermove", 15, 0.063, 19));
@@ -185,7 +185,7 @@ test("a captioned figure: Plot dispatches input on the <figure> it returns, and 
   });
   expect(fig.tagName.toLowerCase()).toBe("figure");
   const store = createSelection<Standing>();
-  linkSelection(store, { plot: fig, hover: { id: byTeam } });
+  linkSelection(store, { figure: fig, hover: { id: byTeam } });
   fig.querySelector("svg")?.dispatchEvent(pointer(fig, "pointermove", 15, 0.063, 4)); // Plot listens on the svg
   expect(hover(store)).toEqual(["KC"]);
   expect(lit(fig)).toEqual(["KC"]);
@@ -193,7 +193,7 @@ test("a captioned figure: Plot dispatches input on the <figure> it returns, and 
 test("hover: false attaches no hover writer; the store still drives the figure (A5)", () => {
   const svg = scatter();
   const store = createSelection<Standing>();
-  linkSelection(store, { plot: svg, hover: false });
+  linkSelection(store, { figure: svg, hover: false });
   over(svg.querySelector('[data-sdv-id="LV"]'));
   expect(store.getState().hover.size).toBe(0);
   store.set({ hover: ["MIA"] });
@@ -205,7 +205,7 @@ test("2,000 BKN shots: a hover moving shot to shot changes 2 attributes and adds
   });
   expect(svg.querySelectorAll("circle[data-sdv-id]")).toHaveLength(2000);
   const store = createSelection();
-  linkSelection(store, { plot: svg });
+  linkSelection(store, { figure: svg });
   over(svg.querySelector('[data-sdv-id="0"]'));
   const mo = new MutationObserver(() => {});
   mo.observe(svg, { attributes: true, childList: true, subtree: true });
@@ -217,7 +217,7 @@ test("2,000 BKN shots: a hover moving shot to shot changes 2 attributes and adds
 test("teardown removes the figure's hover listeners and its store subscription", () => {
   const svg = scatter();
   const store = createSelection<Standing>();
-  const off = linkSelection(store, { plot: svg });
+  const off = linkSelection(store, { figure: svg });
   off();
   over(svg.querySelector('[data-sdv-id="LV"]'));
   expect(store.getState().hover.size).toBe(0);
@@ -230,7 +230,7 @@ test("a stamped element around the figure is never read as a mark: closest(MARK)
   outer.setAttribute("data-sdv-id", "AFC"); // e.g. a stamped mark of an outer chart
   outer.append(svg);
   const store = createSelection<Standing>();
-  linkSelection(store, { plot: svg, select: "toggle" });
+  linkSelection(store, { figure: svg, select: "toggle" });
   const tick = svg.querySelector('g[aria-label="x-axis tick"]'); // inside the figure, not a mark
   over(tick);
   expect(hover(store)).toEqual([]);
@@ -243,11 +243,11 @@ test("a join-key mismatch warns once per figure, not once per hovered id", () =>
   setWarningHandler((m) => warnings.push(m));
   try {
     const store = createSelection<Standing>();
-    linkSelection(store, { plot: scatter() });
+    linkSelection(store, { figure: scatter() });
     for (const id of ["12", "4", "15"]) store.set({ hover: [id] }); // ESPN team ids against abbreviation stamps
     expect(warnings).toHaveLength(1);
     expect(warnings[0]).toContain("none of the linked ids (12) is drawn"); // the first miss names its id
-    linkSelection(store, { plot: scatter() }); // another figure with the same mismatch gets its own warning
+    linkSelection(store, { figure: scatter() }); // another figure with the same mismatch gets its own warning
     store.set({ hover: ["26"] });
     expect(warnings).toHaveLength(2);
     expect(warnings[1]).toContain("(15)"); // the store's hover when that figure linked
@@ -275,14 +275,14 @@ const litNames = (root: Element): (string | null)[] =>
 test("image marks dim the right images when the store holds ESPN ids: the default team ids, or `id` of the QBs' ids", () => {
   const plain = teamLogos();
   const teams = createSelection<Standing>();
-  linkSelection(teams, { plot: plain });
+  linkSelection(teams, { figure: plain });
   teams.set({ selected: ["12", "2"] }); // KC's and BUF's ESPN team ids
   expect(litNames(plain)).toEqual(["KC logo", "BUF logo"]);
   expect(plain.classList.contains("sdv-focus")).toBe(true); // the other six dim
   // a table of quarterbacks keyed by ESPN player id: each TEAM logo is stamped with its QB's id
   const byQb = teamLogos({ id: "qb_espn_id" });
   const qbs = createSelection<Standing>();
-  linkSelection(qbs, { plot: byQb });
+  linkSelection(qbs, { figure: byQb });
   qbs.set({ selected: ["3139477", "3918298"] }); // Patrick Mahomes, Josh Allen
   expect(litNames(byQb)).toEqual(["KC logo", "BUF logo"]);
   qbs.clear();
@@ -292,13 +292,13 @@ test("image marks dim the right images when the store holds ESPN ids: the defaul
 test("an image mark with href: the stamp sits on the <image> inside the <a>; hover and highlight find it (A27)", () => {
   const svg = teamLogos({ id: "team", href: true });
   const store = createSelection<Standing>();
-  linkSelection(store, { plot: svg });
+  linkSelection(store, { figure: svg });
   over(svg.querySelector('a[href="#DEN"] > image'));
   expect(hover(store)).toEqual(["DEN"]);
   const lit = Array.from(svg.querySelectorAll(".sdv-hl"));
   expect(lit.map((e) => `${e.tagName}:${e.getAttribute("data-sdv-id")}`)).toEqual(["image:DEN"]);
   // A36's guard climbs from the <image> to its <a>: a toggle cannot nest a checkbox in a link
-  expect(() => linkSelection(createSelection<Standing>(), { plot: svg, select: "toggle" })).toThrow(
+  expect(() => linkSelection(createSelection<Standing>(), { figure: svg, select: "toggle" })).toThrow(
     InputError,
   );
 });
@@ -309,7 +309,7 @@ test("a hover that is not true, false or { id } throws InputError, in Node too (
   const tries = (): unknown[] =>
     bad.map((hover) => {
       try {
-        linkSelection(store, { plot: svg, hover })();
+        linkSelection(store, { figure: svg, hover })();
         return "no throw";
       } catch (e) {
         return e instanceof InputError;
@@ -320,11 +320,11 @@ test("a hover that is not true, false or { id } throws InputError, in Node too (
   try {
     expect(tries()).toEqual([true, true, true, true, true]);
     const good = [
-      { plot: svg, hover: true },
-      { plot: svg, hover: false },
-      { plot: svg, hover: { id: byTeam } },
+      { figure: svg, hover: true },
+      { figure: svg, hover: false },
+      { figure: svg, hover: { id: byTeam } },
     ];
-    for (const t of [...good, { plot: svg }]) linkSelection(store, t)(); // and the default: no throw
+    for (const t of [...good, { figure: svg }]) linkSelection(store, t)(); // and the default: no throw
   } finally {
     vi.unstubAllGlobals();
   }

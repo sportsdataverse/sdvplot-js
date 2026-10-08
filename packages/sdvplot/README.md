@@ -693,7 +693,7 @@ host.innerHTML = renderHTML(table); // or <SdvTable table={table} /> from @sport
 hydrate(host.querySelector(".sdvt"), table);
 
 const store = createSelection();
-linkSelection(store, { plot: fig }); // hover a dot: its row is underlined; a brush or a selection lights the dots
+linkSelection(store, { figure: fig }); // hover a dot: its row is underlined; a brush or a selection lights the dots
 linkSelection(store, { table }); // hover or click a row: its dot lights; a brush filters the table
 brushFilter(fig, store, { data: rows, x: "wins", y: "net_epa", id: "team" });
 ```
@@ -709,9 +709,9 @@ brushFilter(fig, store, { data: rows, x: "wins", y: "net_epa", id: "team" });
   set, the outer `render` wins. With `href`, the stamp sits on the `<image>` inside the `<a>` (on any other mark, on
   the `<a>`), and `select: "toggle"` throws `InputError`, because a checkbox cannot sit inside a link.
 - **A Plot figure with a `tip`** hovers through Plot's own pointer:
-  `linkSelection(store, { plot: fig, hover: { id: (d) => d.team } })` writes the row Plot's tip picks. The `id`
+  `linkSelection(store, { figure: fig, hover: { id: (d) => d.team } })` writes the row Plot's tip picks. The `id`
   function must return the same key as the marks' `id`; otherwise the tip writes one id and the marks carry another.
-  Pass `plot` as `Plot.plot` returned it (a `<figure>` when there is a caption or legend). On a figure with a `tip`,
+  Pass `figure` as `Plot.plot` returned it (a `<figure>` when there is a caption or legend). On a figure with a `tip`,
   the press that starts a brush also pins the tip showing at that moment, as a press on any Plot tip does.
 - **Linked tables.** A table holds one hover id, so it lights the first id the store hovers. Every interactive
   sdvtables table, linked or not, underlines the row under the pointer; drop it with
@@ -721,7 +721,7 @@ brushFilter(fig, store, { data: rows, x: "wins", y: "net_epa", id: "team" });
   removed when the gesture ends. A d3-drawn chart has no `figure.scale`, so it passes its own d3 scales as `scales`.
   The drawn rectangle follows the store: cleared from elsewhere (`store.clear()`), it goes without a second write. A
   click on empty chart area clears only this brush's region. The handle's `move(region)` brushes in data coordinates.
-- **`linkSelection(store, { plot, select: "toggle" })`** turns each stamped mark into a checkbox (`role`,
+- **`linkSelection(store, { figure, select: "toggle" })`** turns each stamped mark into a checkbox (`role`,
   `tabindex="0"`, `aria-checked`): a click, Enter or Space toggles its id in `selected`. A mark stamped with an empty
   id (a missing key) stays a plain mark.
 - **`linkCursor(fig, store, { field, shape })`** draws the store's `cursor` through this figure's own scale and writes
@@ -735,9 +735,12 @@ brushFilter(fig, store, { data: rows, x: "wins", y: "net_epa", id: "team" });
   non-Plot) figure within `radius` px, in the plane or along one axis, and its `label` option shows `tooltip`'s
   in-SVG box beside it. Link that figure with `hover: false`, so it has one hover writer.
   `tooltip(svg).show(x, y, lines, swatch)` draws the same box on its own.
-- **Teardown.** `linkSelection` and `linkCursor` return a teardown; the `brushFilter` and `nearestHover` handles have
-  `destroy()`. `linkSelection`'s teardown clears the hover its own link wrote, and `linkCursor`'s the cursor its own
-  figure wrote, only while the store still holds exactly that value: another writer's survives. **To replace a linked
+- **Teardown.** `linkSelection` and `linkCursor` return a teardown function, since teardown is all they have
+  (`useEffect(() => linkSelection(store, o), deps)` is one line); `brushFilter`, `nearestHover` and `tooltip` return a
+  handle with `destroy()`, since they have more (`move`, `update`, `show`). `linkSelection` takes the store first because
+  it links a figure, a table or both; the other calls take the element first.
+  `linkSelection`'s teardown clears the hover its own link wrote, and `linkCursor`'s the cursor its own figure wrote,
+  only while the store still holds exactly that value: another writer's survives. **To replace a linked
   figure, tear its link down before linking the new one**; otherwise the new figure's first sync reads the old
   figure's hover and warns that none of the linked ids is drawn.
 - **Styling.** Five CSS custom properties restyle the visuals with no JS, so a page's light and dark tokens reach

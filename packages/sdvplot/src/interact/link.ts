@@ -19,21 +19,24 @@ export interface LinkableTable<Row> {
   subscribe(fn: (event: LinkEvent) => void): () => void;
 }
 /** What {@link linkSelection} wires to a store: one figure and/or one table. */
-export interface LinkTargets<Row, Datum = unknown> {
-  /** A rendered figure whose marks carry `data-sdv-id` (`linkIds`, or a d3 chart's own stamps). */
-  plot?: Element;
+export interface LinkSelectionOptions<Row, Datum = unknown> {
+  /**
+   * The figure whose marks carry `data-sdv-id`: what `Plot.plot` returns (stamped by `linkIds`), or a d3-drawn `<svg>`
+   * with its own stamps.
+   */
+  figure?: Element;
   /**
    * How the figure writes `hover`. `true` (the default): the stamped mark under the pointer (`mouseover`). `false`: it
    * writes nothing, for a figure another writer hovers. `{ id }`: the datum Plot's own `tip`/`pointer` picks, the
    * nearest within its `maxRadius`, published as the figure's `value` with an `input` event; `id` maps it to a link id
-   * (`null` clears). Pass `plot` as `Plot.plot` returned it: with a caption or legend that is a `<figure>`, and only the
+   * (`null` clears). Pass `figure` as `Plot.plot` returned it: with a caption or legend that is a `<figure>`, and only the
    * figure hears `input`. Anything else throws `InputError`, in Node too.
    */
   hover?: boolean | { readonly id: (datum: Datum) => unknown };
   /** A `createTable` engine: `useTable().table`, or the one passed to `hydrate`. */
   table?: LinkableTable<Row>;
   /**
-   * `"toggle"`: each stamped mark of `plot` becomes a checkbox (`role`, `tabindex="0"`, `aria-checked` kept in step
+   * `"toggle"`: each stamped mark of `figure` becomes a checkbox (`role`, `tabindex="0"`, `aria-checked` kept in step
    * with the store), and a click, Enter or Space toggles its id in `selected`. Throws `InputError` when a mark sits
    * in an `<a href>`: a checkbox inside a link is nested interactive content with two tab stops.
    */
@@ -49,27 +52,30 @@ const first = (ids: ReadonlySet<string>): string | null => {
  * stamp (`toId`'s missing id), which names no row to hover or toggle.
  */
 const MARK = '[data-sdv-id]:not([data-sdv-id=""]):not([data-sdv-axis])';
-/** The stamped mark an event in `plot` landed in; `closest` alone climbs past `plot` to a stamped ancestor. */
-const markAt = (plot: Element, e: Event): Element | null => {
+/** The stamped mark an event in `figure` landed in; `closest` alone climbs past `figure` to a stamped ancestor. */
+const markAt = (figure: Element, e: Event): Element | null => {
   const t = e.target as Node | null;
   const mark = t?.nodeType === 1 ? (t as Element).closest(MARK) : null;
-  return mark && plot.contains(mark) ? mark : null;
+  return mark && figure.contains(mark) ? mark : null;
 };
 /** Figures already warned about a join-key mismatch: once per figure, not once per hovered id. */
 const warned = new WeakSet<Element>();
 
 /**
  * Wire a figure and/or a table to a selection store (J31). Figure: pointer hover → `hover` (see
- * {@link LinkTargets.hover}); every store change → `highlight(plot, focusIds(state))`. Table: row hover / click →
- * `hover` / `selected`; every store change → `setSelection(selected)`, `setExternalFilter(predicate)` and
+ * {@link LinkSelectionOptions.hover}); every store change → `highlight(figure, focusIds(state))`. Table: row hover /
+ * click → `hover` / `selected`; every store change → `setSelection(selected)`, `setExternalFilter(predicate)` and
  * `setHover` with the first hover id. Loop-free: the store and the engine drop no-op updates, and the events a table
  * emits while the store is being applied to it are not written back (so a two-id hover is never narrowed to the one id
- * a table holds). One figure or one table per call; link several by calling again with the same store. Returns a
- * teardown, which also clears `hover` when the store still holds the id this link last wrote (as `nearestHover`'s
+ * a table holds). One figure or one table per call; link several by calling again with the same store. The store
+ * comes first because the call takes a figure, a table or both. Returns a teardown FUNCTION, not a handle: teardown is
+ * all a link has, so `useEffect(() => linkSelection(store, o), deps)` is one line (`brushFilter`, `nearestHover` and
+ * `tooltip`, which have more to do, return a handle with `destroy()`). The teardown also clears `hover` when the store
+ * still holds the id this link last wrote (as `nearestHover`'s
  * `destroy` does): a figure redrawn under the pointer leaves no stale hover dimming the others. To replace a figure,
  * tear its link down before linking the new one, which otherwise reads the old figure's hover. Inert without a DOM,
  * so server-rendered markup never changes. With `select: "toggle"`, the figure's marks are keyboard-reachable
- * checkboxes over `selected` ({@link LinkTargets.select}).
+ * checkboxes over `selected` ({@link LinkSelectionOptions.select}).
  *
  * @example
  * ```ts
@@ -89,7 +95,7 @@ const warned = new WeakSet<Element>();
  * const spec = defineTable<Row>().columns((c) => [c.text("team"), c.int("wins")]).rowKey("team").build();
  * const table = createTable(spec, rows); // the engine a hydrated table or <SdvTable table/> renders
  * const store = createSelection<Row>();
- * linkSelection(store, { plot: svg });
+ * linkSelection(store, { figure: svg });
  * linkSelection(store, { table });
  * table.setSelection(new Set(["BUF"])); // what a click on Buffalo's row calls: the store and the figure follow
  * svg; // Buffalo's dot lit, the rest dimmed
@@ -118,17 +124,17 @@ const warned = new WeakSet<Element>();
  *   ],
  * });
  * const store = createSelection<(typeof games)[number]>();
- * linkSelection(store, { plot: svg, select: "toggle" }); // each cell: role="checkbox", tabindex="0", aria-checked
+ * linkSelection(store, { figure: svg, select: "toggle" }); // each cell: role="checkbox", tabindex="0", aria-checked
  * svg.querySelector('[data-sdv-id="0022500173"]')?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
  * [...store.getState().selected]; // ["0022500173"]: the win at Indiana
  * ```
  */
 export function linkSelection<Row, Datum = unknown>(
   store: SelectionStore<Row>,
-  targets: LinkTargets<Row, Datum>,
+  o: LinkSelectionOptions<Row, Datum>,
 ): () => void {
-  const toggled = toggleMarks(targets);
-  const { plot, table, hover = true } = targets;
+  const toggled = toggleMarks(o);
+  const { figure, table, hover = true } = o;
   if (typeof hover !== "boolean" && typeof (hover as { id?: unknown } | null)?.id !== "function")
     throw new InputError("linkSelection: hover is true, false or { id: (datum) => link id }");
   if (!hasDom()) return () => {};
@@ -140,11 +146,11 @@ export function linkSelection<Row, Datum = unknown>(
   };
   let syncing = false; // A29: the table's own events while the store is applied to it are echoes, not user input
   const sync = (s: SelectionState<Row>): void => {
-    if (plot) {
+    if (figure) {
       const focus = focusIds(s);
-      const missing = highlight(plot, focus);
-      if (focus !== null && focus.size > 0 && missing.length === focus.size && !warned.has(plot)) {
-        warned.add(plot);
+      const missing = highlight(figure, focus);
+      if (focus !== null && focus.size > 0 && missing.length === focus.size && !warned.has(figure)) {
+        warned.add(figure);
         const shown = missing.slice(0, 5).join(", ");
         warn(
           `link:missing:${shown}`,
@@ -167,15 +173,15 @@ export function linkSelection<Row, Datum = unknown>(
     el.addEventListener(type, fn);
     offs.push(() => el.removeEventListener(type, fn));
   };
-  if (plot && hover === true) {
-    on(plot, "mouseover", (e) => {
-      const mark = markAt(plot, e);
+  if (figure && hover === true) {
+    on(figure, "mouseover", (e) => {
+      const mark = markAt(figure, e);
       writeHover(mark ? (mark.getAttribute("data-sdv-id") ?? "") : null);
     });
-    on(plot, "mouseleave", () => writeHover(null));
-  } else if (plot && typeof hover === "object") {
+    on(figure, "mouseleave", () => writeHover(null));
+  } else if (figure && typeof hover === "object") {
     // Plot sets `value` on the element it dispatches `input` from (the svg, or the <figure> wrapping it)
-    on(plot, "input", (e) => {
+    on(figure, "input", (e) => {
       const v = (e.target as { value?: unknown } | null)?.value;
       writeHover(v === null || v === undefined ? null : toId(hover.id(v as Datum)));
     });
@@ -189,7 +195,7 @@ export function linkSelection<Row, Datum = unknown>(
       }),
     );
   }
-  if (plot && toggled.length > 0) offs.push(toggles(plot, store, toggled));
+  if (figure && toggled.length > 0) offs.push(toggles(figure, store, toggled));
   offs.push(store.subscribe(sync));
   sync(store.getState());
   return () => {
@@ -202,13 +208,13 @@ export function linkSelection<Row, Datum = unknown>(
 }
 
 /** `select: "toggle"`'s marks, checked before the DOM test so a bad call throws in Node too (A36, A38). */
-function toggleMarks(t: { readonly plot?: Element; readonly select?: "toggle" }): Element[] {
+function toggleMarks(t: { readonly figure?: Element; readonly select?: "toggle" }): Element[] {
   if (t.select === undefined) return [];
   if (t.select !== "toggle")
     throw new InputError(`linkSelection: select is "toggle", not ${JSON.stringify(t.select)}`);
-  if (t.plot === undefined)
-    throw new InputError('linkSelection: select "toggle" needs the plot whose marks it toggles');
-  const marks = Array.from(t.plot.querySelectorAll(MARK));
+  if (t.figure === undefined)
+    throw new InputError('linkSelection: select "toggle" needs the figure whose marks it toggles');
+  const marks = Array.from(t.figure.querySelectorAll(MARK));
   // closest() matches the element itself: linkIds stamps an <a href> (A38), which a parent-only lookup would miss
   const linked = marks.find((m) => m.closest("a[href]") !== null);
   if (linked)
@@ -222,7 +228,7 @@ function toggleMarks(t: { readonly plot?: Element; readonly select?: "toggle" })
  * Marks as checkboxes over `selected` (blazing-the-nets main, lib/charts/gameStrip.ts:75-110): a click, Enter or Space
  * toggles a mark's id; `aria-checked` follows the store, set only on the marks whose membership changed.
  */
-function toggles<Row>(plot: Element, store: SelectionStore<Row>, marks: readonly Element[]): () => void {
+function toggles<Row>(figure: Element, store: SelectionStore<Row>, marks: readonly Element[]): () => void {
   const byId = new Map<string, Element[]>();
   let shown = store.getState().selected;
   for (const m of marks) {
@@ -235,7 +241,7 @@ function toggles<Row>(plot: Element, store: SelectionStore<Row>, marks: readonly
     m.setAttribute("aria-checked", String(shown.has(id)));
   }
   const flip = (e: Event): void => {
-    const id = markAt(plot, e)?.getAttribute("data-sdv-id");
+    const id = markAt(figure, e)?.getAttribute("data-sdv-id");
     if (!id) return;
     if (e.type === "keydown") {
       const key = (e as KeyboardEvent).key;
@@ -256,12 +262,12 @@ function toggles<Row>(plot: Element, store: SelectionStore<Row>, marks: readonly
     check(s.selected, shown, "true");
     shown = s.selected;
   });
-  plot.addEventListener("click", flip);
-  plot.addEventListener("keydown", flip);
+  figure.addEventListener("click", flip);
+  figure.addEventListener("keydown", flip);
   return () => {
     off();
-    plot.removeEventListener("click", flip);
-    plot.removeEventListener("keydown", flip);
+    figure.removeEventListener("click", flip);
+    figure.removeEventListener("keydown", flip);
     for (const m of marks) for (const a of ["role", "tabindex", "aria-checked"]) m.removeAttribute(a);
   };
 }

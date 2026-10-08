@@ -16,7 +16,7 @@ const keyed = { ...spec, rowKey: "team" } satisfies typeof spec;
 function Linked({ store, plot }: { store: SelectionStore<Standing>; plot?: Element }): ReactElement {
   const { table } = useTable(keyed, STANDINGS);
   useEffect(() => linkSelection(store, { table }), [store, table]);
-  useEffect(() => (plot ? linkSelection(store, { plot }) : undefined), [store, plot]);
+  useEffect(() => (plot ? linkSelection(store, { figure: plot }) : undefined), [store, plot]);
   return <SdvTable spec={keyed} rows={STANDINGS} table={table} interactive />;
 }
 const figure = (): ReturnType<typeof Plot.plot> =>

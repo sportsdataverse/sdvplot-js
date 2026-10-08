@@ -42,7 +42,7 @@ const selected = (s: ReturnType<typeof createSelection<BknGame>>): string[] => [
 test("a click toggles the game in selected, a second click restores it, one update each", () => {
   const svg = strip();
   const store = createSelection<BknGame>();
-  linkSelection(store, { plot: svg, select: "toggle" });
+  linkSelection(store, { figure: svg, select: "toggle" });
   const cells = Array.from(svg.querySelectorAll("[data-sdv-id]"));
   expect(cells).toHaveLength(24);
   for (const c of cells) {
@@ -65,7 +65,7 @@ test("a click toggles the game in selected, a second click restores it, one upda
 test("Enter and Space toggle with preventDefault (Review Focus 11); other keys pass through", () => {
   const svg = strip();
   const store = createSelection<BknGame>();
-  linkSelection(store, { plot: svg, select: "toggle" });
+  linkSelection(store, { figure: svg, select: "toggle" });
   const e1 = key(cell(svg, IND), "Enter");
   expect(e1.defaultPrevented).toBe(true);
   expect(selected(store)).toEqual([IND]);
@@ -81,7 +81,7 @@ test("Enter and Space toggle with preventDefault (Review Focus 11); other keys p
 test("aria-checked follows the store, including a change made elsewhere, touching only the changed marks", () => {
   const svg = strip();
   const store = createSelection<BknGame>();
-  linkSelection(store, { plot: svg, select: "toggle" });
+  linkSelection(store, { figure: svg, select: "toggle" });
   const mo = new MutationObserver(() => {});
   mo.observe(svg, { attributes: true, attributeFilter: ["aria-checked"], subtree: true });
   const touched = (): string[] =>
@@ -105,7 +105,7 @@ test("aria-checked follows the store, including a change made elsewhere, touchin
 test("without select, marks get no role or tabindex, and a click writes nothing", () => {
   const svg = strip();
   const store = createSelection<BknGame>();
-  linkSelection(store, { plot: svg });
+  linkSelection(store, { figure: svg });
   expect(svg.querySelectorAll("[role], [tabindex], [aria-checked]")).toHaveLength(0);
   click(cell(svg, PHI));
   expect(selected(store)).toEqual([]);
@@ -115,16 +115,16 @@ test("a mark inside <a href> throws InputError (A36): the guard matches the stam
   const a = svg.querySelector(`a[data-sdv-id="${PHI}"]`);
   expect(a?.getAttribute("href")).toBe(`#${PHI}`); // linkIds stamped the <a>, not the rect inside it
   const store = createSelection<BknGame>();
-  expect(() => linkSelection(store, { plot: svg, select: "toggle" })).toThrow(InputError);
+  expect(() => linkSelection(store, { figure: svg, select: "toggle" })).toThrow(InputError);
   expect(svg.querySelectorAll("[role]")).toHaveLength(0);
-  expect(() => linkSelection(store, { plot: svg })).not.toThrow(); // a link is fine without the toggle
+  expect(() => linkSelection(store, { figure: svg })).not.toThrow(); // a link is fine without the toggle
   const plain = strip();
   const before = plain.outerHTML;
   vi.stubGlobal("window", undefined);
   try {
-    expect(() => linkSelection(store, { plot: svg, select: "toggle" })).toThrow(InputError);
+    expect(() => linkSelection(store, { figure: svg, select: "toggle" })).toThrow(InputError);
     expect(() => linkSelection(store, { select: "toggle" })).toThrow(InputError); // nothing to toggle
-    linkSelection(store, { plot: plain, select: "toggle" })();
+    linkSelection(store, { figure: plain, select: "toggle" })();
     expect(plain.outerHTML).toBe(before); // no DOM: nothing stamped, so a server string is unchanged
   } finally {
     vi.unstubAllGlobals();
@@ -133,7 +133,7 @@ test("a mark inside <a href> throws InputError (A36): the guard matches the stam
 test("teardown removes the roles, the listeners and the store subscription", () => {
   const svg = strip();
   const store = createSelection<BknGame>();
-  const off = linkSelection(store, { plot: svg, select: "toggle" });
+  const off = linkSelection(store, { figure: svg, select: "toggle" });
   click(cell(svg, PHI));
   off();
   expect(svg.querySelectorAll("[role], [tabindex], [aria-checked]")).toHaveLength(0);
@@ -159,7 +159,7 @@ test("a mark stamped with an empty id (a missing key) is no checkbox and no hove
   const ne = svg.querySelector('[data-sdv-id=""]');
   expect(ne).not.toBeNull(); // toId(null): the stamp a missing id gets
   const store = createSelection<Standing>();
-  linkSelection(store, { plot: svg, select: "toggle" });
+  linkSelection(store, { figure: svg, select: "toggle" });
   expect(svg.querySelectorAll('[role="checkbox"]')).toHaveLength(7);
   expect(["role", "tabindex", "aria-checked"].map((a) => ne?.getAttribute(a) ?? null)).toEqual([
     null,

@@ -48,7 +48,7 @@ test("SSR (Review Focus 12): a d3 chart is byte-identical with nearestHover, a s
   const svg = chart();
   const store = createSelection<BknShot>();
   store.set({ hover: ["825"], selected: ["0", "1"] });
-  const off = linkSelection(store, { plot: svg, hover: false });
+  const off = linkSelection(store, { figure: svg, hover: false });
   const hover = nearestHover(svg, store, { points, radius: 18, label: () => ({ lines: ["35 ft, 3PT"] }) });
   tooltip(svg).show(468, 145, ["35 ft, 3PT", "Missed"]); // a tooltip renders nothing server-side
   hover.update(points);

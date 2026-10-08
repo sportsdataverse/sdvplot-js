@@ -62,7 +62,8 @@ const NOOP: TooltipHandle = { show: () => {}, hide: () => {}, destroy: () => {} 
  * the text (`0.6 * fontSize` per character, `1.35 * fontSize` per line), never measured, so it renders the same under
  * jsdom and in every browser. Colours: `--sdv-tip-bg` (default `rgba(34,34,34,.85)`) and `--sdv-tip-fg` (default
  * `#ddd`). Throws `InputError` on a non-positive `fontSize` or a negative size, in Node too, and when `root` is not an
- * `<svg>`. A no-op handle without a DOM: a server render never holds a tooltip.
+ * `<svg>`. Returns a HANDLE (`show`, `hide`, `destroy`), not a teardown function, because it has more to do than tear
+ * down. A no-op handle without a DOM: a server render never holds a tooltip.
  *
  * @example
  * ```ts

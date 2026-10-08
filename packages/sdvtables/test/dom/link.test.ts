@@ -36,7 +36,7 @@ const linked = (pageSize = Number.POSITIVE_INFINITY) => {
   const svg = figure();
   const table = createTable(keyed, STANDINGS, { pageSize });
   const store: SelectionStore<Standing> = createSelection<Standing>();
-  const off = linkSelection(store, { plot: svg, table });
+  const off = linkSelection(store, { figure: svg, table });
   return { svg, table, store, off };
 };
 /** The engine's hover events, as hydrate and <SdvTable/> receive them. */
@@ -121,14 +121,14 @@ test("logos stamped with ESPN team ids vs a table keyed by abbreviation: the mis
   const table = createTable(keyed, STANDINGS);
   const store = createSelection<Standing>();
   const espn = Plot.plot({ marks: [logos(STANDINGS, { league: "nfl", x: "wins", y: "pf", team: "team" })] });
-  linkSelection(store, { plot: espn, table });
+  linkSelection(store, { figure: espn, table });
   table.setHover("MIA");
   expect(lit(espn)).toEqual([]); // MIA's logo is stamped "15"
   expect(warnings.filter((w) => w.startsWith("none of the linked ids (MIA)"))).toHaveLength(1);
   const abbr = Plot.plot({
     marks: [logos(STANDINGS, { league: "nfl", x: "wins", y: "pf", team: "team", id: "team" })],
   });
-  linkSelection(store, { plot: abbr });
+  linkSelection(store, { figure: abbr });
   expect(lit(abbr)).toEqual(["MIA"]);
   table.setSelection(new Set(["KC", "BUF"]));
   expect(lit(abbr)).toEqual(["KC", "BUF", "MIA"]); // document order: the rows' order
@@ -148,7 +148,7 @@ test("linkIds on logos with href: selecting KC lights KC's logo, its hover write
       }),
     ],
   });
-  linkSelection(store, { plot: svg, table });
+  linkSelection(store, { figure: svg, table });
   const seen = hovers(table);
   store.set({ selected: ["KC"] });
   // the logo itself is lit: a lit <a> around an image stamped "12" left the selected logo dimmed
@@ -175,7 +175,7 @@ test("unlinking a table whose row is hovered clears that hover, so the figure st
   const svg = figure();
   const table = createTable(keyed, STANDINGS);
   const store = createSelection<Standing>();
-  linkSelection(store, { plot: svg });
+  linkSelection(store, { figure: svg });
   const offTable = linkSelection(store, { table });
   table.setHover("BUF"); // the pointer on Buffalo's row
   expect(lit(svg)).toEqual(["BUF"]);
@@ -210,7 +210,7 @@ test("BKN shots: the default ids (row index into the SAME rows) link a shot char
   const svg = shotChart();
   const table = createTable(shotSpec, BKN, { pageSize: 10 });
   const store = createSelection<BknShot>();
-  linkSelection(store, { plot: svg, table });
+  linkSelection(store, { figure: svg, table });
   const seen = hovers(table);
   // chart → table, selection: a brush at the rim filters and selects the same 585 shots
   table.setPage(5);
@@ -248,7 +248,7 @@ test("BKN games: one game row lights every shot of that game, and a shot's hover
   );
   const svg = shotChart("game_id");
   const store = createSelection<BknGame>();
-  linkSelection(store, { plot: svg, table: games });
+  linkSelection(store, { figure: svg, table: games });
   const seen = hovers(games);
   const opener = BKN_GAMES[0] as BknGame; // 2025-10-22, BKN @ CHA
   games.setHover(opener.game_id);
