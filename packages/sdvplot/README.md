@@ -67,10 +67,10 @@ The backgrounds default to `#ffffff` (light) and `#181a1b` (dark); pass `theme: 
 | --- | --- |
 | `@sportsdataverse/sdvplot` | `resolve`, `suggest`, `teams`, `rowsFrom`, `palette`, `teamColors`, `matchupColors`, `logoUrl`, `marks` (`full: true` fetches the whole manifest lazily), `selectMark`, `selectMarkSync`, `place`, `placeSync`, `prepareTiers`, `headshotUrl`, `loadGsis`, contrast helpers (`hex6`, `luminance`, `contrast`, `onColor`, `mix`, `solid`), `versions`, errors, types |
 | `@sportsdataverse/sdvplot/react` | `TeamLogo`, `Wordmark`, `Headshot`, `useTeamColors`, `useResolve` (React >= 18, optional peer) |
-| `@sportsdataverse/sdvplot/plot` | Observable Plot marks and scales: `logos`, `wordmarks`, `headshots`, `axisLogos`, `teamColor`/`teamFill`, `meanLines`/`medianLines`, `titleImage`, `teamTiers`, `surface` (optional peers `@observablehq/plot`, `@sportsdataverse/sporty`) |
-| `@sportsdataverse/sdvplot/d3` | `appendLogos`, `appendWordmarks`, `appendHeadshots`, `teamColorScale`, `appendSurface` (optional peers `d3`, `@sportsdataverse/sporty`) |
+| `@sportsdataverse/sdvplot/plot` | Observable Plot marks and scales: `logos`, `wordmarks`, `headshots`, `axisLogos`, `teamColor`/`teamFill`, `meanLines`/`medianLines`, `titleImage`, `teamTiers`, `surface`, shot-chart marks `shotCells`, `shotZones`, `shootingSignature` (optional peers `@observablehq/plot`, `@sportsdataverse/sporty`) |
+| `@sportsdataverse/sdvplot/d3` | `appendLogos`, `appendWordmarks`, `appendHeadshots` (circular faces: `clip`, `ring`, `placeholder`), `teamColorScale`, `appendSurface`, shot-chart `appendLegend` and `appendSignature` (optional peers `d3`, `@sportsdataverse/sporty`) |
 | `@sportsdataverse/sdvplot/bins` | Dependency-free x/y binning for any data: `hexbin` and `hexagonPath` (a d3-hexbin port), `squarebin` and `squarePath`, `binner` (hexagons, squares, or equal-area squares from one options object), `cellPath`, `cellPoints` |
-| `@sportsdataverse/sdvplot/shots` | Shot-chart data and colour, no Plot or d3: the `./bins` binners, `diffScale`, `binShots`, `leagueIndex`, `cellsVsLeague`, `shrunkDiff`, `sizeCells`, `statsByZone` (optional peer `@sportsdataverse/sporty`, for the zones) |
+| `@sportsdataverse/sdvplot/shots` | Shot-chart data and colour, no Plot or d3: the `./bins` binners, `diffScale`, `binShots`, `leagueIndex`, `cellsVsLeague`, `cellsVsDistance`, `shrunkDiff`, `LEAGUE_PRIOR_ATTEMPTS`, `sizeCells`, `statsByZone`, `fgPctByDistance`, `vsLeague`, `statsBySide`, `signaturePoints` (optional peer `@sportsdataverse/sporty`, for the zones) |
 | `@sportsdataverse/sdvplot/chartjs` | Chart.js 4: `logoPoints`, `wordmarkPoints`, `headshotPoints`, `pointImages`, `axisLogos`, `logoWatermarks`, `teamColor`/`teamFill` (optional peer `chart.js` >= 4.4; no sporty needed) |
 | `@sportsdataverse/sdvplot/chartjs/surface` | Chart.js 4 court, field or rink background: `surface` (optional peers `chart.js` >= 4.4, `@sportsdataverse/sporty`) |
 | `@sportsdataverse/sdvplot/testing` | Adapter-contract suite for renderer adapters: `checkAdapterContract`, `drawnMarks`, `drawnAxisMarks`, `visibleAxisLabels` |
@@ -366,6 +366,79 @@ chart.destroy();
   to that size, so resolve a new image on every call, as `@napi-rs/canvas`'s does (a loader that hands out one shared image warns once and skips the use at a different size). Await `Promise.all(loads)` after `new Chart(...)`, since `axisLogos` first calls the loader inside it.
 - In Node an unknown team's text fallback is a circle (there is no canvas to letter it on); pass `fallback` for another
   style. A load that fails warns once and is skipped.
+
+## Shot charts
+
+`sdvplot/shots` computes the shot charts of both blazing-the-nets apps (`main` by default, the 2021 `master` through
+options) with no Plot or d3 import; `sdvplot/plot` and `sdvplot/d3` draw them. The input is `nba_stats_shots` release
+rows: `x_legacy`/`y_legacy` in tenths of a foot from the hoop, `shot_distance` in feet, `shot_value` (2 or 3) and
+`shot_result` (`"Made"` or `"Missed"`). Master-style rows (stats.nba.com `shotchartdetail`) map with one `.map`;
+only the zones read `shot_value`:
+
+```ts
+const shots = rows.map((r) => ({
+  x_legacy: r.LOC_X,
+  y_legacy: r.LOC_Y,
+  shot_distance: r.SHOT_DISTANCE,
+  shot_result: r.SHOT_MADE_FLAG === 1 ? "Made" : "Missed",
+  shot_value: r.SHOT_TYPE === "3PT Field Goal" ? 3 : 2,
+}));
+```
+
+`main`'s chart, hoop at the bottom: colour is the cell's FG% against the league's in the same cell, size is attempts.
+
+```js
+import * as Plot from "@observablehq/plot";
+import { shotCells, surface } from "@sportsdataverse/sdvplot/plot";
+import { cellsVsLeague, diffScale, leagueIndex, sizeCells } from "@sportsdataverse/sdvplot/shots";
+
+const index = leagueIndex(leagueShots, 15); // the league's season in 1.5 ft hexagons (radius in tenths of a foot)
+const cells = cellsVsLeague(playerShots, index); // a cell under 25 league attempts takes its zone's league FG%
+const court = surface("nba", { displayRange: "defense", rotation: 90 });
+Plot.plot({
+  ...court.scales,
+  width: 500,
+  marks: [...court.marks, shotCells(cells, { r: sizeCells(cells, index).r, frame: "nba-legacy-vertical" })],
+});
+Plot.legend({ color: diffScale().plot }); // the matching colour key
+```
+
+Zones are `shotZones(basketballZones("nba", { scale: 10 }), { fill, text })` over `statsByZone(shots)`, and the
+shooting signature is `shootingSignature(signaturePoints(vsLeague(fgPctByDistance(player), fgPctByDistance(league))))`.
+The d3 twins are `appendLegend` (colour bar plus a cell size key) and `appendSignature`. The shot-charts guide,
+<https://plot.sportsdataverse.org/guides/shot-charts>, draws each one.
+
+`main` against `master`:
+
+| Setting | `main` (default) | `master` |
+| --- | --- | --- |
+| League baseline | `cellsVsLeague(player, leagueIndex(league, 15))`: the league in the same cell | `cellsVsDistance(player, fgPctByDistance(league))`: the league at the cell's distance (radius 10 by default) |
+| Size (`sizeCells` `rule`) | `"sqrt-p95"` | `"linear-cap"` |
+| Colour prior in attempts (`shotCells` and `signaturePoints` `prior`, `shrunkDiff`'s `k`) | 25 | 0 |
+| Palette (`diffScale` `palette`) | `"rdbu"` | `"master"` |
+| Signature curve (`shootingSignature`, `appendSignature` `curve`) | `"monotone-x"` | `"basis"` |
+| `signaturePoints` options | the defaults, `{ step: 0.25, smooth: true, minAttempts: 5, prior: 25 }` | `{ step: 1, smooth: false, minAttempts: 1, prior: 0 }` |
+| `statsBySide` `centreHalfWidth` (4th argument) | `0`: `x == 0` is centre | `false`: `x == 0` is dropped |
+
+- Hexagons or squares (J38): every lattice option takes `{ radius }` (hexagons, as both apps), `{ shape: "square", side }`,
+  or `{ shape: "square", radius, equalArea: true }` (squares of that hexagon's area). Pass the same `shape` to
+  `shotCells` and to `appendLegend`'s `size` key. `binner` bins any x/y data, not only shots.
+- The binners (`hexbin`, `squarebin`, `binner`, `hexagonPath`, `squarePath`, `cellPath`, `cellPoints`) import from
+  `sdvplot/shots` or from the sporty-free `sdvplot/bins`. The types the Plot and d3 marks take (`CellVsLeague`,
+  `SignaturePoint`, `DiffScale`, `BinShape`) are exported from `sdvplot/shots`, and `BinShape` from `sdvplot/bins` too,
+  not from `sdvplot/plot` or `sdvplot/d3`.
+- `shootingSignature` does not clamp y: the ribbon's edges are `fgPct ± halfWidth`, so near 0% or 100% they pass a
+  [0, 1] domain (`main` clamps the ribbon's centre, which misstates FG%). Pass `y: { domain: [0, 1], clamp: true }` to
+  clamp. `appendSignature` uses your `y` scale as it is; a clamped scale clamps the centre.
+- Marks paint in array order, so zone fills after `...court.marks` dim the court lines under them. Drawing the court
+  last would hide the zones under its floor; for lines on top, add a second `surface` after the zones whose
+  `colorUpdates` set `plot_background`, `defensive_half_court`, `offensive_half_court`, `court_apron`,
+  `two_point_range`, `painted_area`, `center_circle_fill` and `free_throw_circle_fill` to `"#00000000"`.
+- Faces: `appendHeadshots(…, { clip: "circle", ring, placeholder })` draws circular headshots. The image is drawn 2.3
+  radii tall so the head fills the circle, so `drawnMarks` reports 1.15 × `height` for a face.
+- `<Headshot fallback="initials" name="…">` (React) shows the player's initials when there is no headshot or it fails
+  to load, server-rendered pages included. The initials box reads a new CSS variable, `--sdv-line` (its background;
+  default `#e2e2e2`), and `--sdv-muted` for the text.
 
 ## Data provenance
 
