@@ -364,7 +364,7 @@ test("a d3 figure (A6): its own band scale, no cross; the band spans the svg's v
   expect(store.getState().cursor).toEqual({ field: D, value: 28.5 });
 });
 
-test("teardown removes the cursor and its listeners and writes nothing to the store", () => {
+test("teardown removes the cursor and its listeners; a figure that wrote no cursor writes nothing", () => {
   const svg = share();
   const store = createSelection();
   const off = linkCursor(svg, store, { field: D, shape: { axis: "x", scale: scale(svg, "x") } });
@@ -374,7 +374,7 @@ test("teardown removes the cursor and its listeners and writes nothing to the st
   });
   expect(svg.querySelectorAll('style[data-sdv-interact="cursor"]').length).toBe(1); // A13: once per root
   offBand();
-  overX(svg, "pointermove", 12.3);
+  store.set({ cursor: { field: D, value: 12.3 } }); // another writer's cursor
   const fn = vi.fn();
   store.subscribe(fn);
   off();
@@ -385,6 +385,35 @@ test("teardown removes the cursor and its listeners and writes nothing to the st
   expect(fn).not.toHaveBeenCalled();
   store.set({ cursor: { field: D, value: 3.5 } }); // the store no longer reaches it
   expect(cursorG(svg)).toBeNull();
+});
+
+test("teardown clears the cursor this figure wrote while the store still holds it, and never a later one", () => {
+  const svg = share();
+  const store = createSelection();
+  const snap = (v: number): number => Math.floor(v) + 0.5;
+  const link = (): (() => void) =>
+    linkCursor(svg, store, { field: D, shape: { axis: "x", scale: scale(svg, "x"), width: 1 }, snap });
+  const off = link();
+  overX(svg, "pointermove", 12.3); // writes {distance, 12.5}
+  off(); // the chart is redrawn under the pointer: no pointerleave will come
+  expect(cursorOf(store)).toBeNull();
+  const again = link();
+  overX(svg, "pointermove", 12.3);
+  store.set({ cursor: { field: D, value: 20.5 } }); // a cursor the user set later
+  again();
+  expect(cursorOf(store)).toEqual({ field: D, value: 20.5 });
+  const third = link();
+  overX(svg, "pointermove", 12.3);
+  fire(svg, "pointerleave", 0, 0); // its own clear: it holds no cursor now
+  store.set({ cursor: { field: D, value: 12.5 } }); // the user sets the value it once wrote
+  third();
+  expect(cursorOf(store)).toEqual({ field: D, value: 12.5 });
+  const fourth = link();
+  overX(svg, "pointermove", 13.3);
+  fourth();
+  store.set({ cursor: { field: D, value: 13.5 } }); // set again after the teardown
+  fourth(); // a second teardown writes nothing
+  expect(cursorOf(store)).toEqual({ field: D, value: 13.5 });
 });
 
 test("argument errors throw InputError before anything is drawn", () => {
