@@ -66,9 +66,9 @@ for (const f of [...polygons].sort((a, b) => a.zIndex - b.zIndex)) {
   if (hasSeam(f.points)) seamNames.push(f.name);
 }
 
-// Puck trail: 20 sample rows on the hockeytech-b canvas (600×300, y down) → Scene ft via the frame registry.
+// Puck trail: 20 sample rows on the hockeytech canvas (600×300, y down) → Scene ft via the frame registry.
 const SAMPLE = Array.from({ length: 20 }, (_, i) => ({ x_coord: 60 + i * 24, y_coord: 150 + Math.sin(i / 3) * 90 }));
-const trail = toSurfaceFrame(SAMPLE, { from: "hockeytech-b", x: "x_coord", y: "y_coord" });
+const trail = toSurfaceFrame(SAMPLE, { from: "hockeytech", x: "x_coord", y: "y_coord" });
 const pts = trail.filter((r) => r.surface_x !== null && r.surface_y !== null).map((r) => new THREE.Vector3(r.surface_x!, r.surface_y!, 0.3));
 scene3.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: 0xffcc00 })));
 for (const p of pts) { const puck = new THREE.Mesh(new THREE.CylinderGeometry(0.125, 0.125, 0.083, 16), new THREE.MeshBasicMaterial({ color: 0x000000 })); puck.rotation.x = Math.PI / 2; puck.position.copy(p); scene3.add(puck); }

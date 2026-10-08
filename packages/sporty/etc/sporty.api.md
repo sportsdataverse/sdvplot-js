@@ -622,8 +622,7 @@ export type FrameName = keyof typeof FRAMES;
 export const FRAMES: {
     readonly "nba-legacy": Frame;
     readonly "nba-legacy-vertical": Frame;
-    readonly "hockeytech-a": Frame;
-    readonly "hockeytech-b": Frame;
+    readonly hockeytech: Frame;
     readonly "espn-football-0-100": Frame;
 };
 
