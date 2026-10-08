@@ -1,0 +1,88 @@
+---
+title: Plotly, Vega-Lite, ECharts and Chart.js
+sidebar_position: 7
+---
+
+Not every project draws with Plot or D3. The Plotly, Vega-Lite and ECharts subpaths patch a plain spec object (a
+figure, a spec, an option) and never import the charting library, so they work with whatever build you already
+load; the Chart.js subpath returns dataset options and plugins. All of them are synchronous, so load the league first
+(`loadLeague`). The Vega-Lite, ECharts and Chart.js figures below are rendered in Node, where each library runs
+without a browser.
+
+## Plotly
+
+`withLogos(figure, rows, { league, x, y, team })` returns a new figure with one `layout.images` entry per row, for
+`Plotly.newPlot(div, figure.data, figure.layout)`. plotly.js loads each image itself, so these examples show the
+figure rather than a render.
+
+<Live id="sdvplot/plotly/logos-scatter" />
+
+`withAxisLogos` puts logos under an axis's ticks and `teamColorway` gives one team colour per bar; `withHeadshots`
+and `withWordmarks` place images at each row's point.
+
+<Live id="sdvplot/plotly/axis-logos" />
+
+<Live id="sdvplot/plotly/headshots-wordmarks" />
+
+## Vega-Lite
+
+The same verbs add a native `image` layer to a Vega-Lite spec; compile it and render it as usual. `logoLayer` is that
+layer on its own, to drop into a layered spec of your own, and `teamColorScale` gives a colour scale of team colours.
+
+<Live id="sdvplot/vega/logos-scatter" />
+
+<Live id="sdvplot/vega/logo-layer" />
+
+<Live id="sdvplot/vega/axis-logos" />
+
+<Live id="sdvplot/vega/headshots-wordmarks" />
+
+## ECharts
+
+For ECharts the verbs add a `custom` series that draws the images, sized from the grid at render time; axis logos
+become rich-text labels and `teamColorPalette` fills `option.color`. Server-side rendering to an SVG string works as
+in any ECharts project.
+
+<Live id="sdvplot/echarts/logos-scatter" />
+
+<Live id="sdvplot/echarts/axis-logos" />
+
+<Live id="sdvplot/echarts/headshots-wordmarks" />
+
+## Images that travel with the file
+
+By default every image is a link the viewer's browser loads. `embedSources(urls)` fetches each URL once and returns a
+map from URL to data URI; pass it as `embed` and the spec carries the image bytes instead, for a saved file, an email
+or a page that has to work offline. Each of the three subpaths exports it.
+
+<Live id="sdvplot/echarts/embed-sources" />
+
+<Live id="sdvplot/vega/embed-sources" />
+
+<Live id="sdvplot/plotly/embed-sources" />
+
+## Chart.js
+
+`teamColor` and `teamFill` from `@sportsdataverse/sdvplot/chartjs` return Chart.js colours (one per team) for
+`backgroundColor` and `borderColor`; `teamFill` is the translucent version for areas. These examples draw on
+[`@napi-rs/canvas`](https://github.com/Brooooooklyn/canvas) in Node and register a bundled font first, since a build
+server may have none.
+
+<Live id="sdvplot/chartjs/team-colors" />
+
+`surface(league, { team })` from `@sportsdataverse/sdvplot/chartjs/surface` returns a plugin that paints the court
+under the datasets and scales that keep a foot the same length on both axes.
+
+<Live id="sdvplot/chartjs/court-shots" />
+
+The image helpers (`logoPoints`, `wordmarkPoints`, `headshotPoints`, `pointImages`, `axisLogos`, `logoWatermarks`)
+build `<img>` elements, so they run in the browser; the
+[package README](https://github.com/sportsdataverse/sdvplot-js/tree/main/packages/sdvplot#chartjs-astro-svelte-react-plain-scripts)
+shows them in a complete component.
+
+## A matchup in two colours
+
+`matchupColors(home, away)` returns a pair that reads apart on a light page and one for a dark page; here the light
+pair colours Super Bowl LIX's win probability.
+
+<Live id="sdvplot/chartjs/win-probability" />

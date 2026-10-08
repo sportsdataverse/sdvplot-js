@@ -1,0 +1,39 @@
+---
+title: D3
+sidebar_position: 5
+---
+
+With D3 you own the scales, axes and layout, so `@sportsdataverse/sdvplot/d3` gives you only the parts that need the
+league data: images placed through your scales, a colour scale of team colours, and a team-painted surface. Each
+helper appends to a selection you made and returns what it appended, so it fits into any existing D3 chart.
+
+## Logos, wordmarks and headshots through your scales
+
+`appendLogos(selection, xs, ys, teams, { league, x, y, frameHeight })` places one logo per value through your `x` and
+`y` functions; `height` is a fraction of `frameHeight`. Start from `d3.select(element).append("svg")`: the helpers
+take a selection whose datum is `unknown`, which `d3.create` does not give.
+
+<Live id="api/sdvplot/appendLogos" />
+
+<Live id="sdvplot/d3/append-logos" />
+
+`appendWordmarks` and `appendHeadshots` take the same arguments; headshots read ESPN player ids.
+
+<Live id="sdvplot/d3/append-wordmarks" />
+
+<Live id="sdvplot/d3/append-headshots" />
+
+## A team colour scale
+
+`teamColorScale(league, { values })` is a `d3.scaleOrdinal` from team to colour; a value that is no team gets grey.
+
+<Live id="api/sdvplot/teamColorScale" />
+
+<Live id="sdvplot/d3/team-color-scale" />
+
+## A court in team colours
+
+`appendSurface(selection, league, { team, x, y })` draws the league's surface in the team's colours through your
+scales, so your data and the court share one coordinate system (feet from centre court here).
+
+<Live id="sdvplot/d3/append-surface" />

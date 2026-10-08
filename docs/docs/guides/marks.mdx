@@ -1,0 +1,65 @@
+---
+title: Logos, wordmarks, headshots
+sidebar_position: 3
+---
+
+A logo on a chart is an image URL, and the hard part is picking the right one: the logo a team used that season,
+the dark-background version, a wordmark instead of a crest. sdvplot answers with URLs into an archive of every mark
+(each file named by its sha256, so a URL never changes what it shows), chosen from the league data in the package.
+Nothing here downloads an image; the browser loads each URL when it draws it.
+
+## A logo URL, by season
+
+`logoUrl(team, league, { season })` returns the archived logo that team used that season. `logoUrlSync` is the same
+once the league is loaded.
+
+<Live id="api/sdvplot/logoUrl" />
+
+<Live id="sdvplot/core/logo-eras" />
+
+## Choosing a mark: variants and ranking
+
+`selectMark` returns the chosen mark's full row (source, variant, archive URL); `variant: "dark"` asks for the
+dark-background version (`VARIANTS` lists them all) and `markType: "wordmark"` the wordmark. `marks` returns every
+bundled mark for a team, best first, and `compareMarks` is that ranking for rows you filter or merge yourself.
+
+<Live id="sdvplot/core/mark-variants" />
+
+## The full manifest
+
+The bundled data keeps the marks the charts use. `marks(team, league, { full: true })` reads the complete archive
+manifest instead: one download from `MANIFEST_URL` per process. `fetchManifest`, `parseManifestCsv` and
+`manifestMarks` are the steps it is built from, for a copy you fetched or cached yourself.
+
+<Live id="sdvplot/core/marks-full-manifest" />
+
+<Live id="sdvplot/core/manifest-rows" />
+
+## Headshots
+
+`headshotUrl(playerId, league)` builds an ESPN headshot URL from the player id alone, in every league
+`ESPN_HEADSHOT_LEAGUES` lists; each league's own CDN has its own builder. `HEADSHOT_ASPECT` is the width-to-height
+ratio of an ESPN headshot, for sizing the box.
+
+<Live id="api/sdvplot/headshotUrl" />
+
+<Live id="sdvplot/core/headshot-urls" />
+
+nflverse gsis ids work too, after `loadGsis()` imports the id map that ships with the package.
+
+<Live id="sdvplot/core/headshot-gsis" />
+
+## Placements: what every image mark draws
+
+`place(xs, ys, teams, { league, kind })` is the step every logo, wordmark and headshot mark is built on: one entry
+per drawable row with its position, image URL and aspect ratio. Use it to draw marks in a renderer sdvplot has no
+adapter for.
+
+<Live id="sdvplot/core/place" />
+
+## Versions
+
+`VERSION` is the package's version, `INDEX_VERSION` the bundled team index's, and `versions()` adds the date of the
+manifest the league data came from. Quote them in a bug report.
+
+<Live id="sdvplot/core/versions" />

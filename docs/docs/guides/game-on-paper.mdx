@@ -1,0 +1,60 @@
+---
+title: "Using sdvplot with Game on Paper (Chart.js + Astro/Svelte)"
+sidebar_label: With Game on Paper
+sidebar_position: 15
+---
+
+[Game on Paper](https://gameonpaper.com) renders its pages in Astro and draws its charts with Chart.js inside Svelte 5
+islands. sdvplot fits that stack without a wrapper: its Chart.js subpath returns plain dataset options and plugins, and
+`matchupColors` is Game on Paper's own "game colours" picker, so a page can choose a matchup's colours on the server
+and hand them to the island that draws. This guide follows one game page from the Astro frontmatter to the browser.
+
+## Colours for a game, chosen on the server
+
+In the page's frontmatter, `await loadLeague("cfb")` and call `matchupColorsSync(home, away, { league })`; pass the
+result to the island as a prop. It holds a `light` and a `dark` pair, home first, and the island picks one with
+`window.matchMedia("(prefers-color-scheme: dark)")` when it draws.
+
+<Live id="api/sdvplot/matchupColorsSync" />
+
+## A chart in those colours
+
+The island builds the chart in the browser (a `client:only="svelte"` island, the chart created in an `$effect` and
+destroyed in its cleanup), with the pair as each dataset's `borderColor`. The same chart, drawn in Node:
+
+<Live id="sdvplot/chartjs/win-probability" />
+
+## Datasets in team colours
+
+`teamColor(teams, league)` gives one colour per team for `backgroundColor` or `borderColor`, and `teamFill` the
+translucent fill under a radar or area dataset.
+
+<Live id="sdvplot/chartjs/team-colors" />
+
+## Logos on points
+
+`logoPoints(teams, { league })` turns each point into the team's logo and the `pointImages` plugin draws them once the
+images load; `logoWatermarks([home, away])` puts faint team logos behind the datasets, as on Game on Paper's
+win-probability chart. They create `<img>` elements, so build them inside the island, after `loadLeague` resolves; in Node they throw `UnsupportedTargetError`. The
+[package README](https://github.com/sportsdataverse/sdvplot-js/tree/main/packages/sdvplot#chartjs-astro-svelte-react-plain-scripts)
+has the complete Astro page and Svelte component.
+
+## A court or field behind the data
+
+`surface(league, { team })` from `@sportsdataverse/sdvplot/chartjs/surface` is a Chart.js plugin that paints the
+playing surface under the datasets, with scales that keep its proportions.
+
+<Live id="sdvplot/chartjs/court-shots" />
+
+## Images rendered on the server
+
+The PNGs on this page come from Chart.js on `@napi-rs/canvas`, a route an Astro endpoint can take for social cards
+under the Node adapter (it is a native module, so not under Cloudflare Workers). Register a font with `GlobalFonts`
+before drawing: a server image may have no fonts, and every label would come out blank.
+
+## Tables
+
+sdvtables renders a table to an HTML string in the frontmatter (`await renderHTMLAsync(spec, rows)`), which the page
+inserts with Astro's `set:html`. No JavaScript reaches the browser for it.
+
+<Live id="sdvtables/html/standings" />

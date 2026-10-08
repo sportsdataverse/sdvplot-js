@@ -2,12 +2,40 @@
 title: Hockey (NHL / PWHL)
 ---
 
-Each figure is drawn by the code under it; the same code runs in CI on every pull request. In Node, pass a DOM `document` to `Plot.plot({ document, … })`; see [Node and SSR](../intro.mdx#node-and-ssr).
+Hockey event data arrives on many canvases (HockeyTech's pixel grids, the NHL's feet from centre ice), and the rink
+differs by league. Each figure on this page is drawn by the code under it, and the same code runs in CI on every pull
+request; in Node, see [Node and SSR](../guides/node-ssr.mdx).
 
-## Shot map — rink in team colours, dots, team colour scale
+## Shot map: a rink in team colours, dots, logos
+
+HockeyTech events on the 850 × 400 canvas move onto a 200 × 85 ft rink painted in Boston's colours.
 
 <Live id="sdvplot/plot/nhl-shot-map" />
 
-## Standings — bars with logos on the axis
+## HockeyTech canvases
+
+HockeyTech leagues report events on one of two pixel canvases (850 × 400 or 600 × 300, origin top-left, y down);
+`hockeytech-a` and `hockeytech-b` map both onto the rink.
+
+<Live id="sporty/frames/hockeytech" />
+
+## Display ranges
+
+A display range crops the rink to the part a figure shows; several names are aliases of one box.
+
+<Live id="sporty/core/display-ranges" />
+
+<Live id="sporty/core/arc-resolution" />
+
+## Standings: bars with logos on the axis
 
 <Live id="sdvplot/plot/nhl-standings" />
+
+## Every hockey rink
+
+[NHL](/gallery/sporty/surfaces/hockey-nhl), [PWHL](/gallery/sporty/surfaces/hockey-pwhl),
+[AHL](/gallery/sporty/surfaces/hockey-ahl), [ECHL](/gallery/sporty/surfaces/hockey-echl),
+[IIHF](/gallery/sporty/surfaces/hockey-iihf), [NCAA](/gallery/sporty/surfaces/hockey-ncaa),
+[OHL](/gallery/sporty/surfaces/hockey-ohl), [QMJHL](/gallery/sporty/surfaces/hockey-qmjhl),
+[USHL](/gallery/sporty/surfaces/hockey-ushl), [PHF](/gallery/sporty/surfaces/hockey-phf) and
+[NWHL](/gallery/sporty/surfaces/hockey-nwhl).

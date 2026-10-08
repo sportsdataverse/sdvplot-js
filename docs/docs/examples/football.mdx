@@ -2,18 +2,40 @@
 title: Football (NFL / college)
 ---
 
-Each figure is drawn by the code under it; the same code runs in CI on every pull request. In Node, pass a DOM `document` to `Plot.plot({ document, … })`; see [Node and SSR](../intro.mdx#node-and-ssr).
+Football plays are reported against the yardline, so a play map needs the field and a frame that puts each yardline
+in place; team colours go on the end zones. Each figure on this page is drawn by the code under it, and the same code
+runs in CI on every pull request; in Node, see [Node and SSR](../guides/node-ssr.mdx).
 
-## Play map — field in team colours, dots, team colour scale
+## Play map: a field in team colours, dots, logos
 
 <Live id="sdvplot/plot/nfl-play-map" />
 
-## Standings — bars with logos on the axis
+## ESPN yardlines
+
+ESPN plays carry `x` as a 0-100 yardline and `y` in yards from the middle; the `espn-football-0-100` frame centres the
+field so that midfield is `x = 0`.
+
+<Live id="sporty/frames/espn-football" />
+
+## A field in team colours
+
+`team` paints both end zones in the primary colour; `colorUpdates` overrides any colour key on top of that.
+
+<Live id="sdvplot/plot/surface-team" />
+
+## Standings: bars with logos on the axis
 
 <Live id="sdvplot/plot/nfl-standings" />
 
 ## Team tiers
 
+`teamTiers` takes rows of `team` plus `tier_no` (and optionally `tier_rank`).
+
 <Live id="sdvplot/plot/nfl-team-tiers" />
 
-`rows` carry `team` plus `tier_no` (and optionally `tier_rank`).
+## Every football field
+
+[NFL](/gallery/sporty/surfaces/football-nfl), [NCAA](/gallery/sporty/surfaces/football-ncaa),
+[CFL](/gallery/sporty/surfaces/football-cfl), and the NFHS
+[11-player](/gallery/sporty/surfaces/football-nfhs11), [9-player](/gallery/sporty/surfaces/football-nfhs9),
+[8-player](/gallery/sporty/surfaces/football-nfhs8) and [6-player](/gallery/sporty/surfaces/football-nfhs6) fields.

@@ -2,12 +2,45 @@
 title: Basketball (NBA / WNBA / NCAA)
 ---
 
-Each figure is drawn by the code under it; the same code runs in CI on every pull request. In Node, pass a DOM `document` to `Plot.plot({ document, … })`; see [Node and SSR](../intro.mdx#node-and-ssr).
+A shot chart is the basketball figure: shots in the feed's coordinates, moved onto a court drawn to the league's
+dimensions, often in the home team's colours. Each figure on this page is drawn by the code under it, and the same code
+runs in CI on every pull request; in Node, see [Node and SSR](../guides/node-ssr.mdx).
 
-## Shot chart — court in team colours, dots, team colour scale
+## Shot chart: a court in team colours, dots, logos
+
+sdvplot's `surface("nba", { team })` paints the court; `toSurfaceFrame` moves the shots from stats.nba.com
+coordinates into court feet, and the defensive half is all that shows.
 
 <Live id="sdvplot/plot/nba-shot-chart" />
 
-## Standings — bars with logos on the axis
+## From stats.nba.com coordinates to court feet
+
+The `nba-legacy` frame reads `x_legacy`/`y_legacy` (tenths of a foot from the hoop, x across the court) and returns
+`surface_x`/`surface_y` in court feet.
+
+<Live id="sporty/frames/nba-legacy" />
+
+## Standings: bars with logos on the axis
 
 <Live id="sdvplot/plot/nba-standings" />
+
+## The same court in D3 and Chart.js
+
+<Live id="sdvplot/d3/append-surface" />
+
+<Live id="sdvplot/chartjs/court-shots" />
+
+## Recolouring and resizing the court
+
+`colorUpdates` recolours any of the court's colour keys, and `updates` changes any dimension: here the NBA lane at its
+1951-1964 width.
+
+<Live id="sporty/core/color-updates" />
+
+<Live id="sporty/core/param-updates" />
+
+## Every basketball court
+
+[FIBA](/gallery/sporty/surfaces/basketball-fiba), [NBA](/gallery/sporty/surfaces/basketball-nba),
+[NBA G League](/gallery/sporty/surfaces/basketball-nba-g-league), [WNBA](/gallery/sporty/surfaces/basketball-wnba),
+[NCAA](/gallery/sporty/surfaces/basketball-ncaa) and [NFHS](/gallery/sporty/surfaces/basketball-nfhs).

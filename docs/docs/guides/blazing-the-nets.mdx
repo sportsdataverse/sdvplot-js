@@ -1,0 +1,53 @@
+---
+title: "Using sdvplot with blazing-the-nets (Next/React + d3)"
+sidebar_label: With blazing-the-nets
+sidebar_position: 16
+---
+
+[blazing-the-nets](https://blazingthenets.com) is a Next.js App Router site on React 19 that draws its charts with the
+modular d3 packages inside client components: shot charts on a court in stats.nba.com coordinates, player headshots
+from ESPN, team colours. Each of those maps onto an sdvplot or sporty call, and this guide shows where each one goes:
+the server component, the client component, or the d3 effect.
+
+## Server components: plain URLs
+
+A server component can `await loadLeague("nba")` and use the synchronous lookups: `logoUrlSync` and `headshotUrl`
+return plain URLs for an `<img>` or `next/image` (add `sdv.nyc3.cdn.digitaloceanspaces.com` and `a.espncdn.com` to
+`images.remotePatterns`). `HEADSHOT_ASPECT` is the width-to-height ratio of an ESPN headshot, for sizing the box.
+
+<Live id="sdvplot/core/headshot-urls" />
+
+## Client components: the React components
+
+`TeamLogo`, `Wordmark`, `Headshot` and the hooks hold state and effects, so they belong in a file that starts with
+`"use client"`, as the site's chart components already do.
+
+<Live id="sdvplot/react/headshot" />
+
+<Live id="sdvplot/react/team-logo" />
+
+## d3 inside an effect
+
+The helpers in `@sportsdataverse/sdvplot/d3` append to a selection you made, so they drop into the `useEffect` that
+already draws a chart: `select(ref.current)` from `d3-selection` is the selection they take. They import from the
+`d3` package, so add it beside the modular ones.
+
+<Live id="sdvplot/d3/append-headshots" />
+
+<Live id="sdvplot/d3/team-color-scale" />
+
+## stats.nba.com shots on a court
+
+stats.nba.com reports shots in tenths of a foot from the hoop. `toSurfaceFrame(rows, { from: "nba-legacy" })` moves
+them into court feet, and `appendSurface` draws the court (in a team's colours if you like) through the same scales.
+
+<Live id="sporty/frames/nba-legacy" />
+
+<Live id="sdvplot/d3/append-surface" />
+
+## Tables
+
+`renderHTMLAsync(spec, rows)` in a server component returns the table as an HTML string for
+`dangerouslySetInnerHTML`; a headshot column needs only the ESPN ids.
+
+<Live id="sdvtables/kinds/headshot" />

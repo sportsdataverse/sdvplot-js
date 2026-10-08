@@ -1,0 +1,58 @@
+---
+title: From sdvplot (Python), sdvplotR, sportyR
+sidebar_position: 17
+---
+
+sdvplot-js is a port: the team data and lookups of [sdvplot](https://github.com/sportsdataverse/sdvplot) (Python) and
+[sdvplotR](https://github.com/sportsdataverse/sdvplotR), the table helpers of sdvplotR and gtUtils, and the surfaces
+of [sportyR](https://sportyr.sportsdataverse.org). The answers match theirs (the test suite checks them against the
+Python and R outputs); the names follow JavaScript conventions, and the ggplot and gt functions become marks, adapters
+and builder methods. This page maps the old names to the new.
+
+## Lookups
+
+The Python names become camelCase; sdvplotR's `sdv_` prefix goes.
+
+| Python sdvplot | sdvplotR | sdvplot-js |
+| --- | --- | --- |
+| `resolve`, `suggest`, `teams` | `clean_team_abbrs`, `resolve_historical_abbr`, `team_reference` | `resolve` / `resolveSync`, `suggest`, `teams` |
+| `team_colors`, `palette` | `sdv_team_colors`, `sdv_color_palette` | `teamColors` / `teamColorsSync`, `palette` |
+| `logo_url`, `marks` | `sdv_logo_url` | `logoUrl` / `logoUrlSync`, `marks`, `selectMark` |
+| `headshot_url` | `sdv_headshot_url` | `headshotUrl` |
+| `versions` | | `versions`, `VERSION`, `INDEX_VERSION` |
+
+A season resolves a relocated franchise the same way in all three:
+
+<Live id="sdvplot/core/resolve-relocations" />
+
+## Plot layers
+
+ggplot's geoms and scales become Observable Plot marks and scale options (`@sportsdataverse/sdvplot/plot`); Python's
+`add_*` functions are the same marks. For other libraries the verbs are `with*` (Plotly, Vega-Lite, ECharts) and
+`append*` (D3).
+
+| Python sdvplot | sdvplotR | sdvplot-js (Plot) |
+| --- | --- | --- |
+| `add_logos`, `add_wordmarks`, `add_headshots` | `geom_sdv_logos`, `geom_sdv_wordmarks`, `geom_sdv_headshots` | `logos`, `wordmarks`, `headshots` |
+| `axis_logos` | `theme_x_sdv`, `element_sdv_logo` | `axisLogos` |
+| | `scale_color_sdv`, `scale_fill_sdv` | `teamColor`, `teamFill` |
+| | `geom_mean_lines`, `geom_median_lines` | `meanLines`, `medianLines` |
+| | `ggtitle_image` | `titleImage` |
+| | `sdv_team_tiers` | `teamTiers` |
+| `surface` | `sdv_surface` | `surface` |
+
+## Coordinates and surfaces
+
+sportyR's `geom_baseball`, `geom_basketball` and the other seven become `surface(sport, league)` or the typed entry
+per sport (`basketballCourt("nba")`). Python's `court_coords` and sdvplotR's `sdv_court_coords` /
+`sdv_pitch_coords` become `toSurfaceFrame(rows, { from })` with a frame from `FRAMES`; the stats.nba.com shot frame is
+`"nba-legacy"`.
+
+<Live id="sdvplot/plot/nba-shot-chart" />
+
+## Tables
+
+Every `gt_*` helper of sdvplotR and gtUtils has a home in sdvtables: a column kind (`c.<kind>`), a builder method, a
+theme or a function of `@sportsdataverse/sdvtables/html`. `GT_ALIASES` is that table, and `aliasFor` looks a name up.
+
+<Live id="sdvtables/spec/aliases" />

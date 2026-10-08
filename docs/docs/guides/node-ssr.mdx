@@ -1,0 +1,64 @@
+---
+title: Node and SSR
+sidebar_position: 14
+---
+
+Everything in sdvplot-js runs in Node as well as the browser, which is how this site's figures are made: each one is
+rendered at build time and served as static markup. Plot needs a DOM `document` (jsdom or linkedom), sporty's `toSVG`
+and sdvtables' `renderHTML` need none, and the league data is in the package, so a server or a CI job draws charts
+with no network beyond what the images themselves link to.
+
+## Observable Plot with jsdom or linkedom
+
+Pass `document` to `Plot.plot` and read the figure's `outerHTML`; logos stay links the browser loads when it shows
+the SVG.
+
+<Live id="sdvplot/node/plot-in-node" />
+
+linkedom is a lighter DOM than jsdom: enough for Plot to build the SVG, with no layout.
+
+<Live id="sdvplot/node/plot-linkedom" />
+
+## Load every league once
+
+`preloadAll()` imports every league and the gsis id map, after which every `…Sync` function works for any league. A
+server does it once at start-up; a browser page loads only the leagues it draws.
+
+<Live id="sdvplot/node/preload-all" />
+
+## Surfaces and tables as strings
+
+sporty's `toSVG` and sdvtables' `renderHTML` return strings with no DOM at all.
+
+<Live id="sporty/svg/to-svg-options" />
+
+<Live id="sdvtables/html/standings" />
+
+## Charts written by CI
+
+A scheduled GitHub Action can redraw a chart or table every day and commit the SVG or HTML. A script that writes the
+output of any example above to a file, run by a workflow like this one, is all it takes:
+
+```yaml
+name: charts
+on:
+  schedule: [{ cron: "0 12 * * *" }]
+  workflow_dispatch:
+jobs:
+  draw:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm install @sportsdataverse/sdvplot @sportsdataverse/sporty @sportsdataverse/sdvtables @observablehq/plot jsdom tsx
+      - run: npx tsx scripts/draw.ts
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add charts/
+          git diff --cached --quiet || git commit -m "chore: redraw charts"
+          git push
+```

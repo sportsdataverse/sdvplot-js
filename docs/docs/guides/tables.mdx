@@ -1,0 +1,51 @@
+---
+title: "Tables: the spec"
+sidebar_position: 9
+---
+
+`@sportsdataverse/sdvtables` is the table half of sdvplot-js: the formatting of sdvplotR's `gt` helpers and gtUtils
+(logos in cells, colour scales, tiers, themes) as a plain-data table spec and an HTML renderer. A spec is built once,
+checked against your row type and validated when built, then rendered anywhere: on a server, in a static build or in
+the browser. This guide is the spec; the guides after it cover themes, cell kinds, decorations and rendering. The
+sample rows are on the [Sample data](../sample-data.mdx) page.
+
+## A spec is plain data
+
+`defineTable<Row>()` starts a builder; `.columns`, `.theme`, `.title` and the decorations each return a new builder,
+and `.build()` validates once and returns a plain object that JSON can carry (server to browser, a file, a cache
+key).
+
+<Live id="sdvtables/spec/standings-basic" />
+
+## Rendering it
+
+`renderHTML(spec, rows)` returns the table as an HTML string. It is synchronous, so first `await prepare(spec)`,
+which loads the league data the spec's logo and team-colour columns need.
+
+<Live id="api/sdvtables/defineTable" />
+
+<Live id="api/sdvtables/renderHTML" />
+
+<Live id="sdvtables/html/standings" />
+
+## The column factory and the builder
+
+`.columns((c) => [...])` hands you the column factory, the same object `columnFactory<Row>()` returns: each `c.*`
+call is one column with sdvplotR's defaults, and the gtUtils names are aliases (`c.fmtRank` is `c.rank`).
+`RANK_PALETTE` is the palette rank colours use.
+
+<Live id="sdvtables/spec/column-factory" />
+
+## Rows picked by data
+
+Decorations that pick rows (`highlight`, `boldRows`, `spotlight`, `rowAccent`) take a predicate such as
+`{ key: "wins", op: ">=", value: 11 }`, or row indices, so a spec stays JSON. `selectRows` and `matches` evaluate them.
+
+<Live id="sdvtables/spec/predicates" />
+
+## Errors, raised early
+
+A spec that cannot render throws one `TableSpecError` (an `SdvplotError`) when it is built or rendered, naming the
+problem: no columns, a key used twice, a column the rows do not have.
+
+<Live id="sdvtables/spec/errors" />

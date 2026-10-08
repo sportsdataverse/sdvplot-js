@@ -1,0 +1,23 @@
+---
+title: Sample data
+sidebar_position: 5
+---
+
+The examples on this site draw real data, never invented rows. Two tables are shared between them, both exported by
+the examples workspace as `@sportsdataverse/examples/data`.
+
+## STANDINGS: eight AFC teams, 2024
+
+Eight rows of the 2024 NFL final standings, the AFC West and AFC East. Wins, losses, points for and points against are
+the published 2024 regular-season values, and each starting quarterback carries his ESPN player id. New England's net
+EPA is left `null` on purpose, so every example also shows how a missing value renders.
+
+<Live id="sdvtables/spec/sample-data" />
+
+## SUPER_BOWL_LIX_WP: one game's win probability
+
+Super Bowl LIX (9 February 2025, Philadelphia the home team; Philadelphia won 40-22 over Kansas City): ESPN's win probability for
+Philadelphia after each of 186 plays, against minutes played. It comes from ESPN's game summary (event 401671889),
+its `winprobability` entries joined to the plays they follow.
+
+<Live id="sdvplot/chartjs/win-probability" />

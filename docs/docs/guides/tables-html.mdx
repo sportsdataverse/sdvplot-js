@@ -1,0 +1,44 @@
+---
+title: HTML, SSR and the host page
+sidebar_position: 13
+---
+
+`@sportsdataverse/sdvtables/html` turns a spec and rows into HTML. The output is a string, so the same call serves a
+server response, a static build or a browser page, and it carries its own CSS and font links so it renders the same
+wherever it lands. This guide covers the choices that matter once tables sit in a real page: when to await, sharing
+one stylesheet across many tables, and who loads the fonts.
+
+## Prepare, then render
+
+`renderHTML` is synchronous and needs the league data loaded; `prepare(spec)` loads it. `renderHTMLAsync(spec, rows)`
+is the two in one call, for code that can await.
+
+<Live id="sdvtables/html/render-async" />
+
+## What a spec needs and shows
+
+`leaguesOf(spec)` lists the leagues `prepare` will load (team-aware columns and the `sdvTeam` theme), and
+`columnLabel(column)` gives the header text a column will show (its label, else the key, title-cased).
+
+<Live id="sdvtables/html/leagues-of" />
+
+## One stylesheet for many tables
+
+Each table inlines its theme's CSS by default. A page with many tables in one theme writes `styleSheet(spec)` once per
+`themeKey(spec.theme)` (the class every table of that theme carries) and renders each table with `{ css: "none" }`.
+
+<Live id="sdvtables/html/host-stylesheet" />
+
+## Fonts the page already loads
+
+Every table starts with a Google Fonts `<link>` for its theme; `{ fonts: false }` leaves it out, so the page can load
+the fonts once in its `<head>`.
+
+<Live id="sdvtables/html/fonts-off" />
+
+## A DOM element
+
+`toElement(spec, rows)` returns the table as an element instead of a string, and moves the theme's font link into
+`<head>` once. It needs a DOM (a browser, jsdom or happy-dom).
+
+<Live id="sdvtables/html/to-element" />
