@@ -156,8 +156,8 @@ const toggle = document.createElement("select");
 toggle.setAttribute("aria-label", "Cell shape");
 toggle.innerHTML = '<option value="hex">Hexagons</option><option value="square">Squares</option>';
 toggle.addEventListener("change", () => {
+  current.off(); // first: its teardown clears the hover it wrote, before the new court reads the store
   const next = drawCourt(toggle.value === "square" ? "square" : "hex");
-  current.off();
   current.svg.replaceWith(next.svg);
   current = next;
 });

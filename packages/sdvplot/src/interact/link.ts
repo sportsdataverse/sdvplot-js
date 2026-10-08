@@ -63,9 +63,10 @@ const warned = new WeakSet<Element>();
  * emits while the store is being applied to it are not written back (so a two-id hover is never narrowed to the one id
  * a table holds). One figure or one table per call; link several by calling again with the same store. Returns a
  * teardown, which also clears `hover` when the store still holds the id this link last wrote (as `nearestHover`'s
- * `destroy` does): a figure redrawn under the pointer leaves no stale hover dimming the others. Inert without a DOM,
- * so server-rendered markup never changes. With `select: "toggle"`, the figure's marks
- * are keyboard-reachable checkboxes over `selected` ({@link LinkTargets.select}).
+ * `destroy` does): a figure redrawn under the pointer leaves no stale hover dimming the others. To replace a figure,
+ * tear its link down before linking the new one, which otherwise reads the old figure's hover. Inert without a DOM,
+ * so server-rendered markup never changes. With `select: "toggle"`, the figure's marks are keyboard-reachable
+ * checkboxes over `selected` ({@link LinkTargets.select}).
  *
  * @example
  * ```ts

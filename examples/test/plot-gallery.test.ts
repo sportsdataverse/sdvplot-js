@@ -1,4 +1,5 @@
 import { NFL_TEAM_EPA_2024, SUPER_BOWL_LIX_WP } from "@sportsdataverse/examples/data";
+import { resetWarnings, setWarningHandler } from "@sportsdataverse/sdvplot";
 import { beforeAll, expect, test } from "vitest";
 import { EXAMPLES } from "../src/registry.gen.js";
 import { runExample } from "./run.js";
@@ -73,4 +74,33 @@ test("win-probability-difference: the caption's claim that Kansas City never led
   const min = Math.min(...SUPER_BOWL_LIX_WP.map((d) => d.home_wp));
   expect(min).toBeGreaterThan(0.5);
   expect(fig.querySelector("figcaption")?.textContent).toContain(`${(min * 100).toFixed(1)}%`);
+});
+
+test("shot dashboard: the menu swaps the court under a hovered cell, both ways, with no warning and nothing dimmed", async () => {
+  const root = await figure("sdvplot/shots/dashboard");
+  const select = root.querySelector('select[aria-label="Cell shape"]') as HTMLSelectElement;
+  const warnings: string[] = [];
+  resetWarnings();
+  setWarningHandler((m) => warnings.push(m));
+  try {
+    for (const shape of ["square", "hex"]) {
+      // hover a cell as Plot's tip does: `value` on the figure, then `input`
+      const court = select.nextElementSibling as Element;
+      const [x, y] = (court.querySelector("[data-sdv-id]")?.getAttribute("data-sdv-id") ?? "")
+        .split(",")
+        .map(Number);
+      Object.defineProperty(court, "value", { value: { x, y }, configurable: true });
+      court.dispatchEvent(new Event("input", { bubbles: true }));
+      expect(court.classList.contains("sdv-focus")).toBe(true);
+      select.value = shape;
+      select.dispatchEvent(new Event("change"));
+      const next = select.nextElementSibling as Element;
+      expect(next).not.toBe(court);
+      expect(next.classList.contains("sdv-focus")).toBe(false);
+      expect(next.querySelector(".sdv-hl")).toBeNull();
+    }
+    expect(warnings).toEqual([]); // the new court never sees the old court's hover id
+  } finally {
+    setWarningHandler(null);
+  }
 });
