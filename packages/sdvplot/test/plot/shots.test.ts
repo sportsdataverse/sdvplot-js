@@ -2,6 +2,7 @@
 import * as Plot from "@observablehq/plot";
 import { basketballZones } from "@sportsdataverse/sporty";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
+import { highlight } from "../../src/interact/index.js";
 import { shootingSignature, shotCells, shotZones, surface } from "../../src/plot/index.js";
 import {
   type CellVsLeague,
@@ -97,6 +98,56 @@ test("shotZones: six zone areas with zone ids and six haloed labels", () => {
   expect(g?.getAttribute("stroke-width")).toBe("3");
   // the corner strips' labels run vertically
   expect(labels.filter((t) => /rotate\(-90\)/.test(t.getAttribute("transform") ?? ""))).toHaveLength(2);
+});
+
+/** What highlight's appended dimming rule matches: its own selector, run against the figure (as highlight.test does). */
+const dimmed = (root: Element): Element[] => {
+  const css = root.querySelector("style[data-sdv-interact]")?.textContent ?? "";
+  return [...root.querySelectorAll(css.slice(0, css.indexOf("{")))];
+};
+
+test("with Plot's href, shotCells and shotZones stamp the <a> around each path, as linkIds does, and highlight dims it (A27, A38)", () => {
+  const hexes = cellsVsLeague(BKN, LEAGUE.hex15);
+  const { r } = sizeCells(hexes, { radius: 15 });
+  const court = surface("nba", { displayRange: "defense" });
+  const cells = Plot.plot({
+    ...court.scales,
+    width: 500,
+    marks: [...court.marks, shotCells(hexes, { r, href: (h: CellVsLeague) => `#hex-${h.x},${h.y}` })],
+  });
+  expect(cells.querySelectorAll("a[data-sdv-id]")).toHaveLength(211);
+  expect(cells.querySelectorAll("path[data-sdv-id]")).toHaveLength(0); // on the <a>, never also on its path
+  const rim = cells.querySelector('a[data-sdv-id="0,0"]'); // 181 attempts
+  expect(rim?.getAttribute("href")).toBe("#hex-0,0");
+  expect(highlight(cells, new Set(["0,0"]))).toEqual([]); // the rim's id is found
+  expect(dimmed(cells)).toHaveLength(210);
+  expect(dimmed(cells)).not.toContain(rim);
+
+  const zones = Plot.plot({
+    x: { domain: [-47, 0] },
+    y: { domain: [-25, 25] },
+    marks: shotZones(basketballZones("nba", { scale: 10 }), {
+      fill: () => "#dddddd",
+      href: (a: { zone: string }) => `#${a.zone}`,
+    }),
+  });
+  expect([...zones.querySelectorAll("a[data-sdv-id]")].map((a) => a.getAttribute("data-sdv-id"))).toEqual([
+    "restricted_area",
+    "paint",
+    "mid_range",
+    "corner_3_left",
+    "corner_3_right",
+    "above_break_3",
+  ]);
+  expect(zones.querySelectorAll("path[data-sdv-id]")).toHaveLength(0);
+  highlight(zones, new Set(["paint"]));
+  expect(dimmed(zones).map((e) => e.getAttribute("data-sdv-id"))).toEqual([
+    "restricted_area",
+    "mid_range",
+    "corner_3_left",
+    "corner_3_right",
+    "above_break_3",
+  ]);
 });
 
 test("shootingSignature: content-hash gradient ids, equal for equal input, distinct otherwise; 61 stops", () => {
