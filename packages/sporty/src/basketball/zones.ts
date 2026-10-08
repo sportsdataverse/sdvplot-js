@@ -110,8 +110,13 @@ export interface BasketballZoneArea {
 }
 
 /**
- * The six zones as fillable rings in the basket-centred zone frame, cut at depth `top` (default the half-court
- * line). Map them onto a chart with the same frame as the shots (`toSurfaceFrame`), so zones and shots agree.
+ * The six zones as fillable rings, cut at depth `top` (default the half-court line). Rings and labels are
+ * basket-centred, like `basketballZoneOf`'s input: the hoop at the origin, `y` toward half court, in the league's
+ * units times `scale`. They are not in a surface frame, so map every point through the SAME frame as the shots
+ * before drawing. For stats.nba.com legacy shots in the hoop-at-the-bottom chart, build them with `scale: 10` and
+ * map each point `[x, y]` through `FRAMES["nba-legacy-vertical"]` (`f.x({ x, y })`, `f.y({ x, y })`), which
+ * gives `[x / 10, y / 10 - 41.75]`: feet, with the hoop moved to (0, -41.75). Unmapped, the zones miss the shots
+ * by that hoop offset.
  * Port of blazing-the-nets `main` `lib/data/court.ts:141-175`.
  *
  * @example
@@ -125,8 +130,7 @@ export function basketballZones(
   league: BasketballLeague | (string & {}) = "nba",
   o: Omit<ZoneOptions, "league"> & { top?: number; arcResolution?: number } = {},
 ): readonly BasketballZoneArea[] {
-  const scale = o.scale ?? 1;
-  const g = geometry(league, scale);
+  const g = geometry(league, o.scale ?? 1);
   const top = o.top ?? g.halfCourt;
   const n = arcResolution(o.arcResolution);
   const arc = (r: number, from: number, to: number): Point[] =>
@@ -157,15 +161,20 @@ export function basketballZones(
     [s * cx, base],
   ];
   const aboveBreak: Point[] = [[-w, b], [-w, top], [w, top], [w, b], ...arc(g.arc, corner, Math.PI - corner)];
+  // Label anchors come from the same lines, so they sit inside their zone in any league's units: the restricted
+  // area's at a fifth of its radius (main court.ts:169 puts it at 8 tenths, the same for nba), the others midway
+  // across their zone (main's hard-coded tenths, 95/185/285 and corner y 20, are within 0.7 ft of these for nba);
+  // above the break, no further past the arc than the arc is past the free-throw line.
+  const r = g.restricted;
   const labelX = (w + cx) / 2;
-  // Label anchors are blazing-the-nets main's (court.ts:169-174, tenths of a foot), scaled to the zone frame.
-  const at = (x: number, y: number): Point => [(x * scale) / 10, (y * scale) / 10];
+  const cornerY = (base + b) / 2;
+  const breakLabel = (g.arc + Math.min(top, 2 * g.arc - ft)) / 2;
   return [
-    { zone: "restricted_area", points: rim, label: at(0, 8), vertical: false },
-    { zone: "paint", points: paint, label: at(0, 95), vertical: false },
-    { zone: "mid_range", points: midRange, label: at(0, 185), vertical: false },
-    { zone: "corner_3_left", points: cornerStrip(-1), label: [-labelX, (20 * scale) / 10], vertical: true },
-    { zone: "corner_3_right", points: cornerStrip(1), label: [labelX, (20 * scale) / 10], vertical: true },
-    { zone: "above_break_3", points: aboveBreak, label: at(0, 285), vertical: false },
+    { zone: "restricted_area", points: rim, label: [0, r / 5], vertical: false },
+    { zone: "paint", points: paint, label: [0, (r + ft) / 2], vertical: false },
+    { zone: "mid_range", points: midRange, label: [0, (ft + g.arc) / 2], vertical: false },
+    { zone: "corner_3_left", points: cornerStrip(-1), label: [-labelX, cornerY], vertical: true },
+    { zone: "corner_3_right", points: cornerStrip(1), label: [labelX, cornerY], vertical: true },
+    { zone: "above_break_3", points: aboveBreak, label: [0, breakLabel], vertical: false },
   ];
 }

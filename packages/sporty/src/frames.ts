@@ -44,7 +44,9 @@ export const FRAMES: {
   readonly "nba-legacy": Frame;
   /**
    * stats.nba.com legacy shots with the hoop at the BOTTOM (blazing-the-nets' orientation): `x = x/10`,
-   * `y = -41.75 + y/10`. Pair it with `rotation: 90, displayRange: "defense"`; legacy x keeps its sign.
+   * `y = -41.75 + y/10`, legacy x keeping its sign. The points come out ALREADY in the rotated (screen) frame of a
+   * `rotation: 90, displayRange: "defense"` scene: draw them on that court as they are and never rotate them again.
+   * (`"nba-legacy"` instead gives unrotated points.)
    */
   readonly "nba-legacy-vertical": Frame;
   readonly "hockeytech-a": Frame;
@@ -73,7 +75,7 @@ export const FRAMES: {
       return y === null ? null : -47 + 5.25 + y / 10;
     },
     description:
-      "stats.nba.com shot frame with the hoop at the bottom (scene rotation 90): x across with its sign kept, y toward half court",
+      "stats.nba.com shot frame with the hoop at the bottom: points already in a rotation-90 scene's rotated frame (do not rotate them again); x across with its sign kept, y toward half court",
   },
   "hockeytech-a": {
     x: (r: Row): number | null => canvasX(r.x, 850),

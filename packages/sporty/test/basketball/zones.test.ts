@@ -70,3 +70,14 @@ test("nba-legacy-vertical puts the hoop at (0, -41.75) and keeps legacy x's sign
   expect([p?.surface_x, p?.surface_y]).toEqual([-10, -41.75]);
   expect(FRAMES["nba-legacy-vertical"].description).toMatch(/bottom/);
 });
+test("labels come from the league's own lines: every fiba (metres) label is on the court and in its own zone", () => {
+  const areas = basketballZones("fiba");
+  expect(areas).toHaveLength(6);
+  for (const a of areas) {
+    const [x, y] = a.label;
+    expect(Math.abs(x)).toBeLessThanOrEqual(7.5); // court_width / 2
+    expect(y).toBeGreaterThanOrEqual(-1.575); // the baseline
+    expect(y).toBeLessThanOrEqual(14 - 1.575); // the half-court line
+    expect(winding(a.points, a.label)).not.toBe(0);
+  }
+});
