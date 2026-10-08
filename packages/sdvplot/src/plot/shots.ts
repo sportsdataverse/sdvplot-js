@@ -13,6 +13,7 @@ import { InputError } from "../errors.js";
 import { type CellVsLeague, LEAGUE_PRIOR_ATTEMPTS, shrunkDiff } from "../shots/aggregate.js";
 import { type DiffScale, diffScale } from "../shots/diff.js";
 import { type SignaturePoint, signatureGradient } from "../shots/signature.js";
+import { stampRender } from "./link.js";
 
 type Point = [number, number];
 interface ShotFeature {
@@ -21,17 +22,9 @@ interface ShotFeature {
   geometry: { type: "Polygon"; coordinates: [Point[]] };
 }
 
-/** Stamp `data-sdv-id` on each feature's path (one path per index entry), so `sdvplot/interact` can link them. */
-const stampIds =
-  (features: readonly ShotFeature[]): Plot.RenderFunction =>
-  (index, scales, values, dimensions, context, next) => {
-    const g = next?.(index, scales, values, dimensions, context) ?? null;
-    if (g === null) return null;
-    const paths = g.querySelectorAll("path");
-    if (paths.length !== index.length) return g; // never mislabel
-    index.forEach((i, k) => paths[k]?.setAttribute("data-sdv-id", features[i]?.properties.id ?? ""));
-    return g;
-  };
+/** Stamp `data-sdv-id` on each feature's path, so `sdvplot/interact` can link them; silent on a mismatch. */
+const stampIds = (features: readonly ShotFeature[]): Plot.RenderFunction =>
+  stampRender((i) => features[i]?.properties.id ?? "");
 
 function frameOf(f: FrameName | Frame | undefined): Frame {
   const frame = typeof f === "object" ? f : FRAMES[f ?? "nba-legacy"];
