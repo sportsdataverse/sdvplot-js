@@ -36,7 +36,9 @@ export interface EChartsOption {
   grid?: Record<string, unknown>;
 }
 /** No `name`: ECharts leaves an unnamed series out of the default legend (measured, echarts 6.1.0), so `legend: {}`
- *  lists only the caller's series; the `id` carries the bookkeeping. */
+ *  lists only the caller's series; the `id` carries the bookkeeping. `tooltip: { show: false }` keeps the series out
+ *  of a `trigger: "axis"` tooltip, where it would add a stray row; `silent` alone does not (echarts 6.1.0
+ *  axisPointer/modelHelper collectSeriesInfo reads the series' own tooltip.show, never silent). */
 export interface LogoSeries {
   id: string;
   type: "custom";
@@ -47,6 +49,7 @@ export interface LogoSeries {
   encode: { x: number; y: number };
   z: number;
   silent: true;
+  tooltip: { show: false };
   renderItem: (params: RenderParams, api: RenderApi) => RenderedImage;
 }
 /** echarts types `coordSys` as `{ type: string }`; a cartesian2d series gets x, y, width and height at run time. */
@@ -144,6 +147,7 @@ function add(
     encode: { x: Dim.X, y: Dim.Y },
     z,
     silent: true,
+    tooltip: { show: false },
     renderItem: renderLogo,
   };
   const existing = (option.series ?? []).find((s) => s.id === series.id) as LogoSeries | undefined;
@@ -335,6 +339,7 @@ export function withAxisLogos(option: object, axis: "x" | "y", o: EChartsAxisOpt
     encode: letter === "x" ? { x: 0, y: 1 } : { x: 1, y: 0 },
     z: 0,
     silent: true,
+    tooltip: { show: false },
     renderItem: renderNothing,
   };
   opt.series = [...(opt.series ?? []).filter((s) => s.id !== book.id), book];
