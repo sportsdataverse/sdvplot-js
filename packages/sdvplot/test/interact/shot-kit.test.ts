@@ -7,7 +7,7 @@ import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { resetWarnings, setWarningHandler } from "../../src/index.js";
 import { highlight } from "../../src/interact/index.js";
 import { createSelection } from "../../src/selection.js";
-import { leagueIndex, statsByZone } from "../../src/shots/index.js";
+import { LEAGUE_PRIOR_ATTEMPTS, leagueIndex, statsByZone } from "../../src/shots/index.js";
 import { stubBBox } from "../plot/_pointer.js";
 import { BKN, type BknShot } from "../shots/fixture.js";
 import { D, HOOP, type Kit, at, fire, isolated, kit, linkKit, part, px, shown, span } from "./_dashboard.js";
@@ -157,6 +157,11 @@ test("nearest hex within 18 px (S22: shotCells tip maxRadius 18 + linkSelection 
   const cs = drawnCentres(k);
   const rim = cs.find((c) => c.id === "0,0");
   if (!rim) throw new Error("the rim hex is not drawn");
+  // 10 px is inside the rim's Voronoi cell only at the 500 px court, where its nearest drawn neighbour is 21.6 px away
+  const gap = Math.min(
+    ...cs.filter((c) => c !== rim).map((c) => Math.hypot(c.p[0] - rim.p[0], c.p[1] - rim.p[1])),
+  );
+  expect(gap).toBeGreaterThan(20);
   for (let deg = 0; deg < 360; deg += 45) {
     fire(k.court, "pointermove", ...off(rim, 10, deg));
     expect([...store.getState().hover]).toEqual(["0,0"]);
@@ -275,6 +280,12 @@ test("square cells link like hex cells (J38 S11): '0,0' toggles by click, Enter 
   const cs = drawnCentres(k);
   const centre = cs.find((c) => c.id === "0,0");
   if (!centre) throw new Error("the rim square is not drawn");
+  // S11's index is BKN's own shots, so a square the index holds at least 25 shots in (the rim's 115) is compared with
+  // itself, and the rim tip's league line reads +0.0 by construction: it checks no league. The rest fall back to their
+  // zone's rate. (A17's LEAGUE_SQUARE is the real equal-area league index, at another size.)
+  const own = k.cells.filter((h) => h.attempts >= LEAGUE_PRIOR_ATTEMPTS);
+  expect(own.map((h) => `${h.x},${h.y}`)).toContain("0,0");
+  expect(own.filter((h) => h.leagueFgPct !== h.fgPct)).toEqual([]);
   for (let deg = 0; deg < 360; deg += 45) {
     fire(k.court, "pointermove", ...off(centre, 5, deg));
     expect([...store.getState().hover]).toEqual(["0,0"]);
