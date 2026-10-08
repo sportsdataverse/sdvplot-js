@@ -4,6 +4,7 @@
 
 ```ts
 
+import { BaseType } from 'd3';
 import { BasketballColorKey } from '@sportsdataverse/sporty';
 import { BasketballDisplayRange } from '@sportsdataverse/sporty';
 import { BasketballParamUpdates } from '@sportsdataverse/sporty';
@@ -20,13 +21,13 @@ import { Selection as Selection_2 } from 'd3';
 // Warning: (ae-forgotten-export) The symbol "Value" needs to be exported by the entry point d3.d.ts
 //
 // @public
-export function appendHeadshots<G extends SVGElement>(sel: Sel<G>, xs: ArrayLike<Value>, ys: ArrayLike<Value>, players: readonly Value[], o: D3HeadshotOptions): Sel<SVGGElement>;
+export function appendHeadshots<G extends SVGElement, D>(sel: Sel<G, D>, xs: ArrayLike<Value>, ys: ArrayLike<Value>, players: readonly Value[], o: D3HeadshotOptions): Sel<SVGGElement, D>;
 
 // Warning: (ae-forgotten-export) The symbol "G" needs to be exported by the entry point d3.d.ts
 // Warning: (ae-forgotten-export) The symbol "DiffScale" needs to be exported by the entry point d3.d.ts
 //
 // @public
-export function appendLegend(g: G, scale?: DiffScale, o?: AppendLegendOptions): number;
+export function appendLegend<D>(g: G<D>, scale?: DiffScale, o?: AppendLegendOptions): number;
 
 // @public
 export interface AppendLegendOptions {
@@ -52,7 +53,7 @@ export const appendLogos: AppendTeamMarks;
 // Warning: (ae-forgotten-export) The symbol "SignaturePoint" needs to be exported by the entry point d3.d.ts
 //
 // @public
-export function appendSignature(sel: G, points: readonly SignaturePoint[], o: AppendSignatureOptions): G;
+export function appendSignature<D>(sel: G<D>, points: readonly SignaturePoint[], o: AppendSignatureOptions): G<D>;
 
 // @public
 export interface AppendSignatureOptions {
@@ -67,10 +68,10 @@ export interface AppendSignatureOptions {
 // Warning: (ae-forgotten-export) The symbol "League" needs to be exported by the entry point d3.d.ts
 //
 // @public
-export function appendSurface<G extends SVGGElement | SVGSVGElement>(sel: Sel<G>, league: League, o: D3SurfaceOptions): Sel<SVGGElement>;
+export function appendSurface<G extends SVGGElement | SVGSVGElement, D>(sel: Sel<G, D>, league: League, o: D3SurfaceOptions): Sel<SVGGElement, D>;
 
 // @public (undocumented)
-export type AppendTeamMarks = <G extends SVGElement>(sel: Sel<G>, xs: ArrayLike<Value>, ys: ArrayLike<Value>, teams: readonly Value[], o: D3MarkOptions) => Sel<SVGGElement>;
+export type AppendTeamMarks = <G extends SVGElement, D>(sel: Sel<G, D>, xs: ArrayLike<Value>, ys: ArrayLike<Value>, teams: readonly Value[], o: D3MarkOptions) => Sel<SVGGElement, D>;
 
 // @public
 export const appendWordmarks: AppendTeamMarks;
@@ -133,8 +134,8 @@ export function teamColorScale(league: League, o?: {
 
 // Warnings were encountered during analysis:
 //
-// dist/d3.d.ts:50:9 - (ae-forgotten-export) The symbol "BinShape" needs to be exported by the entry point d3.d.ts
-// dist/d3.d.ts:165:5 - (ae-forgotten-export) The symbol "Which" needs to be exported by the entry point d3.d.ts
+// dist/d3.d.ts:51:9 - (ae-forgotten-export) The symbol "BinShape" needs to be exported by the entry point d3.d.ts
+// dist/d3.d.ts:170:5 - (ae-forgotten-export) The symbol "Which" needs to be exported by the entry point d3.d.ts
 
 // (No @packageDocumentation comment for this package)
 

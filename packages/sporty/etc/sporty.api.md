@@ -250,10 +250,10 @@ export type BasketballParamUpdates = {
     [K in keyof BasketballParams]?: BasketballLoosen<BasketballParams[K]>;
 };
 
-// @public (undocumented)
+// @public
 export type BasketballZone = (typeof BASKETBALL_ZONES)[number];
 
-// @public (undocumented)
+// @public
 export interface BasketballZoneArea {
     readonly label: Point;
     readonly points: Polygon;

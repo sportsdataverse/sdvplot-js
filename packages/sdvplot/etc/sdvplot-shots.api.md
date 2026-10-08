@@ -46,7 +46,7 @@ export type BinShape = "hex" | "square";
 // @public
 export function binShots(shots: readonly ShotRow[], cell: number | BinnerOptions): CellBin[];
 
-// @public (undocumented)
+// @public
 export interface CellBin extends Split {
     // (undocumented)
     readonly meanDistance: number;
@@ -62,7 +62,7 @@ export function cellPath(shape: BinShape, size: number): string;
 // @public
 export function cellPoints(shape: BinShape, size: number): [number, number][];
 
-// @public (undocumented)
+// @public
 export interface CellSizes {
     readonly cap: number;
     readonly r: readonly number[];
@@ -76,13 +76,13 @@ export function cellsVsDistance(player: readonly ShotRow[], byFoot: readonly Dis
 // @public
 export function cellsVsLeague(player: readonly ShotRow[], league: LeagueIndex, minLeague?: number): CellVsLeague[];
 
-// @public (undocumented)
+// @public
 export interface CellVsLeague extends CellBin {
     // (undocumented)
     readonly leagueFgPct: number | null;
 }
 
-// @public (undocumented)
+// @public
 export type DiffPalette = "rdbu" | "master";
 
 // @public
@@ -106,7 +106,7 @@ export interface DiffScale {
 // @public
 export function diffScale(o?: DiffScaleOptions): DiffScale;
 
-// @public (undocumented)
+// @public
 export interface DiffScaleOptions {
     domain?: number;
     nullColor?: string;
@@ -114,13 +114,13 @@ export interface DiffScaleOptions {
     theme?: "light" | "dark";
 }
 
-// @public (undocumented)
+// @public
 export interface DistanceBin extends Split {
     readonly distance: number;
     readonly share: number;
 }
 
-// @public (undocumented)
+// @public
 export interface DistanceVsLeague extends DistanceBin {
     readonly diff: number | null;
     // (undocumented)
@@ -152,7 +152,7 @@ export type Lattice = {
 // @public
 export const LEAGUE_PRIOR_ATTEMPTS = 25;
 
-// @public (undocumented)
+// @public
 export interface LeagueCell {
     // (undocumented)
     readonly attempts: number;
@@ -188,7 +188,7 @@ export interface ShotRow {
 // @public
 export function shrunkDiff(makes: number, attempts: number, league: number, k?: number): number;
 
-// @public (undocumented)
+// @public
 export interface SideBin {
     // (undocumented)
     readonly centre: Split;
@@ -200,7 +200,7 @@ export interface SideBin {
     readonly right: Split;
 }
 
-// @public (undocumented)
+// @public
 export interface SignatureOptions {
     minAttempts?: number;
     prior?: number;
@@ -208,7 +208,7 @@ export interface SignatureOptions {
     step?: number;
 }
 
-// @public (undocumented)
+// @public
 export interface SignaturePoint {
     readonly colourDiff: number | null;
     // (undocumented)
@@ -233,7 +233,7 @@ export function sizeCells(cells: readonly {
 // @public
 export type SizeRule = "sqrt-p95" | "linear-cap";
 
-// @public (undocumented)
+// @public
 export interface Split {
     // (undocumented)
     readonly attempts: number;
