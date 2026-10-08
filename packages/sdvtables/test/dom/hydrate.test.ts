@@ -209,6 +209,19 @@ test("M5: a keyboard sort keeps focus on the re-rendered sort button", async () 
   expect(now).not.toBe(old); // the block was rebuilt
   expect(document.activeElement).toBe(now);
 });
+test("M6: a re-render that keeps the page label leaves its live region's text alone (no re-announcement)", async () => {
+  const t = createTable(spec, many, { pageSize: 10 });
+  const el = mount(renderHTML(t));
+  hydrate(el, t);
+  const label = el.querySelector("[data-sdv-page-label]") as Element;
+  const text = label.firstChild;
+  t.setSort("wins", "desc"); // re-renders the table block; still page 1 of 4
+  await frame();
+  expect(label.firstChild).toBe(text); // writing the same textContent would replace the text node
+  t.setPage(1);
+  await frame();
+  expect(label.textContent).toBe("Page 2 of 4");
+});
 test("M1 + M2: Next keeps focus to the last page, the edge click is a no-op, the label is a polite live region", async () => {
   const t = createTable(spec, many, { pageSize: 10 });
   const el = mount(renderHTML(t));

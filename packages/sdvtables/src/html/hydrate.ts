@@ -43,7 +43,8 @@ export function hydrate<Row>(el: Element, table: Table<Row>): () => void {
     if (toolbar && table.state.hidden !== hidden) toolbar.outerHTML = renderToolbar(table, p.labels);
     hidden = table.state.hidden;
     const label = el.querySelector("[data-sdv-page-label]");
-    if (label) label.textContent = pagerLabel(table);
+    const page = pagerLabel(table);
+    if (label && label.textContent !== page) label.textContent = page; // M6: an unchanged live region is not re-announced
     edge(el.querySelector('[data-sdv-page="prev"]'), table.state.page === 0);
     edge(el.querySelector('[data-sdv-page="next"]'), table.state.page >= table.pageCount - 1);
     // I1: an external setFilter / setGlobalFilter / clear moves the engine state, not the box; a focused input wins
