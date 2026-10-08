@@ -403,7 +403,8 @@ Plot.plot({
 Plot.legend({ color: diffScale().plot }); // the matching colour key
 ```
 
-Zones are `shotZones(basketballZones("nba", { scale: 10 }), { fill, text })` over `statsByZone(shots)`, and the
+Zones are `shotZones(basketballZones("nba", { scale: 10 }), { fill, text, frame: "nba-legacy-vertical" })` over
+`statsByZone(shots)` (the shots' frame, so the zones sit under them on this court), and the
 shooting signature is `shootingSignature(signaturePoints(vsLeague(fgPctByDistance(player), fgPctByDistance(league))))`.
 The d3 twins are `appendLegend` (colour bar plus a cell size key) and `appendSignature`. The shot-charts guide,
 <https://plot.sportsdataverse.org/guides/shot-charts>, draws each one.
@@ -412,11 +413,13 @@ The d3 twins are `appendLegend` (colour bar plus a cell size key) and `appendSig
 
 | Setting | `main` (default) | `master` |
 | --- | --- | --- |
-| League baseline | `cellsVsLeague(player, leagueIndex(league, 15))`: the league in the same cell | `cellsVsDistance(player, fgPctByDistance(league))`: the league at the cell's distance (radius 10 by default) |
+| League baseline | `cellsVsLeague(player, leagueIndex(league, 15))`: the league in the same cell | `cellsVsDistance(player, fgPctByDistance(league))`: the league at the cell's distance (radius 10 by default). The distance is `Math.hypot`: master's `sqrt` read 13 of BKN's 374 cells, those a whole number of feet out, one foot short |
 | Size (`sizeCells` `rule`) | `"sqrt-p95"` | `"linear-cap"` |
 | Colour prior in attempts (`shotCells` and `signaturePoints` `prior`, `shrunkDiff`'s `k`) | 25 | 0 |
 | Palette (`diffScale` `palette`) | `"rdbu"` | `"master"` |
 | Signature curve (`shootingSignature`, `appendSignature` `curve`) | `"monotone-x"` | `"basis"` |
+| Signature half-width (`shootingSignature` `halfWidth`, in y units) | the default, `max(share / maxShare * 20, 0.75) / 190` | `(p) => (1 + p.share * 199) / 200` (in `appendSignature`'s pixels on master's 200 px axis, `(p) => 1 + p.share * 199`) |
+| Legend span (`appendLegend` `domain` and `ticks`) | the scale's ends (±0.15 for `"rdbu"`), ticks at the ends and 0 | `{ domain: [-0.3, 0.3], ticks: [-0.3, -0.15, 0, 0.15, 0.3] }` |
 | `signaturePoints` options | the defaults, `{ step: 0.25, smooth: true, minAttempts: 5, prior: 25 }` | `{ step: 1, smooth: false, minAttempts: 1, prior: 0 }` |
 | `statsBySide` `centreHalfWidth` (4th argument) | `0`: `x == 0` is centre | `false`: `x == 0` is dropped |
 
