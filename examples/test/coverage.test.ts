@@ -8,8 +8,22 @@ import { EXAMPLES } from "../src/registry.gen.js";
  * imports it or a row here says why not. `name` is a RegExp over export names of `spec`; `"*"` exempts the subpath.
  */
 const HOOKS = "test hooks: what the adapter contract suite (sdvplot/testing) reads back from a spec";
-const EMBED =
-  "fetches every image to inline it as a data URI (an offline export): the gate has no image fixtures, so no example can run it; the examples link the images";
+/** An exact-name RegExp: a row names what it exempts, so a later export that merely looks alike is not exempt. */
+const only = (names: readonly string[]): RegExp => new RegExp(`^(${names.join("|")})$`);
+const SPORTS = [
+  "BASEBALL",
+  "BASKETBALL",
+  "CURLING",
+  "FOOTBALL",
+  "HOCKEY",
+  "LACROSSE",
+  "SOCCER",
+  "TENNIS",
+  "VOLLEYBALL",
+];
+/** sporty's per-sport tables (`<SPORT>_<SUFFIX>`), less the ones an example imports by name. */
+const tables = (suffixes: readonly string[], shown: readonly string[] = []): RegExp =>
+  only(SPORTS.flatMap((s) => suffixes.map((x) => `${s}_${x}`)).filter((n) => !shown.includes(n)));
 const EXEMPT: readonly (readonly [spec: string, name: RegExp | "*", reason: string])[] = [
   [
     "@sportsdataverse/sdvplot/testing",
@@ -39,9 +53,6 @@ const EXEMPT: readonly (readonly [spec: string, name: RegExp | "*", reason: stri
   ["@sportsdataverse/sdvplot/plotly", /^(drawnMarks|drawnAxisMarks|visibleAxisLabels)$/, HOOKS],
   ["@sportsdataverse/sdvplot/vega", /^(drawnMarks|drawnAxisMarks|visibleAxisLabels)$/, HOOKS],
   ["@sportsdataverse/sdvplot/echarts", /^(drawnMarks|drawnAxisMarks|visibleAxisLabels)$/, HOOKS],
-  ["@sportsdataverse/sdvplot/plotly", /^embedSources$/, EMBED],
-  ["@sportsdataverse/sdvplot/vega", /^embedSources$/, EMBED],
-  ["@sportsdataverse/sdvplot/echarts", /^embedSources$/, EMBED],
   [
     "@sportsdataverse/sdvplot/echarts",
     /^renderLogo$/,
@@ -49,12 +60,15 @@ const EXEMPT: readonly (readonly [spec: string, name: RegExp | "*", reason: stri
   ],
   [
     "@sportsdataverse/sporty",
-    /_(LEAGUES|FEATURES|DISPLAY_RANGES|COLOR_KEYS|SPECS)$/,
+    tables(
+      ["LEAGUES", "FEATURES", "DISPLAY_RANGES", "COLOR_KEYS", "SPECS"],
+      ["BASKETBALL_SPECS", "SOCCER_SPECS"],
+    ),
     "the tables leagues()/features()/displayRanges()/colorKeys() and surface() read (sporty/core/discovery and spec-tables show those); the surfaces gallery draws every league",
   ],
   [
     "@sportsdataverse/sporty/specs",
-    /_(LEAGUES|SPECS)$/,
+    tables(["LEAGUES", "SPECS"]),
     "the same spec tables the package root exports, without the drawing code (sporty/core/spec-tables reads them from the root)",
   ],
   [
@@ -136,13 +150,54 @@ test.each(valueExports())("every value export of %s is shown by an example, or e
   );
 });
 
-test("every EXEMPT row still exempts something an example does not import", () => {
-  const all = new Map(valueExports());
-  for (const [spec, re, reason] of EXEMPT) {
-    expect(all.has(spec), `${spec}: no such subpath`).toBe(true);
-    if (re === "*") continue;
-    const used = new Set(EXAMPLES.flatMap((e) => [...usedFrom(e.code, spec)]));
-    const hits = (all.get(spec) ?? []).filter((n) => re.test(n) && !used.has(n));
-    expect(hits.length, `${spec} ${re} ("${reason}") exempts nothing: drop the row`).toBeGreaterThan(0);
+/**
+ * What is stale in the exemptions: a subpath that does not exist, a row whose RegExp names no export, and each name
+ * a row exempts that an example now imports (drop that name from the row, even while the row still exempts others).
+ */
+function staleExemptions(
+  rows: typeof EXEMPT,
+  exports: ReadonlyMap<string, readonly string[]>,
+  usedOf: (spec: string) => ReadonlySet<string>,
+): string[] {
+  const out: string[] = [];
+  for (const [spec, re] of rows) {
+    const names = exports.get(spec);
+    if (names === undefined) out.push(`${spec}: no such subpath`);
+    if (names === undefined || re === "*") continue;
+    const hits = names.filter((n) => re.test(n));
+    if (hits.length === 0) out.push(`${spec} ${re} exempts no export: drop the row`);
+    for (const n of hits.filter((h) => usedOf(spec).has(h)))
+      out.push(`${spec} ${n} is shown by an example now: drop it from its EXEMPT row`);
   }
+  return out;
+}
+
+test("a stale exemption is reported per name, not only once the whole row is shown", () => {
+  const exports = new Map([["p", ["a", "b", "c"]]]);
+  const rows: typeof EXEMPT = [
+    ["p", /^(a|b)$/, "two names, one of them shown"],
+    ["p", /^z$/, "names nothing"],
+    ["q", "*", "no such subpath"],
+  ];
+  expect(staleExemptions(rows, exports, () => new Set(["a"]))).toEqual([
+    "p a is shown by an example now: drop it from its EXEMPT row",
+    "p /^z$/ exempts no export: drop the row",
+    "q: no such subpath",
+  ]);
+});
+
+test("the sporty table rows name today's tables exactly: a look-alike export is not exempt", () => {
+  const rows = EXEMPT.filter(([s]) => s.startsWith("@sportsdataverse/sporty"));
+  expect(rows.length).toBe(2);
+  for (const [, re] of rows) {
+    if (re === "*") throw new Error("a sporty row exempts a whole subpath");
+    expect(re.test("HOCKEY_LEAGUES")).toBe(true);
+    for (const n of ["CRICKET_SPECS", "HOCKEY_RINK_SPECS", "XHOCKEY_LEAGUES", "HOCKEY_LEAGUES_V2"])
+      expect(re.test(n), `${re} exempts ${n}`).toBe(false);
+  }
+});
+
+test("every EXEMPT row exempts only names no example imports", () => {
+  const used = (spec: string) => new Set(EXAMPLES.flatMap((e) => [...usedFrom(e.code, spec)]));
+  expect(staleExemptions(EXEMPT, new Map(valueExports()), used)).toEqual([]);
 });

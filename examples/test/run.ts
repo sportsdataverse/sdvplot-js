@@ -5,10 +5,21 @@ import { createRoot } from "react-dom/client";
 import { abs } from "../sources.js";
 import type { ExampleEntry, OutputKind } from "../src/contract.js";
 
+/** Logo PNGs the archive serves under their sha256; fixtures/examples/<sha256>.png holds the same bytes. */
+const CDN_SHA256 = "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256";
+export const LOGO_FIXTURES: readonly string[] = [
+  "3d77958dc6373768919bb2681cbe1b143f56c07a1f013460def665a5026a7f3d", // KC
+  "5400f85bd93129c056717a771da57a97225e15f39c0022107ce89ef993f15bb0", // LAC
+];
+
 /** The only URLs an example may fetch, and only when tagged "network": each answers from a committed fixture. */
-const FIXTURES: Readonly<Record<string, string>> = {
+export const FIXTURES: Readonly<Record<string, string>> = {
   [MANIFEST_URL]: "fixtures/sdvplot/manifest_sample.csv",
+  ...Object.fromEntries(
+    LOGO_FIXTURES.map((h) => [`${CDN_SHA256}/${h.slice(0, 2)}/${h}.png`, `fixtures/examples/${h}.png`]),
+  ),
 };
+const CONTENT_TYPE: Readonly<Record<string, string>> = { csv: "text/csv", png: "image/png" };
 
 export interface RunResult {
   readonly kind: OutputKind;
@@ -27,7 +38,12 @@ function offlineFetch(entry: ExampleEntry, fetched: string[]): typeof fetch {
     fetched.push(url);
     const fixture = FIXTURES[url];
     if (entry.tags.includes("network") && fixture !== undefined)
-      return new Response(readFileSync(abs(fixture), "utf8"), { status: 200 });
+      return new Response(new Uint8Array(readFileSync(abs(fixture))), {
+        status: 200,
+        headers: {
+          "content-type": CONTENT_TYPE[fixture.split(".").pop() ?? ""] ?? "application/octet-stream",
+        },
+      });
     throw new Error(
       `${entry.id} fetched ${url}: examples run offline (tag it "network" and add a fixture to test/run.ts FIXTURES)`,
     );

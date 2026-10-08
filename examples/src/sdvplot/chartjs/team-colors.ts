@@ -1,4 +1,6 @@
-import { createCanvas } from "@napi-rs/canvas";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { GlobalFonts, createCanvas } from "@napi-rs/canvas";
 import { STANDINGS } from "@sportsdataverse/examples/data";
 import { loadLeague } from "@sportsdataverse/sdvplot";
 import { teamColor, teamFill } from "@sportsdataverse/sdvplot/chartjs";
@@ -14,6 +16,11 @@ await loadLeague("nfl");
 const teams = STANDINGS.map((s) => s.team);
 
 Chart.register(...registerables);
+// A build server may have no system fonts (Vercel's has none): register a bundled one before drawing, or every
+// label is blank. Source Sans 3, SIL Open Font License (examples/fonts/OFL.txt).
+const font = join(dirname(fileURLToPath(import.meta.url)), "../../../fonts/SourceSans3-Regular.ttf");
+if (!GlobalFonts.registerFromPath(font, "Source Sans 3")) throw new Error(`no font at ${font}`);
+Chart.defaults.font.family = "Source Sans 3";
 const canvas = createCanvas(640, 320);
 new Chart(canvas.getContext("2d") as unknown as CanvasRenderingContext2D, {
   type: "bar",

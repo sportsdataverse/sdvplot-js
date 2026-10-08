@@ -1,10 +1,13 @@
+import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
 import * as Plot from "@observablehq/plot";
 import { MANIFEST_URL, fetchManifest, loadLeague } from "@sportsdataverse/sdvplot";
 import { logos } from "@sportsdataverse/sdvplot/plot";
 import { createElement } from "react";
 import { expect, test } from "vitest";
+import { abs } from "../sources.js";
 import type { ExampleEntry } from "../src/contract.js";
-import { normalizeIds, problems, runExample } from "./run.js";
+import { FIXTURES, LOGO_FIXTURES, normalizeIds, problems, runExample } from "./run.js";
 
 // Inline rows: examples/src/data.ts has no STANDINGS until Phase 4 lands (then this swaps to the shared fixture).
 const STANDINGS = [
@@ -186,4 +189,22 @@ test("a node example loads without the browser globals, as in Node; every other 
     runExample(entry("t/node-throws", ["node"]), () => Promise.reject(new Error("boom"))),
   ).rejects.toThrow("boom");
   expect([typeof document, typeof Image, typeof window]).toEqual(["object", "function", "object"]);
+});
+
+test("each logo fixture holds the bytes its sha256 name says, served as image/png to a network example", async () => {
+  for (const h of LOGO_FIXTURES)
+    expect(
+      createHash("sha256")
+        .update(readFileSync(abs(`fixtures/examples/${h}.png`)))
+        .digest("hex"),
+    ).toBe(h);
+  const url = Object.keys(FIXTURES).find((u) => u.endsWith(".png")) ?? "";
+  const net = entry("t/png", ["network"]);
+  const r = await runExample(net, async () => {
+    const res = await fetch(url);
+    return {
+      default: { type: res.headers.get("content-type"), bytes: (await res.arrayBuffer()).byteLength },
+    };
+  });
+  expect(r.value).toEqual({ type: "image/png", bytes: readFileSync(abs(FIXTURES[url] ?? "")).byteLength });
 });

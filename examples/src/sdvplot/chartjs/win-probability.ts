@@ -1,4 +1,6 @@
-import { createCanvas } from "@napi-rs/canvas";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { GlobalFonts, createCanvas } from "@napi-rs/canvas";
 import { SUPER_BOWL_LIX_WP } from "@sportsdataverse/examples/data";
 import { matchupColors } from "@sportsdataverse/sdvplot";
 import { Chart, registerables } from "chart.js";
@@ -22,6 +24,11 @@ const line = (label: string, color: string, wp: (p: number) => number) => ({
 });
 
 Chart.register(...registerables);
+// A build server may have no system fonts (Vercel's has none): register a bundled one before drawing, or every
+// label is blank. Source Sans 3, SIL Open Font License (examples/fonts/OFL.txt).
+const font = join(dirname(fileURLToPath(import.meta.url)), "../../../fonts/SourceSans3-Regular.ttf");
+if (!GlobalFonts.registerFromPath(font, "Source Sans 3")) throw new Error(`no font at ${font}`);
+Chart.defaults.font.family = "Source Sans 3";
 const canvas = createCanvas(640, 320);
 // Chart.js types want a DOM canvas; @napi-rs/canvas has the same 2D context. Outside a DOM, Chart.js draws
 // synchronously on its BasicPlatform (no resize, no events).
