@@ -22,9 +22,10 @@ export type { ComposeOptions, GridOptions, StackOptions, TableItem } from "./com
 
 /**
  * Options for {@link htmlToPNG} and {@link tableToPNG}; defaults are Python `gt_save_crop`'s. Its `expand` (the page
- * captured before trimming) is fixed here, as it only has to leave background around the content.
+ * captured before trimming) is fixed here, as it only has to leave background around the content. (The HTML itself
+ * takes `RenderOptions` from `@sportsdataverse/sdvtables/html`.)
  */
-export interface RenderOptions {
+export interface PNGOptions {
   /** the final image width in pixels, the height following (Python `width`); absent: the rendered width */
   width?: number;
   /** the rendering zoom (Python `zoom`); default 2, a sharp (retina) image */
@@ -39,12 +40,12 @@ export interface RenderOptions {
   file?: string;
 }
 /** Options for {@link socialCrop}; defaults are Python `gt_social_crop`'s (whitespace 60). */
-export interface SocialCropOptions extends RenderOptions {
+export interface SocialCropOptions extends PNGOptions {
   aspect?: Aspect;
   gravity?: Gravity;
 }
 /** Options for {@link batchToPNG}, as Python `gt_save_batch` (no `width`; each file is named by its group). */
-export interface BatchOptions extends Omit<RenderOptions, "width" | "file"> {
+export interface BatchOptions extends Omit<PNGOptions, "width" | "file"> {
   dir: string;
   matchWidth?: boolean;
 }
@@ -92,7 +93,7 @@ function resolve({
   whitespace = 50,
   fontLinks = [],
   file,
-}: RenderOptions): Resolved {
+}: PNGOptions): Resolved {
   if (width !== undefined && !(Number.isInteger(width) && width > 0))
     throw new InputError(`width must be a positive integer of pixels, got ${String(width)}`);
   if (!(Number.isFinite(deviceScaleFactor) && deviceScaleFactor > 0))
@@ -270,7 +271,7 @@ async function withPage<T>(o: Resolved, fn: (p: Page) => Promise<T>): Promise<T>
  * px a side, 268,435,456 px in all; near 1,000 plain rows at zoom 2) throws `SdvplotError` naming its size, before
  * anything is drawn or written.
  */
-export async function htmlToPNG(html: string, options: RenderOptions = {}): Promise<Uint8Array> {
+export async function htmlToPNG(html: string, options: PNGOptions = {}): Promise<Uint8Array> {
   const o = resolve(options);
   return withPage(o, async (p) => finish(p, await snap(p, html, o), o));
 }
@@ -279,7 +280,7 @@ export async function htmlToPNG(html: string, options: RenderOptions = {}): Prom
 export function tableToPNG<Row>(
   spec: TableSpec<Row>,
   rows: readonly Row[],
-  options: RenderOptions = {},
+  options: PNGOptions = {},
 ): Promise<Uint8Array> {
   return htmlToPNG(renderHTML(spec, rows), options);
 }

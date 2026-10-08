@@ -15,7 +15,7 @@ import { Variant } from '@sportsdataverse/sdvplot';
 import { Which } from '@sportsdataverse/sdvplot';
 
 // @public
-export interface BatchOptions extends Omit<RenderOptions, "width" | "file"> {
+export interface BatchOptions extends Omit<PNGOptions, "width" | "file"> {
     // (undocumented)
     dir: string;
     // (undocumented)
@@ -58,10 +58,10 @@ export interface GridOptions extends ComposeOptions {
 export function gridTables<Row>(items: readonly TableItem<Row>[], input?: GridOptions): string;
 
 // @public
-export function htmlToPNG(html: string, options?: RenderOptions): Promise<Uint8Array>;
+export function htmlToPNG(html: string, options?: PNGOptions): Promise<Uint8Array>;
 
 // @public
-export interface RenderOptions {
+export interface PNGOptions {
     background?: string;
     deviceScaleFactor?: number;
     file?: string;
@@ -79,7 +79,7 @@ export function slug(value: unknown): string;
 export function socialCrop<Row>(spec: TableSpec<Row>, rows: readonly Row[], input?: SocialCropOptions): Promise<Uint8Array>;
 
 // @public
-export interface SocialCropOptions extends RenderOptions {
+export interface SocialCropOptions extends PNGOptions {
     // (undocumented)
     aspect?: Aspect;
     // (undocumented)
@@ -104,7 +104,7 @@ export type TableItem<Row> = {
 } | string;
 
 // @public
-export function tableToPNG<Row>(spec: TableSpec<Row>, rows: readonly Row[], options?: RenderOptions): Promise<Uint8Array>;
+export function tableToPNG<Row>(spec: TableSpec<Row>, rows: readonly Row[], options?: PNGOptions): Promise<Uint8Array>;
 
 // (No @packageDocumentation comment for this package)
 

@@ -326,9 +326,10 @@ await batchToPNG(rows, "division", (groupRows) => ({ spec, rows: groupRows }), "
   default zoom) throws `SdvplotError` naming its size, and nothing is written. Put fewer rows in each image
   (`rows.slice()` a page at a time, `batchToPNG` by a group column, `gridTables` side by side) or lower
   `deviceScaleFactor`.
-- Options are in image pixels, as in Python: `deviceScaleFactor` (the zoom, default 2), `whitespace` (the margin left
-  around the trimmed content, default 50, or 60 for `socialCrop`), `background` (default white), `width` (the final
-  image width; absent, the rendered width) and `fontLinks` (extra stylesheets to wait for).
+- Options (`PNGOptions`; `SocialCropOptions` and `BatchOptions` build on it) are in image pixels, as in Python:
+  `deviceScaleFactor` (the zoom, default 2), `whitespace` (the margin left around the trimmed content, default 50, or
+  60 for `socialCrop`), `background` (default white), `width` (the final image width; absent, the rendered width) and
+  `fontLinks` (extra stylesheets to wait for).
 - `socialCrop` puts the table on an `aspect` canvas (`"1:1"` by default, `"16:9"`, `"4:5"`, `"9:16"`, `"1.91:1"` or
   a number), placed by `gravity` (one of the nine ImageMagick names, `"center"` by default); the table is never cropped.
 - `batchToPNG` writes one image per value of the group column, with `{group}` replaced by `slug(value)`, all widened
