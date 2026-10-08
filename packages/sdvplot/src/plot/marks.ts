@@ -1,6 +1,7 @@
 import * as Plot from "@observablehq/plot";
 import { InputError } from "../errors.js";
 import type { EspnHeadshotLeague } from "../headshots.js";
+import { getLeagueSync } from "../index-data.js";
 import { type Kind, type Placement, checkAlpha, checkHeight, placeSync } from "../placement.js";
 import type { Value } from "../resolve.js";
 import { stampImage } from "../stamp.js";
@@ -178,6 +179,13 @@ function imageMark<R>(
   });
   const src: (string | null)[] = new Array(keys.length).fill(null);
   for (const p of placed) src[p.index] = p.url;
+  // each image's accessible name: the RESOLVED team (abbreviation, else name), whatever id system the caller used;
+  // the raw key where nothing resolved. Headshots have no name source (the gsis map holds ids only), so the id.
+  const names = keys.map((k) => String(k));
+  if (kind !== "headshot") {
+    const team = new Map(getLeagueSync(o.league).teams.map((t) => [t.team_id, t.abbr || t.name]));
+    for (const p of placed) names[p.index] = team.get(p.id) || String(keys[p.index]);
+  }
   const {
     height: _h,
     alpha: _a,
@@ -201,7 +209,7 @@ function imageMark<R>(
     src: src as Plot.ChannelValue,
     ...(o.opacity === undefined ? { opacity: alpha } : {}),
     // an accessible name per image, as the Vega adapter's (PR #28): "KC logo", "3139477 headshot"
-    ariaLabel: o.ariaLabel ?? keys.map((k) => `${String(k)} ${kind}`),
+    ariaLabel: o.ariaLabel ?? names.map((n) => `${n} ${kind}`),
     channels: { [name]: { value: keys, label: name }, ...channels },
     ...(t === undefined ? {} : { transform: t }),
     ...(init === undefined ? {} : { initializer: init }),

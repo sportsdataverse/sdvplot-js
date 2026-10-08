@@ -16,7 +16,8 @@ export type AxisPassThrough = Omit<
 >;
 /**
  * Options for `axisLogos`. Each drawn image is named by the tick it replaces ("KC logo", "KC wordmark"), so assistive
- * technology reads the category the text showed.
+ * technology reads the category the text showed. The images are sized by `height` (a fraction of the frame); a caller
+ * margin on the anchored side smaller than the computed one can clip them.
  */
 export interface AxisLogosOptions extends AxisPassThrough {
   league: League;

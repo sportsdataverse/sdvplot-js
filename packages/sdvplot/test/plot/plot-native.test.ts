@@ -4,8 +4,8 @@ import * as Plot from "@observablehq/plot";
 import { surfaceMark } from "@sportsdataverse/sporty/plot";
 import { beforeAll, expect, test } from "vitest";
 import { STANDINGS } from "../../../sdvtables/test/fixtures/standings.js";
-import { loadLeague } from "../../src/index.js";
-import { axisLogos, meanLines, surface, teamTiers } from "../../src/plot/index.js";
+import { loadLeague, resolveSync } from "../../src/index.js";
+import { axisLogos, logos, meanLines, surface, teamTiers, wordmarks } from "../../src/plot/index.js";
 import { centreOf, pointAt, stubBBox, tipText } from "./_pointer.js";
 
 beforeAll(async () => {
@@ -65,11 +65,31 @@ test("axisLogos: a caller's margin on the anchored side (or all sides) wins over
   expect(frameBottom({ league: "nfl", margin: 70 })).toBe(70);
 });
 
+test("logos / wordmarks keyed by team_id are named by the resolved team, not the id; a caller's ariaLabel wins", () => {
+  const ids = resolveSync(
+    STANDINGS.map((r) => r.team),
+    "nfl",
+  );
+  const rows = STANDINGS.map((r, i) => ({ team_id: ids[i], wins: r.wins, pf: r.pf }));
+  expect(rows[0]?.team_id).toBe("12"); // KC's team_id: the key really is an id
+  const o = { league: "nfl", x: "wins", y: "pf", team: "team_id", idSystem: "team_id" } as const;
+  const names = (m: Plot.Markish): (string | null)[] =>
+    Array.from(Plot.plot({ marks: [m] }).querySelectorAll("image"), (i) => i.getAttribute("aria-label"));
+  expect(names(logos(rows, o))).toEqual(STANDINGS.map((r) => `${r.team} logo`));
+  expect(names(wordmarks(rows, o))[0]).toBe("KC wordmark");
+  expect(
+    names(logos(rows, { ...o, ariaLabel: (_d: unknown, i: number) => STANDINGS[i]?.qb })).slice(0, 2),
+  ).toEqual(["Patrick Mahomes", "Justin Herbert"]);
+});
+
 test("teamTiers: tip names the team; the figure is labelled by its title", () => {
   const rows = STANDINGS.map((r) => ({ team: r.team, tier_no: r.wins >= 13 ? 1 : r.wins >= 8 ? 2 : 3 }));
   const fig = Plot.plot(teamTiers(rows, { league: "nfl", title: "2024 AFC tiers", tip: true }));
   const svg = fig.querySelector("svg") ?? fig;
   expect(svg.getAttribute("aria-label")).toBe("2024 AFC tiers");
+  // the logos are named by team abbreviation (teamTiers keys them by team_id)
+  const names = Array.from(fig.querySelectorAll("image"), (i) => i.getAttribute("aria-label"));
+  expect(names.sort()).toEqual(STANDINGS.map((r) => `${r.team} logo`).sort());
   const img = fig.querySelector("image") as Element;
   const [x, y] = centreOf(img);
   pointAt(svg, x, y);
