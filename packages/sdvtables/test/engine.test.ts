@@ -26,9 +26,9 @@ describe("sorting", () => {
   test("nulls last both directions (Review Focus 1)", () => {
     const t = createTable(spec, withNaN);
     t.setSort("net_epa", "asc");
-    expect(teams(t)).toEqual(["LV", "NYJ", "MIA", "DEN", "KC", "LAC", "BUF", "NE", "NAN"]);
+    expect(teams(t)).toEqual(["LV", "NYJ", "MIA", "KC", "LAC", "DEN", "BUF", "NE", "NAN"]);
     t.setSort("net_epa", "desc");
-    expect(teams(t)).toEqual(["BUF", "LAC", "KC", "DEN", "MIA", "NYJ", "LV", "NE", "NAN"]);
+    expect(teams(t)).toEqual(["BUF", "DEN", "LAC", "KC", "MIA", "NYJ", "LV", "NE", "NAN"]);
   });
   test("stable: ties keep input order", () => {
     const t = createTable(spec, rows);

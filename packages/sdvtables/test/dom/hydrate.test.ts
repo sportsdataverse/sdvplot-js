@@ -4,7 +4,7 @@ import { afterEach, beforeAll, expect, test, vi } from "vitest";
 import { defineTable } from "../../src/define.js";
 import { createTable } from "../../src/engine.js";
 import { hydrate, renderHTML } from "../../src/html/index.js";
-import { many, rows, spec } from "../fixtures/engine.js";
+import { LV_OCONNELL, many, rows, spec } from "../fixtures/engine.js";
 import { STANDINGS, type Standing } from "../fixtures/standings.js";
 
 beforeAll(async () => {
@@ -50,7 +50,7 @@ function countWrites(node: Element): { n: number } {
 
 test("hydrate is a no-op on matching SSR, including & < ' in data (Review Focus 3)", async () => {
   const t = createTable(spec, [
-    ...rows,
+    ...rows.map((r) => (r.team === "LV" ? LV_OCONNELL : r)),
     { ...(STANDINGS[0] as Standing), team: "TAM", qb: "Texas A&M <QB>" },
   ]);
   const ssr = renderHTML(t);

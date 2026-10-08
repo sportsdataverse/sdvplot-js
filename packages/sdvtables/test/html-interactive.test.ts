@@ -90,7 +90,7 @@ test("J31 + A49: selected rows carry sdvt-selected; under ANY filter colour scal
   const kc = fill(renderHTML(t), "KC");
   expect(kc).toMatch(/^#/);
   t.setExternalFilter(topTwo);
-  expect(fill(renderHTML(t), "KC")).toBe(kc); // KC 0.071: mid-scale over all 8 rows, the bottom of the 2 shown
+  expect(fill(renderHTML(t), "KC")).toBe(kc); // KC 0.063: mid-scale over all 8 rows, the bottom of the 2 shown
   const u = createTable(pills, rows);
   u.setFilter("team", (_v, r) => topTwo(r));
   expect(fill(renderHTML(u), "KC")).toBe(kc); // A49: the table's own filters hold colours still too
@@ -170,8 +170,8 @@ test("A49 (I4): outlier limits and rowAccent levels come from the source rows, n
     .build();
   const t = createTable(out, rows);
   expect(teamsWith(renderHTML(t), "†")).toEqual(["LV", "BUF"]);
-  t.setExternalFilter((r) => r.team !== "LV" && r.team !== "BUF"); // a brush that hides both outliers
-  expect(teamsWith(renderHTML(t), "†")).toEqual([]); // before A49: NYJ, which is no outlier of the column
+  t.setExternalFilter((r) => r.division === "West" && r.team !== "LV"); // a brush that hides both outliers: KC, LAC, DEN
+  expect(teamsWith(renderHTML(t), "†")).toEqual([]); // before A49: KC, an outlier of the 3 shown but not of the column
   t.setExternalFilter(null);
   t.setFilter("team", (_v, r) => r.team !== "NE");
   expect(teamsWith(renderHTML(t), "†")).toEqual(["LV", "BUF"]);

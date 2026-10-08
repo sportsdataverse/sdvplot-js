@@ -5,7 +5,7 @@ import { TableSpecError } from "../src/errors.js";
 import { escapeHtml } from "../src/html/escape.js";
 import { renderHTML } from "../src/html/index.js";
 import { assemble, attrsText, fontsLinkFor, renderParts, tableHTML } from "../src/html/parts.js";
-import { rows, spec } from "./fixtures/engine.js";
+import { LV_OCONNELL, rows, spec } from "./fixtures/engine.js";
 import { STANDINGS, type Standing } from "./fixtures/standings.js";
 
 beforeAll(async () => {
@@ -47,7 +47,7 @@ test("interactive opts: aria-sort + sort button on sortable columns only; hidden
 });
 test("apostrophes escape as &#x27; (React's form)", () => {
   expect(escapeHtml("O'Neal")).toBe("O&#x27;Neal");
-  const p = renderParts(spec, [STANDINGS[3] as Standing]); // Aidan O'Connell
+  const p = renderParts(spec, [LV_OCONNELL]);
   expect(p.rows).toContain("Aidan O&#x27;Connell");
 });
 
