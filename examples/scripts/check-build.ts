@@ -6,7 +6,7 @@ import { pagePath, readRows } from "./pages.js";
 import { overLimit } from "./remark-live.js";
 
 // Review Focus 2 end to end: on each gallery page the static copy of an inline output is the prerendered markup.
-// Compared as parsed DOM, because the docs HTML minifier may requote attributes; it must not change what renders.
+// Compared as parsed DOM. The build does not minify HTML (docs/build.env): swc's minifier rewrites these outputs.
 const build = process.argv[2] ?? abs("docs/build");
 const dom = (html: string): string =>
   parseHTML(`<!doctype html><html><body><div id="x">${html}</div></body></html>`).document.getElementById("x")
