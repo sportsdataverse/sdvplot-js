@@ -30,7 +30,7 @@ const team = view(select(standings.map((r) => r.team), { label: "sdvTeam colours
 
 ## Column kinds and decorations
 
-One spec, seven column kinds: a logo with the team name, a headshot, text, a W-L-T tally with the win share, a point-differential delta with arrows, colour pills for net EPA per play, and a league-wide SRS rank. New England's net EPA is blank on purpose, so you can see how a missing value renders. Tick **Decorations** to add or remove each one; the rows are sorted by wins, best first.
+One spec, seven column kinds: a logo with the team name, a headshot, text, a W-L-T tally with the win share, a point-differential delta with arrows, colour pills for net EPA per play, and a league-wide SRS rank. New England's net EPA is blank on purpose, so you can see how a missing value renders. Tick **Decorations** to add or remove each one; the rows are sorted by wins, best first. The playoff cutline sits after the fourth row, so it is left out when the table is grouped by division (the top four span both groups).
 
 ```js
 const DECORATIONS = [
@@ -70,7 +70,9 @@ if (on("Spotlight the chosen team"))
     { fill: "#fff6d6", accentColor: teamColorsSync("nfl", team) ?? "#888" },
   );
 if (on("Row accent by division")) builder = builder.rowAccent("division", { palette: { East: "#00338D", West: "#E31837" }, width: 6 });
-if (on("Playoff cutline")) builder = builder.cutline(4, { label: ["Top four"] });
+// the cutline follows a row index, so it only means "top four" while the rows stay in win order: grouping by division
+// regroups them (the top four span both divisions), so the cutline is left out of a grouped table
+if (on("Playoff cutline") && !on("Group by division")) builder = builder.cutline(4, { label: ["Top four by wins"] });
 if (on("Colour legend")) builder = builder.legendContinuous({ title: "Net EPA per play", digits: 1 });
 if (on("Source note"))
   builder = builder.sourceNote('Data: <a href="https://nflverse.nflverse.com">nflverse</a>, 2024 regular season', {
