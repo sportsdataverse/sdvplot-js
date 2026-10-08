@@ -52,9 +52,12 @@ is a 404 there. To preview the whole site, notebooks included, build it and serv
 pnpm docs:build && pnpm --filter docs serve
 ```
 
-On Windows set `SKIP_HTML_MINIFICATION=true` for the build: the HTML minifier's native addon fails there (CI on Linux
-is unaffected). Keep the checkout path short there too: under a deep path `@napi-rs/canvas` cannot find its ICU data
-and aborts, which kills the examples gate's worker (the gate then fails, counting the examples that never ran).
+The site ships unminified HTML: `docs/build.env` sets `SKIP_HTML_MINIFICATION=true` for every build. Docusaurus' swc
+minifier drops optional end tags, reorders CSS declarations and merges `<style>` elements in the inline outputs, so
+`check-build` could not compare them, and it saved only 1.6% of the HTML over brotli. The same setting lets the build
+run on Windows, where the minifier's native addon fails to load. On Windows, keep the checkout path short: under a deep
+path `@napi-rs/canvas` cannot find its ICU data and aborts, which kills the examples gate's worker (the gate then
+fails, counting the examples that never ran).
 
 ## Owner steps
 
