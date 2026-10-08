@@ -62,6 +62,23 @@ interface Resolved {
 const VIEWPORT = 1200;
 /** CSS px of page captured around the content, so the trim finds plain background on every side. */
 const EXPAND = 5;
+/**
+ * Chromium's canvas limits (Blink: 65,535 px a side, 32,768 x 8,192 px in all; measured in playwright 1.64's
+ * chromium). Past either, `toDataURL` returns "data:," and `getImageData` reads blank, without an error.
+ */
+const MAX_SIDE = 65_535;
+const MAX_AREA = 32_768 * 8_192;
+const REMEDY =
+  "put fewer rows in each image (rows.slice() a page at a time, batchToPNG by a group column, or gridTables to set tables side by side), or lower deviceScaleFactor";
+const n = (v: number): string => v.toLocaleString("en-US");
+
+/** I1: a canvas past Chromium's limits draws nothing; say so, with the size, before drawing it. */
+function checkCanvas(what: string, w: number, h: number, o: Resolved): void {
+  if (w <= MAX_SIDE && h <= MAX_SIDE && w * h <= MAX_AREA) return;
+  throw new SdvplotError(
+    `${what} ${n(w)} × ${n(h)} px at deviceScaleFactor ${o.deviceScaleFactor}, past Chromium's canvas limit of ${n(MAX_SIDE)} px a side and ${n(MAX_AREA)} px in all; ${REMEDY}`,
+  );
+}
 
 const checkPng = (file: string): void => {
   // Python _check_file: the extension must be a format the writer produces; here that is PNG only
@@ -186,6 +203,10 @@ async function snap(p: Page, html: string, o: Resolved): Promise<Shot> {
   await p.evaluate(() => document.fonts.ready);
   const root = p.locator("#sdv-root");
   const box = await root.boundingBox();
+  if (box) {
+    const z = o.deviceScaleFactor;
+    checkCanvas("the table renders", Math.ceil(box.width * z), Math.ceil(box.height * z), o);
+  }
   if (box && box.width > VIEWPORT) await p.setViewportSize({ width: Math.ceil(box.width), height: 800 });
   const png = Buffer.from(await root.screenshot({ type: "png" })).toString("base64");
   return { png, trim: await p.evaluate(trimBox, png) };
@@ -213,6 +234,8 @@ async function finish(
   // Python _fit_width: the height rounded half up, as ImageMagick
   const [fw, fh] =
     o.width === undefined ? [w, h] : [o.width, Math.max(1, Math.floor((h * o.width) / w + 0.5))];
+  checkCanvas("the image would be", w, h, o);
+  checkCanvas("the image scaled to `width` would be", fw, fh, o);
   const b64 = await p.evaluate(drawPNG, {
     png: shot.png,
     trim: shot.trim,
@@ -224,6 +247,9 @@ async function finish(
     fh,
     bg: o.background,
   });
+  // "data:," (no base64): a canvas Chromium would not allocate; never return or write an empty image
+  if (b64 === "")
+    throw new SdvplotError(`Chromium returned an empty image for ${n(fw)} × ${n(fh)} px; ${REMEDY}`);
   const png = new Uint8Array(Buffer.from(b64, "base64"));
   if (o.file !== undefined) await writeFile(o.file, png);
   return png;
@@ -240,7 +266,9 @@ async function withPage<T>(o: Resolved, fn: (p: Page) => Promise<T>): Promise<T>
 
 /**
  * gt_save_crop for any HTML: rendered at `deviceScaleFactor`, trimmed to its content, `whitespace` image pixels of
- * `background` put back around it, then scaled to `width` when given.
+ * `background` put back around it, then scaled to `width` when given. An image past Chromium's canvas limit (65,535
+ * px a side, 268,435,456 px in all; near 1,000 plain rows at zoom 2) throws `SdvplotError` naming its size, before
+ * anything is drawn or written.
  */
 export async function htmlToPNG(html: string, options: RenderOptions = {}): Promise<Uint8Array> {
   const o = resolve(options);

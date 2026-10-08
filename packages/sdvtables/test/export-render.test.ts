@@ -1,8 +1,9 @@
-import { mkdtemp, readFile } from "node:fs/promises";
+import { readFileSync } from "node:fs";
+import { mkdtemp, readFile, readdir } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { basename, join } from "node:path";
 import { inflateSync } from "node:zlib";
-import { InputError, OptionalDependencyError } from "@sportsdataverse/sdvplot";
+import { InputError, OptionalDependencyError, SdvplotError } from "@sportsdataverse/sdvplot";
 import { afterEach, describe, expect, test, vi } from "vitest";
 import { defineTable } from "../src/define.js";
 import { batchToPNG, gridTables, htmlToPNG, socialCrop, tableToPNG } from "../src/export/index.js";
@@ -79,8 +80,18 @@ describe("without a browser (a stand-in playwright)", () => {
     vi.doUnmock("playwright");
     vi.restoreAllMocks();
   });
-  /** A stand-in playwright: each page records its HTML, deviceScaleFactor and the canvases it draws. */
-  const stub = (onLaunch?: () => void) => {
+  /**
+   * A stand-in playwright: each page records its HTML, deviceScaleFactor and the canvases it draws. `box` is the
+   * content's CSS size, `trim` the in-page trim box, `drawn` what the in-page canvas encodes ("" for Chromium's "data:,").
+   */
+  const stub = (
+    onLaunch?: () => void,
+    {
+      box = { width: 300.5, height: 100 },
+      trim = [5, 5, 300, 100],
+      drawn = "iVBORw==",
+    }: { box?: { width: number; height: number }; trim?: number[]; drawn?: string } = {},
+  ) => {
     const pages: { html: string; scale: number; draws: Record<string, unknown>[] }[] = [];
     const browser = {
       newPage: async (o?: { deviceScaleFactor?: number }) => {
@@ -90,14 +101,17 @@ describe("without a browser (a stand-in playwright)", () => {
           setContent: async (html: string) => {
             rec.html = html;
           },
-          // the in-page steps: every shot trims to a 300 x 100 box at (5, 5); a drawing is recorded
+          // the in-page steps: every shot trims to `trim` (300 x 100 at (5, 5)); a drawing is recorded
           evaluate: async (fn: { name: string }, arg: Record<string, unknown>) => {
-            if (fn.name === "trimBox") return [5, 5, 300, 100];
-            if (fn.name === "drawPNG") rec.draws.push(arg);
-            return "iVBORw==";
+            if (fn.name === "trimBox") return trim;
+            if (fn.name === "drawPNG") {
+              rec.draws.push(arg);
+              return drawn;
+            }
+            return undefined;
           },
           locator: () => ({
-            boundingBox: async () => ({ x: 0, y: 0, width: 300.5, height: 100 }),
+            boundingBox: async () => ({ x: 0, y: 0, ...box }),
             screenshot: async () => PNG,
           }),
           setViewportSize: async () => undefined,
@@ -212,6 +226,29 @@ describe("without a browser (a stand-in playwright)", () => {
     await render("<p>x</p>", { width: 903 });
     expect(drawn()).toMatchObject({ w: 400, h: 200, fw: 903, fh: 452 });
   });
+  test("I1: past Chromium's canvas limit (65,535 px a side, 268,435,456 in all) it throws, naming the size; no file is written", async () => {
+    const dir = await mkdtemp(join(tmpdir(), "sdvt-limit-"));
+    const file = join(dir, "t.png");
+    // a page 352 x 39,727.5 CSS px (as 1,200 two-column rows measure) is 704 x 79,455 image px at zoom 2
+    let pages = stub(undefined, { box: { width: 352, height: 39_727.5 } });
+    let err = await rejection((await fresh()).htmlToPNG("<p>x</p>", { file }));
+    expect(err.name).toBe(SdvplotError.name);
+    expect(err.message).toMatch(/704 × 79,455 px at deviceScaleFactor 2/);
+    expect(err.message).toMatch(/fewer rows in each image/);
+    expect(pages[0]?.draws).toEqual([]); // stopped before the screenshot and any canvas
+    // the trimmed table fits, but a 1:1 social canvas around it would be 40,120 px square: 1.6e9 px in all
+    pages = stub(undefined, { box: { width: 600, height: 40_000 }, trim: [0, 0, 600, 40_000] });
+    err = await rejection((await fresh()).socialCrop(spec, rows, { deviceScaleFactor: 1, file }));
+    expect(err.name).toBe(SdvplotError.name);
+    expect(err.message).toMatch(/40,120 × 40,120 px at deviceScaleFactor 1/);
+    expect(pages[0]?.draws).toEqual([]);
+    // any canvas Chromium still refuses encodes as "data:,", i.e. no base64 at all
+    pages = stub(undefined, { drawn: "" });
+    err = await rejection((await fresh()).htmlToPNG("<p>x</p>", { file }));
+    expect(err.name).toBe(SdvplotError.name);
+    expect(err.message).toMatch(/Chromium returned an empty image for 400 × 200 px/);
+    expect(await readdir(dir)).toEqual([]); // never a 0-byte file
+  });
   test("batchToPNG skips a group that fails to build and names it in one warning (Python gt_save_batch)", async () => {
     stub();
     const { batchToPNG: batch } = await fresh();
@@ -263,6 +300,25 @@ describe.skipIf(!process.env.SDV_RENDER_TESTS)("playwright rendering (SDV_RENDER
     expect(dims(out).width).toBeGreaterThan(400);
     expect((await readFile(file)).length).toBe(out.length);
   }, 60_000);
+  test("I1: 1,200 real rows at zoom 2 pass Chromium's 65,535 px canvas side: a named error, no file; zoom 1 fits", async () => {
+    // real resolver inputs from the sdvplot oracle (fixtures/sdvplot/inputs.json), the first 1,200 of 8,403
+    type Input = { league: string; value: string; id_system: string };
+    const inputs = JSON.parse(
+      readFileSync(new URL("../../../fixtures/sdvplot/inputs.json", import.meta.url), "utf8"),
+    ) as Input[];
+    const tall = inputs.slice(0, 1200);
+    const s = defineTable<Input>()
+      .columns((c) => [c.text("league"), c.text("value", { label: "Team" }), c.text("id_system")])
+      .build();
+    const dir = await mkdtemp(join(tmpdir(), "sdvt-tall-"));
+    await expect(tableToPNG(s, tall, { file: join(dir, "tall.png") })).rejects.toThrow(
+      /^the table renders \d{3,4} × \d{2},\d{3} px at deviceScaleFactor 2, past Chromium's canvas limit/,
+    );
+    expect(await readdir(dir)).toEqual([]);
+    const half = dims(await tableToPNG(s, tall, { deviceScaleFactor: 1 })); // the remedy the message names
+    expect(half.height).toBeGreaterThan(30_000);
+    expect(half.height).toBeLessThanOrEqual(65_535);
+  }, 120_000);
   test("socialCrop 1:1 is square; 16:9 is wider than tall", async () => {
     const sq = dims(await socialCrop(spec, rows, { aspect: "1:1" }));
     expect(sq.width).toBe(sq.height);

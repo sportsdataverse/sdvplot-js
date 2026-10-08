@@ -322,6 +322,10 @@ await batchToPNG(rows, "division", (groupRows) => ({ spec, rows: groupRows }), "
 
 - `tableToPNG`, `socialCrop` and `htmlToPNG` return the PNG bytes and also write `file` when given (it must end in
   `.png`); `batchToPNG` returns the paths it wrote.
+- An image past Chromium's canvas limit (65,535 px a side, 268,435,456 px in all: near 1,000 plain rows at the
+  default zoom) throws `SdvplotError` naming its size, and nothing is written. Put fewer rows in each image
+  (`rows.slice()` a page at a time, `batchToPNG` by a group column, `gridTables` side by side) or lower
+  `deviceScaleFactor`.
 - Options are in image pixels, as in Python: `deviceScaleFactor` (the zoom, default 2), `whitespace` (the margin left
   around the trimmed content, default 50, or 60 for `socialCrop`), `background` (default white), `width` (the final
   image width; absent, the rendered width) and `fontLinks` (extra stylesheets to wait for).
