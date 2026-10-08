@@ -24,5 +24,15 @@ export function BASE_CSS(sel: string): string {
     `${s} tfoot td{font-size:var(--sdvt-source-size);font-style:var(--sdvt-source-style);color:var(--sdvt-source-color);padding:var(--sdvt-source-pad) 5px;text-align:left}`,
     `${s} img.sdvt-mark{vertical-align:middle}`,
     `${s} table{--bs-table-bg:transparent;--bs-table-color:currentcolor}`, // utils-theme.R .theme_bs_host: Bootstrap hosts repaint td
+    // Phase 5 controls: renderHTML(table), hydrate and <SdvTable/> (the last rule is J31 A5, a neutral selected-row overlay)
+    `${s} .sdvt-sort{all:unset;cursor:pointer;display:inline-block;width:100%}`,
+    `${s} th[aria-sort="ascending"] .sdvt-sort::after{content:" ▲";font-size:.7em}`,
+    `${s} th[aria-sort="descending"] .sdvt-sort::after{content:" ▼";font-size:.7em}`,
+    `${s} .sdvt-toolbar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}`,
+    `${s} .sdvt-toolbar input{font:inherit;padding:2px 6px;border:1px solid var(--sdvt-rule);background:var(--sdvt-bg);color:var(--sdvt-text)}`,
+    `${s} .sdvt-pager{display:flex;gap:8px;align-items:center;justify-content:flex-end;margin-top:6px}`,
+    `${s} .sdvt-page{font:inherit;cursor:pointer}`,
+    `${s} .sdvt-page[disabled]{opacity:.4;cursor:default}`,
+    `${s} tr.sdvt-selected>td{box-shadow:inset 0 0 0 9999px rgba(127,127,127,.18)}`,
   ].join("\n");
 }

@@ -1,10 +1,12 @@
 // src/html/index.ts — the public renderer entry; the body lives in parts.ts (Phase 5 Task 2).
 import { loadGsis, loadLeague } from "@sportsdataverse/sdvplot";
 import type { League } from "@sportsdataverse/sdvplot";
+import type { Table } from "../engine.js";
 import { TableSpecError } from "../errors.js";
 import type { Density, TableSpec } from "../spec.js";
 import { loadTeamNames } from "../team-name.js";
 import { THEME_NAMES } from "../themes/index.js";
+import { renderInteractive } from "./interactive.js";
 import { type RenderOptions, assemble, labelOf, renderParts } from "./parts.js";
 
 export type { ColumnScale, RenderContext } from "./cells.js";
@@ -38,13 +40,29 @@ export async function prepare<Row>(spec: TableSpec<Row>): Promise<void> {
   await loadTeamNames(leaguesOf(spec));
 }
 
-export function renderHTML<Row>(
-  input: TableSpec<Row>,
-  rows: readonly Row[],
-  opts: RenderOptions = {},
-): string {
-  return assemble(renderParts(input, rows, opts));
+function isTable<Row>(x: TableSpec<Row> | Table<Row>): x is Table<Row> {
+  return typeof (x as Table<Row>).subscribe === "function";
 }
+/** Static markup from a spec, or the interactive document (toolbar, aria-sort headers, pager) from a `createTable` instance. */
+export function renderHTML<Row>(table: Table<Row>, opts?: RenderOptions): string;
+export function renderHTML<Row>(spec: TableSpec<Row>, rows: readonly Row[], opts?: RenderOptions): string;
+export function renderHTML<Row>(
+  a: TableSpec<Row> | Table<Row>,
+  b?: readonly Row[] | RenderOptions,
+  c: RenderOptions = {},
+): string {
+  if (isTable(a)) return renderInteractive(a, (b as RenderOptions | undefined) ?? {});
+  return assemble(renderParts(a, (b as readonly Row[] | undefined) ?? [], c));
+}
+export { createTable } from "../engine.js";
+export { handleClick, handleHover, handleInput, rowIdAt } from "./controls.js";
+export {
+  pagerLabel,
+  renderInteractive,
+  renderPager,
+  renderToolbar,
+  tableRenderOptions,
+} from "./interactive.js";
 export async function renderHTMLAsync<Row>(
   spec: TableSpec<Row>,
   rows: readonly Row[],

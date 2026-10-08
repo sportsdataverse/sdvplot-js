@@ -33,11 +33,16 @@ export interface ColumnScale {
     readonly values: readonly (number | null)[];
 }
 
+// Warning: (ae-forgotten-export) The symbol "TableSpec" needs to be exported by the entry point html.d.ts
+// Warning: (ae-forgotten-export) The symbol "TableOptions" needs to be exported by the entry point html.d.ts
+// Warning: (ae-forgotten-export) The symbol "Table" needs to be exported by the entry point html.d.ts
+//
+// @public
+export function createTable<Row>(spec: TableSpec<Row>, rows: readonly Row[], options?: TableOptions): Table<Row>;
+
 // @public
 export function fontsLink(fonts: readonly GoogleFont[]): string;
 
-// Warning: (ae-forgotten-export) The symbol "TableSpec" needs to be exported by the entry point html.d.ts
-//
 // @public
 export const fontsLinkFor: <Row>(spec: TableSpec<Row>) => string;
 
@@ -51,6 +56,15 @@ export interface GoogleFont {
     readonly weights: readonly number[];
 }
 
+// @public
+export function handleClick<Row>(table: Table<Row>, target: EventTarget | null): void;
+
+// @public
+export function handleHover<Row>(table: Table<Row>, target: EventTarget | null): void;
+
+// @public
+export function handleInput<Row>(table: Table<Row>, target: EventTarget | null): void;
+
 // Warning: (ae-forgotten-export) The symbol "ColumnSpec" needs to be exported by the entry point html.d.ts
 //
 // @public (undocumented)
@@ -60,6 +74,9 @@ export { labelOf }
 
 // @public
 export function leaguesOf<Row>(spec: TableSpec<Row>): League[];
+
+// @public (undocumented)
+export function pagerLabel<Row>(table: Table<Row>): string;
 
 // @public
 export function prepare<Row>(spec: TableSpec<Row>): Promise<void>;
@@ -109,11 +126,17 @@ export interface RenderedParts {
     readonly wrapperAttrs: Readonly<Record<string, string>>;
 }
 
+// @public
+export function renderHTML<Row>(table: Table<Row>, opts?: RenderOptions): string;
+
 // @public (undocumented)
-export function renderHTML<Row>(input: TableSpec<Row>, rows: readonly Row[], opts?: RenderOptions): string;
+export function renderHTML<Row>(spec: TableSpec<Row>, rows: readonly Row[], opts?: RenderOptions): string;
 
 // @public (undocumented)
 export function renderHTMLAsync<Row>(spec: TableSpec<Row>, rows: readonly Row[], opts?: RenderOptions): Promise<string>;
+
+// @public
+export function renderInteractive<Row>(table: Table<Row>, opts?: RenderOptions): string;
 
 // @public (undocumented)
 export interface RenderOptions {
@@ -129,8 +152,17 @@ export interface RenderOptions {
     readonly sort?: Sort | null;
 }
 
+// @public (undocumented)
+export function renderPager<Row>(table: Table<Row>): string;
+
 // @public
 export function renderParts<Row>(input: TableSpec<Row>, rows: readonly Row[], opts?: RenderOptions): RenderedParts;
+
+// @public
+export function renderToolbar<Row>(table: Table<Row>): string;
+
+// @public
+export function rowIdAt<Row>(table: Table<Row>, target: EventTarget | null): string | null;
 
 // @public
 export function sortAria(sort: Sort | null | undefined, key: string): "ascending" | "descending" | "none";
@@ -140,6 +172,9 @@ export function styleSheet<Row>(spec: TableSpec<Row>, theme?: Theme): string;
 
 // @public
 export function tableHTML(p: RenderedParts): string;
+
+// @public
+export function tableRenderOptions<Row>(table: Table<Row>): RenderOptions;
 
 // Warning: (ae-forgotten-export) The symbol "ThemeRef" needs to be exported by the entry point html.d.ts
 //
@@ -157,7 +192,7 @@ export function toElement<Row>(spec: TableSpec<Row>, rows: readonly Row[], opts?
 
 // Warnings were encountered during analysis:
 //
-// dist/html.d.ts:119:5 - (ae-forgotten-export) The symbol "Density" needs to be exported by the entry point html.d.ts
+// dist/html.d.ts:141:5 - (ae-forgotten-export) The symbol "Density" needs to be exported by the entry point html.d.ts
 
 // (No @packageDocumentation comment for this package)
 
