@@ -11,6 +11,16 @@ colors, logos, surfaces and tables for SportsDataverse plots.
 
 Docs site: <https://plot.sportsdataverse.org>
 
+## Repository layout
+
+- `packages/` - the three packages, each with its tests and public-API report (`etc/*.api.md`)
+- `examples/` - every example the docs site shows, one module each; `pnpm test` runs them all
+- `docs/` - the Docusaurus site: guides, the gallery and the typedoc API reference
+- `notebooks/` - Observable Framework notebooks, built into the site at `/notebooks/`; a standalone npm app (the
+  docs build runs `npm ci` there whenever its lockfile changes)
+- `tools/` - the league-data index build, vendoring, codegen, parity oracles and brand assets
+- `fixtures/` - real captured data the tests and examples read
+
 ## Toolchain
 
 pnpm workspace, tsup, vitest, biome, api-extractor (public-type drift baseline in `packages/*/etc`),
@@ -22,6 +32,28 @@ pnpm lint && pnpm typecheck && pnpm build && pnpm test && pnpm api:check && pnpm
 ```
 
 After changing public types run `pnpm -r api:report` and commit the updated `etc/*.api.md`.
+
+## Docs
+
+Every example on the site runs in CI. `pnpm docs:build` first runs the examples gate: each example is executed
+offline in Node (jsdom for the DOM), and one that throws, renders nothing, draws `NaN` or warns unexpectedly fails the
+build. The same run writes the markup the pages serve, so nothing generated is committed. The build then adds the
+notebooks and the Docusaurus site, and `check-build` confirms each inline output on a gallery page is the gate's.
+CI also typechecks the site (`pnpm --filter docs typecheck`).
+
+The Vercel build is pinned by `vercel.json` (install `pnpm install --frozen-lockfile`, build `pnpm docs:build`, output
+`docs/build`), so the gate, the gallery and the notebooks run on every deploy. Vercel reads that file only when the
+project's Root Directory is the repository root.
+
+`pnpm --filter docs start` (the dev server) prerenders the examples but does not build the notebooks, so `/notebooks/`
+is a 404 there. To preview the whole site, notebooks included, build it and serve the output:
+
+```bash
+pnpm docs:build && pnpm --filter docs serve
+```
+
+On Windows set `SKIP_HTML_MINIFICATION=true` for the build: the HTML minifier's native addon fails there (CI on Linux
+is unaffected).
 
 ## Owner steps
 
