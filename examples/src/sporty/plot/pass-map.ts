@@ -6,7 +6,7 @@ import type { ExampleMeta } from "../../contract.js";
 
 export const meta = {
   title: "Pass map: France's completed first-half passes, 2018 World Cup final (Plot.arrow on a pitch)",
-  tags: ["plot", "arrow", "surface", "toSurfaceFrame", "frameBottomLeft", "soccer", "fifa"],
+  tags: ["plot", "arrow", "surface", "toSurfaceFrame", "frameBottomLeft", "soccer", "fifa", "statsbomb"],
 } satisfies ExampleMeta;
 
 // StatsBomb open data as SPADL: metres from the bottom-left corner of a 105 x 68 pitch, France attacking left to

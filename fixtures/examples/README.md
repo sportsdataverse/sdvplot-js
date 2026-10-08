@@ -90,6 +90,12 @@ from sportsdataverse-py's `tests/fixtures/socceraction/8658_spadl.csv` (soccerac
 converter, every action attacking left to right on a 105 x 68 m pitch; frozen 2026-10-07, sha256
 `aba3c8cbb4770631997828d9006ec5f68bac3525363521583d1a0c6228bbdd58`, last changed in sportsdataverse-py 35776ac; read at
 29d2006, 2026-10-08). Kept: `team_id` 771, `period_id` 1, `type_name` pass, `result_name` success (75 rows, each
-unchanged, with the header). StatsBomb open data (<https://github.com/statsbomb/open-data>) is free for research and
-non-commercial use with attribution to StatsBomb; the example that draws it (`sporty/plot/pass-map`) credits StatsBomb
-in its caption.
+unchanged, with the header). StatsBomb's terms (<https://github.com/statsbomb/open-data>, README "Terms & Conditions" and
+`LICENSE.pdf` clause 1.4, read 2026-10-08) ask that published work state StatsBomb as the source and show the
+StatsBomb logo. The example that draws it (`sporty/plot/pass-map`) names StatsBomb in its caption, and its `statsbomb`
+tag makes the docs' `<Live>` show the logo, linked to <https://statsbomb.com>, with "Data: StatsBomb open data".
+
+`docs/static/img/statsbomb-logo.png`: StatsBomb's logo, byte for byte, from the open-data repository's
+`img/SB - Icon Lockup - Colour positive.png` (<https://github.com/statsbomb/open-data/tree/master/img>, last changed in
+3bfc16d, 2022-03-03; fetched 2026-10-08; 5885 x 943 PNG, 120,793 bytes, sha256
+`8ba5480785f0dc4be2342ec47c70509483eb79287f85f92be1dfba36fc2872a7`). Used only as that credit, as the terms ask.
