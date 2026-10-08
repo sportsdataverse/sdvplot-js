@@ -158,7 +158,7 @@ test("M3: hydrating again while a render is pending draws it first, so the body 
   el.querySelector<HTMLElement>('[data-sdv-body] tr[data-row="3"] td')?.click(); // the row shown at 3: BUF
   expect(t.getSelection()).toEqual(new Set(["BUF"]));
 });
-test("a render that throws leaves the rows the body shows on record, so the next row event still redraws it first", () => {
+test("a render that throws leaves the rows the body shows on record: a row event while another render is owed redraws first", () => {
   let fail = false;
   // LV's row, whose wins read throws while `fail` is set: a render that dies after the engine moved
   const lv = Object.defineProperty({ ...(STANDINGS[3] as Standing) }, "wins", {

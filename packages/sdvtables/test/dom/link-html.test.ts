@@ -212,6 +212,15 @@ test.each([
     expect(table.getSelection().size).toBe(0);
   },
 );
+test("a page-size cut keeps a prefix of the rows; an event on a cut row still draws the change first", () => {
+  const { table, el } = bare();
+  const mia = rowAt(el, 5); // cut by a 4-row page
+  table.setPageSize(4); // KC LAC DEN LV: the same objects at the same indexes, only fewer: the length check sees it
+  over(mia.querySelector("td"));
+  expect(mia.isConnected).toBe(false); // redrawn at the event, not a frame later
+  expect(teamsOf(el, "[data-sdv-body] tbody tr")).toEqual(["KC", "LAC", "DEN", "LV"]);
+  expect(table.getHover()).toBeNull();
+});
 test("after one rows change has rendered, j twice in one frame still moves twice (each render records its rows)", async () => {
   const { table, el } = bare();
   table.setExternalFilter((r) => r.wins >= 8); // KC LAC DEN BUF MIA
