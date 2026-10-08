@@ -84,7 +84,9 @@ const box = (svg: Element): { x: [number, number]; y: [number, number] } => {
  * filters a table (it is not an id). A store change moves attributes only: no element is added or removed, so a cursor
  * costs O(1) per figure. The pointer listeners capture, so a Plot `tip` that stops a press from reaching other
  * listeners does not stop this one. Styled by `--sdv-cursor-color` and `--sdv-cursor-width`. Returns a teardown that
- * removes the cursor and its listeners. Throws `InputError` on a bad option, in Node too; a no-op without a DOM.
+ * removes the cursor and its listeners, and clears the store's cursor when it still holds the value this figure last
+ * wrote (as `linkSelection`'s teardown does with its hover): a chart redrawn under the pointer leaves no cursor that no
+ * pointer drives. Throws `InputError` on a bad option, in Node too; a no-op without a DOM.
  *
  * @example
  * ```ts
@@ -290,8 +292,10 @@ export function linkCursor<R>(root: Element, store: SelectionStore<R>, o: LinkCu
   offs.push(() => g.remove());
   sync(store.getState().cursor);
 
+  let wrote: Cursor | null = null; // the cursor this figure last wrote, which its teardown clears if still current
   if (line && emit) {
     const clear = (): void => {
+      wrote = null;
       if (store.getState().cursor?.field === o.field) store.set({ cursor: null }); // only this field's
     };
     /** The value under the pointer along this axis, or null outside the axis' pixel range. */
@@ -316,7 +320,10 @@ export function linkCursor<R>(root: Element, store: SelectionStore<R>, o: LinkCu
       const [mx, my] = pointer(e, svg);
       const v = valueAt(line.axis === "x" ? mx : my);
       if (v === null || !Number.isFinite(v)) clear();
-      else store.set({ cursor: { field: o.field, value: v } });
+      else {
+        wrote = { field: o.field, value: v };
+        store.set({ cursor: wrote });
+      }
     };
     const on = (type: string, fn: (e: Event) => void): void => {
       svg.addEventListener(type, fn, { capture: true }); // A34: before Plot's tip, which stops other pointerdowns
@@ -329,5 +336,7 @@ export function linkCursor<R>(root: Element, store: SelectionStore<R>, o: LinkCu
   }
   return () => {
     for (const off of offs) off();
+    if (wrote !== null && sameCursor(store.getState().cursor, wrote)) store.set({ cursor: null });
+    wrote = null;
   };
 }

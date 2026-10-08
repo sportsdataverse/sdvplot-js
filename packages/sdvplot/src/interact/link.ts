@@ -62,8 +62,11 @@ const warned = new WeakSet<Element>();
  * `setHover` with the first hover id. Loop-free: the store and the engine drop no-op updates, and the events a table
  * emits while the store is being applied to it are not written back (so a two-id hover is never narrowed to the one id
  * a table holds). One figure or one table per call; link several by calling again with the same store. Returns a
- * teardown. Inert without a DOM, so server-rendered markup never changes. With `select: "toggle"`, the figure's marks
- * are keyboard-reachable checkboxes over `selected` ({@link LinkTargets.select}).
+ * teardown, which also clears `hover` when the store still holds the id this link last wrote (as `nearestHover`'s
+ * `destroy` does): a figure redrawn under the pointer leaves no stale hover dimming the others. To replace a figure,
+ * tear its link down before linking the new one, which otherwise reads the old figure's hover. Inert without a DOM,
+ * so server-rendered markup never changes. With `select: "toggle"`, the figure's marks are keyboard-reachable
+ * checkboxes over `selected` ({@link LinkTargets.select}).
  *
  * @example
  * ```ts
@@ -125,6 +128,11 @@ export function linkSelection<Row, Datum = unknown>(
   if (!hasDom()) return () => {};
   const { plot, table, hover = true } = targets;
   const offs: (() => void)[] = [];
+  let wrote: string | null = null; // the hover id this link last wrote, which its teardown clears if still current
+  const writeHover = (id: string | null): void => {
+    wrote = id;
+    store.set({ hover: id === null ? [] : [id] });
+  };
   let syncing = false; // A29: the table's own events while the store is applied to it are echoes, not user input
   const sync = (s: SelectionState<Row>): void => {
     if (plot) {
@@ -157,21 +165,21 @@ export function linkSelection<Row, Datum = unknown>(
   if (plot && hover === true) {
     on(plot, "mouseover", (e) => {
       const mark = markAt(plot, e);
-      store.set({ hover: mark ? [mark.getAttribute("data-sdv-id") ?? ""] : [] });
+      writeHover(mark ? (mark.getAttribute("data-sdv-id") ?? "") : null);
     });
-    on(plot, "mouseleave", () => store.set({ hover: [] }));
+    on(plot, "mouseleave", () => writeHover(null));
   } else if (plot && typeof hover === "object") {
     // Plot sets `value` on the element it dispatches `input` from (the svg, or the <figure> wrapping it)
     on(plot, "input", (e) => {
       const v = (e.target as { value?: unknown } | null)?.value;
-      store.set({ hover: v === null || v === undefined ? [] : [toId(hover.id(v as Datum))] });
+      writeHover(v === null || v === undefined ? null : toId(hover.id(v as Datum)));
     });
   }
   if (table) {
     offs.push(
       table.subscribe((e) => {
         if (syncing) return;
-        if (e.type === "hover") store.set({ hover: e.id === null ? [] : [e.id] });
+        if (e.type === "hover") writeHover(e.id);
         else if (e.type === "select") store.set({ selected: e.ids });
       }),
     );
@@ -180,6 +188,10 @@ export function linkSelection<Row, Datum = unknown>(
   offs.push(store.subscribe(sync));
   sync(store.getState());
   return () => {
+    const h = store.getState().hover;
+    // before the unsubscribe: this figure, and its table, still follow the store and un-dim too
+    if (wrote !== null && h.size === 1 && h.has(wrote)) store.set({ hover: [] });
+    wrote = null;
     for (const off of offs) off();
   };
 }

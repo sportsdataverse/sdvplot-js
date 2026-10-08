@@ -1,4 +1,5 @@
-import { NFL_TEAM_EPA_2024, SUPER_BOWL_LIX_WP } from "@sportsdataverse/examples/data";
+import { BKN_SHOTS_2026, NFL_TEAM_EPA_2024, SUPER_BOWL_LIX_WP } from "@sportsdataverse/examples/data";
+import { resetWarnings, setWarningHandler } from "@sportsdataverse/sdvplot";
 import { beforeAll, expect, test } from "vitest";
 import { EXAMPLES } from "../src/registry.gen.js";
 import { runExample } from "./run.js";
@@ -73,4 +74,106 @@ test("win-probability-difference: the caption's claim that Kansas City never led
   const min = Math.min(...SUPER_BOWL_LIX_WP.map((d) => d.home_wp));
   expect(min).toBeGreaterThan(0.5);
   expect(fig.querySelector("figcaption")?.textContent).toContain(`${(min * 100).toFixed(1)}%`);
+});
+
+test("shot dashboard: the menu swaps the court under a hovered cell, both ways, with no warning and nothing dimmed", async () => {
+  const root = await figure("sdvplot/shots/dashboard");
+  const select = root.querySelector('select[aria-label="Cell shape"]') as HTMLSelectElement;
+  const warnings: string[] = [];
+  resetWarnings();
+  setWarningHandler((m) => warnings.push(m));
+  try {
+    for (const shape of ["square", "hex"]) {
+      // hover a cell as Plot's tip does: `value` on the figure, then `input`
+      const court = select.nextElementSibling as Element;
+      const [x, y] = (court.querySelector("[data-sdv-id]")?.getAttribute("data-sdv-id") ?? "")
+        .split(",")
+        .map(Number);
+      Object.defineProperty(court, "value", { value: { x, y }, configurable: true });
+      court.dispatchEvent(new Event("input", { bubbles: true }));
+      expect(court.classList.contains("sdv-focus")).toBe(true);
+      select.value = shape;
+      select.dispatchEvent(new Event("change"));
+      const next = select.nextElementSibling as Element;
+      expect(next).not.toBe(court);
+      expect(next.classList.contains("sdv-focus")).toBe(false);
+      expect(next.querySelector(".sdv-hl")).toBeNull();
+    }
+    expect(warnings).toEqual([]); // the new court never sees the old court's hover id
+  } finally {
+    setWarningHandler(null);
+  }
+});
+
+// The shot dashboard's five figures in page order: court, signature, share, FG% and side.
+type Fig = SVGSVGElement & {
+  scale: (n: string) => {
+    range?: readonly number[];
+    apply: (v: number) => number;
+    invert?: (p: number) => number;
+  };
+};
+const dashboard = async (): Promise<Fig[]> =>
+  Array.from((await figure("sdvplot/shots/dashboard")).querySelectorAll("svg")).filter(
+    (s): s is Fig => typeof (s as Partial<Fig>).scale === "function",
+  );
+const span = (f: Fig, n: string): [number, number] => {
+  const r = Array.from(f.scale(n)?.range ?? [], Number);
+  return [Math.min(...r), Math.max(...r)];
+};
+const at = (r: Element, a: string): number => Number(r.getAttribute(a));
+const end = (r: Element): number => at(r, "x") + at(r, "width");
+
+test("shot dashboard: every bar of every figure sits inside its plot (FG% is a percent scale on [0, 100])", async () => {
+  const figs = await dashboard();
+  expect(figs).toHaveLength(5);
+  const outside: string[] = [];
+  const bars = figs.map((f) => {
+    const [[x0, x1], [y0, y1]] = [span(f, "x"), span(f, "y")];
+    const rects = f.querySelectorAll('g[aria-label="bar"] rect, g[aria-label="rect"] rect');
+    for (const r of rects)
+      if (
+        !(
+          at(r, "x") >= x0 - 1 &&
+          end(r) <= x1 + 1 &&
+          at(r, "y") >= y0 - 1 &&
+          at(r, "y") + at(r, "height") <= y1 + 1
+        )
+      )
+        outside.push(r.outerHTML);
+    return rects.length;
+  });
+  expect(outside).toEqual([]);
+  expect(bars.slice(2).every((n) => n > 0)).toBe(true); // the share, FG% and side charts draw bars
+});
+
+// main's side chart (blazing-the-nets lib/charts/sideChart.ts:20-22, :66-75): left and right grow from a FIXED centre
+// column's edges, so the 0-ft row (70 left, 60 centre, 70 right) reads 70 a side
+test("shot dashboard: x < 0 shots grow left of a fixed centre column, x > 0 right; the axis reads attempts from its edges", async () => {
+  const side = (await dashboard())[4] as Fig;
+  const [left = [], centre = [], right = []] = Array.from(
+    side.querySelectorAll('g[aria-label="rect"]'),
+    (g) => Array.from(g.querySelectorAll("rect")),
+  );
+  const inner = [...new Set(left.map(end)), ...new Set(right.map((r) => at(r, "x")))];
+  expect(inner).toHaveLength(2); // every row's left bar ends, and every right bar starts, at one x: the column's edges
+  const [l = Number.NaN, r = Number.NaN] = inner;
+  expect(r - l).toBeGreaterThan(0);
+  for (const c of centre) expect([at(c, "x") >= l, end(c) <= r]).toEqual([true, true]);
+  const k = side.scale("x").apply(1) - side.scale("x").apply(0); // px per attempt
+  const row = (b: Element): number =>
+    Math.floor(Number(side.scale("y").invert?.(at(b, "y") + at(b, "height") / 2)));
+  const n = (ft: number, on: (x: number) => boolean): number =>
+    BKN_SHOTS_2026.filter(
+      (s) => s.shot_distance <= 35 && Math.floor(s.shot_distance) === ft && on(s.x_legacy),
+    ).length;
+  for (const b of left) expect(at(b, "width")).toBeCloseTo(n(row(b), (x) => x < 0) * k);
+  for (const b of right) expect(at(b, "width")).toBeCloseTo(n(row(b), (x) => x > 0) * k);
+  expect(left.some((b) => n(row(b), (x) => x < 0) !== n(row(b), (x) => x > 0))).toBe(true); // so a swap shows
+  const ticks = Array.from(side.querySelectorAll('g[aria-label="x-axis tick label"] text'));
+  expect(ticks.length).toBeGreaterThan(2);
+  for (const t of ticks) {
+    const x = Number(/translate\(([-\d.]+)/.exec(t.getAttribute("transform") ?? "")?.[1]);
+    expect(Number(t.textContent)).toBeCloseTo((Math.abs(x - (l + r) / 2) - (r - l) / 2) / k, 0);
+  }
 });
