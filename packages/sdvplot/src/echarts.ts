@@ -1,3 +1,26 @@
+/** The ECharts adapter: logos, wordmarks and headshots as a `custom` series whose renderItem draws image elements in
+ *  data coordinates; axis logos as rich-text axis labels. Pure: echarts is never imported at runtime. */
+import {
+  type AxisOptions,
+  type HeadshotOptions,
+  type MarkOptions,
+  type Placement,
+  type Row,
+  aspect,
+  axisLetter,
+  axisPlacements,
+  checkAlpha,
+  checkHeight,
+  colorList,
+  imageSources,
+  markPlacements,
+} from "./_web.js";
+import type { DrawnAxisMark, DrawnMark } from "./_web.js";
+import { InputError, UnsupportedTargetError } from "./errors.js";
+import type { IdSystem, League, SeasonInput } from "./types.js";
+export type { AxisOptions, DrawnAxisMark, DrawnMark, HeadshotOptions, MarkOptions, Row } from "./_web.js";
+export { embedSources } from "./_web.js"; // public: the README tells callers to build `embed` with it
+
 /** Structural types for an ECharts option: the subset `sdvplot/echarts` reads and writes. No runtime import of echarts. */
 export interface EChartsAxis {
   type?: "value" | "category" | "time" | "log";
@@ -36,4 +59,251 @@ export interface RenderApi {
 export interface RenderedImage {
   type: "image";
   style: { image: string; x: number; y: number; width: number; height: number; opacity?: number };
+}
+
+export interface EChartsMarkOptions extends MarkOptions {
+  xAxisIndex?: number;
+  yAxisIndex?: number;
+  z?: number;
+}
+export interface EChartsHeadshotOptions extends HeadshotOptions {
+  xAxisIndex?: number;
+  yAxisIndex?: number;
+  z?: number;
+}
+
+const Dim = { X: 0, Y: 1, Url: 2, Team: 3, Aspect: 4, Height: 5, Alpha: 6 } as const; // the data row layout
+
+/** Deep copy of plain objects and arrays. Functions (renderItem, formatters) and class instances are kept by reference:
+ *  structuredClone throws a DataCloneError on a function, and ECharts options routinely hold them. */
+function copy<T>(v: T): T {
+  if (Array.isArray(v)) return v.map(copy) as T;
+  if (typeof v === "object" && v !== null && Object.getPrototypeOf(v) === Object.prototype)
+    return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, copy(x)])) as T;
+  return v;
+}
+function optionOf(target: unknown): EChartsOption {
+  if (typeof target !== "object" || target === null || Array.isArray(target))
+    throw new UnsupportedTargetError(
+      `sdvplot/echarts draws on an ECharts option object, got ${target === null ? "null" : Array.isArray(target) ? "array" : typeof target}`,
+    );
+  return copy(target as EChartsOption);
+}
+const datum = (v: unknown): string | number =>
+  v instanceof Date ? v.toISOString() : typeof v === "number" || typeof v === "string" ? v : String(v);
+
+/** The renderItem every sdvplot custom series uses: one image per datum, centred on api.coord([x, y]), `height` of the grid tall. */
+export function renderLogo(params: RenderParams, api: RenderApi): RenderedImage {
+  const [px, py] = api.coord([api.value(Dim.X), api.value(Dim.Y)]) as [number, number];
+  const h = Number(api.value(Dim.Height)) * (params.coordSys.height ?? 0);
+  const w = h * Number(api.value(Dim.Aspect));
+  return {
+    type: "image",
+    style: {
+      image: String(api.value(Dim.Url)),
+      x: px - w / 2,
+      y: py - h / 2,
+      width: w,
+      height: h,
+      opacity: Number(api.value(Dim.Alpha)),
+    },
+  };
+}
+
+function add(
+  target: unknown,
+  rows: readonly Row[],
+  kind: "logo" | "wordmark" | "headshot",
+  o: EChartsMarkOptions | EChartsHeadshotOptions,
+): EChartsOption {
+  const h = checkHeight(o.height ?? 0.1);
+  const a = checkAlpha(o.alpha ?? 1);
+  const option = optionOf(target);
+  const ps: Placement[] = markPlacements(rows, kind, o);
+  if (ps.length === 0) return option;
+  const sources = imageSources(ps, o.embed);
+  const series: LogoSeries = {
+    id: `sdvplot:${kind}`,
+    name: `sdvplot:${kind}`,
+    type: "custom",
+    coordinateSystem: "cartesian2d",
+    ...(o.xAxisIndex !== undefined ? { xAxisIndex: o.xAxisIndex } : {}),
+    ...(o.yAxisIndex !== undefined ? { yAxisIndex: o.yAxisIndex } : {}),
+    data: ps.map((p, i) => [datum(p.x), datum(p.y), sources[i]!, p.id, aspect(p), h, a]),
+    encode: { x: Dim.X, y: Dim.Y },
+    z: o.z ?? 100,
+    silent: true,
+    renderItem: renderLogo,
+  };
+  // a second call of the same kind appends to the existing series' data instead of adding a second series
+  const existing = (option.series ?? []).find((s) => s.id === series.id) as LogoSeries | undefined;
+  if (existing !== undefined) {
+    existing.data = [...existing.data, ...series.data];
+    return option;
+  }
+  option.series = [...(option.series ?? []), series];
+  return option;
+}
+export function withLogos(option: EChartsOption, rows: readonly Row[], o: EChartsMarkOptions): EChartsOption;
+export function withLogos<F extends object>(option: F, rows: readonly Row[], o: EChartsMarkOptions): F;
+export function withLogos(option: object, rows: readonly Row[], o: EChartsMarkOptions): object {
+  return add(option, rows, "logo", o);
+}
+export function withWordmarks(
+  option: EChartsOption,
+  rows: readonly Row[],
+  o: EChartsMarkOptions,
+): EChartsOption;
+export function withWordmarks<F extends object>(option: F, rows: readonly Row[], o: EChartsMarkOptions): F;
+export function withWordmarks(option: object, rows: readonly Row[], o: EChartsMarkOptions): object {
+  return add(option, rows, "wordmark", o);
+}
+export function withHeadshots(
+  option: EChartsOption,
+  rows: readonly Row[],
+  o: EChartsHeadshotOptions,
+): EChartsOption;
+export function withHeadshots<F extends object>(
+  option: F,
+  rows: readonly Row[],
+  o: EChartsHeadshotOptions,
+): F;
+export function withHeadshots(option: object, rows: readonly Row[], o: EChartsHeadshotOptions): object {
+  return add(option, rows, "headshot", o);
+}
+
+/** Test hook: [teamId, x, y, height, url] per datum of the sdvplot mark series (the renderItem draws exactly these). */
+export function drawnMarks(option: EChartsOption): DrawnMark[] {
+  const opt = optionOf(option);
+  return (opt.series ?? [])
+    .filter(
+      (s): s is LogoSeries =>
+        typeof s.id === "string" && s.id.startsWith("sdvplot:") && !s.id.startsWith("sdvplot:axis:"),
+    )
+    .flatMap((s) =>
+      s.data.map(
+        (d): DrawnMark => [
+          String(d[Dim.Team]),
+          d[Dim.X],
+          d[Dim.Y],
+          Number(d[Dim.Height]),
+          String(d[Dim.Url]),
+        ],
+      ),
+    );
+}
+
+const DEFAULT_CHART_HEIGHT = 400; // px: ECharts has no default canvas height in a pure option; documented in the README
+const LABEL_MARGIN = 8; // px: ECharts' default axisLabel.margin
+
+type AxisLogoOptions = AxisOptions & { axisIndex?: number; chartHeight?: number };
+
+function axisAt(
+  option: EChartsOption,
+  letter: "x" | "y",
+  index: number,
+): EChartsAxis & { axisLabel?: Record<string, unknown> } {
+  const axes = option[`${letter}Axis`];
+  const list = Array.isArray(axes) ? axes : axes === undefined ? [] : [axes];
+  const ax = list[index] as EChartsAxis | undefined;
+  if (ax === undefined || ax.type !== "category" || !Array.isArray(ax.data))
+    throw new InputError(`withAxisLogos needs a category ${letter} axis with data (team names on the axis)`);
+  return ax;
+}
+/** The category labels as ECharts shows them: a `{ value }` item reads as its value. */
+const categories = (ax: EChartsAxis): string[] =>
+  (ax.data ?? []).map((c) =>
+    typeof c === "object" && c !== null && "value" in c ? String((c as { value: unknown }).value) : String(c),
+  );
+
+export function withAxisLogos(option: EChartsOption, axis: "x" | "y", o: AxisLogoOptions): EChartsOption;
+export function withAxisLogos<F extends object>(option: F, axis: "x" | "y", o: AxisLogoOptions): F;
+export function withAxisLogos(option: object, axis: "x" | "y", o: AxisLogoOptions): object {
+  const letter = axisLetter(axis);
+  const h = checkHeight(o.height ?? 0.1);
+  const chartH = o.chartHeight ?? DEFAULT_CHART_HEIGHT;
+  if (!Number.isFinite(chartH) || chartH <= 0)
+    throw new InputError(
+      `chartHeight must be a positive number of pixels, got ${JSON.stringify(o.chartHeight)}`,
+    );
+  const opt = optionOf(option);
+  const ax = axisAt(opt, letter, o.axisIndex ?? 0);
+  const cats = categories(ax);
+  const ps = axisPlacements(cats, letter, o);
+  if (ps.length === 0) return opt;
+  const hPx = h * chartH;
+  const sources = imageSources(ps, o.embed);
+  const keyOf = new Map<string, string>(); // category label → rich key
+  const rich: Record<string, { backgroundColor: { image: string }; height: number; width: number }> = {};
+  for (const [i, p] of ps.entries()) {
+    const ci = Number(letter === "x" ? p.x : p.y);
+    const key = `t_${ci}`;
+    keyOf.set(cats[ci]!, key);
+    rich[key] = { backgroundColor: { image: sources[i]! }, height: hPx, width: hPx * aspect(p) };
+  }
+  const old = { ...(ax.axisLabel ?? {}) } as {
+    formatter?: unknown;
+    rich?: Record<string, unknown>;
+    margin?: number;
+  };
+  // an unresolved label keeps the caller's formatter: a function gets ECharts' own arguments, a string template its {value}
+  const fallback = (v: string, rest: unknown[]): string =>
+    typeof old.formatter === "function"
+      ? String((old.formatter as (v: string, ...rest: unknown[]) => unknown)(v, ...rest))
+      : typeof old.formatter === "string"
+        ? old.formatter.replaceAll("{value}", v)
+        : v;
+  ax.axisLabel = {
+    ...old,
+    formatter: (v: string, ...rest: unknown[]) => {
+      const k = keyOf.get(v);
+      return k === undefined ? fallback(v, rest) : `{${k}|}`;
+    },
+    rich: { ...old.rich, ...rich },
+    margin: (old.margin ?? LABEL_MARGIN) + 4,
+  };
+  // pure-data bookkeeping for the test hooks: an invisible custom series. Dim 0 (the tick index) sits on the category
+  // axis; dim 1 is "-" (ECharts' empty value) on the value axis, so the series never stretches that axis' extent (A22).
+  const book: LogoSeries = {
+    id: `sdvplot:axis:${letter}`,
+    name: `sdvplot:axis:${letter}`,
+    type: "custom",
+    coordinateSystem: "cartesian2d",
+    data: ps.map((p, i) => [Number(letter === "x" ? p.x : p.y), "-", sources[i]!, p.id, aspect(p), h, 1]),
+    encode: letter === "x" ? { x: 0, y: 1 } : { x: 1, y: 0 },
+    z: 0,
+    silent: true,
+    renderItem: renderNothing,
+  };
+  opt.series = [...(opt.series ?? []).filter((s) => s.id !== book.id), book];
+  return opt;
+}
+function renderNothing(): RenderedImage {
+  return { type: "image", style: { image: "", x: 0, y: 0, width: 0, height: 0, opacity: 0 } };
+}
+
+/** One colour per team, in order, for `option.color`. */
+export function teamColorPalette(
+  league: League,
+  teams: readonly unknown[],
+  o: { which?: "primary" | "secondary"; season?: SeasonInput; idSystem?: IdSystem; fallback?: string } = {},
+): string[] {
+  return colorList(league, teams, o).map((c) => c ?? o.fallback ?? "#808080");
+}
+/** Test hook: [teamId, category index, height] per axis image, in tick order. */
+export function drawnAxisMarks(option: EChartsOption, axis: "x" | "y"): DrawnAxisMark[] {
+  const letter = axisLetter(axis);
+  const book = (optionOf(option).series ?? []).find((s) => s.id === `sdvplot:axis:${letter}`) as
+    | LogoSeries
+    | undefined;
+  return (book?.data ?? [])
+    .map((d): DrawnAxisMark => [String(d[Dim.Team]), Number(d[Dim.X]), Number(d[Dim.Height])])
+    .sort((a, b) => a[1] - b[1]);
+}
+/** Test hook: the category labels the formatter still shows as text. */
+export function visibleAxisLabels(option: EChartsOption, axis: "x" | "y"): string[] {
+  const letter = axisLetter(axis);
+  const opt = optionOf(option);
+  const drawn = new Set(drawnAxisMarks(opt, letter).map((m) => m[1]));
+  return categories(axisAt(opt, letter, 0)).filter((_, i) => !drawn.has(i));
 }
