@@ -317,6 +317,18 @@ test("J31: <SdvTable table={…}/> renders an external engine; row hover and cli
   fireEvent.mouseLeave(container.firstElementChild as Element);
   expect(seen.at(-1)).toBe("hover:null");
 });
+test("J31: leaving <SdvTable/> from a row clears the hover: React's leave event targets that row's cell, not the table", () => {
+  // React synthesises mouseleave from mouseout, and the root's leave event keeps the deepest element the pointer left
+  const t = createTable({ ...spec, rowKey: "team" }, STANDINGS);
+  const { container } = render(<SdvTable spec={t.spec} rows={STANDINGS} table={t} interactive />);
+  document.body.append(container);
+  const cell = container.querySelector('[data-sdv-body] tr[data-row="0"] td');
+  if (!cell) throw new Error("no KC cell");
+  fireEvent.mouseOver(cell);
+  expect([t.getHover(), container.querySelectorAll("tr.sdvt-hover").length]).toEqual(["KC", 1]);
+  fireEvent.mouseOut(cell, { relatedTarget: document.body }); // out of the table, from KC's cell
+  expect([t.getHover(), container.querySelectorAll("tr.sdvt-hover").length]).toEqual([null, 0]);
+});
 test("I1 + M4: a parent re-rendering fresh equal rows and an inline spec keeps sort, filter text, page and selection; new rows show; later pageSize/sort are ignored; a structural spec change rebuilds", () => {
   const Parent = ({
     data,
