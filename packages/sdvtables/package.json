@@ -51,11 +51,13 @@
     }
   },
   "devDependencies": {
+    "@observablehq/plot": "^0.6.17",
     "@sportsdataverse/sdvplot": "workspace:^",
     "@testing-library/react": "^16.3.3",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "happy-dom": "^15.11.0",
+    "jsdom": "^26.1.0",
     "playwright": "^1.64.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"

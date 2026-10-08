@@ -50,6 +50,10 @@
       "types": "./dist/export.d.ts",
       "import": "./dist/export.js"
     },
+    "./interact": {
+      "types": "./dist/interact.d.ts",
+      "import": "./dist/interact.js"
+    },
     "./plotly": {
       "types": "./dist/plotly.d.ts",
       "import": "./dist/plotly.js"
