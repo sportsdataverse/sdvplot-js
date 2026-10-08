@@ -104,12 +104,31 @@ class Loading {
   ) {}
 }
 type Mark = HTMLImageElement | Loading;
+/** The size each loaded image was set to, to catch a loader that hands the same image out for two sizes. */
+const sizes = new WeakMap<object, { width: number; height: number }>();
 const DRAWN = ["[object HTMLImageElement]", "[object HTMLCanvasElement]"];
 /** Chart.js draws a point-style image at its own width x height, and only one that stringifies as a DOM image or canvas. */
-function sized(img: ImageLike, w: number, h: number): ImageLike {
+function sized(img: ImageLike, w: number, h: number): ImageLike | null {
+  const was = sizes.get(img);
+  if (was !== undefined && (was.width !== w || was.height !== h)) {
+    warn(
+      "chartjs:loadImage:shared",
+      "loadImage returned an image already sized for another drawn size, so that use is not drawn: loadImage must return a fresh image per call (wrap a cache so each call returns a new image)",
+    );
+    return null;
+  }
   const own = (value: unknown): PropertyDescriptor => ({ value, writable: true, configurable: true });
   const tag: PropertyDescriptorMap = DRAWN.includes(String(img)) ? {} : { toString: own(() => DRAWN[0]) };
-  Object.defineProperties(img, { width: own(w), height: own(h), ...tag });
+  try {
+    Object.defineProperties(img, { width: own(w), height: own(h), ...tag });
+  } catch (e) {
+    warn(
+      "chartjs:loadImage:unsizable",
+      `loadImage returned an image that cannot be sized (${String(e)}), so it is not drawn`,
+    );
+    return null;
+  }
+  sizes.set(img, { width: w, height: h });
   return img;
 }
 // ponytail: unbounded like `images`; per loader, so two loaders never share an image.

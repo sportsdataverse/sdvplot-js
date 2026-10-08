@@ -361,7 +361,7 @@ chart.destroy();
 - Every image helper takes it: `logoPoints`, `wordmarkPoints`, `headshotPoints`, `axisLogos`, `logoWatermarks`. Point
   styles still need `pointImages` in `plugins`, which updates the chart as they land.
 - `loadImage` is called once per URL and drawn size (per loader function), and the image's `width` and `height` are set
-  to that size, so resolve a new image on every call, as `@napi-rs/canvas`'s does.
+  to that size, so resolve a new image on every call, as `@napi-rs/canvas`'s does (a loader that hands out one shared image warns once and skips the use at a different size). Await `Promise.all(loads)` after `new Chart(...)`, since `axisLogos` first calls the loader inside it.
 - In Node an unknown team's text fallback is a circle (there is no canvas to letter it on); pass `fallback` for another
   style. A load that fails warns once and is skipped.
 

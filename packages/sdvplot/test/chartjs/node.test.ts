@@ -4,7 +4,7 @@ import { type Image, createCanvas, loadImage } from "@napi-rs/canvas";
 import { Chart, type ChartConfiguration, registerables } from "chart.js";
 import { beforeAll, describe, expect, test } from "vitest";
 import { axisLogos, logoPoints, logoWatermarks, pointImages } from "../../src/chartjs.js";
-import { UnsupportedTargetError, loadLeague } from "../../src/index.js";
+import { UnsupportedTargetError, loadLeague, resetWarnings, setWarningHandler } from "../../src/index.js";
 
 Chart.register(...registerables);
 beforeAll(async () => {
@@ -185,6 +185,45 @@ describe("loadImage: the image plugins in Node", () => {
     expect(inside[0]).toBeGreaterThan(100);
     expect(outside).toBe(0);
     chart.destroy();
+  });
+
+  test("a loader that reuses one image for two drawn sizes warns once and skips the second use", async () => {
+    resetWarnings();
+    const msgs: string[] = [];
+    setWarningHandler((m) => msgs.push(m));
+    try {
+      const shared = await fromFixtures(
+        "aab854c59098d4f465c1c6f31b580f2a38d2ed4f5c0c03df2da76f62f5378dc4.png",
+      );
+      const { load, loads } = recording(async () => shared);
+      const mark = logoWatermarks(["LAD"], { league: "mlb", loadImage: load }); // 75 px first
+      const pts = logoPoints(["LAD"], { league: "mlb", radius: 16, loadImage: load }); // then 32 px
+      await Promise.all(loads);
+      expect(msgs.filter((m) => m.includes("fresh image per call"))).toHaveLength(1);
+      expect([shared.width, shared.height]).toEqual([75, 75]);
+      expect(pts.pointStyle[0]).toBe(false); // not drawn mis-sized
+      void mark;
+    } finally {
+      setWarningHandler(null);
+      resetWarnings();
+    }
+  });
+
+  test("a frozen image is a failed load: one warning, nothing drawn, no rejection", async () => {
+    resetWarnings();
+    const msgs: string[] = [];
+    setWarningHandler((m) => msgs.push(m));
+    try {
+      const { load, loads } = recording(async (u) => Object.freeze(await fromFixtures(u)));
+      const pts = logoPoints(["LAD"], { league: "mlb", radius: 16, loadImage: load });
+      await Promise.all(loads);
+      await new Promise((r) => setTimeout(r, 0));
+      expect(msgs.filter((m) => m.includes("cannot be sized"))).toHaveLength(1);
+      expect(pts.pointStyle[0]).toBe(false);
+    } finally {
+      setWarningHandler(null);
+      resetWarnings();
+    }
   });
 
   test("without loadImage there is still no DOM to build them on: UnsupportedTargetError", () => {
