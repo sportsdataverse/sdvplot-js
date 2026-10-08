@@ -104,6 +104,8 @@ export interface PlotlyAxis {
     // (undocumented)
     range?: readonly [unknown, unknown];
     // (undocumented)
+    showticklabels?: boolean;
+    // (undocumented)
     tickmode?: string;
     // (undocumented)
     ticktext?: readonly string[];
