@@ -37,5 +37,24 @@ jobs:
         with: { node-version: 20.18.1, cache: pnpm }
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @sportsdataverse/sdvtables exec playwright install --with-deps chromium
+      # spec §7 (A46): every registered theme's themePreview through the tableToPNG path, one PNG each, uploaded below.
+      # Non-gating: a theme that fails to render fails only this step (an annotation per theme, and the summary line);
+      # the other themes still render, the export tests still run, and the artifact still uploads.
+      - id: themes
+        continue-on-error: true
+        run: pnpm --filter @sportsdataverse/sdvtables render:themes
       - run: pnpm --filter @sportsdataverse/sdvtables test -- test/export-render.test.ts
         env: { SDV_RENDER_TESTS: "1" }
+      - if: ${{ !cancelled() }}
+        run: |
+          dir=packages/sdvtables/theme-pass
+          {
+            echo "### sdvtables theme visual pass (spec §7, non-gating): ${{ steps.themes.outcome }}"
+            if [ -d "$dir" ]; then
+              for f in "$dir"/*.error.txt; do if [ -f "$f" ]; then echo "- **failed: $(basename "$f" .error.txt)**: $(head -n 1 "$f")"; fi; done
+              find "$dir" -name '*.png' -printf '- %f\n' | sort
+            else echo "- no PNG written"; fi
+          } >> "$GITHUB_STEP_SUMMARY"
+      - if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with: { name: sdvtables-theme-pass, path: packages/sdvtables/theme-pass/, if-no-files-found: warn }
