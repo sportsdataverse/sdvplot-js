@@ -136,6 +136,12 @@ export function statsBySide(
  * foot when that bin is empty (blazing-the-nets `master` `src/components/Hexagon/index.js:44-49`). `cell` is a
  * hexagon radius (default 10, master's) or any `binner` lattice, e.g. `{ shape: "square", side: 10 }`.
  *
+ * The distance is `Math.hypot(x, y)`, a deliberate divergence from master's `Math.sqrt(x ** 2 + y ** 2)`
+ * (`src/lib/distance.js:3-4`). On a hexagon centre exactly a whole number of feet out, such as (15√3, 15) at 3 ft,
+ * master's sqrt returns 29.999…96 and reads the foot below; hypot reads the true foot. On the real BKN fixture at
+ * radius 10 that is 13 of 374 cells, among them the cells beside the rim (0.572 at 3 ft, where master reads 0.669
+ * at 2 ft). Every other cell reads master's foot.
+ *
  * @example
  * ```ts
  * import { cellsVsDistance, fgPctByDistance } from "@sportsdataverse/sdvplot/shots";
@@ -150,6 +156,7 @@ export function cellsVsDistance(
   cell: number | BinnerOptions = 10,
 ): CellVsLeague[] {
   return binShots(player, cell).map((h) => {
+    // hypot, not master's sqrt(x ** 2 + y ** 2) (distance.js:3-4), which reads a whole-foot centre one foot short
     const d = Math.floor(Math.hypot(h.x, h.y) / 10);
     return { ...h, leagueFgPct: byFoot[d]?.fgPct ?? byFoot[d - 1]?.fgPct ?? null };
   });
