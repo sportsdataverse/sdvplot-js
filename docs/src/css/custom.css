@@ -38,15 +38,17 @@
   overflow-x: auto;
 }
 .sdv-live-static svg,
-.sdv-live-output svg,
-img.sdv-live-static {
+.sdv-live-output svg {
   max-width: 100%;
   height: auto;
 }
 iframe.sdv-live-static {
+  border: 0;
+}
+/* an .html output; an SVG one carries its own width/height and scrolls with its container */
+iframe.sdv-live-static:not([width]) {
   width: 100%;
   height: 32rem;
-  border: 0;
 }
 .sdv-live-error {
   color: var(--ifm-color-danger);

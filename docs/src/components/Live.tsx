@@ -3,7 +3,6 @@ import useBaseUrl from "@docusaurus/useBaseUrl";
 import { LOADERS } from "@sportsdataverse/examples/loaders";
 import CodeBlock from "@theme/CodeBlock";
 import { type ReactElement, isValidElement, useEffect, useRef, useState } from "react";
-import { type Root, createRoot } from "react-dom/client";
 
 /** Props: `id` (+ `thumb`/`href` on gallery cards) come from the MDX; the rest are injected by remark-live at build. */
 export interface LiveProps {
@@ -14,8 +13,10 @@ export interface LiveProps {
   readonly title: string;
   /** The prerendered output, inline (≤ 64 KB) … */
   readonly markup?: string;
-  /** … or the URL of the prerendered file. */
+  /** … or the URL of the prerendered file, with the root <svg>'s size when it is an SVG. */
   readonly src?: string;
+  readonly width?: string;
+  readonly height?: string;
   /** A gallery card: the prerendered output and the title, linking to `href`; never re-run. */
   readonly thumb?: boolean;
   readonly href?: string;
@@ -29,21 +30,19 @@ export interface LiveProps {
 export default function Live(p: LiveProps): ReactElement {
   const host = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(false);
+  const [element, setElement] = useState<ReactElement | null>(null);
   const [error, setError] = useState<string | null>(null);
   const src = useBaseUrl(p.src ?? "");
   useEffect(() => {
     const load = LOADERS[p.id];
     if (p.thumb || load === undefined || (p.kind !== "node" && p.kind !== "react")) return;
     let cancelled = false;
-    let root: Root | undefined;
     load().then(
       (m) => {
         const el = host.current;
         if (cancelled || el === null) return;
-        if (isValidElement(m.default)) {
-          root = createRoot(el);
-          root.render(m.default);
-        } else if (m.default instanceof Node) el.replaceChildren(m.default);
+        if (isValidElement(m.default)) setElement(m.default);
+        else if (m.default instanceof Node) el.replaceChildren(m.default);
         else return;
         setMounted(true);
       },
@@ -53,9 +52,9 @@ export default function Live(p: LiveProps): ReactElement {
     );
     return () => {
       cancelled = true;
-      root?.unmount();
     };
   }, [p.id, p.kind, p.thumb]);
+  // A static file is embedded as a document (never <img>: that would not load the external logo <image>s).
   const output =
     p.src === undefined ? (
       <div
@@ -64,10 +63,16 @@ export default function Live(p: LiveProps): ReactElement {
         // biome-ignore lint/security/noDangerouslySetInnerHtml: markup the gate produced at build time from our own examples
         dangerouslySetInnerHTML={{ __html: p.markup ?? "" }}
       />
-    ) : p.src.endsWith(".svg") ? (
-      <img className="sdv-live-static" hidden={mounted} src={src} alt={p.title} loading="lazy" />
     ) : (
-      <iframe className="sdv-live-static" hidden={mounted} src={src} title={p.title} loading="lazy" />
+      <iframe
+        className="sdv-live-static"
+        hidden={mounted}
+        src={src}
+        title={p.title}
+        width={p.width}
+        height={p.height}
+        loading="lazy"
+      />
     );
   if (p.thumb)
     return (
@@ -79,7 +84,9 @@ export default function Live(p: LiveProps): ReactElement {
   return (
     <figure className="sdv-live" data-example={p.id}>
       {output}
-      <div className="sdv-live-output" ref={host} />
+      <div className="sdv-live-output" ref={host}>
+        {element}
+      </div>
       {error !== null && (
         <p role="alert" className="sdv-live-error">
           This example threw in your browser: {error}
