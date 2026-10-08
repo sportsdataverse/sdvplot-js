@@ -24,6 +24,7 @@
     "oracle:shots": "tsx tools/oracle/shots.ts",
     "oracle:matchup-colors": "tsx tools/oracle/matchup-colors.ts",
     "changeset": "changeset",
+    "version-packages": "changeset version && biome format --write .",
     "release": "pnpm build && changeset publish"
   },
   "devDependencies": {

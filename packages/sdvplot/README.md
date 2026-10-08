@@ -9,9 +9,18 @@ npm install @sportsdataverse/sdvplot
 ```
 
 ESM only, Node >= 20.18.1. The core and the `bins`, `testing`, `plotly`, `vega` and `echarts` subpaths need no
-peer. The others use optional peers, installed only for the subpath you import: `react` >= 18 for `/react`,
-`@observablehq/plot` >= 0.6.16 for `/plot`, `d3` >= 7 for `/d3` and `/interact`, `chart.js` >= 4.4 for `/chartjs`, and
-`@sportsdataverse/sporty` for surfaces and shot zones (see the table under [Subpaths](#subpaths)).
+peer. The others use optional peers, which npm and pnpm do not install for you, so add the ones for the subpaths you
+import: `react` >= 18 for `/react`, `@observablehq/plot` >= 0.6.16 for `/plot`, `d3` >= 7 for `/d3` and `/interact`,
+`chart.js` >= 4.4 for `/chartjs` and `/chartjs/surface`, and `@resvg/resvg-js` for `/export`'s `toPNG`.
+
+`/plot`, `/d3`, `/shots` and `/chartjs/surface` also need `@sportsdataverse/sporty`, whether or not you draw a
+surface: they import it when they load, and fail to load without it. No other subpath imports sporty. For a Plot chart:
+
+```sh
+npm install @sportsdataverse/sdvplot @sportsdataverse/sporty @observablehq/plot
+```
+
+The table under [Subpaths](#subpaths) lists each subpath's peers.
 
 ## Quick start
 
@@ -79,12 +88,12 @@ The backgrounds default to `#ffffff` (light) and `#181a1b` (dark); pass `theme: 
 | --- | --- |
 | `@sportsdataverse/sdvplot` | `resolve`, `suggest`, `teams`, `rowsFrom`, `palette`, `teamColors`, `matchupColors`, `logoUrl`, `marks` (`full: true` fetches the whole manifest lazily), `selectMark`, `selectMarkSync`, `place`, `placeSync`, `prepareTiers`, `headshotUrl`, `loadGsis`, contrast helpers (`hex6`, `luminance`, `contrast`, `onColor`, `mix`, `solid`), the selection store `createSelection` with `focusIds`, `toId`, `sameIds`, `sameCursor` (see [Linked interactivity](#linked-interactivity)), `versions`, errors, types |
 | `@sportsdataverse/sdvplot/react` | `TeamLogo`, `Wordmark`, `Headshot`, `useTeamColors`, `useResolve`, `useSelection` (re-renders on every change of a selection store) (React >= 18, optional peer) |
-| `@sportsdataverse/sdvplot/plot` | Observable Plot marks and scales: `logos`, `wordmarks`, `headshots`, `axisLogos`, `teamColor`/`teamFill`, `meanLines`/`medianLines`, `titleImage`, `teamTiers`, `surface`, shot-chart marks `shotCells`, `shotZones`, `shootingSignature`, `linkIds` (stamps any mark's link ids; the image marks take an `id` option) (optional peers `@observablehq/plot`, `@sportsdataverse/sporty`) |
-| `@sportsdataverse/sdvplot/d3` | `appendLogos`, `appendWordmarks`, `appendHeadshots` (circular faces: `clip`, `ring`, `placeholder`), `teamColorScale`, `appendSurface`, shot-chart `appendLegend` and `appendSignature` (optional peers `d3`, `@sportsdataverse/sporty`) |
+| `@sportsdataverse/sdvplot/plot` | Observable Plot marks and scales: `logos`, `wordmarks`, `headshots`, `axisLogos`, `teamColor`/`teamFill`, `meanLines`/`medianLines`, `titleImage`, `teamTiers`, `surface`, shot-chart marks `shotCells`, `shotZones`, `shootingSignature`, `linkIds` (stamps any mark's link ids; the image marks take an `id` option) (needs `@observablehq/plot` and `@sportsdataverse/sporty` installed to import) |
+| `@sportsdataverse/sdvplot/d3` | `appendLogos`, `appendWordmarks`, `appendHeadshots` (circular faces: `clip`, `ring`, `placeholder`), `teamColorScale`, `appendSurface`, shot-chart `appendLegend` and `appendSignature` (needs `d3` and `@sportsdataverse/sporty` installed to import) |
 | `@sportsdataverse/sdvplot/bins` | Dependency-free x/y binning for any data: `hexbin` and `hexagonPath` (a d3-hexbin port), `squarebin` and `squarePath`, `binner` (hexagons, squares, or equal-area squares from one options object), `cellPath`, `cellPoints` |
-| `@sportsdataverse/sdvplot/shots` | Shot-chart data and colour, no Plot or d3: the `./bins` binners, `diffScale`, `binShots`, `leagueIndex`, `cellsVsLeague`, `cellsVsDistance`, `shrunkDiff`, `LEAGUE_PRIOR_ATTEMPTS`, `sizeCells`, `statsByZone`, `fgPctByDistance`, `vsLeague`, `statsBySide`, `signaturePoints` (optional peer `@sportsdataverse/sporty`, for the zones) |
+| `@sportsdataverse/sdvplot/shots` | Shot-chart data and colour, no Plot or d3: the `./bins` binners, `diffScale`, `binShots`, `leagueIndex`, `cellsVsLeague`, `cellsVsDistance`, `shrunkDiff`, `LEAGUE_PRIOR_ATTEMPTS`, `sizeCells`, `statsByZone`, `fgPctByDistance`, `vsLeague`, `statsBySide`, `signaturePoints` (needs `@sportsdataverse/sporty` installed to import; `./bins` has the binners without it) |
 | `@sportsdataverse/sdvplot/chartjs` | Chart.js 4: `logoPoints`, `wordmarkPoints`, `headshotPoints`, `pointImages`, `axisLogos`, `logoWatermarks`, `teamColor`/`teamFill` (optional peer `chart.js` >= 4.4; no sporty needed) |
-| `@sportsdataverse/sdvplot/chartjs/surface` | Chart.js 4 court, field or rink background: `surface` (optional peers `chart.js` >= 4.4, `@sportsdataverse/sporty`) |
+| `@sportsdataverse/sdvplot/chartjs/surface` | Chart.js 4 court, field or rink background: `surface` (needs `@sportsdataverse/sporty` installed to import; optional peer `chart.js` >= 4.4) |
 | `@sportsdataverse/sdvplot/export` | Node only: `toPNG` (SVG to PNG; optional peer `@resvg/resvg-js`), `socialCard` (fixed-ratio framing, `gt_social_crop`), `svgSize`, `parseAspect`, `parseGravity`, `checkColor`, `canvasFor`, `offsetFor`, `peerMissing` |
 | `@sportsdataverse/sdvplot/interact` | Linked figures over a selection store: `brushFilter` (a d3-brush overlay behind the marks writes the brushed ids and region; on a figure with a Plot `tip`, the press that starts a brush also pins the tip showing at that moment), `highlight`, `linkSelection` (one figure or one sdvtables table per call: hover and selection both ways, and a brush filters a linked table; a Plot `tip` hovers through `hover: { id }`), `linkCursor` (the store's `cursor`, one shared hover value such as a shot distance, drawn and emitted through each figure's own scale as a rule, a band or a ring around the hoop; unrelated to sdvtables' keyboard `TableCursor`), `nearestHover` (the nearest mark of a d3 or other non-Plot figure within a radius writes `hover`), `tooltip` (an in-SVG tooltip box for non-Plot figures), `hasDom` (optional peer `d3`; inert without a DOM) |
 | `@sportsdataverse/sdvplot/testing` | Adapter-contract suite for renderer adapters: `checkAdapterContract`, `drawnMarks`, `drawnAxisMarks`, `visibleAxisLabels` |

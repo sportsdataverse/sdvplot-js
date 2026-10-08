@@ -32,6 +32,7 @@ publishers), 7 (Node 24, drop the token) and the optional 8.
 5. **Merge the version PR only when every phase has landed.** All three packages ship together at 0.1.0. After the
    release job finishes, confirm each package exists:
    `npm view @sportsdataverse/sdvplot version`, and the same for `sporty` and `sdvtables`.
+   Then confirm main's `ci` run on the merge commit is green: a bot pushes the version PR, so CI never ran on it.
 6. **Attach a trusted publisher to each package.** On npmjs.com, open the package, then Settings, Trusted Publisher,
    GitHub Actions: organization `sportsdataverse`, repository `sdvplot-js`, workflow filename `release.yml`,
    environment left blank. Repeat for all three packages. (With npm 11.15.0 or later and 2FA on your account,
