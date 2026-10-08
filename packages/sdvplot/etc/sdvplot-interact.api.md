@@ -36,6 +36,38 @@ export function hasDom(): boolean;
 export function highlight(root: Element, ids: ReadonlySet<string> | null): string[];
 
 // @public
+export interface LinkableTable<Row> {
+    // Warning: (ae-forgotten-export) The symbol "RowFilter" needs to be exported by the entry point interact.d.ts
+    setExternalFilter(filter: RowFilter<Row> | null): void;
+    setHover(id: string | null): void;
+    setSelection(ids: ReadonlySet<string>): void;
+    subscribe(fn: (event: LinkEvent) => void): () => void;
+}
+
+// @public
+export type LinkEvent = {
+    readonly type: "change";
+} | {
+    readonly type: "hover";
+    readonly id: string | null;
+} | {
+    readonly type: "select";
+    readonly ids: ReadonlySet<string>;
+};
+
+// @public
+export function linkSelection<Row, Datum = unknown>(store: SelectionStore<Row>, targets: LinkTargets<Row, Datum>): () => void;
+
+// @public
+export interface LinkTargets<Row, Datum = unknown> {
+    hover?: boolean | {
+        readonly id: (datum: Datum) => unknown;
+    };
+    plot?: Element;
+    table?: LinkableTable<Row>;
+}
+
+// @public
 export type PlotFigure = Element & {
     scale(name: "x" | "y"): ScaleLike | undefined;
 };
