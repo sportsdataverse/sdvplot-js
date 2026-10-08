@@ -54,6 +54,23 @@ test("shotZones tip with statsByZone: the restricted area reads 358/527, 67.9%; 
   expect(fig.querySelector('path[data-sdv-id="paint"]')?.getAttribute("aria-label")).toBe("Paint (non-RA)");
 });
 
+test("a zone tip object's format merges per key: FG% as .0%, the anchor's x/y still hidden (3 rows, not 5)", () => {
+  const fig = Plot.plot({
+    width: 500,
+    height: 500,
+    x: { domain: [-47, 0] },
+    y: { domain: [-25, 25] },
+    marks: shotZones(basketballZones("nba", { scale: 10 }), {
+      fill: () => "#ddd",
+      stats: statsByZone(BKN),
+      tip: { format: { fgPct: ".0%" } },
+    }),
+  });
+  pointAt(fig, px(fig, "x", -41.5), px(fig, "y", 0.3));
+  expect(tipText(fig)).toMatch(/Zone\s*Restricted area.*Made\s*358\/527.*FG%\s*68%/);
+  expect(fig.querySelectorAll("g[aria-label=tip] text > tspan")).toHaveLength(3);
+});
+
 test("shootingSignature tip follows x: distance, FG%, league FG% and share at the pointer", () => {
   const pts = signaturePoints(vsLeague(fgPctByDistance(BKN), LEAGUE.byFoot));
   const fig = Plot.plot({ width: 640, y: { domain: [0, 1] }, marks: shootingSignature(pts, { tip: true }) });

@@ -107,7 +107,9 @@ test("logos keyed by team_id: the default tip names the team as the image does (
   const fig = Plot.plot({
     width: 640,
     height: 400,
-    marks: [logos(rows, { league: "nfl", x: "wins", y: "pf", team: "team_id", idSystem: "team_id", tip: true })],
+    marks: [
+      logos(rows, { league: "nfl", x: "wins", y: "pf", team: "team_id", idSystem: "team_id", tip: true }),
+    ],
   });
   const kc = fig.querySelector('image[data-sdv-id="12"]') as Element;
   expect(kc.getAttribute("aria-label")).toBe("KC logo");
@@ -116,6 +118,26 @@ test("logos keyed by team_id: the default tip names the team as the image does (
   expect(tipText(fig)).toMatch(/team\s*KC/);
   expect(tipText(fig)).not.toMatch(/team\s*12/);
   expect((fig as unknown as { value: { team_id: string } }).value.team_id).toBe("12"); // the row is the caller's
+});
+
+test("a league with no abbreviations (soccer) names each image, and its tip, by the team's full name, not its id", async () => {
+  await loadLeague("soccer");
+  // ESPN soccer team_ids; every soccer team in the index has a null abbreviation
+  const rows = [
+    { team_id: "359", x: 1, y: 1 },
+    { team_id: "364", x: 2, y: 2 },
+    { team_id: "478", x: 3, y: 3 },
+  ];
+  const fig = Plot.plot({
+    marks: [
+      logos(rows, { league: "soccer", x: "x", y: "y", team: "team_id", idSystem: "team_id", tip: true }),
+    ],
+  });
+  const names = Array.from(fig.querySelectorAll("image"), (i) => i.getAttribute("aria-label"));
+  expect(names).toEqual(["Arsenal logo", "Liverpool logo", "France logo"]);
+  const [x, y] = centreOf(fig.querySelector('image[data-sdv-id="478"]') as Element);
+  pointAt(fig, x, y);
+  expect(tipText(fig)).toMatch(/team\s*France/);
 });
 
 test("teamTiers: tip names the team; the figure is labelled by its title", () => {
