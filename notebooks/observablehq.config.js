@@ -21,6 +21,17 @@ export default {
     { name: "Tables", pages: [{ name: "Tables", path: "/tables" }] },
     { name: "Linking", pages: [{ name: "Linked interactivity", path: "/linked" }] },
     { name: "Chart libraries", pages: [{ name: "Chart libraries", path: "/libraries" }] },
+    // ESPN data through sportsdataverse-js (snapshots in fixtures/sdvjs, a "Fetch live" toggle on each page)
+    {
+      name: "Workflows with sdv-js",
+      pages: [
+        { name: "Live scoreboard", path: "/scoreboard" },
+        { name: "Win-probability scrubber", path: "/win-probability" },
+        { name: "Build your own game dashboard", path: "/game-dashboard" },
+        { name: "Season ratings scatter", path: "/ratings" },
+        { name: "Player trend explorer", path: "/player-trend" },
+      ],
+    },
   ],
   // rel="external": Framework rewrites a root link into its own base ("/" would become /notebooks/).
   // "Open in Observable" once a page names its observablehq.com twin (owner step after the 0.1.0 publish).
