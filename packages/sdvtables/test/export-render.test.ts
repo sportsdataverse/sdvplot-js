@@ -8,7 +8,7 @@ import { InputError, OptionalDependencyError, SdvplotError, preloadAll } from "@
 import { afterEach, describe, expect, test, vi } from "vitest";
 import { defineTable } from "../src/define.js";
 import { batchToPNG, gridTables, htmlToPNG, socialCrop, tableToPNG } from "../src/export/index.js";
-import { themePreview } from "../src/html/index.js";
+import { renderHTML, themePreview } from "../src/html/index.js";
 import { THEME_NAMES } from "../src/index.js";
 import { many, rows, spec } from "./fixtures/engine.js";
 import { STANDINGS, type Standing } from "./fixtures/standings.js";
@@ -491,4 +491,127 @@ describe.skipIf(!process.env.SDV_RENDER_TESTS)("playwright rendering (SDV_RENDER
       expect(optedOut, `${name}: after the documented opt-out`).toBe("none");
     }
   }, 120_000);
+  test("a host page's global table CSS (Observable Framework, Docusaurus) changes no cell's ink, ground or font, nor a row's rules", async () => {
+    // Framework's td{color} and table{font} beat what a cell inherits from the table root, and Docusaurus paints its
+    // stripe on every second <tr>: the notebooks' dark mode put the page's light ink on a light table
+    await preloadAll(); // themePreview's sdvTeam resolves KC
+    // the theme pass's table (theme-pass.test.ts): group rows and a source note too, so every kind of <tr> is probed
+    const full = defineTable<Standing>()
+      .columns(() => PASS_SPEC.columns)
+      .title("AFC")
+      .subtitle("2024 regular season")
+      .groupBy("division")
+      .sourceNote("Source: nflverse")
+      .build();
+    const pages: Record<string, string> = {
+      ...themePreview(full, STANDINGS, THEME_NAMES, { n: STANDINGS.length }),
+      // themePreview names the theme alone, so the dark style goes through renderHTML
+      "sdv dark": renderHTML(
+        { ...full, theme: { name: "sdv", density: "compact", options: { style: "dark" } } },
+        STANDINGS,
+      ),
+    };
+    // each cell's ink and the ground under it, composited to opaque #rrggbb in the page itself, plus its font
+    const probe = () => {
+      const cv = document.createElement("canvas");
+      cv.width = cv.height = 1;
+      const cx = cv.getContext("2d", { willReadFrequently: true }) as CanvasRenderingContext2D;
+      const rgba = (c: string): number[] => {
+        cx.clearRect(0, 0, 1, 1);
+        cx.fillStyle = c;
+        cx.fillRect(0, 0, 1, 1);
+        return Array.from(cx.getImageData(0, 0, 1, 1).data);
+      };
+      const over = (top: number[], under: number[]): number[] =>
+        under.map((u, k) =>
+          k < 3
+            ? Math.round(((top[k] as number) * (top[3] as number) + u * (255 - (top[3] as number))) / 255)
+            : 255,
+        );
+      const hex = (c: number[]): string =>
+        `#${c
+          .slice(0, 3)
+          .map((v) => v.toString(16).padStart(2, "0"))
+          .join("")}`;
+      return Array.from(document.querySelectorAll("table td, table th"), (cell) => {
+        const layers: number[][] = [];
+        for (let n: Element | null = cell; n; n = n.parentElement)
+          layers.push(rgba(getComputedStyle(n).backgroundColor));
+        const ground = layers.reduceRight((under, top) => over(top, under), [255, 255, 255, 255]);
+        const cs = getComputedStyle(cell);
+        const tr = getComputedStyle(cell.parentElement as Element);
+        return [
+          hex(over(rgba(cs.color), ground)),
+          hex(ground),
+          `${cs.fontFamily} ${cs.fontSize}/${cs.lineHeight}`,
+          `${tr.borderTopWidth} ${tr.borderBottomWidth}`,
+        ];
+      });
+    };
+    const { contrast } = await import("@sportsdataverse/sdvplot");
+    const { HOST_TABLE_CSS } = await import("./fixtures/host-table-css.js");
+    const { chromium } = await import("playwright");
+    const browser = await chromium.launch();
+    // one line per theme and host that changed: which properties, how many cells, the worst cell's contrast before → after
+    const bad: string[] = [];
+    try {
+      const page = await browser.newPage();
+      for (const [name, html] of Object.entries(pages)) {
+        await page.setContent(`<!doctype html><html><head></head><body>${html}</body></html>`);
+        const bare = await page.evaluate(probe);
+        for (const [host, css] of Object.entries(HOST_TABLE_CSS)) {
+          await page.setContent(
+            `<!doctype html><html><head><style>${css}</style></head><body>${html}</body></html>`,
+          );
+          const hosted = await page.evaluate(probe);
+          const what = new Set<string>();
+          let [n, worst, before] = [0, Number.POSITIVE_INFINITY, 0];
+          hosted.forEach(([ink, ground, font, rule], i) => {
+            const [ink0, ground0, font0, rule0] = bare[i] as string[];
+            if (ink === ink0 && ground === ground0 && font === font0 && rule === rule0) return;
+            n++;
+            if (ink !== ink0) what.add("ink");
+            if (ground !== ground0) what.add("ground");
+            if (font !== font0) what.add("font");
+            if (rule !== rule0) what.add("row rule");
+            const c = contrast(ink as string, ground as string);
+            if (c < worst) [worst, before] = [c, contrast(ink0 as string, ground0 as string)];
+          });
+          if (n > 0)
+            bad.push(
+              `${name} in ${host}: ${[...what].join("+")} on ${n} cells, worst ${before.toFixed(2)}:1 -> ${worst.toFixed(2)}:1`,
+            );
+        }
+      }
+      // the cell takes its ROW's ink, not the theme's outright: spotlight dims an unlit row on its <tr>
+      const lit = defineTable<Standing>()
+        .columns(() => PASS_SPEC.columns)
+        .spotlight([0])
+        .build();
+      await page.setContent(
+        `<!doctype html><html><head><style>${HOST_TABLE_CSS["framework-light"]}</style></head><body>${renderHTML(lit, STANDINGS)}</body></html>`,
+      );
+      const [rowInk, cellInk] = await page.evaluate(() => {
+        const tr = document.querySelectorAll("tbody tr.sdvt-row")[1] as HTMLElement;
+        return [
+          getComputedStyle(tr).color,
+          getComputedStyle(tr.querySelector("td.sdvt-cell") as Element).color,
+        ];
+      });
+      bad.push(
+        ...(cellInk === rowInk ? [] : [`spotlight's dimmed row: ink ${rowInk}, its cells ${cellInk}`]),
+      );
+      // an author's deliberate class-qualified rule still wins, from the head, before the table's own sheet
+      await page.setContent(
+        `<!doctype html><html><head><style>.page td{color:rgb(204, 0, 0)}</style></head><body class="page">${pages.sdv as string}</body></html>`,
+      );
+      const authored = await page.evaluate(
+        () => getComputedStyle(document.querySelector("td.sdvt-cell") as Element).color,
+      );
+      bad.push(...(authored === "rgb(204, 0, 0)" ? [] : [`an author's .page td{color} lost: ${authored}`]));
+    } finally {
+      await browser.close();
+    }
+    expect(bad, bad.join("\n")).toEqual([]);
+  }, 240_000);
 });

@@ -31,8 +31,4 @@ export default {
         : `<a href="${SOURCE}${path === "/" ? "/index" : path}.md">View source</a>`
     }`,
   footer: "Built with Observable Framework from the sdvplot-js repository.",
-  // Framework's global table rules (td { color }, table { font }, a border under each tr) outrank what an sdvtables
-  // table inherits from its own root, so in dark mode its cells took the page's light text on the table's white
-  // background. Give the table back its own text colour, font and rules.
-  head: "<style>.sdvt td{color:inherit}.sdvt table{font:inherit}.sdvt tr{border-bottom:0}</style>",
 };

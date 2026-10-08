@@ -9,7 +9,8 @@ export function BASE_CSS(sel: string): string {
   const s = sel;
   return [
     `${s}{display:inline-block;max-width:100%;background:var(--sdvt-bg);color:var(--sdvt-text);font-family:var(--sdvt-font-body);font-size:var(--sdvt-body-size);font-weight:var(--sdvt-body-weight);line-height:var(--sdvt-line-height)}`,
-    `${s} table{border-collapse:collapse;border-spacing:0;width:auto;border-top:var(--sdvt-table-border-top);border-bottom:var(--sdvt-table-border-bottom);border-left:var(--sdvt-table-border-x);border-right:var(--sdvt-table-border-x)}`,
+    // font:inherit: a host's table{font} (Observable Framework's 13px sans) outranks inheriting the root's type
+    `${s} table{font:inherit;border-collapse:collapse;border-spacing:0;width:auto;border-top:var(--sdvt-table-border-top);border-bottom:var(--sdvt-table-border-bottom);border-left:var(--sdvt-table-border-x);border-right:var(--sdvt-table-border-x)}`,
     `${s} caption{caption-side:top;text-align:var(--sdvt-heading-align);background:var(--sdvt-heading-bg);padding:var(--sdvt-heading-pad) 5px}`,
     `${s} .sdvt-title{font-family:var(--sdvt-font-title);font-weight:var(--sdvt-title-weight);font-size:var(--sdvt-title-size);color:var(--sdvt-title-color);text-transform:var(--sdvt-title-transform);letter-spacing:var(--sdvt-title-tracking)}`,
     `${s} .sdvt-subtitle{display:block;font-size:var(--sdvt-subtitle-size);font-style:var(--sdvt-subtitle-style);font-weight:var(--sdvt-subtitle-weight);color:var(--sdvt-subtitle-color)}`, // great_tables draws the subtitle on its own heading row in every theme
@@ -17,6 +18,16 @@ export function BASE_CSS(sel: string): string {
     `${s} th.sdvt-label{font-family:var(--sdvt-font-label);font-weight:var(--sdvt-label-weight);font-size:var(--sdvt-label-size);font-style:var(--sdvt-label-style);color:var(--sdvt-label-color);background:var(--sdvt-label-bg);text-transform:var(--sdvt-label-transform);letter-spacing:var(--sdvt-label-tracking);border-top:var(--sdvt-label-border-top);border-bottom:var(--sdvt-label-border-bottom);padding:var(--sdvt-label-pad) 5px;vertical-align:bottom}`,
     `${s} .sdvt-subheader{display:block;font-weight:400;font-size:0.8em;color:var(--sdvt-muted);text-transform:none;letter-spacing:normal}`,
     `${s} th.sdvt-group{font-family:var(--sdvt-font-label);font-weight:var(--sdvt-group-weight);font-size:var(--sdvt-group-size);color:var(--sdvt-group-color);background:var(--sdvt-group-bg);text-transform:var(--sdvt-group-transform);border-top:var(--sdvt-group-border-top);border-bottom:var(--sdvt-group-border-bottom);text-align:left;padding:var(--sdvt-group-pad) 5px}`,
+    // A host's td{color} (Framework; Infima's --ifm-table-cell-color) outranks the ink a cell only inherits, so the
+    // cell asks for it explicitly. inherit, not var(--sdvt-text): the row's ink is the theme's, or spotlight's dim on
+    // the <tr>. ponytail: (0,1,0), the scope in :where(): beats any element-only host rule (td, table td), loses to an
+    // author's class-qualified rule (.page td at (0,1,1)) and to every theme rule and inline cell style.
+    `:where(${s}) .sdvt-cell{color:inherit}`,
+    // Hosts paint rows: Infima stripes every second one (table tr:nth-child(2n), (0,1,2)) under cells that leave the
+    // ground to the root, and Framework and Infima rule them. sdvtables' own sheets never colour or border a <tr>
+    // (themes and decorations style cells; cutlines and watermarks are images; row decorations are inline), so rows
+    // stay clear. ponytail: :nth-child(n) lifts this to (0,2,1), past that stripe whatever the stylesheet order.
+    `${s} tr:nth-child(n){background-color:transparent;border:0}`,
     `${s} td.sdvt-cell{padding:var(--sdvt-pad) 5px;border-top:var(--sdvt-hline);font-variant-numeric:tabular-nums;vertical-align:middle}`,
     `${s} tbody tr:first-child td.sdvt-cell{border-top:none}${s} tbody{border-bottom:var(--sdvt-body-border-bottom)}`,
     // background-color, not the `background` shorthand: the shorthand would reset the hovered row's underline image
