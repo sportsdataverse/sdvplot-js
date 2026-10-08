@@ -225,18 +225,24 @@ export function brushFilter<R>(
   svg.insertBefore(node, svg.firstChild);
   const g = select<SVGGElement, unknown>(node);
   let mine: RowFilter<R> | null = null;
+  let picked: ReadonlySet<string> | null = null; // the `selected` this brush wrote with `mine`
   let last = ""; // d3 emits "brush" then "end" for one gesture: one store update per distinct region
   const idOf = (row: R, i: number): string => (o.id === undefined ? String(i) : toId(get(row, o.id)));
   const b = (xs && ys ? brush<unknown>() : xs ? brushX<unknown>() : brushY<unknown>()).extent([
     [x0px, y0px],
     [x1px, y1px],
   ]);
-  /** The brush's region is gone: clear the store only while it still holds that region (main: the window alone). */
+  /**
+   * The brush's region is gone: clear the store only while it still holds that region (main: the window alone), and
+   * `selected` only while it is still the set this brush wrote: a pick another control made since survives.
+   */
   const release = (): void => {
     last = "";
     if (mine === null) return;
+    const own = store.getState().selected === picked;
     mine = null;
-    store.set({ selected: [], predicate: null });
+    picked = null;
+    store.set(own ? { selected: [], predicate: null } : { predicate: null });
   };
   // Remove the drawn rectangle. Always called with `mine` already null, so the null selection d3 then emits releases
   // nothing: the erasure writes nothing (main ignores its programmatic moves the same way, timeline.ts:57).
@@ -276,6 +282,7 @@ export function brushFilter<R>(
     last = key;
     mine = inside;
     store.set({ selected: ids, predicate: inside });
+    picked = store.getState().selected;
   });
   g.call(b);
   // The drawn brush follows the store: a region cleared or replaced elsewhere (a "Clear dates" button, another brush)
@@ -312,7 +319,7 @@ export function brushFilter<R>(
     destroy() {
       off();
       node.remove();
-      if (mine !== null && store.getState().predicate === mine) store.set({ selected: [], predicate: null });
+      if (mine !== null && store.getState().predicate === mine) release();
     },
   };
 }

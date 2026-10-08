@@ -101,6 +101,26 @@ test("the overlay sits behind the marks; destroy removes it and clears only what
   again.brush.destroy();
   expect(again.store.getState().predicate).toBe(other);
 });
+test("clearing or destroying the brush clears its region, never a selection another control made since", () => {
+  const { store, brush } = setup();
+  brush.move({ x: [9.5, 16], y: [0, 0.2] }); // KC LAC DEN BUF
+  const region = store.getState().predicate;
+  store.set({ selected: ["BUF"] }); // a linked table row or a toggled cell picks Buffalo; the region stays
+  expect(store.getState().predicate).toBe(region);
+  const fn = vi.fn();
+  store.subscribe(fn);
+  brush.move(null);
+  expect([[...store.getState().selected], store.getState().predicate, fn.mock.calls.length]).toEqual([
+    ["BUF"],
+    null,
+    1,
+  ]);
+  const again = setup();
+  again.brush.move({ x: [9.5, 16], y: [0, 0.2] });
+  again.store.set({ selected: ["DEN"] });
+  again.brush.destroy();
+  expect([[...again.store.getState().selected], again.store.getState().predicate]).toEqual([["DEN"], null]);
+});
 test("a ScaleLike with no range (it is optional) brushes across the svg's box on that axis, never [Infinity, -Infinity]", () => {
   const svg = chart();
   const x = svg.scale("x") as Plot.Scale;
