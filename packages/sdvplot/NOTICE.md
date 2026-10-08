@@ -2,6 +2,12 @@
 
 - `@sportsdataverse/sdvplot` re-shards the team index curated in **sdvplot** (Python, MIT) and reads the
   SportsDataverse logo archive manifest. It ports WCAG contrast helpers from **sdvplotR** (MIT).
+- `@sportsdataverse/sdvplot` ships NFL data derived from **nflverse-data** by the nflverse project
+  (https://github.com/nflverse/nflverse-data), licensed CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/) and
+  provided as is, without warranties. The gsis-id map behind `loadGsis()` keeps three columns (`gsis_id`, `espn_id`,
+  `headshot`) of the `players` release's `players.parquet`; it holds headshot URLs, not images. The 32 NFL team colors
+  (`color_source` `"nflverse"`) and the `nflverse` abbreviation aliases come, through the sdvplot index, from the
+  `teams` release's `teams_colors_logos.csv`. Both were modified: columns selected and rows re-keyed.
 - `@sportsdataverse/sdvplot/bins` (re-exported by `@sportsdataverse/sdvplot/shots`): `hexbin` and `hexagonPath` port
   **d3-hexbin** 0.2.2, Copyright Mike Bostock, 2012-2016, BSD-3-Clause; the licence text follows this list verbatim.
   `squarebin`, `squarePath`, `binner`, `cellPath` and `cellPoints` are this package's own.

@@ -5,6 +5,12 @@
   (recorded 2026-10-05, spec decision J3) the ported material is distributed here under MIT.
 - `@sportsdataverse/sdvplot` re-shards the team index curated in **sdvplot** (Python, MIT) and reads the
   SportsDataverse logo archive manifest. It ports WCAG contrast helpers from **sdvplotR** (MIT).
+- `@sportsdataverse/sdvplot` ships NFL data derived from **nflverse-data** by the nflverse project
+  (https://github.com/nflverse/nflverse-data), licensed CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/) and
+  provided as is, without warranties. The gsis-id map behind `loadGsis()` keeps three columns (`gsis_id`, `espn_id`,
+  `headshot`) of the `players` release's `players.parquet`; it holds headshot URLs, not images. The 32 NFL team colors
+  (`color_source` `"nflverse"`) and the `nflverse` abbreviation aliases come, through the sdvplot index, from the
+  `teams` release's `teams_colors_logos.csv`. Both were modified: columns selected and rows re-keyed.
 - `@sportsdataverse/sdvtables` ports the `great_tables` helpers of **sdvplot** (Python, MIT) and the `gt_*` table
   functions of **sdvplotR** (MIT). Its social icons are Font Awesome Free 6 paths (https://fontawesome.com),
   licensed CC BY 4.0.
