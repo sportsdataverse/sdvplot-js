@@ -4,7 +4,7 @@ import { loadLeague } from "@sportsdataverse/sdvplot";
 import { teamColor } from "@sportsdataverse/sdvplot/chartjs";
 import { surface } from "@sportsdataverse/sdvplot/chartjs/surface";
 import { toSurfaceFrame } from "@sportsdataverse/sporty";
-import { Chart, registerables } from "chart.js";
+import { Chart, type ChartConfiguration, registerables } from "chart.js";
 import type { ExampleMeta } from "../../contract.js";
 
 export const meta = {
@@ -23,11 +23,8 @@ const color = teamColor(
   "nba",
 );
 
-Chart.register(...registerables);
-const [x0, y0, x1, y1] = court.scene.bbox;
-const width = 640;
-const canvas = createCanvas(width, Math.round((width * (y1 - y0)) / (x1 - x0)));
-new Chart(canvas.getContext("2d") as unknown as CanvasRenderingContext2D, {
+// One config for the browser and for Node, built fresh per chart (Chart.js keeps state on what it is given).
+const config = (): ChartConfiguration<"scatter"> => ({
   type: "scatter",
   data: {
     datasets: [
@@ -50,6 +47,21 @@ new Chart(canvas.getContext("2d") as unknown as CanvasRenderingContext2D, {
     scales: { x: { ...court.scales.x, display: false }, y: { ...court.scales.y, display: false } },
   },
 });
+const [x0, y0, x1, y1] = court.scene.bbox;
+const width = 640;
+// In the browser: new Chart(canvas, config()) on a canvas of the court's aspect, as this page does.
+export const browser = {
+  lib: "chartjs",
+  config,
+  width,
+  height: Math.round((width * (y1 - y0)) / (x1 - x0)),
+  label:
+    "The 38 fourth-quarter shots of the Lakers at the Nuggets, 24 October 2023, on the defensive half of a Nuggets-painted court: made shots filled in the team colour, misses white",
+} as const;
+
+Chart.register(...registerables);
+const canvas = createCanvas(browser.width, browser.height);
+new Chart(canvas.getContext("2d") as unknown as CanvasRenderingContext2D, config());
 
 const png = canvas.toBuffer("image/png").toString("base64");
-export default `<img src="data:image/png;base64,${png}" width="${canvas.width}" height="${canvas.height}" alt="The 38 fourth-quarter shots of the Lakers at the Nuggets, 24 October 2023, on the defensive half of a Nuggets-painted court: made shots filled in the team colour, misses white">`;
+export default `<img src="data:image/png;base64,${png}" width="${canvas.width}" height="${canvas.height}" alt="${browser.label}">`;

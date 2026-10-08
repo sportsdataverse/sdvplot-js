@@ -11,7 +11,8 @@
     "verbatimModuleSyntax": true,
     "paths": {
       "@site/*": ["./*"],
-      "@sportsdataverse/examples/loaders": ["./plugins/no-loaders.ts"]
+      "@sportsdataverse/examples/loaders": ["./plugins/no-loaders.ts"],
+      "@sportsdataverse/examples/browser": ["./plugins/no-loaders.ts"]
     }
   },
   "exclude": [".docusaurus", "build"]

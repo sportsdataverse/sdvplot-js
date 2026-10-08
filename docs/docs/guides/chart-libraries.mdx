@@ -6,14 +6,16 @@ sidebar_position: 7
 Not every project draws with Plot or D3. The Plotly, Vega-Lite and ECharts subpaths patch a plain spec object (a
 figure, a spec, an option) and never import the charting library, so they work with whatever build you already
 load; the Chart.js subpath returns dataset options and plugins. All of them are synchronous, so load the league first
-(`loadLeague`). The Vega-Lite, ECharts and Chart.js figures below are rendered in Node, where each library runs
-without a browser.
+(`loadLeague`). Each chart below, except the three static `embedSources` outputs, is drawn by its own library in
+your browser, from the spec the example exports as `browser`; hover it, zoom it or save it as that library allows.
+The code also renders the Vega-Lite, ECharts and Chart.js charts in Node, where each library runs without a browser:
+that render is what the page shows before (or without) JavaScript.
 
 ## Plotly
 
 `withLogos(figure, rows, { league, x, y, team })` returns a new figure with one `layout.images` entry per row, for
-`Plotly.newPlot(div, figure.data, figure.layout)`. plotly.js loads each image itself, so these examples show the
-figure rather than a render.
+`Plotly.newPlot(div, figure.data, figure.layout)`. plotly.js loads each image itself, so without JavaScript these
+examples show the figure rather than a render.
 
 <Live id="sdvplot/plotly/logos-scatter" />
 
@@ -66,7 +68,7 @@ or a page that has to work offline. Each of the three subpaths exports it.
 `teamColor` and `teamFill` from `@sportsdataverse/sdvplot/chartjs` return Chart.js colours (one per team) for
 `backgroundColor` and `borderColor`; `teamFill` is the translucent version for areas. These examples draw on
 [`@napi-rs/canvas`](https://github.com/Brooooooklyn/canvas) in Node and register a bundled font first, since a build
-server may have none.
+server may have none; in your browser the same config is drawn on a canvas with the same font.
 
 <Live id="sdvplot/chartjs/team-colors" />
 

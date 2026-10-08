@@ -33,6 +33,8 @@ export type VegaLiteSpec = Record<string, unknown> & {
   data?: unknown;
   datasets?: Record<string, unknown>;
 };
+/** One sdvplot image layer. It never shows a tooltip: `mark.tooltip: null` outranks `config.mark.tooltip` and
+ *  `config.image.tooltip`, and `encoding.tooltip: null` outranks a parent layer's `encoding.tooltip`. */
 export interface ImageLayer {
   name: string;
   data: { values: Record<string, unknown>[] };
@@ -42,6 +44,7 @@ export interface ImageLayer {
     width: number;
     height: number;
     aspect: true;
+    tooltip: null;
     opacity?: number;
     align?: "left" | "center" | "right";
     baseline?: "top" | "middle" | "bottom";
@@ -256,8 +259,22 @@ function layerOf(
   return {
     name: `sdvplot_${kind}`,
     data: { values },
-    mark: { type: "image", aria: true, width: hPx * widest, height: hPx, aspect: true, opacity: alpha },
-    encoding: { x, y, url: { field: URL, type: "nominal" }, description: { field: LABEL, type: "nominal" } },
+    mark: {
+      type: "image",
+      aria: true,
+      width: hPx * widest,
+      height: hPx,
+      aspect: true,
+      tooltip: null,
+      opacity: alpha,
+    },
+    encoding: {
+      x,
+      y,
+      url: { field: URL, type: "nominal" },
+      description: { field: LABEL, type: "nominal" },
+      tooltip: null,
+    },
   };
 }
 /** `spec` plus `layer` as a layered spec: a unit spec is wrapped, its unit keys moving into layer[0]; a layered spec
@@ -280,6 +297,8 @@ function layered(spec: VegaLiteSpec, layer: ImageLayer): VegaLiteSpec {
   return { ...top, layer: [first, layer] };
 }
 
+/** One image layer of team logos to drop into a layer list of your own; its fields are "x" and "y". It never shows a
+ *  tooltip, even under `config.mark.tooltip` or a parent layer's `encoding.tooltip`. */
 export function logoLayer(
   rows: readonly Row[],
   o: MarkOptions & {
@@ -325,16 +344,22 @@ function add(
     layerOf(ps, kind, h, chartHeight(spec), a, enc.x, enc.y, labelsOf(rows, ps, o), o.embed),
   );
 }
+/** Team logos as an image layer at each row's (x, y). The layer never shows a tooltip, even when the spec turns tooltips
+ *  on for every mark (`config.mark.tooltip`). */
 export function withLogos(spec: VegaLiteSpec, rows: readonly Row[], o: MarkOptions): VegaLiteSpec;
 export function withLogos<F extends object>(spec: F, rows: readonly Row[], o: MarkOptions): F;
 export function withLogos(spec: object, rows: readonly Row[], o: MarkOptions): object {
   return add(spec, rows, "logo", o);
 }
+/** Team wordmarks as an image layer at each row's (x, y). The layer never shows a tooltip, even when the spec turns
+ *  tooltips on for every mark (`config.mark.tooltip`). */
 export function withWordmarks(spec: VegaLiteSpec, rows: readonly Row[], o: MarkOptions): VegaLiteSpec;
 export function withWordmarks<F extends object>(spec: F, rows: readonly Row[], o: MarkOptions): F;
 export function withWordmarks(spec: object, rows: readonly Row[], o: MarkOptions): object {
   return add(spec, rows, "wordmark", o);
 }
+/** Player headshots as an image layer at each row's (x, y). The layer never shows a tooltip, even when the spec turns
+ *  tooltips on for every mark (`config.mark.tooltip`). */
 export function withHeadshots(spec: VegaLiteSpec, rows: readonly Row[], o: HeadshotOptions): VegaLiteSpec;
 export function withHeadshots<F extends object>(spec: F, rows: readonly Row[], o: HeadshotOptions): F;
 export function withHeadshots(spec: object, rows: readonly Row[], o: HeadshotOptions): object {
@@ -392,7 +417,8 @@ function targetChannel(spec: VegaLiteSpec, channel: "x" | "y"): Enc {
 
 /** Team logos (or wordmarks, `markType`) in place of the labels of a nominal or ordinal axis: a `labelExpr` blanks the
  *  resolved labels and an image layer draws them. Assumes the default axis orient (x at the bottom, y on the left) and
- *  that `height` is the plot height: an axis with `orient: "top"` or `"right"` gets its logos on the opposite side. */
+ *  that `height` is the plot height: an axis with `orient: "top"` or `"right"` gets its logos on the opposite side.
+ *  The image layer never shows a tooltip, even when the spec turns tooltips on for every mark (`config.mark.tooltip`). */
 export function withAxisLogos(spec: VegaLiteSpec, axis: "x" | "y", o: AxisOptions): VegaLiteSpec;
 export function withAxisLogos<F extends object>(spec: F, axis: "x" | "y", o: AxisOptions): F;
 export function withAxisLogos(spec: object, axis: "x" | "y", o: AxisOptions): object {
@@ -451,15 +477,24 @@ export function withAxisLogos(spec: object, axis: "x" | "y", o: AxisOptions): ob
             width: hPx * widest,
             height: hPx,
             aspect: true,
+            tooltip: null,
             baseline: "top",
           },
-          encoding: { x: channel, y: { value: chartH + AXIS_GAP }, url, description },
+          encoding: { x: channel, y: { value: chartH + AXIS_GAP }, url, description, tooltip: null },
         }
       : {
           name: "sdvplot_axis_y",
           data: { values },
-          mark: { type: "image", aria: true, width: hPx * widest, height: hPx, aspect: true, align: "right" },
-          encoding: { y: channel, x: { value: -AXIS_GAP }, url, description },
+          mark: {
+            type: "image",
+            aria: true,
+            width: hPx * widest,
+            height: hPx,
+            aspect: true,
+            tooltip: null,
+            align: "right",
+          },
+          encoding: { y: channel, x: { value: -AXIS_GAP }, url, description, tooltip: null },
         };
   return layered(base, layer);
 }

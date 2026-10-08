@@ -109,6 +109,10 @@ export interface LogoSeries {
     // (undocumented)
     silent: true;
     // (undocumented)
+    tooltip: {
+        show: false;
+    };
+    // (undocumented)
     type: "custom";
     // (undocumented)
     xAxisIndex?: number;

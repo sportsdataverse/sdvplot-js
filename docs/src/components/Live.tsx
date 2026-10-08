@@ -44,6 +44,8 @@ export interface LiveProps {
   readonly src?: string;
   readonly width?: string;
   readonly height?: string;
+  /** The example exports `browser`: its library draws it here once the page's scripts run (see BrowserSpec). */
+  readonly browser?: boolean;
   /** A gallery card: the prerendered output and the title, linking to `href`; never re-run. */
   readonly thumb?: boolean;
   readonly href?: string;
@@ -52,8 +54,9 @@ export interface LiveProps {
 /**
  * An example: the prerendered output (static HTML, so the page is complete without JavaScript), the code that
  * produced it, and, for DOM and React outputs that have a browser loader, a live re-run that replaces the static
- * copy once the example comes within a screen of the viewport. A re-run that throws shows the error over the static
- * output; it never leaves a blank.
+ * copy once the example comes within a screen of the viewport. An adapter example with a browser upgrade (Plotly,
+ * Vega, ECharts, Chart.js: `export const browser`) is drawn by its library instead, in the same place and at the same
+ * moment. A re-run or a drawing that throws shows the error over the static output; it never leaves a blank.
  */
 export default function Live(p: LiveProps): ReactElement {
   const figure = useRef<HTMLElement>(null);
@@ -64,7 +67,9 @@ export default function Live(p: LiveProps): ReactElement {
   const [error, setError] = useState<string | null>(null);
   const src = useBaseUrl(p.src ?? "");
   const statsbombLogo = useBaseUrl("/img/statsbomb-logo.png");
-  const live = !p.thumb && LOADERS[p.id] !== undefined && (p.kind === "node" || p.kind === "react");
+  const live =
+    !p.thumb &&
+    (p.browser === true || (LOADERS[p.id] !== undefined && (p.kind === "node" || p.kind === "react")));
   // Re-run only near the viewport: the prerendered copy already shows, so a guide does not load every example's
   // chunk at once (the shot-charts guide's gsis map alone is 0.5 MB compressed).
   useEffect(() => {
@@ -85,9 +90,36 @@ export default function Live(p: LiveProps): ReactElement {
     io.observe(el);
     return () => io.disconnect();
   }, [live]);
+  // The upgrades' table and the libraries load only on a page that shows one, so no other page's bundle grows.
+  useEffect(() => {
+    const el = host.current;
+    if (!near || p.browser !== true || el === null) return;
+    let cancelled = false;
+    let remove: (() => void) | undefined;
+    import("@sportsdataverse/examples/browser")
+      .then(async ({ BROWSER, draw }) => {
+        const upgrade = BROWSER[p.id];
+        if (upgrade === undefined) throw new Error(`${p.id} has no browser upgrade in this build`);
+        return draw(el, (await upgrade()).browser);
+      })
+      .then(
+        (r) => {
+          if (cancelled) return r();
+          remove = r;
+          setMounted(true);
+        },
+        (e: unknown) => {
+          if (!cancelled) fail(e); // draw() has removed what it drew; a cancelled run leaves el to the newer one
+        },
+      );
+    return () => {
+      cancelled = true;
+      remove?.();
+    };
+  }, [near, p.id, p.browser]);
   useEffect(() => {
     const load = LOADERS[p.id];
-    if (!near || load === undefined) return;
+    if (!near || load === undefined || p.browser === true) return;
     let cancelled = false;
     load().then(
       (m) => {
@@ -105,7 +137,7 @@ export default function Live(p: LiveProps): ReactElement {
     return () => {
       cancelled = true;
     };
-  }, [near, p.id]);
+  }, [near, p.id, p.browser]);
   // A load or a render that throws: drop the live output and bring the static copy back under the alert.
   function fail(e: unknown): void {
     setError(e instanceof Error ? e.message : String(e));
@@ -157,6 +189,10 @@ export default function Live(p: LiveProps): ReactElement {
     );
   return (
     <figure className="sdv-live" data-example={p.id} ref={figure}>
+      {p.browser === true && p.kind === "value" && !mounted && error === null && (
+        // a Plotly figure: the static copy is its data, not a picture of it (after a failure, the alert says why)
+        <p className="sdv-live-note">With JavaScript on, plotly.js draws this figure here.</p>
+      )}
       {output}
       <div className="sdv-live-output" ref={host}>
         <Boundary onError={fail}>{element}</Boundary>
