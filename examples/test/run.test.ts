@@ -147,3 +147,21 @@ test("every example starts with an empty manifest cache: a network example fetch
   expect(await run()).toEqual([MANIFEST_URL]);
   expect(await run()).toEqual([MANIFEST_URL]);
 });
+
+test('a Plot warning (console.warn or the ⚠️ badge on the figure) fails an example without the "warns" tag', async () => {
+  // Strings that look like numbers on a point scale: Plot warns once and draws its badge.
+  const warning = (): Element => Plot.plot({ marks: [Plot.dotX(["1", "2", "10"])] });
+  const quiet = entry("t/plot-warns");
+  const r = await runExample(quiet, async () => ({ default: warning() }));
+  expect(r.warnings.join()).toContain("strings that appear to be numbers");
+  expect(problems(quiet, r)).toEqual([
+    `warned without the "warns" tag: ${r.warnings[0]}`,
+    `shows Plot's ⚠️ warning badge without the "warns" tag`,
+  ]);
+  const tagged = entry("t/plot-warns", ["warns"]);
+  expect(problems(tagged, await runExample(tagged, async () => ({ default: warning() })))).toEqual([]);
+  // Built before the run, its console.warn escaped the capture; the badge in the markup still fails it.
+  const early = await runExample(quiet, out(warning()));
+  expect(early.warnings).toEqual([]);
+  expect(problems(quiet, early)).toEqual([`shows Plot's ⚠️ warning badge without the "warns" tag`]);
+});

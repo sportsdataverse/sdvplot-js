@@ -119,8 +119,9 @@ function recordOtherNetworkPaths(fetched: string[]): () => void {
 }
 
 /**
- * Load (= run) one example offline, collecting sdvplot warnings and every fetch it attempted. Per-process state is
- * reset before and after, so an example sees the same state whatever ran before it (or whether it runs alone).
+ * Load (= run) one example offline, collecting its warnings (sdvplot's, and any console.warn: Plot reports one
+ * that way) and every fetch it attempted. Per-process state is reset before and after, so an example sees the same
+ * state whatever ran before it (or whether it runs alone).
  */
 export async function runExample(
   entry: ExampleEntry,
@@ -129,7 +130,9 @@ export async function runExample(
   const warnings: string[] = [];
   const fetched: string[] = [];
   const realFetch = globalThis.fetch;
+  const realWarn = console.warn;
   globalThis.fetch = offlineFetch(entry, fetched);
+  console.warn = (...args: unknown[]) => void warnings.push(args.map(String).join(" "));
   const restoreSinks = recordOtherNetworkPaths(fetched);
   resetWarnings();
   resetManifestCache();
@@ -139,6 +142,7 @@ export async function runExample(
     return { ...(await toMarkup(value, entry.id)), value, warnings, fetched };
   } finally {
     globalThis.fetch = realFetch;
+    console.warn = realWarn;
     restoreSinks();
     setWarningHandler(null);
     resetWarnings();
@@ -154,6 +158,8 @@ const isEmpty = (v: unknown): boolean =>
   (typeof v === "object" && v !== null && !Array.isArray(v) && Object.keys(v).length === 0);
 
 const MARK = "path,circle,image,rect,polygon,polyline,line,text,img";
+/** The <title> of the ⚠️ badge Plot draws on a figure that warned (its console.warn may have run outside the gate). */
+const PLOT_WARNING_BADGE = /[\d,]+ warnings?\. Please check the console\./;
 const FURNITURE = /^(x|y|fx|fy)-(axis|grid)( |$)|^frame$/;
 
 /** A DATA mark: not an axis, tick, label or grid (Plot's `g[aria-label]` groups), or any non-svg table/img. */
@@ -187,6 +193,8 @@ export function problems(entry: ExampleEntry, r: RunResult): string[] {
   if (/\bNaN\b/.test(r.markup)) p.push("output contains NaN");
   const warns = entry.tags.includes("warns");
   if (!warns && r.warnings.length > 0) p.push(`warned without the "warns" tag: ${r.warnings.join(" | ")}`);
+  if (!warns && PLOT_WARNING_BADGE.test(r.markup))
+    p.push(`shows Plot's ⚠️ warning badge without the "warns" tag`);
   if (warns && r.warnings.length === 0) p.push(`has the "warns" tag but did not warn`);
   return p;
 }
