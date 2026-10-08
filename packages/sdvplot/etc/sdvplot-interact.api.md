@@ -36,6 +36,13 @@ export function hasDom(): boolean;
 export function highlight(root: Element, ids: ReadonlySet<string> | null): string[];
 
 // @public
+export interface HoverPoint {
+    readonly id: string;
+    readonly x: number;
+    readonly y: number;
+}
+
+// @public
 export interface LinkableTable<Row> {
     // Warning: (ae-forgotten-export) The symbol "RowFilter" needs to be exported by the entry point interact.d.ts
     setExternalFilter(filter: RowFilter<Row> | null): void;
@@ -68,6 +75,27 @@ export interface LinkTargets<Row, Datum = unknown> {
 }
 
 // @public
+export function nearestHover<R>(root: Element, store: SelectionStore<R>, o: NearestHoverOptions): NearestHoverHandle;
+
+// @public
+export interface NearestHoverHandle {
+    destroy(): void;
+    update(points: readonly HoverPoint[]): void;
+}
+
+// @public
+export interface NearestHoverOptions {
+    readonly dimension?: "x" | "y" | "xy";
+    readonly label?: (id: string) => {
+        readonly lines: readonly string[];
+        readonly swatch?: string;
+    } | null;
+    readonly padding?: number;
+    readonly points: readonly HoverPoint[];
+    readonly radius?: number;
+}
+
+// @public
 export type PlotFigure = Element & {
     scale(name: "x" | "y"): ScaleLike | undefined;
 };
@@ -77,6 +105,23 @@ export interface ScaleLike {
     apply(value: unknown): unknown;
     invert?(pixel: unknown): unknown;
     range?: Iterable<unknown>;
+}
+
+// @public
+export function tooltip(root: Element, o?: TooltipOptions): TooltipHandle;
+
+// @public
+export interface TooltipHandle {
+    destroy(): void;
+    hide(): void;
+    show(x: number, y: number, lines: readonly string[], swatch?: string): void;
+}
+
+// @public
+export interface TooltipOptions {
+    readonly fontSize?: number;
+    readonly height?: number;
+    readonly width?: number;
 }
 
 // (No @packageDocumentation comment for this package)
