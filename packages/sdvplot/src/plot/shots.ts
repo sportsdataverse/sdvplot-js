@@ -31,14 +31,58 @@ const stampIds =
     return g;
   };
 
-/** A caller's `tip: true` gains sdvplot's default formats; a tip options object keeps its own. */
+type TipObject = Exclude<NonNullable<Plot.MarkOptions["tip"]>, boolean | Plot.TipPointer>;
+/** A caller's `tip` as options, sdvplot's default formats merged under its own key by key (the caller's keys win). */
 function withFormat(
   tip: NonNullable<Plot.MarkOptions["tip"]>,
-  format: Record<string, string | boolean>,
-): NonNullable<Plot.MarkOptions["tip"]> {
-  if (tip === false) return tip;
-  if (tip === true || typeof tip === "string") return { ...(tip === true ? {} : { pointer: tip }), format };
-  return { format, ...tip };
+  format: Record<string, Plot.TipFormat | boolean>,
+): TipObject | false {
+  if (tip === false) return false;
+  if (tip === true) return { format };
+  if (typeof tip === "string") return { pointer: tip, format };
+  const own = tip.format;
+  return {
+    ...tip,
+    format: { ...format, ...(typeof own === "object" ? own : own === undefined ? {} : { title: own }) },
+  };
+}
+
+/** Even-odd: is (x, y) inside the closed ring? */
+function inRing(x: number, y: number, r: readonly Point[]): boolean {
+  let inside = false;
+  for (let i = 0, j = r.length - 1; i < r.length; j = i++) {
+    const [xi, yi] = r[i] as Point;
+    const [xj, yj] = r[j] as Point;
+    if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) inside = !inside;
+  }
+  return inside;
+}
+/** Zone tip anchors per side of the zones' extent: 40 = 1.25 ft on an NBA half court (1,520 anchors). */
+const ZONE_STEPS = 40;
+/**
+ * Tip anchors inside the zones: a grid of step = the zones' extent / `ZONE_STEPS`, each point kept for the first ring
+ * holding it. `data[i]` is that zone's area, so the tip's channels read the caller's areas.
+ */
+function zoneSamples<A>(
+  areas: readonly A[],
+  rings: readonly (readonly Point[])[],
+): { data: A[]; x: number[]; y: number[] } {
+  const xs = rings.flatMap((r) => r.map((p) => p[0]));
+  const ys = rings.flatMap((r) => r.map((p) => p[1]));
+  const [x0, x1, y0, y1] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)];
+  const step = Math.max(x1 - x0, y1 - y0) / ZONE_STEPS;
+  const out: { data: A[]; x: number[]; y: number[] } = { data: [], x: [], y: [] };
+  for (let i = 0; x0 + (i + 0.5) * step < x1; i++) {
+    for (let j = 0; y0 + (j + 0.5) * step < y1; j++) {
+      const [x, y] = [x0 + (i + 0.5) * step, y0 + (j + 0.5) * step];
+      const area = areas[rings.findIndex((r) => inRing(x, y, r))];
+      if (area === undefined) continue;
+      out.data.push(area);
+      out.x.push(x);
+      out.y.push(y);
+    }
+  }
+  return out;
 }
 
 function frameOf(f: FrameName | Frame | undefined): Frame {
@@ -62,7 +106,11 @@ function ring(points: readonly (readonly [number, number])[], f: Frame): Point[]
 }
 const polygon = (coordinates: Point[]): Polygon => ({ type: "Polygon", coordinates: [coordinates] });
 
-/** Plot's geo options sdvplot does not own pass through (tip, title, href, fx, fy, filter, className, clip, …). */
+/**
+ * Plot's geo options sdvplot does not own pass through (tip, title, href, fx, fy, filter, className, clip, …). `x` and
+ * `y` are sdvplot's: a cell's tip anchors on the cell's centre and a zone's on samples inside the zone, so neither
+ * needs a mark-level anchor.
+ */
 export type GeoPassThrough = Omit<Plot.GeoOptions, "geometry" | "fill" | "r" | "x" | "y">;
 
 /** Options for `shotCells`. */
@@ -99,7 +147,8 @@ export interface ShotCellsOptions extends GeoPassThrough {
  * (by default, `dropOutside`) a cell centred outside the plot's frame. Each path carries `data-sdv-id="x,y"`, the cell's
  * legacy centre. Marks paint in array order: after `...court.marks` the cells cover the court lines under them, as
  * in `main`.
- * `tip: true` shows attempts, FG%, league FG% and the shrunk difference (formats `.1%`, `+.1%`); every other
+ * `tip: true` shows attempts, FG%, league FG% and the shrunk difference (formats `.1%`, `+.1%`; a `tip` object's
+ * `format` overrides them key by key); every other
  * `Plot.geo` option passes through, and the cells are the mark's data, so `fx`/`fy`, `filter`, `sort` (replacing the
  * default order) and `title` read the caller's fields.
  *
@@ -135,7 +184,9 @@ export function shotCells(cells: readonly CellVsLeague[], o: ShotCellsOptions): 
     h.leagueFgPct === null || h.attempts === 0 ? null : shrunkDiff(h.makes, h.attempts, h.leagueFgPct, prior);
   const size = (i: number): number => (typeof r === "number" ? r : (r[i] ?? 0));
   const centre = (h: CellVsLeague): Point => toPlot([h.x, h.y], f);
-  // ponytail: pixel filter in an initializer (not render), so a tip never points at a dropped cell
+  // In an initializer (not render), so a tip never points at a dropped cell.
+  // ponytail: keeps a cell by its centre only, as Phase 10 did: a cell centred just inside is drawn whole (and
+  // tippable) though mostly off-frame. Plot's `clip: "frame"` cuts it; test every vertex if a partial cell must go.
   const inFrame: Plot.InitializerFunction = (data, facets, _channels, scales, dimensions) => {
     const { x, y } = scales;
     if (!dropOutside || !x || !y) return { data, facets };
@@ -216,8 +267,12 @@ export interface ShotZonesOptions extends GeoPassThrough {
  * filled polygons), so add a second `surface` after the zones instead, its `colorUpdates` setting `plot_background`,
  * `defensive_half_court`, `offensive_half_court`, `court_apron`, `two_point_range`, `painted_area`,
  * `center_circle_fill` and `free_throw_circle_fill` to `"#00000000"`: only the lines remain.
- * The areas are the mark's data and each path is named by its zone; `tip: true` shows the zone and, with `stats`
- * (`statsByZone(shots)`), its makes/attempts and FG%. Every other `Plot.geo` option passes through.
+ * The areas are the mark's data and each path is named by its zone. `tip: true` adds a `Plot.tip` mark that names
+ * the zone under the pointer and, with `stats` (`statsByZone(shots)`), its makes/attempts and FG%. It follows the
+ * nearest of a grid of anchors inside the zones (a fortieth of their extent apart, 1.25 ft on an NBA half court), so
+ * within about that of a zone edge it may name the neighbour. The tip's data is the areas, so `channels` (shown in
+ * the tip) read the caller's fields; a `tip` object's `format` overrides sdvplot's key by key. Every other
+ * `Plot.geo` option passes through to the zone paths.
  *
  * @example
  * ```ts
@@ -233,35 +288,54 @@ export interface ShotZonesOptions extends GeoPassThrough {
 export function shotZones(areas: readonly BasketballZoneArea[], o: ShotZonesOptions): Plot.Markish[] {
   const { fill, text, frame, stats, fillOpacity = 0.85, tip, channels, render, ...pass } = o;
   const f = frameOf(frame);
+  const rings = areas.map((a) => ring(a.points, f));
   const marks: Plot.Markish[] = [
     Plot.geo(areas as BasketballZoneArea[], {
       ariaLabel: (a: BasketballZoneArea) => BASKETBALL_ZONE_LABELS[a.zone], // each path names its zone
       ...pass,
-      geometry: (a: BasketballZoneArea) => polygon(ring(a.points, f)),
+      geometry: (_a: BasketballZoneArea, i: number) => polygon(rings[i] as Point[]),
       fill: (a: BasketballZoneArea) => fill(a.zone),
       fillOpacity,
-      ...(tip === undefined || tip === null
-        ? {}
-        : { tip: withFormat(tip, { zone: true, made: true, fgPct: ".1%" }) }),
-      channels: {
-        zone: { value: (a: BasketballZoneArea) => BASKETBALL_ZONE_LABELS[a.zone], label: "Zone" },
-        ...(stats === undefined
-          ? {}
-          : {
-              made: {
-                value: (a: BasketballZoneArea) => `${stats[a.zone].makes}/${stats[a.zone].attempts}`,
-                label: "Made",
-              },
-              fgPct: { value: (a: BasketballZoneArea) => stats[a.zone].fgPct, label: "FG%" },
-            }),
-        ...channels,
-      },
       render: compose(
         render,
         stampIds((i) => areas[i]?.zone ?? ""),
       ),
     }),
   ];
+  const t =
+    tip === undefined ? false : withFormat(tip, { x: false, y: false, zone: true, made: true, fgPct: ".1%" });
+  if (t !== false) {
+    // A geo's tip anchors on each zone's centroid, which lies outside the C-shaped mid-range: the pointer takes the
+    // nearest of many anchors inside the zones instead.
+    // ponytail: nearest anchor, not a hit test: within about one grid step of a zone edge the tip can name the
+    // neighbour. A larger ZONE_STEPS narrows that band (more anchors, more pointer work per move).
+    const { pointer: mode, ...options } = t;
+    const pointer = mode === "x" ? Plot.pointerX : mode === "y" ? Plot.pointerY : Plot.pointer;
+    const at = zoneSamples(areas, rings);
+    marks.push(
+      Plot.tip(
+        at.data,
+        pointer({
+          x: at.x,
+          y: at.y,
+          channels: {
+            zone: { value: (a: BasketballZoneArea) => BASKETBALL_ZONE_LABELS[a.zone], label: "Zone" },
+            ...(stats === undefined
+              ? {}
+              : {
+                  made: {
+                    value: (a: BasketballZoneArea) => `${stats[a.zone].makes}/${stats[a.zone].attempts}`,
+                    label: "Made",
+                  },
+                  fgPct: { value: (a: BasketballZoneArea) => stats[a.zone].fgPct, label: "FG%" },
+                }),
+            ...channels,
+          },
+          ...options,
+        }),
+      ),
+    );
+  }
   if (text) {
     const labels = areas.map((a) => {
       const [x, y] = toPlot(a.label, f);
@@ -299,7 +373,10 @@ export interface ShootingSignatureOptions {
   halfWidth?: (p: SignaturePoint, maxShare: number) => number;
   /** The dashed league line, faint everywhere and full strength under the ribbon (`:165-181`); default true. */
   league?: boolean;
-  /** A tip that follows the pointer along x: distance, FG%, league FG% and shot share (`Plot.tip` + `Plot.pointerX`). */
+  /**
+   * A tip that follows the pointer along x: distance, FG%, league FG% and shot share (`Plot.tip` + `Plot.pointerX`).
+   * An options object's `format` overrides sdvplot's key by key.
+   */
   tip?: boolean | Plot.TipOptions;
 }
 
@@ -386,8 +463,13 @@ export function shootingSignature(
       },
     }),
   );
-  if (o.tip) {
-    const own = o.tip === true ? {} : o.tip;
+  const t = withFormat(o.tip ?? false, {
+    x: (d: number) => `${d} ft`,
+    y: ".1%",
+    leagueFgPct: ".1%",
+    share: ".1%",
+  });
+  if (t !== false) {
     marks.push(
       Plot.tip(
         points,
@@ -398,8 +480,7 @@ export function shootingSignature(
             leagueFgPct: { value: "leagueFgPct", label: "League FG%" },
             share: { value: "share", label: "Share of shots" },
           },
-          format: { x: (d: number) => `${d} ft`, y: ".1%", leagueFgPct: ".1%", share: ".1%" },
-          ...own,
+          ...t,
         }),
       ),
     );

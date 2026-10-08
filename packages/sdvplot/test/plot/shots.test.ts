@@ -169,7 +169,7 @@ test("shootingSignature: one data set at two widths keeps two gradients, each sp
   }
 });
 
-test("shotCells drops cells centred off the plot's frame (main's `h.y <= v.top`); clip: false draws them all", () => {
+test("shotCells drops cells centred off the plot's frame (main's `h.y <= v.top`); dropOutside: false draws them all", () => {
   // The REAL 2026 league hex15 index drawn as a player: 28 of its 397 centres lie past the half-court line
   // (legacy y > 417.5, 41.75 ft from the hoop), off the defensive half court's frame.
   const cells: CellVsLeague[] = LEAGUE.hex15.cells.map((c) => ({

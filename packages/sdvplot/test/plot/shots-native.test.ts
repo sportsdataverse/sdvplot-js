@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 // Phase 11 (J39, J40): the shot marks draw the CALLER's cells and areas, pass Plot's options through, and tip.
 import * as Plot from "@observablehq/plot";
-import { basketballZones } from "@sportsdataverse/sporty";
+import { BASKETBALL_ZONE_LABELS, FRAMES, basketballZones } from "@sportsdataverse/sporty";
 import { beforeAll, expect, test } from "vitest";
 import { shootingSignature, shotCells, shotZones, surface } from "../../src/plot/index.js";
 import {
@@ -49,6 +49,7 @@ test("shotZones tip with statsByZone: the restricted area reads 358/527, 67.9%; 
   });
   pointAt(fig, px(fig, "x", -41.5), px(fig, "y", 0.3));
   expect(tipText(fig)).toMatch(/Zone\s*Restricted area.*Made\s*358\/527.*FG%\s*67\.9%/);
+  expect(fig.querySelectorAll("g[aria-label=tip] text > tspan")).toHaveLength(3); // the anchor's x/y are not rows
   expect(fig.querySelector('path[data-sdv-id="paint"]')?.getAttribute("aria-label")).toBe("Paint (non-RA)");
 });
 
@@ -93,12 +94,15 @@ test("dropOutside: a tip never points at a dropped (off-frame) cell; Plot's own 
     width: 700,
     marks: [...court.marks, shotCells(cells, { r: 15, tip: true, clip: "frame" })],
   });
-  // the dropped cell nearest the frame: smallest legacy y past 417.5, then nearest the centre line
-  const back = cells.filter((c) => c.y > 417.5).sort((a, b) => a.y - b.y || Math.abs(a.x) - Math.abs(b.x))[0];
-  expect(back).toMatchObject({ y: 427.5 });
-  pointAt(fig, px(fig, "x", -47 + 5.25 + (back?.y ?? 0) / 10), px(fig, "y", (back?.x ?? 0) / 10));
-  const v = (fig as unknown as { value: CellVsLeague | null }).value;
-  expect(v === null || v.y <= 417.5).toBe(true); // with the filter in render instead, this focused (12.99, 427.5)
+  // the pointer at each of the 28 dropped cells' centres (with the filter in render instead, the one nearest the
+  // frame, (12.99, 427.5), was focused)
+  const back = cells.filter((c) => c.y > 417.5);
+  expect(back).toHaveLength(28);
+  const focused = back.map((c) => {
+    pointAt(fig, px(fig, "x", -47 + 5.25 + c.y / 10), px(fig, "y", c.x / 10));
+    return (fig as unknown as { value: CellVsLeague | null }).value;
+  });
+  expect(focused.filter((v) => v !== null && v.y > 417.5)).toEqual([]);
   expect(fig.outerHTML).toMatch(/clip-path="url\(#plot-clip-\d+\)"/);
 });
 
@@ -128,7 +132,7 @@ test("shotCells composes a caller's render (outermost), initializer (after the f
       ...court.marks,
       shotCells(cells, {
         r: 15,
-        tip: { format: { diff: "+.2%" } }, // a tip options object keeps its own formats
+        tip: { format: { diff: "+.2%" } }, // the caller's keys win; sdvplot's other formats stay
         render: (index, scales, values, dimensions, context, next) => {
           const g = next?.(index, scales, values, dimensions, context) ?? null;
           seen.push(g?.querySelectorAll("path[data-sdv-id]").length ?? -1); // sdvplot's stamps are inside
@@ -145,9 +149,10 @@ test("shotCells composes a caller's render (outermost), initializer (after the f
   expect(seen).toEqual([busy]);
   pointAt(fig, px(fig, "x", -41.75), px(fig, "y", 0));
   expect(tipText(fig)).toMatch(/vs league \(shrunk\)\s*\+4\.\d\d%/);
+  expect(tipText(fig)).toMatch(/FG%\s*81\.2%.*League FG%\s*76\.3%/);
 });
 
-test("shotZones labels are aria-hidden (the paths carry the names); a signature TipOptions overrides its formats", () => {
+test("shotZones labels are aria-hidden (the paths carry the names); a signature TipOptions format merges per key", () => {
   const z = statsByZone(BKN);
   const zones = Plot.plot({
     x: { domain: [-47, 0] },
@@ -162,8 +167,69 @@ test("shotZones labels are aria-hidden (the paths carry the names); a signature 
   const fig = Plot.plot({
     width: 640,
     y: { domain: [0, 1] },
-    marks: shootingSignature(pts, { tip: { format: { x: (d: number) => `${d} feet`, y: ".0%" } } }),
+    marks: shootingSignature(pts, { tip: { format: { x: (d: number) => `${d} feet` } } }),
   });
   pointAt(fig, px(fig, "x", 12.3), px(fig, "y", 0.5));
-  expect(tipText(fig)).toMatch(/Distance\s*12\.25 feet.*FG%\s*47%/);
+  expect(tipText(fig)).toMatch(
+    /Distance\s*12\.25 feet.*FG%\s*46\.8%.*League FG%\s*46\.0%.*Share of shots\s*1\.2%/,
+  );
+});
+
+type Pt = readonly [number, number];
+/** Winding number of `p` around a closed ring: an independent inside test (shotZones samples by even-odd). */
+function winding([x, y]: Pt, ring: readonly Pt[]): number {
+  let w = 0;
+  ring.forEach(([ax, ay], i) => {
+    const [bx, by] = ring[(i + 1) % ring.length] as Pt;
+    const side = (bx - ax) * (y - ay) - (x - ax) * (by - ay);
+    if (ay <= y && by > y && side > 0) w++;
+    else if (ay > y && by <= y && side < 0) w--;
+  });
+  return w;
+}
+/** Distance from `p` to the nearest edge of a closed ring. */
+function edgeDistance([x, y]: Pt, ring: readonly Pt[]): number {
+  return Math.min(
+    ...ring.map(([ax, ay], i) => {
+      const [bx, by] = ring[(i + 1) % ring.length] as Pt;
+      const [dx, dy] = [bx - ax, by - ay];
+      const t = Math.max(0, Math.min(1, ((x - ax) * dx + (y - ay) * dy) / (dx * dx + dy * dy || 1)));
+      return Math.hypot(x - ax - t * dx, y - ay - t * dy);
+    }),
+  );
+}
+
+test("zone tips follow the pointer: interior probes name their own zone (>= 99% per zone), all six reachable", () => {
+  const areas = basketballZones("nba", { scale: 10 });
+  const f = FRAMES["nba-legacy"];
+  const rings = areas.map((a) =>
+    a.points.map(([x, y]): Pt => [f.x({ x, y }) ?? Number.NaN, f.y({ x, y }) ?? Number.NaN]),
+  );
+  const fig = Plot.plot({
+    width: 500,
+    height: 500,
+    x: { domain: [-47, 0] },
+    y: { domain: [-25, 25] },
+    marks: shotZones(areas, { fill: () => "#ddd", stats: statsByZone(BKN), tip: true }),
+  });
+  const names = areas.map((a) => BASKETBALL_ZONE_LABELS[a.zone]);
+  const tally = names.map(() => ({ probes: 0, right: 0 }));
+  const margin = 1.25 / 2; // half shotZones' sample step: the zones' 50 ft extent / 40
+  // probes on a 0.73 ft grid offset from the samples', strictly inside a zone and `margin` from its every edge
+  for (let x = -46.69; x < 0; x += 0.73) {
+    for (let y = -24.83; y < 25; y += 0.73) {
+      const k = rings.findIndex((r) => winding([x, y], r) !== 0);
+      const ring = rings[k];
+      if (ring === undefined || edgeDistance([x, y], ring) < margin) continue;
+      pointAt(fig, px(fig, "x", x), px(fig, "y", y));
+      const t = tally[k] as { probes: number; right: number };
+      t.probes++;
+      if (names.find((n) => tipText(fig).includes(n)) === names[k]) t.right++;
+    }
+  }
+  const table = names.map((n, k) => `${n} ${tally[k]?.right}/${tally[k]?.probes}`).join("; ");
+  for (const t of tally) {
+    expect(t.probes, table).toBeGreaterThan(0);
+    expect(t.right / t.probes, table).toBeGreaterThanOrEqual(0.99);
+  }
 });
