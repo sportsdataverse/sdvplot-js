@@ -101,10 +101,10 @@ const rows = await getTeamRows(); // [{ team: "UGA", epa: 0.21, sr: 0.48 }, …]
 <canvas bind:this={canvas}></canvas>
 ```
 
-An expected-points line per team with its logo at the line's end (Game on Paper's EP chart, team colours from sdvplot):
+A line per team with its logo at the line's end (the per-point logos of Game on Paper's trends chart, team colours from
+sdvplot):
 
 ```ts
-// TODO(Task 15): matchupColors — a contrast-checked pair for the two teams on each theme; explicit team colours for now
 new Chart(canvas, {
   type: "scatter",
   data: {
@@ -128,7 +128,6 @@ A radar in team colours (the datasets Game on Paper's `utils/radar.ts` builds fo
 
 ```ts
 import { teamColor, teamFill } from "@sportsdataverse/sdvplot/chartjs";
-// TODO(Task 15): matchupColors — the two-team pair; explicit team colours for now
 const pct = { UGA: [91, 80, 67], ALA: [85, 88, 54] };
 const data = {
   labels: ["EPA/Play", "Success %", "Explosive %"],
@@ -146,13 +145,13 @@ const data = {
 };
 ```
 
-Faint team logos behind a line (Game on Paper's win-probability chart): the first team top-left of the chart area, the
-last bottom-left, at 0.4 opacity and 75 px tall by default:
+Faint team logos behind a line (Game on Paper's win-probability chart). Pass `[home, away]`: the line is the home win
+probability, so the home logo sits top-left of the chart area and the away logo bottom-left, at 0.4 opacity and 75 px
+tall by default:
 
 ```ts
 import { logoWatermarks, teamColor } from "@sportsdataverse/sdvplot/chartjs";
 const dark = matchMedia("(prefers-color-scheme: dark)").matches;
-// TODO(Task 15): matchupColors — the home/away pair; explicit team colours for now
 new Chart(canvas, {
   type: "line",
   data: { labels: seconds, datasets: [{ data: homeWp, borderColor: teamColor("UGA", "cfb"), pointRadius: 0 }] },
@@ -172,10 +171,12 @@ new Chart(canvas, {
 
 - Sizes are pixels: `radius` (point styles), `size` (axis logos, watermarks) — Chart.js draws an image at its own size.
 - Add `pointImages` to `plugins` with any `*Points`: Chart.js does not redraw when an `<img>` finishes loading.
-- An unknown team draws its own label as text (or pass `fallback: "circle"`), with one warning per call.
+- An unknown team draws its own label as text (or pass `fallback: "circle"`), with one warning per call; the text is
+  grey on a light chart and light grey on a dark one (`background`, default white, or black with `variant: "dark"`).
 - Dark theme: `variant: "dark"` (read `prefers-color-scheme` as Game on Paper does); a team with no dark mark falls back to a light one by polarity, so no `onerror` retry is needed.
-- Two teams on one chart: `teamColor(team, league, { which: "secondary" })` is the alternate; a contrast-checked pair per theme is `matchupColors` (Task 15, pending).
-- `axisLogos` needs a category axis; unresolved labels keep their text; your own scale options are not modified, and replacing `chart.options` (`chart.options = next; chart.update()`) keeps the logos.
+- Two teams on one chart: `teamColor(team, league, { which: "secondary" })` is the alternate. A helper that picks a contrast-checked pair of team colours for each theme is planned.
+- `axisLogos` needs a category axis (any other scale is left as it is, with one warning); on `y` the axis widens to the widest mark, so wordmarks fit; unresolved labels keep their text; your own scale options are not modified, and replacing `chart.options` (`chart.options = next; chart.update()`) keeps the logos.
+- Destroying a chart drops its pending image listeners, so unmounting before the logos arrive is safe.
 
 ## Data provenance
 

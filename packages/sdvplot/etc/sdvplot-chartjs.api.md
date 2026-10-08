@@ -41,6 +41,7 @@ export type ColorsFor<T> = T extends readonly Value[] ? string[] : string;
 
 // @public (undocumented)
 export interface HeadshotPointOptions {
+    background?: string;
     // (undocumented)
     fallback?: PointStyle | "text";
     // Warning: (ae-forgotten-export) The symbol "HeadshotIdSystem" needs to be exported by the entry point chartjs.d.ts
@@ -69,6 +70,7 @@ export const pointImages: Plugin_2;
 
 // @public
 export interface PointOptions {
+    background?: string;
     fallback?: PointStyle | "text";
     // (undocumented)
     idSystem?: IdSystem;
