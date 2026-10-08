@@ -56,6 +56,7 @@ export function renderHTML<Row>(
 }
 export { createTable } from "../engine.js";
 export { handleClick, handleHover, handleInput, rowIdAt } from "./controls.js";
+export { hydrate } from "./hydrate.js";
 export {
   pagerLabel,
   renderInteractive,

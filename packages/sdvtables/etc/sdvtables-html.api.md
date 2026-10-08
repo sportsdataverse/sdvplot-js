@@ -65,6 +65,9 @@ export function handleHover<Row>(table: Table<Row>, target: EventTarget | null):
 // @public
 export function handleInput<Row>(table: Table<Row>, target: EventTarget | null): void;
 
+// @public
+export function hydrate<Row>(el: Element, table: Table<Row>): () => void;
+
 // Warning: (ae-forgotten-export) The symbol "ColumnSpec" needs to be exported by the entry point html.d.ts
 //
 // @public (undocumented)
@@ -193,7 +196,7 @@ export function toElement<Row>(spec: TableSpec<Row>, rows: readonly Row[], opts?
 
 // Warnings were encountered during analysis:
 //
-// dist/html.d.ts:147:5 - (ae-forgotten-export) The symbol "Density" needs to be exported by the entry point html.d.ts
+// dist/html.d.ts:154:5 - (ae-forgotten-export) The symbol "Density" needs to be exported by the entry point html.d.ts
 
 // (No @packageDocumentation comment for this package)
 
