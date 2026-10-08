@@ -118,6 +118,32 @@ test("appendSignature draws Plot's shootingSignature: same ribbon, league lines,
   expect(dg?.querySelectorAll("stop")).toHaveLength(61);
 });
 
+test("master options keep a stop at every drawn foot, as master drew them (ShootingSignature/index.js:52-67)", () => {
+  const pts = signaturePoints(vsLeague(fgPctByDistance(BKN), LEAGUE.byFoot), {
+    step: 1,
+    smooth: false,
+    minAttempts: 1,
+    prior: 0,
+  });
+  const feet = pts.filter((p) => p.fgPct !== null).map((p) => p.distance);
+  expect(pts).toHaveLength(36);
+  expect(feet).toHaveLength(35); // 0-35 ft but 34, which BKN never shot from (master drew it as 0%; this, a gap)
+  expect(feet).not.toContain(34);
+  const fill = diffScale({ palette: "master" });
+  const g = appendSignature(newG(), pts, {
+    x: scaleLinear([0, 35], [0, 490]),
+    y: scaleLinear([0, 1], [190, 0]),
+    fill,
+  });
+  const stops = (g.node() as SVGGElement).querySelectorAll("stop");
+  expect(attr(stops, "offset")).toEqual(feet.map((d) => `${(d / 35) * 100}%`));
+  expect(attr(stops, "stop-color")).toEqual(
+    pts.filter((p) => p.fgPct !== null).map((p) => fill(p.colourDiff)),
+  );
+  const fig = Plot.plot({ y: { domain: [0, 1] }, marks: shootingSignature(pts, { fill }) });
+  expect(fig.querySelectorAll("stop")).toHaveLength(35);
+});
+
 test("the d3 legend and the signature's league lines take the page's ink: var(--sdv-muted, currentColor)", () => {
   const ink = "var(--sdv-muted, currentColor)";
   const svg = select(document.body).append("svg");

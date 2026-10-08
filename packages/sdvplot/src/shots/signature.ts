@@ -132,8 +132,10 @@ export function signaturePoints(
 
 /**
  * What the Plot and d3 signatures share, so the two cannot drift (`main` `shootingSignature.ts:126-131`, `:183-193`):
- * the busiest drawn share, the last distance, the gradient's stops (every other drawn sample, as percentages of
- * [0, maxFt]) and its id for a pixel x range. The gradient is in user space (pixels), so the id hashes that range
+ * the busiest drawn share, the last distance, the gradient's stops (drawn samples about half a foot apart, as
+ * percentages of [0, maxFt]) and its id for a pixel x range. The stops are thinned by spacing, not by index: `main`'s
+ * 0.25-ft samples keep every other one (`:192`), and `master`'s 1-ft samples keep every foot, as master drew them
+ * (`ShootingSignature/index.js:52-67`). The gradient is in user space (pixels), so the id hashes that range
  * with the colours: the same signature at two widths never shares one, and two signatures never steal each other's
  * (`master`'s fixed id did, `Gradient.js:10`). Internal: not exported from `sdvplot/shots`.
  */
@@ -148,8 +150,10 @@ export function signatureGradient(
 } {
   const drawn = points.filter((p) => p.fgPct !== null);
   const maxFt = points.at(-1)?.distance ?? 0;
+  const step = (points[1]?.distance ?? 0) - (points[0]?.distance ?? 0);
+  const every = step > 0 ? Math.max(1, Math.round(0.5 / step)) : 1; // 2 for main's 0.25 ft, 1 for master's 1 ft
   const stops = drawn
-    .filter((_, i) => i % 2 === 0)
+    .filter((_, i) => i % every === 0)
     .map((p) => [maxFt ? (p.distance / maxFt) * 100 : 0, fill(p.colourDiff)] as const);
   const text = stops.map((s) => s.join(" ")).join(";");
   return {
