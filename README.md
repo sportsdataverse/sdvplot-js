@@ -58,10 +58,7 @@ and aborts, which kills the examples gate's worker (the gate then fails, countin
 
 ## Owner steps
 
-- Create/own the `@sportsdataverse` npm org.
-- Register each package on npmjs.com once and configure OIDC trusted publishing for
-  `sportsdataverse/sdvplot-js` (workflow `release.yml`). Until then `changeset publish` fails at the publish
-  step only.
+- Publishing to npm: follow [RELEASING.md](RELEASING.md) (first publish, then trusted publishing).
 - Upload `docs/static/img/social-card.png` as the repo's Social preview (Settings → General); GitHub has no
   API for it. `pnpm brand` regenerates it and the other brand assets (see `tools/brand/README.md`).
 
