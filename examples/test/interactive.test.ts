@@ -67,83 +67,89 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
     if (entry === undefined) throw new Error(`${id} is not in the registry`);
     const lib = id.split("/")[1] ?? "";
     const page = await browser.newPage();
-    const errors: string[] = [];
-    page.on("console", (m) => void (m.type() === "error" && errors.push(m.text())));
-    page.on("pageerror", (e) => void errors.push(e.message));
-    await page.goto(`${base}/gallery/${pagePath(entry)}/`);
-    const figure = page.locator(`figure[data-example="${id}"]`);
-    await figure.scrollIntoViewIfNeeded();
-    await figure
-      .locator(DRAWN[lib] ?? "never")
-      .first()
-      .waitFor({ timeout: 30_000 });
-    await page.waitForLoadState("networkidle"); // the images the chart loads, so a failed one is logged
-    expect(await figure.locator(".sdv-live-static").count(), "the static copy is replaced").toBe(0);
-    expect(await figure.locator(".sdv-live-error").count(), "no error alert").toBe(0);
-    if (lib === "chartjs") {
-      const painted = await figure.locator("canvas").evaluate((c: HTMLCanvasElement) =>
-        c
-          .getContext("2d")
-          ?.getImageData(0, 0, c.width, c.height)
-          .data.some((v, i) => i % 4 === 3 && v > 0),
-      );
-      expect(painted, "the canvas is painted").toBe(true);
-    }
-    // ECharts draws the server's SVG, tag for tag: init() alone already leaves an <svg>, and a series that drew nothing
-    // would still leave its axes
-    if (lib === "echarts") {
-      const [server, drawn] = await figure.evaluate(async (f, id) => {
-        const html = new DOMParser().parseFromString(await (await fetch(location.href)).text(), "text/html");
-        const marks = (svg: Element | null | undefined) =>
-          ["path", "image", "text"].map((t) => `${t} ${svg?.querySelectorAll(t).length}`).join(", ");
-        return [
-          marks(html.querySelector(`figure[data-example="${id}"] .sdv-live-static svg`)),
-          marks(f.querySelector(".sdv-live-output svg")),
-        ];
-      }, id);
-      expect(drawn, "the server's marks, tag for tag").toBe(server);
-    }
-    // an accessible name: Vega names each mark in its SVG (sdvplot's images too); the others name the chart
-    const named =
-      lib === "vega"
-        ? figure.locator('svg.marks [role="graphics-symbol"][aria-label]')
-        : figure.locator('.sdv-live-output :is([role="img"], [role="figure"])[aria-label]');
-    expect(await named.count(), "an accessible name").toBeGreaterThan(0);
-    const nested =
-      '.sdv-live-output [role="img"] :is(button, a[href], summary, input, [tabindex]:not([tabindex="-1"]))';
-    expect(
-      await figure.locator(nested).count(),
-      "no control inside an img (its children are presentational)",
-    ).toBe(0);
-    // a menu's disclosure button (vega-embed's actions) is named: its <summary> holds only an icon
-    const unnamed = await figure
-      .locator(".sdv-live-output summary")
-      .evaluateAll((s) => s.filter((e) => !e.getAttribute("aria-label") && !e.textContent?.trim()).length);
-    expect(unnamed, "every menu button has a name").toBe(0);
-    if (SHOTS !== undefined)
+    try {
+      const errors: string[] = [];
+      page.on("console", (m) => void (m.type() === "error" && errors.push(m.text())));
+      page.on("pageerror", (e) => void errors.push(e.message));
+      await page.goto(`${base}/gallery/${pagePath(entry)}/`);
+      const figure = page.locator(`figure[data-example="${id}"]`);
+      await figure.scrollIntoViewIfNeeded();
       await figure
-        .locator(".sdv-live-output")
-        .screenshot({ path: join(SHOTS, `${id.replace(/\//g, "_")}.png`) });
-    // A Plotly bar's hover names its category: withAxisLogos hides the tick labels rather than blanking them, since
-    // plotly.js reads a category's hover label from its tick text (blanked, hovering KC read "(, 15)").
-    const bar = figure.locator(".js-plotly-plot .bars path").first();
-    if (lib === "plotly" && (await bar.count()) > 0) {
-      const name = await figure
-        .locator(".js-plotly-plot")
-        .evaluate((gd) => String((gd as unknown as { data: { x: unknown[] }[] }).data[0]?.x[0]));
-      const box = await bar.boundingBox();
-      if (box === null) throw new Error(`${id}: the first bar has no box`);
-      await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-      const hover = figure.locator(".hoverlayer .hovertext").first();
-      await hover.waitFor({ timeout: 5_000 });
-      expect(await hover.textContent(), "the hover names the bar's category").toContain(name);
+        .locator(DRAWN[lib] ?? "never")
+        .first()
+        .waitFor({ timeout: 30_000 });
+      await page.waitForLoadState("networkidle"); // the images the chart loads, so a failed one is logged
+      expect(await figure.locator(".sdv-live-static").count(), "the static copy is replaced").toBe(0);
+      expect(await figure.locator(".sdv-live-error").count(), "no error alert").toBe(0);
+      if (lib === "chartjs") {
+        const painted = await figure.locator("canvas").evaluate((c: HTMLCanvasElement) =>
+          c
+            .getContext("2d")
+            ?.getImageData(0, 0, c.width, c.height)
+            .data.some((v, i) => i % 4 === 3 && v > 0),
+        );
+        expect(painted, "the canvas is painted").toBe(true);
+      }
+      // ECharts draws the server's SVG, tag for tag: init() alone already leaves an <svg>, and a series that drew nothing
+      // would still leave its axes
+      if (lib === "echarts") {
+        const [server, drawn] = await figure.evaluate(async (f, id) => {
+          const html = new DOMParser().parseFromString(
+            await (await fetch(location.href)).text(),
+            "text/html",
+          );
+          const marks = (svg: Element | null | undefined) =>
+            ["path", "image", "text"].map((t) => `${t} ${svg?.querySelectorAll(t).length}`).join(", ");
+          return [
+            marks(html.querySelector(`figure[data-example="${id}"] .sdv-live-static svg`)),
+            marks(f.querySelector(".sdv-live-output svg")),
+          ];
+        }, id);
+        expect(drawn, "the server's marks, tag for tag").toBe(server);
+      }
+      // an accessible name: Vega names each mark in its SVG (sdvplot's images too); the others name the chart
+      const named =
+        lib === "vega"
+          ? figure.locator('svg.marks [role="graphics-symbol"][aria-label]')
+          : figure.locator('.sdv-live-output :is([role="img"], [role="figure"])[aria-label]');
+      expect(await named.count(), "an accessible name").toBeGreaterThan(0);
+      const nested =
+        '.sdv-live-output [role="img"] :is(button, a[href], summary, input, [tabindex]:not([tabindex="-1"]))';
+      expect(
+        await figure.locator(nested).count(),
+        "no control inside an img (its children are presentational)",
+      ).toBe(0);
+      // a menu's disclosure button (vega-embed's actions) is named: its <summary> holds only an icon
+      const unnamed = await figure
+        .locator(".sdv-live-output summary")
+        .evaluateAll((s) => s.filter((e) => !e.getAttribute("aria-label") && !e.textContent?.trim()).length);
+      expect(unnamed, "every menu button has a name").toBe(0);
       if (SHOTS !== undefined)
         await figure
           .locator(".sdv-live-output")
-          .screenshot({ path: join(SHOTS, `${id.replace(/\//g, "_")}_hover.png`) });
+          .screenshot({ path: join(SHOTS, `${id.replace(/\//g, "_")}.png`) });
+      // A Plotly bar's hover names its category: withAxisLogos hides the tick labels rather than blanking them, since
+      // plotly.js reads a category's hover label from its tick text (blanked, hovering KC read "(, 15)").
+      const bar = figure.locator(".js-plotly-plot .bars path").first();
+      if (lib === "plotly" && (await bar.count()) > 0) {
+        const name = await figure
+          .locator(".js-plotly-plot")
+          .evaluate((gd) => String((gd as unknown as { data: { x: unknown[] }[] }).data[0]?.x[0]));
+        const box = await bar.boundingBox();
+        if (box === null) throw new Error(`${id}: the first bar has no box`);
+        await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+        const hover = figure.locator(".hoverlayer .hovertext").first();
+        await hover.waitFor({ timeout: 5_000 });
+        expect(await hover.textContent(), "the hover names the bar's category").toContain(name);
+        if (SHOTS !== undefined)
+          await figure
+            .locator(".sdv-live-output")
+            .screenshot({ path: join(SHOTS, `${id.replace(/\//g, "_")}_hover.png`) });
+      }
+      expect(errors).toEqual([]);
+    } finally {
+      await page.close();
     }
-    expect(errors).toEqual([]);
-    await page.close();
   });
 
   // A drawing that fails (here plotly.js never arrives) shows the alert over the static copy, leaves nothing drawn,
@@ -153,14 +159,17 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
     const entry = EXAMPLES.find((e) => e.id === id);
     if (entry === undefined) throw new Error(`${id} is not in the registry`);
     const page = await browser.newPage();
-    await page.route("**/lib-plotly.*.js", (r) => r.abort());
-    await page.goto(`${base}/gallery/${pagePath(entry)}/`);
-    const figure = page.locator(`figure[data-example="${id}"]`);
-    await figure.scrollIntoViewIfNeeded();
-    await figure.locator(".sdv-live-error").waitFor({ timeout: 30_000 });
-    expect(await figure.locator(".sdv-live-static").count(), "the static copy is back").toBe(1);
-    expect(await figure.locator(".sdv-live-output > *").count(), "nothing drawn is left").toBe(0);
-    expect(await figure.locator(".sdv-live-note").count(), "no note promising a drawing").toBe(0);
-    await page.close();
+    try {
+      await page.route("**/lib-plotly.*.js", (r) => r.abort());
+      await page.goto(`${base}/gallery/${pagePath(entry)}/`);
+      const figure = page.locator(`figure[data-example="${id}"]`);
+      await figure.scrollIntoViewIfNeeded();
+      await figure.locator(".sdv-live-error").waitFor({ timeout: 30_000 });
+      expect(await figure.locator(".sdv-live-static").count(), "the static copy is back").toBe(1);
+      expect(await figure.locator(".sdv-live-output > *").count(), "nothing drawn is left").toBe(0);
+      expect(await figure.locator(".sdv-live-note").count(), "no note promising a drawing").toBe(0);
+    } finally {
+      await page.close();
+    }
   });
 });
