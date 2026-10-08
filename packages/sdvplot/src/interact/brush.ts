@@ -104,10 +104,11 @@ const boxOf = (svg: Element): [number, number, number, number] => {
  * the store's `predicate` (the region as a row test, for linked tables) and `selected` (the ids of `data` inside it,
  * for highlighting) in ONE notification. Pass `x` and `y` for a rectangle, or one of them for a 1-D brush across the
  * whole svg (a date window on a timeline). Clearing the brush, or a click on the empty chart, clears both, but only
- * while the store still holds this brush's region: a selection made elsewhere (a table row, a toggled mark) survives.
- * The drawn brush follows the store: when its region is cleared or replaced elsewhere, the rectangle is removed with no
- * second write. `empty` says what a brush holding no row means. The overlay is inserted BEHIND the marks, so hovering
- * a mark still reaches it. On a figure with a Plot `tip`, the press that starts a brush also pins the tip showing at
+ * while the store still holds this brush's region. A selection made elsewhere since (a table row, a toggled mark)
+ * survives, and so does one made before that holds exactly the brushed ids: the store kept that set, so the brush
+ * wrote none of its own. The drawn brush follows the store: when its region is cleared or replaced elsewhere, the
+ * rectangle is removed with no second write. `empty` says what a brush holding no row means. The overlay is inserted
+ * BEHIND the marks, so hovering a mark still reaches it. On a figure with a Plot `tip`, the press that starts a brush also pins the tip showing at
  * that moment (Plot's pointer toggles a sticky tip on `pointerdown`); the brush still works. Throws `InputError`
  * without `x` or `y`, or unless each brushed axis has a continuous (invertible) scale, in Node too. Returns a HANDLE,
  * not a teardown function, because a brush has more to do than tear down: `move` drives it and `destroy` removes it
@@ -290,8 +291,12 @@ export function brushFilter<R>(
     }
     last = key;
     mine = inside;
+    const had = store.getState().selected;
     store.set({ selected: ids, predicate: inside });
-    picked = store.getState().selected;
+    const now = store.getState().selected;
+    // the brush owns `selected` by identity: the set its write made, or one it already owned. An equal set another
+    // control selected first keeps its identity (the store drops a no-op), so it stays that control's
+    picked = now !== had || had === picked ? now : null;
   });
   g.call(b);
   // The drawn brush follows the store: a region cleared or replaced elsewhere (a "Clear dates" button, another brush)

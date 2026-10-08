@@ -132,6 +132,28 @@ test("clearing or destroying the brush clears its region, never a selection anot
   again.brush.destroy();
   expect([[...again.store.getState().selected], again.store.getState().predicate]).toEqual([["DEN"], null]);
 });
+test("a brush over exactly the ids another control selected first adopts nothing: clearing it keeps that selection", () => {
+  // the store keeps an equal set's identity (one notification per change), so the brush's write leaves the table's
+  // selection object in place: it is not the brush's to clear
+  const { store, brush } = setup();
+  store.set({ selected: ["LAC", "DEN", "BUF"] }); // three rows picked in a linked table
+  const table = store.getState().selected;
+  brush.move({ x: [9.5, 16], y: [0.07, 0.2] }); // exactly LAC, DEN, BUF (KC's 0.063 is below the floor)
+  expect(store.getState().selected).toBe(table);
+  const fn = vi.fn();
+  store.subscribe(fn);
+  brush.move(null);
+  expect([[...store.getState().selected], store.getState().predicate, fn.mock.calls.length]).toEqual([
+    ["LAC", "DEN", "BUF"],
+    null,
+    1,
+  ]);
+  // a set the brush did make stays its own across a move to the same ids, and clearing then clears it
+  brush.move({ x: [9.5, 16], y: [0, 0.2] }); // KC LAC DEN BUF: a new set, the brush's
+  brush.move({ x: [9.4, 16], y: [0, 0.2] }); // the same four rows: the store keeps the brush's set
+  brush.move(null);
+  expect([store.getState().selected.size, store.getState().predicate]).toEqual([0, null]);
+});
 test("a ScaleLike with no range (it is optional) brushes across the svg's box on that axis, never [Infinity, -Infinity]", () => {
   const svg = chart();
   const x = svg.scale("x") as Plot.Scale;
