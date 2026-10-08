@@ -569,10 +569,13 @@ The d3 twins are `appendLegend` (colour bar plus a cell size key) and `appendSig
 - `shootingSignature` does not clamp y: the ribbon's edges are `fgPct ± halfWidth`, so near 0% or 100% they pass a
   [0, 1] domain (`main` clamps the ribbon's centre, which misstates FG%). Pass `y: { domain: [0, 1], clamp: true }` to
   clamp. `appendSignature` uses your `y` scale as it is; a clamped scale clamps the centre.
-- Marks paint in array order, so zone fills after `...court.marks` dim the court lines under them. Drawing the court
-  last would hide the zones under its floor; for lines on top, add a second `surface` after the zones whose
-  `colorUpdates` set `plot_background`, `defensive_half_court`, `offensive_half_court`, `court_apron`,
-  `two_point_range`, `painted_area`, `center_circle_fill` and `free_throw_circle_fill` to `"#00000000"`.
+- Marks paint in array order. `shotZones` returns the zone paths, then the labels, then the tip, and
+  `shootingSignature`'s tip is its last mark too, so spread these marks last, or add other marks before them: a mark
+  added after them paints over the tip. Zone fills after `...court.marks` dim the court lines under them, and drawing
+  the court last would hide the zones under its floor. For lines on top, put a second `surface` right after the zone
+  paths, its `colorUpdates` setting `plot_background`, `defensive_half_court`, `offensive_half_court`, `court_apron`,
+  `two_point_range`, `painted_area`, `center_circle_fill` and `free_throw_circle_fill` to `"#00000000"`:
+  `const [paths, ...rest] = shotZones(areas, o)`, then `marks: [...court.marks, paths, ...lines.marks, ...rest]`.
 - Faces: `appendHeadshots(…, { clip: "circle", ring, placeholder })` draws circular headshots. The image is drawn 2.3
   radii tall so the head fills the circle, so `drawnMarks` reports 1.15 × `height` for a face.
 - `<Headshot fallback="initials" name="…">` (React) shows the player's initials when there is no headshot or it fails

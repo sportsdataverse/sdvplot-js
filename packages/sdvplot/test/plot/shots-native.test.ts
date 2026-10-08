@@ -206,6 +206,32 @@ test("shotZones labels are aria-hidden (the paths carry the names); a signature 
   );
 });
 
+test("the tip is the last mark shotZones and shootingSignature return: the zone labels never paint over it", () => {
+  const z = statsByZone(BKN);
+  const label = (k: keyof typeof z) => `${z[k].makes}/${z[k].attempts}`;
+  const zones = shotZones(basketballZones("nba", { scale: 10 }), {
+    fill: () => "#ddd",
+    text: label,
+    stats: z,
+    tip: true,
+  });
+  expect(zones).toHaveLength(3);
+  expect(zones.at(-1)).toBeInstanceOf(Plot.Tip);
+  const fig = Plot.plot({ x: { domain: [-47, 0] }, y: { domain: [-25, 25] }, marks: zones });
+  expect(Array.from(fig.children, (c) => c.getAttribute("aria-label")).slice(-3)).toEqual([
+    "geo",
+    "text",
+    "tip",
+  ]);
+  // [0] the paths and [1] the labels, with or without a tip
+  const plain = shotZones(basketballZones("nba", { scale: 10 }), { fill: () => "#ddd", text: label });
+  expect(plain).toHaveLength(2);
+  const sig = shootingSignature(signaturePoints(vsLeague(fgPctByDistance(BKN), LEAGUE.byFoot)), {
+    tip: true,
+  });
+  expect(sig.at(-1)).toBeInstanceOf(Plot.Tip);
+});
+
 type Pt = readonly [number, number];
 /** Winding number of `p` around a closed ring: an independent inside test (shotZones samples by even-odd). */
 function winding([x, y]: Pt, ring: readonly Pt[]): number {

@@ -274,11 +274,14 @@ export interface ShotZonesOptions extends GeoPassThrough {
  * corner strips' set vertically (blazing-the-nets `main` zones mode, `lib/charts/hexShotChart.ts:97-136`). Each
  * area's path carries `data-sdv-id` = its zone.
  *
- * Marks paint in array order, so after `...court.marks` the zone fills dim the court lines under them. `main` draws
- * its lines after the zones. Moving the court mark last would hide the zones under its floor (sporty draws lines as
- * filled polygons), so add a second `surface` after the zones instead, its `colorUpdates` setting `plot_background`,
+ * Returns the zone paths, then the labels (with `text`), then the tip (with `tip`). Marks paint in array order and
+ * the tip is last, so spread these marks LAST, or add other marks before them: a mark added after them paints over
+ * the tip. After `...court.marks` the zone fills dim the court lines under them; `main` draws its lines after the
+ * zones, but moving the court mark last would hide the zones under its floor (sporty draws lines as filled polygons).
+ * For lines on top, put a second `surface` right after the paths, its `colorUpdates` setting `plot_background`,
  * `defensive_half_court`, `offensive_half_court`, `court_apron`, `two_point_range`, `painted_area`,
- * `center_circle_fill` and `free_throw_circle_fill` to `"#00000000"`: only the lines remain.
+ * `center_circle_fill` and `free_throw_circle_fill` to `"#00000000"` so only the lines remain:
+ * `const [paths, ...rest] = shotZones(areas, o)`, then `marks: [...court.marks, paths, ...lines.marks, ...rest]`.
  * The areas are the mark's data and each path is named by its zone. `tip: true` adds a `Plot.tip` mark that names
  * the zone under the pointer and, with `stats` (`statsByZone(shots)`), its makes/attempts and FG%. It follows the
  * nearest of a grid of anchors inside the zones (a fortieth of their extent apart, 1.25 ft on an NBA half court), so
@@ -328,6 +331,27 @@ export function shotZones(areas: readonly BasketballZoneArea[], o: ShotZonesOpti
       ),
     }),
   ];
+  if (text) {
+    const labels = areas.map((a) => {
+      const [x, y] = toPlot(a.label, f);
+      return { x, y, text: text(a.zone), vertical: a.vertical };
+    });
+    marks.push(
+      Plot.text(labels, {
+        x: "x",
+        y: "y",
+        text: "text",
+        rotate: (d: { vertical: boolean }) => (d.vertical ? -90 : 0),
+        fill: "currentColor",
+        stroke: "var(--sdv-bg, white)",
+        strokeWidth: 3,
+        strokeLinejoin: "round",
+        paintOrder: "stroke",
+        ariaHidden: "true", // the zone paths carry the names; the labels repeat them
+      }),
+    );
+  }
+  // the tip goes last, so nothing shotZones draws paints over it (Plot appends its own derived tips last too)
   const t =
     tip === undefined ? false : withFormat(tip, { x: false, y: false, zone: true, made: true, fgPct: ".1%" });
   if (t !== false) {
@@ -360,26 +384,6 @@ export function shotZones(areas: readonly BasketballZoneArea[], o: ShotZonesOpti
           ...options,
         }),
       ),
-    );
-  }
-  if (text) {
-    const labels = areas.map((a) => {
-      const [x, y] = toPlot(a.label, f);
-      return { x, y, text: text(a.zone), vertical: a.vertical };
-    });
-    marks.push(
-      Plot.text(labels, {
-        x: "x",
-        y: "y",
-        text: "text",
-        rotate: (d: { vertical: boolean }) => (d.vertical ? -90 : 0),
-        fill: "currentColor",
-        stroke: "var(--sdv-bg, white)",
-        strokeWidth: 3,
-        strokeLinejoin: "round",
-        paintOrder: "stroke",
-        ariaHidden: "true", // the zone paths carry the names; the labels repeat them
-      }),
     );
   }
   return marks;
@@ -419,6 +423,8 @@ const SVG_NS = "http://www.w3.org/2000/svg";
  * domain (`main` clamps the ribbon's centre instead, which misstates FG%). To clamp them, pass
  * `y: { domain: [0, 1], clamp: true }`.
  * `tip` adds a `Plot.tip` that follows the pointer along x (`Plot.pointerX`): distance, FG%, league FG% and share.
+ * It is the last mark returned, and a mark added after it paints over it, so spread these marks LAST, or add other
+ * marks (a `Plot.ruleY`, say) before them.
  *
  * @example
  * ```ts

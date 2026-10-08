@@ -80,6 +80,8 @@ The three Plot marks take `tip: true`, as the hex chart, zones and signature abo
 attempts, FG%, the league's FG% and the shrunk difference; a zone shows its name and, when `shotZones` is given
 `stats` (`statsByZone(shots)`), its makes/attempts and FG%; the signature shows the distance, FG%, the league's FG%
 and the share of shots where the pointer is. A tip object's `format` overrides sdvplot's formats key by key.
+`shotZones` and `shootingSignature` return the tip as their last mark, so spread them last, or add other marks before
+them: a mark added after them paints over the tip.
 `shotCells`' `dropOutside` (default true) leaves out cells whose centre is outside the frame, so a tip never points
 at a cell that is not drawn; Plot's own `clip` passes through and cuts paths at the frame instead.
 
