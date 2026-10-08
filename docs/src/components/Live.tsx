@@ -109,8 +109,10 @@ export default function Live(p: LiveProps): ReactElement {
           setMounted(true);
         },
         (e: unknown) => {
+          // A cancelled effect no longer owns the host: a newer draw (p.id changed) may be mounting into it.
+          if (cancelled) return;
           el.replaceChildren(); // whatever the library drew before it threw
-          if (!cancelled) fail(e);
+          fail(e);
         },
       );
     return () => {
