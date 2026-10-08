@@ -32,11 +32,14 @@ export function BASE_CSS(sel: string): string {
     `${s} th[aria-sort="ascending"] .sdvt-sort::after{content:" ▲";content:" ▲"/"";font-size:.7em}`,
     `${s} th[aria-sort="descending"] .sdvt-sort::after{content:" ▼";content:" ▼"/"";font-size:.7em}`,
     `${s} .sdvt-toolbar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}`,
-    `${s} .sdvt-toolbar input{font:inherit;padding:2px 6px;border:1px solid var(--sdvt-rule);background:var(--sdvt-bg);color:var(--sdvt-text)}`,
+    // I4 (WCAG 1.4.11): the theme's rule taken 60% of the way to the text colour, 3:1 or better on the table background
+    // in every theme (a black or ink rule stays itself); where color-mix is unsupported, the text colour
+    `${s} .sdvt-toolbar input{font:inherit;padding:2px 6px;border:1px solid var(--sdvt-text);border-color:color-mix(in srgb,var(--sdvt-text) 60%,var(--sdvt-rule));background:var(--sdvt-bg);color:var(--sdvt-text)}`,
     `${s} .sdvt-pager{display:flex;gap:8px;align-items:center;justify-content:flex-end;margin-top:6px}`,
     `${s} .sdvt-page{font:inherit;cursor:pointer}`,
     `${s} .sdvt-page[aria-disabled="true"]{opacity:.4;cursor:default}`, // M1: aria-disabled, so focus stays on an edge button
     `${s} tr.sdvt-selected>td{box-shadow:inset 0 0 0 9999px rgba(127,127,127,.18)}`,
+    `${s} tr.sdvt-selected>td:first-child{box-shadow:inset 3px 0 0 var(--sdvt-text),inset 0 0 0 9999px rgba(127,127,127,.18)}`, // I4: the tint is 1.2:1; a text-coloured bar gives the state 3:1
     `${s} tr.sdvt-row:focus-visible{outline:2px solid currentColor;outline-offset:-2px}`, // Task 10: the grid's tab stop (WCAG 2.4.7)
     `${s} th.sdvt-col-current .sdvt-sort{text-decoration:underline;text-underline-offset:4px}`, // Task 10: the column `s` sorts
   ].join("\n");
