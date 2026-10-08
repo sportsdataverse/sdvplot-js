@@ -32,6 +32,14 @@ export interface ToPNGOptions {
    * `fetch` and draws it, a failed download throwing `DownloadError`; `"skip"` leaves them out with one warning
    */
   images?: "fetch" | "skip";
+  /**
+   * the fonts `<text>` is drawn with. resvg draws text only in fonts it has loaded, and with none (a host without
+   * system fonts: slim Docker images, minimal CI runners) every label renders as nothing, with no error. `files`: font
+   * files (.ttf, .otf, .ttc) on disk to load, each checked to exist; `defaultFamily`: the family for text whose own
+   * families are not loaded (absent: resvg's choice, the first font loaded); `system`: also load the system fonts,
+   * default true. Absent: the system fonts only.
+   */
+  fonts?: { files?: readonly string[]; defaultFamily?: string; system?: boolean };
 }
 /** Options for {@link socialCard}; defaults are Python/R `gt_social_crop`'s. */
 export interface SocialCardOptions {
@@ -260,11 +268,25 @@ const hrefAttr = (url: string): RegExp => {
 /**
  * Rasterize an SVG with `@resvg/resvg-js` (optional peer; Node only). Throws OptionalDependencyError when it is missing.
  * An HTML-serialized figure (a DOM element or its `outerHTML`, as Observable Plot makes) gets the `xmlns` (and
- * `xmlns:xlink`) declarations it lacks. Remote images are downloaded and drawn unless `images` is `"skip"`.
+ * `xmlns:xlink`) declarations it lacks. Remote images are downloaded and drawn unless `images` is `"skip"`. Text is
+ * drawn in the system fonts; on a host without any, pass `fonts.files` or every label comes out blank.
+ *
+ * @example
+ * ```ts
+ * import { dirname, join } from "node:path";
+ * import { fileURLToPath } from "node:url";
+ * import { toPNG } from "@sportsdataverse/sdvplot/export";
+ *
+ * // any .ttf/.otf on disk; this one is Source Sans 3 (OFL) from the sdvplot-js repo's examples/fonts
+ * const font = join(dirname(fileURLToPath(import.meta.url)), "../../../../fonts/SourceSans3-Regular.ttf");
+ * const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="240" height="60"><text x="8" y="42" font-size="32">Giants 27</text></svg>`;
+ * // the same pixels with or without system fonts: only the given file is loaded
+ * await toPNG(svg, { background: "white", fonts: { files: [font], system: false } });
+ * ```
  */
 export async function toPNG(
   svg: string | { outerHTML: string },
-  { width, scale = 1, background, color, images = "fetch" }: ToPNGOptions = {},
+  { width, scale = 1, background, color, images = "fetch", fonts = {} }: ToPNGOptions = {},
 ): Promise<Uint8Array> {
   if (!(Number.isFinite(scale) && scale > 0))
     throw new InputError(`scale must be a positive number, got ${String(scale)}`);
@@ -274,6 +296,7 @@ export async function toPNG(
   if (color !== undefined) checkColor("color", color);
   if (images !== "fetch" && images !== "skip")
     throw new InputError(`images must be "fetch" or "skip", got ${JSON.stringify(images)}`);
+  const font = await fontOptions(fonts);
   let text = typeof svg === "string" ? svg : svg.outerHTML;
   const mod = await import("@resvg/resvg-js").catch((e: unknown) => {
     throw new OptionalDependencyError(
@@ -287,7 +310,7 @@ export async function toPNG(
     width !== undefined
       ? { mode: "width" as const, value: Math.round(width * scale) }
       : { mode: "zoom" as const, value: scale };
-  const opts = { fitTo, ...(background !== undefined && { background }) };
+  const opts = { fitTo, font, ...(background !== undefined && { background }) };
 
   const open = OPEN_TAG.exec(text)?.[0];
   if (open !== undefined) {
@@ -354,6 +377,27 @@ export async function toPNG(
 }
 
 const NO_FONTS = { font: { loadSystemFonts: false } };
+
+/** `fonts` as resvg's `font` option; a missing font file is an InputError (resvg would skip it, drawing no text). */
+async function fontOptions({ files = [], defaultFamily, system = true }: NonNullable<ToPNGOptions["fonts"]>) {
+  if (!Array.isArray(files) || files.some((f) => typeof f !== "string"))
+    throw new InputError(`fonts.files must be an array of font file paths, got ${JSON.stringify(files)}`);
+  if (defaultFamily !== undefined && typeof defaultFamily !== "string")
+    throw new InputError(`fonts.defaultFamily must be a string, got ${JSON.stringify(defaultFamily)}`);
+  if (typeof system !== "boolean")
+    throw new InputError(`fonts.system must be a boolean, got ${JSON.stringify(system)}`);
+  if (files.length > 0) {
+    const { statSync } = await import("node:fs"); // ponytail: loaded only when files are given; /export is Node-only
+    for (const f of files)
+      if (!statSync(f, { throwIfNoEntry: false })?.isFile())
+        throw new InputError(`fonts.files: no font file at ${JSON.stringify(f)}`);
+  }
+  return {
+    loadSystemFonts: system,
+    fontFiles: [...files],
+    ...(defaultFamily !== undefined && { defaultFontFamily: defaultFamily }),
+  };
+}
 /** A shared image's one raster is this many times its largest box: headroom for a transform that enlarges it. */
 const OVERSAMPLE = 2;
 

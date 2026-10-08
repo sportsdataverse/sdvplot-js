@@ -59,6 +59,11 @@ export function toPNG(svg: string | {
 export interface ToPNGOptions {
     background?: string;
     color?: string;
+    fonts?: {
+        files?: readonly string[];
+        defaultFamily?: string;
+        system?: boolean;
+    };
     images?: "fetch" | "skip";
     scale?: number;
     width?: number;
