@@ -39,7 +39,10 @@ export default function sdvExamples(_context: LoadContext): Plugin {
               include: abs("docs/docs/"),
               enforce: "pre",
               use: [
-                { loader: abs("examples/scripts/live-deps.cjs"), options: { outDir: abs("examples/out") } },
+                {
+                  loader: abs("examples/scripts/live-deps.cjs"),
+                  options: { outDir: abs("examples/out"), snippetDir: abs("examples/snippets") },
+                },
               ],
             },
           ],

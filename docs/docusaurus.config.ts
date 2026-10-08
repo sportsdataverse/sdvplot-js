@@ -50,7 +50,9 @@ const config: Config = {
         docs: {
           sidebarPath: "./sidebars.ts",
           routeBasePath: "/",
-          remarkPlugins: [[remarkLive, { outDir: resolve("../examples/out") }]],
+          remarkPlugins: [
+            [remarkLive, { outDir: resolve("../examples/out"), snippetDir: resolve("../examples/snippets") }],
+          ],
         },
         blog: false,
         theme: { customCss: "./src/css/custom.css" },

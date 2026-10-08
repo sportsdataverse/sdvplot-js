@@ -6,10 +6,14 @@ const { join } = require("node:path");
 
 /** The ids of an MDX source's `<Live id="…">` tags (remark-live accepts only a literal id). */
 const liveIds = (source) => [...source.matchAll(/<Live\b[^>]*?\bid=(["'])(.+?)\1/g)].map((m) => m[2]);
+/** The files of its `<Snippet file="…">` tags, which remark-live inlines the same way. */
+const snippetFiles = (source) =>
+  [...source.matchAll(/<Snippet\b[^>]*?\bfile=(["'])(.+?)\1/g)].map((m) => m[2]);
 
 module.exports = function liveDeps(source) {
-  const { outDir } = this.getOptions();
+  const { outDir, snippetDir } = this.getOptions();
   for (const id of liveIds(source)) this.addDependency(join(outDir, `${id}.json`));
+  for (const f of snippetFiles(source)) this.addDependency(join(snippetDir, f));
   return source;
 };
 module.exports.liveIds = liveIds;

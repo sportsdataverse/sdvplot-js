@@ -1,0 +1,20 @@
+---
+// src/components/game/GameWinProbability.astro: runs on the server, under the Cloudflare adapter as under Node
+import { loadLeague, matchupColorsSync } from "@sportsdataverse/sdvplot";
+import WinProbabilityChart from "./WinProbabilityChart.svelte";
+
+interface Props {
+  /** The two teams as the game page names them, e.g. "Georgia" and "Alabama". */
+  home: string;
+  away: string;
+  /** The home team's win probability after each play, against minutes played. */
+  plays: { minute: number; home_wp: number }[];
+}
+const { home, away, plays }: Props = Astro.props;
+
+await loadLeague("cfb");
+// Game on Paper's "game colours": a light and a dark pair, home first, chosen here so no picker code ships
+const colors = matchupColorsSync(home, away, { league: "cfb" });
+---
+
+<WinProbabilityChart client:only="svelte" home={home} away={away} plays={plays} colors={colors} />

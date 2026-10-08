@@ -37,19 +37,44 @@ interface MdNode {
   name?: string | null;
   attributes?: Attribute[];
   children?: MdNode[];
+  lang?: string;
+  meta?: string;
+  value?: string;
 }
+/** Prism has no Astro or Svelte grammar; their markup reads well enough as HTML. */
+const LANG: Readonly<Record<string, string>> = { astro: "html", svelte: "html", ts: "ts", tsx: "tsx" };
 const attr = (name: string, value: string): Attribute => ({ type: "mdxJsxAttribute", name, value });
 
 /**
  * remark plugin: give every `<Live id="…"/>` its prerendered output (examples/out/<id>.json) as props at MDX
  * compile time, so the static HTML already holds the figure, table or value. An unknown id, a computed id or the
- * same id twice on one page fails the docs build.
+ * same id twice on one page fails the docs build. `<Snippet file="…"/>` becomes a code block holding that file of
+ * `snippetDir` (examples/snippets: framework code the gate typechecks but cannot run); an unknown file fails the build.
  */
-export default function remarkLive(o: { outDir: string }): (tree: MdNode, file: { path?: string }) => void {
+export default function remarkLive(o: {
+  outDir: string;
+  snippetDir?: string;
+}): (tree: MdNode, file: { path?: string }) => void {
   return (tree, file) => {
     const where = file.path ?? "an MDX file";
     const seen = new Set<string>();
     const visit = (n: MdNode): void => {
+      if (n.type === "mdxJsxFlowElement" && n.name === "Snippet") {
+        const name = n.attributes?.find((a) => a.type === "mdxJsxAttribute" && a.name === "file")?.value;
+        if (typeof name !== "string" || o.snippetDir === undefined)
+          throw new Error(`${where}: <Snippet> needs a literal file="…" and remark-live's snippetDir`);
+        let value: string;
+        try {
+          value = readFileSync(join(o.snippetDir, name), "utf8").trimEnd();
+        } catch {
+          throw new Error(`${where}: no snippet "${name}" in ${o.snippetDir}`);
+        }
+        const ext = name.split(".").pop() ?? "";
+        // the JSX element becomes a markdown code node in place
+        for (const k of ["name", "attributes", "children"] as const) delete n[k];
+        Object.assign(n, { type: "code", lang: LANG[ext] ?? ext, meta: `title="${name.split("/").pop()}"`, value });
+        return;
+      }
       if ((n.type === "mdxJsxFlowElement" || n.type === "mdxJsxTextElement") && n.name === "Live") {
         const id = n.attributes?.find((a) => a.type === "mdxJsxAttribute" && a.name === "id")?.value;
         if (typeof id !== "string") throw new Error(`${where}: <Live> needs a literal id="…"`);

@@ -3,7 +3,8 @@ import { join } from "node:path";
 import { expect, test } from "vitest";
 import { abs } from "../sources.js";
 
-// Hand-written docs pages show code only through <Live>: a ```ts block there would be code nothing runs.
+// Hand-written docs pages show code only through <Live>, or <Snippet> for framework files the gate typechecks
+// (test/snippets.test.ts): a ```ts block there would be code nothing runs or checks.
 test("no hand-written docs page holds a js/ts/tsx code fence", () => {
   const offenders: string[] = [];
   const walk = (dir: string): void => {

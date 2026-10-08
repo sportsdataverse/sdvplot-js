@@ -34,6 +34,7 @@
     "src",
     "scripts",
     "test",
+    "snippets",
     "../packages/sdvplot/src/globals.d.ts",
     "../packages/sporty/src/globals.d.ts",
     "../packages/sdvtables/src/globals.d.ts"

@@ -12,7 +12,9 @@
       "docs/build/**",
       "docs/.docusaurus/**",
       "docs/docs/api/**",
-      "spikes/**"
+      "spikes/**",
+      "examples/snippets/**/*.svelte",
+      "examples/snippets/**/*.astro"
     ]
   },
   "formatter": { "indentStyle": "space", "indentWidth": 2, "lineWidth": 110 },

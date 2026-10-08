@@ -29,8 +29,16 @@ return plain URLs for an `<img>` or `next/image` (add `sdv.nyc3.cdn.digitalocean
 ## d3 inside an effect
 
 The helpers in `@sportsdataverse/sdvplot/d3` append to a selection you made, so they drop into the `useEffect` that
-already draws a chart: `select(ref.current)` from `d3-selection` is the selection they take. They import from the
-`d3` package, so add it beside the modular ones.
+already draws a chart: `select(ref.current)` is the selection they take. They import from the `d3` package, so add it
+beside the modular ones.
+
+Two things the effect has to do. The helpers that look teams up (`appendSurface` with a `team`, `appendLogos`,
+`appendWordmarks`, `teamColorScale`) need `loadLeague(league)` in the browser too: a server component's call loads the
+league on the server only, so await it inside the effect, with a flag that stops a draw after cleanup. And each helper
+returns the `<g>` it appended, which the effect's cleanup removes: React Strict Mode runs every effect twice in
+development, and without the cleanup the marks are drawn twice.
+
+<Snippet file="blazing-the-nets/ShotChart.tsx" />
 
 <Live id="sdvplot/d3/append-headshots" />
 
@@ -48,6 +56,9 @@ them into court feet, and `appendSurface` draws the court (in a team's colours i
 ## Tables
 
 `renderHTMLAsync(spec, rows)` in a server component returns the table as an HTML string for
-`dangerouslySetInnerHTML`; a headshot column needs only the ESPN ids.
+`dangerouslySetInnerHTML`; a headshot column needs only the ESPN ids. The string starts with a Google Fonts `<link>`
+and the theme's `<style>`: in a layout that already loads its fonts, pass `{ fonts: false }`, and with many tables
+pass `{ css: "none" }` and put the theme's stylesheet in the layout once ([HTML, SSR and the host
+page](./tables-html.mdx)).
 
 <Live id="sdvtables/kinds/headshot" />

@@ -78,7 +78,7 @@ test("an unknown or repeated <Live id> fails the docs build", () => {
 });
 
 interface LoaderContext {
-  getOptions(): { outDir: string };
+  getOptions(): { outDir: string; snippetDir?: string };
   addDependency(file: string): void;
 }
 const liveDeps: ((this: LoaderContext, source: string) => string) & { liveIds(source: string): string[] } =
@@ -99,4 +99,35 @@ test("a page depends on the outputs its <Live> tags inline, so a warm build cach
     const text = readFileSync(join(docs, p), "utf8");
     expect(liveDeps.liveIds(text).length, p).toBe(text.match(/<Live\b/g)?.length ?? 0);
   }
+});
+
+test("<Snippet file> becomes a code block holding that snippet; an unknown file fails the docs build", () => {
+  const snippet = (file: string) => ({
+    type: "root",
+    children: [
+      {
+        type: "mdxJsxFlowElement",
+        name: "Snippet",
+        attributes: [{ type: "mdxJsxAttribute", name: "file", value: file }],
+      },
+    ],
+  });
+  const snippetDir = abs("examples/snippets");
+  const t = snippet("game-on-paper/WinProbabilityChart.svelte");
+  remarkLive({ outDir: out, snippetDir })(t, { path: "a.mdx" });
+  expect(t.children[0]).toMatchObject({
+    type: "code",
+    lang: "html",
+    meta: 'title="WinProbabilityChart.svelte"',
+    value: readFileSync(join(snippetDir, "game-on-paper/WinProbabilityChart.svelte"), "utf8").trimEnd(),
+  });
+  expect(() => remarkLive({ outDir: out, snippetDir })(snippet("nope.svelte"), { path: "a.mdx" })).toThrow(
+    'a.mdx: no snippet "nope.svelte"',
+  );
+  const deps: string[] = [];
+  liveDeps.call(
+    { getOptions: () => ({ outDir: "out", snippetDir: "snip" }), addDependency: (f) => void deps.push(f) },
+    '<Snippet file="a/B.svelte" />',
+  );
+  expect(deps).toEqual([join("snip", "a/B.svelte")]);
 });
