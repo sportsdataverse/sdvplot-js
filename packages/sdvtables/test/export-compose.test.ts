@@ -1,0 +1,61 @@
+import { InputError } from "@sportsdataverse/sdvplot";
+import { expect, test } from "vitest";
+import { gridTables, slug, stackTables } from "../src/export/compose.js";
+import { renderHTML } from "../src/html/index.js";
+import { rows, spec } from "./fixtures/engine.js";
+
+const east = { spec, rows: rows.slice(0, 2) };
+const west = { spec, rows: rows.slice(2) };
+
+test("gridTables lays tables out in a CSS grid with Python's defaults", () => {
+  const html = gridTables([east, west, east]);
+  expect(html).toContain(
+    'style="display:grid;grid-template-columns:repeat(2,max-content);gap:24px;align-items:start;justify-content:center"',
+  );
+  expect(html.match(/class="sdvt sdvt-theme-sdv /g)?.length).toBe(3);
+  expect(html).toContain(renderHTML(spec, east.rows));
+});
+test("labels recycle and are escaped; title/caption compose with Python's style values; align maps", () => {
+  const html = gridTables([east, west], {
+    ncol: 1,
+    gap: 8,
+    align: "bottom",
+    labels: ["A&E"],
+    title: "Division leaders",
+    caption: "Data: ESPN",
+    sourceNote: "@sdv",
+    captionRule: true,
+  });
+  expect(html.match(/<div class="sdvt-compose-label">A&amp;E<\/div>/g)?.length).toBe(2);
+  expect(html).toContain("align-items:end");
+  expect(html).toContain('<h1 class="sdvt-compose-title">Division leaders</h1>');
+  expect(html).toContain(
+    '<footer class="sdvt-compose-foot"><p class="sdvt-compose-caption sdvt-compose-rule">Data: ESPN</p><p class="sdvt-compose-source">@sdv</p></footer>',
+  );
+  // _export.py _STYLE_DEFAULTS: caption #8A8A8A centred 12px, rule under the caption in its colour
+  expect(html).toContain(
+    ".sdvt-compose-caption{font-size:12px;font-weight:400;color:#8A8A8A;text-align:center;margin:10px 0 0}",
+  );
+  expect(html).toContain(".sdvt-compose-rule{border-bottom:1px solid #8A8A8A;padding-bottom:6px}");
+  expect(gridTables([east])).not.toContain("<header");
+});
+test("stackTables is a flex column; pre-rendered HTML strings are accepted as items", () => {
+  const html = stackTables([east, "<p>custom</p>"], { align: "left" });
+  expect(html).toContain('style="display:flex;flex-direction:column;gap:16px;align-items:flex-start"');
+  expect(html).toContain("<p>custom</p>");
+});
+test("argument checks run before anything renders", () => {
+  expect(() => gridTables([east], { ncol: 0 })).toThrow(InputError);
+  expect(() => gridTables([east], { ncol: 1.5 })).toThrow(InputError);
+  expect(() => gridTables([east], { labels: [] })).toThrow(InputError);
+  expect(() => gridTables([east], { align: "middle" as never })).toThrow(InputError);
+  expect(() => stackTables([east], { gap: -1 })).toThrow(InputError);
+  expect(() => stackTables([east], { align: "top" as never })).toThrow(InputError);
+  expect(() => stackTables([], {})).toThrow(InputError);
+});
+test("slug matches Python _slug", () => {
+  expect(slug("North / East")).toBe("north-east");
+  expect(slug(" AFC West! ")).toBe("afc-west");
+  expect(slug(2024)).toBe("2024");
+  expect(slug("a.b_c-d")).toBe("a.b_c-d");
+});
