@@ -1,7 +1,17 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { InputError, UnsupportedTargetError } from "../src/errors.js";
 import { resetWarnings, resolveSync, setWarningHandler } from "../src/index.js";
-import { type PlotlyFigure, drawnMarks, withHeadshots, withLogos, withWordmarks } from "../src/plotly.js";
+import {
+  type PlotlyFigure,
+  drawnAxisMarks,
+  drawnMarks,
+  teamColorway,
+  visibleAxisLabels,
+  withAxisLogos,
+  withHeadshots,
+  withLogos,
+  withWordmarks,
+} from "../src/plotly.js";
 import { BUF, KC, ROWS, ROWS_UNKNOWN } from "./_fixtures.js";
 
 beforeEach(() => resetWarnings()); // warn() dedupes per key per process; every test counts its own
@@ -215,5 +225,89 @@ describe("withLogos on a scatter", () => {
       embed: new Map([[url, "data:image/png;base64,QQ=="]]),
     });
     expect(drawnMarks(emb)[0]![4]).toBe("data:image/png;base64,QQ==");
+  });
+});
+
+describe("withAxisLogos", () => {
+  const bars = (labels: string[]): PlotlyFigure => ({
+    data: [{ type: "bar", x: labels, y: labels.map((_, i) => i + 1) }],
+    layout: {},
+  });
+
+  test("x axis: resolved labels become images under the plot, unknown ones stay text with one warning, margin grows", () => {
+    const spy = vi.fn();
+    setWarningHandler(spy);
+    const out = withAxisLogos(
+      { ...bars(["KC", "XXX", "BUF"]), layout: { height: 400, margin: { t: 50, b: 50 } } },
+      "x",
+      {
+        league: "nfl",
+        height: 0.1,
+      },
+    );
+    setWarningHandler(null);
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(drawnAxisMarks(out, "x")).toEqual([
+      [ID(KC), 0, 0.1],
+      [ID(BUF), 2, 0.1],
+    ]);
+    expect(visibleAxisLabels(out, "x")).toEqual(["XXX"]);
+    expect(out.layout!.margin!.b).toBe(50 + Math.ceil((0.1 * 300) / 1.1));
+    expect(out.layout!.images![0]).toMatchObject({
+      yref: "paper",
+      y: 0,
+      sizey: 0.1,
+      yanchor: "top",
+      xref: "x",
+      xanchor: "center",
+      sizex: 6,
+    });
+    expect(out.layout!.xaxis).toMatchObject({
+      tickmode: "array",
+      tickvals: ["KC", "XXX", "BUF"],
+      ticktext: ["", "XXX", ""],
+    });
+  });
+
+  test("y axis: images left of the plot, range pinned to the category bands, sizey = h × span", () => {
+    const out = withAxisLogos(
+      { data: [{ type: "bar", y: ["KC", "BUF"], x: [1, 2], orientation: "h" }], layout: {} },
+      "y",
+      { league: "nfl", height: 0.1 },
+    );
+    expect(drawnAxisMarks(out, "y")).toEqual([
+      [ID(KC), 0, 0.1],
+      [ID(BUF), 1, 0.1],
+    ]);
+    expect(visibleAxisLabels(out, "y")).toEqual([]);
+    expect(out.layout!.yaxis!.range).toEqual([-0.5, 1.5]);
+    expect(out.layout!.images![0]!.sizey).toBeCloseTo(0.2, 9); // 0.1 of the two-category span
+    expect(out.layout!.images![0]).toMatchObject({
+      xref: "paper",
+      x: 0,
+      xanchor: "right",
+      yanchor: "middle",
+      sizex: 1,
+    });
+    expect(out.layout!.margin!.l).toBeGreaterThan(80);
+  });
+
+  test("needs a category axis; axis must be x or y; wordmarks via markType", () => {
+    expect(() =>
+      withAxisLogos({ data: [{ type: "scatter", x: [1, 2], y: [1, 2] }], layout: {} }, "x", {
+        league: "nfl",
+      }),
+    ).toThrow(/needs a category x axis/);
+    expect(() => withAxisLogos(bars(["KC"]), "z" as "x", { league: "nfl" })).toThrow(InputError);
+    const out = withAxisLogos(bars(["KC"]), "x", { league: "nfl", markType: "wordmark" });
+    expect(out.layout!.images![0]!.name).toBe(`sdvplot:axis:x:${ID(KC)}`);
+  });
+
+  test("teamColorway: one colour per team, fallback for unknown", () => {
+    const cw = teamColorway("nfl", [KC, "XXX", BUF], { fallback: "#999999" });
+    expect(cw).toHaveLength(3);
+    expect(cw[0]).toMatch(/^#[0-9a-f]{6}$/i);
+    expect(cw[1]).toBe("#999999");
+    expect(teamColorway("nfl", [KC], { which: "secondary" })[0]).not.toBe(cw[0]);
   });
 });

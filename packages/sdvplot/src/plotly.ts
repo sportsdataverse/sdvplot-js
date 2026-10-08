@@ -1,18 +1,24 @@
 /** The Plotly adapter: logos, wordmarks, headshots and axis logos as layout images on a plain `{ data, layout }` figure.
  *  Pure: plotly.js is never imported at runtime; the figure is a plain object and a NEW one is returned. */
 import {
+  type AxisOptions,
+  type DrawnAxisMark,
   type DrawnMark,
   type HeadshotOptions,
   type MarkOptions,
   type Placement,
   type Row,
   aspect,
+  axisLetter,
+  axisPlacements,
   checkAlpha,
   checkHeight,
+  colorList,
   imageSources,
   markPlacements,
 } from "./_web.js";
 import { InputError, UnsupportedTargetError, warn } from "./errors.js";
+import type { IdSystem, League, SeasonInput } from "./types.js";
 
 export type { AxisOptions, DrawnAxisMark, DrawnMark, HeadshotOptions, MarkOptions, Row } from "./_web.js";
 export { embedSources } from "./_web.js"; // public: the README tells callers to build `embed` with it
@@ -417,4 +423,104 @@ export function drawnMarks(figure: PlotlyFigure): DrawnMark[] {
       ? [[parts[2] ?? "", im.x, im.y, imageHeight(fig.layout!, im), im.source]]
       : [];
   });
+}
+
+/** Team logos (or wordmarks, `markType`) in place of the tick labels of a category axis.
+ *  x: images hang under the plot in paper y (`height` of the plot, exact), and `margin.b` grows to make room.
+ *  y: images sit left of the plot in data y; the range is pinned to the category bands so `sizey = h × span`. */
+export function withAxisLogos(figure: PlotlyFigure, axis: "x" | "y", o: AxisOptions): PlotlyFigure;
+export function withAxisLogos<F extends object>(figure: F, axis: "x" | "y", o: AxisOptions): F;
+export function withAxisLogos(figure: object, axis: "x" | "y", o: AxisOptions): object {
+  const letter = axisLetter(axis);
+  const h = checkHeight(o.height ?? 0.1);
+  const fig = figureOf(figure);
+  if (axisType(fig, letter, letter, []) !== "category") {
+    throw new InputError(`withAxisLogos needs a category ${letter} axis (team names on the axis)`);
+  }
+  const cats = categories(fig, letter, letter);
+  const labels = cats.map(String);
+  const placements = axisPlacements(labels, letter, o);
+  const ax = axisOf(fig.layout!, letter, letter);
+  const drawn = new Set(placements.map((p) => Number(letter === "x" ? p.x : p.y)));
+  ax.tickmode = "array";
+  ax.tickvals = cats;
+  ax.ticktext = labels.map((lab, i) => (drawn.has(i) ? "" : lab));
+  if (placements.length === 0) return fig;
+  const layout = fig.layout!;
+  const plotH = plotSize(layout, "x", "y")[1];
+  let lo = 0;
+  let hi = 1;
+  if (letter === "x") {
+    // make room under the plot; the plot shrinks by what the margin grows, so `h` of the shrunk plot is what it gained
+    layout.margin = { ...layout.margin, b: margin(layout, "b") + Math.ceil((h * plotH) / (1 + h)) };
+  } else {
+    [lo, hi] = range(fig, "y", "y", [], new Map(cats.map((c, i) => [c, i] as const)), 0);
+    layout.margin = {
+      ...layout.margin,
+      l: margin(layout, "l") + Math.ceil(h * plotH * Math.max(...placements.map(aspect))),
+    };
+  }
+  const sources = imageSources(placements, o.embed);
+  const images: LayoutImage[] = placements.map((p, i) => {
+    const loc = Number(letter === "x" ? p.x : p.y);
+    const common = {
+      source: sources[i]!,
+      sizing: "contain" as const,
+      layer: "above" as const,
+      name: `sdvplot:axis:${letter}:${p.id}`,
+    };
+    return letter === "x"
+      ? {
+          ...common,
+          x: loc,
+          y: 0,
+          xref: "x",
+          yref: "paper",
+          sizex: 2 * cats.length,
+          sizey: h,
+          xanchor: "center",
+          yanchor: "top",
+        }
+      : {
+          ...common,
+          x: 0,
+          y: loc,
+          xref: "paper",
+          yref: "y",
+          sizex: 1,
+          sizey: h * Math.abs(hi - lo),
+          xanchor: "right",
+          yanchor: "middle",
+        };
+  });
+  layout.images = [...(layout.images ?? []), ...images];
+  return fig;
+}
+
+/** One colour per team, in order, for `layout.colorway` (Plotly cycles it per trace). */
+export function teamColorway(
+  league: League,
+  teams: readonly unknown[],
+  o: { which?: "primary" | "secondary"; season?: SeasonInput; idSystem?: IdSystem; fallback?: string } = {},
+): string[] {
+  return colorList(league, teams, o).map((c) => c ?? o.fallback ?? "#808080");
+}
+
+/** Test hook: [teamId, category index, height] for each image on `axis`, in tick order. */
+export function drawnAxisMarks(figure: PlotlyFigure, axis: "x" | "y"): DrawnAxisMark[] {
+  const letter = axisLetter(axis);
+  const fig = figureOf(figure);
+  return (fig.layout!.images ?? [])
+    .flatMap((im): DrawnAxisMark[] => {
+      const p = (im.name ?? "").split(":", 4);
+      return p[0] === "sdvplot" && p[1] === "axis" && p[2] === letter
+        ? [[p[3] ?? "", letter === "x" ? im.x : im.y, imageHeight(fig.layout!, im)]]
+        : [];
+    })
+    .sort((a, b) => a[1] - b[1]);
+}
+/** Test hook: the tick labels on `axis` still shown as text. */
+export function visibleAxisLabels(figure: PlotlyFigure, axis: "x" | "y"): string[] {
+  const letter = axisLetter(axis);
+  return [...(figureOf(figure).layout![axisKey(letter, letter)]?.ticktext ?? [])].filter((t) => t !== "");
 }
