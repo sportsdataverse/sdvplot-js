@@ -87,6 +87,9 @@ export type Data<R> = Iterable<R> | {
     numRows: number;
 };
 
+// @public
+export type GeoPassThrough = Omit<Plot.GeoOptions, "geometry" | "fill" | "r" | "x" | "y">;
+
 // @public (undocumented)
 export interface HeadshotOptions<R> extends ImageMarkOptions {
     // Warning: (ae-forgotten-export) The symbol "HeadshotIdSystem" needs to be exported by the entry point plot.d.ts
@@ -162,6 +165,7 @@ export interface ShootingSignatureOptions {
     fill?: DiffScale;
     halfWidth?: (p: SignaturePoint, maxShare: number) => number;
     league?: boolean;
+    tip?: boolean | Plot.TipOptions;
 }
 
 // Warning: (ae-forgotten-export) The symbol "CellVsLeague" needs to be exported by the entry point plot.d.ts
@@ -170,26 +174,28 @@ export interface ShootingSignatureOptions {
 export function shotCells(cells: readonly CellVsLeague[], o: ShotCellsOptions): Plot.Markish;
 
 // @public
-export interface ShotCellsOptions {
-    clip?: boolean;
+export interface ShotCellsOptions extends GeoPassThrough {
+    dropOutside?: boolean;
     frame?: FrameName | Frame;
     prior?: number;
     r: readonly number[] | number;
     scale?: DiffScale;
     // Warning: (ae-forgotten-export) The symbol "BinShape" needs to be exported by the entry point plot.d.ts
     shape?: BinShape;
-    stroke?: string;
-    strokeWidth?: number;
+    stroke?: Plot.ChannelValueSpec;
+    strokeWidth?: Plot.ChannelValueSpec;
 }
 
 // @public
 export function shotZones(areas: readonly BasketballZoneArea[], o: ShotZonesOptions): Plot.Markish[];
 
 // @public
-export interface ShotZonesOptions {
+export interface ShotZonesOptions extends GeoPassThrough {
     fill: (zone: BasketballZone) => string;
-    fillOpacity?: number;
+    fillOpacity?: Plot.ChannelValueSpec;
     frame?: FrameName | Frame;
+    // Warning: (ae-forgotten-export) The symbol "Split" needs to be exported by the entry point plot.d.ts
+    stats?: Readonly<Record<BasketballZone, Split>>;
     text?: (zone: BasketballZone) => string;
 }
 
