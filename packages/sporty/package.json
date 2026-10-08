@@ -12,6 +12,7 @@
     "./svg": { "types": "./dist/svg.d.ts", "import": "./dist/svg.js" },
     "./specs": { "types": "./dist/specs/index.d.ts", "import": "./dist/specs/index.js" },
     "./plot": { "types": "./dist/plot.d.ts", "import": "./dist/plot.js" },
+    "./canvas": { "types": "./dist/canvas.d.ts", "import": "./dist/canvas.js" },
     "./d3": { "types": "./dist/d3.d.ts", "import": "./dist/d3.js" },
     "./package.json": "./package.json"
   },
@@ -29,12 +30,21 @@
     "directory": "packages/sporty"
   },
   "publishConfig": { "access": "public", "provenance": true },
-  "peerDependencies": { "@observablehq/plot": ">=0.6.16", "d3": ">=7" },
-  "peerDependenciesMeta": { "@observablehq/plot": { "optional": true }, "d3": { "optional": true } },
+  "peerDependencies": { "@observablehq/plot": ">=0.6.16", "d3": ">=7", "@napi-rs/canvas": ">=0.1.50" },
+  "peerDependenciesMeta": {
+    "@observablehq/plot": { "optional": true },
+    "d3": { "optional": true },
+    "@napi-rs/canvas": { "optional": true }
+  },
   "devDependencies": {
+    "@napi-rs/canvas": "^1.0.10",
     "@observablehq/plot": "^0.6.17",
+    "@resvg/resvg-js": "^2.6.2",
     "@types/d3": "^7.4.3",
+    "@types/pngjs": "^6.0.5",
     "d3": "^7.9.0",
-    "jsdom": "^26.1.0"
+    "jsdom": "^26.1.0",
+    "pixelmatch": "^8.0.0",
+    "pngjs": "^7.0.0"
   }
 }
