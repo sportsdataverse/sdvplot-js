@@ -14,28 +14,35 @@ import { Variant } from '@sportsdataverse/sdvplot';
 import { Which } from '@sportsdataverse/sdvplot';
 
 // @public
-export function SdvTable<Row>(input: SdvTableProps<Row>): ReactElement;
+export function SdvTable<Row>(props: SdvTableProps<Row>): ReactElement;
 
-// @public (undocumented)
-export interface SdvTableProps<Row> {
-    // (undocumented)
+// @public
+export interface SdvTableLinkedProps<Row> {
     css?: "inline" | "none";
     interactive?: boolean;
-    // (undocumented)
+    pageSize?: undefined;
+    rows?: readonly Row[];
+    sort?: undefined;
+    // Warning: (ae-forgotten-export) The symbol "TableSpec" needs to be exported by the entry point react.d.ts
+    spec?: TableSpec<Row>;
+    // Warning: (ae-forgotten-export) The symbol "Table" needs to be exported by the entry point react.d.ts
+    table: Table<Row>;
+}
+
+// @public
+export interface SdvTableOwnProps<Row> {
+    css?: "inline" | "none";
+    interactive?: boolean;
     pageSize?: number;
-    // (undocumented)
     rows: readonly Row[];
     // Warning: (ae-forgotten-export) The symbol "Sort" needs to be exported by the entry point react.d.ts
-    //
-    // (undocumented)
     sort?: Sort;
-    // Warning: (ae-forgotten-export) The symbol "TableSpec" needs to be exported by the entry point react.d.ts
-    //
-    // (undocumented)
     spec: TableSpec<Row>;
-    // Warning: (ae-forgotten-export) The symbol "Table" needs to be exported by the entry point react.d.ts
-    table?: Table<Row>;
+    table?: undefined;
 }
+
+// @public
+export type SdvTableProps<Row> = SdvTableOwnProps<Row> | SdvTableLinkedProps<Row>;
 
 // Warning: (ae-forgotten-export) The symbol "TableOptions" needs to be exported by the entry point react.d.ts
 //
@@ -47,7 +54,7 @@ export function useTable<Row>(spec: TableSpec<Row>, rows: readonly Row[], option
 
 // Warnings were encountered during analysis:
 //
-// dist/react.d.ts:8:5 - (ae-forgotten-export) The symbol "TableSnapshot" needs to be exported by the entry point react.d.ts
+// dist/react.d.ts:12:5 - (ae-forgotten-export) The symbol "TableSnapshot" needs to be exported by the entry point react.d.ts
 
 // (No @packageDocumentation comment for this package)
 

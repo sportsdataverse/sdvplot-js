@@ -7,8 +7,8 @@ import {
   useCallback,
   useEffect,
   useLayoutEffect,
-  useMemo,
   useRef,
+  useState,
   useSyncExternalStore,
 } from "react";
 import { type Sort, type Table, type TableOptions, type TableSnapshot, createTable } from "../engine.js";
@@ -17,29 +17,84 @@ import { SR_ONLY, filterInputs, pagerLabel, tableRenderOptions } from "../html/i
 import { type RenderOptions, type RenderedParts, renderParts, tableHTML } from "../html/parts.js";
 import type { TableSpec } from "../spec.js";
 
-/** Subscribe a component to a `createTable` engine via useSyncExternalStore. Options seed the initial state only. */
+/**
+ * The engine behind `useTable` and an owned `<SdvTable/>`, created ONCE per component instance. A new `rows` array
+ * (even an equal copy) goes to `table.setRows`, so the user's sort, filters, page and selection survive a parent
+ * re-render; only a STRUCTURAL spec change (its JSON, functions dropped) builds a new engine from the current props.
+ * Function-valued spec fields (formatters, comparators) are therefore read from the spec the engine was built with.
+ */
+function useOwnedTable<Row>(spec: TableSpec<Row>, rows: readonly Row[], options: TableOptions): Table<Row> {
+  // Not tableId(spec): an explicit spec.id short-circuits it, so a column change under a fixed id would keep a stale engine.
+  // ponytail: one JSON.stringify per render, the same work tableId does for an id-less spec.
+  const key = JSON.stringify(spec);
+  const [held, setHeld] = useState(() => ({ key, table: createTable(spec, rows, options) }));
+  let table = held.table;
+  if (held.key !== key) {
+    table = createTable(spec, rows, options); // React re-runs this render at once with the stored engine
+    setHeld({ key, table });
+  }
+  // after the commit, never during render: setRows notifies subscribers, and React forbids updates from a render
+  useIsoLayoutEffect(() => {
+    if (table.allRows !== rows) table.setRows(rows);
+  }, [table, rows]);
+  return table;
+}
+
+/**
+ * Subscribe a component to a `createTable` engine via useSyncExternalStore. The engine is created once per component:
+ * a new `rows` array is handed to `table.setRows` (sort, filters, page and selection kept), and only a structural
+ * `spec` change rebuilds it, so neither needs to be memoized. `options` are INITIAL state: a later change is ignored.
+ */
 export function useTable<Row>(
   spec: TableSpec<Row>,
   rows: readonly Row[],
   options: TableOptions = {},
 ): { table: Table<Row>; snapshot: TableSnapshot<Row> } {
-  // biome-ignore lint/correctness/useExhaustiveDependencies: options are initial state, not a dependency
-  const table = useMemo(() => createTable(spec, rows, options), [spec, rows]);
+  const table = useOwnedTable(spec, rows, options);
   const snapshot = useSyncExternalStore(table.subscribe, table.getSnapshot, table.getSnapshot);
   return { table, snapshot };
 }
 
-export interface SdvTableProps<Row> {
+/** `<SdvTable/>` building and owning its engine from `spec` and `rows`. */
+export interface SdvTableOwnProps<Row> {
+  /** the table to build; a later change with the same JSON (functions dropped) keeps the engine and its state */
   spec: TableSpec<Row>;
+  /** the source rows; a new array (an equal copy included) keeps the user's sort, filters, page and selection */
   rows: readonly Row[];
-  /** toolbar filters, sort headers and a pager driven by the engine */
+  /** toolbar filters, sort headers and a pager driven by the engine; without it no engine is built */
   interactive?: boolean;
+  /** INITIAL page size (beats `spec.interactive.pageSize`); like a React `default*` prop, a later change is ignored */
   pageSize?: number;
+  /** INITIAL sort; like a React `default*` prop, a later change is ignored */
   sort?: Sort;
+  /** `"none"` leaves the theme stylesheet out */
   css?: "inline" | "none";
-  /** J31 (A8): render this engine (e.g. from `useTable`, linked with `linkSelection`) instead of creating one */
-  table?: Table<Row>;
+  /** absent: pass a `table` to render an engine you own (`SdvTableLinkedProps`) */
+  table?: undefined;
 }
+/**
+ * J31 (A8): `<SdvTable/>` rendering an engine you own (from `createTable` or `useTable`, linked with
+ * `linkSelection`). Its own spec and rows are rendered; `spec` and `rows` passed beside it are accepted and IGNORED
+ * (change the rows with `table.setRows`). Initial state (`pageSize`, `sort`) belongs to that engine, so it is rejected.
+ */
+export interface SdvTableLinkedProps<Row> {
+  /** the engine to render; the component re-renders on its changes */
+  table: Table<Row>;
+  /** ignored: the engine's own spec is rendered */
+  spec?: TableSpec<Row>;
+  /** ignored: the engine's own rows are rendered */
+  rows?: readonly Row[];
+  /** toolbar filters, sort headers and a pager; without it, the engine's current page as a static table */
+  interactive?: boolean;
+  /** `"none"` leaves the theme stylesheet out */
+  css?: "inline" | "none";
+  /** rejected: set it on the engine (`createTable(spec, rows, { pageSize })`) */
+  pageSize?: undefined;
+  /** rejected: set it on the engine (`createTable(spec, rows, { sort })`) */
+  sort?: undefined;
+}
+/** Either an engine to render (`{ table }`) or the data to build one from (`{ spec, rows }`). */
+export type SdvTableProps<Row> = SdvTableOwnProps<Row> | SdvTableLinkedProps<Row>;
 
 /** Wrapper attributes in the string renderer's order: class, id, data-sdvt-theme, data-sdvt-density. */
 function wrapperProps(p: RenderedParts): Record<string, string> {
@@ -82,26 +137,47 @@ function searchBox(
 }
 
 /**
- * Same markup as `renderHTML` (test-enforced): the table block is the string renderer's output; React owns only the
- * toolbar inputs and the pager, so typing in a filter never re-creates the input. The inputs are controlled by the
- * engine state, so a filter set from outside (another component, a linked selection) shows in its box. A control or
- * focusable cell element that a re-render replaces gets focus back, as in `hydrate`. The Google-Fonts link is NOT
- * rendered: put `fontsLinkFor(spec)` in the page head.
+ * Same markup as `renderHTML` (test-enforced). Two forms: `{ spec, rows }` builds an engine (only when `interactive`;
+ * a static table needs none) that lives as long as the component; `{ table }` renders an engine you own, statically
+ * (its current page: filtered, sorted, sliced) or with controls. The table block is the string renderer's output;
+ * React owns only the toolbar inputs and the pager, so typing in a filter never re-creates the input. The inputs are
+ * controlled by the engine state, so a filter set from outside (another component, a linked selection) shows in its
+ * box. A control or focusable cell element that a re-render replaces gets focus back, as in `hydrate`. The
+ * Google-Fonts link is NOT rendered: put `fontsLinkFor(spec)` in the page head.
  */
-export function SdvTable<Row>({
-  spec,
-  rows,
-  interactive = false,
-  pageSize,
-  sort,
-  css,
-  table: external,
-}: SdvTableProps<Row>): ReactElement {
-  const owned = useTable(spec, rows, {
+export function SdvTable<Row>(props: SdvTableProps<Row>): ReactElement {
+  const { interactive = false, css } = props;
+  if (props.table !== undefined)
+    return createElement(TableView<Row>, { table: props.table, interactive, css });
+  if (interactive) return createElement(OwnedTable<Row>, props);
+  const p = renderParts(props.spec, props.rows, { fonts: false, ...(css !== undefined && { css }) });
+  return staticBlock(p);
+}
+
+/** The static table: wrapper, theme sheet and table block, as one string-renderer HTML blob. */
+function staticBlock(p: RenderedParts): ReactElement {
+  const inner = `${p.sheet ? `<style>${p.sheet}</style>` : ""}${tableHTML(p)}`;
+  return createElement("div", { ...wrapperProps(p), dangerouslySetInnerHTML: raw(inner) });
+}
+
+/** I2: the owned engine exists only here, so `{ table }` and static renders never build one. */
+function OwnedTable<Row>({ spec, rows, pageSize, sort, css }: SdvTableOwnProps<Row>): ReactElement {
+  const table = useOwnedTable(spec, rows, {
     ...(pageSize !== undefined && { pageSize }),
     ...(sort !== undefined && { sort }),
   });
-  const table = external ?? owned.table;
+  return createElement(TableView<Row>, { table, interactive: true, css });
+}
+
+function TableView<Row>({
+  table,
+  interactive,
+  css,
+}: {
+  table: Table<Row>;
+  interactive: boolean;
+  css: "inline" | "none" | undefined;
+}): ReactElement {
   const ref = useRef<HTMLDivElement>(null);
   const restore = useRef<(() => void) | null>(null);
   // A50: remember the focused control while the DOM still holds it (the engine notifies before React re-renders)
@@ -120,12 +196,11 @@ export function SdvTable<Row>({
     restore.current = null;
   });
   const base: RenderOptions = { fonts: false, ...(css !== undefined && { css }) };
-
-  if (!interactive) {
-    const p = renderParts(spec, rows, base);
-    const inner = `${p.sheet ? `<style>${p.sheet}</style>` : ""}${tableHTML(p)}`;
-    return createElement("div", { ...wrapperProps(p), dangerouslySetInnerHTML: raw(inner) });
-  }
+  // M3: without controls, the engine's current page, coloured from all its rows (A49)
+  if (!interactive)
+    return staticBlock(
+      renderParts(table.spec, table.rows, { ...base, ...tableRenderOptions(table), interactive: false }),
+    );
 
   const p = renderParts(table.spec, table.rows, { ...base, ...tableRenderOptions(table) });
   const onInput = (e: SyntheticEvent): void => handleInput(table, e.target);

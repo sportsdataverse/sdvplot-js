@@ -3,7 +3,7 @@ import { preloadAll, setWarningHandler } from "@sportsdataverse/sdvplot";
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import type { ReactElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { afterEach, beforeAll, expect, test } from "vitest";
+import { afterEach, beforeAll, expect, test, vi } from "vitest";
 import { defineTable } from "../../src/define.js";
 import { type Table, createTable } from "../../src/engine.js";
 import { renderHTML } from "../../src/html/index.js";
@@ -312,4 +312,82 @@ test("J31: <SdvTable table={…}/> renders an external engine; row hover and cli
   expect(container.querySelector('tr.sdvt-selected [data-col="team"]')?.textContent).toBe("KC");
   fireEvent.mouseLeave(container.firstElementChild as Element);
   expect(seen.at(-1)).toBe("hover:null");
+});
+test("I1 + M4: a parent re-rendering fresh equal rows and an inline spec keeps sort, filter text, page and selection; new rows show; later pageSize/sort are ignored; a structural spec change rebuilds", () => {
+  const Parent = ({
+    data,
+    pageSize,
+    sort,
+    narrow = false,
+  }: {
+    data: readonly Standing[];
+    pageSize: number;
+    sort?: { col: string; dir: "asc" | "desc" };
+    narrow?: boolean;
+  }): ReactElement => (
+    <SdvTable
+      // an explicit id: a structural change must rebuild even though tableId(spec) stays "fixed"
+      spec={{ ...spec, id: "fixed", rowKey: "team", ...(narrow && { columns: spec.columns.slice(0, 2) }) }}
+      rows={data.map((r) => ({ ...r }))}
+      interactive
+      pageSize={pageSize}
+      {...(sort && { sort })}
+    />
+  );
+  const { container, rerender } = render(<Parent data={many} pageSize={5} />);
+  const bodyTeams = (): (string | null)[] =>
+    Array.from(container.querySelectorAll('[data-sdv-body] tbody [data-col="team"]'), (e) => e.textContent);
+  const filter = (): HTMLInputElement => screen.getByLabelText("Filter Team") as HTMLInputElement;
+  fireEvent.click(screen.getByRole("button", { name: "Wins" }));
+  fireEvent.click(screen.getByRole("button", { name: "Wins" })); // desc
+  filter().focus();
+  fireEvent.input(filter(), { target: { value: "T1" } }); // T19..T10
+  fireEvent.click(screen.getByRole("button", { name: "Next page" }));
+  fireEvent.click(container.querySelector('[data-sdv-body] tr[data-row="2"]') as Element); // T12
+  const kept = (): void => {
+    expect(filter().value).toBe("T1");
+    expect(container.querySelector('th[data-col="wins"]')?.getAttribute("aria-sort")).toBe("descending");
+    expect(screen.getByText("Page 2 of 2")).toBeTruthy();
+    expect(bodyTeams()).toEqual(["T14", "T13", "T12", "T11", "T10"]);
+    expect(container.querySelector('tr.sdvt-selected [data-col="team"]')?.textContent).toBe("T12");
+  };
+  kept();
+  rerender(<Parent data={many} pageSize={10} sort={{ col: "team", dir: "asc" }} />); // fresh rows + spec, new initial props
+  kept();
+  expect(document.activeElement).toBe(filter());
+  rerender(
+    <Parent data={many.map((r) => (r.team === "T12" ? { ...r, qb: "Changed QB" } : r))} pageSize={10} />,
+  );
+  kept();
+  expect(container.querySelector('tr.sdvt-selected [data-col="qb"]')?.textContent).toBe("Changed QB");
+  rerender(<Parent data={many} pageSize={10} narrow />); // a different spec: a new engine from the current props
+  expect(container.querySelector('th[data-col="qb"]')).toBeNull();
+  expect(filter().value).toBe("");
+  expect(screen.getByText("Page 1 of 3")).toBeTruthy();
+  expect(container.querySelector("tr.sdvt-selected")).toBeNull();
+});
+test("I2: with table= no owned engine is built; spec and rows are optional, and ignored when passed", () => {
+  const t = createTable(spec, many, { pageSize: 10 });
+  const watched = [...rows];
+  const filter = vi.spyOn(watched, "filter");
+  const { container, rerender } = render(<SdvTable table={t} spec={spec} rows={watched} interactive />);
+  expect(filter).not.toHaveBeenCalled();
+  expect(container.querySelectorAll("[data-sdv-body] tbody tr").length).toBe(10);
+  rerender(<SdvTable table={t} interactive />);
+  expect(screen.getByText("Page 1 of 3")).toBeTruthy();
+});
+test("M3: a non-interactive render of table= shows its current (filtered, sorted) rows and follows the engine", () => {
+  const t = createTable(spec, rows);
+  t.setSort("wins", "desc");
+  t.setFilter("team", "n"); // DEN NYJ NE
+  const html = renderToStaticMarkup(<SdvTable table={t} spec={spec} rows={rows} />);
+  expect(html).toBe(renderHTML(t.spec, t.rows, { fonts: false, domainRows: t.allRows }));
+  expect(html).not.toContain(`class="sdvt-toolbar"`);
+  expect(html).not.toContain("data-sdv-sort");
+  const { container } = render(<SdvTable table={t} />);
+  const shown = (): (string | null)[] =>
+    Array.from(container.querySelectorAll('tbody [data-col="team"]'), (e) => e.textContent);
+  expect(shown()).toEqual(["DEN", "NYJ", "NE"]);
+  act(() => t.setFilter("team", "ny"));
+  expect(shown()).toEqual(["NYJ"]);
 });
