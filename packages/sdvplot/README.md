@@ -591,6 +591,12 @@ The d3 twins are `appendLegend` (colour bar plus a cell size key) and `appendSig
   own `clip` passes through. The shot marks draw your `cells` and `areas` as the mark's data, so `fx`/`fy`,
   `channels` and the tip read your fields; every other Plot geo option passes through. As on the image marks, a
   `transform` or `initializer` that makes new rows (`Plot.group`, `Plot.hexbin`) throws `InputError`.
+- Linking: each cell's path carries `data-sdv-id` `"x,y"` (its legacy centre) and each zone's its name, so
+  `linkSelection(store, { figure, select: "toggle" })` from `sdvplot/interact` toggles them by click, Enter or Space.
+  Hexagon ids and zone names are two id spaces, so give the cells and the zones a store each. A zone's label passes
+  the pointer through to its zone. A click also pins Plot's tip, so give `shotCells` `tip: { pointerEvents: "none" }`
+  (with your `maxRadius`): the pinned tip then never takes a click meant for a cell under it
+  ([guide](https://plot.sportsdataverse.org/guides/shot-charts#linking)).
 - The binners (`hexbin`, `squarebin`, `binner`, `hexagonPath`, `squarePath`, `cellPath`, `cellPoints`) import from
   `sdvplot/shots` or from the sporty-free `sdvplot/bins`. The types the Plot and d3 marks take (`CellVsLeague`,
   `SignaturePoint`, `DiffScale`, `BinShape`) are exported from `sdvplot/shots`, and `BinShape` from `sdvplot/bins` too,
