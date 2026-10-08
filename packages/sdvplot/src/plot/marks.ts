@@ -26,12 +26,18 @@ export type ImagePassThrough = Omit<
 export interface ImageMarkOptions extends ImagePassThrough {
   /** Fraction of the (facet) frame height in (0, 1]; default 0.1. */
   height?: number;
-  /** Opacity in [0, 1]; default 1. Use Plot's `opacity` instead for a per-row channel (not both). */
+  /**
+   * Opacity in [0, 1]; default 1. `alpha` is the Python sdvplot name for a constant `opacity`, kept for parity; Plot's
+   * `opacity` also takes a per-row channel. Passing both throws `InputError`.
+   */
   alpha?: number;
+  // ponytail: no circular crop on the Plot image marks; add an explicit `clip: "circle"` option, as the d3 faces have
+  // (appendHeadshots), if Plot users need round headshots.
   /**
    * Read by `Plot.dodgeX` / `Plot.dodgeY` as the collision radius in pixels (dodge's own option); the image is never
    * clipped or sized by it. Half the drawn height (`height` × frame height / 2) makes neighbours just touch; a smaller
-   * `r` lets them overlap (by design: the images keep their size).
+   * `r` lets them overlap (by design: the images keep their size). Plot's own image mark uses `r` to clip the image to
+   * a circle, while sdvplot uses `r` only for dodge spacing and never clips.
    */
   r?: Plot.ChannelValue;
 }

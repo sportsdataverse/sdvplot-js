@@ -95,8 +95,10 @@ and `fy`, `sort`, `filter` and `reverse`, `dx` and `dy`, `className`, `clip`, `o
   rows first, then draw the result.
 - `height` stays a fraction of the frame, or of each facet's frame under `fx` or `fy`.
 - Under a dodge, `r` is the collision radius in pixels. Half the drawn height makes neighbours just touch; a smaller
-  `r` lets them overlap. It never clips or sizes an image.
-- `alpha` (a constant) and `opacity` (Plot's channel) are exclusive.
+  `r` lets them overlap. It never clips or sizes an image. Plot's own image mark uses `r` to clip the image to a
+  circle, while sdvplot uses `r` only for dodge spacing and never clips.
+- `alpha` is the Python sdvplot name for a constant `opacity`, kept for parity; Plot's `opacity` also takes a per-row
+  channel. Passing both throws `InputError`.
 - A `render`, `transform` or `initializer` you pass is composed with sdvplot's, never replaced: your `render` sees the
   sized image, and `Plot.pointer` stays outermost.
 
