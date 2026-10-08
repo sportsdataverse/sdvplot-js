@@ -10,7 +10,7 @@
   licensed CC BY 4.0.
 - `@sportsdataverse/sdvplot/bins` (re-exported by `@sportsdataverse/sdvplot/shots`): `hexbin` and `hexagonPath` port
   **d3-hexbin** 0.2.2, Copyright Mike Bostock, 2012-2016, BSD-3-Clause; the licence text follows this list verbatim.
-  `squarebin`, `binner`, `cellPath` and `cellPoints` are this package's own.
+  `squarebin`, `squarePath`, `binner`, `cellPath` and `cellPoints` are this package's own.
 - `@sportsdataverse/sdvplot/shots` ports blazing-the-nets' shot-chart code (Copyright (c) 2021-2026 Saiem Gilani, MIT).
   `diffScale` ports colour interpolation from **d3-interpolate** 3.0.1 (Copyright 2010-2021 Mike Bostock, ISC) and
   **d3-scale-chromatic** 3.1.0 (Copyright 2010-2024 Mike Bostock, ISC), whose RdBu scheme is from **ColorBrewer**

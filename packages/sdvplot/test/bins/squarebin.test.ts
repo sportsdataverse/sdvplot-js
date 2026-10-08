@@ -3,6 +3,8 @@ import { expect, test } from "vitest";
 import columns from "../../../../fixtures/shots/nba-2026-bkn-2000-columns.json" with { type: "json" };
 import { hexagonPoints } from "../../src/bins/hexbin.js";
 import {
+  type Binner,
+  type BinnerOptions,
   binner,
   cellPath,
   cellPoints,
@@ -12,6 +14,7 @@ import {
   squarebin,
 } from "../../src/bins/index.js";
 import { squarePoints } from "../../src/bins/squarebin.js";
+import { InputError } from "../../src/errors.js";
 
 /** The 2000 real BKN shot locations, legacy tenths (integers, so a side of 10 puts real shots ON cell edges). */
 const POINTS = columns.x_legacy.map((x, i) => ({ x, y: columns.y_legacy[i] as number }));
@@ -75,6 +78,27 @@ test("empty input gives []; a NaN coordinate is skipped; a non-positive side thr
   expect(() => squarebin(POINTS, { side: 0, x: X, y: Y })).toThrow(/side/);
   expect(() => binner({ radius: -1 })).toThrow(/radius/);
 });
+test("binner validation names the option the caller passed; non-finite sizes and unknown shapes throw InputError", () => {
+  const bad =
+    (o: unknown): (() => Binner) =>
+    () =>
+      binner(o as BinnerOptions);
+  expect(bad({ shape: "square", radius: -1, equalArea: true })).toThrow(/^binner radius must be .*, got -1$/);
+  for (const v of [Number.POSITIVE_INFINITY, Number.NaN, 0]) {
+    expect(bad({ radius: v })).toThrow(InputError);
+    expect(bad({ radius: v })).toThrow(/^binner radius /);
+    expect(bad({ shape: "hex", radius: v })).toThrow(/^binner radius /);
+    expect(bad({ shape: "square", side: v })).toThrow(/^binner side /);
+    expect(bad({ shape: "square", radius: v, equalArea: true })).toThrow(/^binner radius /);
+  }
+  expect(bad({ shape: "circle", radius: 10 })).toThrow(InputError);
+  expect(bad({ shape: "circle", radius: 10 })).toThrow(
+    /^binner shape must be "hex" or "square", got circle$/,
+  );
+  expect(bad({ shape: "square", radius: 10 })).toThrow(
+    /^binner square needs side, or radius with equalArea: true/,
+  );
+});
 test("squarePath is a relative path for the translate-per-bin drawing; cellPath / cellPoints switch by shape", () => {
   expect(squarePath(15)).toBe("m-7.5,-7.5h15v15h-15z");
   expect(squarePoints(15)).toEqual([
@@ -100,11 +124,17 @@ test("equal area: side = r·√(3√3/2), the area of the drawn hexagon", () => 
 });
 test("binner: { radius } is exactly Task 3's hexbin, { shape: 'square' } exactly squarebin", () => {
   for (const radius of [10, 15]) {
-    const h = binner({ radius });
-    const got = h.bins(POINTS, { x: X, y: Y });
     const want = hexbin(POINTS, { radius, x: X, y: Y });
-    expect(got.map((b) => [b.x, b.y, ...b])).toEqual(want.map((b) => [b.x, b.y, ...b]));
-    expect([h.shape, h.size, h.lattice, h.cell()]).toEqual(["hex", radius, { radius }, hexagonPath(radius)]);
+    for (const h of [binner({ radius }), binner({ shape: "hex", radius })]) {
+      const got = h.bins(POINTS, { x: X, y: Y });
+      expect(got.map((b) => [b.x, b.y, ...b])).toEqual(want.map((b) => [b.x, b.y, ...b]));
+      expect([h.shape, h.size, h.lattice, h.cell()]).toEqual([
+        "hex",
+        radius,
+        { radius },
+        hexagonPath(radius),
+      ]);
+    }
   }
   const s = binner({ shape: "square", side: 15 });
   const got = s.bins(POINTS, { x: X, y: Y });

@@ -35,6 +35,13 @@ export interface Binner {
   cell(s?: number): string;
 }
 
+/** The option the caller passed, if it is a positive finite number; otherwise an InputError naming it. */
+function positive(name: "radius" | "side", v: number): number {
+  if (!(Number.isFinite(v) && v > 0))
+    throw new InputError(`binner ${name} must be a finite number > 0, got ${String(v)}`);
+  return v;
+}
+
 /** √(3√3/2) ≈ 1.6119: a hexagon of circumradius r has area (3√3/2)·r², so the equal-area square has side r·√(3√3/2). */
 const EQUAL_AREA = Math.sqrt(1.5 * Math.sqrt(3));
 
@@ -138,7 +145,8 @@ export function cellPath(shape: BinShape, size: number): string {
 /**
  * One binning API for both lattices: `binner({ radius: 15 })` is d3-hexbin's, `binner({ shape: "square", side: 15 })`
  * squares, and `binner({ shape: "square", radius: 15, equalArea: true })` squares of side 15·√(3√3/2) ≈ 24.18,
- * each the area of a radius-15 hexagon. Works on any x/y data, not just shots.
+ * each the area of a radius-15 hexagon. Works on any x/y data, not just shots. Throws `InputError` on an unknown
+ * `shape` or a size that is not a positive finite number, naming the option passed.
  *
  * @example
  * ```ts
@@ -149,9 +157,12 @@ export function cellPath(shape: BinShape, size: number): string {
  * ```
  */
 export function binner(o: BinnerOptions): Binner {
+  // Runtime checks for JS callers: the types already rule these out.
+  const shape: unknown = o.shape;
+  if (shape !== undefined && shape !== "hex" && shape !== "square")
+    throw new InputError(`binner shape must be "hex" or "square", got ${String(shape)}`);
   if (o.shape !== "square") {
-    const radius = o.radius;
-    if (!(radius > 0)) throw new InputError(`binner radius must be > 0, got ${String(radius)}`);
+    const radius = positive("radius", o.radius);
     return {
       shape: "hex",
       size: radius,
@@ -160,8 +171,9 @@ export function binner(o: BinnerOptions): Binner {
       cell: (s = radius) => hexagonPath(s),
     };
   }
-  const side = "side" in o ? o.side : o.radius * EQUAL_AREA;
-  if (!(side > 0)) throw new InputError(`binner side must be > 0, got ${String(side)}`);
+  if (!("side" in o) && o.equalArea !== true)
+    throw new InputError("binner square needs side, or radius with equalArea: true");
+  const side = "side" in o ? positive("side", o.side) : positive("radius", o.radius) * EQUAL_AREA;
   return {
     shape: "square",
     size: side,
