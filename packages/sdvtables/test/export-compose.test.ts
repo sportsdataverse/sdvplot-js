@@ -84,3 +84,17 @@ test("one spec composed twice: unique wrapper ids, each table's decoration rules
       });
   }
 });
+test("an id that is also a hex colour: the repeat's selectors move, the colour value does not", () => {
+  // "fade" is a valid table id and the colour #fade (#ffaadd, alpha ee); the cut line is drawn in it
+  const fade = defineTable<Standing>()
+    .id("fade")
+    .columns((c) => [c.text("team"), c.int("wins")])
+    .cutline(3, { color: "#fade" })
+    .build();
+  const item = { spec: fade, rows };
+  const [, , second] = stackTables([item, item]).split(/(?=<div class="sdvt )/);
+  const css = [...(second ?? "").matchAll(/<style>([\s\S]*?)<\/style>/g)].map((m) => m[1]).join("");
+  expect(css).toMatch(/#fade-2\b/); // the selectors are the repeat's own
+  expect(css).toMatch(/dashed #fade[;}]/); // the colour is untouched
+  expect(css).not.toContain("dashed #fade-2");
+});

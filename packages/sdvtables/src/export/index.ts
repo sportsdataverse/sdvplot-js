@@ -1,15 +1,18 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { InputError, OptionalDependencyError } from "@sportsdataverse/sdvplot";
+import { InputError, OptionalDependencyError, SdvplotError, warn } from "@sportsdataverse/sdvplot";
 import {
   type Aspect,
   type Gravity,
   canvasFor,
   checkColor,
+  offsetFor,
   parseAspect,
   parseGravity,
+  peerMissing,
 } from "@sportsdataverse/sdvplot/export";
-import type { Browser } from "playwright";
+import type { Browser, Page } from "playwright";
+import { escapeAttr } from "../html/escape.js";
 import { renderHTML } from "../html/index.js";
 import type { TableSpec } from "../spec.js";
 import { type TableItem, slug } from "./compose.js";
@@ -17,30 +20,37 @@ import { type TableItem, slug } from "./compose.js";
 export { gridTables, stackTables, composePage, slug } from "./compose.js";
 export type { ComposeOptions, GridOptions, StackOptions, TableItem } from "./compose.js";
 
+/**
+ * Options for {@link htmlToPNG} and {@link tableToPNG}; defaults are Python `gt_save_crop`'s. Its `expand` (the page
+ * captured before trimming) is fixed here, as it only has to leave background around the content.
+ */
 export interface RenderOptions {
-  /** viewport width; the screenshot grows past it when the table is wider */
+  /** the final image width in pixels, the height following (Python `width`); absent: the rendered width */
   width?: number;
-  /** zoom — gt_save_crop's `zoom = 2` */
+  /** the rendering zoom (Python `zoom`); default 2, a sharp (retina) image */
   deviceScaleFactor?: number;
+  /** the color around the content; default "white" */
   background?: string;
-  /** padding around the table, px at scale 1 — gt_save_crop's `whitespace = 50` */
+  /** image pixels of `background` left around the trimmed content (Python `whitespace`, truncated to an integer); default 50 */
   whitespace?: number;
   /** stylesheet URLs (Google Fonts) awaited via document.fonts.ready */
   fontLinks?: readonly string[];
   /** also write the PNG here (must end in .png) */
   file?: string;
 }
+/** Options for {@link socialCrop}; defaults are Python `gt_social_crop`'s (whitespace 60). */
 export interface SocialCropOptions extends RenderOptions {
   aspect?: Aspect;
   gravity?: Gravity;
 }
-export interface BatchOptions extends RenderOptions {
+/** Options for {@link batchToPNG}, as Python `gt_save_batch` (no `width`; each file is named by its group). */
+export interface BatchOptions extends Omit<RenderOptions, "width" | "file"> {
   dir: string;
   matchWidth?: boolean;
 }
 
 interface Resolved {
-  width: number;
+  width: number | undefined;
   deviceScaleFactor: number;
   background: string;
   whitespace: number;
@@ -48,20 +58,25 @@ interface Resolved {
   file: string | undefined;
 }
 
+/** The page width tables lay out in; a wider table grows the page rather than being clipped. */
+const VIEWPORT = 1200;
+/** CSS px of page captured around the content, so the trim finds plain background on every side. */
+const EXPAND = 5;
+
 const checkPng = (file: string): void => {
   // Python _check_file: the extension must be a format the writer produces; here that is PNG only
   if (!/\.png$/i.test(file)) throw new InputError(`file must end in .png, got ${JSON.stringify(file)}`);
 };
 
 function resolve({
-  width = 1200,
+  width,
   deviceScaleFactor = 2,
   background = "white",
   whitespace = 50,
   fontLinks = [],
   file,
 }: RenderOptions): Resolved {
-  if (!(Number.isInteger(width) && width > 0))
+  if (width !== undefined && !(Number.isInteger(width) && width > 0))
     throw new InputError(`width must be a positive integer of pixels, got ${String(width)}`);
   if (!(Number.isFinite(deviceScaleFactor) && deviceScaleFactor > 0))
     throw new InputError(`deviceScaleFactor must be a positive number, got ${String(deviceScaleFactor)}`);
@@ -69,51 +84,170 @@ function resolve({
     throw new InputError(`whitespace must be a non-negative number of pixels, got ${String(whitespace)}`);
   checkColor("background", background);
   if (file !== undefined) checkPng(file);
-  return { width, deviceScaleFactor, background, whitespace, fontLinks, file };
+  // Python _pixels: int()
+  return { width, deviceScaleFactor, background, whitespace: Math.trunc(whitespace), fontLinks, file };
 }
 
 async function launch(): Promise<Browser> {
-  const pw = await import("playwright").catch(() => {
+  const pw = await import("playwright").catch((e: unknown) => {
     throw new OptionalDependencyError(
-      "sdvtables/export needs the optional peer playwright — pnpm add -D playwright && pnpm exec playwright install chromium",
+      peerMissing(e, "playwright")
+        ? "sdvtables/export needs the optional peer playwright, which is not installed: pnpm add -D playwright && pnpm exec playwright install chromium"
+        : `sdvtables/export could not load the optional peer playwright (installed, but it failed to load): ${String(e)}`,
+      { cause: e },
     );
   });
-  return pw.chromium.launch();
-}
-
-function page(body: string, o: Resolved, wrapperCss: string): string {
-  const links = o.fontLinks.map((href) => `<link rel="stylesheet" href="${href}">`).join("");
-  return `<!doctype html><html><head><meta charset="utf-8">${links}<style>html,body{margin:0;background:${o.background}}#sdv-root{background:${o.background};${wrapperCss}}</style></head><body><div id="sdv-root">${body}</div></body></html>`;
-}
-
-// ponytail: one chromium per call; pass a shared Browser through here if batches get slow.
-async function shoot(body: string, o: Resolved, wrapperCss: string, browser?: Browser): Promise<Uint8Array> {
-  const own = browser ?? (await launch());
   try {
-    const p = await own.newPage({
-      viewport: { width: o.width, height: 800 },
-      deviceScaleFactor: o.deviceScaleFactor,
-    });
-    await p.setContent(page(body, o, wrapperCss), { waitUntil: "load" });
-    await p.evaluate(() => document.fonts.ready);
-    const root = p.locator("#sdv-root");
-    const box = await root.boundingBox();
-    if (box && box.width > o.width) await p.setViewportSize({ width: Math.ceil(box.width), height: 800 }); // never clip a wide table
-    const png = new Uint8Array(await root.screenshot({ type: "png" }));
-    await p.close();
-    if (o.file !== undefined) await writeFile(o.file, png);
-    return png;
-  } finally {
-    if (browser === undefined) await own.close();
+    return await pw.chromium.launch();
+  } catch (e) {
+    if (e instanceof Error && /Executable doesn't exist/.test(e.message))
+      throw new OptionalDependencyError(
+        "sdvtables/export found playwright but not its chromium browser: pnpm exec playwright install chromium",
+        { cause: e },
+      );
+    throw e;
   }
 }
 
-/** gt_save_crop for any HTML: the content tightly framed with `whitespace` padding on `background`. */
-export async function htmlToPNG(html: string, options: RenderOptions = {}): Promise<Uint8Array> {
-  const o = resolve(options);
-  return shoot(html, o, `display:inline-block;padding:${o.whitespace}px`);
+function page(body: string, o: Resolved): string {
+  const links = o.fontLinks.map((href) => `<link rel="stylesheet" href="${escapeAttr(href)}">`).join("");
+  return `<!doctype html><html><head><meta charset="utf-8">${links}<style>html,body{margin:0;background:${o.background}}#sdv-root{display:inline-block;padding:${EXPAND}px;background:${o.background}}</style></head><body><div id="sdv-root">${body}</div></body></html>`;
 }
 
+/** A screenshot (base64 PNG) and its trim box: x, y, width, height in image pixels. */
+interface Shot {
+  png: string;
+  trim: [number, number, number, number];
+}
+
+/** In the page: Python `_trim` (ImageMagick, fuzz 0), the box of the pixels unlike the top-left one; all one color: the whole image. */
+async function trimBox(png: string): Promise<[number, number, number, number]> {
+  const img = new Image();
+  img.src = `data:image/png;base64,${png}`;
+  await img.decode();
+  const c = document.createElement("canvas");
+  c.width = img.width;
+  c.height = img.height;
+  const g = c.getContext("2d") as CanvasRenderingContext2D;
+  g.drawImage(img, 0, 0);
+  const px = new Uint32Array(g.getImageData(0, 0, c.width, c.height).data.buffer);
+  const bg = px[0];
+  let [x0, y0, x1, y1] = [c.width, c.height, -1, -1];
+  for (let y = 0, i = 0; y < c.height; y++)
+    for (let x = 0; x < c.width; x++, i++)
+      if (px[i] !== bg) {
+        if (x < x0) x0 = x;
+        if (x > x1) x1 = x;
+        if (y < y0) y0 = y;
+        y1 = y;
+      }
+  return x1 < 0 ? [0, 0, c.width, c.height] : [x0, y0, x1 - x0 + 1, y1 - y0 + 1];
+}
+
+/** In the page: the trimmed shot placed at dx, dy on a w x h canvas of `bg`, then scaled to fw x fh; a base64 PNG. */
+async function drawPNG(a: {
+  png: string;
+  trim: [number, number, number, number];
+  w: number;
+  h: number;
+  dx: number;
+  dy: number;
+  fw: number;
+  fh: number;
+  bg: string;
+}): Promise<string> {
+  const img = new Image();
+  img.src = `data:image/png;base64,${a.png}`;
+  await img.decode();
+  const c = document.createElement("canvas");
+  c.width = a.w;
+  c.height = a.h;
+  const g = c.getContext("2d") as CanvasRenderingContext2D;
+  g.fillStyle = a.bg;
+  g.fillRect(0, 0, a.w, a.h);
+  const [x, y, tw, th] = a.trim;
+  g.drawImage(img, x, y, tw, th, a.dx, a.dy, tw, th);
+  let out = c;
+  if (a.fw !== a.w || a.fh !== a.h) {
+    out = document.createElement("canvas");
+    out.width = a.fw;
+    out.height = a.fh;
+    const s = out.getContext("2d") as CanvasRenderingContext2D;
+    s.imageSmoothingQuality = "high";
+    s.drawImage(c, 0, 0, a.fw, a.fh);
+  }
+  return out.toDataURL("image/png").slice("data:image/png;base64,".length);
+}
+
+/** `html` rendered at the zoom (a wide table is never clipped) and trimmed: Python `_trim(_render_gt(...))`. */
+async function snap(p: Page, html: string, o: Resolved): Promise<Shot> {
+  await p.setViewportSize({ width: VIEWPORT, height: 800 });
+  await p.setContent(page(html, o), { waitUntil: "load" });
+  await p.evaluate(() => document.fonts.ready);
+  const root = p.locator("#sdv-root");
+  const box = await root.boundingBox();
+  if (box && box.width > VIEWPORT) await p.setViewportSize({ width: Math.ceil(box.width), height: 800 });
+  const png = Buffer.from(await root.screenshot({ type: "png" })).toString("base64");
+  return { png, trim: await p.evaluate(trimBox, png) };
+}
+
+/**
+ * Python's finishing steps, in image pixels: `_extent` to `minWidth` (centred), `_pad` by `whitespace`, the social
+ * `_canvas` + `_extent` by gravity, `_fit_width` to `width`. Writes `o.file` when set.
+ */
+async function finish(
+  p: Page,
+  shot: Shot,
+  o: Resolved,
+  { minWidth = 0, ratio, gravity = "center" }: { minWidth?: number; ratio?: number; gravity?: Gravity } = {},
+): Promise<Uint8Array> {
+  const [, , tw, th] = shot.trim;
+  const ws = o.whitespace;
+  let [w, h] = [Math.max(tw, minWidth) + 2 * ws, th + 2 * ws];
+  let [dx, dy] = [Math.floor((w - 2 * ws - tw) / 2) + ws, ws];
+  if (ratio !== undefined) {
+    const [cw, ch] = canvasFor(w, h, ratio);
+    const [ox, oy] = offsetFor(cw - w, ch - h, gravity);
+    [w, h, dx, dy] = [cw, ch, dx + ox, dy + oy];
+  }
+  // Python _fit_width: the height rounded half up, as ImageMagick
+  const [fw, fh] =
+    o.width === undefined ? [w, h] : [o.width, Math.max(1, Math.floor((h * o.width) / w + 0.5))];
+  const b64 = await p.evaluate(drawPNG, {
+    png: shot.png,
+    trim: shot.trim,
+    w,
+    h,
+    dx,
+    dy,
+    fw,
+    fh,
+    bg: o.background,
+  });
+  const png = new Uint8Array(Buffer.from(b64, "base64"));
+  if (o.file !== undefined) await writeFile(o.file, png);
+  return png;
+}
+
+async function withPage<T>(o: Resolved, fn: (p: Page) => Promise<T>): Promise<T> {
+  const browser = await launch();
+  try {
+    return await fn(await browser.newPage({ deviceScaleFactor: o.deviceScaleFactor }));
+  } finally {
+    await browser.close();
+  }
+}
+
+/**
+ * gt_save_crop for any HTML: rendered at `deviceScaleFactor`, trimmed to its content, `whitespace` image pixels of
+ * `background` put back around it, then scaled to `width` when given.
+ */
+export async function htmlToPNG(html: string, options: RenderOptions = {}): Promise<Uint8Array> {
+  const o = resolve(options);
+  return withPage(o, async (p) => finish(p, await snap(p, html, o), o));
+}
+
+/** gt_save_crop: {@link htmlToPNG} of the rendered table. */
 export function tableToPNG<Row>(
   spec: TableSpec<Row>,
   rows: readonly Row[],
@@ -122,7 +256,7 @@ export function tableToPNG<Row>(
   return htmlToPNG(renderHTML(spec, rows), options);
 }
 
-/** gt_social_crop: the padded table on a fixed-ratio canvas; the table is never cropped. */
+/** gt_social_crop: the trimmed, padded table on a fixed-ratio canvas placed by `gravity`; the table is never cropped. */
 export async function socialCrop<Row>(
   spec: TableSpec<Row>,
   rows: readonly Row[],
@@ -132,42 +266,14 @@ export async function socialCrop<Row>(
   const place = parseGravity(gravity);
   const o = resolve({ whitespace: 60, ...rest });
   const html = renderHTML(spec, rows);
-  const browser = await launch();
-  try {
-    const measure = await browser.newPage({ viewport: { width: o.width, height: 800 } });
-    await measure.setContent(
-      page(
-        `<div style="display:inline-block;padding:${o.whitespace}px">${html}</div>`,
-        o,
-        "display:inline-block",
-      ),
-      { waitUntil: "load" },
-    );
-    await measure.evaluate(() => document.fonts.ready);
-    const box = await measure.locator("#sdv-root").boundingBox();
-    await measure.close();
-    if (!box) throw new InputError("socialCrop: the table rendered with no size");
-    const [cw, ch] = canvasFor(Math.ceil(box.width), Math.ceil(box.height), ratio);
-    const justify = place.endsWith("west") ? "flex-start" : place.endsWith("east") ? "flex-end" : "center";
-    const alignItems = place.startsWith("north")
-      ? "flex-start"
-      : place.startsWith("south")
-        ? "flex-end"
-        : "center";
-    const wrapper = `display:flex;box-sizing:border-box;width:${cw}px;height:${ch}px;justify-content:${justify};align-items:${alignItems}`;
-    return await shoot(
-      // await: without it `finally` closes the browser before the screenshot runs
-      `<div style="padding:${o.whitespace}px">${html}</div>`,
-      { ...o, width: Math.max(o.width, cw) },
-      wrapper,
-      browser,
-    );
-  } finally {
-    await browser.close();
-  }
+  return withPage(o, async (p) => finish(p, await snap(p, html, o), o, { ratio, gravity: place }));
 }
 
-/** gt_save_batch: one image per group value, `{group}` in the file name replaced by `slug(value)`. */
+/**
+ * gt_save_batch: one image per group value, `{group}` in the file name replaced by `slug(value)`. A group whose table
+ * fails to build (`build` or the spec throws) is skipped and named in one warning at the end; when none builds, the
+ * error lists every failure. Python's `quiet` progress lines are not ported.
+ */
 export async function batchToPNG<Row, G extends keyof Row>(
   rows: readonly Row[],
   group: G,
@@ -195,35 +301,34 @@ export async function batchToPNG<Row, G extends keyof Row>(
     throw new InputError(
       `group values write to the same file name: ${shared.join(", ")}; rename the values first`,
     );
-  await mkdir(dir, { recursive: true });
-  const items = [...groups].map(([v, rs], i) => {
-    const built = build(rs, v);
-    return {
-      file: join(dir, names[i] as string),
-      html: typeof built === "string" ? built : renderHTML(built.spec, built.rows),
-    };
+  const items: { file: string; html: string }[] = [];
+  const failed: string[] = [];
+  [...groups].forEach(([v, rs], i) => {
+    try {
+      const built = build(rs, v);
+      items.push({
+        file: join(dir, names[i] as string),
+        html: typeof built === "string" ? built : renderHTML(built.spec, built.rows),
+      });
+    } catch (e) {
+      failed.push(`${String(v)}: ${e instanceof Error ? e.message : String(e)}`);
+    }
   });
-  const browser = await launch();
-  try {
-    let minWidth = 0;
-    if (matchWidth) {
-      const p = await browser.newPage({ viewport: { width: o.width, height: 800 } });
-      for (const it of items) {
-        await p.setContent(page(it.html, o, "display:inline-block"), { waitUntil: "load" });
-        const box = await p.locator("#sdv-root").boundingBox();
-        minWidth = Math.max(minWidth, Math.ceil(box?.width ?? 0));
-      }
-      await p.close();
-    }
-    // inline-flex shrinks to the widest table; a block-level flex box would stretch every image to the viewport
-    const wrapper = `display:inline-flex;justify-content:center;padding:${o.whitespace}px;box-sizing:content-box;min-width:${minWidth}px`;
-    const out: string[] = [];
-    for (const it of items) {
-      await shoot(it.html, { ...o, file: it.file }, wrapper, browser);
-      out.push(it.file);
-    }
-    return out;
-  } finally {
-    await browser.close();
-  }
+  if (items.length === 0) throw new SdvplotError(`No group built successfully:\n${failed.join("\n")}`);
+  await mkdir(dir, { recursive: true });
+  const out = await withPage(o, async (p) => {
+    const shots: Shot[] = [];
+    for (const it of items) shots.push(await snap(p, it.html, o));
+    // Python: every trimmed image extended (centred) to the widest one's width, then padded
+    const minWidth = matchWidth ? Math.max(...shots.map((s) => s.trim[2])) : 0;
+    for (const [i, it] of items.entries())
+      await finish(p, shots[i] as Shot, { ...o, file: it.file }, { minWidth });
+    return items.map((it) => it.file);
+  });
+  if (failed.length > 0)
+    warn(
+      `sdvtables:batch:${filePattern}:${failed.join("|")}`,
+      `${failed.length} group(s) failed and were skipped:\n${failed.join("\n")}`,
+    );
+  return out;
 }

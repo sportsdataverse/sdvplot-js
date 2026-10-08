@@ -14,8 +14,8 @@ import { SeasonInput } from '@sportsdataverse/sdvplot';
 import { Variant } from '@sportsdataverse/sdvplot';
 import { Which } from '@sportsdataverse/sdvplot';
 
-// @public (undocumented)
-export interface BatchOptions extends RenderOptions {
+// @public
+export interface BatchOptions extends Omit<RenderOptions, "width" | "file"> {
     // (undocumented)
     dir: string;
     // (undocumented)
@@ -60,9 +60,8 @@ export function gridTables<Row>(items: readonly TableItem<Row>[], input?: GridOp
 // @public
 export function htmlToPNG(html: string, options?: RenderOptions): Promise<Uint8Array>;
 
-// @public (undocumented)
+// @public
 export interface RenderOptions {
-    // (undocumented)
     background?: string;
     deviceScaleFactor?: number;
     file?: string;
@@ -79,7 +78,7 @@ export function slug(value: unknown): string;
 // @public
 export function socialCrop<Row>(spec: TableSpec<Row>, rows: readonly Row[], input?: SocialCropOptions): Promise<Uint8Array>;
 
-// @public (undocumented)
+// @public
 export interface SocialCropOptions extends RenderOptions {
     // (undocumented)
     aspect?: Aspect;
@@ -104,7 +103,7 @@ export type TableItem<Row> = {
     rows: readonly Row[];
 } | string;
 
-// @public (undocumented)
+// @public
 export function tableToPNG<Row>(spec: TableSpec<Row>, rows: readonly Row[], options?: RenderOptions): Promise<Uint8Array>;
 
 // (No @packageDocumentation comment for this package)

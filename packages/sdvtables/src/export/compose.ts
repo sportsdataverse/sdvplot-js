@@ -90,7 +90,8 @@ function uniqueIds(body: string): string {
       table = table
         .replace(new RegExp(`(\\s(?:id|for)=")${id}(?=["-])`, "g"), `$1${to}`)
         .replace(/<style>[\s\S]*?<\/style>/g, (css) =>
-          css.replace(new RegExp(`#${id}(?![\\w-])`, "g"), `#${to}`),
+          // a selector only: the next brace is the rule's `{`, so a color equal to the id (`#fade;`) is left alone
+          css.replace(new RegExp(`#${id}(?![\\w-])(?=[^{}]*\\{)`, "g"), `#${to}`),
         );
     }
     seen.add(id);
