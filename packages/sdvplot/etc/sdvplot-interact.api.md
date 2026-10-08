@@ -4,6 +4,12 @@
 
 ```ts
 
+// @public
+export function hasDom(): boolean;
+
+// @public
+export function highlight(root: Element, ids: ReadonlySet<string> | null): string[];
+
 // (No @packageDocumentation comment for this package)
 
 ```
