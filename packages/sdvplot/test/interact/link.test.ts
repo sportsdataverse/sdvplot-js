@@ -302,3 +302,30 @@ test("an image mark with href: the stamp sits on the <image> inside the <a>; hov
     InputError,
   );
 });
+test("a hover that is not true, false or { id } throws InputError, in Node too (before the no-DOM return)", () => {
+  const svg = scatter({ tip: true });
+  const store = createSelection<Standing>();
+  const bad = ["yes", null, {}, { id: undefined }, { id: "team" }] as unknown as boolean[];
+  const tries = (): unknown[] =>
+    bad.map((hover) => {
+      try {
+        linkSelection(store, { plot: svg, hover })();
+        return "no throw";
+      } catch (e) {
+        return e instanceof InputError;
+      }
+    });
+  expect(tries()).toEqual([true, true, true, true, true]);
+  vi.stubGlobal("window", undefined);
+  try {
+    expect(tries()).toEqual([true, true, true, true, true]);
+    const good = [
+      { plot: svg, hover: true },
+      { plot: svg, hover: false },
+      { plot: svg, hover: { id: byTeam } },
+    ];
+    for (const t of [...good, { plot: svg }]) linkSelection(store, t)(); // and the default: no throw
+  } finally {
+    vi.unstubAllGlobals();
+  }
+});

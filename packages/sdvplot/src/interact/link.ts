@@ -27,7 +27,7 @@ export interface LinkTargets<Row, Datum = unknown> {
    * writes nothing, for a figure another writer hovers. `{ id }`: the datum Plot's own `tip`/`pointer` picks, the
    * nearest within its `maxRadius`, published as the figure's `value` with an `input` event; `id` maps it to a link id
    * (`null` clears). Pass `plot` as `Plot.plot` returned it: with a caption or legend that is a `<figure>`, and only the
-   * figure hears `input`.
+   * figure hears `input`. Anything else throws `InputError`, in Node too.
    */
   hover?: boolean | { readonly id: (datum: Datum) => unknown };
   /** A `createTable` engine: `useTable().table`, or the one passed to `hydrate`. */
@@ -128,8 +128,10 @@ export function linkSelection<Row, Datum = unknown>(
   targets: LinkTargets<Row, Datum>,
 ): () => void {
   const toggled = toggleMarks(targets);
-  if (!hasDom()) return () => {};
   const { plot, table, hover = true } = targets;
+  if (typeof hover !== "boolean" && typeof (hover as { id?: unknown } | null)?.id !== "function")
+    throw new InputError("linkSelection: hover is true, false or { id: (datum) => link id }");
+  if (!hasDom()) return () => {};
   const offs: (() => void)[] = [];
   let wrote: string | null = null; // the hover id this link last wrote, which its teardown clears if still current
   const writeHover = (id: string | null): void => {
