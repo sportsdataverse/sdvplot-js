@@ -21,7 +21,9 @@ const games = KC_PHI_GAMES_2024.flatMap((g) =>
         : [],
   ),
 );
-const rolling = { k: 4, anchor: "end" } as const;
+// strict: each line starts at the team's 4th game, so every point is the 4-game average the axis names (without it,
+// games 1-3 would be 1-, 2- and 3-game means under the same label). The window counts games, so a bye stretches none.
+const rolling = { k: 4, anchor: "end", strict: true } as const;
 export default Plot.plot({
   width: 640,
   height: 320,
