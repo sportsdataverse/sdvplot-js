@@ -145,7 +145,7 @@ describe.each<Shape>(["hex", "square"])("%s cells", (shape) => {
     const height = Number(d.court.getAttribute("height"));
     const [x0, x1] = span(d.court, "x");
     expect(p[0]).toBeCloseTo((x0 + x1) / 2);
-    expect(d.court.scale("y")?.domain?.map(Math.round)).toEqual([-55, 0]); // the top is 1.8e-15 after the rotation
+    expect(Array.from(d.court.scale("y")?.domain ?? [], (v) => Math.round(Number(v)))).toEqual([-55, 0]); // the top is 1.8e-15 after the rotation
     expect(p[1]).toBeGreaterThan(0.75 * height); // so the hoop, 13.25 of 55 ft up, is in the bottom quarter
     expect(px(d.court, "x", f.x({ x: -229 }) ?? Number.NaN)).toBeLessThan(p[0] ?? Number.NaN); // main lib/data/court.ts:49
     expect(px(d.court, "y", -47)).toBeGreaterThan(p[1] ?? Number.NaN); // the baseline is below the hoop
