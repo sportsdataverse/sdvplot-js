@@ -4,13 +4,14 @@
 
 ```ts
 
+import { BaseType } from 'd3';
 import { Selection as Selection_2 } from 'd3';
 
 // Warning: (ae-forgotten-export) The symbol "Sel" needs to be exported by the entry point d3.d.ts
 // Warning: (ae-forgotten-export) The symbol "Scene" needs to be exported by the entry point d3.d.ts
 //
 // @public
-export function appendSurface<G extends SVGGElement | SVGSVGElement>(selection: Sel<G>, scene: Scene, x: (v: number) => number, y: (v: number) => number): Sel<SVGGElement>;
+export function appendSurface<G extends SVGGElement | SVGSVGElement, D>(selection: Sel<G, D>, scene: Scene, x: (v: number) => number, y: (v: number) => number): Sel<SVGGElement, D>;
 
 // (No @packageDocumentation comment for this package)
 

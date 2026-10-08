@@ -26,6 +26,14 @@
       "types": "./dist/d3.d.ts",
       "import": "./dist/d3.js"
     },
+    "./bins": {
+      "types": "./dist/bins.d.ts",
+      "import": "./dist/bins.js"
+    },
+    "./shots": {
+      "types": "./dist/shots.d.ts",
+      "import": "./dist/shots.js"
+    },
     "./chartjs": {
       "types": "./dist/chartjs.d.ts",
       "import": "./dist/chartjs.js"
@@ -59,7 +67,7 @@
   "peerDependencies": {
     "@observablehq/plot": ">=0.6.16",
     "@resvg/resvg-js": ">=2.6",
-    "@sportsdataverse/sporty": "workspace:^",
+    "@sportsdataverse/sporty": "workspace:^0",
     "chart.js": ">=4.4",
     "d3": ">=7",
     "react": ">=18"
