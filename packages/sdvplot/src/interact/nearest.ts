@@ -126,13 +126,16 @@ export function nearestHover<R>(
   };
   index(o.points);
   let cur: string | null | undefined; // the id last shown; undefined: unknown, so the next event writes and re-places
-  let wrote: string | null = null; // the hover id this handle last wrote, which destroy clears if still current
+  let wrote: ReadonlySet<string> | null = null; // the store's hover set this handle wrote; destroy clears it
   const to = (p: HoverPoint | undefined): void => {
     const id = p === undefined ? null : p.id;
     if (id === cur) return;
     cur = id;
-    wrote = id;
+    const had = store.getState().hover;
     store.set({ hover: id === null ? [] : [id] });
+    const now = store.getState().hover;
+    // owned by identity: an equal hover set first elsewhere keeps its identity (a no-op patch), so it stays theirs
+    wrote = now !== had || had === wrote ? now : null;
     const shown = p !== undefined && label ? label(p.id) : null;
     if (shown && p) tip?.show(p.x, p.y, shown.lines, shown.swatch);
     else tip?.hide();
@@ -165,8 +168,7 @@ export function nearestHover<R>(
     destroy() {
       for (const [type, fn, capture] of listeners) svg.removeEventListener(type, fn, { capture });
       tip?.destroy();
-      const h = store.getState().hover;
-      if (wrote !== null && h.size === 1 && h.has(wrote)) store.set({ hover: [] });
+      if (wrote !== null && wrote.size > 0 && store.getState().hover === wrote) store.set({ hover: [] });
       cur = undefined;
       wrote = null;
     },

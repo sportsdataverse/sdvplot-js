@@ -129,6 +129,22 @@ test("a figure unlinked while a selection is active is left undimmed; the store 
   b();
   expect([svg.classList.contains("sdv-focus"), lit(svg)]).toEqual([false, []]);
 });
+test("an equal hover the app set first stays the app's: hovering that mark claims nothing, so the teardown keeps it", () => {
+  // the store keeps an equal hover set's identity (a no-op patch): this link wrote nothing it could clear
+  const svg = scatter();
+  const store = createSelection<Standing>();
+  store.set({ hover: ["KC"] }); // the app preloads Kansas City
+  const off = linkSelection(store, { figure: svg });
+  const fn = vi.fn();
+  store.subscribe(fn);
+  over(svg.querySelector('[data-sdv-id="KC"]'));
+  off();
+  expect([hover(store), fn.mock.calls.length]).toEqual([["KC"], 0]);
+  const again = linkSelection(store, { figure: svg }); // an id this link does write is its own
+  over(svg.querySelector('[data-sdv-id="LV"]'));
+  again();
+  expect(hover(store)).toEqual([]);
+});
 test("an axis logo is never a hover target: it carries an ESPN id, but it is a decoration (A39)", () => {
   const svg = Plot.plot({
     marks: [

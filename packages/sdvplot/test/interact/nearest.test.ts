@@ -264,6 +264,22 @@ test("destroy right after update(points) still clears the hover this handle wrot
   again.destroy();
   expect(hovered(store)).toEqual(["0"]);
 });
+test("an equal hover the app set first stays the app's: hovering that shot claims nothing, so destroy keeps it", () => {
+  const svg = shotChart();
+  const store = createSelection<BknShot>();
+  store.set({ hover: ["825"] }); // the app preloads shot 825
+  const hover = nearestHover(svg, store, { points: points(), radius: 18 });
+  const fn = vi.fn();
+  store.subscribe(fn);
+  at(svg, "pointermove", PX + 10, PY); // nearest is 825: a no-op patch
+  hover.destroy();
+  expect([hovered(store), fn.mock.calls.length]).toEqual([["825"], 0]);
+  const again = nearestHover(svg, store, { points: points(), radius: 18 }); // a shot it does write is its own
+  at(svg, "pointermove", PX + 60, PY + 60);
+  at(svg, "pointermove", PX + 10, PY);
+  again.destroy();
+  expect(hovered(store)).toEqual([]);
+});
 test("argument errors throw InputError: a negative radius or padding, an unknown dimension, a root that is not an <svg>", () => {
   const store = createSelection();
   const svg = shotChart();

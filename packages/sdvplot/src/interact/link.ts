@@ -80,14 +80,14 @@ const TOGGLE_ATTRS = ["role", "tabindex", "aria-checked", "aria-label"] as const
  * comes first because the call takes a figure, a table or both. Returns a teardown FUNCTION, not a handle: teardown is
  * all a link has, so `useEffect(() => linkSelection(store, o), deps)` is one line (`brushFilter`, `nearestHover` and
  * `tooltip`, which have more to do, return a handle with `destroy()`). The teardown clears `hover` when the store still
- * holds the id this link last wrote (as `nearestHover`'s `destroy` does): a figure redrawn under the pointer leaves no
- * stale hover dimming the others. It then restores the view it changed, so a figure or table unlinked and kept on the
- * page shows no store state: the figure un-dims (once the last link on it goes), its toggled marks get their own
- * attributes back, and the table drops the brush filter and the hover it showed. It never clears store state another
- * writer owns: a brush's region and a selection stay in the store for the views still linked. To replace a figure,
- * tear its link down before linking the new one, which otherwise reads the old figure's hover. Inert without a DOM,
- * so server-rendered markup never changes. With `select: "toggle"`, the figure's marks are keyboard-reachable
- * checkboxes over `selected` ({@link LinkSelectionOptions.select}).
+ * holds the hover this link wrote (as `nearestHover`'s `destroy` does; an equal hover set first elsewhere is not one it
+ * wrote): a figure redrawn under the pointer leaves no stale hover dimming the others. It then restores the view it
+ * changed, so a figure or table unlinked and kept on the page shows no store state: the figure un-dims (once the last
+ * link on it goes), its toggled marks get their own attributes back, and the table drops the brush filter and the hover
+ * it showed. It never clears store state another writer owns: a brush's region and a selection stay in the store for
+ * the views still linked. To replace a figure, tear its link down before linking the new one, which otherwise reads the
+ * old figure's hover. Inert without a DOM, so server-rendered markup never changes. With `select: "toggle"`, the
+ * figure's marks are keyboard-reachable checkboxes over `selected` ({@link LinkSelectionOptions.select}).
  *
  * @example
  * ```ts
@@ -156,10 +156,14 @@ export function linkSelection<Row, Datum = unknown>(
     );
   if (figure) links.set(figure, (links.get(figure) ?? 0) + 1);
   const offs: (() => void)[] = [];
-  let wrote: string | null = null; // the hover id this link last wrote, which its teardown clears if still current
+  let wrote: ReadonlySet<string> | null = null; // the store's hover set this link wrote; the teardown clears it
   const writeHover = (id: string | null): void => {
-    wrote = id;
+    const had = store.getState().hover;
     store.set({ hover: id === null ? [] : [id] });
+    const now = store.getState().hover;
+    // owned by identity, as a brush owns `selected`: the set this write made, or one this link already owned. An
+    // equal hover set first elsewhere keeps its identity (the store drops a no-op), so it stays theirs
+    wrote = now !== had || had === wrote ? now : null;
   };
   let syncing = false; // A29: the table's own events while the store is applied to it are echoes, not user input
   const sync = (s: SelectionState<Row>): void => {
@@ -219,9 +223,8 @@ export function linkSelection<Row, Datum = unknown>(
   return () => {
     if (!live) return; // a second teardown writes and restores nothing
     live = false;
-    const h = store.getState().hover;
     // before the unsubscribe: this figure, and its table, still follow the store and un-dim too
-    if (wrote !== null && h.size === 1 && h.has(wrote)) store.set({ hover: [] });
+    if (wrote !== null && wrote.size > 0 && store.getState().hover === wrote) store.set({ hover: [] });
     wrote = null;
     for (const off of offs) off();
     // Unlink and keep: restore the view this link changed, never the store, which the views still linked show. Done
