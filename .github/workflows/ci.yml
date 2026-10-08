@@ -81,7 +81,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @sportsdataverse/examples exec playwright install --with-deps chromium
       - run: pnpm docs:build
-      - run: pnpm --filter @sportsdataverse/examples exec vitest run test/interactive.test.ts
+      # --retry: a CDN or ESPN hiccup fails an image (a console error); retry the test before calling it red
+      - run: pnpm --filter @sportsdataverse/examples exec vitest run test/interactive.test.ts --retry=2
         env: { SDV_RENDER_TESTS: "1", SDV_RENDER_SHOTS: "${{ github.workspace }}/interactive-shots" }
       - if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
