@@ -433,6 +433,22 @@ describe("withAxisLogos", () => {
     expect(visibleAxisLabels(out, "x")).toEqual(["XXX"]);
   });
 
+  test("a second call that brings an unknown category shows its label again", () => {
+    const first = withAxisLogos({ data: [{ type: "bar", x: teams, y: teams.map(wins) }], layout: {} }, "x", {
+      league: "nfl",
+    });
+    const cats = [...teams, "XXX"];
+    setWarningHandler(() => {});
+    const out = withAxisLogos({ ...first, data: [{ type: "bar", x: cats, y: cats.map(wins) }] }, "x", {
+      league: "nfl",
+    });
+    setWarningHandler(null);
+    expect(cats.map((c) => plotlyShows(out.layout!.xaxis!, c))).toEqual(
+      cats.map((c) => [c, c === "XXX" ? c : ""]),
+    );
+    expect(visibleAxisLabels(out, "x")).toEqual(["XXX"]);
+  });
+
   test("teamColorway: one colour per team, fallback for unknown", () => {
     const cw = teamColorway("nfl", [KC, "XXX", BUF], { fallback: "#999999" });
     expect(cw).toHaveLength(3);

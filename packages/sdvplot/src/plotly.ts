@@ -483,6 +483,7 @@ export function withAxisLogos(figure: object, axis: "x" | "y", o: PlotlyAxisOpti
     ax.tickvals = cats;
     ax.ticktext = labels;
   } else {
+    ax.showticklabels = true; // undo an earlier all-drawn call on this axis
     ax.tickvals = keep.map((i) => cats[i]);
     ax.ticktext = keep.map((i) => labels[i]!);
   }
