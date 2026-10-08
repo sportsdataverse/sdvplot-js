@@ -165,3 +165,25 @@ test('a Plot warning (console.warn or the ⚠️ badge on the figure) fails an e
   expect(early.warnings).toEqual([]);
   expect(problems(quiet, early)).toEqual([`shows Plot's ⚠️ warning badge without the "warns" tag`]);
 });
+
+test("a node example loads without the browser globals, as in Node; every other example keeps jsdom's", async () => {
+  const globals = async (): Promise<{ default: unknown }> => ({
+    default: { document: typeof document, Image: typeof Image, window: typeof window, self: typeof self },
+  });
+  expect((await runExample(entry("t/node", ["node"]), globals)).value).toEqual({
+    document: "undefined",
+    Image: "undefined",
+    window: "undefined",
+    self: "undefined",
+  });
+  expect((await runExample(entry("t/browser"), globals)).value).toEqual({
+    document: "object",
+    Image: "function",
+    window: "object",
+    self: "object",
+  });
+  await expect(
+    runExample(entry("t/node-throws", ["node"]), () => Promise.reject(new Error("boom"))),
+  ).rejects.toThrow("boom");
+  expect([typeof document, typeof Image, typeof window]).toEqual(["object", "function", "object"]);
+});

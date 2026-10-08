@@ -21,7 +21,10 @@ export interface ExampleEntry extends ExampleMeta {
 export const TAG = {
   /** Calls `fetch`: the gate answers from committed fixtures; the docs never re-run it in the browser. */
   network: "network",
-  /** Needs Node (jsdom, linkedom, resvg, fs): left out of the browser loaders. */
+  /**
+   * Needs Node (jsdom, linkedom, resvg, fs, @napi-rs/canvas): left out of the browser loaders, and the gate runs it
+   * without the browser globals (test/run.ts BROWSER_GLOBALS), as Node would.
+   */
   node: "node",
   /** Expected to emit an sdvplot warning; the gate fails an example that warns without it, or has it and does not. */
   warns: "warns",

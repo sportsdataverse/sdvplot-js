@@ -119,6 +119,31 @@ function recordOtherNetworkPaths(fetched: string[]): () => void {
 }
 
 /**
+ * The globals libraries sniff to choose their browser path (Chart.js, ECharts and Vega pick a DOM platform, a DOM
+ * canvas, or load images through `Image`, which jsdom never completes). A `node` example loads without them, as it
+ * would in Node; every other example keeps the jsdom browser.
+ */
+const BROWSER_GLOBALS = [
+  "window",
+  "self",
+  "document",
+  "Image",
+  "HTMLElement",
+  "HTMLCanvasElement",
+  "HTMLImageElement",
+  "XMLHttpRequest",
+  "requestAnimationFrame",
+  "getComputedStyle",
+] as const;
+function hideBrowser(): () => void {
+  const saved = BROWSER_GLOBALS.map((k) => [k, Object.getOwnPropertyDescriptor(globalThis, k)] as const);
+  for (const [k] of saved) Reflect.deleteProperty(globalThis, k);
+  return () => {
+    for (const [k, d] of saved) if (d !== undefined) Object.defineProperty(globalThis, k, d);
+  };
+}
+
+/**
  * Load (= run) one example offline, collecting its warnings (sdvplot's, and any console.warn: Plot reports one
  * that way) and every fetch it attempted. Per-process state is reset before and after, so an example sees the same
  * state whatever ran before it (or whether it runs alone).
@@ -138,7 +163,13 @@ export async function runExample(
   resetManifestCache();
   setWarningHandler((m) => warnings.push(m));
   try {
-    const value = (await load()).default;
+    const restore = entry.tags.includes("node") ? hideBrowser() : () => {};
+    let value: unknown;
+    try {
+      value = (await load()).default;
+    } finally {
+      restore();
+    }
     return { ...(await toMarkup(value, entry.id)), value, warnings, fetched };
   } finally {
     globalThis.fetch = realFetch;
