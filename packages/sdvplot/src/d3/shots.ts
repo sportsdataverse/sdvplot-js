@@ -1,13 +1,14 @@
 // d3 twins of the shot-chart marks: blazing-the-nets `main` lib/charts/theme.ts (legend), hexShotChart.ts (size key)
 // and shootingSignature.ts (@31427b8), which are d3 themselves. Never imports ../plot/*.
-import { type Selection, area, curveBasis, curveMonotoneX, line } from "d3";
+import { type BaseType, type Selection, area, curveBasis, curveMonotoneX, line } from "d3";
 import { type BinShape, cellPath } from "../bins/index.js";
 import { contentId } from "../content-id.js";
 import { InputError } from "../errors.js";
 import { type DiffScale, diffScale } from "../shots/diff.js";
 import { type SignaturePoint, signatureGradient } from "../shots/signature.js";
 
-type G = Selection<SVGGElement, unknown, null, undefined>;
+/** Any `<g>` selection, whatever its datum (d3's `Selection` is invariant in it; see `Sel` in ./index.ts). */
+type G<D> = Selection<SVGGElement, D, BaseType, unknown>;
 const FONT_PX = 11; // blazing-the-nets main lib/charts/theme.ts:24
 const CHAR_PX = 6.2; // theme.ts:26
 const LINE_H = 15; // theme.ts:92
@@ -81,7 +82,11 @@ export interface AppendLegendOptions {
  * svg.node();
  * ```
  */
-export function appendLegend(g: G, scale: DiffScale = diffScale(), o: AppendLegendOptions = {}): number {
+export function appendLegend<D>(
+  g: G<D>,
+  scale: DiffScale = diffScale(),
+  o: AppendLegendOptions = {},
+): number {
   const x = o.x ?? 0;
   const y = o.y ?? 0;
   const maxWidth = o.width ?? 240;
@@ -200,7 +205,11 @@ export interface AppendSignatureOptions {
  * svg.node();
  * ```
  */
-export function appendSignature(sel: G, points: readonly SignaturePoint[], o: AppendSignatureOptions): G {
+export function appendSignature<D>(
+  sel: G<D>,
+  points: readonly SignaturePoint[],
+  o: AppendSignatureOptions,
+): G<D> {
   const curve = (o.curve ?? "monotone-x") === "basis" ? curveBasis : curveMonotoneX;
   const { maxShare, maxFt, stops, id: gradientId } = signatureGradient(points, o.fill ?? diffScale());
   const half = o.halfWidth ?? ((p: SignaturePoint, m: number) => Math.max((p.share / m) * 20, 0.75));

@@ -1,7 +1,5 @@
-import type { Selection } from "d3";
+import type { BaseType, Selection } from "d3";
 import { contentId } from "../content-id.js";
-
-type G = Selection<SVGGElement, unknown, null, undefined>;
 
 /** Face options for `appendHeadshots` (blazing-the-nets `main` scatter "faces", `lib/charts/scatterChart.ts:139-191`). */
 export interface FaceOptions {
@@ -21,7 +19,7 @@ const pick = (c: FaceOptions["ring"], id: string): string | undefined =>
   typeof c === "function" ? c(id) : c;
 
 /** Turn `appendHeadshots`' images into circular faces in place. */
-export function clipFaces(g: G, o: FaceOptions): void {
+export function clipFaces<D>(g: Selection<SVGGElement, D, BaseType, unknown>, o: FaceOptions): void {
   if (o.clip !== "circle") return;
   for (const img of g.selectAll<SVGImageElement, unknown>("image").nodes()) {
     const doc = img.ownerDocument;
