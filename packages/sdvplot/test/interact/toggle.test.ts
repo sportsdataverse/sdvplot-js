@@ -164,6 +164,35 @@ test("teardown restores each mark's own role, tabindex and aria-checked, and un-
   expect(attrs(cell(svg, IND))).toEqual([null, null, null]);
   expect([svg.classList.contains("sdv-focus"), selected(store)]).toEqual([false, [IND]]); // the pick is the store's
 });
+test("each checkbox has an accessible name: its own aria-label or <title> when it has one, else its link id", () => {
+  // Plot's ariaLabel channel names a mark through aria-label, its title channel through a <title> child; a mark with
+  // neither would be an unnamed checkbox, so the toggle names it by its id until teardown
+  const games = BKN_GAMES.slice(0, 3); // the first three games of the season
+  const plot = (o: Plot.CellOptions) =>
+    Plot.plot({
+      width: 640,
+      height: 60,
+      x: { type: "band" },
+      marks: [Plot.cell(games, { x: "game_date", fill: "wl", ...o, render: linkIds(games, "game_id") })],
+    });
+  const name = (m: Element): string | null =>
+    m.getAttribute("aria-label") ?? m.querySelector(":scope > title")?.textContent ?? null;
+  const ids = games.map((g) => g.game_id);
+  const store = createSelection<BknGame>();
+  const bare = plot({});
+  const offBare = linkSelection(store, { figure: bare, select: "toggle" });
+  const cells = (svg: Element): Element[] => Array.from(svg.querySelectorAll('[role="checkbox"]'));
+  expect(cells(bare).map(name)).toEqual(ids);
+  const labelled = plot({ ariaLabel: "matchup" });
+  linkSelection(store, { figure: labelled, select: "toggle" });
+  expect(cells(labelled).map(name)).toEqual(games.map((g) => g.matchup));
+  const titled = plot({ title: "matchup" });
+  linkSelection(store, { figure: titled, select: "toggle" });
+  expect(cells(titled).map((m) => m.getAttribute("aria-label"))).toEqual([null, null, null]); // the <title> names it
+  expect(cells(titled).map(name)).toEqual(games.map((g) => g.matchup));
+  offBare();
+  expect(ids.map((id) => cell(bare, id)?.getAttribute("aria-label") ?? null)).toEqual([null, null, null]); // added, removed
+});
 test("a mark stamped with an empty id (a missing key) is no checkbox and no hover target: it could never toggle", () => {
   // 2024 AFC, one cell per team, keyed by team only where the team has a net EPA: NE's is blanked, so its id is missing
   const svg = Plot.plot({

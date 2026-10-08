@@ -37,8 +37,10 @@ export interface LinkSelectionOptions<Row, Datum = unknown> {
   table?: LinkableTable<Row>;
   /**
    * `"toggle"`: each stamped mark of `figure` becomes a checkbox (`role`, `tabindex="0"`, `aria-checked` kept in step
-   * with the store), and a click, Enter or Space toggles its id in `selected`. Throws `InputError` when a mark sits
-   * in an `<a href>`: a checkbox inside a link is nested interactive content with two tab stops.
+   * with the store), and a click, Enter or Space toggles its id in `selected`. Each checkbox keeps the mark's own
+   * accessible name: name the marks through Plot's `ariaLabel` channel (`ariaLabel: "matchup"`, an `aria-label`) or its
+   * `title` channel (a `<title>`); a mark with neither is named by its link id until teardown. Throws `InputError` when
+   * a mark sits in an `<a href>`: a checkbox inside a link is nested interactive content with two tab stops.
    */
   select?: "toggle";
 }
@@ -63,7 +65,7 @@ const warned = new WeakSet<Element>();
 /** Live links per figure: a teardown un-dims its figure only when no other link on it still follows the store. */
 const links = new WeakMap<Element, number>();
 /** What `select: "toggle"` sets on a mark, and its teardown gives back. */
-const TOGGLE_ATTRS = ["role", "tabindex", "aria-checked"] as const;
+const TOGGLE_ATTRS = ["role", "tabindex", "aria-checked", "aria-label"] as const;
 
 /**
  * Wire a figure and/or a table to a selection store (J31). Figure: pointer hover → `hover` (see
@@ -266,6 +268,10 @@ function toggles<Row>(figure: Element, store: SelectionStore<Row>, marks: readon
     m.setAttribute("role", "checkbox");
     m.setAttribute("tabindex", "0");
     m.setAttribute("aria-checked", String(shown.has(id)));
+    // a checkbox needs a name: the mark's own (Plot's ariaLabel channel writes aria-label, its title channel a
+    // <title> child), else its link id
+    if (!m.hasAttribute("aria-label") && !m.hasAttribute("aria-labelledby") && !m.querySelector(":scope > title"))
+      m.setAttribute("aria-label", id);
   }
   const flip = (e: Event): void => {
     const id = markAt(figure, e)?.getAttribute("data-sdv-id");

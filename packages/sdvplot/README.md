@@ -722,8 +722,9 @@ brushFilter(fig, store, { data: rows, x: "wins", y: "net_epa", id: "team" });
   The drawn rectangle follows the store: cleared from elsewhere (`store.clear()`), it goes without a second write. A
   click on empty chart area clears only this brush's region. The handle's `move(region)` brushes in data coordinates.
 - **`linkSelection(store, { figure, select: "toggle" })`** turns each stamped mark into a checkbox (`role`,
-  `tabindex="0"`, `aria-checked`): a click, Enter or Space toggles its id in `selected`. A mark stamped with an empty
-  id (a missing key) stays a plain mark.
+  `tabindex="0"`, `aria-checked`): a click, Enter or Space toggles its id in `selected`. Each checkbox is named by the
+  mark's own name, from Plot's `ariaLabel` or `title` channel, else by its link id. A mark stamped with an empty id (a
+  missing key) stays a plain mark.
 - **`linkCursor(fig, store, { field, shape })`** draws the store's `cursor` through this figure's own scale and writes
   the value under the pointer back: a rule, or a band `width` data units wide, on an x or y scale; the band holding the
   value on a band scale; or a ring around a centre (`axis: "ring"`, such as a shot distance around the hoop).
