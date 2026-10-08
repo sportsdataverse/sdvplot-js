@@ -1,6 +1,7 @@
 # @sportsdataverse/sdvtables
 
-Serializable table specs rendered to static HTML with SportsDataverse team identity and themes. A `TableSpec` is plain
+Serializable table specs rendered to HTML (static, or interactive with a headless engine) and to PNG, with
+SportsDataverse team identity and themes. A `TableSpec` is plain
 data (JSON-safe), so the same spec renders in Node, the browser and notebooks. Zero runtime dependencies beyond
 [`@sportsdataverse/sdvplot`](https://plot.sportsdataverse.org) (team logos, headshots and colors).
 
@@ -54,7 +55,7 @@ call `.id("a")` / `.id("b")` on the builder.
 sdvtables has its own headless engine and takes no TanStack dependency. If your app already renders tables with
 `@tanstack/react-table` 8, map a `TableSpec` to `ColumnDef`s: the header comes from the spec, and each
 cell reuses the markup `renderHTML` draws (logos, pills, bars), read back from `toElement()` by `data-row` / `data-col`.
-Sorting uses the spec's `sortable` and `compare`, the [Phase 5 fields](#reserved-for-phase-5): a column without
+Sorting uses the spec's `sortable` and `compare`, the fields [the engine](#interactive) reads: a column without
 `compare` falls back to TanStack's default sort, and `compare` stays ascending because TanStack inverts it for
 descending itself.
 
@@ -195,15 +196,143 @@ decorations (title, caption, stripes) are not cells and are not carried over. Wr
 - Number cells display negatives with U+2212 (a true minus); `formatValue`-style labels (legends, notes) stay ASCII.
 - Unknown team ids warn once per call per set and render as plain text.
 
-## Reserved for Phase 5
+## Interactive
 
-Accepted and ignored by `renderHTML` today; do not rely on behavior yet.
+`createTable(spec, rows, options)` is the package's own headless engine (no table library): sort, per-column and
+global text filters, paging, column visibility and row selection, with immutable snapshots and `subscribe`. Every
+column sorts unless `sortable: false`, missing values sort last in both directions, and a column's `compare(a, b)`
+replaces the kind's comparator. `filterable: true` gives a column its own filter box; the search box searches every
+shown column. The page size is `options.pageSize`, else `spec.interactive.pageSize`, else one page.
 
-- `sortable`, `filterable` and `compare(a, b)` on a column. `compare` is the one non-serializable field and is
-  dropped by `JSON.stringify`.
-- `TableSpec.interactive.pageSize`.
-- Markup hooks the interactive engine will target: wrapper `id="sdvt-..."` with `data-sdvt-theme` and
-  `data-sdvt-density`, `<th data-col data-kind>`, `<tr data-row>` (index into `rows`), `<td data-col>`.
+```ts
+import { createTable, defineTable } from "@sportsdataverse/sdvtables";
+import { hydrate, prepare, renderHTML } from "@sportsdataverse/sdvtables/html";
+
+// 2024 AFC regular season (nflverse games)
+const rows = [
+  { team: "KC", division: "West", wins: 15, losses: 2, pf: 385, pa: 326 },
+  { team: "LAC", division: "West", wins: 11, losses: 6, pf: 402, pa: 301 },
+  { team: "DEN", division: "West", wins: 10, losses: 7, pf: 425, pa: 311 },
+  { team: "LV", division: "West", wins: 4, losses: 13, pf: 309, pa: 434 },
+  { team: "BUF", division: "East", wins: 13, losses: 4, pf: 525, pa: 368 },
+  { team: "MIA", division: "East", wins: 8, losses: 9, pf: 345, pa: 364 },
+  { team: "NYJ", division: "East", wins: 5, losses: 12, pf: 338, pa: 404 },
+  { team: "NE", division: "East", wins: 4, losses: 13, pf: 289, pa: 417 },
+];
+type Row = (typeof rows)[number];
+const spec = defineTable<Row>()
+  .columns((c) => [
+    c.logo("team", { league: "nfl", includeName: true }),
+    c.text("division", { filterable: true }),
+    c.int("wins"),
+    c.int("losses"),
+    c.int("pf", { label: "PF" }),
+    c.int("pa", { label: "PA" }),
+  ])
+  .title("AFC")
+  .subtitle("2024 regular season")
+  .rowKey("team")
+  .build();
+
+await prepare(spec);
+const table = createTable(spec, rows, { pageSize: 4, sort: { col: "wins", dir: "desc" } });
+const host = document.querySelector("#standings")!;
+host.innerHTML = renderHTML(table); // the same string renders on a server or a static site
+const stop = hydrate(host.querySelector(".sdvt")!, table); // sort, filter, page and select without React
+table.setFilter("division", "east"); // BUF, MIA, NYJ, NE; back to the first page
+```
+
+`renderHTML(table)` draws sort buttons in the headers (`aria-sort` on the sorted one), a search box and the filter
+boxes above the table, and a pager below it. `hydrate(el, table)` attaches delegated listeners and re-renders only the
+table block and the pager, at most once per animation frame; it returns a teardown. Render the markup from the same
+table state you hydrate: attaching does not reconcile the two.
+
+Inside an interactive table: j/k (↓/↑) move between the rows of the page and never turn it (the pager does), h/l
+(←/→) pick a column, s sorts it, / jumps to the search box, Enter or Space toggles the row's selection;
+`interactive: { hotkeys: false }` on the spec keeps only the arrows, Enter and Space. The table is a `role="grid"`
+whose rows share one tab stop, the current row; the current column's header carries
+`aria-current="true"` and a selected row `aria-selected="true"`. Keys pressed with Ctrl, Meta or Alt, during IME
+composition, or in a text field are left alone. Clicking a row toggles its selection too.
+
+In an interactive table, colour scales, legends, outlier limits and row-accent palettes are computed from all of the
+table's rows, not the page on screen, so a value keeps its colour while the user pages, filters or sorts. Row
+selectors by index (`.boldRows([0])`) count in the rows passed to `createTable`. `snake` layouts are static only: an
+interactive render of a `.snake()` spec throws `TableSpecError`.
+
+Linking a table to a figure: with `.rowKey("team")`, a row's id is `String(row.team)` (without one, its index in the
+input rows). `setSelection(ids)` / `getSelection()`, `setExternalFilter((row) => …)` (ANDed with the table's own
+filters) and `setHover(id)` drive the table from outside, and `subscribe` reports `select`, `hover` and `change`
+events. Setting the same selection or filter again notifies nobody, so a two-way link does not loop.
+
+Engine non-goals: virtualization, column resize/reorder/pin, a grouping UI and server-side paging (slice the rows
+before `createTable`).
+
+### React
+
+```tsx
+import { fontsLinkFor } from "@sportsdataverse/sdvtables/html";
+import { SdvTable, useTable } from "@sportsdataverse/sdvtables/react"; // peer: react >= 18
+
+// spec and rows from above; await prepare(spec) before the first render, server included
+<SdvTable spec={spec} rows={rows} interactive pageSize={4} />; // SSR markup === renderHTML(table, { fonts: false })
+
+function Standings() {
+  const { table, snapshot } = useTable(spec, rows, { pageSize: 4 });
+  return (
+    <>
+      <p>{snapshot.filteredCount} teams</p>
+      <SdvTable table={table} interactive />
+    </>
+  );
+}
+```
+
+`<SdvTable/>` writes no fonts `<link>`: put the tag `fontsLinkFor(spec)` returns in the page `<head>`. `pageSize` and
+`sort` are initial state, like React's `default*` props. A new `rows` array, even an equal copy, keeps the user's
+sort, filters, page and selection; only a structural `spec` change builds a new engine. Without `interactive` the
+component renders the static table. The `react` entry is marked `"use client"`.
+
+## Export (Node; peer: playwright)
+
+`@sportsdataverse/sdvtables/export` renders tables to PNG in headless Chromium. Its functions port sdvplotR's
+`gt_save_crop`, `gt_social_crop`, `gt_save_batch`, `gt_grid` and `gt_stack_tables`, with the Python package's
+defaults. Install the optional peer and its browser once:
+
+```sh
+pnpm add -D playwright
+pnpm exec playwright install chromium
+```
+
+Without `playwright` the functions throw `OptionalDependencyError` (from `@sportsdataverse/sdvplot`), and a missing
+browser says to run `playwright install chromium`. Arguments are checked before any browser starts.
+
+```ts
+import { batchToPNG, gridTables, htmlToPNG, socialCrop, stackTables, tableToPNG } from "@sportsdataverse/sdvtables/export";
+
+// spec and rows from the Interactive example; await prepare(spec) first
+await tableToPNG(spec, rows, { file: "afc.png" }); // gt_save_crop
+await socialCrop(spec, rows, { aspect: "4:5", file: "afc-post.png" }); // gt_social_crop
+const west = { spec, rows: rows.filter((r) => r.division === "West") };
+const east = { spec, rows: rows.filter((r) => r.division === "East") };
+await htmlToPNG(gridTables([west, east], { ncol: 2, title: "AFC by division" }), { file: "grid.png" }); // gt_grid
+await htmlToPNG(stackTables([west, east], { title: "AFC by division" }), { file: "stack.png" }); // gt_stack_tables
+await batchToPNG(rows, "division", (groupRows) => ({ spec, rows: groupRows }), "afc-{group}.png", { dir: "out" });
+// gt_save_batch: out/afc-west.png and out/afc-east.png
+```
+
+- `tableToPNG`, `socialCrop` and `htmlToPNG` return the PNG bytes and also write `file` when given (it must end in
+  `.png`); `batchToPNG` returns the paths it wrote.
+- Options are in image pixels, as in Python: `deviceScaleFactor` (the zoom, default 2), `whitespace` (the margin left
+  around the trimmed content, default 50, or 60 for `socialCrop`), `background` (default white), `width` (the final
+  image width; absent, the rendered width) and `fontLinks` (extra stylesheets to wait for).
+- `socialCrop` puts the table on an `aspect` canvas (`"1:1"` by default, `"16:9"`, `"4:5"`, `"9:16"`, `"1.91:1"` or
+  a number), placed by `gravity` (one of the nine ImageMagick names, `"center"` by default); the table is never cropped.
+- `batchToPNG` writes one image per value of the group column, with `{group}` replaced by `slug(value)`, all widened
+  to the widest (`matchWidth: false` keeps each width). A group whose table fails to build is skipped and named in one
+  warning, as in Python.
+- `gridTables` and `stackTables` return HTML: the tables with a page title, subtitle, caption and source note around
+  them, styled with the Python defaults. A spec used twice gets distinct ids, so each copy keeps its decorations.
+- For an SVG figure, use `toPNG` and `socialCard` from `@sportsdataverse/sdvplot/export` instead (no browser).
 
 ## gtUtils / sdvplotR names
 
@@ -215,7 +344,7 @@ the same table in code). Builder methods are on `defineTable()`, `c.*` inside `.
 | `gt_sdv_logos` | `c.logo(key, {league, includeName, season, variant, height})` | ported |
 | `gt_sdv_wordmarks` | `c.wordmark(key, {league, season, variant, height})` | ported |
 | `gt_sdv_headshots` | `c.headshot(key, {league, idSystem, height})` | ported |
-| `gt_sdv_cols_label` | image labels are Phase 5 (`labelHtml`); today use `.titleHeader()` or `subheader` | not ported (labels are text) |
+| `gt_sdv_cols_label` | image labels are not ported; use `.titleHeader()` or `subheader` | not ported (labels are text) |
 | `gt_merge_stack_team_color` | `c.mergeStackTeamColor(top, stack, team, {league, fontSizeTop, fontSizeBottom, color, background})` | ported |
 | `gt_theme_sdv` / `gt_theme_sdv_team` | `.theme("sdv", {options:{style}})` / `.theme("sdvTeam", {options:{league, team}})` | ported |
 | `gt_theme_<name>` (18) | `.theme("<name>", {density, options:{accent\|stripe\|paper\|color\|style}})` | ported |
@@ -251,9 +380,9 @@ the same table in code). Builder methods are on `defineTable()`, `c.*` inside `.
 | `gt_title_header` | `.titleHeader(title, {subtitle, kicker, date, *Style})` | ported |
 | `gt_watermark` | `.watermark({text, image, opacity, size, position, color, angle, font})` | ported |
 | `gt_wrap_labels` | `.wrapLabels({columns, width, balance})` | ported |
-| `gt_save_crop` / `gt_save_batch` | `tableToPNG` (`/export`) | Phase 5 |
-| `gt_social_crop` | `socialCrop` (`/export`) | Phase 5 |
-| `gt_grid` / `gt_stack_tables` | `gridTables` / `stackTables` (`/export`) | Phase 5 |
+| `gt_save_crop` / `gt_save_batch` | `tableToPNG` / `batchToPNG` (`/export`) | ported |
+| `gt_social_crop` | `socialCrop` (`/export`) | ported |
+| `gt_grid` / `gt_stack_tables` | `gridTables` / `stackTables` (`/export`) | ported |
 | `reactable_sdv_logos/wordmarks/headshots` | `c.logo` / `c.wordmark` / `c.headshot` | ported |
 | `reactable_sdv_cols_label` | as `gt_sdv_cols_label` | not ported |
 | `reactable_sdv_team_color_bar` / `_bg` | `c.teamColorBar(key, {league, which, naColor, barWidth})` / `c.teamColorBg(key, {league, which, alpha, naColor})` | ported |
@@ -268,6 +397,24 @@ the same table in code). Builder methods are on `defineTable()`, `c.*` inside `.
   `email`/`mail`), not every Font Awesome name; `tiktok`, `threads` and `substack` are unavailable, as in faicons.
 - `kicker` always renders uppercase; `cutline` y positions round half-up.
 - `wrapLabels` keeps internal whitespace of a label as given.
+
+## Visual pass (contributors)
+
+The unit snapshots pin each theme's CSS text, not what it draws. The visual pass renders every registered theme's
+`themePreview` of a 2024 AFC standings table (title, subtitle, division groups, source note) through the `tableToPNG`
+path, one PNG per theme:
+
+```sh
+pnpm --filter @sportsdataverse/sdvtables exec playwright install chromium # once
+pnpm --filter @sportsdataverse/sdvtables render:themes # writes packages/sdvtables/theme-pass/<theme>.png
+SDV_RENDER_TESTS=1 pnpm --filter @sportsdataverse/sdvtables test # the unit tests plus the chromium export tests
+```
+
+Open the PNGs after changing a theme or the base sheet: this pass caught tufte and booktabs running the title and the
+subtitle together on one line. `theme-pass/` is gitignored; `SDV_THEME_PASS_DIR=<dir>` writes elsewhere. An always-on
+test fails if a registered theme is missing from the pass. In CI the `render-tests` job runs the same pass, lists the
+PNGs and any failed theme in the job summary, and uploads them as the `sdvtables-theme-pass` artifact; a failing theme
+never fails the build.
 
 ## Data and licenses
 
