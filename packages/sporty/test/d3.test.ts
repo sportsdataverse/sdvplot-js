@@ -89,3 +89,17 @@ test("text: visible count, font size through y, negated rotation", () => {
   );
   expect(g.node()!.outerHTML).not.toMatch(/NaN/);
 });
+
+test("appendSurface describes the surface, as surfaceMark does: default '<league> <sport> surface', or ariaDescription", () => {
+  expect(draw(basketballCourt("nba")).g.attr("aria-description")).toBe("nba basketball surface");
+  const court = basketballCourt("nba");
+  const [x0, y0, x1, y1] = court.bbox;
+  const g = appendSurface(
+    select(document.body).append("svg"),
+    court,
+    scaleLinear([x0, x1], [0, 500]),
+    scaleLinear([y0, y1], [272, 0]),
+    { ariaDescription: "half court" },
+  );
+  expect(g.attr("aria-description")).toBe("half court");
+});

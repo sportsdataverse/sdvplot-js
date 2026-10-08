@@ -27,8 +27,8 @@ export type Axis = "x" | "y" | "fx" | "fy";
 // @public
 export function axisLogos(axis: Axis, o: AxisLogosOptions): Plot.Markish;
 
-// @public (undocumented)
-export interface AxisLogosOptions {
+// @public
+export interface AxisLogosOptions extends AxisPassThrough {
     // (undocumented)
     anchor?: "top" | "bottom" | "left" | "right";
     height?: number;
@@ -58,6 +58,9 @@ export interface AxisLogosOptions {
     variant?: Variant;
 }
 
+// @public
+export type AxisPassThrough = Omit<Plot.AxisXOptions, "tickFormat" | "anchor" | "tickSize" | "label">;
+
 // Warning: (ae-forgotten-export) The symbol "Value" needs to be exported by the entry point plot.d.ts
 //
 // @public
@@ -84,14 +87,11 @@ export type Data<R> = Iterable<R> | {
     numRows: number;
 };
 
+// @public
+export type GeoPassThrough = Omit<Plot.GeoOptions, "geometry" | "fill" | "r" | "x" | "y">;
+
 // @public (undocumented)
-export interface HeadshotOptions<R> {
-    // (undocumented)
-    alpha?: number;
-    // (undocumented)
-    ariaLabel?: string;
-    // (undocumented)
-    height?: number;
+export interface HeadshotOptions<R> extends ImageMarkOptions {
     // Warning: (ae-forgotten-export) The symbol "HeadshotIdSystem" needs to be exported by the entry point plot.d.ts
     idSystem?: HeadshotIdSystem;
     // Warning: (ae-forgotten-export) The symbol "EspnHeadshotLeague" needs to be exported by the entry point plot.d.ts
@@ -100,26 +100,26 @@ export interface HeadshotOptions<R> {
     league: EspnHeadshotLeague;
     // (undocumented)
     player: Channel<R>;
-    // (undocumented)
-    title?: Channel<R>;
-    // (undocumented)
-    x: Channel<R>;
-    // (undocumented)
-    y: Channel<R>;
 }
 
-// @public (undocumented)
+// @public
 export function headshots<R>(data: Data<R>, o: HeadshotOptions<R>): Plot.Markish;
+
+// @public
+export interface ImageMarkOptions extends ImagePassThrough {
+    alpha?: number;
+    height?: number;
+    r?: Plot.ChannelValue;
+}
+
+// @public
+export type ImagePassThrough = Omit<Plot.ImageOptions, "src" | "width" | "height" | "r" | "preserveAspectRatio">;
 
 // @public
 export function logos<R>(data: Data<R>, o: MarkOptions<R>): Plot.Markish;
 
 // @public (undocumented)
-export interface MarkOptions<R> {
-    alpha?: number;
-    // (undocumented)
-    ariaLabel?: string;
-    height?: number;
+export interface MarkOptions<R> extends ImageMarkOptions {
     // (undocumented)
     idSystem?: IdSystem;
     // (undocumented)
@@ -128,13 +128,7 @@ export interface MarkOptions<R> {
     // (undocumented)
     team: Channel<R>;
     // (undocumented)
-    title?: Channel<R>;
-    // (undocumented)
     variant?: Variant;
-    // (undocumented)
-    x: Channel<R>;
-    // (undocumented)
-    y: Channel<R>;
 }
 
 // @public
@@ -144,7 +138,7 @@ export function meanLines<R>(data: Data<R>, o: RefLineOptions<R>): Plot.Markish[
 export function medianLines<R>(data: Data<R>, o: RefLineOptions<R>): Plot.Markish[];
 
 // @public (undocumented)
-export interface RefLineOptions<R> {
+export interface RefLineOptions<R> extends RuleLinePassThrough {
     stroke?: string;
     strokeDasharray?: string;
     // (undocumented)
@@ -155,6 +149,9 @@ export interface RefLineOptions<R> {
     // (undocumented)
     y?: Channel<R>;
 }
+
+// @public
+export type RuleLinePassThrough = Omit<Plot.RuleXOptions, "x" | "y" | "x1" | "x2" | "y1" | "y2">;
 
 // Warning: (ae-forgotten-export) The symbol "SignaturePoint" needs to be exported by the entry point plot.d.ts
 //
@@ -168,6 +165,7 @@ export interface ShootingSignatureOptions {
     fill?: DiffScale;
     halfWidth?: (p: SignaturePoint, maxShare: number) => number;
     league?: boolean;
+    tip?: boolean | Plot.TipOptions;
 }
 
 // Warning: (ae-forgotten-export) The symbol "CellVsLeague" needs to be exported by the entry point plot.d.ts
@@ -176,26 +174,28 @@ export interface ShootingSignatureOptions {
 export function shotCells(cells: readonly CellVsLeague[], o: ShotCellsOptions): Plot.Markish;
 
 // @public
-export interface ShotCellsOptions {
-    clip?: boolean;
+export interface ShotCellsOptions extends GeoPassThrough {
+    dropOutside?: boolean;
     frame?: FrameName | Frame;
     prior?: number;
     r: readonly number[] | number;
     scale?: DiffScale;
     // Warning: (ae-forgotten-export) The symbol "BinShape" needs to be exported by the entry point plot.d.ts
     shape?: BinShape;
-    stroke?: string;
-    strokeWidth?: number;
+    stroke?: Plot.ChannelValueSpec;
+    strokeWidth?: Plot.ChannelValueSpec;
 }
 
 // @public
 export function shotZones(areas: readonly BasketballZoneArea[], o: ShotZonesOptions): Plot.Markish[];
 
 // @public
-export interface ShotZonesOptions {
+export interface ShotZonesOptions extends GeoPassThrough {
     fill: (zone: BasketballZone) => string;
-    fillOpacity?: number;
+    fillOpacity?: Plot.ChannelValueSpec;
     frame?: FrameName | Frame;
+    // Warning: (ae-forgotten-export) The symbol "Split" needs to be exported by the entry point plot.d.ts
+    stats?: Readonly<Record<BasketballZone, Split>>;
     text?: (zone: BasketballZone) => string;
 }
 
@@ -263,6 +263,7 @@ export type TeamTiersOptions = TiersOptions & {
     league: League;
     devel?: boolean;
     width?: number;
+    tip?: boolean;
 };
 
 // @public
@@ -281,7 +282,7 @@ export interface TitleImageOptions {
     title?: string;
 }
 
-// @public (undocumented)
+// @public
 export function wordmarks<R>(data: Data<R>, o: MarkOptions<R>): Plot.Markish;
 
 // (No @packageDocumentation comment for this package)

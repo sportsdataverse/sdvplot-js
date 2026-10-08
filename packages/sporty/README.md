@@ -41,6 +41,11 @@ Plot.plot({ ...surfaceScales(scene), marks: surfaceMark(scene) });
 import { appendSurface } from "@sportsdataverse/sporty/d3";
 ```
 
+`surfaceMark(scene, { ariaDescription })`, `toSVG(scene, { ariaDescription })` and
+`appendSurface(selection, scene, x, y, { ariaDescription })` describe the surface for assistive technology, on the group
+that holds it; the default is the scene's league and sport, such as "nba basketball surface". A canvas has no DOM to
+carry one: describe the `<canvas>` element itself.
+
 Paint onto a canvas (a browser `CanvasRenderingContext2D`, or `@napi-rs/canvas` in Node; no DOM types needed):
 
 ```ts

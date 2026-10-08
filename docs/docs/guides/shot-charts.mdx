@@ -74,6 +74,17 @@ shots taken from there, and its colour the shrunk difference from the league, wh
 
 <Live id="sdvplot/shots/signature" />
 
+## Hover
+
+The three Plot marks take `tip: true`, as the hex chart, zones and signature above do: hover them. A cell shows its
+attempts, FG%, the league's FG% and the shrunk difference; a zone shows its name and, when `shotZones` is given
+`stats` (`statsByZone(shots)`), its makes/attempts and FG%; the signature shows the distance, FG%, the league's FG%
+and the share of shots where the pointer is. A tip object's `format` overrides sdvplot's formats key by key.
+`shotZones` and `shootingSignature` return the tip as their last mark, so spread them last, or add other marks before
+them: a mark added after them paints over the tip.
+`shotCells`' `dropOutside` (default true) leaves out cells whose centre is outside the frame, so a tip never points
+at a cell that is not drawn; Plot's own `clip` passes through and cuts paths at the frame instead.
+
 ## Legends
 
 The colours come from `diffScale()`, a function from a difference to a colour. Its `.plot` is the same scale in

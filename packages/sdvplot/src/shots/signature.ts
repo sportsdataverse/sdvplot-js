@@ -143,6 +143,12 @@ export function signaturePoints(
  * with the colours: the same signature at two widths never shares one, and two signatures never steal each other's
  * (`master`'s fixed id did, `Gradient.js:10`). Internal: not exported from `sdvplot/shots`.
  */
+/**
+ * The signature ribbon's accessible name, shared by the Plot mark and its d3 twin.
+ * @internal
+ */
+export const SIGNATURE_NAME = "shooting signature: FG% by distance against the league";
+
 export function signatureGradient(
   points: readonly SignaturePoint[],
   fill: (diff: number | null) => string,

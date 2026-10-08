@@ -1,11 +1,18 @@
 export { headshots, logos, sizeRender, wordmarks } from "./marks.js";
-export type { Channel, Data, HeadshotOptions, MarkOptions } from "./marks.js";
+export type {
+  Channel,
+  Data,
+  HeadshotOptions,
+  ImageMarkOptions,
+  ImagePassThrough,
+  MarkOptions,
+} from "./marks.js";
 export { axisLogos } from "./axis.js";
-export type { Axis, AxisLogosOptions } from "./axis.js";
+export type { Axis, AxisLogosOptions, AxisPassThrough } from "./axis.js";
 export { teamColor, teamFill } from "./scales.js";
 export type { TeamColorOptions } from "./scales.js";
 export { meanLines, medianLines } from "./lines.js";
-export type { RefLineOptions } from "./lines.js";
+export type { RefLineOptions, RuleLinePassThrough } from "./lines.js";
 export { titleImage } from "./title.js";
 export type { TitleImageOptions } from "./title.js";
 export { teamTiers } from "./tiers.js";
@@ -13,4 +20,9 @@ export type { TeamTiersOptions } from "./tiers.js";
 export { SURFACES, SURFACE_BASE, colorUpdates, surface } from "./surface.js";
 export type { SurfaceOpts } from "./surface.js";
 export { shootingSignature, shotCells, shotZones } from "./shots.js";
-export type { ShootingSignatureOptions, ShotCellsOptions, ShotZonesOptions } from "./shots.js";
+export type {
+  GeoPassThrough,
+  ShootingSignatureOptions,
+  ShotCellsOptions,
+  ShotZonesOptions,
+} from "./shots.js";
