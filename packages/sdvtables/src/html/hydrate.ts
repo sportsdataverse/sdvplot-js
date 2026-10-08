@@ -41,8 +41,10 @@ export function hydrate<Row>(el: Element, table: Table<Row>): () => void {
   live.get(el)?.();
 
   let hidden = table.state.hidden; // the engine replaces this array only when a column is hidden or shown
+  let drawn = table.rows; // the rows the body shows: the SSR markup's until the first render
   const render = (): void => {
     cancel = undefined;
+    drawn = table.rows;
     const root = el.getRootNode() as Document | ShadowRoot;
     const restore = captureFocus(el);
     const p = renderParts(table.spec, table.rows, { css: "none", ...tableRenderOptions(table) });
@@ -82,10 +84,29 @@ export function hydrate<Row>(el: Element, table: Table<Row>): () => void {
       cancel = () => clearTimeout(id);
     }
   };
-  const onClick = (e: Event): void => handleClick(table, e.target);
+  // a row event while a render that changes the rows is pending would read the old body's data-row against the new
+  // rows (LV's row as BUF): render first, so the target is a current row, or a replaced one that names no row. A
+  // pending render that keeps the rows (a selection, the cursor) leaves data-row right, and the target in place.
+  const flush = (): void => {
+    const rows = table.rows;
+    if (cancel && (rows.length !== drawn.length || rows.some((r, i) => r !== drawn[i]))) {
+      cancel();
+      render();
+    }
+  };
+  const onClick = (e: Event): void => {
+    flush();
+    handleClick(table, e.target);
+  };
   const onInput = (e: Event): void => handleInput(table, e.target);
-  const onHover = (e: Event): void => handleHover(table, e.target); // J31 (A7)
-  const onKeydown = (e: Event): void => handleKeydown(table, el, e as KeyboardEvent); // Task 10
+  const onHover = (e: Event): void => {
+    flush();
+    handleHover(table, e.target); // J31 (A7)
+  };
+  const onKeydown = (e: Event): void => {
+    flush();
+    handleKeydown(table, el, e as KeyboardEvent); // Task 10
+  };
 
   el.addEventListener("click", onClick);
   el.addEventListener("input", onInput);

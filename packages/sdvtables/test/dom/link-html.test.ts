@@ -63,6 +63,9 @@ const brushTop4 = (
     x: [9.5, 16],
     y: [0, 0.2],
   });
+const click = (el: Element | null | undefined): void => {
+  el?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+};
 
 test("hovering a hydrated table row highlights its dot; leaving the table clears it", () => {
   const { svg, el } = setup();
@@ -128,6 +131,31 @@ test("a table hydrated after the store already holds a hover lights it at once",
   linkSelection(store, { plot: svg, table }); // the engine holds BUF before any view listens
   hydrate(el, table);
   expect(hovered(el)).toEqual(["BUF"]);
+});
+test("a pointer in the frame after a brush reads the current rows: the old row 3 (LV) never reads as BUF", () => {
+  const { svg, el, store } = setup();
+  brushTop4(svg, store);
+  over(el.querySelector('[data-sdv-body] tr[data-row="3"] td')); // the old body's LV: the render runs first
+  expect([...store.getState().hover]).toEqual([]); // LV's row is gone, so the pointer names no row
+  expect(teamsOf(el, "[data-sdv-body] tbody tr")).toEqual(["KC", "LAC", "DEN", "BUF"]); // already current
+  over(el.querySelector('[data-sdv-body] tr[data-row="3"] td'));
+  expect([...store.getState().hover]).toEqual(["BUF"]);
+});
+test("a click in the frame after a brush toggles the right row: the old LV row toggles nothing", () => {
+  const { svg, el, store } = setup();
+  brushTop4(svg, store); // selects KC, LAC, DEN, BUF
+  click(el.querySelector('[data-sdv-body] tr[data-row="3"] td')); // the old body's LV, not BUF
+  expect([...store.getState().selected]).toEqual(["KC", "LAC", "DEN", "BUF"]);
+  click(el.querySelector('[data-sdv-body] tr[data-row="3"] td')); // the current row 3: BUF
+  expect([...store.getState().selected]).toEqual(["KC", "LAC", "DEN"]);
+});
+test("Enter in the frame after a brush on the old LV row toggles nothing", () => {
+  const { svg, el, store } = setup();
+  const lv = el.querySelector<HTMLElement>('[data-sdv-body] tr.sdvt-row[data-row="3"]');
+  lv?.focus();
+  brushTop4(svg, store);
+  lv?.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }));
+  expect([...store.getState().selected]).toEqual(["KC", "LAC", "DEN", "BUF"]); // BUF not toggled off for LV
 });
 test("Space on a hydrated grid row selects it; the store and the figure follow (A37)", () => {
   const { svg, el, store } = setup();
