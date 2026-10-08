@@ -12,6 +12,7 @@
       "docs/build/**",
       "docs/.docusaurus/**",
       "docs/docs/api/**",
+      "docs/src/css/sdv-theme.css",
       "spikes/**",
       "examples/snippets/**/*.svelte",
       "examples/snippets/**/*.astro"

@@ -1,33 +1,4 @@
-/**
- * Any CSS included here will be global. The classic template
- * bundles Infima by default. Infima is a CSS framework designed to
- * work well for content-centric websites.
- */
-
-/* You can override the default Infima variables here. */
-:root {
-  --ifm-color-primary: #2e8555;
-  --ifm-color-primary-dark: #29784c;
-  --ifm-color-primary-darker: #277148;
-  --ifm-color-primary-darkest: #205d3b;
-  --ifm-color-primary-light: #33925d;
-  --ifm-color-primary-lighter: #359962;
-  --ifm-color-primary-lightest: #3cad6e;
-  --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
-}
-
-/* For readability concerns, you should choose a lighter palette in dark mode. */
-[data-theme="dark"] {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
-}
+/* sdvplot-js only. The shared family theme is sdv-theme.css (a copy of sdvplot's, byte for byte), which loads first. */
 
 /* <Live> examples (src/components/Live.tsx) and gallery cards */
 .sdv-live {
@@ -109,4 +80,257 @@
 }
 .sdv-credit img {
   display: block;
+}
+
+/* ---- the home page's "What's covered" (src/components/Coverage.tsx) ---- */
+.sdv-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.sdv-cov-totals {
+  font-size: 1.05rem;
+}
+/* the league table scrolls inside its own box on a phone; the page never does */
+.sdv-cov-scroll {
+  position: relative;
+  max-width: 100%;
+  overflow-x: auto;
+  margin-bottom: 2rem;
+  border: 1px solid var(--ifm-toc-border-color);
+  border-radius: var(--ifm-global-radius);
+}
+.sdv-cov-table {
+  display: table;
+  width: 100%;
+  margin: 0;
+  border: 0;
+  font-size: 0.9rem;
+}
+.sdv-cov-table th,
+.sdv-cov-table td {
+  border-width: 0 0 1px;
+  padding: 0.3rem 0.75rem;
+  white-space: nowrap;
+}
+.sdv-cov-table thead th {
+  text-align: left;
+}
+.sdv-cov-table tr {
+  background: none;
+}
+.sdv-cov-table .sdv-cov-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.sdv-cov-table tbody th[scope="row"] {
+  font-weight: 400;
+  text-align: left;
+}
+.sdv-cov-group th {
+  background: var(--ifm-table-stripe-background);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-align: left;
+}
+/* the league stays in view while the counts scroll beside it (a phone shows two or three count columns) */
+.sdv-cov-table tbody th[scope="row"],
+.sdv-cov-table thead th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--ifm-background-color);
+}
+.sdv-cov-table thead th:first-child {
+  background: var(--ifm-table-stripe-background);
+}
+/* the right edge fades while the table has more to scroll (sdv-theme.css's keyframes, as on .markdown table) */
+.sdv-cov-scroll {
+  animation: sdv-more-right linear both;
+  animation-timeline: scroll(self inline);
+}
+@media (max-width: 600px) {
+  .sdv-cov-table tbody th[scope="row"] {
+    min-width: 8.5rem;
+    max-width: 10rem;
+    white-space: normal;
+  }
+  .sdv-cov-name {
+    display: block;
+    line-height: 1.25;
+  }
+}
+.sdv-cov-sub {
+  color: var(--ifm-font-color-secondary);
+  font-size: 0.8rem;
+}
+.sdv-chip {
+  display: inline-block;
+  margin: 0.125rem 0.25rem 0.125rem 0;
+  padding: 0.05rem 0.45rem;
+  border: 1px solid var(--ifm-toc-border-color);
+  border-radius: 999px;
+  background: var(--ifm-code-background);
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+.sdv-chip--soft {
+  background: none;
+  font-family: inherit;
+}
+.sdv-chips {
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.sdv-chips > li {
+  display: inline-block;
+}
+.sdv-cov-sports {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+  gap: 0.75rem;
+  margin: 0 0 2rem;
+  padding: 0;
+  list-style: none;
+}
+.sdv-cov-sport {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--ifm-toc-border-color);
+  border-radius: var(--ifm-global-radius);
+  background: var(--ifm-card-background-color);
+}
+.sdv-cov-sport-name {
+  font-weight: 700;
+}
+.sdv-cov-sources dt {
+  margin-top: 0.75rem;
+  font-weight: 700;
+}
+.sdv-cov-sources dd {
+  margin-left: 0;
+}
+
+/* ---- the phone drawer: the SDV packages dropdown renders as a plain list there, so its section entries need
+   their own divider style (sdv-theme.css styles them only in the desktop mega-menu) ---- */
+.navbar-sidebar .menu__link.sdv-section-header {
+  margin-top: 0.5rem;
+  border-top: 1px solid var(--ifm-toc-border-color);
+  border-radius: 0;
+  color: var(--ifm-color-primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ---- touch: 44 px targets in the drawer, the docs sidebar and the footer (WCAG 2.5.5) ---- */
+@media (max-width: 996px) {
+  .navbar-sidebar .menu__link,
+  .theme-doc-sidebar-menu .menu__link {
+    min-height: 44px;
+    align-items: center;
+  }
+  .navbar-sidebar__brand .navbar__brand,
+  .navbar-sidebar__brand .clean-btn,
+  .navbar-sidebar__close,
+  .navbar-sidebar__back,
+  .navbar__toggle {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .navbar-sidebar__close,
+  .navbar__toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .footer__link-item {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+}
+
+/* ---- the home page (src/pages/index.tsx), after sdvplot (Python)'s src/pages/index.module.css ---- */
+.sdv-home-hero {
+  padding: 4rem 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  --ifm-hero-text-color: #fff;
+}
+@media screen and (max-width: 966px) {
+  .sdv-home-hero {
+    padding: 2rem 0;
+  }
+}
+.sdv-home-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* wrap on a phone, and let a long label break inside its own border */
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.sdv-home-buttons .button {
+  max-width: 100%;
+  white-space: normal;
+}
+.sdv-home-section {
+  padding: 2rem 0 0;
+}
+/* the README badge row: wraps, never wider than the screen */
+.sdv-home-badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 0 0 2rem;
+  padding: 0;
+  list-style: none;
+}
+.sdv-home-badges img {
+  display: block;
+  max-width: 100%;
+  width: auto;
+  height: 28px;
+}
+@media (max-width: 600px) {
+  .sdv-home-badges {
+    gap: 0.375rem;
+  }
+  .sdv-home-badges img {
+    height: 22px;
+  }
+}
+.sdv-home-features {
+  padding: 2rem 0;
+}
+.sdv-home-feature {
+  margin-bottom: var(--ifm-spacing-vertical);
+}
+.sdv-home-card {
+  height: 100%;
+  padding: 1.25rem;
+  border: 1px solid var(--ifm-toc-border-color);
+  box-shadow: none;
+}
+.sdv-home-card-title {
+  margin-bottom: 0.5rem;
+}
+.sdv-home-card p:last-child {
+  margin-bottom: 0;
+}
+
+/* same-site links that leave the SPA (the notebooks): no external-link icon */
+.sdv-same-site svg {
+  display: none;
 }
