@@ -23,7 +23,7 @@ export interface RenderOptions {
   readonly sort?: Sort | null;
   /** Phase 5: engine-hidden column keys (merged with decoration-hidden columns); a key that is not a column throws `TableSpecError` */
   readonly hidden?: readonly string[];
-  /** J31 (A5): page-relative indices of selected rows → `sdvt-selected` on their <tr> */
+  /** J31 (A5): page-relative indices of selected rows → `sdvt-selected` on their `<tr>` */
   readonly selected?: ReadonlySet<number>;
   /**
    * J31 (A4): rows the scale/legend domains, outlier limits and row-accent levels are computed from, and the rows
@@ -45,7 +45,7 @@ export interface RenderOptions {
 export interface RenderedParts {
   /** the table id (`tableId(spec)`), also the wrapper's `id` */
   readonly id: string;
-  /** the Google Fonts <link>, or "" */
+  /** the Google Fonts `<link>`, or "" */
   readonly link: string;
   /** class, id, data-sdvt-theme, data-sdvt-density — UNESCAPED values, in this order */
   readonly wrapperAttrs: Readonly<Record<string, string>>;
@@ -59,17 +59,17 @@ export interface RenderedParts {
   readonly caption: string;
   /** header rows above the main one, or "" (no decoration emits any yet) */
   readonly headRows: string;
-  /** the <th> cells of the main header row */
+  /** the `<th>` cells of the main header row */
   readonly head: string;
   /** each SHOWN column's header text, unescaped, keyed by column key (a marginalia rename and scaleNote suffix included): the toolbar's filter labels */
   readonly labels: ReadonlyMap<string, string>;
-  /** every body <tr> (group header rows included) */
+  /** every body `<tr>` (group header rows included) */
   readonly rows: string;
   /** the tfoot element (source notes, footnotes), or "" */
   readonly foot: string;
   /** decoration blocks placed after the table element (bottom border bars and legends), or "" */
   readonly after: string;
-  /** the <table> tag's attributes with a leading space (Task 10: the grid role), or "" */
+  /** the `<table>` tag's attributes with a leading space (Task 10: the grid role), or "" */
   readonly tableAttrs: string;
 }
 
@@ -139,7 +139,7 @@ export function attrsText(attrs: Readonly<Record<string, string>>): string {
     .join("");
 }
 const styleTag = (css: string): string => (css ? `<style>${css}</style>` : "");
-/** The table block: the decorations' own <style>, then before + <table> + after. hydrate re-renders exactly this. */
+/** The table block: the decorations' own `<style>`, then before + `<table>` + after. hydrate re-renders exactly this. */
 export function tableHTML(p: RenderedParts): string {
   return `${styleTag(p.rules)}${p.before}<table${p.tableAttrs}>${p.caption}<thead>${p.headRows}<tr>${p.head}</tr></thead><tbody>${p.rows}</tbody>${p.foot}</table>${p.after}`;
 }
