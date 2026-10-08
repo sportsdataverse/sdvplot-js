@@ -39,6 +39,9 @@ export function compareMarks(a: Rankable, b: Rankable): number;
 // @public
 export function contrast(a: string, b: string): number;
 
+// @public
+export function createSelection<Row = unknown>(): SelectionStore<Row>;
+
 // @public (undocumented)
 export class DownloadError extends OfflineError {
     constructor(message: string, url: string, status?: number | undefined);
@@ -70,6 +73,9 @@ export const EXPLICIT_ONLY: readonly ["nhl_id"];
 export function fetchManifest(o?: {
     fetch?: typeof fetch;
 }): Promise<ManifestRow[]>;
+
+// @public
+export function focusIds<Row>(s: SelectionState<Row>): ReadonlySet<string> | null;
 
 // @public
 export const HEADSHOT_ASPECT: number;
@@ -367,7 +373,13 @@ export interface ResolveOptions {
 export function resolveSync<T extends Value | readonly Value[]>(values: T, league: League, opts?: ResolveOptions): Resolved<T>;
 
 // @public
+export type RowFilter<Row> = (row: Row) => boolean;
+
+// @public
 export function rowsFrom(columns: Record<string, readonly unknown[]>): Record<string, unknown>[];
+
+// @public
+export function sameIds(a: ReadonlySet<string>, b: ReadonlySet<string>): boolean;
 
 // @public (undocumented)
 export class SdvplotError extends Error {
@@ -379,6 +391,28 @@ export function seasonBounds(league?: League): readonly [number, number] | null;
 
 // @public (undocumented)
 export type SeasonInput = number | string | null | undefined;
+
+// @public
+export interface SelectionPatch<Row = unknown> {
+    readonly hover?: Iterable<string>;
+    readonly predicate?: RowFilter<Row> | null;
+    readonly selected?: Iterable<string>;
+}
+
+// @public
+export interface SelectionState<Row = unknown> {
+    readonly hover: ReadonlySet<string>;
+    readonly predicate: RowFilter<Row> | null;
+    readonly selected: ReadonlySet<string>;
+}
+
+// @public
+export interface SelectionStore<Row = unknown> {
+    clear(): void;
+    getState(): SelectionState<Row>;
+    set(patch: SelectionPatch<Row>): void;
+    subscribe(fn: (state: SelectionState<Row>) => void): () => void;
+}
 
 // @public (undocumented)
 export function selectMark(team: Value, league: League, o?: SelectOptions): Promise<MarkRow | undefined>;
@@ -541,6 +575,9 @@ export interface TiersOptions {
     // (undocumented)
     variant?: Variant | "auto";
 }
+
+// @public
+export function toId(v: unknown): string;
 
 // @public (undocumented)
 export class UnresolvedTeamError extends SdvplotError {

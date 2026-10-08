@@ -38,6 +38,8 @@ export { rowsFrom } from "./rows.js";
 export { palette, teamColors, teamColorsSync } from "./colors.js";
 export { matchupColors, matchupColorsSync } from "./matchup-colors.js";
 export type { MatchupColorOptions, MatchupColors } from "./matchup-colors.js";
+export { createSelection, focusIds, sameIds, toId } from "./selection.js";
+export type { RowFilter, SelectionPatch, SelectionState, SelectionStore } from "./selection.js";
 export { checkAlpha, checkHeight, place, placeSync } from "./placement.js";
 export { compareMarks } from "./rank.js";
 export { TIER_DESC, TIERS_SUBTITLE, TIER_THEMES, prepareTiers, wrapLabel } from "./tiers.js";
