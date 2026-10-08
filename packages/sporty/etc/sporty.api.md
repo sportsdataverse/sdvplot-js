@@ -119,6 +119,12 @@ export const BASKETBALL_LEAGUES: readonly ["custom", "fiba", "nba", "nba g leagu
 // @public (undocumented)
 export const BASKETBALL_SPECS: Readonly<Record<BasketballLeague, Readonly<BasketballParams>>>;
 
+// @public
+export const BASKETBALL_ZONE_LABELS: Readonly<Record<BasketballZone, string>>;
+
+// @public
+export const BASKETBALL_ZONES: readonly ["restricted_area", "paint", "mid_range", "corner_3_left", "corner_3_right", "above_break_3"];
+
 // @public (undocumented)
 export type BasketballColorKey = (typeof BASKETBALL_COLOR_KEYS)[number];
 
@@ -243,6 +249,27 @@ export interface BasketballParams {
 export type BasketballParamUpdates = {
     [K in keyof BasketballParams]?: BasketballLoosen<BasketballParams[K]>;
 };
+
+// @public (undocumented)
+export type BasketballZone = (typeof BASKETBALL_ZONES)[number];
+
+// @public (undocumented)
+export interface BasketballZoneArea {
+    readonly label: Point;
+    readonly points: Polygon;
+    readonly vertical: boolean;
+    // (undocumented)
+    readonly zone: BasketballZone;
+}
+
+// @public
+export function basketballZoneOf(x: number, y: number, shotValue: number, o?: ZoneOptions): BasketballZone;
+
+// @public
+export function basketballZones(league?: BasketballLeague | (string & {}), o?: Omit<ZoneOptions, "league"> & {
+    top?: number;
+    arcResolution?: number;
+}): readonly BasketballZoneArea[];
 
 // @public
 export type Color = string;
@@ -594,6 +621,7 @@ export type FrameName = keyof typeof FRAMES;
 // @public
 export const FRAMES: {
     readonly "nba-legacy": Frame;
+    readonly "nba-legacy-vertical": Frame;
     readonly "hockeytech-a": Frame;
     readonly "hockeytech-b": Frame;
     readonly "espn-football-0-100": Frame;
@@ -1370,6 +1398,12 @@ export interface VolleyballParams {
 export type VolleyballParamUpdates = {
     [K in keyof VolleyballParams]?: VolleyballLoosen<VolleyballParams[K]>;
 };
+
+// @public
+export interface ZoneOptions {
+    league?: BasketballLeague | (string & {});
+    scale?: number;
+}
 
 // (No @packageDocumentation comment for this package)
 

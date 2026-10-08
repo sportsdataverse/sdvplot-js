@@ -42,6 +42,11 @@ export const FRAMES: {
    * `displayRange: "defense"` (as sdvplot's `court_coords` documents).
    */
   readonly "nba-legacy": Frame;
+  /**
+   * stats.nba.com legacy shots with the hoop at the BOTTOM (blazing-the-nets' orientation): `x = x/10`,
+   * `y = -41.75 + y/10`. Pair it with `rotation: 90, displayRange: "defense"`; legacy x keeps its sign.
+   */
+  readonly "nba-legacy-vertical": Frame;
   readonly "hockeytech-a": Frame;
   readonly "hockeytech-b": Frame;
   readonly "espn-football-0-100": Frame;
@@ -57,6 +62,18 @@ export const FRAMES: {
     },
     description:
       "stats.nba.com shot frame: tenths of a foot, hoop origin, x across the court (sdvplot court_coords; input columns default to x_legacy/y_legacy)",
+  },
+  "nba-legacy-vertical": {
+    x: (r: Row): number | null => {
+      const x = num(r.x);
+      return x === null ? null : x / 10;
+    },
+    y: (r: Row): number | null => {
+      const y = num(r.y);
+      return y === null ? null : -47 + 5.25 + y / 10;
+    },
+    description:
+      "stats.nba.com shot frame with the hoop at the bottom (scene rotation 90): x across with its sign kept, y toward half court",
   },
   "hockeytech-a": {
     x: (r: Row): number | null => canvasX(r.x, 850),
@@ -101,14 +118,15 @@ export function frameBottomLeft(length: number, width: number): Frame {
  * Move data rows into a surface's frame. Returns new rows (inputs untouched) with `surface_x`/`surface_y`
  * (or the names in `out`) added; missing or non-numeric inputs give `null`.
  *
- * `x`/`y` name the input columns (default `x`/`y`, or `x_legacy`/`y_legacy` for `"nba-legacy"`). The frame sees
+ * `x`/`y` name the input columns (default `x`/`y`, or `x_legacy`/`y_legacy` for `"nba-legacy"` and
+ * `"nba-legacy-vertical"`). The frame sees
  * a view `{ x: row[xCol], y: row[yCol] }`.
  */
 export function toSurfaceFrame<R extends Row>(
   rows: readonly R[],
   o: { from: FrameName | Frame; x?: string; y?: string; out?: { x?: string; y?: string } },
 ): (R & { surface_x: number | null; surface_y: number | null })[] {
-  const nba = o.from === "nba-legacy";
+  const nba = o.from === "nba-legacy" || o.from === "nba-legacy-vertical";
   const f: Frame = typeof o.from === "string" ? FRAMES[o.from] : o.from;
   const xc = o.x ?? (nba ? "x_legacy" : "x");
   const yc = o.y ?? (nba ? "y_legacy" : "y");
