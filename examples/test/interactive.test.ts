@@ -101,6 +101,11 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
       await figure.locator(nested).count(),
       "no control inside an img (its children are presentational)",
     ).toBe(0);
+    // a menu's disclosure button (vega-embed's actions) is named: its <summary> holds only an icon
+    const unnamed = await figure
+      .locator(".sdv-live-output summary")
+      .evaluateAll((s) => s.filter((e) => !e.getAttribute("aria-label") && !e.textContent?.trim()).length);
+    expect(unnamed, "every menu button has a name").toBe(0);
     if (SHOTS !== undefined)
       await figure
         .locator(".sdv-live-output")

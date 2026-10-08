@@ -8,6 +8,8 @@ import type { Draw } from "./index.js";
 const draw: Draw<"vega"> = async (el, s) => {
   const box = el.appendChild(document.createElement("div"));
   const result = await embed(box, s.spec as VisualizationSpec, { mode: "vega-lite", renderer: "svg" });
+  // the actions menu's <summary> holds only an icon: name the button
+  box.querySelector("summary")?.setAttribute("aria-label", "Save or view this chart's source");
   return () => {
     result.finalize();
     box.remove();
