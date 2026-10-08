@@ -40,5 +40,8 @@ const spec = withWordmarks(headshots, rows, {
   height: 0.05,
 });
 
-const view = new vega.View(vega.parse(compile(spec).spec), { renderer: "none" });
+// In the browser: vegaEmbed(div, spec, { renderer: "svg" }), as this page does (the SVG names each mark, "KC logo").
+export const browser = { lib: "vega", spec } as const;
+
+const view = new vega.View(vega.parse(compile(browser.spec).spec), { renderer: "none" });
 export default await view.toSVG();

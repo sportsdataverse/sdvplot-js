@@ -24,4 +24,12 @@ const figure = {
 };
 
 // The axis keeps its categories; their labels are blanked and a layout image sits under each tick.
-export default withAxisLogos(figure, "x", { league: "nfl", height: 0.1 });
+const logos = withAxisLogos(figure, "x", { league: "nfl", height: 0.1 });
+// In the browser: Plotly.newPlot(div, data, layout), as this page does. Without JavaScript the page shows the figure.
+export const browser = {
+  lib: "plotly",
+  figure: logos,
+  label: "2024 AFC wins by team, best first, each bar in its team's colour with the team's logo under it",
+} as const;
+
+export default logos;
