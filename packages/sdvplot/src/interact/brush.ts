@@ -223,7 +223,11 @@ export function brushFilter<R>(
     throw new InputError(`brushFilter: empty is "dim" or "clear", not ${JSON.stringify(o.empty)}`);
   const xs = o.x === undefined ? undefined : scaleOf(o.scales?.x ?? figure.scale?.("x"));
   const ys = o.y === undefined ? undefined : scaleOf(o.scales?.y ?? figure.scale?.("y"));
-  if ((o.x !== undefined && !xs?.invert) || (o.y !== undefined && !ys?.invert))
+  // both directions: move() maps data to pixels (apply), a drag maps pixels back (invert); a JavaScript caller can
+  // pass an object with one alone
+  const usable = (s: ScaleLike | undefined): boolean =>
+    typeof s?.apply === "function" && typeof s?.invert === "function";
+  if ((o.x !== undefined && !usable(xs)) || (o.y !== undefined && !usable(ys)))
     throw new InputError(
       "brushFilter needs continuous x and y scales on the axes it brushes; band and point scales cannot be inverted, and a chart without figure.scale passes `scales`",
     );

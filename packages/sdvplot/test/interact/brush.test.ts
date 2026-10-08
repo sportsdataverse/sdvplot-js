@@ -172,6 +172,21 @@ test("a ScaleLike with no range (it is optional) brushes across the svg's box on
   brush.move({ x: [9.5, 16], y: [0, 0.2] });
   expect([...store.getState().selected]).toEqual(["KC", "LAC", "DEN", "BUF"]);
 });
+test("a scale without apply throws InputError at construction, in Node too, not a TypeError at move() (JS caller)", () => {
+  const svg = chart();
+  const store = createSelection<Standing>();
+  const noApply = { invert: (p: unknown) => Number(p) / 37.6 } as unknown as Plot.Scale; // invert alone
+  for (const node of [false, true]) {
+    if (node) vi.stubGlobal("window", undefined);
+    try {
+      expect(() =>
+        brushFilter(svg, store, { data: STANDINGS, x: "wins", id: "team", scales: { x: noApply } }),
+      ).toThrow(InputError);
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  }
+});
 test("a band x scale throws InputError at construction", () => {
   const bars = Plot.plot({ marks: [Plot.barY(STANDINGS, { x: "team", y: "wins" })] });
   expect(() =>
