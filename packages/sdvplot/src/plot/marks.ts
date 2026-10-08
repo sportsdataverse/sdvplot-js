@@ -51,9 +51,10 @@ export interface MarkOptions<R> extends ImageMarkOptions {
   idSystem?: IdSystem;
   /**
    * The link id stamped as each image's `data-sdv-id`, which `sdvplot/interact` matches against a store or a linked
-   * table's `rowKey` (`id: "team"` for a table keyed by abbreviation). One value per row, like every channel; it
-   * follows its row through `sort`, `filter` and `Plot.dodgeY`. It changes only the stamp: each image keeps its
-   * team's accessible name and tip. Default: the resolved ESPN team id ("12" for KC), which never matches "KC".
+   * table's `rowKey` (`id: "team"` for a table keyed by abbreviation). One value per row, like every channel: ids
+   * index the data row, never the draw position, so each follows its row through `sort`, `filter`, facets
+   * (`fx`/`fy`) and `Plot.dodgeY`. It changes only the stamp: each image keeps its team's accessible name and tip.
+   * Default: the resolved ESPN team id ("12" for KC), which never matches "KC".
    */
   id?: Channel<R>;
 }

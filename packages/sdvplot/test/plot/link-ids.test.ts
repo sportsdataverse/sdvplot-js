@@ -120,6 +120,13 @@ test("`id` follows its row when Plot reorders or drops rows (sort, filter, dodge
     STANDINGS.slice(0, 7).map((r) => expect.stringContaining(`/${r.qb_espn_id}.png`)),
   );
 });
+test("`id` indexes the data row, so it holds across facets (fx): each facet draws its own rows", () => {
+  const faceted = Plot.plot({
+    marks: [logos(STANDINGS, { league: "nfl", ...pos, team: "team", id: "team", fx: "division" })],
+  });
+  expect(stamped(faceted, "image")).toEqual(["BUF", "MIA", "NYJ", "NE", "KC", "LAC", "DEN", "LV"]); // East first
+  expect(labels(faceted)).toEqual(stamped(faceted, "image").map((t) => `${t} logo`));
+});
 test("`id` changes only the stamp: each image keeps its team's accessible name (Placement.id is never rewritten)", () => {
   // the row index, a linked table's default id: "1" is also ATL's ESPN team id, so a rewritten placement would
   // name LAC's logo "ATL logo"
