@@ -125,6 +125,11 @@ const isNa = (col: HighlightNaCol, v: unknown): boolean =>
   isBlank(v) ||
   col.naStrings.some((n) => (col.ignoreCase ? n.toLowerCase() === String(v).toLowerCase() : n === String(v)));
 
+/** The column kinds `columnScales` computes a scale for. */
+export const isScaled = <Row>(
+  col: ColumnSpec<Row>,
+): col is Extract<ColumnSpec<Row>, { kind: "colorPills" | "colorRanks" | "percentileBar" }> =>
+  col.kind === "colorPills" || col.kind === "colorRanks" || col.kind === "percentileBar";
 /** One pass per scaled column (pills, ranks, percentile): numbers, ranks, domain, ramp — gt computes these per column, not per cell. */
 export function columnScales<Row>(
   spec: TableSpec<Row>,
@@ -134,28 +139,34 @@ export function columnScales<Row>(
 ): Map<string, ColumnScale> {
   // J31 (A4): domain, ranks and the out-of-domain count come from domainRows; `values` and pill widths follow `rows`
   const at = domainRows === rows ? null : new Map(domainRows.map((r, j) => [r, j] as const));
+  const missing = at !== null && rows.some((r) => !at.has(r));
   const out = new Map<string, ColumnScale>();
   for (const col of spec.columns) {
-    if (col.kind !== "colorPills" && col.kind !== "colorRanks" && col.kind !== "percentileBar") continue;
+    if (!isScaled(col)) continue;
+    if (missing)
+      warnFn(
+        `sdvtables:domainRows:${col.key}`,
+        `column "${col.key}": a rendered row is not in domainRows (matched by identity, not by value), so it is colored from its own value (a rank fill: not at all); pass the same row objects as rows`,
+      );
+    // zero rows: no domain to derive, nothing to color. Phase 4's throw for an all-null NON-empty column stays (domainOf).
+    if (col.domain === undefined && domainRows.length === 0) continue;
     const nums = domainRows.map((r) => toNumber(cellValue(r, col.key)));
     let values: (number | null)[] = nums;
-    if (col.kind === "colorPills" && col.fillType === "rank")
+    let own = (n: number | null): number | null => n; // a rendered row's value when it is not in domainRows (I2)
+    if (col.kind === "colorPills" && col.fillType === "rank") {
       values = averageRanks(nums, col.rankOrder === "desc");
+      own = () => null; // a rank exists only within domainRows
+    }
     if (col.kind === "percentileBar") {
       const present = nums.filter((n): n is number => n !== null);
       const [lo, hi] = col.domain;
+      const scale = col.scale;
       // _layout.py:772-779,806: numeric scale multiplies; "auto" maps proportions only when every value is in [0, 1] and hi > 1
       const proportion =
-        col.scale === "auto" && present.length > 0 && present.every((n) => n >= 0 && n <= 1) && hi > 1;
-      values = nums.map((n) =>
-        n === null
-          ? null
-          : typeof col.scale === "number"
-            ? n * col.scale
-            : proportion
-              ? lo + n * (hi - lo)
-              : n,
-      );
+        scale === "auto" && present.length > 0 && present.every((n) => n >= 0 && n <= 1) && hi > 1;
+      own = (n) =>
+        n === null ? null : typeof scale === "number" ? n * scale : proportion ? lo + n * (hi - lo) : n;
+      values = nums.map(own);
     }
     const domain: readonly [number, number] = col.domain ?? domainOf([values]);
     const fmt = (): string => `(${naturalDigits(domain[0])} to ${naturalDigits(domain[1])})`;
@@ -172,7 +183,13 @@ export function columnScales<Row>(
         `sdvtables:outside:${col.key}:${outside}:${domain.join(",")}`,
         `${outside} value(s) fall outside the domain ${fmt()} and are drawn grey`,
       ); // _cells.py:1226-1227
-    const shown = at === null ? values : rows.map((r) => values[at.get(r) ?? -1] ?? null);
+    const shown =
+      at === null
+        ? values
+        : rows.map((r) => {
+            const j = at.get(r);
+            return j === undefined ? own(toNumber(cellValue(r, col.key))) : (values[j] ?? null);
+          });
     const shownNums = at === null ? nums : rows.map((r) => toNumber(cellValue(r, col.key)));
     const labelWidth =
       col.kind === "colorPills" ? Math.max(1, ...shownNums.map((n) => pillLabel(col, n).length)) : 1;

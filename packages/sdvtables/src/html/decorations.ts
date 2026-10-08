@@ -9,7 +9,7 @@ import { domainOf, quantile7, ramp, sampleSd } from "../scale.js";
 import type { ColumnSpec, Decoration, TableSpec, TextStyle } from "../spec.js";
 import { secondaryOn } from "../themes/sdv.js";
 import { type GoogleFont, fontStack } from "../themes/tokens.js";
-import { type RenderContext, cellValue } from "./cells.js";
+import { type RenderContext, cellValue, isScaled } from "./cells.js";
 import { checkPx, cssValue, escapeAttr, escapeHtml, isCssValue, styleAttr } from "./escape.js";
 import { SOCIAL_ICONS } from "./social-icons.js";
 import { cssStr, cutlineSvg, watermarkSvg } from "./svg.js";
@@ -505,8 +505,10 @@ export function applyDecorations<Row>(
         const rec = ctx.recorded;
         const palette = (d.palette ?? rec?.palette ?? RANK_PALETTE).map((c) => hex6(c));
         let domain = d.domain ?? rec?.domain;
-        if (!domain && d.columns)
+        if (!domain && d.columns && rows.length > 0)
           domain = domainOf(d.columns.map((k) => rows.map((r) => toNumber(cellValue(r, k)))));
+        // zero rows: a data-derived domain does not exist yet (an empty page, fontsLinkFor), so no legend; a spec with no source still throws
+        if (!domain && rows.length === 0 && (d.columns || ctx.columns.some(isScaled))) break;
         if (!domain)
           throw new TableSpecError(
             "legendContinuous: no recorded scale (color a column with colorPills/colorRanks/percentileBar first) and no domain or columns given",

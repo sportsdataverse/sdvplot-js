@@ -8,7 +8,7 @@ import { fnv1a32, tableId } from "../table-id.js";
 import { BASE_CSS, tokensCSS } from "../themes/base-css.js";
 import { resolveTheme } from "../themes/index.js";
 import type { GoogleFont, Theme } from "../themes/tokens.js";
-import { type RenderContext, columnScales, kindCellStyle, renderCell, teamIdsOf } from "./cells.js";
+import { type RenderContext, columnScales, isScaled, kindCellStyle, renderCell, teamIdsOf } from "./cells.js";
 import { applyDecorations } from "./decorations.js";
 import { cssValue, escapeAttr, escapeHtml, styleOf } from "./escape.js";
 import { fontsLink } from "./fonts.js";
@@ -21,14 +21,20 @@ export interface RenderOptions {
   readonly interactive?: boolean;
   /** Phase 5: the engine's current sort, for aria-sort */
   readonly sort?: Sort | null;
-  /** Phase 5: engine-hidden column keys (merged with decoration-hidden columns) */
+  /** Phase 5: engine-hidden column keys (merged with decoration-hidden columns); a key that is not a column throws `TableSpecError` */
   readonly hidden?: readonly string[];
   /** J31 (A5): page-relative indices of selected rows → `sdvt-selected` on their <tr> */
   readonly selected?: ReadonlySet<number>;
-  /** J31 (A4): rows the scale/legend domains are computed from; default the rendered rows */
+  /**
+   * J31 (A4): rows the scale/legend domains are computed from; default the rendered rows.
+   * It must hold the same row OBJECTS as `rows` (matched by identity, as the engine passes them), not equal copies:
+   * a rendered row missing from it is colored from its own value (a rank fill gets none) and warns once per column.
+   */
   readonly domainRows?: readonly unknown[];
 }
+/** One render split into strings: `assemble` joins them into `renderHTML`'s output; `tableHTML` is the part that depends on the rows. */
 export interface RenderedParts {
+  /** the table id (`tableId(spec)`), also the wrapper's `id` */
   readonly id: string;
   /** the Google Fonts <link>, or "" */
   readonly link: string;
@@ -38,14 +44,19 @@ export interface RenderedParts {
   readonly sheet: string;
   /** the decorations' own rules without the tag, or "" — part of the table block, so hydrate re-renders them */
   readonly rules: string;
+  /** decoration blocks placed before the table element (top border bars and legends), or "" */
   readonly before: string;
+  /** the caption element (title, subtitle), or "" */
   readonly caption: string;
+  /** header rows above the main one, or "" (no decoration emits any yet) */
   readonly headRows: string;
   /** the <th> cells of the main header row */
   readonly head: string;
   /** every body <tr> (group header rows included) */
   readonly rows: string;
+  /** the tfoot element (source notes, footnotes), or "" */
   readonly foot: string;
+  /** decoration blocks placed after the table element (bottom border bars and legends), or "" */
   readonly after: string;
 }
 
@@ -103,10 +114,12 @@ export function styleSheet<Row>(spec: TableSpec<Row>, theme: Theme = resolveThem
   return `${tokensCSS(sel, theme.tokens)}\n${BASE_CSS(sel)}\n${theme.rules(sel)}`;
 }
 
+/** The `aria-sort` value of column `key` under `sort`: "none" unless `sort` is on that column. */
 export function sortAria(sort: Sort | null | undefined, key: string): "ascending" | "descending" | "none" {
   if (!sort || sort.col !== key) return "none";
   return sort.dir === "asc" ? "ascending" : "descending";
 }
+/** ` k="v"` for each entry, in order. Values are attribute-escaped; keys are NOT escaped, so they must be trusted names. */
 export function attrsText(attrs: Readonly<Record<string, string>>): string {
   return Object.entries(attrs)
     .map(([k, v]) => ` ${k}="${escapeAttr(v)}"`)
@@ -117,11 +130,18 @@ const styleTag = (css: string): string => (css ? `<style>${css}</style>` : "");
 export function tableHTML(p: RenderedParts): string {
   return `${styleTag(p.rules)}${p.before}<table>${p.caption}<thead>${p.headRows}<tr>${p.head}</tr></thead><tbody>${p.rows}</tbody>${p.foot}</table>${p.after}`;
 }
-/** The fonts link, then the wrapper holding the theme sheet and `inner` (default: the table block). */
+/**
+ * The fonts link, then the wrapper holding the theme sheet and `inner` (default: the table block).
+ * `inner` is inserted as raw, unescaped HTML: pass trusted renderer output (`tableHTML`) only, never data.
+ */
 export function assemble(p: RenderedParts, inner: string = tableHTML(p)): string {
   return `${p.link ? `${p.link}\n` : ""}<div${attrsText(p.wrapperAttrs)}>${styleTag(p.sheet)}${inner}</div>`;
 }
 
+/**
+ * Render `rows` of `spec` as {@link RenderedParts}; `assemble(renderParts(spec, rows, opts))` is `renderHTML`'s output.
+ * Throws `TableSpecError` for a column key missing from the first row, an unknown `hidden` key, or an invalid spec.
+ */
 export function renderParts<Row>(
   input: TableSpec<Row>,
   rows: readonly Row[],
@@ -139,6 +159,12 @@ export function renderParts<Row>(
   const groupBy = spec.decorations.find(
     (d): d is Extract<Decoration<Row>, { type: "groupBy" }> => d.type === "groupBy",
   );
+  const engineHidden = opts.hidden ?? [];
+  const bad = engineHidden.filter((k) => !spec.columns.some((c) => c.key === k));
+  if (bad.length > 0)
+    throw new TableSpecError(
+      `hidden names no column ${bad.map((k) => JSON.stringify(k)).join(", ")}; columns are ${spec.columns.map((c) => c.key).join(", ")}`,
+    );
   const scales = columnScales(spec, rows, warn, (opts.domainRows ?? rows) as readonly Row[]); // J31 (A4)
   const ctx: RenderContext<Row> = {
     spec,
@@ -151,13 +177,13 @@ export function renderParts<Row>(
     warn,
     teamIds: teamIdsOf(spec, rows),
     scales,
-    recorded: [...scales.values()].at(-1),
+    recorded: scales.get(spec.columns.filter(isScaled).at(-1)?.key ?? ""), // none when the last one was skipped (zero rows)
     scaled: new Map(),
   };
   const deco = applyDecorations(spec, rows, ctx);
-  const engineHidden = opts.hidden ?? [];
   const visible = spec.columns.filter((c) => !deco.hiddenColumns.has(c.key) && !engineHidden.includes(c.key));
   const ncol = visible.length;
+  const span = Math.max(1, ncol); // every column hidden: a colspan is never 0
   let head = visible
     .map((c) => {
       const label = `${deco.label(c, (deco.labelText.get(c.key) ?? labelOf(c)) + deco.labelSuffix(c.key))}${c.subheader ? `<span class="sdvt-subheader">${escapeHtml(c.subheader)}</span>` : ""}`;
@@ -226,7 +252,7 @@ export function renderParts<Row>(
       groupIndex++;
       if (ctx.groupKey !== undefined)
         body.push(
-          `<tr class="sdvt-group-row${deco.groupRowClass(groupIndex)}"><th scope="rowgroup" colspan="${ncol}" class="sdvt-group">${escapeHtml(g)}</th></tr>`,
+          `<tr class="sdvt-group-row${deco.groupRowClass(groupIndex)}"><th scope="rowgroup" colspan="${span}" class="sdvt-group">${escapeHtml(g)}</th></tr>`,
         );
       for (const i of idxs) body.push(trOf(i, cellsOf(rows[i] as Row, i)));
     }
@@ -251,10 +277,11 @@ export function renderParts<Row>(
     rows: body.join(""),
     foot:
       deco.foot.length > 0
-        ? `<tfoot>${deco.foot.map((f) => `<tr><td colspan="${ncol}">${f}</td></tr>`).join("")}</tfoot>`
+        ? `<tfoot>${deco.foot.map((f) => `<tr><td colspan="${span}">${f}</td></tr>`).join("")}</tfoot>`
         : "",
     after: deco.after,
   };
 }
 // ponytail: renders the empty table to get the font link; cheap and always consistent with renderHTML
+/** The Google Fonts link element `renderHTML(spec, ...)` would emit (theme and decoration fonts), or "": for a page's head. */
 export const fontsLinkFor = <Row>(spec: TableSpec<Row>): string => renderParts(spec, []).link;

@@ -15,7 +15,7 @@ import { Which } from '@sportsdataverse/sdvplot';
 // @public
 export function assemble(p: RenderedParts, inner?: string): string;
 
-// @public (undocumented)
+// @public
 export function attrsText(attrs: Readonly<Record<string, string>>): string;
 
 // @public
@@ -38,7 +38,7 @@ export function fontsLink(fonts: readonly GoogleFont[]): string;
 
 // Warning: (ae-forgotten-export) The symbol "TableSpec" needs to be exported by the entry point html.d.ts
 //
-// @public (undocumented)
+// @public
 export const fontsLinkFor: <Row>(spec: TableSpec<Row>) => string;
 
 // @public (undocumented)
@@ -93,20 +93,14 @@ export interface RenderContext<Row> {
     readonly warn: (key: string, message: string) => void;
 }
 
-// @public (undocumented)
+// @public
 export interface RenderedParts {
-    // (undocumented)
     readonly after: string;
-    // (undocumented)
     readonly before: string;
-    // (undocumented)
     readonly caption: string;
-    // (undocumented)
     readonly foot: string;
     readonly head: string;
-    // (undocumented)
     readonly headRows: string;
-    // (undocumented)
     readonly id: string;
     readonly link: string;
     readonly rows: string;
@@ -135,10 +129,10 @@ export interface RenderOptions {
     readonly sort?: Sort | null;
 }
 
-// @public (undocumented)
+// @public
 export function renderParts<Row>(input: TableSpec<Row>, rows: readonly Row[], opts?: RenderOptions): RenderedParts;
 
-// @public (undocumented)
+// @public
 export function sortAria(sort: Sort | null | undefined, key: string): "ascending" | "descending" | "none";
 
 // @public
@@ -163,7 +157,7 @@ export function toElement<Row>(spec: TableSpec<Row>, rows: readonly Row[], opts?
 
 // Warnings were encountered during analysis:
 //
-// dist/html.d.ts:98:5 - (ae-forgotten-export) The symbol "Density" needs to be exported by the entry point html.d.ts
+// dist/html.d.ts:119:5 - (ae-forgotten-export) The symbol "Density" needs to be exported by the entry point html.d.ts
 
 // (No @packageDocumentation comment for this package)
 
