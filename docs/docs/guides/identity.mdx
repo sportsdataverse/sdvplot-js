@@ -58,9 +58,9 @@ into rows.
 
 ## Warnings, strict mode and errors
 
-A value that does not resolve becomes `undefined` and one warning per call; `setWarningHandler` routes warnings
-elsewhere and `resetWarnings` lets a repeated warning through again. `strict: true` throws `UnresolvedTeamError`
-instead.
+A value that does not resolve becomes `undefined` with a warning, given once per distinct set of unresolved values
+for the life of the process: a call that repeats it is silent until `resetWarnings()`. `setWarningHandler` routes
+warnings elsewhere. `strict: true` throws `UnresolvedTeamError` instead.
 
 <Live id="sdvplot/core/warnings-and-strict" />
 

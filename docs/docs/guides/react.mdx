@@ -3,9 +3,11 @@ title: React
 sidebar_position: 6
 ---
 
-`@sportsdataverse/sdvplot/react` wraps the lookups in components and hooks for React 18 or later. Each loads its
-league on first use and renders once the data is there, so a page needs no loading code of its own. They use
-`useState` and `useEffect`: in a framework with server components (Next.js), use them from a client component.
+A React page that shows logos or headshots otherwise needs its own loading code: await the league data, hold it in
+state, guard the first render. `@sportsdataverse/sdvplot/react` does that for you in components and hooks (React 18 or
+later). Each loads its league on first use and renders nothing until the data is there, which also keeps server
+rendering safe: the server and the first client render agree on an empty result. They use `useState` and `useEffect`,
+so in a framework with server components (Next.js), use them from a client component.
 
 ## Logos and wordmarks
 

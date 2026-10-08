@@ -9,7 +9,7 @@ import {
 import type { ExampleMeta } from "../../contract.js";
 
 export const meta = {
-  title: "Warnings once per call, or strict errors",
+  title: "One warning per distinct set of unresolved values, or strict errors",
   tags: ["resolve", "warnings", "strict", "nfl"],
 } satisfies ExampleMeta;
 
