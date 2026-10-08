@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 // Phase 8 acceptance (plan Task 12, A11, A17, A23, A33): blazing-the-nets master's linked dashboard over Brooklyn's
 // 2000 real 2025-26 shots, rebuilt from the library and linked through ONE store. Review Focus 6-10.
-import { FRAMES } from "@sportsdataverse/sporty";
+import { BASKETBALL_ZONE_LABELS, FRAMES } from "@sportsdataverse/sporty";
 import * as d3 from "d3";
 import { describe, expect, test, vi } from "vitest";
 import { resetWarnings, setWarningHandler } from "../../src/index.js";
@@ -133,7 +133,7 @@ test("fixture sanity: 1998 of the 2000 shots within 35 ft, each in one 1-ft, one
 describe.each<Shape>(["hex", "square"])("%s cells", (shape) => {
   // Plan Step 1 said "the bottom tenth". Measured: the hoop row is 0.757 of the court's height down, because sporty's
   // NBA "defense" range runs to y = -55 (an 8 ft apron behind the baseline at -47): the hoop is 13.25 of 55 ft up.
-  test("hoop at the bottom: a 0-ft shot maps into the bottom quarter, centred, above the baseline; the ring's centre is it", () => {
+  test("hoop at the bottom: the frame runs from the apron to half court; a 0-ft shot maps centred, above the baseline; x < 0 draws left; the ring's centre is it", () => {
     const { d, store } = setup(shape);
     const rim = BKN.find((s) => s.shot_distance === 0 && s.x_legacy === 0 && s.y_legacy === 0);
     if (rim === undefined) throw new Error("no shot at the hoop");
@@ -145,7 +145,9 @@ describe.each<Shape>(["hex", "square"])("%s cells", (shape) => {
     const height = Number(d.court.getAttribute("height"));
     const [x0, x1] = span(d.court, "x");
     expect(p[0]).toBeCloseTo((x0 + x1) / 2);
-    expect(p[1]).toBeGreaterThan(0.75 * height);
+    expect(d.court.scale("y")?.domain?.map(Math.round)).toEqual([-55, 0]); // the top is 1.8e-15 after the rotation
+    expect(p[1]).toBeGreaterThan(0.75 * height); // so the hoop, 13.25 of 55 ft up, is in the bottom quarter
+    expect(px(d.court, "x", f.x({ x: -229 }) ?? Number.NaN)).toBeLessThan(p[0] ?? Number.NaN); // main lib/data/court.ts:49
     expect(px(d.court, "y", -47)).toBeGreaterThan(p[1] ?? Number.NaN); // the baseline is below the hoop
     expect(px(d.court, "y", 0)).toBe(Math.min(...span(d.court, "y"))); // half court along the top edge
     store.set({ cursor: { field: D, value: 0 } });
@@ -272,7 +274,9 @@ describe.each<Shape>(["hex", "square"])("%s cells", (shape) => {
     expect(store.getState().cursor).toBe(cursor);
     expect(d.court.querySelector(".sdv-hl")?.getAttribute("data-sdv-id")).toBe(c.id); // the hovered cell lit
     expect(d.court.classList.contains("sdv-focus")).toBe(true);
-    expect(tipText(d.court)).toContain(`${c.h.makes}/${c.h.attempts} FG`); // main's four lines (A23)
+    expect(tipText(d.court)).toContain(BASKETBALL_ZONE_LABELS[c.h.zone]); // main's four lines (A23)
+    expect(tipText(d.court)).toContain(`${c.h.makes}/${c.h.attempts} FG`);
+    expect(tipText(d.court)).toContain("League ");
     expect(tipText(d.court)).toContain(`${c.h.meanDistance.toFixed(1)} ft`);
     expectCursorAt(d, 12.5);
     fire(d.court, "pointermove", ...probe(19));
