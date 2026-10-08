@@ -528,3 +528,56 @@ describe("withAxisLogos", () => {
     expect(s.range[0]).toMatch(/^#/);
   });
 });
+
+describe("accessible descriptions", () => {
+  const PNG = `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==${"A".repeat(2000)}`; // padding stands in for a real logo's base64
+  const six = ["KC", "BUF", "SF", "DAL", "PHI", "BAL"].map((team, i) => ({ x: 10 + i, y: -3 - i, team }));
+  const svgOf = async (spec: object) => {
+    const { View, parse, loader } = await import("vega");
+    const warnings: string[] = [];
+    const out = compile(spec as never, {
+      logger: {
+        level: () => 0,
+        warn: (...a: unknown[]) => warnings.push(a.join(" ")) && 0,
+        info: () => 0,
+        error: () => 0,
+        debug: () => 0,
+      } as never,
+    });
+    const view = new View(parse(out.spec), { renderer: "none", loader: loader() });
+    return { svg: await view.toSVG(), warnings: warnings };
+  };
+  const labels = (svg: string) => [...svg.matchAll(/aria-label="([^"]*)"/g)].map((m) => m[1]!);
+  const imageLabels = (svg: string) => labels(svg).filter((l) => /logo/.test(l));
+
+  test("image marks describe the team, never the URL, with or without embedSources", async () => {
+    const opts = { x: "x", y: "y", team: "team", league: "nfl" as const };
+    const plain = await svgOf(withLogos(points(), six, opts));
+    const embedded = await svgOf(
+      withLogos(points(), six, {
+        ...opts,
+        embed: new Map(drawnMarks(withLogos(points(), six, opts)).map((m) => [m[4], PNG])),
+      }),
+    );
+    console.info(`vega SVG bytes (6 teams, embedSources): ${embedded.svg.length}`);
+    for (const { svg } of [plain, embedded]) {
+      const ls = imageLabels(svg);
+      expect(ls).toHaveLength(6);
+      for (const l of ls) expect(l).not.toMatch(/data:|https?:\/\//);
+      for (const t of ["KC", "BUF", "SF", "DAL", "PHI", "BAL"])
+        expect(ls.some((l) => l.includes(`${t} logo`))).toBe(true);
+    }
+  });
+
+  test("axis logos too, and compile() emits no warnings", async () => {
+    const bars: VegaLiteSpec = {
+      data: { values: six.map((r) => ({ team: r.team, v: r.x })) },
+      mark: "bar",
+      encoding: { x: { field: "team", type: "nominal" }, y: { field: "v", type: "quantitative" } },
+    };
+    const r = await svgOf(withAxisLogos(bars, "x", { league: "nfl" }));
+    expect(imageLabels(r.svg).some((l) => l.includes("KC logo"))).toBe(true);
+    expect(labels(r.svg).join("|")).not.toMatch(/data:|https?:\/\//);
+    expect(r.warnings).toEqual([]);
+  });
+});
