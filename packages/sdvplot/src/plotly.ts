@@ -111,7 +111,7 @@ function figureOf(target: unknown): PlotlyFigure {
     );
   }
   const f = target as PlotlyFigure;
-  return { data: f.data, layout: structuredClone(f.layout ?? {}) }; // layout is what we patch; traces are read only
+  return { ...f, layout: structuredClone(f.layout ?? {}) }; // keep config/frames/etc.; layout is what we patch, traces are read only
 }
 
 function axisKey(ref: string, letter: Letter): AxisKey {
@@ -425,42 +425,57 @@ export function drawnMarks(figure: PlotlyFigure): DrawnMark[] {
   });
 }
 
+export interface PlotlyAxisOptions extends AxisOptions {
+  xref?: string;
+  yref?: string;
+}
+
 /** Team logos (or wordmarks, `markType`) in place of the tick labels of a category axis.
+ *  `xref`/`yref` pick the subplot axes (default "x"/"y"); the category axis is the one named by `axis`.
+ *  Pixel sizing uses `layout.width`/`layout.height`; when unset it assumes Plotly's 700x450 default, which is
+ *  approximate under autosize (images stay correctly placed in paper/data units).
  *  x: images hang under the plot in paper y (`height` of the plot, exact), and `margin.b` grows to make room.
  *  y: images sit left of the plot in data y; the range is pinned to the category bands so `sizey = h × span`. */
-export function withAxisLogos(figure: PlotlyFigure, axis: "x" | "y", o: AxisOptions): PlotlyFigure;
-export function withAxisLogos<F extends object>(figure: F, axis: "x" | "y", o: AxisOptions): F;
-export function withAxisLogos(figure: object, axis: "x" | "y", o: AxisOptions): object {
+export function withAxisLogos(figure: PlotlyFigure, axis: "x" | "y", o: PlotlyAxisOptions): PlotlyFigure;
+export function withAxisLogos<F extends object>(figure: F, axis: "x" | "y", o: PlotlyAxisOptions): F;
+export function withAxisLogos(figure: object, axis: "x" | "y", o: PlotlyAxisOptions): object {
   const letter = axisLetter(axis);
   const h = checkHeight(o.height ?? 0.1);
+  const xref = o.xref ?? "x";
+  const yref = o.yref ?? "y";
+  axisKey(xref, "x");
+  axisKey(yref, "y");
+  const cref = letter === "x" ? xref : yref;
   const fig = figureOf(figure);
-  if (axisType(fig, letter, letter, []) !== "category") {
-    throw new InputError(`withAxisLogos needs a category ${letter} axis (team names on the axis)`);
+  if (axisType(fig, letter, cref, []) !== "category") {
+    throw new InputError(`withAxisLogos needs a category ${letter} axis (${cref}) with team names on it`);
   }
-  const cats = categories(fig, letter, letter);
+  const cats = categories(fig, letter, cref);
   const labels = cats.map(String);
   const placements = axisPlacements(labels, letter, o);
-  const ax = axisOf(fig.layout!, letter, letter);
+  const ax = axisOf(fig.layout!, cref, letter);
   const drawn = new Set(placements.map((p) => Number(letter === "x" ? p.x : p.y)));
   ax.tickmode = "array";
   ax.tickvals = cats;
   ax.ticktext = labels.map((lab, i) => (drawn.has(i) ? "" : lab));
   if (placements.length === 0) return fig;
   const layout = fig.layout!;
-  const plotH = plotSize(layout, "x", "y")[1];
+  const plotH = plotSize(layout, xref, yref)[1];
   let lo = 0;
   let hi = 1;
   if (letter === "x") {
     // make room under the plot; the plot shrinks by what the margin grows, so `h` of the shrunk plot is what it gained
     layout.margin = { ...layout.margin, b: margin(layout, "b") + Math.ceil((h * plotH) / (1 + h)) };
   } else {
-    [lo, hi] = range(fig, "y", "y", [], new Map(cats.map((c, i) => [c, i] as const)), 0);
+    [lo, hi] = range(fig, "y", yref, [], new Map(cats.map((c, i) => [c, i] as const)), 0);
     layout.margin = {
       ...layout.margin,
       l: margin(layout, "l") + Math.ceil(h * plotH * Math.max(...placements.map(aspect))),
     };
   }
   const sources = imageSources(placements, o.embed);
+  const xDom0 = layout[axisKey(xref, "x")]?.domain?.[0] ?? 0;
+  const yDom0 = layout[axisKey(yref, "y")]?.domain?.[0] ?? 0;
   const images: LayoutImage[] = placements.map((p, i) => {
     const loc = Number(letter === "x" ? p.x : p.y);
     const common = {
@@ -473,8 +488,8 @@ export function withAxisLogos(figure: object, axis: "x" | "y", o: AxisOptions): 
       ? {
           ...common,
           x: loc,
-          y: 0,
-          xref: "x",
+          y: yDom0,
+          xref,
           yref: "paper",
           sizex: 2 * cats.length,
           sizey: h,
@@ -483,10 +498,10 @@ export function withAxisLogos(figure: object, axis: "x" | "y", o: AxisOptions): 
         }
       : {
           ...common,
-          x: 0,
+          x: xDom0,
           y: loc,
           xref: "paper",
-          yref: "y",
+          yref,
           sizex: 1,
           sizey: h * Math.abs(hi - lo),
           xanchor: "right",

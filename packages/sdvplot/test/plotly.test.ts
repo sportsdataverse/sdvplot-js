@@ -228,6 +228,19 @@ describe("withLogos on a scatter", () => {
   });
 });
 
+describe("figure pass-through", () => {
+  test("every verb keeps config and frames", () => {
+    const extra = { config: { responsive: true }, frames: [{ name: "a" }] };
+    const bars: PlotlyFigure = { data: [{ type: "bar", x: ["KC", "BUF"], y: [1, 2] }], layout: {} };
+    const outs = [
+      withLogos({ ...scatter(), ...extra }, ROWS, { x: "x", y: "y", team: "team", league: "nfl" }),
+      withWordmarks({ ...scatter(), ...extra }, ROWS, { x: "x", y: "y", team: "team", league: "nfl" }),
+      withAxisLogos({ ...bars, ...extra }, "x", { league: "nfl" }),
+    ];
+    for (const o of outs) expect(o).toMatchObject(extra);
+  });
+});
+
 describe("withAxisLogos", () => {
   const bars = (labels: string[]): PlotlyFigure => ({
     data: [{ type: "bar", x: labels, y: labels.map((_, i) => i + 1) }],
@@ -290,6 +303,17 @@ describe("withAxisLogos", () => {
       sizex: 1,
     });
     expect(out.layout!.margin!.l).toBeGreaterThan(80);
+  });
+
+  test("subplot: bar on xaxis2 gets xref x2 and paper y at that axis's domain; error names the checked axis", () => {
+    const fig: PlotlyFigure = {
+      data: [{ type: "bar", x: ["KC", "BUF"], y: [1, 2], xaxis: "x2", yaxis: "y2" }],
+      layout: { xaxis2: { domain: [0.5, 1] }, yaxis2: { domain: [0.2, 0.9] } },
+    };
+    const out = withAxisLogos(fig, "x", { league: "nfl", xref: "x2", yref: "y2" });
+    expect(out.layout!.images![0]).toMatchObject({ xref: "x2", yref: "paper", y: 0.2 });
+    expect(out.layout!.xaxis2).toMatchObject({ tickmode: "array", ticktext: ["", ""] });
+    expect(() => withAxisLogos(fig, "x", { league: "nfl" })).toThrow(/x axis \(x\)/);
   });
 
   test("needs a category axis; axis must be x or y; wordmarks via markType", () => {
