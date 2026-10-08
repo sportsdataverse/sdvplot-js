@@ -64,6 +64,28 @@ export interface TableOptions {
 /**
  * The headless table engine: holds the rows and a `TableState`, derives the visible page, and notifies subscribers.
  * Renderers (static HTML, hydrate, React) read `rows`/`columns` and call the setters; nothing here touches the DOM.
+ *
+ * @example A hover set before any view attaches: the view lights it when it does (`getHover`)
+ * ```ts
+ * import { createTable, defineTable } from "@sportsdataverse/sdvtables";
+ * import { hydrate, renderHTML } from "@sportsdataverse/sdvtables/html";
+ *
+ * // 2024 AFC: Kansas City 15 wins, Buffalo 13
+ * const spec = defineTable<{ team: string; wins: number }>()
+ *   .columns((c) => [c.text("team"), c.int("wins")])
+ *   .rowKey("team")
+ *   .build();
+ * const table = createTable(spec, [
+ *   { team: "KC", wins: 15 },
+ *   { team: "BUF", wins: 13 },
+ * ]);
+ * table.setHover("BUF"); // a linked figure's hover, before the table is on the page
+ * table.getHover(); // "BUF"
+ * const root = document.createElement("div");
+ * root.innerHTML = renderHTML(table, { fonts: false });
+ * hydrate(root, table); // Buffalo's row gets sdvt-hover as it attaches
+ * root;
+ * ```
  */
 export interface Table<Row> {
   readonly spec: TableSpec<Row>;
@@ -96,6 +118,11 @@ export interface Table<Row> {
   getSelection(): ReadonlySet<string>;
   /** J31: emits `{ type: "hover" }` without changing state; the same id twice in a row is a no-op */
   setHover(id: string | null): void;
+  /**
+   * J31: the last `setHover` id, or null. A view that attaches (`hydrate`) or mounts (`<SdvTable table/>`) after a
+   * hover reads it, since no event comes until the hover changes.
+   */
+  getHover(): string | null;
   /**
    * Task 10: move the keyboard cursor. `row` is clamped to the current page; `col` must name a spec column, or be
    * null. One `"change"` event; an equal cursor (after clamping) is a no-op, and a non-finite `row` is ignored.
@@ -428,6 +455,7 @@ export function createTable<Row>(
       hovered = id;
       emit({ type: "hover", id });
     },
+    getHover: () => hovered,
     subscribe(fn) {
       listeners.add(fn);
       return () => {

@@ -607,6 +607,7 @@ export interface Table<Row> {
     readonly columns: readonly ColumnSpec<Row>[];
     // (undocumented)
     readonly filteredCount: number;
+    getHover(): string | null;
     // (undocumented)
     getSelection(): ReadonlySet<string>;
     getSnapshot(): TableSnapshot<Row>;

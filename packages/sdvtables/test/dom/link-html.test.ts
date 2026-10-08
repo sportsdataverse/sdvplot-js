@@ -119,6 +119,16 @@ test("the hydrated table never narrows a two-id store hover: it lights the first
   expect([...store.getState().hover]).toEqual(["KC", "BUF"]);
   expect(hovered(el)).toEqual(["KC"]);
 });
+test("a table hydrated after the store already holds a hover lights it at once", () => {
+  const svg = figure();
+  const table = createTable(spec, STANDINGS);
+  const el = mount(renderHTML(table));
+  const store = createSelection<Standing>();
+  store.set({ hover: ["BUF"] });
+  linkSelection(store, { plot: svg, table }); // the engine holds BUF before any view listens
+  hydrate(el, table);
+  expect(hovered(el)).toEqual(["BUF"]);
+});
 test("Space on a hydrated grid row selects it; the store and the figure follow (A37)", () => {
   const { svg, el, store } = setup();
   const den = el.querySelector<HTMLElement>('[data-sdv-body] tr.sdvt-row[data-row="2"]');

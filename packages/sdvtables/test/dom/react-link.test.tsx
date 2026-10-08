@@ -6,6 +6,7 @@ import { linkIds } from "@sportsdataverse/sdvplot/plot";
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { type ReactElement, useEffect } from "react";
 import { afterEach, expect, test } from "vitest";
+import { createTable } from "../../src/engine.js";
 import { SdvTable, useTable } from "../../src/react/index.js";
 import { spec } from "../fixtures/engine.js";
 import { STANDINGS, type Standing } from "../fixtures/standings.js";
@@ -85,4 +86,23 @@ test("React: <SdvTable/> never narrows a two-id store hover: it lights the first
   });
   expect([...store.getState().hover]).toEqual(["KC", "BUF"]);
   expect(hovered()).toEqual(["KC"]);
+});
+test("React: an <SdvTable table/> that mounts or remounts after the store holds a hover lights it at once", () => {
+  const store = createSelection<Standing>();
+  const table = createTable(keyed, STANDINGS);
+  linkSelection(store, { table });
+  const view = render(<SdvTable spec={keyed} rows={STANDINGS} table={table} interactive />);
+  view.unmount(); // e.g. its tab is hidden
+  act(() => store.set({ hover: ["BUF"] })); // a linked figure's hover meanwhile
+  render(<SdvTable spec={keyed} rows={STANDINGS} table={table} interactive />);
+  expect(hovered()).toEqual(["BUF"]);
+});
+test("React: a new table prop shows that engine's hover, not the previous engine's", () => {
+  const a = createTable(keyed, STANDINGS);
+  const b = createTable(keyed, STANDINGS);
+  const view = render(<SdvTable spec={keyed} rows={STANDINGS} table={a} interactive />);
+  act(() => a.setHover("KC"));
+  expect(hovered()).toEqual(["KC"]);
+  view.rerender(<SdvTable spec={keyed} rows={STANDINGS} table={b} interactive />);
+  expect(hovered()).toEqual([]);
 });
