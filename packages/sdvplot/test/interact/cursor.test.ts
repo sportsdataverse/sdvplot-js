@@ -416,6 +416,45 @@ test("a d3 figure (A6): its own band scale, no cross; the band spans the svg's v
   expect(store.getState().cursor).toEqual({ field: D, value: 28.5 });
 });
 
+test("a raw d3 scale goes in as it is (A6, as brushFilter's scales): a band, a linear rule with its cross, a ring", () => {
+  // blazing-the-nets' charts are d3: its scales are functions whose range(), bandwidth() and domain() are methods
+  const svg = d3.create("svg").attr("viewBox", "0 0 640 300").attr("width", 640).attr("height", 300);
+  const node = svg.node() as SVGSVGElement;
+  const store = createSelection();
+  // FG% bars on a d3 band scale (3 ft bands)
+  const band = d3
+    .scaleBand<number>()
+    .domain(by3.map((b) => b.distance))
+    .range([40, 620])
+    .padding(0.1);
+  linkCursor(node, store, { field: D, shape: { axis: "x", scale: band } });
+  // share bars on a d3 linear scale, the band spanning its d3 y range
+  const lin = d3.scaleLinear([0, 36], [40, 620]);
+  const ly = d3.scaleLinear([0, 0.3], [270, 20]);
+  const snap = (v: number): number => Math.floor(v) + 0.5;
+  const shareSvg = d3.create("svg").attr("viewBox", "0 0 640 300").node() as SVGSVGElement;
+  linkCursor(shareSvg, store, { field: D, shape: { axis: "x", scale: lin, width: 1, cross: ly }, snap });
+  // a ring around the hoop on a d3 court
+  const cx = d3.scaleLinear([-25, 25], [0, 500]);
+  const cy = d3.scaleLinear([-47, 0], [470, 0]);
+  const courtSvg = d3.create("svg").attr("viewBox", "0 0 500 470").node() as SVGSVGElement;
+  linkCursor(courtSvg, store, { field: D, shape: { axis: "ring", x: cx, y: cy, center: HOOP } });
+  store.set({ cursor: { field: D, value: 12.5 } });
+  const rect = part(node, "rect");
+  expect([shown(node), at(rect, "x")]).toEqual([true, band(12)]);
+  expect(at(rect, "width")).toBeCloseTo(band.bandwidth());
+  const bar = part(shareSvg, "rect");
+  expect([shown(shareSvg), at(bar, "x"), at(bar, "y"), at(bar, "height")]).toEqual([true, lin(12), 20, 250]);
+  expect(at(bar, "width")).toBeCloseTo(lin(13) - lin(12));
+  const ring = part(courtSvg, "ellipse");
+  expect([shown(courtSvg), at(ring, "rx"), at(ring, "ry")]).toEqual([true, 125, 125]); // 12.5 ft: 10 px per foot
+  // both emitters write through their d3 scale: the band's midpoint, and the snapped inverted pixel
+  fire(node, "pointermove", (band(27) ?? 0) + 2, 150);
+  expect(store.getState().cursor).toEqual({ field: D, value: 28.5 });
+  fire(shareSvg, "pointermove", lin(20.3), 150);
+  expect(store.getState().cursor).toEqual({ field: D, value: 20.5 });
+});
+
 test("teardown removes the cursor and its listeners; a figure that wrote no cursor writes nothing", () => {
   const svg = share();
   const store = createSelection();

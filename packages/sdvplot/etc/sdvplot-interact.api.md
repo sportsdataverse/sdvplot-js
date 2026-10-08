@@ -40,19 +40,21 @@ export interface BrushFilterOptions<R> {
 // @public
 export type CursorShape = {
     readonly axis: "x" | "y";
-    readonly scale: BandScaleLike;
+    readonly scale: BandScaleLike | D3ScaleLike;
     readonly width?: number;
-    readonly cross?: ScaleLike;
+    readonly cross?: ScaleLike | D3ScaleLike;
 } | {
     readonly axis: "ring";
-    readonly x: ScaleLike;
-    readonly y: ScaleLike;
+    readonly x: ScaleLike | D3ScaleLike;
+    readonly y: ScaleLike | D3ScaleLike;
     readonly center: readonly [number, number];
 };
 
 // @public
 export interface D3ScaleLike {
     (value: never): unknown;
+    bandwidth?(): number;
+    domain?(): Iterable<unknown>;
     invert?(pixel: number): unknown;
     range(): Iterable<unknown>;
 }

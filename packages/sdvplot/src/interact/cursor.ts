@@ -1,7 +1,7 @@
 import { pointer } from "d3";
 import { InputError } from "../errors.js";
 import { type Cursor, type SelectionStore, sameCursor } from "../selection.js";
-import type { PlotFigure, ScaleLike } from "./brush.js";
+import { type D3ScaleLike, type PlotFigure, type ScaleLike, scaleOf } from "./brush.js";
 import { hasDom } from "./highlight.js";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
@@ -24,19 +24,20 @@ export interface BandScaleLike extends ScaleLike {
  * `width` data units wide centred on it, or on a band scale (`bandwidth`) the band holding it. `cross` is the other
  * axis' scale: the rule spans its range (default: the figure's own other scale on a Plot figure, else the svg's
  * viewBox). `axis: "ring"`: an ellipse around `center` (data coordinates) whose radii are the value mapped through the
- * x and y scales, such as a shot distance around the hoop.
+ * x and y scales, such as a shot distance around the hoop. Every scale is a Plot figure's (`svg.scale("x")`) or a d3
+ * scale as it is ({@link D3ScaleLike}: `d3.scaleLinear()`, `d3.scaleBand()`), as `brushFilter`'s `scales` are.
  */
 export type CursorShape =
   | {
       readonly axis: "x" | "y";
-      readonly scale: BandScaleLike;
+      readonly scale: BandScaleLike | D3ScaleLike;
       readonly width?: number;
-      readonly cross?: ScaleLike;
+      readonly cross?: ScaleLike | D3ScaleLike;
     }
   | {
       readonly axis: "ring";
-      readonly x: ScaleLike;
-      readonly y: ScaleLike;
+      readonly x: ScaleLike | D3ScaleLike;
+      readonly y: ScaleLike | D3ScaleLike;
       readonly center: readonly [number, number];
     };
 /** How {@link linkCursor} follows and emits the store's cursor. */
@@ -129,8 +130,10 @@ export function linkCursor<R>(root: Element, store: SelectionStore<R>, o: LinkCu
     throw new InputError(`linkCursor shape.axis must be "x", "y" or "ring", got ${String(shape.axis)}`);
   if (o.flipAt !== undefined && !(o.flipAt > 0 && o.flipAt <= 1))
     throw new InputError(`linkCursor flipAt must be in (0, 1], got ${String(o.flipAt)}`);
-  const ring = shape.axis === "ring" ? shape : null;
-  const line = shape.axis === "ring" ? null : shape;
+  // a d3 scale is adapted once (A6): its range, bandwidth and domain are methods, its apply Function.prototype's
+  const ring = shape.axis === "ring" ? { ...shape, x: scaleOf(shape.x), y: scaleOf(shape.y) } : null;
+  const line =
+    shape.axis === "ring" ? null : { ...shape, scale: scaleOf(shape.scale), cross: scaleOf(shape.cross) };
   if (ring) {
     if (!ring.center.every(Number.isFinite))
       throw new InputError(

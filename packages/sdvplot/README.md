@@ -727,7 +727,8 @@ brushFilter(fig, store, { data: rows, x: "wins", y: "net_epa", id: "team" });
   missing key) stays a plain mark.
 - **`linkCursor(fig, store, { field, shape })`** draws the store's `cursor` through this figure's own scale and writes
   the value under the pointer back: a rule, or a band `width` data units wide, on an x or y scale; the band holding the
-  value on a band scale; or a ring around a centre (`axis: "ring"`, such as a shot distance around the hoop).
+  value on a band scale; or a ring around a centre (`axis: "ring"`, such as a shot distance around the hoop). A
+  d3-drawn chart passes its d3 scales as they are (`d3.scaleLinear()`, `d3.scaleBand()`), as `brushFilter`'s `scales` do.
   Options: `snap`, `label` and `dot`. Moving inside one snapped bin writes nothing, and leaving the figure clears the
   cursor it wrote, never one another figure or `store.set` wrote since. A cursor is not an id: it never dims marks or
   filters a table. The store's `Cursor` is unrelated to

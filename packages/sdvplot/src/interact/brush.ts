@@ -52,16 +52,21 @@ export interface ScaleLike {
   range?: Iterable<unknown>;
 }
 /**
- * A d3-scale continuous scale as `d3.scaleLinear()` or `d3.scaleUtc()` makes it: callable, with `invert`, and with
- * `range()` a METHOD (a {@link ScaleLike}'s `range` is the pixels themselves). `brushFilter` adapts it.
+ * A d3-scale scale as `d3.scaleLinear()`, `d3.scaleUtc()` or `d3.scaleBand()` makes it: callable, with `range()` a
+ * METHOD (a {@link ScaleLike}'s `range` is the pixels themselves), and on a band scale `bandwidth()` and `domain()`
+ * methods too. `brushFilter` and `linkCursor` adapt it, so a d3-drawn chart passes its own scales as they are.
  */
 export interface D3ScaleLike {
   /** Data value to pixel. */
   (value: never): unknown;
   /** Pixel to data value; absent on band and point scales, which a brush cannot invert. */
   invert?(pixel: number): unknown;
-  /** The pixel range, read once when the brush is made. */
+  /** The pixel range, read once when the brush or cursor is made. */
   range(): Iterable<unknown>;
+  /** A band scale's band width in pixels (a `linkCursor` band). */
+  bandwidth?(): number;
+  /** The domain; a band scale's values are each band's first value (a `linkCursor` band). */
+  domain?(): Iterable<unknown>;
 }
 /**
  * What `Plot.plot` returns: the `<svg>`, or a `<figure>` wrapping it, exposing its scales. Any `<svg>` fits: a d3-drawn
@@ -78,17 +83,27 @@ const span = (a: unknown, b: unknown): [number, number] => {
   return p <= q ? [p, q] : [q, p];
 };
 const NOOP: BrushFilterHandle = { move: () => {}, destroy: () => {} };
-/** A d3 scale is a function: its `range` is a method and its `apply` is Function.prototype's. Never read it as is. */
-const scaleOf = (s: ScaleLike | D3ScaleLike | undefined): ScaleLike | undefined => {
+/** A scale as the interact functions read it: a {@link ScaleLike}, plus a band scale's width and domain. */
+type Adapted = ScaleLike & { readonly bandwidth?: number; readonly domain?: Iterable<unknown> };
+/**
+ * A d3 scale is a function: its `range`, `bandwidth` and `domain` are methods and its `apply` is
+ * Function.prototype's, so `scale.apply(10)` would call it with no argument. Never read it as is: adapt it.
+ * @internal
+ */
+export function scaleOf(s: Adapted | D3ScaleLike): Adapted;
+export function scaleOf(s: Adapted | D3ScaleLike | undefined): Adapted | undefined;
+export function scaleOf(s: Adapted | D3ScaleLike | undefined): Adapted | undefined {
   if (typeof s !== "function") return s;
   const f = s as unknown as (value: unknown) => unknown;
-  const inv = s.invert;
+  const { invert: inv, bandwidth: bw, domain: dom } = s;
   return {
     apply: (v) => f(v),
     ...(inv && { invert: (p: unknown) => inv.call(s, Number(p)) }),
     range: s.range(),
+    ...(bw && { bandwidth: bw.call(s) }),
+    ...(dom && { domain: dom.call(s) }),
   };
-};
+}
 /** The svg's user-space box: its viewBox, else its width and height. A 1-D brush spans the other axis entirely. */
 const boxOf = (svg: Element): [number, number, number, number] => {
   const v = (svg.getAttribute("viewBox") ?? "")
