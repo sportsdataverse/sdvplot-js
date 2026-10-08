@@ -363,6 +363,48 @@ describe("toPNG remote images", () => {
     expect(warned[0]).toContain(href);
     await expect(toPNG(fig, { images: "inline" as never })).rejects.toThrow(InputError);
   });
+  test("50 unique hrefs: at most 8 downloads in flight, every image drawn from its own body", async () => {
+    const { Resvg } = await import("@resvg/resvg-js");
+    const colour = (i: number): number[] => [i * 5, 100, 255 - i * 5];
+    const solid = (i: number) =>
+      new Uint8Array(
+        new Resvg(
+          `<svg xmlns="http://www.w3.org/2000/svg" width="4" height="4"><rect width="4" height="4" fill="rgb(${colour(i).join(",")})"/></svg>`,
+          { font: { loadSystemFonts: false } }, // no text; skipping the system-font scan keeps 50 renders fast
+        )
+          .render()
+          .asPng(),
+      );
+    const href = (i: number) => `https://example.test/img/${i}.png`;
+    const images = Array.from(
+      { length: 50 },
+      (_, i) =>
+        `<image href="${href(i)}" x="${(i % 10) * 40}" y="${Math.floor(i / 10) * 40}" width="40" height="40"/>`,
+    ).join("");
+    let inFlight = 0;
+    let peak = 0;
+    const fetch = vi.fn(async (url: string) => {
+      inFlight++;
+      peak = Math.max(peak, inFlight);
+      const i = Number(/(\d+)\.png$/.exec(url)?.[1]);
+      await new Promise((r) => setTimeout(r, (i * 7) % 11)); // uneven delays: completions arrive out of order
+      inFlight--;
+      return new Response(solid(i), { status: 200, headers: { "content-type": "image/png" } });
+    });
+    vi.stubGlobal("fetch", fetch);
+    const out = await toPNG(
+      `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200">${images}</svg>`,
+      { background: "white" },
+    );
+    expect(peak).toBe(8);
+    expect(fetch).toHaveBeenCalledTimes(50);
+    expect(new Set(fetch.mock.calls.map((c) => c[0]))).toEqual(
+      new Set(Array.from({ length: 50 }, (_, i) => href(i))),
+    );
+    const { at } = pixels(out);
+    for (let i = 0; i < 50; i++)
+      expect(at((i % 10) * 40 + 20, Math.floor(i / 10) * 40 + 20)).toEqual([...colour(i), 255]);
+  });
 });
 
 describe("toPNG optional peer", () => {

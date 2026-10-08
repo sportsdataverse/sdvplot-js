@@ -206,6 +206,28 @@ async function download(url: string): Promise<Uint8Array> {
   throw new DownloadError(`toPNG could not download ${url}: it answered ${r.status}`, url, r.status);
 }
 
+/** At most this many image downloads in flight at once: a figure with hundreds of logos must not open hundreds of sockets. */
+const FETCH_LIMIT = 8;
+
+/** `fn` over `xs` with at most `limit` calls in flight; results keep input order, and the first failure stops new calls. */
+async function mapLimit<T, R>(xs: readonly T[], limit: number, fn: (x: T) => Promise<R>): Promise<R[]> {
+  const out = new Array<R>(xs.length);
+  let next = 0;
+  const worker = async (): Promise<void> => {
+    while (next < xs.length) {
+      const i = next++;
+      try {
+        out[i] = await fn(xs[i] as T);
+      } catch (e) {
+        next = xs.length;
+        throw e;
+      }
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(limit, xs.length) }, worker));
+  return out;
+}
+
 /** `href="url"` / `xlink:href='url'` attributes, the URL as written or with `&` escaped as `&amp;`. */
 const hrefAttr = (url: string): RegExp => {
   const re = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -278,7 +300,7 @@ export async function toPNG(
       `toPNG left out ${hrefs.length} remote image(s): ${hrefs.join(", ")}`,
     );
   } else if (hrefs.length > 0) {
-    const bodies = await Promise.all(hrefs.map(download));
+    const bodies = await mapLimit(hrefs, FETCH_LIMIT, download);
     // resolveImage takes PNG/JPEG/GIF only; an SVG mark goes in as a data URI, which resvg draws as a nested SVG
     const vector = bodies.map((b) => new TextDecoder().decode(b.subarray(0, 64)).trimStart().startsWith("<"));
     if (vector.includes(true)) {
