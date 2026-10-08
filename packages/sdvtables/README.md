@@ -255,7 +255,8 @@ boxes above the table, and a pager below it. `hydrate(el, table)` attaches deleg
 table block and the pager, once, on the next animation frame, however many changes land in it; it returns a teardown.
 A click, pointer move or key that arrives while a change to the rows (a sort, filter, page turn or `setRows`) waits for
 that frame draws it first, so the event never acts on an old row at a new row's index. Render the markup from the same
-table state you hydrate: attaching does not reconcile the two.
+table state you hydrate: attaching does not reconcile the two. A teardown drops a render still owed; hydrating that
+element again redraws it first, so React StrictMode's mount, cleanup, mount leaves no stale rows.
 
 Inside an interactive table: j/k (↓/↑) move between the rows of the page and never turn it (the pager does), h/l
 (←/→) pick a column, s sorts it, / jumps to the search box, Enter or Space toggles the row's selection;

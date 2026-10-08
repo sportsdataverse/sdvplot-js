@@ -13,6 +13,9 @@ import { renderParts, tableHTML } from "./parts.js";
 
 /** I2: each element's live binding, so hydrating it again replaces the old one (see `replace`). */
 const live = new WeakMap<Element, () => void>();
+/** Bodies a teardown left behind the engine (it dropped a render still owed); the next hydrate of one redraws it. */
+// ponytail: exists for React StrictMode's double effect (mount, cleanup, mount); weak, so it never holds a body alive
+const behind = new WeakSet<Element>();
 
 const edge = (button: Element | null, atEdge: boolean): void => {
   if (atEdge) button?.setAttribute("aria-disabled", "true");
@@ -35,7 +38,9 @@ const edge = (button: Element | null, atEdge: boolean): void => {
  * against the engine state: render the markup from the same table state you hydrate. Hydrating an element again
  * replaces its previous binding (HMR, client-side navigation, an effect without cleanup) after drawing any change that
  * binding still owed, so every control still acts once. The returned teardown is idempotent and drops a render still
- * owed. Until it runs, the table's subscriber keeps `el` alive as long as the table lives.
+ * owed; hydrating that element again redraws it (on the next frame, or at once for an event that comes first), so React
+ * StrictMode's mount, cleanup, mount leaves no stale rows. Until the teardown runs, the table's subscriber keeps `el`
+ * alive as long as the table lives.
  */
 export function hydrate<Row>(el: Element, table: Table<Row>): () => void {
   const body = el.querySelector("[data-sdv-body]");
@@ -46,7 +51,9 @@ export function hydrate<Row>(el: Element, table: Table<Row>): () => void {
   live.get(el)?.();
 
   let hidden = table.state.hidden; // the engine replaces this array only when a column is hidden or shown
-  let drawn = table.rows; // the rows the body shows: the SSR markup's until the first render
+  // the rows the body shows: the SSR markup's until the first render; unknown ([]) on a body a teardown left behind,
+  // so an event before its redraw frame redraws first
+  let drawn: readonly Row[] = behind.has(body) ? [] : table.rows;
   const render = (): void => {
     cancel = undefined;
     const root = el.getRootNode() as Document | ShadowRoot;
@@ -140,10 +147,14 @@ export function hydrate<Row>(el: Element, table: Table<Row>): () => void {
     else if (cancel === undefined) applyHover(el, table, e.id);
   });
   applyHover(el, table, table.getHover()); // a hover set before this attached (a linked figure's) shows now
+  if (behind.delete(body)) schedule(); // a teardown dropped a render this body still owes (StrictMode's cleanup)
   const teardown = (): void => {
     if (live.get(el) === replace) live.delete(el);
     unsubscribe();
-    cancel?.();
+    if (cancel) {
+      cancel();
+      behind.add(body); // the body stays behind the engine until the next hydrate of it redraws
+    }
     cancel = undefined;
     el.removeEventListener("click", onClick);
     el.removeEventListener("input", onInput);
@@ -152,7 +163,8 @@ export function hydrate<Row>(el: Element, table: Table<Row>): () => void {
     el.removeEventListener("keydown", onKeydown);
   };
   // M3: hydrating `el` again first draws a change this binding still owes, so the next one starts from a current body
-  // (its `drawn` is the engine's rows); a plain teardown drops it, since the element may no longer be ours to write
+  // (its `drawn` is the engine's rows); a plain teardown drops it, since the element may no longer be ours to write,
+  // and leaves the body `behind` for whichever hydrate comes next
   const replace = (): void => {
     if (cancel) {
       cancel();
