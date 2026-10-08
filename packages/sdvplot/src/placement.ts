@@ -2,7 +2,7 @@ import type { MarkRow } from "./data/index.js";
 import { InputError, warn } from "./errors.js";
 import { ESPN_HEADSHOT_LEAGUES, HEADSHOT_ASPECT, headshotUrl, loadGsis } from "./headshots.js";
 import type { EspnHeadshotLeague } from "./headshots.js";
-import { loadLeague } from "./index-data.js";
+import { getLeagueSync, loadLeague } from "./index-data.js";
 import { selectMarkSync } from "./marks.js";
 import { normValue } from "./normalize.js";
 import { type ResolveOptions, type Value, resolveSync } from "./resolve.js";
@@ -30,6 +30,19 @@ export interface PlaceOptions {
   warn?: boolean;
 }
 export { HEADSHOT_ASPECT };
+
+/**
+ * What a placed image is named for (its accessible name, before the mark type): a logo's or wordmark's resolved team,
+ * by abbreviation, else full name, whatever id system the caller keyed it by; `raw` (the caller's own value) only when
+ * the team has neither. A headshot has no name source (no team row; the gsis map holds ids only), so it keeps `raw`.
+ * Every renderer that names images goes through this one rule.
+ * @internal
+ */
+export function placedName(p: Placement, league: League, raw: unknown): string {
+  // ponytail: a linear scan of the league's teams per image (2,631 for soccer at most); index by team_id if it shows
+  const team = p.mark === null ? undefined : getLeagueSync(league).teams.find((t) => t.team_id === p.id);
+  return team?.abbr || team?.name || String(raw);
+}
 
 const real = (v: unknown): v is number => typeof v === "number" && !Number.isNaN(v);
 export function checkHeight(height: unknown): number {

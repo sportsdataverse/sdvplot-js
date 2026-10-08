@@ -50,6 +50,22 @@ test("axisLogos: each image is named by the tick it replaces; Plot's axis option
   expect(wm.querySelector("image")?.getAttribute("aria-label")).toBe("BUF wordmark");
 });
 
+test("axisLogos: categories keyed by team_id name each image by the team, not the id", () => {
+  const ids = resolveSync(
+    STANDINGS.map((r) => r.team),
+    "nfl",
+  );
+  const rows = STANDINGS.map((r, i) => ({ team_id: ids[i], wins: r.wins }));
+  const fig = Plot.plot({
+    marks: [
+      Plot.barY(rows, { x: "team_id", y: "wins" }),
+      axisLogos("x", { league: "nfl", idSystem: "team_id" }),
+    ],
+  });
+  const names = Array.from(fig.querySelectorAll("image"), (i) => i.getAttribute("aria-label"));
+  expect(names.sort()).toEqual(STANDINGS.map((r) => `${r.team} logo`).sort());
+});
+
 test("axisLogos: a caller's margin on the anchored side (or all sides) wins over the computed one", () => {
   const frameBottom = (o: Parameters<typeof axisLogos>[1]): number => {
     const svg = Plot.plot({ marks: [Plot.barY(STANDINGS, { x: "team", y: "wins" }), axisLogos("x", o)] });

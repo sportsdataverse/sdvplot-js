@@ -1,5 +1,5 @@
 import * as Plot from "@observablehq/plot";
-import { checkHeight, placeSync } from "../placement.js";
+import { checkHeight, placeSync, placedName } from "../placement.js";
 import { stampImage } from "../stamp.js";
 import type { IdSystem, League, MarkType, SeasonInput, Variant } from "../types.js";
 
@@ -109,7 +109,7 @@ export function axisLogos(axis: Axis, o: AxisLogosOptions): Plot.Markish {
       img.setAttribute("preserveAspectRatio", "xMidYMid meet");
       img.setAttribute("data-sdv-axis", axis);
       img.setAttribute("data-sdv-tick", String(tick));
-      img.setAttribute("aria-label", `${labels[k]} ${kind}`); // the tick text it replaces, as the Vega adapter (PR #28)
+      img.setAttribute("aria-label", `${placedName(p, o.league, labels[k])} ${kind}`); // the team its tick named
       stampImage(img, p, kind, px, frame, cx, cy);
       t.replaceWith(img);
     });

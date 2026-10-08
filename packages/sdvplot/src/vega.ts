@@ -17,6 +17,7 @@ import {
 } from "./_web.js";
 import type { DrawnAxisMark, DrawnMark } from "./_web.js";
 import { InputError, UnsupportedTargetError } from "./errors.js";
+import { placedName } from "./placement.js";
 import type { IdSystem, League, SeasonInput } from "./types.js";
 export type { AxisOptions, DrawnAxisMark, DrawnMark, HeadshotOptions, MarkOptions, Row } from "./_web.js";
 export { embedSources } from "./_web.js"; // public: the README tells callers to build `embed` with it
@@ -222,14 +223,14 @@ function encodings(spec: VegaLiteSpec): { x: Enc; y: Enc } {
   }
   return out;
 }
-/** The user's own team / player value per placement: what the image's accessible description names. */
+/** What each placed image's accessible description names: the resolved team, or a headshot's own player id (placedName). */
 function labelsOf(
   rows: readonly Row[],
   ps: readonly Placement[],
   o: MarkOptions | HeadshotOptions,
 ): string[] {
   const key = "player" in o ? o.player : o.team;
-  return ps.map((p) => String(rows[p.index]?.[key]));
+  return ps.map((p) => placedName(p, o.league, rows[p.index]?.[key]));
 }
 function layerOf(
   ps: readonly Placement[],
@@ -430,7 +431,7 @@ export function withAxisLogos(spec: object, axis: "x" | "y", o: AxisOptions): ob
     [key]: cats[pos[i]!],
     [URL]: sources[i]!,
     [TEAM]: p.id,
-    [LABEL]: `${cats[pos[i]!]} ${o.markType ?? "logo"}`,
+    [LABEL]: `${placedName(p, o.league, cats[pos[i]!])} ${o.markType ?? "logo"}`,
   }));
   const channel: Enc = {
     field: enc.field ?? letter,

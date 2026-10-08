@@ -1,8 +1,7 @@
 import * as Plot from "@observablehq/plot";
 import { InputError } from "../errors.js";
 import type { EspnHeadshotLeague } from "../headshots.js";
-import { getLeagueSync } from "../index-data.js";
-import { type Kind, type Placement, checkAlpha, checkHeight, placeSync } from "../placement.js";
+import { type Kind, type Placement, checkAlpha, checkHeight, placeSync, placedName } from "../placement.js";
 import type { Value } from "../resolve.js";
 import { stampImage } from "../stamp.js";
 import type { HeadshotIdSystem, IdSystem, League, SeasonInput, Variant } from "../types.js";
@@ -179,13 +178,9 @@ function imageMark<R>(
   });
   const src: (string | null)[] = new Array(keys.length).fill(null);
   for (const p of placed) src[p.index] = p.url;
-  // each image's accessible name: the RESOLVED team (abbreviation, else name), whatever id system the caller used;
-  // the raw key where nothing resolved. Headshots have no name source (the gsis map holds ids only), so the id.
+  // each image's accessible name: the resolved team ("KC"), whatever id system the caller used (see placedName)
   const names = keys.map((k) => String(k));
-  if (kind !== "headshot") {
-    const team = new Map(getLeagueSync(o.league).teams.map((t) => [t.team_id, t.abbr || t.name]));
-    for (const p of placed) names[p.index] = team.get(p.id) || String(keys[p.index]);
-  }
+  for (const p of placed) names[p.index] = placedName(p, o.league, keys[p.index]);
   const {
     height: _h,
     alpha: _a,
