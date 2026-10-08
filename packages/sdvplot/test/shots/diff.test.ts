@@ -19,6 +19,19 @@ test("master: master's own expression, d3 scaleLinear over its five stops, uncla
   const xs = [...XS, -1.2, -0.99, 0.99, 1.2];
   expect(xs.map((d) => diffScale({ palette: "master" })(d))).toEqual(xs.map((d) => master(d)));
 });
+test("master: an infinite diff takes the end colour (d3 gives rgb(0, 0, 0) and rgb(0, 255, 0)); finite ones extrapolate", () => {
+  const s = diffScale({ palette: "master" });
+  expect([s(Number.POSITIVE_INFINITY), s(Number.NEGATIVE_INFINITY)]).toEqual([
+    "rgb(25, 89, 67)",
+    "rgb(141, 8, 1)",
+  ]);
+  expect([s(0.99), s(-0.99)]).toEqual(["rgb(25, 89, 67)", "rgb(141, 8, 1)"]);
+  expect(s(1.2)).not.toBe(s(0.99)); // unclamped past the stops, as d3 scaleLinear
+  for (const o of [{}, { theme: "dark" as const }]) {
+    const c = diffScale(o);
+    expect([c(Number.POSITIVE_INFINITY), c(Number.NEGATIVE_INFINITY)]).toEqual([c(1), c(-1)]); // clamped already
+  }
+});
 test(".plot is the same scale in Observable Plot, so Plot.legend matches (light, dark, master)", () => {
   for (const o of [{}, { theme: "dark" as const }, { palette: "master" as const }]) {
     const s = diffScale(o);

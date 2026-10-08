@@ -72,7 +72,12 @@ function piecewise(domain: readonly number[], range: readonly Rgb[], x: number):
 
 export type DiffPalette = "rdbu" | "master";
 export interface DiffScaleOptions {
-  /** `"rdbu"` (default): RdBu reversed, above league red (blazing-the-nets `main`). `"master"`: the 2021 five-stop red-yellow-green. */
+  /**
+   * `"rdbu"` (default): RdBu reversed, above league red (blazing-the-nets `main`), clamped at `±domain`.
+   * `"master"`: the 2021 five-stop red-yellow-green, UNCLAMPED like master's d3 `scaleLinear`: a diff past the end
+   * stops (±0.99) extrapolates, each channel then clamped to 0-255. An infinite diff takes the end colour (d3 gives
+   * `rgb(0, 0, 0)` for `Infinity` and `rgb(0, 255, 0)` for `-Infinity`).
+   */
   palette?: DiffPalette;
   /** `"dark"` swaps RdBu's near-white centre for `#303030` so an average mark recedes (`theme.ts:52-58`). Ignored by `"master"`. */
   theme?: "light" | "dark";
@@ -120,7 +125,11 @@ export function diffScale(o: DiffScaleOptions = {}): DiffScale {
   let stops: readonly number[] = [0, 0.25, 0.5, 0.75, 1].map((t) => (t * 2 - 1) * D);
   if (palette === "master") {
     const range = MASTER.map(fmt);
-    colour = (d) => fmt(piecewise(MASTER_DOMAIN, MASTER, d));
+    // Deliberate divergence from d3: ±Infinity takes the end colour, where d3 gives black (+) or green (-).
+    colour = (d) =>
+      Number.isFinite(d)
+        ? fmt(piecewise(MASTER_DOMAIN, MASTER, d))
+        : (range[d > 0 ? range.length - 1 : 0] as string);
     plot = { type: "linear", domain: MASTER_DOMAIN, range, interpolate: "rgb", clamp: false };
     stops = MASTER_DOMAIN;
   } else if (o.theme === "dark") {
