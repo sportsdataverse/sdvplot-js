@@ -48,19 +48,19 @@
     "react": ">=18"
   },
   "peerDependenciesMeta": {
-    "react": {
+    "@observablehq/plot": {
+      "optional": true
+    },
+    "@sportsdataverse/sporty": {
       "optional": true
     },
     "chart.js": {
       "optional": true
     },
-    "@observablehq/plot": {
-      "optional": true
-    },
     "d3": {
       "optional": true
     },
-    "@sportsdataverse/sporty": {
+    "react": {
       "optional": true
     }
   },

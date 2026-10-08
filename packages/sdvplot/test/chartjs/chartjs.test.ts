@@ -74,6 +74,7 @@ describe("point styles", () => {
     expect(dark.height).toBe(light.height);
   });
   test("the text fallback is inked for the chart background: grey on light, light grey on dark", () => {
+    collect(); // the unknown team "XXX" warns once per call: asserted, not printed
     const ink = (o: Partial<Parameters<typeof logoPoints>[1]>): unknown => {
       const [c] = logoPoints(["XXX"], { league: "nfl", ...o }).pointStyle as [HTMLCanvasElement];
       return calls.get(c)?.find(([n]) => n === "fillText")?.[1][3];
@@ -87,6 +88,7 @@ describe("point styles", () => {
     ];
     expect(calls.get(h)?.find(([n]) => n === "fillText")?.[1][3]).toBe("#e8e6e3");
     expect(() => logoPoints(["KC"], { league: "nfl", background: "dark" })).toThrow(InputError);
+    expect(warnings.length).toBeGreaterThan(0);
   });
   test("headshots use the headshot aspect", () => {
     const [h] = headshotPoints(["3139477"], { league: "nfl", radius: 30 }).pointStyle;

@@ -45,6 +45,17 @@ export function surface(league: League, o: ChartSurfaceOptions = {}): ChartSurfa
   return {
     plugin: {
       id: "sdvplotSurface",
+      // Chart.js has no plugin priority: inline plugins run in array order, so a watermark listed first is painted over
+      start: (chart) => {
+        const ps = chart.config.plugins ?? [];
+        const own = ps.findIndex((p) => p.id === "sdvplotSurface");
+        const wm = ps.findIndex((p) => p.id === "sdvplotLogoWatermarks");
+        if (wm !== -1 && (own === -1 || wm < own))
+          warn(
+            "chartjs:surface:order",
+            "logoWatermarks is listed before the surface plugin, so the court is painted over it; list court.plugin first",
+          );
+      },
       beforeDatasetsDraw: (chart) => paintScene(chart, scene, xAxisID, yAxisID),
     },
     scales: { x: { type: "linear", min: x0, max: x1 }, y: { type: "linear", min: y0, max: y1 } },

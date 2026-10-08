@@ -1,7 +1,8 @@
 // @vitest-environment jsdom
-import { Chart, registerables } from "chart.js";
+import { Chart, type Plugin, registerables } from "chart.js";
 import { afterEach, beforeAll, describe, expect, test } from "vitest";
 import { surface } from "../../src/chartjs-surface.js";
+import { logoWatermarks } from "../../src/chartjs.js";
 import { InputError, loadLeague, resetWarnings, setWarningHandler } from "../../src/index.js";
 import { calls, draw, mockCanvas } from "./harness.js";
 
@@ -110,5 +111,54 @@ describe("surface", () => {
     expect(early.chartArea).toBeUndefined();
     expect(() => early.draw()).not.toThrow();
     early.destroy();
+  });
+  test("at devicePixelRatio 2 the composed transform maps scene points onto dpr x getPixelForValue", () => {
+    const s = surface("nba");
+    const [x0, y0, x1, y1] = s.scene.bbox;
+    const canvas = document.createElement("canvas");
+    canvas.width = 1200;
+    canvas.height = 800;
+    document.body.append(canvas);
+    const chart = new Chart(canvas, {
+      type: "scatter",
+      data: { datasets: [{ data: [] }] },
+      options: { responsive: false, animation: false, devicePixelRatio: 2, scales: s.scales },
+      plugins: [s.plugin],
+    });
+    const log = calls.get(canvas) ?? [];
+    const ts = log.flatMap(([n], i) => (n === "transform" ? [i] : []));
+    const dpr = log
+      .slice(0, ts[0])
+      .filter(([n]) => n === "setTransform")
+      .pop();
+    expect(dpr?.[1].slice(0, 6)).toEqual([2, 0, 0, 2, 0, 0]);
+    const [ours, scenes] = ts.map((i) => log[i]![1].slice(0, 6) as unknown as M) as [M, M];
+    for (const p of [
+      [0, 0],
+      [x0, y0],
+      [x1, y1],
+    ] as const) {
+      const [px, py] = apply(ours, apply(scenes, p)); // under the chart's own dpr transform: device = 2 x this
+      expect(2 * px).toBeCloseTo(2 * chart.scales.x!.getPixelForValue(p[0]), 6);
+      expect(2 * py).toBeCloseTo(2 * chart.scales.y!.getPixelForValue(p[1]), 6);
+    }
+    chart.destroy();
+  });
+  test("logoWatermarks listed before the surface plugin warns once; the documented order does not", () => {
+    collect();
+    const s = surface("nba");
+    const wm = logoWatermarks(["BOS"], { league: "nba" });
+    const config = (plugins: Plugin[]) => ({
+      type: "scatter" as const,
+      data: { datasets: [{ data: [] }] },
+      options: { scales: s.scales },
+      plugins,
+    });
+    draw(config([s.plugin, wm])).chart.destroy();
+    expect(warnings).toHaveLength(0);
+    draw(config([wm, s.plugin])).chart.destroy();
+    draw(config([wm, s.plugin])).chart.destroy();
+    expect(warnings).toHaveLength(1);
+    expect(warnings[0]).toMatch(/logoWatermarks.*surface/);
   });
 });
