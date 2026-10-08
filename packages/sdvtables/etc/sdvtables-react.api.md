@@ -54,7 +54,7 @@ export function useTable<Row>(spec: TableSpec<Row>, rows: readonly Row[], option
 
 // Warnings were encountered during analysis:
 //
-// dist/react.d.ts:12:5 - (ae-forgotten-export) The symbol "TableSnapshot" needs to be exported by the entry point react.d.ts
+// dist/react.d.ts:13:5 - (ae-forgotten-export) The symbol "TableSnapshot" needs to be exported by the entry point react.d.ts
 
 // (No @packageDocumentation comment for this package)
 

@@ -4,7 +4,13 @@ import sdvplotPkg from "../sdvplot/package.json" with { type: "json" };
 import pkg from "./package.json" with { type: "json" };
 export default defineConfig({
   resolve: {
-    alias: { "@sportsdataverse/sdvplot": fileURLToPath(new URL("../sdvplot/src/index.ts", import.meta.url)) },
+    alias: {
+      // the subpath BEFORE the bare key: a string alias also matches "<key>/…" and would rewrite to …/src/index.ts/export
+      "@sportsdataverse/sdvplot/export": fileURLToPath(
+        new URL("../sdvplot/src/export/index.ts", import.meta.url),
+      ),
+      "@sportsdataverse/sdvplot": fileURLToPath(new URL("../sdvplot/src/index.ts", import.meta.url)),
+    },
   },
   define: {
     __SDVTABLES_VERSION__: JSON.stringify(pkg.version),

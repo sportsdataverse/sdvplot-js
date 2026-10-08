@@ -24,3 +24,18 @@ jobs:
       - run: pnpm api:check
       - run: pnpm pack:check
       - run: pnpm docs:build
+  # Non-gating: real-browser renders of sdvtables/export (playwright + chromium). No build: vitest runs sdvtables and
+  # sdvplot from source (vitest.config.ts aliases); the root has no playwright bin, so chromium installs via sdvtables.
+  render-tests:
+    runs-on: ubuntu-latest
+    needs: [check]
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20.18.1, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @sportsdataverse/sdvtables exec playwright install --with-deps chromium
+      - run: pnpm --filter @sportsdataverse/sdvtables test -- test/export-render.test.ts
+        env: { SDV_RENDER_TESTS: "1" }

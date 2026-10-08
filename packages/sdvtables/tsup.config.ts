@@ -2,8 +2,20 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { defineConfig } from "tsup";
 import pkg from "./package.json" with { type: "json" };
 export default defineConfig({
-  entry: { index: "src/index.ts", html: "src/html/index.ts", react: "src/react/index.tsx" },
-  external: ["@sportsdataverse/sdvplot", "react", "react/jsx-runtime", "react-dom"],
+  entry: {
+    index: "src/index.ts",
+    html: "src/html/index.ts",
+    react: "src/react/index.tsx",
+    export: "src/export/index.ts",
+  },
+  external: [
+    "@sportsdataverse/sdvplot",
+    "@sportsdataverse/sdvplot/export",
+    "react",
+    "react/jsx-runtime",
+    "react-dom",
+    "playwright",
+  ],
   format: ["esm"],
   dts: true,
   sourcemap: true,

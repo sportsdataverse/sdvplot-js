@@ -3,7 +3,10 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "baseUrl": ".",
-    "paths": { "@sportsdataverse/sdvplot": ["../sdvplot/src/index.ts"] }
+    "paths": {
+      "@sportsdataverse/sdvplot": ["../sdvplot/src/index.ts"],
+      "@sportsdataverse/sdvplot/export": ["../sdvplot/src/export/index.ts"]
+    }
   },
   "include": ["src", "test"]
 }
