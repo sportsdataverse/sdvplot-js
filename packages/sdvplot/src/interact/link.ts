@@ -188,9 +188,11 @@ export function linkSelection<Row, Datum = unknown>(
   offs.push(store.subscribe(sync));
   sync(store.getState());
   return () => {
-    for (const off of offs) off();
     const h = store.getState().hover;
+    // before the unsubscribe: this figure, and its table, still follow the store and un-dim too
     if (wrote !== null && h.size === 1 && h.has(wrote)) store.set({ hover: [] });
+    wrote = null;
+    for (const off of offs) off();
   };
 }
 

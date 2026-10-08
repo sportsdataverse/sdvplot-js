@@ -94,6 +94,19 @@ test("teardown under the pointer clears the hover this figure wrote, never anoth
   fourth();
   expect(hover(store)).toEqual(["LV", "KC"]);
 });
+test("a figure unlinked under the pointer and kept is left undimmed; a second teardown writes nothing", () => {
+  const svg = scatter();
+  const store = createSelection<Standing>();
+  const off = linkSelection(store, { plot: svg });
+  over(svg.querySelector('[data-sdv-id="LV"]'));
+  expect([svg.classList.contains("sdv-focus"), lit(svg)]).toEqual([true, ["LV"]]);
+  off(); // "unlink and keep": the figure stays on the page
+  expect(hover(store)).toEqual([]);
+  expect([svg.classList.contains("sdv-focus"), lit(svg)]).toEqual([false, []]);
+  store.set({ hover: ["LV"] }); // set again after the teardown
+  off();
+  expect(hover(store)).toEqual(["LV"]);
+});
 test("an axis logo is never a hover target: it carries an ESPN id, but it is a decoration (A39)", () => {
   const svg = Plot.plot({
     marks: [
