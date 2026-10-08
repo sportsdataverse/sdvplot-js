@@ -6,7 +6,7 @@ import { linkIds } from "@sportsdataverse/sdvplot/plot";
 import { beforeAll, expect, test } from "vitest";
 import { BKN, type BknShot } from "../../../sdvplot/test/shots/fixture.js";
 import { defineTable } from "../../src/define.js";
-import { createTable } from "../../src/engine.js";
+import { type Table, createTable } from "../../src/engine.js";
 import { hydrate, renderHTML } from "../../src/html/index.js";
 import { STANDINGS, type Standing } from "../fixtures/standings.js";
 
@@ -65,6 +65,18 @@ const brushTop4 = (
   });
 const click = (el: Element | null | undefined): void => {
   el?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+};
+/** A keydown on `target`; true when nothing consumed it (dispatchEvent's return value). */
+const press = (target: Element | null | undefined, key: string): boolean =>
+  target?.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true, cancelable: true })) ?? true;
+const rowAt = (el: Element, i: number): HTMLElement =>
+  el.querySelector<HTMLElement>(`[data-sdv-body] tr.sdvt-row[data-row="${i}"]`) as HTMLElement;
+/** A hydrated table with no figure or store: the flush is hydrate's own. */
+const bare = (pageSize?: number) => {
+  const table = createTable(spec, STANDINGS, pageSize === undefined ? {} : { pageSize });
+  const el = mount(renderHTML(table));
+  hydrate(el, table);
+  return { table, el };
 };
 
 test("hovering a hydrated table row highlights its dot; leaving the table clears it", () => {
@@ -164,6 +176,41 @@ test("Space on a hydrated grid row selects it; the store and the figure follow (
   den?.dispatchEvent(new KeyboardEvent("keydown", { key: " ", bubbles: true, cancelable: true }));
   expect([...store.getState().selected]).toEqual(["DEN"]);
   expect(lit(svg)).toEqual(["DEN"]);
+});
+test.each([
+  ["a sort", undefined, (t: Table<Standing>) => t.setSort("wins", "asc")], // 8 rows and 8: row 3 becomes MIA
+  ["a page turn", 4, (t: Table<Standing>) => t.setPage(1)], // 4 rows and 4: row 3 becomes NE
+] as const)(
+  "%s keeps the row count; in the pending frame the old LV row never reads as another team",
+  (_, pageSize, move) => {
+    const { table, el } = bare(pageSize);
+    const lv = rowAt(el, 3).querySelector("td");
+    move(table); // the rows change but their number does not: only the identity check sees it
+    over(lv);
+    expect(table.getHover()).toBeNull(); // the render ran first: LV's row is gone, so the pointer names no row
+    click(lv);
+    expect(table.getSelection().size).toBe(0);
+  },
+);
+test("after one rows change has rendered, j twice in one frame still moves twice (each render records its rows)", async () => {
+  const { table, el } = bare();
+  table.setExternalFilter((r) => r.wins >= 8); // KC LAC DEN BUF MIA
+  await frame();
+  rowAt(el, 0).focus();
+  press(document.activeElement, "j");
+  press(document.activeElement, "j"); // a cursor-only render is pending: it keeps the rows, so no flush
+  expect(table.state.cursor.row).toBe(2);
+});
+test("after one rows change has rendered, a click then a hover in one frame both land", async () => {
+  const { table, el } = bare();
+  table.setExternalFilter((r) => r.wins >= 8);
+  await frame();
+  click(rowAt(el, 0).querySelector("td")); // KC: a selection-only render is pending
+  const den = rowAt(el, 2);
+  over(den.querySelector("td"));
+  expect(den.isConnected).toBe(true); // not flushed: the row under the pointer stays in place
+  expect(table.getHover()).toBe("DEN");
+  expect([...table.getSelection()]).toEqual(["KC"]);
 });
 
 // Brooklyn's 2025-26 shots (fixtures/shots): no rowKey, so a row's id is its index into BKN, as linkIds stamps
