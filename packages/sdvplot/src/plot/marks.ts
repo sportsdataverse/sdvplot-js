@@ -234,7 +234,7 @@ function imageMark<R>(
  * Plot.plot({ marks: [logos(afc, { league: "nfl", x: "pf", y: "pa", team: "team", tip: true })] });
  * ```
  *
- * @example A beeswarm: `Plot.dodgeY` reads `r` as the collision radius in pixels, about half the drawn height.
+ * @example A beeswarm: Plot.dodgeY reads r as the collision radius in pixels, about half the drawn height.
  * ```ts
  * import * as Plot from "@observablehq/plot";
  * import { loadLeague } from "@sportsdataverse/sdvplot";
