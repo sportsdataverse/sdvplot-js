@@ -42,6 +42,12 @@ export function contrast(a: string, b: string): number;
 // @public
 export function createSelection<Row = unknown>(): SelectionStore<Row>;
 
+// @public
+export interface Cursor {
+    readonly field: string;
+    readonly value: number;
+}
+
 // @public (undocumented)
 export class DownloadError extends OfflineError {
     constructor(message: string, url: string, status?: number | undefined);
@@ -379,6 +385,9 @@ export type RowFilter<Row> = (row: Row) => boolean;
 export function rowsFrom(columns: Record<string, readonly unknown[]>): Record<string, unknown>[];
 
 // @public
+export function sameCursor(a: Cursor | null, b: Cursor | null): boolean;
+
+// @public
 export function sameIds(a: ReadonlySet<string>, b: ReadonlySet<string>): boolean;
 
 // @public (undocumented)
@@ -394,6 +403,7 @@ export type SeasonInput = number | string | null | undefined;
 
 // @public
 export interface SelectionPatch<Row = unknown> {
+    readonly cursor?: Cursor | null;
     readonly hover?: Iterable<string>;
     readonly predicate?: RowFilter<Row> | null;
     readonly selected?: Iterable<string>;
@@ -401,6 +411,7 @@ export interface SelectionPatch<Row = unknown> {
 
 // @public
 export interface SelectionState<Row = unknown> {
+    readonly cursor: Cursor | null;
     readonly hover: ReadonlySet<string>;
     readonly predicate: RowFilter<Row> | null;
     readonly selected: ReadonlySet<string>;
