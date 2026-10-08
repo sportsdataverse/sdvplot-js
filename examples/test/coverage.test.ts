@@ -67,6 +67,11 @@ const EXEMPT: readonly (readonly [spec: string, name: RegExp | "*", reason: stri
     "the same spec tables the package root exports, without the drawing code (sporty/core/spec-tables reads them from the root)",
   ],
   [
+    "@sportsdataverse/sdvplot/shots",
+    only(["hexbin", "hexagonPath", "squarebin", "squarePath", "binner", "cellPath", "cellPoints"]),
+    "re-exports of sdvplot/bins, shown there",
+  ],
+  [
     "@sportsdataverse/sdvtables/html",
     /^labelOf$/,
     "the same function as columnLabel (export { labelOf as columnLabel }), which sdvtables/html examples show",

@@ -11,6 +11,7 @@ const SECTIONS: Readonly<Record<string, string>> = {
   "sporty/core": "Surfaces, options, units, shapes",
   plot: "Observable Plot",
   d3: "D3",
+  shots: "Shot charts",
   react: "React",
   plotly: "Plotly",
   vega: "Vega-Lite",
