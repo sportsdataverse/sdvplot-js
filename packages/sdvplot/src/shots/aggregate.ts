@@ -68,9 +68,14 @@ export interface CellBin extends Split {
  * ```ts
  * import { binShots } from "@sportsdataverse/sdvplot/shots";
  *
- * const shot = { x_legacy: 0, y_legacy: 5, shot_distance: 0, shot_value: 2, shot_result: "Made" };
- * binShots([shot], 15);
- * binShots([shot], { shape: "square", side: 15 });
+ * // Brooklyn shots from the sportsdataverse-data nba_stats_shots release, 2025-26
+ * const shots = [
+ *   { x_legacy: -1, y_legacy: 7, shot_distance: 1, shot_value: 2, shot_result: "Made" },
+ *   { x_legacy: 0, y_legacy: 0, shot_distance: 0, shot_value: 2, shot_result: "Missed" },
+ *   { x_legacy: -44, y_legacy: 252, shot_distance: 26, shot_value: 3, shot_result: "Made" },
+ * ];
+ * binShots(shots, 15);
+ * binShots(shots, { shape: "square", side: 15 });
  * ```
  */
 export function binShots(shots: readonly ShotRow[], cell: number | BinnerOptions): CellBin[] {
@@ -157,7 +162,13 @@ export interface CellVsLeague extends CellBin {
  * ```ts
  * import { leagueIndex } from "@sportsdataverse/sdvplot/shots";
  *
- * leagueIndex([{ x_legacy: 0, y_legacy: 5, shot_distance: 0, shot_value: 2, shot_result: "Made" }], 15).cells;
+ * // Brooklyn shots from the sportsdataverse-data nba_stats_shots release, 2025-26
+ * const shots = [
+ *   { x_legacy: -1, y_legacy: 7, shot_distance: 1, shot_value: 2, shot_result: "Made" },
+ *   { x_legacy: 0, y_legacy: 0, shot_distance: 0, shot_value: 2, shot_result: "Missed" },
+ *   { x_legacy: -44, y_legacy: 252, shot_distance: 26, shot_value: 3, shot_result: "Made" },
+ * ];
+ * leagueIndex(shots, 15).cells;
  * ```
  */
 export function leagueIndex(league: readonly ShotRow[], cell: number | BinnerOptions): LeagueIndex {
@@ -179,8 +190,10 @@ const centres = new WeakMap<LeagueIndex, Map<string, LeagueCell>>();
  * ```ts
  * import { cellsVsLeague, leagueIndex } from "@sportsdataverse/sdvplot/shots";
  *
- * const shot = { x_legacy: 0, y_legacy: 5, shot_distance: 0, shot_value: 2, shot_result: "Made" };
- * cellsVsLeague([shot], leagueIndex([shot, shot], 15));
+ * // Brooklyn shots from the sportsdataverse-data nba_stats_shots release, 2025-26
+ * const made = { x_legacy: 0, y_legacy: 0, shot_distance: 0, shot_value: 2, shot_result: "Made" };
+ * const missed = { ...made, shot_result: "Missed" };
+ * cellsVsLeague([made], leagueIndex([made, missed], 15));
  * ```
  */
 export function cellsVsLeague(
@@ -281,7 +294,8 @@ export function sizeCells(
  * ```ts
  * import { statsByZone } from "@sportsdataverse/sdvplot/shots";
  *
- * statsByZone([{ x_legacy: -224, y_legacy: 20, shot_distance: 22, shot_value: 3, shot_result: "Made" }]);
+ * // a Brooklyn corner three, 2025-26 (sportsdataverse-data nba_stats_shots)
+ * statsByZone([{ x_legacy: 237, y_legacy: 34, shot_distance: 24, shot_value: 3, shot_result: "Made" }]);
  * ```
  */
 export function statsByZone(shots: readonly ShotRow[]): Record<BasketballZone, Split> {
