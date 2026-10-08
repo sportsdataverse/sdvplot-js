@@ -113,10 +113,11 @@ type Fig = SVGSVGElement & {
     invert?: (p: number) => number;
   };
 };
-const dashboard = async (): Promise<Fig[]> =>
-  Array.from((await figure("sdvplot/shots/dashboard")).querySelectorAll("svg")).filter(
+const figures = async (id: string): Promise<Fig[]> =>
+  Array.from((await figure(id)).querySelectorAll("svg")).filter(
     (s): s is Fig => typeof (s as Partial<Fig>).scale === "function",
   );
+const dashboard = (): Promise<Fig[]> => figures("sdvplot/shots/dashboard");
 const span = (f: Fig, n: string): [number, number] => {
   const r = Array.from(f.scale(n)?.range ?? [], Number);
   return [Math.min(...r), Math.max(...r)];
@@ -124,9 +125,8 @@ const span = (f: Fig, n: string): [number, number] => {
 const at = (r: Element, a: string): number => Number(r.getAttribute(a));
 const end = (r: Element): number => at(r, "x") + at(r, "width");
 
-test("shot dashboard: every bar of every figure sits inside its plot (FG% is a percent scale on [0, 100])", async () => {
-  const figs = await dashboard();
-  expect(figs).toHaveLength(5);
+/** Each figure's bar and rect count, and every bar drawn outside its plot area (1 px slack). */
+const barsOutside = (figs: Fig[]): { bars: number[]; outside: string[] } => {
   const outside: string[] = [];
   const bars = figs.map((f) => {
     const [[x0, x1], [y0, y1]] = [span(f, "x"), span(f, "y")];
@@ -143,8 +143,22 @@ test("shot dashboard: every bar of every figure sits inside its plot (FG% is a p
         outside.push(r.outerHTML);
     return rects.length;
   });
+  return { bars, outside };
+};
+
+test("shot dashboard: every bar of every figure sits inside its plot (FG% is a percent scale on [0, 100])", async () => {
+  const figs = await dashboard();
+  expect(figs).toHaveLength(5);
+  const { bars, outside } = barsOutside(figs);
   expect(outside).toEqual([]);
   expect(bars.slice(2).every((n) => n > 0)).toBe(true); // the share, FG% and side charts draw bars
+});
+test("linkCursor gallery: every bar of every figure sits inside its plot (FG% is a percent scale on [0, 100])", async () => {
+  const figs = await figures("sdvplot/plot/link-cursor"); // share, FG%, side and the court
+  expect(figs).toHaveLength(4);
+  const { bars, outside } = barsOutside(figs);
+  expect(outside).toEqual([]);
+  expect(bars.slice(0, 3).every((n) => n > 0)).toBe(true); // the share, FG% and side charts draw bars
 });
 
 // main's side chart (blazing-the-nets lib/charts/sideChart.ts:20-22, :66-75): left and right grow from a FIXED centre

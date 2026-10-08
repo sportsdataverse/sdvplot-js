@@ -60,7 +60,7 @@ const fg = Plot.plot({
   width: 640,
   height: 220,
   x: { label: "Shot distance (ft, 3 ft bins)" },
-  y: { label: "FG%", percent: true, domain: [0, 1] },
+  y: { label: "FG%", percent: true, domain: [0, 100] }, // percent scales by 100 before the domain applies
   marks: [Plot.barY(by3, { x: "distance", y: "fgPct" })],
 });
 linkCursor(fg, store, { field: D, shape: { axis: "x", scale: fg.scale("x")! } });
