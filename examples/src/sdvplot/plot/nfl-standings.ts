@@ -1,4 +1,5 @@
 import * as Plot from "@observablehq/plot";
+import { STANDINGS } from "@sportsdataverse/examples/data";
 import { loadLeague } from "@sportsdataverse/sdvplot";
 import { axisLogos, teamColor } from "@sportsdataverse/sdvplot/plot";
 import type { ExampleMeta } from "../../contract.js";
@@ -9,16 +10,12 @@ export const meta = {
 } satisfies ExampleMeta;
 
 await loadLeague("nfl");
-const standings = [
-  { team: "KC", wins: 14 },
-  { team: "BUF", wins: 11 },
-  { team: "NYJ", wins: 7 },
-];
 export default Plot.plot({
   height: 300,
+  caption: "AFC West and East wins, 2024 regular season. Data: nflverse",
   marks: [
-    Plot.barY(standings, { x: "team", y: "wins", fill: "team" }),
+    Plot.barY(STANDINGS, { x: "team", y: "wins", fill: "team", sort: { x: "-y" } }),
     axisLogos("x", { league: "nfl", height: 0.12 }),
   ],
-  color: teamColor("nfl", { values: standings.map((s) => s.team) }),
+  color: teamColor("nfl", { values: STANDINGS.map((s) => s.team) }),
 });

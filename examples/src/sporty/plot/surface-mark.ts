@@ -9,12 +9,13 @@ export const meta = {
 } satisfies ExampleMeta;
 
 // surfaceScales fixes x/y to the scene's bbox (feet, no axes, aspect 1); surfaceMark draws the scene through
-// those scales, so data in feet lands where it belongs. Baseball's origin is home plate.
+// those scales, so data in feet lands where it belongs. Baseball's origin is home plate; these are the rule book's
+// landmarks (60.5 ft to the rubber, 90 ft base paths), not observations.
 const field = surface("baseball", "mlb");
-const hits = [
+const spots = [
   { x: 0, y: 60.5, what: "pitcher's rubber" },
   { x: 63.6, y: 63.6, what: "first base" },
-  { x: -230, y: 300, what: "a deep fly to left" },
+  { x: 0, y: 127.3, what: "second base" },
 ];
 
 export default Plot.plot({
@@ -22,7 +23,7 @@ export default Plot.plot({
   width: 560,
   marks: [
     ...surfaceMark(field),
-    Plot.dot(hits, { x: "x", y: "y", r: 5, fill: "white", stroke: "black" }),
-    Plot.text(hits, { x: "x", y: "y", text: "what", dy: -12, fill: "white" }),
+    Plot.dot(spots, { x: "x", y: "y", r: 5, fill: "white", stroke: "black" }),
+    Plot.text(spots, { x: "x", y: "y", text: "what", dy: -12, fill: "white" }),
   ],
 });

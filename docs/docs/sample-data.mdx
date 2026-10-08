@@ -3,10 +3,11 @@ title: Sample data
 sidebar_position: 5
 ---
 
-The examples on this site draw real data, never invented rows. Three datasets are shared between them, all exported
-by the examples workspace as `@sportsdataverse/examples/data`. For the first two, a test
+The examples on this site draw real data, never invented rows. The datasets below are shared between them, all
+exported by the examples workspace as `@sportsdataverse/examples/data`. For every one but `SUPER_BOWL_LIX_WP`, a test
 (`examples/test/sample-data.test.ts`) re-derives every value from captures committed in `fixtures/examples`, so a
-hand-typed number fails the examples gate.
+hand-typed number fails the examples gate. A second test fails when an example types its own table of rows instead of
+importing one of these.
 
 ## STANDINGS: eight AFC teams, 2024
 
@@ -45,3 +46,43 @@ its `winprobability` entries joined to the plays they follow. The logos behind t
 sdvplot archive.
 
 <Live id="sdvplot/chartjs/win-probability" />
+
+## NBA_STANDINGS: the Pacific Division, 2023-24
+
+The five Pacific Division teams' final 2023-24 regular-season records (the season of `NBA_SHOTS`): stats.nba.com's
+`leaguestandingsv3`, as captured by sportsdataverse-py, with `TeamName` as `team` (the nickname, which sdvplot
+resolves), `WINS`, `LOSSES` and `DivisionRank`.
+
+<Live id="sdvplot/plot/nba-standings" />
+
+## NHL_STANDINGS: the Atlantic Division, 2025-26
+
+The eight Atlantic Division teams' final 2025-26 regular-season records (82 games each), from the NHL's api-web
+`standings/now`, as captured by sportsdataverse-py on 24 May 2026: wins, losses, overtime losses and points.
+
+<Live id="sdvplot/plot/nhl-standings" />
+
+## NHL_SHOTS: one period of shots
+
+Every goal, shot on goal and missed shot of the first period of game 7 of the 2024 Stanley Cup Final (Edmonton at
+Florida, 24 June 2024; Florida won 2-1): 27 shots, 11 by Edmonton and 16 by Florida. They come from the NHL's api-web
+play-by-play for game 2023030417, as captured by sportsdataverse-py, with `xCoord`/`yCoord` (feet from centre ice) as
+`x`/`y`. Florida shot at the -x end that period.
+
+<Live id="sdvplot/plot/nhl-shot-map" />
+
+## SUPER_BOWL_LIX_TDS: one game's touchdowns
+
+Super Bowl LIX's six offensive touchdowns, three for each team, from the same ESPN game summary as `SUPER_BOWL_LIX_WP`:
+each play's offence and the line of scrimmage it started from (`start.yardLine`, 0-100 from Philadelphia's goal line).
+ESPN gives no position across the field.
+
+<Live id="sporty/frames/espn-football" />
+
+## PWHL_GOALS: one game's goals
+
+The four goals of PWHL Boston at PWHL Montreal on 2 March 2024 (game 42; Montreal won 3-1), from HockeyTech's
+`gameCenterPlayByPlay`, as captured by sportsdataverse-py: scorer, team, period, time and the canvas position
+(`xLocation`/`yLocation`, pixels on the 600 × 300 canvas).
+
+<Live id="sporty/frames/hockeytech" />

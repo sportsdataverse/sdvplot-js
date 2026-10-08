@@ -1,0 +1,2907 @@
+[
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 16,
+    "firstName": "Jamie Lee",
+    "lastName": "Rattray",
+    "jerseyNumber": 47,
+    "position": "RW",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/16.jpg"
+   },
+   "goalie": {
+    "id": 85,
+    "firstName": "Elaine",
+    "lastName": "Chuli",
+    "jerseyNumber": 20,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/85.jpg"
+   },
+   "shooterTeamId": "1",
+   "period": {
+    "id": "1",
+    "shortName": "1",
+    "longName": "1st"
+   },
+   "time": "3:12",
+   "isGoal": false,
+   "shotQuality": "Quality on net",
+   "shotType": "Wrist",
+   "xLocation": 468,
+   "yLocation": 209
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 168,
+    "firstName": "Mélodie",
+    "lastName": "Daoust",
+    "jerseyNumber": 25,
+    "position": "RW",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/168.jpg"
+   },
+   "goalie": {
+    "id": 6,
+    "firstName": "Aerin",
+    "lastName": "Frankel",
+    "jerseyNumber": 31,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/6.jpg"
+   },
+   "shooterTeamId": "3",
+   "period": {
+    "id": "1",
+    "shortName": "1",
+    "longName": "1st"
+   },
+   "time": "3:40",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Wrist",
+   "xLocation": 31,
+   "yLocation": 187
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 168,
+    "firstName": "Mélodie",
+    "lastName": "Daoust",
+    "jerseyNumber": 25,
+    "position": "RW",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/168.jpg"
+   },
+   "goalie": {
+    "id": 6,
+    "firstName": "Aerin",
+    "lastName": "Frankel",
+    "jerseyNumber": 31,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/6.jpg"
+   },
+   "shooterTeamId": "3",
+   "period": {
+    "id": "1",
+    "shortName": "1",
+    "longName": "1st"
+   },
+   "time": "3:51",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Wrist",
+   "xLocation": 159,
+   "yLocation": 156
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 31,
+    "firstName": "Marie-Philip",
+    "lastName": "Poulin",
+    "jerseyNumber": 29,
+    "position": "C",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/31.jpg"
+   },
+   "goalie": {
+    "id": 6,
+    "firstName": "Aerin",
+    "lastName": "Frankel",
+    "jerseyNumber": 31,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/6.jpg"
+   },
+   "shooterTeamId": "3",
+   "period": {
+    "id": "1",
+    "shortName": "1",
+    "longName": "1st"
+   },
+   "time": "3:51",
+   "isGoal": true,
+   "shotQuality": "Quality goal",
+   "shotType": "Wrist",
+   "xLocation": 90,
+   "yLocation": 123
+  }
+ },
+ {
+  "event": "goal",
+  "details": {
+   "game_goal_id": "253",
+   "team": {
+    "id": 3,
+    "name": "",
+    "city": "",
+    "nickname": "",
+    "abbreviation": "MTL",
+    "logo": ""
+   },
+   "period": {
+    "id": "1",
+    "shortName": "1",
+    "longName": "1st"
+   },
+   "time": "3:51",
+   "scorerGoalNumber": "7",
+   "scoredBy": {
+    "id": 31,
+    "firstName": "Marie-Philip",
+    "lastName": "Poulin",
+    "jerseyNumber": 29,
+    "position": "C",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/31.jpg"
+   },
+   "assists": [],
+   "assistNumbers": [
+    "0",
+    "0"
+   ],
+   "properties": {
+    "isPowerPlay": "0",
+    "isShortHanded": "0",
+    "isEmptyNet": "0",
+    "isPenaltyShot": "0",
+    "isInsuranceGoal": "0",
+    "isGameWinningGoal": "0"
+   },
+   "plus_players": [
+    {
+     "id": 163,
+     "firstName": "Catherine",
+     "lastName": "Daoust",
+     "jerseyNumber": 4,
+     "position": "D",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/163.jpg"
+    },
+    {
+     "id": 32,
+     "firstName": "Laura",
+     "lastName": "Stacey",
+     "jerseyNumber": 7,
+     "position": "LW",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/32.jpg"
+    },
+    {
+     "id": 84,
+     "firstName": "Kati",
+     "lastName": "Tabin",
+     "jerseyNumber": 9,
+     "position": "LD",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/84.jpg"
+    },
+    {
+     "id": 168,
+     "firstName": "Mélodie",
+     "lastName": "Daoust",
+     "jerseyNumber": 25,
+     "position": "RW",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/168.jpg"
+    },
+    {
+     "id": 31,
+     "firstName": "Marie-Philip",
+     "lastName": "Poulin",
+     "jerseyNumber": 29,
+     "position": "C",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/31.jpg"
+    }
+   ],
+   "minus_players": [
+    {
+     "id": 12,
+     "firstName": "Megan",
+     "lastName": "Keller",
+     "jerseyNumber": 5,
+     "position": "LD",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/12.jpg"
+    },
+    {
+     "id": 18,
+     "firstName": "Sophie",
+     "lastName": "Shirley",
+     "jerseyNumber": 9,
+     "position": "RW",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/18.jpg"
+    },
+    {
+     "id": 7,
+     "firstName": "Kaleigh",
+     "lastName": "Fratkin",
+     "jerseyNumber": 13,
+     "position": "RD",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/7.jpg"
+    },
+    {
+     "id": 1,
+     "firstName": "Hannah",
+     "lastName": "Brandt",
+     "jerseyNumber": 20,
+     "position": "C",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/1.jpg"
+    },
+    {
+     "id": 4,
+     "firstName": "Shiann",
+     "lastName": "Darkangelo",
+     "jerseyNumber": 27,
+     "position": "LW",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/4.jpg"
+    }
+   ],
+   "xLocation": 90,
+   "yLocation": 123
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 13,
+    "firstName": "Hilary",
+    "lastName": "Knight",
+    "jerseyNumber": 21,
+    "position": "RW",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/13.jpg"
+   },
+   "goalie": {
+    "id": 85,
+    "firstName": "Elaine",
+    "lastName": "Chuli",
+    "jerseyNumber": 20,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/85.jpg"
+   },
+   "shooterTeamId": "1",
+   "period": {
+    "id": "1",
+    "shortName": "1",
+    "longName": "1st"
+   },
+   "time": "4:38",
+   "isGoal": false,
+   "shotQuality": "Quality on net",
+   "shotType": "Wrist",
+   "xLocation": 530,
+   "yLocation": 131
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 117,
+    "firstName": "Abby",
+    "lastName": "Cook",
+    "jerseyNumber": 18,
+    "position": "RD",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/117.jpg"
+   },
+   "goalie": {
+    "id": 85,
+    "firstName": "Elaine",
+    "lastName": "Chuli",
+    "jerseyNumber": 20,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/85.jpg"
+   },
+   "shooterTeamId": "1",
+   "period": {
+    "id": "1",
+    "shortName": "1",
+    "longName": "1st"
+   },
+   "time": "5:12",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Wrist",
+   "xLocation": 339,
+   "yLocation": 276
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 16,
+    "firstName": "Jamie Lee",
+    "lastName": "Rattray",
+    "jerseyNumber": 47,
+    "position": "RW",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/16.jpg"
+   },
+   "goalie": {
+    "id": 85,
+    "firstName": "Elaine",
+    "lastName": "Chuli",
+    "jerseyNumber": 20,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/85.jpg"
+   },
+   "shooterTeamId": "1",
+   "period": {
+    "id": "1",
+    "shortName": "1",
+    "longName": "1st"
+   },
+   "time": "5:45",
+   "isGoal": false,
+   "shotQuality": "Quality on net",
+   "shotType": "Tip",
+   "xLocation": 515,
+   "yLocation": 189
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 161,
+    "firstName": "Tereza",
+    "lastName": "Vanišová",
+    "jerseyNumber": 21,
+    "position": "LW",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/161.jpg"
+   },
+   "goalie": {
+    "id": 6,
+    "firstName": "Aerin",
+    "lastName": "Frankel",
+    "jerseyNumber": 31,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/6.jpg"
+   },
+   "shooterTeamId": "3",
+   "period": {
+    "id": "1",
+    "shortName": "1",
+    "longName": "1st"
+   },
+   "time": "6:57",
+   "isGoal": false,
+   "shotQuality": "Quality on net",
+   "shotType": "Backhand",
+   "xLocation": 85,
+   "yLocation": 153
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 4,
+    "firstName": "Shiann",
+    "lastName": "Darkangelo",
+    "jerseyNumber": 27,
+    "position": "LW",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/4.jpg"
+   },
+   "goalie": {
+    "id": 85,
+    "firstName": "Elaine",
+    "lastName": "Chuli",
+    "jerseyNumber": 20,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/85.jpg"
+   },
+   "shooterTeamId": "1",
+   "period": {
+    "id": "1",
+    "shortName": "1",
+    "longName": "1st"
+   },
+   "time": "7:05",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Wrist",
+   "xLocation": 338,
+   "yLocation": 128
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 8,
+    "firstName": "Loren",
+    "lastName": "Gabel",
+    "jerseyNumber": 36,
+    "position": "LW",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/8.jpg"
+   },
+   "goalie": {
+    "id": 85,
+    "firstName": "Elaine",
+    "lastName": "Chuli",
+    "jerseyNumber": 20,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/85.jpg"
+   },
+   "shooterTeamId": "1",
+   "period": {
+    "id": "1",
+    "shortName": "1",
+    "longName": "1st"
+   },
+   "time": "7:32",
+   "isGoal": false,
+   "shotQuality": "Quality on net",
+   "shotType": "Wrist",
+   "xLocation": 482,
+   "yLocation": 88
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 159,
+    "firstName": "Leah",
+    "lastName": "Lum",
+    "jerseyNumber": 12,
+    "position": "LD",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/159.jpg"
+   },
+   "goalie": {
+    "id": 6,
+    "firstName": "Aerin",
+    "lastName": "Frankel",
+    "jerseyNumber": 31,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/6.jpg"
+   },
+   "shooterTeamId": "3",
+   "period": {
+    "id": "1",
+    "shortName": "1",
+    "longName": "1st"
+   },
+   "time": "9:17",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Wrist",
+   "xLocation": 219,
+   "yLocation": 273
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 78,
+    "firstName": "Susanna",
+    "lastName": "Tapani",
+    "jerseyNumber": 88,
+    "position": "C",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/78.jpg"
+   },
+   "goalie": {
+    "id": 85,
+    "firstName": "Elaine",
+    "lastName": "Chuli",
+    "jerseyNumber": 20,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/85.jpg"
+   },
+   "shooterTeamId": "1",
+   "period": {
+    "id": "1",
+    "shortName": "1",
+    "longName": "1st"
+   },
+   "time": "9:45",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Backhand",
+   "xLocation": 533,
+   "yLocation": 273
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 8,
+    "firstName": "Loren",
+    "lastName": "Gabel",
+    "jerseyNumber": 36,
+    "position": "LW",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/8.jpg"
+   },
+   "goalie": {
+    "id": 85,
+    "firstName": "Elaine",
+    "lastName": "Chuli",
+    "jerseyNumber": 20,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/85.jpg"
+   },
+   "shooterTeamId": "1",
+   "period": {
+    "id": "1",
+    "shortName": "1",
+    "longName": "1st"
+   },
+   "time": "10:44",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Wrist",
+   "xLocation": 401,
+   "yLocation": 153
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 110,
+    "firstName": "Amanda",
+    "lastName": "Pelkey",
+    "jerseyNumber": 16,
+    "position": "RW",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/110.jpg"
+   },
+   "goalie": {
+    "id": 85,
+    "firstName": "Elaine",
+    "lastName": "Chuli",
+    "jerseyNumber": 20,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/85.jpg"
+   },
+   "shooterTeamId": "1",
+   "period": {
+    "id": "1",
+    "shortName": "1",
+    "longName": "1st"
+   },
+   "time": "11:22",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Backhand",
+   "xLocation": 461,
+   "yLocation": 44
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 109,
+    "firstName": "Gigi",
+    "lastName": "Marvin",
+    "jerseyNumber": 19,
+    "position": "C",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/109.jpg"
+   },
+   "goalie": {
+    "id": 85,
+    "firstName": "Elaine",
+    "lastName": "Chuli",
+    "jerseyNumber": 20,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/85.jpg"
+   },
+   "shooterTeamId": "1",
+   "period": {
+    "id": "1",
+    "shortName": "1",
+    "longName": "1st"
+   },
+   "time": "11:29",
+   "isGoal": false,
+   "shotQuality": "Quality on net",
+   "shotType": "Backhand",
+   "xLocation": 548,
+   "yLocation": 122
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 83,
+    "firstName": "Erin",
+    "lastName": "Ambrose",
+    "jerseyNumber": 23,
+    "position": "RD",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/83.jpg"
+   },
+   "goalie": {
+    "id": 6,
+    "firstName": "Aerin",
+    "lastName": "Frankel",
+    "jerseyNumber": 31,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/6.jpg"
+   },
+   "shooterTeamId": "3",
+   "period": {
+    "id": "1",
+    "shortName": "1",
+    "longName": "1st"
+   },
+   "time": "12:42",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Wrist",
+   "xLocation": 150,
+   "yLocation": 80
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 32,
+    "firstName": "Laura",
+    "lastName": "Stacey",
+    "jerseyNumber": 7,
+    "position": "LW",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/32.jpg"
+   },
+   "goalie": {
+    "id": 6,
+    "firstName": "Aerin",
+    "lastName": "Frankel",
+    "jerseyNumber": 31,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/6.jpg"
+   },
+   "shooterTeamId": "3",
+   "period": {
+    "id": "1",
+    "shortName": "1",
+    "longName": "1st"
+   },
+   "time": "12:49",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Snap",
+   "xLocation": 163,
+   "yLocation": 117
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 30,
+    "firstName": "Kristin",
+    "lastName": "O'Neill",
+    "jerseyNumber": 43,
+    "position": "C",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/30.jpg"
+   },
+   "goalie": {
+    "id": 6,
+    "firstName": "Aerin",
+    "lastName": "Frankel",
+    "jerseyNumber": 31,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/6.jpg"
+   },
+   "shooterTeamId": "3",
+   "period": {
+    "id": "1",
+    "shortName": "1",
+    "longName": "1st"
+   },
+   "time": "15:36",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Wrist",
+   "xLocation": 65,
+   "yLocation": 284
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 163,
+    "firstName": "Catherine",
+    "lastName": "Daoust",
+    "jerseyNumber": 4,
+    "position": "D",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/163.jpg"
+   },
+   "goalie": {
+    "id": 6,
+    "firstName": "Aerin",
+    "lastName": "Frankel",
+    "jerseyNumber": 31,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/6.jpg"
+   },
+   "shooterTeamId": "3",
+   "period": {
+    "id": "1",
+    "shortName": "1",
+    "longName": "1st"
+   },
+   "time": "15:50",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Backhand",
+   "xLocation": 260,
+   "yLocation": 153
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 158,
+    "firstName": "Sarah",
+    "lastName": "Lefort",
+    "jerseyNumber": 16,
+    "position": "LW",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/158.jpg"
+   },
+   "goalie": {
+    "id": 6,
+    "firstName": "Aerin",
+    "lastName": "Frankel",
+    "jerseyNumber": 31,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/6.jpg"
+   },
+   "shooterTeamId": "3",
+   "period": {
+    "id": "1",
+    "shortName": "1",
+    "longName": "1st"
+   },
+   "time": "16:34",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Wrist",
+   "xLocation": 133,
+   "yLocation": 292
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 167,
+    "firstName": "Sidney",
+    "lastName": "Morin",
+    "jerseyNumber": 7,
+    "position": "RD",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/167.jpg"
+   },
+   "goalie": {
+    "id": 85,
+    "firstName": "Elaine",
+    "lastName": "Chuli",
+    "jerseyNumber": 20,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/85.jpg"
+   },
+   "shooterTeamId": "1",
+   "period": {
+    "id": "1",
+    "shortName": "1",
+    "longName": "1st"
+   },
+   "time": "18:04",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Wrist",
+   "xLocation": 354,
+   "yLocation": 226
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 15,
+    "firstName": "Alina",
+    "lastName": "Müller",
+    "jerseyNumber": 11,
+    "position": "C",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/15.jpg"
+   },
+   "goalie": {
+    "id": 85,
+    "firstName": "Elaine",
+    "lastName": "Chuli",
+    "jerseyNumber": 20,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/85.jpg"
+   },
+   "shooterTeamId": "1",
+   "period": {
+    "id": "2",
+    "shortName": "2",
+    "longName": "2nd"
+   },
+   "time": "0:59",
+   "isGoal": false,
+   "shotQuality": "Quality on net",
+   "shotType": "Slap",
+   "xLocation": 471,
+   "yLocation": 219
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 167,
+    "firstName": "Sidney",
+    "lastName": "Morin",
+    "jerseyNumber": 7,
+    "position": "RD",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/167.jpg"
+   },
+   "goalie": {
+    "id": 85,
+    "firstName": "Elaine",
+    "lastName": "Chuli",
+    "jerseyNumber": 20,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/85.jpg"
+   },
+   "shooterTeamId": "1",
+   "period": {
+    "id": "2",
+    "shortName": "2",
+    "longName": "2nd"
+   },
+   "time": "3:42",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Wrist",
+   "xLocation": 410,
+   "yLocation": 22
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 1,
+    "firstName": "Hannah",
+    "lastName": "Brandt",
+    "jerseyNumber": 20,
+    "position": "C",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/1.jpg"
+   },
+   "goalie": {
+    "id": 85,
+    "firstName": "Elaine",
+    "lastName": "Chuli",
+    "jerseyNumber": 20,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/85.jpg"
+   },
+   "shooterTeamId": "1",
+   "period": {
+    "id": "2",
+    "shortName": "2",
+    "longName": "2nd"
+   },
+   "time": "4:20",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Wrist",
+   "xLocation": 289,
+   "yLocation": 147
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 1,
+    "firstName": "Hannah",
+    "lastName": "Brandt",
+    "jerseyNumber": 20,
+    "position": "C",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/1.jpg"
+   },
+   "goalie": {
+    "id": 85,
+    "firstName": "Elaine",
+    "lastName": "Chuli",
+    "jerseyNumber": 20,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/85.jpg"
+   },
+   "shooterTeamId": "1",
+   "period": {
+    "id": "2",
+    "shortName": "2",
+    "longName": "2nd"
+   },
+   "time": "4:21",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Wrist",
+   "xLocation": 525,
+   "yLocation": 34
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 156,
+    "firstName": "Gabrielle",
+    "lastName": "David",
+    "jerseyNumber": 8,
+    "position": "RW",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/156.jpg"
+   },
+   "goalie": {
+    "id": 6,
+    "firstName": "Aerin",
+    "lastName": "Frankel",
+    "jerseyNumber": 31,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/6.jpg"
+   },
+   "shooterTeamId": "3",
+   "period": {
+    "id": "2",
+    "shortName": "2",
+    "longName": "2nd"
+   },
+   "time": "4:34",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Wrist",
+   "xLocation": 78,
+   "yLocation": 23
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 32,
+    "firstName": "Laura",
+    "lastName": "Stacey",
+    "jerseyNumber": 7,
+    "position": "LW",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/32.jpg"
+   },
+   "goalie": {
+    "id": 6,
+    "firstName": "Aerin",
+    "lastName": "Frankel",
+    "jerseyNumber": 31,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/6.jpg"
+   },
+   "shooterTeamId": "3",
+   "period": {
+    "id": "2",
+    "shortName": "2",
+    "longName": "2nd"
+   },
+   "time": "4:35",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Default",
+   "xLocation": 158,
+   "yLocation": 89
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 168,
+    "firstName": "Mélodie",
+    "lastName": "Daoust",
+    "jerseyNumber": 25,
+    "position": "RW",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/168.jpg"
+   },
+   "goalie": {
+    "id": 6,
+    "firstName": "Aerin",
+    "lastName": "Frankel",
+    "jerseyNumber": 31,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/6.jpg"
+   },
+   "shooterTeamId": "3",
+   "period": {
+    "id": "2",
+    "shortName": "2",
+    "longName": "2nd"
+   },
+   "time": "4:50",
+   "isGoal": true,
+   "shotQuality": "Non quality goal",
+   "shotType": "Wrist",
+   "xLocation": 57,
+   "yLocation": 105
+  }
+ },
+ {
+  "event": "goal",
+  "details": {
+   "game_goal_id": "258",
+   "team": {
+    "id": 3,
+    "name": "",
+    "city": "",
+    "nickname": "",
+    "abbreviation": "MTL",
+    "logo": ""
+   },
+   "period": {
+    "id": "2",
+    "shortName": "2",
+    "longName": "2nd"
+   },
+   "time": "4:50",
+   "scorerGoalNumber": "1",
+   "scoredBy": {
+    "id": 168,
+    "firstName": "Mélodie",
+    "lastName": "Daoust",
+    "jerseyNumber": 25,
+    "position": "RW",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/168.jpg"
+   },
+   "assists": [
+    {
+     "id": 31,
+     "firstName": "Marie-Philip",
+     "lastName": "Poulin",
+     "jerseyNumber": 29,
+     "position": "C",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/31.jpg"
+    }
+   ],
+   "assistNumbers": [
+    "7",
+    "0"
+   ],
+   "properties": {
+    "isPowerPlay": "0",
+    "isShortHanded": "0",
+    "isEmptyNet": "0",
+    "isPenaltyShot": "0",
+    "isInsuranceGoal": "0",
+    "isGameWinningGoal": "1"
+   },
+   "plus_players": [
+    {
+     "id": 162,
+     "firstName": "Madison",
+     "lastName": "Bizal",
+     "jerseyNumber": 6,
+     "position": "D",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/162.jpg"
+    },
+    {
+     "id": 32,
+     "firstName": "Laura",
+     "lastName": "Stacey",
+     "jerseyNumber": 7,
+     "position": "LW",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/32.jpg"
+    },
+    {
+     "id": 159,
+     "firstName": "Leah",
+     "lastName": "Lum",
+     "jerseyNumber": 12,
+     "position": "LD",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/159.jpg"
+    },
+    {
+     "id": 168,
+     "firstName": "Mélodie",
+     "lastName": "Daoust",
+     "jerseyNumber": 25,
+     "position": "RW",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/168.jpg"
+    },
+    {
+     "id": 31,
+     "firstName": "Marie-Philip",
+     "lastName": "Poulin",
+     "jerseyNumber": 29,
+     "position": "C",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/31.jpg"
+    }
+   ],
+   "minus_players": [
+    {
+     "id": 12,
+     "firstName": "Megan",
+     "lastName": "Keller",
+     "jerseyNumber": 5,
+     "position": "LD",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/12.jpg"
+    },
+    {
+     "id": 18,
+     "firstName": "Sophie",
+     "lastName": "Shirley",
+     "jerseyNumber": 9,
+     "position": "RW",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/18.jpg"
+    },
+    {
+     "id": 7,
+     "firstName": "Kaleigh",
+     "lastName": "Fratkin",
+     "jerseyNumber": 13,
+     "position": "RD",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/7.jpg"
+    },
+    {
+     "id": 1,
+     "firstName": "Hannah",
+     "lastName": "Brandt",
+     "jerseyNumber": 20,
+     "position": "C",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/1.jpg"
+    },
+    {
+     "id": 4,
+     "firstName": "Shiann",
+     "lastName": "Darkangelo",
+     "jerseyNumber": 27,
+     "position": "LW",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/4.jpg"
+    }
+   ],
+   "xLocation": 57,
+   "yLocation": 105
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 110,
+    "firstName": "Amanda",
+    "lastName": "Pelkey",
+    "jerseyNumber": 16,
+    "position": "RW",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/110.jpg"
+   },
+   "goalie": {
+    "id": 85,
+    "firstName": "Elaine",
+    "lastName": "Chuli",
+    "jerseyNumber": 20,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/85.jpg"
+   },
+   "shooterTeamId": "1",
+   "period": {
+    "id": "2",
+    "shortName": "2",
+    "longName": "2nd"
+   },
+   "time": "5:21",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Wrist",
+   "xLocation": 538,
+   "yLocation": 109
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 157,
+    "firstName": "Catherine",
+    "lastName": "Dubois",
+    "jerseyNumber": 28,
+    "position": "RW",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/157.jpg"
+   },
+   "goalie": {
+    "id": 6,
+    "firstName": "Aerin",
+    "lastName": "Frankel",
+    "jerseyNumber": 31,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/6.jpg"
+   },
+   "shooterTeamId": "3",
+   "period": {
+    "id": "2",
+    "shortName": "2",
+    "longName": "2nd"
+   },
+   "time": "7:09",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Wrist",
+   "xLocation": 50,
+   "yLocation": 109
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 31,
+    "firstName": "Marie-Philip",
+    "lastName": "Poulin",
+    "jerseyNumber": 29,
+    "position": "C",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/31.jpg"
+   },
+   "goalie": {
+    "id": 6,
+    "firstName": "Aerin",
+    "lastName": "Frankel",
+    "jerseyNumber": 31,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/6.jpg"
+   },
+   "shooterTeamId": "3",
+   "period": {
+    "id": "2",
+    "shortName": "2",
+    "longName": "2nd"
+   },
+   "time": "8:12",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Wrist",
+   "xLocation": 158,
+   "yLocation": 225
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 13,
+    "firstName": "Hilary",
+    "lastName": "Knight",
+    "jerseyNumber": 21,
+    "position": "RW",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/13.jpg"
+   },
+   "goalie": {
+    "id": 85,
+    "firstName": "Elaine",
+    "lastName": "Chuli",
+    "jerseyNumber": 20,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/85.jpg"
+   },
+   "shooterTeamId": "1",
+   "period": {
+    "id": "2",
+    "shortName": "2",
+    "longName": "2nd"
+   },
+   "time": "10:18",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Wrist",
+   "xLocation": 546,
+   "yLocation": 273
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 9,
+    "firstName": "Taylor",
+    "lastName": "Girard",
+    "jerseyNumber": 17,
+    "position": "LW",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/9.jpg"
+   },
+   "goalie": {
+    "id": 85,
+    "firstName": "Elaine",
+    "lastName": "Chuli",
+    "jerseyNumber": 20,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/85.jpg"
+   },
+   "shooterTeamId": "1",
+   "period": {
+    "id": "2",
+    "shortName": "2",
+    "longName": "2nd"
+   },
+   "time": "11:04",
+   "isGoal": false,
+   "shotQuality": "Quality on net",
+   "shotType": "Wrist",
+   "xLocation": 504,
+   "yLocation": 183
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 17,
+    "firstName": "Theresa",
+    "lastName": "Schafzahl",
+    "jerseyNumber": 37,
+    "position": "LW",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/17.jpg"
+   },
+   "goalie": {
+    "id": 85,
+    "firstName": "Elaine",
+    "lastName": "Chuli",
+    "jerseyNumber": 20,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/85.jpg"
+   },
+   "shooterTeamId": "1",
+   "period": {
+    "id": "2",
+    "shortName": "2",
+    "longName": "2nd"
+   },
+   "time": "12:01",
+   "isGoal": false,
+   "shotQuality": "Quality on net",
+   "shotType": "Wrist",
+   "xLocation": 503,
+   "yLocation": 96
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 32,
+    "firstName": "Laura",
+    "lastName": "Stacey",
+    "jerseyNumber": 7,
+    "position": "LW",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/32.jpg"
+   },
+   "goalie": {
+    "id": 6,
+    "firstName": "Aerin",
+    "lastName": "Frankel",
+    "jerseyNumber": 31,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/6.jpg"
+   },
+   "shooterTeamId": "3",
+   "period": {
+    "id": "2",
+    "shortName": "2",
+    "longName": "2nd"
+   },
+   "time": "12:42",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Wrist",
+   "xLocation": 42,
+   "yLocation": 178
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 158,
+    "firstName": "Sarah",
+    "lastName": "Lefort",
+    "jerseyNumber": 16,
+    "position": "LW",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/158.jpg"
+   },
+   "goalie": {
+    "id": 6,
+    "firstName": "Aerin",
+    "lastName": "Frankel",
+    "jerseyNumber": 31,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/6.jpg"
+   },
+   "shooterTeamId": "3",
+   "period": {
+    "id": "2",
+    "shortName": "2",
+    "longName": "2nd"
+   },
+   "time": "13:46",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Wrist",
+   "xLocation": 59,
+   "yLocation": 261
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 78,
+    "firstName": "Susanna",
+    "lastName": "Tapani",
+    "jerseyNumber": 88,
+    "position": "C",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/78.jpg"
+   },
+   "goalie": {
+    "id": 85,
+    "firstName": "Elaine",
+    "lastName": "Chuli",
+    "jerseyNumber": 20,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/85.jpg"
+   },
+   "shooterTeamId": "1",
+   "period": {
+    "id": "2",
+    "shortName": "2",
+    "longName": "2nd"
+   },
+   "time": "13:58",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Wrist",
+   "xLocation": 426,
+   "yLocation": 229
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 83,
+    "firstName": "Erin",
+    "lastName": "Ambrose",
+    "jerseyNumber": 23,
+    "position": "RD",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/83.jpg"
+   },
+   "goalie": {
+    "id": 6,
+    "firstName": "Aerin",
+    "lastName": "Frankel",
+    "jerseyNumber": 31,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/6.jpg"
+   },
+   "shooterTeamId": "3",
+   "period": {
+    "id": "2",
+    "shortName": "2",
+    "longName": "2nd"
+   },
+   "time": "14:25",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Wrist",
+   "xLocation": 325,
+   "yLocation": 55
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 13,
+    "firstName": "Hilary",
+    "lastName": "Knight",
+    "jerseyNumber": 21,
+    "position": "RW",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/13.jpg"
+   },
+   "goalie": {
+    "id": 85,
+    "firstName": "Elaine",
+    "lastName": "Chuli",
+    "jerseyNumber": 20,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/85.jpg"
+   },
+   "shooterTeamId": "1",
+   "period": {
+    "id": "2",
+    "shortName": "2",
+    "longName": "2nd"
+   },
+   "time": "14:55",
+   "isGoal": true,
+   "shotQuality": "Quality goal",
+   "shotType": "Wrist",
+   "xLocation": 470,
+   "yLocation": 117
+  }
+ },
+ {
+  "event": "goal",
+  "details": {
+   "game_goal_id": "259",
+   "team": {
+    "id": 1,
+    "name": "",
+    "city": "",
+    "nickname": "",
+    "abbreviation": "BOS",
+    "logo": ""
+   },
+   "period": {
+    "id": "2",
+    "shortName": "2",
+    "longName": "2nd"
+   },
+   "time": "14:55",
+   "scorerGoalNumber": "3",
+   "scoredBy": {
+    "id": 13,
+    "firstName": "Hilary",
+    "lastName": "Knight",
+    "jerseyNumber": 21,
+    "position": "RW",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/13.jpg"
+   },
+   "assists": [
+    {
+     "id": 15,
+     "firstName": "Alina",
+     "lastName": "Müller",
+     "jerseyNumber": 11,
+     "position": "C",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/15.jpg"
+    }
+   ],
+   "assistNumbers": [
+    "9",
+    "0"
+   ],
+   "properties": {
+    "isPowerPlay": "0",
+    "isShortHanded": "0",
+    "isEmptyNet": "0",
+    "isPenaltyShot": "0",
+    "isInsuranceGoal": "0",
+    "isGameWinningGoal": "0"
+   },
+   "plus_players": [
+    {
+     "id": 12,
+     "firstName": "Megan",
+     "lastName": "Keller",
+     "jerseyNumber": 5,
+     "position": "LD",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/12.jpg"
+    },
+    {
+     "id": 15,
+     "firstName": "Alina",
+     "lastName": "Müller",
+     "jerseyNumber": 11,
+     "position": "C",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/15.jpg"
+    },
+    {
+     "id": 7,
+     "firstName": "Kaleigh",
+     "lastName": "Fratkin",
+     "jerseyNumber": 13,
+     "position": "RD",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/7.jpg"
+    },
+    {
+     "id": 13,
+     "firstName": "Hilary",
+     "lastName": "Knight",
+     "jerseyNumber": 21,
+     "position": "RW",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/13.jpg"
+    },
+    {
+     "id": 78,
+     "firstName": "Susanna",
+     "lastName": "Tapani",
+     "jerseyNumber": 88,
+     "position": "C",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/78.jpg"
+    }
+   ],
+   "minus_players": [
+    {
+     "id": 99,
+     "firstName": "Mariah",
+     "lastName": "Keopple",
+     "jerseyNumber": 2,
+     "position": "D",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/99.jpg"
+    },
+    {
+     "id": 32,
+     "firstName": "Laura",
+     "lastName": "Stacey",
+     "jerseyNumber": 7,
+     "position": "LW",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/32.jpg"
+    },
+    {
+     "id": 83,
+     "firstName": "Erin",
+     "lastName": "Ambrose",
+     "jerseyNumber": 23,
+     "position": "RD",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/83.jpg"
+    },
+    {
+     "id": 80,
+     "firstName": "Ann-Sophie",
+     "lastName": "Bettez",
+     "jerseyNumber": 24,
+     "position": "LW",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/80.jpg"
+    },
+    {
+     "id": 31,
+     "firstName": "Marie-Philip",
+     "lastName": "Poulin",
+     "jerseyNumber": 29,
+     "position": "C",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/31.jpg"
+    }
+   ],
+   "xLocation": 470,
+   "yLocation": 117
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 9,
+    "firstName": "Taylor",
+    "lastName": "Girard",
+    "jerseyNumber": 17,
+    "position": "LW",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/9.jpg"
+   },
+   "goalie": {
+    "id": 85,
+    "firstName": "Elaine",
+    "lastName": "Chuli",
+    "jerseyNumber": 20,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/85.jpg"
+   },
+   "shooterTeamId": "1",
+   "period": {
+    "id": "2",
+    "shortName": "2",
+    "longName": "2nd"
+   },
+   "time": "16:20",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Backhand",
+   "xLocation": 305,
+   "yLocation": 11
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 30,
+    "firstName": "Kristin",
+    "lastName": "O'Neill",
+    "jerseyNumber": 43,
+    "position": "C",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/30.jpg"
+   },
+   "goalie": {
+    "id": 6,
+    "firstName": "Aerin",
+    "lastName": "Frankel",
+    "jerseyNumber": 31,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/6.jpg"
+   },
+   "shooterTeamId": "3",
+   "period": {
+    "id": "2",
+    "shortName": "2",
+    "longName": "2nd"
+   },
+   "time": "16:54",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Wrist",
+   "xLocation": 50,
+   "yLocation": 118
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 30,
+    "firstName": "Kristin",
+    "lastName": "O'Neill",
+    "jerseyNumber": 43,
+    "position": "C",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/30.jpg"
+   },
+   "goalie": {
+    "id": 6,
+    "firstName": "Aerin",
+    "lastName": "Frankel",
+    "jerseyNumber": 31,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/6.jpg"
+   },
+   "shooterTeamId": "3",
+   "period": {
+    "id": "2",
+    "shortName": "2",
+    "longName": "2nd"
+   },
+   "time": "16:55",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Wrist",
+   "xLocation": 49,
+   "yLocation": 114
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 31,
+    "firstName": "Marie-Philip",
+    "lastName": "Poulin",
+    "jerseyNumber": 29,
+    "position": "C",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/31.jpg"
+   },
+   "goalie": {
+    "id": 6,
+    "firstName": "Aerin",
+    "lastName": "Frankel",
+    "jerseyNumber": 31,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/6.jpg"
+   },
+   "shooterTeamId": "3",
+   "period": {
+    "id": "2",
+    "shortName": "2",
+    "longName": "2nd"
+   },
+   "time": "17:23",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Wrist",
+   "xLocation": 106,
+   "yLocation": 261
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 30,
+    "firstName": "Kristin",
+    "lastName": "O'Neill",
+    "jerseyNumber": 43,
+    "position": "C",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/30.jpg"
+   },
+   "goalie": {
+    "id": 6,
+    "firstName": "Aerin",
+    "lastName": "Frankel",
+    "jerseyNumber": 31,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/6.jpg"
+   },
+   "shooterTeamId": "3",
+   "period": {
+    "id": "2",
+    "shortName": "2",
+    "longName": "2nd"
+   },
+   "time": "18:45",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Wrist",
+   "xLocation": 44,
+   "yLocation": 94
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 157,
+    "firstName": "Catherine",
+    "lastName": "Dubois",
+    "jerseyNumber": 28,
+    "position": "RW",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/157.jpg"
+   },
+   "goalie": {
+    "id": 6,
+    "firstName": "Aerin",
+    "lastName": "Frankel",
+    "jerseyNumber": 31,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/6.jpg"
+   },
+   "shooterTeamId": "3",
+   "period": {
+    "id": "2",
+    "shortName": "2",
+    "longName": "2nd"
+   },
+   "time": "19:29",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Slap",
+   "xLocation": 194,
+   "yLocation": 43
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 16,
+    "firstName": "Jamie Lee",
+    "lastName": "Rattray",
+    "jerseyNumber": 47,
+    "position": "RW",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/16.jpg"
+   },
+   "goalie": {
+    "id": 85,
+    "firstName": "Elaine",
+    "lastName": "Chuli",
+    "jerseyNumber": 20,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/85.jpg"
+   },
+   "shooterTeamId": "1",
+   "period": {
+    "id": "3",
+    "shortName": "3",
+    "longName": "3rd"
+   },
+   "time": "0:51",
+   "isGoal": false,
+   "shotQuality": "Quality on net",
+   "shotType": "Wrist",
+   "xLocation": 473,
+   "yLocation": 138
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 167,
+    "firstName": "Sidney",
+    "lastName": "Morin",
+    "jerseyNumber": 7,
+    "position": "RD",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/167.jpg"
+   },
+   "goalie": {
+    "id": 85,
+    "firstName": "Elaine",
+    "lastName": "Chuli",
+    "jerseyNumber": 20,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/85.jpg"
+   },
+   "shooterTeamId": "1",
+   "period": {
+    "id": "3",
+    "shortName": "3",
+    "longName": "3rd"
+   },
+   "time": "2:00",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Wrist",
+   "xLocation": 454,
+   "yLocation": 57
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 167,
+    "firstName": "Sidney",
+    "lastName": "Morin",
+    "jerseyNumber": 7,
+    "position": "RD",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/167.jpg"
+   },
+   "goalie": {
+    "id": 85,
+    "firstName": "Elaine",
+    "lastName": "Chuli",
+    "jerseyNumber": 20,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/85.jpg"
+   },
+   "shooterTeamId": "1",
+   "period": {
+    "id": "3",
+    "shortName": "3",
+    "longName": "3rd"
+   },
+   "time": "2:06",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Wrist",
+   "xLocation": 573,
+   "yLocation": 252
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 17,
+    "firstName": "Theresa",
+    "lastName": "Schafzahl",
+    "jerseyNumber": 37,
+    "position": "LW",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/17.jpg"
+   },
+   "goalie": {
+    "id": 85,
+    "firstName": "Elaine",
+    "lastName": "Chuli",
+    "jerseyNumber": 20,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/85.jpg"
+   },
+   "shooterTeamId": "1",
+   "period": {
+    "id": "3",
+    "shortName": "3",
+    "longName": "3rd"
+   },
+   "time": "2:08",
+   "isGoal": false,
+   "shotQuality": "Quality on net",
+   "shotType": "Wrist",
+   "xLocation": 504,
+   "yLocation": 91
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 83,
+    "firstName": "Erin",
+    "lastName": "Ambrose",
+    "jerseyNumber": 23,
+    "position": "RD",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/83.jpg"
+   },
+   "goalie": {
+    "id": 6,
+    "firstName": "Aerin",
+    "lastName": "Frankel",
+    "jerseyNumber": 31,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/6.jpg"
+   },
+   "shooterTeamId": "3",
+   "period": {
+    "id": "3",
+    "shortName": "3",
+    "longName": "3rd"
+   },
+   "time": "2:29",
+   "isGoal": true,
+   "shotQuality": "Non quality goal",
+   "shotType": "Wrist",
+   "xLocation": 196,
+   "yLocation": 61
+  }
+ },
+ {
+  "event": "goal",
+  "details": {
+   "game_goal_id": "262",
+   "team": {
+    "id": 3,
+    "name": "",
+    "city": "",
+    "nickname": "",
+    "abbreviation": "MTL",
+    "logo": ""
+   },
+   "period": {
+    "id": "3",
+    "shortName": "3",
+    "longName": "3rd"
+   },
+   "time": "2:29",
+   "scorerGoalNumber": "3",
+   "scoredBy": {
+    "id": 83,
+    "firstName": "Erin",
+    "lastName": "Ambrose",
+    "jerseyNumber": 23,
+    "position": "RD",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/83.jpg"
+   },
+   "assists": [
+    {
+     "id": 99,
+     "firstName": "Mariah",
+     "lastName": "Keopple",
+     "jerseyNumber": 2,
+     "position": "D",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/99.jpg"
+    },
+    {
+     "id": 31,
+     "firstName": "Marie-Philip",
+     "lastName": "Poulin",
+     "jerseyNumber": 29,
+     "position": "C",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/31.jpg"
+    }
+   ],
+   "assistNumbers": [
+    "1",
+    "8"
+   ],
+   "properties": {
+    "isPowerPlay": "0",
+    "isShortHanded": "0",
+    "isEmptyNet": "0",
+    "isPenaltyShot": "0",
+    "isInsuranceGoal": "1",
+    "isGameWinningGoal": "0"
+   },
+   "plus_players": [
+    {
+     "id": 99,
+     "firstName": "Mariah",
+     "lastName": "Keopple",
+     "jerseyNumber": 2,
+     "position": "D",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/99.jpg"
+    },
+    {
+     "id": 32,
+     "firstName": "Laura",
+     "lastName": "Stacey",
+     "jerseyNumber": 7,
+     "position": "LW",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/32.jpg"
+    },
+    {
+     "id": 83,
+     "firstName": "Erin",
+     "lastName": "Ambrose",
+     "jerseyNumber": 23,
+     "position": "RD",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/83.jpg"
+    },
+    {
+     "id": 168,
+     "firstName": "Mélodie",
+     "lastName": "Daoust",
+     "jerseyNumber": 25,
+     "position": "RW",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/168.jpg"
+    },
+    {
+     "id": 31,
+     "firstName": "Marie-Philip",
+     "lastName": "Poulin",
+     "jerseyNumber": 29,
+     "position": "C",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/31.jpg"
+    }
+   ],
+   "minus_players": [
+    {
+     "id": 12,
+     "firstName": "Megan",
+     "lastName": "Keller",
+     "jerseyNumber": 5,
+     "position": "LD",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/12.jpg"
+    },
+    {
+     "id": 7,
+     "firstName": "Kaleigh",
+     "lastName": "Fratkin",
+     "jerseyNumber": 13,
+     "position": "RD",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/7.jpg"
+    },
+    {
+     "id": 110,
+     "firstName": "Amanda",
+     "lastName": "Pelkey",
+     "jerseyNumber": 16,
+     "position": "RW",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/110.jpg"
+    },
+    {
+     "id": 9,
+     "firstName": "Taylor",
+     "lastName": "Girard",
+     "jerseyNumber": 17,
+     "position": "LW",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/9.jpg"
+    },
+    {
+     "id": 109,
+     "firstName": "Gigi",
+     "lastName": "Marvin",
+     "jerseyNumber": 19,
+     "position": "C",
+     "birthDate": "",
+     "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/109.jpg"
+    }
+   ],
+   "xLocation": 196,
+   "yLocation": 61
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 161,
+    "firstName": "Tereza",
+    "lastName": "Vanišová",
+    "jerseyNumber": 21,
+    "position": "LW",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/161.jpg"
+   },
+   "goalie": {
+    "id": 6,
+    "firstName": "Aerin",
+    "lastName": "Frankel",
+    "jerseyNumber": 31,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/6.jpg"
+   },
+   "shooterTeamId": "3",
+   "period": {
+    "id": "3",
+    "shortName": "3",
+    "longName": "3rd"
+   },
+   "time": "5:11",
+   "isGoal": false,
+   "shotQuality": "Quality on net",
+   "shotType": "Tip",
+   "xLocation": 66,
+   "yLocation": 150
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 32,
+    "firstName": "Laura",
+    "lastName": "Stacey",
+    "jerseyNumber": 7,
+    "position": "LW",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/32.jpg"
+   },
+   "goalie": {
+    "id": 6,
+    "firstName": "Aerin",
+    "lastName": "Frankel",
+    "jerseyNumber": 31,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/6.jpg"
+   },
+   "shooterTeamId": "3",
+   "period": {
+    "id": "3",
+    "shortName": "3",
+    "longName": "3rd"
+   },
+   "time": "5:31",
+   "isGoal": false,
+   "shotQuality": "Quality on net",
+   "shotType": "Wrist",
+   "xLocation": 87,
+   "yLocation": 153
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 83,
+    "firstName": "Erin",
+    "lastName": "Ambrose",
+    "jerseyNumber": 23,
+    "position": "RD",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/83.jpg"
+   },
+   "goalie": {
+    "id": 6,
+    "firstName": "Aerin",
+    "lastName": "Frankel",
+    "jerseyNumber": 31,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/6.jpg"
+   },
+   "shooterTeamId": "3",
+   "period": {
+    "id": "3",
+    "shortName": "3",
+    "longName": "3rd"
+   },
+   "time": "5:41",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Wrist",
+   "xLocation": 209,
+   "yLocation": 129
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 32,
+    "firstName": "Laura",
+    "lastName": "Stacey",
+    "jerseyNumber": 7,
+    "position": "LW",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/32.jpg"
+   },
+   "goalie": {
+    "id": 6,
+    "firstName": "Aerin",
+    "lastName": "Frankel",
+    "jerseyNumber": 31,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/6.jpg"
+   },
+   "shooterTeamId": "3",
+   "period": {
+    "id": "3",
+    "shortName": "3",
+    "longName": "3rd"
+   },
+   "time": "6:03",
+   "isGoal": false,
+   "shotQuality": "Quality on net",
+   "shotType": "Wrist",
+   "xLocation": 82,
+   "yLocation": 207
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 84,
+    "firstName": "Kati",
+    "lastName": "Tabin",
+    "jerseyNumber": 9,
+    "position": "LD",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/84.jpg"
+   },
+   "goalie": {
+    "id": 6,
+    "firstName": "Aerin",
+    "lastName": "Frankel",
+    "jerseyNumber": 31,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/6.jpg"
+   },
+   "shooterTeamId": "3",
+   "period": {
+    "id": "3",
+    "shortName": "3",
+    "longName": "3rd"
+   },
+   "time": "10:33",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Wrist",
+   "xLocation": 105,
+   "yLocation": 272
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 32,
+    "firstName": "Laura",
+    "lastName": "Stacey",
+    "jerseyNumber": 7,
+    "position": "LW",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/32.jpg"
+   },
+   "goalie": {
+    "id": 6,
+    "firstName": "Aerin",
+    "lastName": "Frankel",
+    "jerseyNumber": 31,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/6.jpg"
+   },
+   "shooterTeamId": "3",
+   "period": {
+    "id": "3",
+    "shortName": "3",
+    "longName": "3rd"
+   },
+   "time": "10:59",
+   "isGoal": false,
+   "shotQuality": "Quality on net",
+   "shotType": "Backhand",
+   "xLocation": 65,
+   "yLocation": 131
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 7,
+    "firstName": "Kaleigh",
+    "lastName": "Fratkin",
+    "jerseyNumber": 13,
+    "position": "RD",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/7.jpg"
+   },
+   "goalie": {
+    "id": 85,
+    "firstName": "Elaine",
+    "lastName": "Chuli",
+    "jerseyNumber": 20,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/85.jpg"
+   },
+   "shooterTeamId": "1",
+   "period": {
+    "id": "3",
+    "shortName": "3",
+    "longName": "3rd"
+   },
+   "time": "12:22",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Wrist",
+   "xLocation": 441,
+   "yLocation": 285
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 18,
+    "firstName": "Sophie",
+    "lastName": "Shirley",
+    "jerseyNumber": 9,
+    "position": "RW",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/18.jpg"
+   },
+   "goalie": {
+    "id": 85,
+    "firstName": "Elaine",
+    "lastName": "Chuli",
+    "jerseyNumber": 20,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/85.jpg"
+   },
+   "shooterTeamId": "1",
+   "period": {
+    "id": "3",
+    "shortName": "3",
+    "longName": "3rd"
+   },
+   "time": "13:30",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Wrist",
+   "xLocation": 562,
+   "yLocation": 184
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 8,
+    "firstName": "Loren",
+    "lastName": "Gabel",
+    "jerseyNumber": 36,
+    "position": "LW",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/8.jpg"
+   },
+   "goalie": {
+    "id": 85,
+    "firstName": "Elaine",
+    "lastName": "Chuli",
+    "jerseyNumber": 20,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/85.jpg"
+   },
+   "shooterTeamId": "1",
+   "period": {
+    "id": "3",
+    "shortName": "3",
+    "longName": "3rd"
+   },
+   "time": "14:35",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Wrist",
+   "xLocation": 487,
+   "yLocation": 67
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 16,
+    "firstName": "Jamie Lee",
+    "lastName": "Rattray",
+    "jerseyNumber": 47,
+    "position": "RW",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/16.jpg"
+   },
+   "goalie": {
+    "id": 85,
+    "firstName": "Elaine",
+    "lastName": "Chuli",
+    "jerseyNumber": 20,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/85.jpg"
+   },
+   "shooterTeamId": "1",
+   "period": {
+    "id": "3",
+    "shortName": "3",
+    "longName": "3rd"
+   },
+   "time": "14:49",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Wrist",
+   "xLocation": 449,
+   "yLocation": 254
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 80,
+    "firstName": "Ann-Sophie",
+    "lastName": "Bettez",
+    "jerseyNumber": 24,
+    "position": "LW",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/80.jpg"
+   },
+   "goalie": {
+    "id": 6,
+    "firstName": "Aerin",
+    "lastName": "Frankel",
+    "jerseyNumber": 31,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/6.jpg"
+   },
+   "shooterTeamId": "3",
+   "period": {
+    "id": "3",
+    "shortName": "3",
+    "longName": "3rd"
+   },
+   "time": "16:38",
+   "isGoal": false,
+   "shotQuality": "Quality on net",
+   "shotType": "Wrist",
+   "xLocation": 69,
+   "yLocation": 119
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 157,
+    "firstName": "Catherine",
+    "lastName": "Dubois",
+    "jerseyNumber": 28,
+    "position": "RW",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/157.jpg"
+   },
+   "goalie": {
+    "id": 6,
+    "firstName": "Aerin",
+    "lastName": "Frankel",
+    "jerseyNumber": 31,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/6.jpg"
+   },
+   "shooterTeamId": "3",
+   "period": {
+    "id": "3",
+    "shortName": "3",
+    "longName": "3rd"
+   },
+   "time": "17:27",
+   "isGoal": false,
+   "shotQuality": "Quality on net",
+   "shotType": "Wrist",
+   "xLocation": 84,
+   "yLocation": 164
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 15,
+    "firstName": "Alina",
+    "lastName": "Müller",
+    "jerseyNumber": 11,
+    "position": "C",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/15.jpg"
+   },
+   "goalie": {
+    "id": 85,
+    "firstName": "Elaine",
+    "lastName": "Chuli",
+    "jerseyNumber": 20,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/85.jpg"
+   },
+   "shooterTeamId": "1",
+   "period": {
+    "id": "3",
+    "shortName": "3",
+    "longName": "3rd"
+   },
+   "time": "19:14",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Slap",
+   "xLocation": 475,
+   "yLocation": 57
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 98,
+    "firstName": "Maureen",
+    "lastName": "Murphy",
+    "jerseyNumber": 15,
+    "position": "RW",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/98.jpg"
+   },
+   "goalie": {
+    "id": 6,
+    "firstName": "Aerin",
+    "lastName": "Frankel",
+    "jerseyNumber": 31,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/6.jpg"
+   },
+   "shooterTeamId": "3",
+   "period": {
+    "id": "3",
+    "shortName": "3",
+    "longName": "3rd"
+   },
+   "time": "19:51",
+   "isGoal": false,
+   "shotQuality": "Quality on net",
+   "shotType": "Wrist",
+   "xLocation": 125,
+   "yLocation": 223
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 159,
+    "firstName": "Leah",
+    "lastName": "Lum",
+    "jerseyNumber": 12,
+    "position": "LD",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/159.jpg"
+   },
+   "goalie": {
+    "id": 6,
+    "firstName": "Aerin",
+    "lastName": "Frankel",
+    "jerseyNumber": 31,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/6.jpg"
+   },
+   "shooterTeamId": "3",
+   "period": {
+    "id": "3",
+    "shortName": "3",
+    "longName": "3rd"
+   },
+   "time": "19:57",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Wrist",
+   "xLocation": 187,
+   "yLocation": 274
+  }
+ },
+ {
+  "event": "shot",
+  "details": {
+   "shooter": {
+    "id": 156,
+    "firstName": "Gabrielle",
+    "lastName": "David",
+    "jerseyNumber": 8,
+    "position": "RW",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/156.jpg"
+   },
+   "goalie": {
+    "id": 6,
+    "firstName": "Aerin",
+    "lastName": "Frankel",
+    "jerseyNumber": 31,
+    "position": "G",
+    "birthDate": "",
+    "playerImageURL": "https://assets.leaguestat.com/pwhl/120x160/6.jpg"
+   },
+   "shooterTeamId": "3",
+   "period": {
+    "id": "3",
+    "shortName": "3",
+    "longName": "3rd"
+   },
+   "time": "20:00",
+   "isGoal": false,
+   "shotQuality": "Non quality on net",
+   "shotType": "Wrist",
+   "xLocation": 67,
+   "yLocation": 202
+  }
+ }
+]

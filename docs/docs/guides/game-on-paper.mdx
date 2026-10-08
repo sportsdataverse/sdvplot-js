@@ -25,7 +25,9 @@ none of the chart code runs during server rendering.
 <Snippet file="game-on-paper/GameWinProbability.astro" />
 
 The island builds the chart in an `$effect` and destroys it in the effect's cleanup. It calls `loadLeague` again
-first: the frontmatter's call loaded the league on the server, and the browser bundle has its own copy to fill.
+first: the frontmatter's call loaded the league on the server, and the browser bundle has its own copy to fill. It
+reads every prop before that call, because Svelte tracks only what an effect reads synchronously: a prop read inside
+the `.then` would not re-run the effect when it changes.
 
 <Snippet file="game-on-paper/WinProbabilityChart.svelte" />
 

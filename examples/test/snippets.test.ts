@@ -23,6 +23,7 @@ function scriptOf(file: string, text: string): string | undefined {
 }
 
 // What the frameworks declare for these files: Astro's global, Svelte 5's runes and component modules.
+// `$props(): any` means a component's prop types are not checked at its call sites, only inside its script.
 const AMBIENT = `
 declare const Astro: { props: any; params: Record<string, string | undefined> };
 declare function $props(): any;
