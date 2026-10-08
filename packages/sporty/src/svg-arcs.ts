@@ -108,9 +108,11 @@ export function resampleArc(run: ArcRun): Point[] {
 
 /**
  * Path data for one polygon: "M x y L … Z" when arcs is "sampled"; with "svg" each ArcRun becomes
- * `A r r 0 large sweep x y`. A run spanning ≥ 2π − 1e-9, or whose formatted endpoints coincide, is split
- * into two half arcs (a renderer drops an `A` with identical endpoints); a run spanning more than one
- * turn cannot be drawn with arcs and is emitted as `L` segments.
+ * `ceil(|span| / (π/2))` equal `A r r 0 0 sweep x y` commands (one per quarter turn, so a full circle is
+ * four), each ending on the true circle. A half circle as one `A` locates its centre from the rounded
+ * endpoints ill-conditionedly (error ≈ √(2rδ): 3.4 px at `precision` 2); quarters stay within the
+ * sampled path's error. A run spanning more than one turn cannot be drawn with arcs and is emitted as `L`
+ * segments.
  */
 export function pathData(points: Polygon, arcs: "sampled" | "svg", precision: number): string {
   const f = (v: number): string => fmt(v, precision);
@@ -132,18 +134,15 @@ export function pathData(points: Polygon, arcs: "sampled" | "svg", precision: nu
       const span = run.a1 - run.a0;
       const sweep = span > 0 ? 1 : 0;
       const rr = `${f(run.r)} ${f(run.r)}`;
-      const [sx, sy] = points[run.start]!;
       const [ex, ey] = points[run.end]!;
-      if (Math.abs(span) >= TWO_PI - 1e-9 || (f(sx) === f(ex) && f(sy) === f(ey))) {
-        const am = run.a0 + span / 2;
+      const k = Math.max(1, Math.ceil((Math.abs(span) - 1e-9) / (Math.PI / 2)));
+      for (let s = 1; s < k; s++) {
+        const a = run.a0 + (span * s) / k;
         parts.push(
-          `A ${rr} 0 0 ${sweep} ${f(run.cx + run.r * Math.cos(am))} ${f(run.cy + run.r * Math.sin(am))}`,
+          `A ${rr} 0 0 ${sweep} ${f(run.cx + run.r * Math.cos(a))} ${f(run.cy + run.r * Math.sin(a))}`,
         );
-        parts.push(`A ${rr} 0 0 ${sweep} ${f(ex)} ${f(ey)}`);
-      } else {
-        const large = Math.abs(span) > Math.PI + 1e-9 ? 1 : 0;
-        parts.push(`A ${rr} 0 ${large} ${sweep} ${f(ex)} ${f(ey)}`);
       }
+      parts.push(`A ${rr} 0 0 ${sweep} ${f(ex)} ${f(ey)}`);
       i = run.end;
       ri++;
     } else {

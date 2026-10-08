@@ -91,22 +91,23 @@ test("every arc detected on every NBA polygon re-samples to the original points 
   expect(ring.kind === "polygon" && detectArcs(ring.points)).toHaveLength(2);
 });
 
-test("pathData: sampled is M/L only; svg emits A commands, splits full circles in two, and shrinks the path", () => {
+test("pathData: sampled is M/L only; svg emits one A per quarter turn (a full circle is four), and shrinks the path", () => {
   const full = createCircle({ r: 5, npoints: 100 });
   const sampled = pathData(full, "sampled", 4);
   const arcs = pathData(full, "svg", 4);
   expect(sampled).not.toContain("A");
   expect(sampled.split("L").length).toBe(100);
-  expect((arcs.match(/A /g) ?? []).length).toBe(2);
+  expect((arcs.match(/A /g) ?? []).length).toBe(4);
   expect(arcs).toMatch(/A 5 5 0 0 1 /);
   expect(arcs.length).toBeLessThan(sampled.length / 10);
   const three = pathData(createCircle({ start: 0.5, end: 2, r: 5, npoints: 100 }), "svg", 4);
-  expect((three.match(/A /g) ?? []).length).toBe(1);
-  expect(three).toMatch(/A 5 5 0 1 1 /); // 1.5π > π → large-arc 1
+  expect((three.match(/A /g) ?? []).length).toBe(3); // 1.5π → three quarters
+  expect(three).not.toMatch(/A \S+ \S+ 0 1 /); // never a large arc
   const cw = pathData(createCircle({ start: 2, end: 0.5, r: 5, npoints: 100 }), "svg", 4);
-  expect(cw).toMatch(/A 5 5 0 1 0 /); // reversed direction → sweep 0
+  expect(cw).toMatch(/A 5 5 0 0 0 /); // reversed direction → sweep 0
   const half = pathData(createCircle({ start: 0.5, end: 1.5, r: 5, npoints: 100 }), "svg", 4);
-  expect(half).toMatch(/A 5 5 0 0 1 /); // exactly π → large-arc 0 (tolerance)
+  expect((half.match(/A /g) ?? []).length).toBe(2); // exactly π → two quarters (tolerance)
+  expect(half).toMatch(/A 5 5 0 0 1 /);
 });
 
 test("toSVG default output is unchanged; arcs: 'svg' is smaller and still has one path per polygon", () => {
@@ -141,20 +142,20 @@ test("toSVG default output is unchanged; arcs: 'svg' is smaller and still has on
   expect(c).not.toContain("NaN");
 });
 
-test("C1: a 200-point full circle of small radius (FIBA net) is two A commands with distinct endpoints, never one degenerate arc", () => {
+test("C1: a 200-point full circle of small radius (FIBA net) is four A commands with distinct endpoints, never one degenerate arc", () => {
   const net = createCircle({ center: [12.65, 0], r: 0.225, npoints: 200 });
   const [run] = detectArcs(net);
   expect(Math.abs(Math.abs(run!.a1 - run!.a0) - 2 * Math.PI)).toBeLessThan(1e-12); // accumulated, not extrapolated
   const d = pathData(net, "svg", 4);
-  expect(countA(d)).toBe(2);
-  expect(d).not.toMatch(/A \S+ \S+ 0 1 /); // no large-arc flag on either half
+  expect(countA(d)).toBe(4);
+  expect(d).not.toMatch(/A \S+ \S+ 0 1 /); // no large-arc flag on any quarter
   for (const [from, to] of arcHops(d)) expect(from).not.toBe(to);
-  // the formatted-endpoint guard alone (span just under the 2π tolerance) must also split
+  // a span just under 2π (formatted endpoints coincide) still gets four quarters
   const shy = createCircle({ center: [12.65, 0], r: 0.225, start: 0, end: 2 - 1e-7, npoints: 200 });
-  expect(countA(pathData(shy, "svg", 4))).toBe(2);
+  expect(countA(pathData(shy, "svg", 4))).toBe(4);
 });
 
-test("every surface: arcs='svg' never emits an A whose endpoint is the current point, and each closed circular run is exactly two A commands", () => {
+test("every surface: arcs='svg' never emits an A whose endpoint is the current point, and each run is ceil(|span| / (π/2)) A commands", () => {
   let surfaces = 0;
   let fullCircles = 0;
   for (const [, leagues, build] of SURFACES)
@@ -171,9 +172,8 @@ test("every surface: arcs='svg' never emits an A whose endpoint is the current p
         const expected = runs.reduce((acc, r) => {
           const [sx, sy] = f.points[r.start]!;
           const [ex, ey] = f.points[r.end]!;
-          const closed = fmt(sx, 4) === fmt(ex, 4) && fmt(sy, 4) === fmt(ey, 4);
-          if (closed) fullCircles++;
-          return acc + (closed ? 2 : 1);
+          if (fmt(sx, 4) === fmt(ex, 4) && fmt(sy, 4) === fmt(ey, 4)) fullCircles++;
+          return acc + Math.max(1, Math.ceil((Math.abs(r.a1 - r.a0) - 1e-9) / (Math.PI / 2)));
         }, 0);
         expect(countA(pathData(f.points, "svg", 4)), `${league} ${f.name}`).toBe(expected);
       }
