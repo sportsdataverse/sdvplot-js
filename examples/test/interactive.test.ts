@@ -89,6 +89,20 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
       );
       expect(painted, "the canvas is painted").toBe(true);
     }
+    // ECharts draws the server's SVG, tag for tag: init() alone already leaves an <svg>, and a series that drew nothing
+    // would still leave its axes
+    if (lib === "echarts") {
+      const [server, drawn] = await figure.evaluate(async (f, id) => {
+        const html = new DOMParser().parseFromString(await (await fetch(location.href)).text(), "text/html");
+        const marks = (svg: Element | null | undefined) =>
+          ["path", "image", "text"].map((t) => `${t} ${svg?.querySelectorAll(t).length}`).join(", ");
+        return [
+          marks(html.querySelector(`figure[data-example="${id}"] .sdv-live-static svg`)),
+          marks(f.querySelector(".sdv-live-output svg")),
+        ];
+      }, id);
+      expect(drawn, "the server's marks, tag for tag").toBe(server);
+    }
     // an accessible name: Vega names each mark in its SVG (sdvplot's images too); the others name the chart
     const named =
       lib === "vega"
