@@ -53,6 +53,7 @@ export interface TableOptions {
  */
 export interface Table<Row> {
   readonly spec: TableSpec<Row>;
+  /** the source rows: the ones given to `createTable`, or the last `setRows` */
   readonly allRows: readonly Row[];
   readonly state: TableState<Row>;
   readonly rows: readonly Row[];
@@ -66,6 +67,12 @@ export interface Table<Row> {
   setPage(n: number): void;
   setPageSize(n: number): void;
   toggleColumn(col: string, visible?: boolean): void;
+  /**
+   * Replace the source rows (a React parent's new array, a live feed). Sort, filters, the external filter, hidden
+   * columns and selection are kept; the page is clamped to the new page count; one `"change"` event. Without a
+   * `rowKey`, row ids are indices into the NEW rows, so a kept selection means the rows at those positions.
+   */
+  setRows(rows: readonly Row[]): void;
   /** J31: `String(row[spec.rowKey])` ("" when missing), else the row's index in `allRows` */
   rowId(row: Row): string;
   /** J31: same function again is a no-op; a new one resets the page */
@@ -237,7 +244,9 @@ export function createTable<Row>(
     for (const fn of [...listeners]) fn(event);
   };
   const key = spec.rowKey;
-  const indexOf = key === undefined ? new Map(rows.map((r, i) => [r, i] as const)) : null;
+  let source = rows;
+  let indexOf: Map<Row, number> | null = null;
+  let warned = false;
   const rowId = (row: Row): string => {
     if (key === undefined) {
       const i = indexOf?.get(row);
@@ -246,18 +255,27 @@ export function createTable<Row>(
     const v = fieldOf(row, key);
     return isMissing(v) ? "" : String(v);
   };
-  if (key !== undefined) {
-    // Duplicate ids collapse to one link id (selecting one highlights all); say so once, at construction.
-    const ids = rows.map(rowId).filter((id) => id !== "");
+  const setSource = (next: readonly Row[]): void => {
+    source = next;
+    if (key === undefined) {
+      indexOf = new Map(next.map((r, i) => [r, i] as const));
+      return;
+    }
+    if (warned) return;
+    // Duplicate ids collapse to one link id (selecting one highlights all); say so once per table.
+    const ids = next.map(rowId).filter((id) => id !== "");
     const dupes = ids.length - new Set(ids).size;
-    if (dupes > 0)
+    if (dupes > 0) {
+      warned = true;
       console.warn(
         `sdvtables: rowKey "${key}" is not unique — ${dupes} duplicate id(s); linked selection will merge them`,
       );
-  }
+    }
+  };
+  setSource(rows);
   let hovered: string | null = null;
   const compute = (): TableSnapshot<Row> => {
-    const filtered = applyFilters(spec, rows, state);
+    const filtered = applyFilters(spec, source, state);
     const sorted = applySort(spec, filtered, state.sort);
     const { rows: pageRows, pageCount } = paginate(sorted, state.page, state.pageSize);
     return { state, rows: pageRows, filteredCount: filtered.length, pageCount };
@@ -274,7 +292,9 @@ export function createTable<Row>(
   };
   return {
     spec,
-    allRows: rows,
+    get allRows() {
+      return source;
+    },
     get state() {
       return snapshot.state;
     },
@@ -321,6 +341,10 @@ export function createTable<Row>(
           : [...state.hidden, col]
         : state.hidden.filter((c) => c !== col);
       update({ hidden, sort: hide && state.sort?.col === col ? null : state.sort });
+    },
+    setRows(next) {
+      setSource(next);
+      update({}); // every state field kept; update re-clamps the page and emits once
     },
     rowId,
     setExternalFilter(filter) {

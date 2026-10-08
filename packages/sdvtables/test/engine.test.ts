@@ -12,6 +12,7 @@ import {
   withMissingLast,
 } from "../src/engine.js";
 import { TableSpecError } from "../src/errors.js";
+import { tableRenderOptions } from "../src/html/interactive.js";
 import { many, rows, spec } from "./fixtures/engine.js";
 import { STANDINGS, type Standing } from "./fixtures/standings.js";
 
@@ -287,5 +288,68 @@ describe("J31 seam: rowKey, external filter, selection, events", () => {
       { type: "hover", id: null },
     ]);
     expect(t.getSnapshot()).toBe(snap);
+  });
+});
+
+describe("setRows (Task 5 I1: one engine per React component)", () => {
+  const keyed = { ...spec, rowKey: "team" } satisfies typeof spec;
+  test("replaces the source rows; keeps sort, filters, external filter, hidden columns, selection and page; one event", () => {
+    const t = createTable(keyed, many, { pageSize: 5 });
+    const ext = (r: Standing): boolean => r.wins !== 19;
+    t.setSort("wins", "desc");
+    t.setFilter("team", "T1"); // T10..T19
+    t.setGlobalFilter("t");
+    t.setExternalFilter(ext); // drops T19
+    t.toggleColumn("qb");
+    t.setSelection(new Set(["T12"]));
+    t.setPage(1);
+    const seen: unknown[] = [];
+    t.subscribe((e) => seen.push(e));
+    const next = many.map((r) => ({ ...r })); // a parent's fresh, equal array
+    t.setRows(next);
+    expect(seen).toEqual([{ type: "change" }]);
+    expect(t.allRows).toBe(next);
+    expect(t.state).toMatchObject({
+      sort: { col: "wins", dir: "desc" },
+      filters: { team: "T1" },
+      globalFilter: "t",
+      externalFilter: ext,
+      hidden: ["qb"],
+      page: 1,
+    });
+    expect(t.getSelection()).toEqual(new Set(["T12"]));
+    expect(teams(t)).toEqual(["T13", "T12", "T11", "T10"]);
+    expect(t.rows.every((r) => next.includes(r))).toBe(true); // the new objects, not the old
+    expect(tableRenderOptions(t).domainRows).toBe(next); // A49 colour domains follow the new source rows
+  });
+  test("re-clamps the page when the new rows are fewer, still with one event", () => {
+    const t = createTable(spec, many, { pageSize: 10 });
+    t.setPage(2);
+    const seen: string[] = [];
+    t.subscribe((e) => seen.push(e.type));
+    t.setRows(many.slice(0, 12));
+    expect(t.state.page).toBe(1);
+    expect(t.pageCount).toBe(2);
+    expect(teams(t)).toEqual(["T11", "T12"]);
+    expect(seen).toEqual(["change"]);
+  });
+  test("without a rowKey, ids are indices into the NEW rows", () => {
+    const t = createTable(spec, rows);
+    const next = [...rows].reverse();
+    t.setRows(next);
+    expect(t.rowId(next[0] as Standing)).toBe("0");
+    expect(t.rowId(rows[0] as Standing)).toBe(String(rows.length - 1));
+  });
+  test("duplicate rowKey values in new rows warn once per table", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    try {
+      const t = createTable(keyed, rows);
+      t.setRows([...rows, rows[0] as Standing]);
+      t.setRows([...rows, rows[0] as Standing]);
+      expect(warn).toHaveBeenCalledTimes(1);
+      expect(warn.mock.calls[0]?.[0]).toMatch(/1 duplicate/);
+    } finally {
+      warn.mockRestore();
+    }
   });
 });

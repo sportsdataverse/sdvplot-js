@@ -606,7 +606,6 @@ export type StringKey<Row> = {
 
 // @public
 export interface Table<Row> {
-    // (undocumented)
     readonly allRows: readonly Row[];
     readonly columns: readonly ColumnSpec<Row>[];
     // (undocumented)
@@ -629,6 +628,7 @@ export interface Table<Row> {
     setPage(n: number): void;
     // (undocumented)
     setPageSize(n: number): void;
+    setRows(rows: readonly Row[]): void;
     setSelection(ids: ReadonlySet<string>): void;
     // (undocumented)
     setSort(col: string, dir: SortDir | null): void;
