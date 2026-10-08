@@ -13,7 +13,6 @@ export const abs = (p: string): string => join(ROOT, p);
  * Every specifier an example may import, mapped to its SOURCE file. Examples, the gate and the docs bundle all
  * run package source, never `dist/`. A phase that adds a package subpath adds its row here (test/sources.test.ts
  * fails until it does) and the same row to tsconfig.json `paths`.
- * (`@sportsdataverse/sdvtables/html` joins when Phase 4 lands it.)
  */
 export const SOURCES: Readonly<Record<string, string>> = {
   "@sportsdataverse/sdvplot": "packages/sdvplot/src/index.ts",
@@ -27,6 +26,7 @@ export const SOURCES: Readonly<Record<string, string>> = {
   "@sportsdataverse/sporty/plot": "packages/sporty/src/plot.ts",
   "@sportsdataverse/sporty/d3": "packages/sporty/src/d3.ts",
   "@sportsdataverse/sdvtables": "packages/sdvtables/src/index.ts",
+  "@sportsdataverse/sdvtables/html": "packages/sdvtables/src/html/index.ts",
   "@sportsdataverse/examples/data": "examples/src/data.ts",
 };
 

@@ -99,6 +99,7 @@ const config: Config = {
       logo: { alt: "sdvplot-js hex mark", src: "img/sdvplot-js-mark.svg" },
       items: [
         { type: "docSidebar", sidebarId: "docsSidebar", position: "left", label: "Docs" },
+        { to: "/gallery/", label: "Gallery", position: "left" },
         { href: "pathname:///notebooks/", label: "Notebooks", position: "left" },
         { href: "https://github.com/sportsdataverse/sdvplot-js", label: "GitHub", position: "right" },
       ],

@@ -18,6 +18,7 @@
       "@sportsdataverse/sporty/plot": ["../packages/sporty/src/plot.ts"],
       "@sportsdataverse/sporty/d3": ["../packages/sporty/src/d3.ts"],
       "@sportsdataverse/sdvtables": ["../packages/sdvtables/src/index.ts"],
+      "@sportsdataverse/sdvtables/html": ["../packages/sdvtables/src/html/index.ts"],
       "@sportsdataverse/examples/data": ["../examples/src/data.ts"]
     }
   },

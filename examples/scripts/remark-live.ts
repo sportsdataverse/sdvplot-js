@@ -9,6 +9,18 @@ export const overLimit = (markup: string): boolean => Buffer.byteLength(markup, 
 /** Where the prerender writes a large output, under docs/static (and so its URL path). */
 export const staticFile = (row: Pick<Prerendered, "id" | "markup">): string =>
   `examples/${row.id}.${/^\s*<svg\b/.test(row.markup) ? "svg" : "html"}`;
+/**
+ * Plot output is HTML-serialised (`outerHTML`), so its root <svg> declares no namespace. Inline that is fine; served
+ * as its own document it parses as generic XML (0×0 shapes, "no style information"). Declare it, and xlink if used.
+ */
+export function svgDocument(markup: string): string {
+  const open = /^\s*<svg\b[^>]*/.exec(markup)?.[0] ?? "";
+  let ns = /\sxmlns=/.test(open) ? "" : ' xmlns="http://www.w3.org/2000/svg"';
+  if (/\bxlink:/.test(markup) && !/\sxmlns:xlink=/.test(open))
+    ns += ' xmlns:xlink="http://www.w3.org/1999/xlink"';
+  return markup.replace(/^(\s*<svg\b)/, `$1${ns}`);
+}
+
 /** The root <svg>'s width/height attribute, rounded: a static SVG is embedded as a document, which does not size to its content. */
 const svgDim = (markup: string, name: "width" | "height"): string | undefined => {
   const m = new RegExp(`^\\s*<svg\\b[^>]*\\s${name}="(\\d+(?:\\.\\d+)?)"`).exec(markup)?.[1];
