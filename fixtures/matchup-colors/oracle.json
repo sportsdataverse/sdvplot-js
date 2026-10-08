@@ -1,0 +1,2783 @@
+{
+ "meta": {
+  "gop_commit": "b8b8eaad2fd4641fd2bbfcfa0591d6e57bf5524e",
+  "gop_file": "astro/src/utils/misc.ts",
+  "schedule_dir": "cfb/schedules/csv",
+  "schedule_seasons": "2004-2026",
+  "schedule_commit": "95c155b6cb68cefc15ca0f7f366748e643fdfad9",
+  "index_version": "1c025b69f8cf",
+  "matchups": 5043,
+  "deep_matchups": 4,
+  "pairs": 69,
+  "by_why": {
+   "stuck": 15,
+   "clash": 20,
+   "random": 20,
+   "unreadable": 10,
+   "deep": 4
+  },
+  "espn_colors_differ": 3
+ },
+ "cases": [
+  {
+   "game_id": "401864494",
+   "season": 2026,
+   "week": 1,
+   "home_id": "30",
+   "away_id": "23",
+   "home": "USC Trojans",
+   "away": "San José State Spartans",
+   "input": {
+    "home": {
+     "color": "#9d2235",
+     "alternateColor": "#ffc72c"
+    },
+    "away": {
+     "color": "#0038a8",
+     "alternateColor": "#ffb81a"
+    }
+   },
+   "espn": {
+    "home": [
+     "#9d2235",
+     "#ffc72c"
+    ],
+    "away": [
+     "#0038a8",
+     "#ffb81a"
+    ]
+   },
+   "why": "stuck",
+   "expected": {
+    "light": {
+     "home": "#9d2235",
+     "away": "#0038a8"
+    },
+    "dark": {
+     "home": "#a62b3c",
+     "away": "#394fc4"
+    }
+   }
+  },
+  {
+   "game_id": "401856766",
+   "season": 2026,
+   "week": 1,
+   "home_id": "2628",
+   "away_id": "153",
+   "home": "TCU Horned Frogs",
+   "away": "North Carolina Tar Heels",
+   "input": {
+    "home": {
+     "color": "#4d1979",
+     "alternateColor": "#ffffff"
+    },
+    "away": {
+     "color": "#7bafd4",
+     "alternateColor": "#13294b"
+    }
+   },
+   "espn": {
+    "home": [
+     "#4d1979",
+     "#ffffff"
+    ],
+    "away": [
+     "#7bafd4",
+     "#13294b"
+    ]
+   },
+   "why": "stuck",
+   "expected": {
+    "light": {
+     "home": "#4d1979",
+     "away": "#73a7cc"
+    },
+    "dark": {
+     "home": "#ffffff",
+     "away": "#7bafd4"
+    }
+   }
+  },
+  {
+   "game_id": "401866408",
+   "season": 2026,
+   "week": 1,
+   "home_id": "2199",
+   "away_id": "16",
+   "home": "Eastern Michigan Eagles",
+   "away": "Sacramento State Hornets",
+   "input": {
+    "home": {
+     "color": "#006938",
+     "alternateColor": "#ffffff"
+    },
+    "away": {
+     "color": "#00573c",
+     "alternateColor": "#cdb97d"
+    }
+   },
+   "espn": {
+    "home": [
+     "#006938",
+     "#ffffff"
+    ],
+    "away": [
+     "#00573c",
+     "#cdb97d"
+    ]
+   },
+   "why": "stuck",
+   "expected": {
+    "light": {
+     "home": "#006938",
+     "away": "#b4a166"
+    },
+    "dark": {
+     "home": "#006938",
+     "away": "#cdb97d"
+    }
+   }
+  },
+  {
+   "game_id": "401858201",
+   "season": 2026,
+   "week": 1,
+   "home_id": "24",
+   "away_id": "62",
+   "home": "Stanford Cardinal",
+   "away": "Hawai'i Rainbow Warriors",
+   "input": {
+    "home": {
+     "color": "#8c1515",
+     "alternateColor": "#ffffff"
+    },
+    "away": {
+     "color": "#005737",
+     "alternateColor": "#000000"
+    }
+   },
+   "espn": {
+    "home": [
+     "#8c1515",
+     "#ffffff"
+    ],
+    "away": [
+     "#005737",
+     "#000000"
+    ]
+   },
+   "why": "stuck",
+   "expected": {
+    "light": {
+     "home": "#8c1515",
+     "away": "#005737"
+    },
+    "dark": {
+     "home": "#a73128",
+     "away": "#196645"
+    }
+   }
+  },
+  {
+   "game_id": "401864570",
+   "season": 2026,
+   "week": 1,
+   "home_id": "52",
+   "away_id": "166",
+   "home": "Florida State Seminoles",
+   "away": "New Mexico State Aggies",
+   "input": {
+    "home": {
+     "color": "#782f40",
+     "alternateColor": "#ceb888"
+    },
+    "away": {
+     "color": "#7e141b",
+     "alternateColor": "#231f20"
+    }
+   },
+   "espn": {
+    "home": [
+     "#782f40",
+     "#ceb888"
+    ],
+    "away": [
+     "#7e141b",
+     "#231f20"
+    ]
+   },
+   "why": "stuck",
+   "expected": {
+    "light": {
+     "home": "#782f40",
+     "away": "#231f20"
+    },
+    "dark": {
+     "home": "#8e4352",
+     "away": "#5e595a"
+    }
+   }
+  },
+  {
+   "game_id": "401856663",
+   "season": 2026,
+   "week": 1,
+   "home_id": "142",
+   "away_id": "2029",
+   "home": "Missouri Tigers",
+   "away": "Arkansas-Pine Bluff Golden Lions",
+   "input": {
+    "home": {
+     "color": "#f1b82d",
+     "alternateColor": "#000000"
+    },
+    "away": {
+     "color": "#e0aa0f",
+     "alternateColor": "#eaaa00"
+    }
+   },
+   "espn": {
+    "home": [
+     "#f1b82d",
+     "#000000"
+    ],
+    "away": [
+     "#e0aa0f",
+     "#eaaa00"
+    ]
+   },
+   "why": "stuck",
+   "expected": {
+    "light": {
+     "home": "#000000",
+     "away": "#ce9a00"
+    },
+    "dark": {
+     "home": "#5c5c5c",
+     "away": "#e0aa0f"
+    }
+   }
+  },
+  {
+   "game_id": "401858423",
+   "season": 2026,
+   "week": 1,
+   "home_id": "164",
+   "away_id": "113",
+   "home": "Rutgers Scarlet Knights",
+   "away": "Massachusetts Minutemen",
+   "input": {
+    "home": {
+     "color": "#ce0e2d",
+     "alternateColor": "#ffffff"
+    },
+    "away": {
+     "color": "#881c1c",
+     "alternateColor": "#ffffff"
+    }
+   },
+   "espn": {
+    "home": [
+     "#ce0e2d",
+     "#ffffff"
+    ],
+    "away": [
+     "#881c1c",
+     "#ffffff"
+    ]
+   },
+   "why": "stuck",
+   "expected": {
+    "light": {
+     "home": "#ce0e2d",
+     "away": "#a3a3a3"
+    },
+    "dark": {
+     "home": "#ce0e2d",
+     "away": "#ffffff"
+    }
+   }
+  },
+  {
+   "game_id": "401856767",
+   "season": 2026,
+   "week": 1,
+   "home_id": "2116",
+   "away_id": "2065",
+   "home": "UCF Knights",
+   "away": "Bethune-Cookman Wildcats",
+   "input": {
+    "home": {
+     "color": "#000000",
+     "alternateColor": "#b4a169"
+    },
+    "away": {
+     "color": "#7b1831",
+     "alternateColor": "#e9aa12"
+    }
+   },
+   "espn": {
+    "home": [
+     "#000000",
+     "#b4a169"
+    ],
+    "away": [
+     "#7b1831",
+     "#e9aa12"
+    ]
+   },
+   "why": "stuck",
+   "expected": {
+    "light": {
+     "home": "#000000",
+     "away": "#7b1831"
+    },
+    "dark": {
+     "home": "#5c5c5c",
+     "away": "#9a374a"
+    }
+   }
+  },
+  {
+   "game_id": "401858204",
+   "season": 2026,
+   "week": 1,
+   "home_id": "154",
+   "away_id": "2006",
+   "home": "Wake Forest Demon Deacons",
+   "away": "Akron Zips",
+   "input": {
+    "home": {
+     "color": "#ceb888",
+     "alternateColor": "#2c2a29"
+    },
+    "away": {
+     "color": "#041e42",
+     "alternateColor": "#c5b783"
+    }
+   },
+   "espn": {
+    "home": [
+     "#ceb888",
+     "#2c2a29"
+    ],
+    "away": [
+     "#041e42",
+     "#c5b783"
+    ]
+   },
+   "why": "stuck",
+   "expected": {
+    "light": {
+     "home": "#b5a071",
+     "away": "#041e42"
+    },
+    "dark": {
+     "home": "#ceb888",
+     "away": "#4b5a84"
+    }
+   }
+  },
+  {
+   "game_id": "401864424",
+   "season": 2026,
+   "week": 1,
+   "home_id": "48",
+   "away_id": "2771",
+   "home": "Delaware Blue Hens",
+   "away": "Merrimack Warriors",
+   "input": {
+    "home": {
+     "color": "#00539f",
+     "alternateColor": "#ffd200"
+    },
+    "away": {
+     "color": "#2f4f93",
+     "alternateColor": "#e8c535"
+    }
+   },
+   "espn": {
+    "home": [
+     "#00539f",
+     "#ffd200"
+    ],
+    "away": [
+     "#000000",
+     null
+    ]
+   },
+   "why": "stuck",
+   "expected": {
+    "light": {
+     "home": "#00539f",
+     "away": "#be9f00"
+    },
+    "dark": {
+     "home": "#185aa7",
+     "away": "#e8c535"
+    }
+   }
+  },
+  {
+   "game_id": "401858436",
+   "season": 2026,
+   "week": 1,
+   "home_id": "30",
+   "away_id": "278",
+   "home": "USC Trojans",
+   "away": "Fresno State Bulldogs",
+   "input": {
+    "home": {
+     "color": "#9d2235",
+     "alternateColor": "#ffc72c"
+    },
+    "away": {
+     "color": "#b1102b",
+     "alternateColor": "#13284c"
+    }
+   },
+   "espn": {
+    "home": [
+     "#9d2235",
+     "#ffc72c"
+    ],
+    "away": [
+     "#b1102b",
+     "#13284c"
+    ]
+   },
+   "why": "stuck",
+   "expected": {
+    "light": {
+     "home": "#9d2235",
+     "away": "#13284c"
+    },
+    "dark": {
+     "home": "#a62b3c",
+     "away": "#4b5982"
+    }
+   }
+  },
+  {
+   "game_id": "401866623",
+   "season": 2026,
+   "week": 1,
+   "home_id": "2247",
+   "away_id": "2448",
+   "home": "Georgia State Panthers",
+   "away": "North Carolina A&T Aggies",
+   "input": {
+    "home": {
+     "color": "#0039a6",
+     "alternateColor": "#ffffff"
+    },
+    "away": {
+     "color": "#0505aa",
+     "alternateColor": "#004684"
+    }
+   },
+   "espn": {
+    "home": [
+     "#0039a6",
+     "#ffffff"
+    ],
+    "away": [
+     "#0505aa",
+     "#004684"
+    ]
+   },
+   "why": "stuck",
+   "expected": {
+    "light": {
+     "home": "#a3a3a3",
+     "away": "#0505aa"
+    },
+    "dark": {
+     "home": "#ffffff",
+     "away": "#5a38dd"
+    }
+   }
+  },
+  {
+   "game_id": "401856769",
+   "season": 2026,
+   "week": 1,
+   "home_id": "2305",
+   "away_id": "2341",
+   "home": "Kansas Jayhawks",
+   "away": "Long Island University Sharks",
+   "input": {
+    "home": {
+     "color": "#0051ba",
+     "alternateColor": "#e8000d"
+    },
+    "away": {
+     "color": "#50c9f7",
+     "alternateColor": "#ffbf00"
+    }
+   },
+   "espn": {
+    "home": [
+     "#0051ba",
+     "#e8000d"
+    ],
+    "away": [
+     null,
+     null
+    ]
+   },
+   "why": "stuck",
+   "expected": {
+    "light": {
+     "home": "#0051ba",
+     "away": "#2ab0dd"
+    },
+    "dark": {
+     "home": "#e8000d",
+     "away": "#50c9f7"
+    }
+   }
+  },
+  {
+   "game_id": "401858432",
+   "season": 2026,
+   "week": 1,
+   "home_id": "194",
+   "away_id": "2050",
+   "home": "Ohio State Buckeyes",
+   "away": "Ball State Cardinals",
+   "input": {
+    "home": {
+     "color": "#ba0c2f",
+     "alternateColor": "#a8adb4"
+    },
+    "away": {
+     "color": "#ba0c2f",
+     "alternateColor": "#ffffff"
+    }
+   },
+   "espn": {
+    "home": [
+     "#ba0c2f",
+     "#a8adb4"
+    ],
+    "away": [
+     "#ba0c2f",
+     "#ffffff"
+    ]
+   },
+   "why": "clash",
+   "expected": {
+    "light": {
+     "home": "#ba0c2f",
+     "away": "#a3a3a3"
+    },
+    "dark": {
+     "home": "#ba0c2f",
+     "away": "#ffffff"
+    }
+   }
+  },
+  {
+   "game_id": "401856667",
+   "season": 2026,
+   "week": 1,
+   "home_id": "251",
+   "away_id": "326",
+   "home": "Texas Longhorns",
+   "away": "Texas State Bobcats",
+   "input": {
+    "home": {
+     "color": "#af5c37",
+     "alternateColor": "#ffffff"
+    },
+    "away": {
+     "color": "#501214",
+     "alternateColor": "#6a5638"
+    }
+   },
+   "espn": {
+    "home": [
+     "#af5c37",
+     "#ffffff"
+    ],
+    "away": [
+     "#501214",
+     "#6a5638"
+    ]
+   },
+   "why": "stuck",
+   "expected": {
+    "light": {
+     "home": "#af5c37",
+     "away": "#501214"
+    },
+    "dark": {
+     "home": "#ffffff",
+     "away": "#8b4643"
+    }
+   }
+  },
+  {
+   "game_id": "401856668",
+   "season": 2026,
+   "week": 1,
+   "home_id": "245",
+   "away_id": "2623",
+   "home": "Texas A&M Aggies",
+   "away": "Missouri State Bears",
+   "input": {
+    "home": {
+     "color": "#500000",
+     "alternateColor": "#ffffff"
+    },
+    "away": {
+     "color": "#5e0009",
+     "alternateColor": "#ffffff"
+    }
+   },
+   "espn": {
+    "home": [
+     "#500000",
+     "#ffffff"
+    ],
+    "away": [
+     "#5e0009",
+     "#ffffff"
+    ]
+   },
+   "why": "stuck",
+   "expected": {
+    "light": {
+     "home": "#500000",
+     "away": "#a3a3a3"
+    },
+    "dark": {
+     "home": "#95423a",
+     "away": "#ffffff"
+    }
+   }
+  },
+  {
+   "game_id": "401862701",
+   "season": 2026,
+   "week": 1,
+   "home_id": "349",
+   "away_id": "2803",
+   "home": "Army Black Knights",
+   "away": "Bryant Bulldogs",
+   "input": {
+    "home": {
+     "color": "#000000",
+     "alternateColor": "#d3bc8d"
+    },
+    "away": {
+     "color": "#000000",
+     "alternateColor": "#9f8343"
+    }
+   },
+   "espn": {
+    "home": [
+     "#000000",
+     "#d3bc8d"
+    ],
+    "away": [
+     "#000000",
+     "#9f8343"
+    ]
+   },
+   "why": "clash",
+   "expected": {
+    "light": {
+     "home": "#000000",
+     "away": "#9f8343"
+    },
+    "dark": {
+     "home": "#5c5c5c",
+     "away": "#9f8343"
+    }
+   }
+  },
+  {
+   "game_id": "401869960",
+   "season": 2026,
+   "week": 1,
+   "home_id": "256",
+   "away_id": "2335",
+   "home": "James Madison Dukes",
+   "away": "Liberty Flames",
+   "input": {
+    "home": {
+     "color": "#450084",
+     "alternateColor": "#cbb677"
+    },
+    "away": {
+     "color": "#0a254e",
+     "alternateColor": "#b72025"
+    }
+   },
+   "espn": {
+    "home": [
+     "#450084",
+     "#cbb677"
+    ],
+    "away": [
+     "#0a254e",
+     "#b72025"
+    ]
+   },
+   "why": "random",
+   "expected": {
+    "light": {
+     "home": "#450084",
+     "away": "#b72025"
+    },
+    "dark": {
+     "home": "#cbb677",
+     "away": "#b72025"
+    }
+   }
+  },
+  {
+   "game_id": "401867866",
+   "season": 2026,
+   "week": 1,
+   "home_id": "2393",
+   "away_id": "93",
+   "home": "Middle Tennessee Blue Raiders",
+   "away": "Murray State Racers",
+   "input": {
+    "home": {
+     "color": "#036eb7",
+     "alternateColor": "#ffffff"
+    },
+    "away": {
+     "color": "#002148",
+     "alternateColor": "#000e00"
+    }
+   },
+   "espn": {
+    "home": [
+     "#036eb7",
+     "#ffffff"
+    ],
+    "away": [
+     "#002148",
+     "#000e00"
+    ]
+   },
+   "why": "random",
+   "expected": {
+    "light": {
+     "home": "#036eb7",
+     "away": "#002148"
+    },
+    "dark": {
+     "home": "#036eb7",
+     "away": "#525c52"
+    }
+   }
+  },
+  {
+   "game_id": "401858224",
+   "season": 2026,
+   "week": 2,
+   "home_id": "2509",
+   "away_id": "154",
+   "home": "Purdue Boilermakers",
+   "away": "Wake Forest Demon Deacons",
+   "input": {
+    "home": {
+     "color": "#ceb888",
+     "alternateColor": "#000000"
+    },
+    "away": {
+     "color": "#ceb888",
+     "alternateColor": "#2c2a29"
+    }
+   },
+   "espn": {
+    "home": [
+     "#ceb888",
+     "#000000"
+    ],
+    "away": [
+     "#ceb888",
+     "#2c2a29"
+    ]
+   },
+   "why": "clash",
+   "expected": {
+    "light": {
+     "home": "#b5a071",
+     "away": "#2c2a29"
+    },
+    "dark": {
+     "home": "#ceb888",
+     "away": "#5c5a58"
+    }
+   }
+  },
+  {
+   "game_id": "401752676",
+   "season": 2025,
+   "week": 1,
+   "home_id": "2633",
+   "away_id": "183",
+   "home": "Tennessee Volunteers",
+   "away": "Syracuse Orange",
+   "input": {
+    "home": {
+     "color": "#ff8200",
+     "alternateColor": "#ffffff"
+    },
+    "away": {
+     "color": "#000e54",
+     "alternateColor": "#ff431b"
+    }
+   },
+   "espn": {
+    "home": [
+     "#ff8200",
+     "#ffffff"
+    ],
+    "away": [
+     "#000e54",
+     "#ff431b"
+    ]
+   },
+   "why": "unreadable",
+   "expected": {
+    "light": {
+     "home": "#fc7f00",
+     "away": "#000e54"
+    },
+    "dark": {
+     "home": "#ffffff",
+     "away": "#ff431b"
+    }
+   }
+  },
+  {
+   "game_id": "401761591",
+   "season": 2025,
+   "week": 1,
+   "home_id": "2032",
+   "away_id": "2546",
+   "home": "Arkansas State Red Wolves",
+   "away": "Southeast Missouri State Redhawks",
+   "input": {
+    "home": {
+     "color": "#cc092f",
+     "alternateColor": "#000000"
+    },
+    "away": {
+     "color": "#c8102e",
+     "alternateColor": "#000000"
+    }
+   },
+   "espn": {
+    "home": [
+     "#cc092f",
+     "#000000"
+    ],
+    "away": [
+     "#c8102e",
+     "#000000"
+    ]
+   },
+   "why": "clash",
+   "expected": {
+    "light": {
+     "home": "#cc092f",
+     "away": "#000000"
+    },
+    "dark": {
+     "home": "#cc092f",
+     "away": "#5c5c5c"
+    }
+   }
+  },
+  {
+   "game_id": "401754532",
+   "season": 2025,
+   "week": 3,
+   "home_id": "183",
+   "away_id": "2142",
+   "home": "Syracuse Orange",
+   "away": "Colgate Raiders",
+   "input": {
+    "home": {
+     "color": "#000e54",
+     "alternateColor": "#ff431b"
+    },
+    "away": {
+     "color": "#821019",
+     "alternateColor": "#ffffff"
+    }
+   },
+   "espn": {
+    "home": [
+     "#000e54",
+     "#ff431b"
+    ],
+    "away": [
+     "#821019",
+     "#ffffff"
+    ]
+   },
+   "why": "unreadable",
+   "expected": {
+    "light": {
+     "home": "#000e54",
+     "away": "#821019"
+    },
+    "dark": {
+     "home": "#ff431b",
+     "away": "#ffffff"
+    }
+   }
+  },
+  {
+   "game_id": "401754537",
+   "season": 2025,
+   "week": 4,
+   "home_id": "228",
+   "away_id": "183",
+   "home": "Clemson Tigers",
+   "away": "Syracuse Orange",
+   "input": {
+    "home": {
+     "color": "#f56600",
+     "alternateColor": "#ffffff"
+    },
+    "away": {
+     "color": "#000e54",
+     "alternateColor": "#ff431b"
+    }
+   },
+   "espn": {
+    "home": [
+     "#f56600",
+     "#ffffff"
+    ],
+    "away": [
+     "#000e54",
+     "#ff431b"
+    ]
+   },
+   "why": "unreadable",
+   "expected": {
+    "light": {
+     "home": "#f56600",
+     "away": "#000e54"
+    },
+    "dark": {
+     "home": "#ffffff",
+     "away": "#ff431b"
+    }
+   }
+  },
+  {
+   "game_id": "401754545",
+   "season": 2025,
+   "week": 5,
+   "home_id": "183",
+   "away_id": "150",
+   "home": "Syracuse Orange",
+   "away": "Duke Blue Devils",
+   "input": {
+    "home": {
+     "color": "#000e54",
+     "alternateColor": "#ff431b"
+    },
+    "away": {
+     "color": "#00539b",
+     "alternateColor": "#ffffff"
+    }
+   },
+   "espn": {
+    "home": [
+     "#000e54",
+     "#ff431b"
+    ],
+    "away": [
+     "#00539b",
+     "#ffffff"
+    ]
+   },
+   "why": "unreadable",
+   "expected": {
+    "light": {
+     "home": "#000e54",
+     "away": "#00539b"
+    },
+    "dark": {
+     "home": "#ff431b",
+     "away": "#ffffff"
+    }
+   }
+  },
+  {
+   "game_id": "401762473",
+   "season": 2025,
+   "week": 5,
+   "home_id": "2426",
+   "away_id": "242",
+   "home": "Navy Midshipmen",
+   "away": "Rice Owls",
+   "input": {
+    "home": {
+     "color": "#00225b",
+     "alternateColor": "#b5a67c"
+    },
+    "away": {
+     "color": "#00205b",
+     "alternateColor": "#c1c6c8"
+    }
+   },
+   "espn": {
+    "home": [
+     "#00225b",
+     "#b5a67c"
+    ],
+    "away": [
+     "#00205b",
+     "#c1c6c8"
+    ]
+   },
+   "why": "clash",
+   "expected": {
+    "light": {
+     "home": "#00225b",
+     "away": "#9ea3a5"
+    },
+    "dark": {
+     "home": "#495596",
+     "away": "#c1c6c8"
+    }
+   }
+  },
+  {
+   "game_id": "401761615",
+   "season": 2025,
+   "week": 5,
+   "home_id": "309",
+   "away_id": "276",
+   "home": "Louisiana Ragin' Cajuns",
+   "away": "Marshall Thundering Herd",
+   "input": {
+    "home": {
+     "color": "#ce181e",
+     "alternateColor": "#000000"
+    },
+    "away": {
+     "color": "#00b140",
+     "alternateColor": "#000000"
+    }
+   },
+   "espn": {
+    "home": [
+     "#ce181e",
+     "#000000"
+    ],
+    "away": [
+     "#00b140",
+     "#000000"
+    ]
+   },
+   "why": "random",
+   "expected": {
+    "light": {
+     "home": "#ce181e",
+     "away": "#00b140"
+    },
+    "dark": {
+     "home": "#ce181e",
+     "away": "#00b140"
+    }
+   }
+  },
+  {
+   "game_id": "401754555",
+   "season": 2025,
+   "week": 6,
+   "home_id": "2567",
+   "away_id": "183",
+   "home": "SMU Mustangs",
+   "away": "Syracuse Orange",
+   "input": {
+    "home": {
+     "color": "#a80000",
+     "alternateColor": "#0033a1"
+    },
+    "away": {
+     "color": "#000e54",
+     "alternateColor": "#ff431b"
+    }
+   },
+   "espn": {
+    "home": [
+     "#a80000",
+     "#0033a1"
+    ],
+    "away": [
+     "#000e54",
+     "#ff431b"
+    ]
+   },
+   "why": "unreadable",
+   "expected": {
+    "light": {
+     "home": "#a80000",
+     "away": "#000e54"
+    },
+    "dark": {
+     "home": "#b51809",
+     "away": "#5b4fa1"
+    }
+   }
+  },
+  {
+   "game_id": "401756922",
+   "season": 2025,
+   "week": 7,
+   "home_id": "254",
+   "away_id": "9",
+   "home": "Utah Utes",
+   "away": "Arizona State Sun Devils",
+   "input": {
+    "home": {
+     "color": "#be0000",
+     "alternateColor": "#ffffff"
+    },
+    "away": {
+     "color": "#ffc627",
+     "alternateColor": "#8c1d40"
+    }
+   },
+   "espn": {
+    "home": [
+     "#be0000",
+     "#ffffff"
+    ],
+    "away": [
+     "#ffc627",
+     "#8c1d40"
+    ]
+   },
+   "why": "random",
+   "expected": {
+    "light": {
+     "home": "#be0000",
+     "away": "#8c1d40"
+    },
+    "dark": {
+     "home": "#be0000",
+     "away": "#ffc627"
+    }
+   }
+  },
+  {
+   "game_id": "401756917",
+   "season": 2025,
+   "week": 7,
+   "home_id": "2132",
+   "away_id": "2116",
+   "home": "Cincinnati Bearcats",
+   "away": "UCF Knights",
+   "input": {
+    "home": {
+     "color": "#000000",
+     "alternateColor": "#e00122"
+    },
+    "away": {
+     "color": "#000000",
+     "alternateColor": "#b4a169"
+    }
+   },
+   "espn": {
+    "home": [
+     "#000000",
+     "#e00122"
+    ],
+    "away": [
+     "#000000",
+     "#b4a169"
+    ]
+   },
+   "why": "clash",
+   "expected": {
+    "light": {
+     "home": "#000000",
+     "away": "#b4a169"
+    },
+    "dark": {
+     "home": "#e00122",
+     "away": "#b4a169"
+    }
+   }
+  },
+  {
+   "game_id": "401754571",
+   "season": 2025,
+   "week": 9,
+   "home_id": "59",
+   "away_id": "183",
+   "home": "Georgia Tech Yellow Jackets",
+   "away": "Syracuse Orange",
+   "input": {
+    "home": {
+     "color": "#b3a369",
+     "alternateColor": "#ffffff"
+    },
+    "away": {
+     "color": "#000e54",
+     "alternateColor": "#ff431b"
+    }
+   },
+   "espn": {
+    "home": [
+     "#b3a369",
+     "#ffffff"
+    ],
+    "away": [
+     "#000e54",
+     "#ff431b"
+    ]
+   },
+   "why": "unreadable",
+   "expected": {
+    "light": {
+     "home": "#b3a369",
+     "away": "#000e54"
+    },
+    "dark": {
+     "home": "#b3a369",
+     "away": "#ff431b"
+    }
+   }
+  },
+  {
+   "game_id": "401754575",
+   "season": 2025,
+   "week": 10,
+   "home_id": "183",
+   "away_id": "153",
+   "home": "Syracuse Orange",
+   "away": "North Carolina Tar Heels",
+   "input": {
+    "home": {
+     "color": "#000e54",
+     "alternateColor": "#ff431b"
+    },
+    "away": {
+     "color": "#7bafd4",
+     "alternateColor": "#13294b"
+    }
+   },
+   "espn": {
+    "home": [
+     "#000e54",
+     "#ff431b"
+    ],
+    "away": [
+     "#7bafd4",
+     "#13294b"
+    ]
+   },
+   "why": "unreadable",
+   "expected": {
+    "light": {
+     "home": "#ff431b",
+     "away": "#13294b"
+    },
+    "dark": {
+     "home": "#ff431b",
+     "away": "#7bafd4"
+    }
+   }
+  },
+  {
+   "game_id": "401754587",
+   "season": 2025,
+   "week": 11,
+   "home_id": "2390",
+   "away_id": "183",
+   "home": "Miami Hurricanes",
+   "away": "Syracuse Orange",
+   "input": {
+    "home": {
+     "color": "#f47423",
+     "alternateColor": "#035131"
+    },
+    "away": {
+     "color": "#000e54",
+     "alternateColor": "#ff431b"
+    }
+   },
+   "espn": {
+    "home": [
+     "#f47423",
+     "#035131"
+    ],
+    "away": [
+     "#000e54",
+     "#ff431b"
+    ]
+   },
+   "why": "unreadable",
+   "expected": {
+    "light": {
+     "home": "#f47423",
+     "away": "#000e54"
+    },
+    "dark": {
+     "home": "#f47423",
+     "away": "#5b4fa1"
+    }
+   }
+  },
+  {
+   "game_id": "401754608",
+   "season": 2025,
+   "week": 14,
+   "home_id": "183",
+   "away_id": "103",
+   "home": "Syracuse Orange",
+   "away": "Boston College Eagles",
+   "input": {
+    "home": {
+     "color": "#000e54",
+     "alternateColor": "#ff431b"
+    },
+    "away": {
+     "color": "#8c2232",
+     "alternateColor": "#dbcca6"
+    }
+   },
+   "espn": {
+    "home": [
+     "#000e54",
+     "#ff431b"
+    ],
+    "away": [
+     "#8c2232",
+     "#dbcca6"
+    ]
+   },
+   "why": "unreadable",
+   "expected": {
+    "light": {
+     "home": "#000e54",
+     "away": "#8c2232"
+    },
+    "dark": {
+     "home": "#ff431b",
+     "away": "#dbcca6"
+    }
+   }
+  },
+  {
+   "game_id": "401777353",
+   "season": 2025,
+   "week": 15,
+   "home_id": "194",
+   "away_id": "84",
+   "home": "Ohio State Buckeyes",
+   "away": "Indiana Hoosiers",
+   "input": {
+    "home": {
+     "color": "#ba0c2f",
+     "alternateColor": "#a8adb4"
+    },
+    "away": {
+     "color": "#970310",
+     "alternateColor": "#ffffff"
+    }
+   },
+   "espn": {
+    "home": [
+     "#ba0c2f",
+     "#a8adb4"
+    ],
+    "away": [
+     "#970310",
+     "#ffffff"
+    ]
+   },
+   "why": "random",
+   "expected": {
+    "light": {
+     "home": "#ba0c2f",
+     "away": "#a3a3a3"
+    },
+    "dark": {
+     "home": "#ba0c2f",
+     "away": "#ffffff"
+    }
+   }
+  },
+  {
+   "game_id": "401634304",
+   "season": 2024,
+   "week": 1,
+   "home_id": "183",
+   "away_id": "195",
+   "home": "Syracuse Orange",
+   "away": "Ohio Bobcats",
+   "input": {
+    "home": {
+     "color": "#000e54",
+     "alternateColor": "#ff431b"
+    },
+    "away": {
+     "color": "#154734",
+     "alternateColor": "#ffffff"
+    }
+   },
+   "espn": {
+    "home": [
+     "#000e54",
+     "#ff431b"
+    ],
+    "away": [
+     "#154734",
+     "#ffffff"
+    ]
+   },
+   "why": "unreadable",
+   "expected": {
+    "light": {
+     "home": "#000e54",
+     "away": "#154734"
+    },
+    "dark": {
+     "home": "#ff431b",
+     "away": "#ffffff"
+    }
+   }
+  },
+  {
+   "game_id": "401643708",
+   "season": 2024,
+   "week": 2,
+   "home_id": "2440",
+   "away_id": "290",
+   "home": "Nevada Wolf Pack",
+   "away": "Georgia Southern Eagles",
+   "input": {
+    "home": {
+     "color": "#041e42",
+     "alternateColor": "#8a8d8f"
+    },
+    "away": {
+     "color": "#041e42",
+     "alternateColor": "#a3aaae"
+    }
+   },
+   "espn": {
+    "home": [
+     "#041e42",
+     "#8a8d8f"
+    ],
+    "away": [
+     "#041e42",
+     "#a3aaae"
+    ]
+   },
+   "why": "clash",
+   "expected": {
+    "light": {
+     "home": "#8a8d8f",
+     "away": "#041e42"
+    },
+    "dark": {
+     "home": "#4b5a84",
+     "away": "#a3aaae"
+    }
+   }
+  },
+  {
+   "game_id": "401645337",
+   "season": 2024,
+   "week": 5,
+   "home_id": "2655",
+   "away_id": "58",
+   "home": "Tulane Green Wave",
+   "away": "South Florida Bulls",
+   "input": {
+    "home": {
+     "color": "#006747",
+     "alternateColor": "#418fde"
+    },
+    "away": {
+     "color": "#006747",
+     "alternateColor": "#cfc493"
+    }
+   },
+   "espn": {
+    "home": [
+     "#006747",
+     "#418fde"
+    ],
+    "away": [
+     "#006747",
+     "#cfc493"
+    ]
+   },
+   "why": "clash",
+   "expected": {
+    "light": {
+     "home": "#418fde",
+     "away": "#006747"
+    },
+    "dark": {
+     "home": "#006747",
+     "away": "#cfc493"
+    }
+   }
+  },
+  {
+   "game_id": "401628435",
+   "season": 2024,
+   "week": 13,
+   "home_id": "2633",
+   "away_id": "2638",
+   "home": "Tennessee Volunteers",
+   "away": "UTEP Miners",
+   "input": {
+    "home": {
+     "color": "#ff8200",
+     "alternateColor": "#ffffff"
+    },
+    "away": {
+     "color": "#ff8200",
+     "alternateColor": "#041e42"
+    }
+   },
+   "espn": {
+    "home": [
+     "#ff8200",
+     "#ffffff"
+    ],
+    "away": [
+     "#ff8200",
+     "#041e42"
+    ]
+   },
+   "why": "clash",
+   "expected": {
+    "light": {
+     "home": "#fc7f00",
+     "away": "#041e42"
+    },
+    "dark": {
+     "home": "#ffffff",
+     "away": "#ff8200"
+    }
+   }
+  },
+  {
+   "game_id": "401520191",
+   "season": 2023,
+   "week": 2,
+   "home_id": "61",
+   "away_id": "2050",
+   "home": "Georgia Bulldogs",
+   "away": "Ball State Cardinals",
+   "input": {
+    "home": {
+     "color": "#ba0c2f",
+     "alternateColor": "#2c2a29"
+    },
+    "away": {
+     "color": "#ba0c2f",
+     "alternateColor": "#ffffff"
+    }
+   },
+   "espn": {
+    "home": [
+     "#ba0c2f",
+     "#2c2a29"
+    ],
+    "away": [
+     "#ba0c2f",
+     "#ffffff"
+    ]
+   },
+   "why": "clash",
+   "expected": {
+    "light": {
+     "home": "#2c2a29",
+     "away": "#ba0c2f"
+    },
+    "dark": {
+     "home": "#ba0c2f",
+     "away": "#ffffff"
+    }
+   }
+  },
+  {
+   "game_id": "401551741",
+   "season": 2023,
+   "week": 1,
+   "home_id": "2459",
+   "away_id": "2032",
+   "home": "Northern Illinois Huskies",
+   "away": "Arkansas State Red Wolves",
+   "input": {
+    "home": {
+     "color": "#c8102e",
+     "alternateColor": "#000000"
+    },
+    "away": {
+     "color": "#cc092f",
+     "alternateColor": "#000000"
+    }
+   },
+   "espn": {
+    "home": [
+     "#c8102e",
+     "#000000"
+    ],
+    "away": [
+     "#cc092f",
+     "#000000"
+    ]
+   },
+   "why": "clash",
+   "expected": {
+    "light": {
+     "home": "#c8102e",
+     "away": "#000000"
+    },
+    "dark": {
+     "home": "#c8102e",
+     "away": "#5c5c5c"
+    }
+   }
+  },
+  {
+   "game_id": "401551761",
+   "season": 2023,
+   "week": 1,
+   "home_id": "277",
+   "away_id": "153",
+   "home": "West Virginia Mountaineers",
+   "away": "North Carolina Tar Heels",
+   "input": {
+    "home": {
+     "color": "#eaaa00",
+     "alternateColor": "#002855"
+    },
+    "away": {
+     "color": "#7bafd4",
+     "alternateColor": "#13294b"
+    }
+   },
+   "espn": {
+    "home": [
+     "#eaaa00",
+     "#002855"
+    ],
+    "away": [
+     "#7bafd4",
+     "#13294b"
+    ]
+   },
+   "why": "random",
+   "expected": {
+    "light": {
+     "home": "#d49700",
+     "away": "#73a7cc"
+    },
+    "dark": {
+     "home": "#eaaa00",
+     "away": "#7bafd4"
+    }
+   }
+  },
+  {
+   "game_id": "401551765",
+   "season": 2023,
+   "week": 1,
+   "home_id": "201",
+   "away_id": "12",
+   "home": "Oklahoma Sooners",
+   "away": "Arizona Wildcats",
+   "input": {
+    "home": {
+     "color": "#990000",
+     "alternateColor": "#ffffff"
+    },
+    "away": {
+     "color": "#cc0033",
+     "alternateColor": "#003366"
+    }
+   },
+   "espn": {
+    "home": [
+     "#990000",
+     "#ffffff"
+    ],
+    "away": [
+     "#cc0033",
+     "#003366"
+    ]
+   },
+   "why": "random",
+   "expected": {
+    "light": {
+     "home": "#990000",
+     "away": "#003366"
+    },
+    "dark": {
+     "home": "#ffffff",
+     "away": "#cc0033"
+    }
+   }
+  },
+  {
+   "game_id": "401551782",
+   "season": 2023,
+   "week": 1,
+   "home_id": "2483",
+   "away_id": "2335",
+   "home": "Oregon Ducks",
+   "away": "Liberty Flames",
+   "input": {
+    "home": {
+     "color": "#00934b",
+     "alternateColor": "#fff41b"
+    },
+    "away": {
+     "color": "#0a254e",
+     "alternateColor": "#b72025"
+    }
+   },
+   "espn": {
+    "home": [
+     "#00934b",
+     "#fff41b"
+    ],
+    "away": [
+     "#0a254e",
+     "#b72025"
+    ]
+   },
+   "why": "random",
+   "expected": {
+    "light": {
+     "home": "#00934b",
+     "away": "#0a254e"
+    },
+    "dark": {
+     "home": "#00934b",
+     "away": "#b72025"
+    }
+   }
+  },
+  {
+   "game_id": "401403866",
+   "season": 2022,
+   "week": 1,
+   "home_id": "238",
+   "away_id": "2210",
+   "home": "Vanderbilt Commodores",
+   "away": "Elon Phoenix",
+   "input": {
+    "home": {
+     "color": "#000000",
+     "alternateColor": "#cfae70"
+    },
+    "away": {
+     "color": "#020303",
+     "alternateColor": "#b59a57"
+    }
+   },
+   "espn": {
+    "home": [
+     "#000000",
+     "#cfae70"
+    ],
+    "away": [
+     "#020303",
+     "#b59a57"
+    ]
+   },
+   "why": "clash",
+   "expected": {
+    "light": {
+     "home": "#000000",
+     "away": "#b59a57"
+    },
+    "dark": {
+     "home": "#5c5c5c",
+     "away": "#b59a57"
+    }
+   }
+  },
+  {
+   "game_id": "401411130",
+   "season": 2022,
+   "week": 5,
+   "home_id": "183",
+   "away_id": "2681",
+   "home": "Syracuse Orange",
+   "away": "Wagner Seahawks",
+   "input": {
+    "home": {
+     "color": "#000e54",
+     "alternateColor": "#ff431b"
+    },
+    "away": {
+     "color": "#00483a",
+     "alternateColor": "#ffffff"
+    }
+   },
+   "espn": {
+    "home": [
+     "#000e54",
+     "#ff431b"
+    ],
+    "away": [
+     "#00483a",
+     "#ffffff"
+    ]
+   },
+   "why": "random",
+   "expected": {
+    "light": {
+     "home": "#000e54",
+     "away": "#00483a"
+    },
+    "dark": {
+     "home": "#ff431b",
+     "away": "#ffffff"
+    }
+   }
+  },
+  {
+   "game_id": "401426615",
+   "season": 2022,
+   "week": 13,
+   "home_id": "2226",
+   "away_id": "98",
+   "home": "Florida Atlantic Owls",
+   "away": "Western Kentucky Hilltoppers",
+   "input": {
+    "home": {
+     "color": "#003366",
+     "alternateColor": "#cc0000"
+    },
+    "away": {
+     "color": "#e13a3e",
+     "alternateColor": "#ffffff"
+    }
+   },
+   "espn": {
+    "home": [
+     "#003366",
+     "#cc0000"
+    ],
+    "away": [
+     "#e13a3e",
+     "#ffffff"
+    ]
+   },
+   "why": "random",
+   "expected": {
+    "light": {
+     "home": "#003366",
+     "away": "#e13a3e"
+    },
+    "dark": {
+     "home": "#cc0000",
+     "away": "#ffffff"
+    }
+   }
+  },
+  {
+   "game_id": "401442015",
+   "season": 2022,
+   "week": 1,
+   "home_id": "61",
+   "away_id": "194",
+   "home": "Georgia Bulldogs",
+   "away": "Ohio State Buckeyes",
+   "input": {
+    "home": {
+     "color": "#ba0c2f",
+     "alternateColor": "#2c2a29"
+    },
+    "away": {
+     "color": "#ba0c2f",
+     "alternateColor": "#a8adb4"
+    }
+   },
+   "espn": {
+    "home": [
+     "#ba0c2f",
+     "#2c2a29"
+    ],
+    "away": [
+     "#ba0c2f",
+     "#a8adb4"
+    ]
+   },
+   "why": "clash",
+   "expected": {
+    "light": {
+     "home": "#2c2a29",
+     "away": "#ba0c2f"
+    },
+    "dark": {
+     "home": "#ba0c2f",
+     "away": "#a8adb4"
+    }
+   }
+  },
+  {
+   "game_id": "401282175",
+   "season": 2021,
+   "week": 1,
+   "home_id": "249",
+   "away_id": "2466",
+   "home": "North Texas Mean Green",
+   "away": "Northwestern State Demons",
+   "input": {
+    "home": {
+     "color": "#068f33",
+     "alternateColor": "#ffffff"
+    },
+    "away": {
+     "color": "#492f91",
+     "alternateColor": "#ed6118"
+    }
+   },
+   "espn": {
+    "home": [
+     "#068f33",
+     "#ffffff"
+    ],
+    "away": [
+     "#492f91",
+     "#ed6118"
+    ]
+   },
+   "why": "random",
+   "expected": {
+    "light": {
+     "home": "#068f33",
+     "away": "#492f91"
+    },
+    "dark": {
+     "home": "#068f33",
+     "away": "#ed6118"
+    }
+   }
+  },
+  {
+   "game_id": "401309837",
+   "season": 2021,
+   "week": 1,
+   "home_id": "25",
+   "away_id": "2440",
+   "home": "California Golden Bears",
+   "away": "Nevada Wolf Pack",
+   "input": {
+    "home": {
+     "color": "#041e42",
+     "alternateColor": "#ffc72c"
+    },
+    "away": {
+     "color": "#041e42",
+     "alternateColor": "#8a8d8f"
+    }
+   },
+   "espn": {
+    "home": [
+     "#041e42",
+     "#ffc72c"
+    ],
+    "away": [
+     "#041e42",
+     "#8a8d8f"
+    ]
+   },
+   "why": "clash",
+   "expected": {
+    "light": {
+     "home": "#041e42",
+     "away": "#8a8d8f"
+    },
+    "dark": {
+     "home": "#ffc72c",
+     "away": "#8a8d8f"
+    }
+   }
+  },
+  {
+   "game_id": "401309604",
+   "season": 2021,
+   "week": 3,
+   "home_id": "2026",
+   "away_id": "2210",
+   "home": "Appalachian State Mountaineers",
+   "away": "Elon Phoenix",
+   "input": {
+    "home": {
+     "color": "#000000",
+     "alternateColor": "#ffcd00"
+    },
+    "away": {
+     "color": "#020303",
+     "alternateColor": "#b59a57"
+    }
+   },
+   "espn": {
+    "home": [
+     "#000000",
+     "#ffcd00"
+    ],
+    "away": [
+     "#020303",
+     "#b59a57"
+    ]
+   },
+   "why": "clash",
+   "expected": {
+    "light": {
+     "home": "#000000",
+     "away": "#b59a57"
+    },
+    "dark": {
+     "home": "#5c5c5c",
+     "away": "#b59a57"
+    }
+   }
+  },
+  {
+   "game_id": "401282645",
+   "season": 2021,
+   "week": 4,
+   "home_id": "259",
+   "away_id": "257",
+   "home": "Virginia Tech Hokies",
+   "away": "Richmond Spiders",
+   "input": {
+    "home": {
+     "color": "#6a2c3e",
+     "alternateColor": "#cf4520"
+    },
+    "away": {
+     "color": "#9e0712",
+     "alternateColor": "#b90b2e"
+    }
+   },
+   "espn": {
+    "home": [
+     "#6a2c3e",
+     "#cf4520"
+    ],
+    "away": [
+     "#9e0712",
+     "#b90b2e"
+    ]
+   },
+   "why": "deep",
+   "expected": {
+    "light": {
+     "home": "#6a2c3e",
+     "away": "#ae1f1d"
+    },
+    "dark": {
+     "home": "#a05c6d",
+     "away": "#ae1f1d"
+    }
+   }
+  },
+  {
+   "game_id": "401240996",
+   "season": 2020,
+   "week": 4,
+   "home_id": "2132",
+   "away_id": "349",
+   "home": "Cincinnati Bearcats",
+   "away": "Army Black Knights",
+   "input": {
+    "home": {
+     "color": "#000000",
+     "alternateColor": "#e00122"
+    },
+    "away": {
+     "color": "#000000",
+     "alternateColor": "#d3bc8d"
+    }
+   },
+   "espn": {
+    "home": [
+     "#000000",
+     "#e00122"
+    ],
+    "away": [
+     "#000000",
+     "#d3bc8d"
+    ]
+   },
+   "why": "clash",
+   "expected": {
+    "light": {
+     "home": "#e00122",
+     "away": "#000000"
+    },
+    "dark": {
+     "home": "#e00122",
+     "away": "#d3bc8d"
+    }
+   }
+  },
+  {
+   "game_id": "401209818",
+   "season": 2020,
+   "week": 12,
+   "home_id": "252",
+   "away_id": "2453",
+   "home": "BYU Cougars",
+   "away": "North Alabama Lions",
+   "input": {
+    "home": {
+     "color": "#0047ba",
+     "alternateColor": "#002e5d"
+    },
+    "away": {
+     "color": "#663399",
+     "alternateColor": null
+    }
+   },
+   "espn": {
+    "home": [
+     "#0047ba",
+     "#002e5d"
+    ],
+    "away": [
+     "#000000",
+     null
+    ]
+   },
+   "why": "deep",
+   "expected": {
+    "light": {
+     "home": "#4866df",
+     "away": "#633196"
+    },
+    "dark": {
+     "home": "#2250c5",
+     "away": "#9a63cd"
+    }
+   }
+  },
+  {
+   "game_id": "401135272",
+   "season": 2019,
+   "week": 1,
+   "home_id": "218",
+   "away_id": "153",
+   "home": "Temple Owls",
+   "away": "North Carolina Tar Heels",
+   "input": {
+    "home": {
+     "color": "#a41e35",
+     "alternateColor": "#ffffff"
+    },
+    "away": {
+     "color": "#7bafd4",
+     "alternateColor": "#13294b"
+    }
+   },
+   "espn": {
+    "home": [
+     "#a41e35",
+     "#ffffff"
+    ],
+    "away": [
+     "#7bafd4",
+     "#13294b"
+    ]
+   },
+   "why": "random",
+   "expected": {
+    "light": {
+     "home": "#a41e35",
+     "away": "#13294b"
+    },
+    "dark": {
+     "home": "#ffffff",
+     "away": "#7bafd4"
+    }
+   }
+  },
+  {
+   "game_id": "401013089",
+   "season": 2018,
+   "week": 1,
+   "home_id": "150",
+   "away_id": "349",
+   "home": "Duke Blue Devils",
+   "away": "Army Black Knights",
+   "input": {
+    "home": {
+     "color": "#00539b",
+     "alternateColor": "#ffffff"
+    },
+    "away": {
+     "color": "#000000",
+     "alternateColor": "#d3bc8d"
+    }
+   },
+   "espn": {
+    "home": [
+     "#00539b",
+     "#ffffff"
+    ],
+    "away": [
+     "#000000",
+     "#d3bc8d"
+    ]
+   },
+   "why": "random",
+   "expected": {
+    "light": {
+     "home": "#00539b",
+     "away": "#000000"
+    },
+    "dark": {
+     "home": "#ffffff",
+     "away": "#d3bc8d"
+    }
+   }
+  },
+  {
+   "game_id": "401016406",
+   "season": 2018,
+   "week": 4,
+   "home_id": "252",
+   "away_id": "2377",
+   "home": "BYU Cougars",
+   "away": "McNeese Cowboys",
+   "input": {
+    "home": {
+     "color": "#0047ba",
+     "alternateColor": "#002e5d"
+    },
+    "away": {
+     "color": "#00529c",
+     "alternateColor": null
+    }
+   },
+   "espn": {
+    "home": [
+     "#0047ba",
+     "#002e5d"
+    ],
+    "away": [
+     "#00529c",
+     null
+    ]
+   },
+   "why": "deep",
+   "expected": {
+    "light": {
+     "home": "#0047ba",
+     "away": "#5583d3"
+    },
+    "dark": {
+     "home": "#2250c5",
+     "away": "#5e8adc"
+    }
+   }
+  },
+  {
+   "game_id": "400944853",
+   "season": 2017,
+   "week": 7,
+   "home_id": "70",
+   "away_id": "2026",
+   "home": "Idaho Vandals",
+   "away": "Appalachian State Mountaineers",
+   "input": {
+    "home": {
+     "color": "#000000",
+     "alternateColor": "#8c6e4a"
+    },
+    "away": {
+     "color": "#000000",
+     "alternateColor": "#ffcd00"
+    }
+   },
+   "espn": {
+    "home": [
+     "#000000",
+     "#8c6e4a"
+    ],
+    "away": [
+     "#000000",
+     "#ffcd00"
+    ]
+   },
+   "why": "clash",
+   "expected": {
+    "light": {
+     "home": "#8c6e4a",
+     "away": "#000000"
+    },
+    "dark": {
+     "home": "#8c6e4a",
+     "away": "#ffcd00"
+    }
+   }
+  },
+  {
+   "game_id": "400852683",
+   "season": 2015,
+   "week": 1,
+   "home_id": "2247",
+   "away_id": "23",
+   "home": "Georgia State Panthers",
+   "away": "San Jose State Spartans",
+   "input": {
+    "home": {
+     "color": "#0039a6",
+     "alternateColor": "#ffffff"
+    },
+    "away": {
+     "color": "#0038a8",
+     "alternateColor": "#ffb81a"
+    }
+   },
+   "espn": {
+    "home": [
+     "#0039a6",
+     "#ffffff"
+    ],
+    "away": [
+     "#0038a8",
+     "#ffb81a"
+    ]
+   },
+   "why": "clash",
+   "expected": {
+    "light": {
+     "home": "#0039a6",
+     "away": "#d69500"
+    },
+    "dark": {
+     "home": "#ffffff",
+     "away": "#ffb81a"
+    }
+   }
+  },
+  {
+   "game_id": "400548396",
+   "season": 2014,
+   "week": 2,
+   "home_id": "2633",
+   "away_id": "2032",
+   "home": "Tennessee Volunteers",
+   "away": "Arkansas State Red Wolves",
+   "input": {
+    "home": {
+     "color": "#ff8200",
+     "alternateColor": "#ffffff"
+    },
+    "away": {
+     "color": "#cc092f",
+     "alternateColor": "#000000"
+    }
+   },
+   "espn": {
+    "home": [
+     "#ff8200",
+     "#ffffff"
+    ],
+    "away": [
+     "#cc092f",
+     "#000000"
+    ]
+   },
+   "why": "random",
+   "expected": {
+    "light": {
+     "home": "#fc7f00",
+     "away": "#cc092f"
+    },
+    "dark": {
+     "home": "#ff8200",
+     "away": "#cc092f"
+    }
+   }
+  },
+  {
+   "game_id": "322520259",
+   "season": 2012,
+   "week": 2,
+   "home_id": "259",
+   "away_id": "2046",
+   "home": "Virginia Tech Hokies",
+   "away": "Austin Peay Governors",
+   "input": {
+    "home": {
+     "color": "#6a2c3e",
+     "alternateColor": "#cf4520"
+    },
+    "away": {
+     "color": "#8e0b0b",
+     "alternateColor": null
+    }
+   },
+   "espn": {
+    "home": [
+     "#6a2c3e",
+     "#cf4520"
+    ],
+    "away": [
+     "#8e0b0b",
+     null
+    ]
+   },
+   "why": "deep",
+   "expected": {
+    "light": {
+     "home": "#672a3c",
+     "away": "#a3251a"
+    },
+    "dark": {
+     "home": "#874657",
+     "away": "#c84735"
+    }
+   }
+  },
+  {
+   "game_id": "323152567",
+   "season": 2012,
+   "week": 11,
+   "home_id": "2567",
+   "away_id": "2572",
+   "home": "SMU Mustangs",
+   "away": "Southern Mississippi Golden Eagles",
+   "input": {
+    "home": {
+     "color": "#a80000",
+     "alternateColor": "#0033a1"
+    },
+    "away": {
+     "color": "#ffc72c",
+     "alternateColor": "#231f20"
+    }
+   },
+   "espn": {
+    "home": [
+     "#a80000",
+     "#0033a1"
+    ],
+    "away": [
+     "#ffc72c",
+     "#231f20"
+    ]
+   },
+   "why": "random",
+   "expected": {
+    "light": {
+     "home": "#a80000",
+     "away": "#231f20"
+    },
+    "dark": {
+     "home": "#b51809",
+     "away": "#ffc72c"
+    }
+   }
+  },
+  {
+   "game_id": "323362226",
+   "season": 2012,
+   "week": 14,
+   "home_id": "2226",
+   "away_id": "309",
+   "home": "Florida Atlantic Owls",
+   "away": "Louisiana Ragin' Cajuns",
+   "input": {
+    "home": {
+     "color": "#003366",
+     "alternateColor": "#cc0000"
+    },
+    "away": {
+     "color": "#ce181e",
+     "alternateColor": "#000000"
+    }
+   },
+   "espn": {
+    "home": [
+     "#003366",
+     "#cc0000"
+    ],
+    "away": [
+     "#ce181e",
+     "#000000"
+    ]
+   },
+   "why": "random",
+   "expected": {
+    "light": {
+     "home": "#003366",
+     "away": "#ce181e"
+    },
+    "dark": {
+     "home": "#3c5a92",
+     "away": "#ce181e"
+    }
+   }
+  },
+  {
+   "game_id": "312950238",
+   "season": 2011,
+   "week": 8,
+   "home_id": "238",
+   "away_id": "349",
+   "home": "Vanderbilt Commodores",
+   "away": "Army Black Knights",
+   "input": {
+    "home": {
+     "color": "#000000",
+     "alternateColor": "#cfae70"
+    },
+    "away": {
+     "color": "#000000",
+     "alternateColor": "#d3bc8d"
+    }
+   },
+   "espn": {
+    "home": [
+     "#000000",
+     "#cfae70"
+    ],
+    "away": [
+     "#000000",
+     "#d3bc8d"
+    ]
+   },
+   "why": "clash",
+   "expected": {
+    "light": {
+     "home": "#000000",
+     "away": "#b7a173"
+    },
+    "dark": {
+     "home": "#5c5c5c",
+     "away": "#d3bc8d"
+    }
+   }
+  },
+  {
+   "game_id": "302470021",
+   "season": 2010,
+   "week": 1,
+   "home_id": "21",
+   "away_id": "2447",
+   "home": "San Diego State Aztecs",
+   "away": "Nicholls State Colonels",
+   "input": {
+    "home": {
+     "color": "#a6192e",
+     "alternateColor": "#000000"
+    },
+    "away": {
+     "color": "#c41230",
+     "alternateColor": "#f0f0f0"
+    }
+   },
+   "espn": {
+    "home": [
+     "#a6192e",
+     "#000000"
+    ],
+    "away": [
+     "#c41230",
+     "#f0f0f0"
+    ]
+   },
+   "why": "random",
+   "expected": {
+    "light": {
+     "home": "#000000",
+     "away": "#c41230"
+    },
+    "dark": {
+     "home": "#ac2132",
+     "away": "#f0f0f0"
+    }
+   }
+  },
+  {
+   "game_id": "300050059",
+   "season": 2009,
+   "week": 1,
+   "home_id": "59",
+   "away_id": "2294",
+   "home": "Georgia Tech Yellow Jackets",
+   "away": "Iowa Hawkeyes",
+   "input": {
+    "home": {
+     "color": "#b3a369",
+     "alternateColor": "#ffffff"
+    },
+    "away": {
+     "color": "#231f20",
+     "alternateColor": "#fcd116"
+    }
+   },
+   "espn": {
+    "home": [
+     "#b3a369",
+     "#ffffff"
+    ],
+    "away": [
+     "#231f20",
+     "#fcd116"
+    ]
+   },
+   "why": "random",
+   "expected": {
+    "light": {
+     "home": "#b3a369",
+     "away": "#231f20"
+    },
+    "dark": {
+     "home": "#ffffff",
+     "away": "#fcd116"
+    }
+   }
+  },
+  {
+   "game_id": "282610097",
+   "season": 2008,
+   "week": 4,
+   "home_id": "97",
+   "away_id": "2306",
+   "home": "Louisville Cardinals",
+   "away": "Kansas State Wildcats",
+   "input": {
+    "home": {
+     "color": "#c9001f",
+     "alternateColor": "#ffffff"
+    },
+    "away": {
+     "color": "#330a57",
+     "alternateColor": "#e2e3e4"
+    }
+   },
+   "espn": {
+    "home": [
+     "#c9001f",
+     "#ffffff"
+    ],
+    "away": [
+     "#330a57",
+     "#e2e3e4"
+    ]
+   },
+   "why": "random",
+   "expected": {
+    "light": {
+     "home": "#c9001f",
+     "away": "#330a57"
+    },
+    "dark": {
+     "home": "#c9001f",
+     "away": "#e2e3e4"
+    }
+   }
+  },
+  {
+   "game_id": "252882426",
+   "season": 2005,
+   "week": 7,
+   "home_id": "2426",
+   "away_id": "2309",
+   "home": "Navy Midshipmen",
+   "away": "Kent State Golden Flashes",
+   "input": {
+    "home": {
+     "color": "#00225b",
+     "alternateColor": "#b5a67c"
+    },
+    "away": {
+     "color": "#002664",
+     "alternateColor": "#eaab00"
+    }
+   },
+   "espn": {
+    "home": [
+     "#00225b",
+     "#b5a67c"
+    ],
+    "away": [
+     "#002664",
+     "#eaab00"
+    ]
+   },
+   "why": "random",
+   "expected": {
+    "light": {
+     "home": "#00225b",
+     "away": "#d49800"
+    },
+    "dark": {
+     "home": "#495596",
+     "away": "#eaab00"
+    }
+   }
+  },
+  {
+   "game_id": "243622649",
+   "season": 2004,
+   "week": 1,
+   "home_id": "41",
+   "away_id": "2649",
+   "home": "Connecticut Huskies",
+   "away": "Toledo Rockets",
+   "input": {
+    "home": {
+     "color": "#0c2340",
+     "alternateColor": "#a2aaad"
+    },
+    "away": {
+     "color": "#0b2240",
+     "alternateColor": "#ffcd00"
+    }
+   },
+   "espn": {
+    "home": [
+     "#0c2340",
+     "#a2aaad"
+    ],
+    "away": [
+     "#0b2240",
+     "#ffcd00"
+    ]
+   },
+   "why": "clash",
+   "expected": {
+    "light": {
+     "home": "#0c2340",
+     "away": "#c79d00"
+    },
+    "dark": {
+     "home": "#a2aaad",
+     "away": "#ffcd00"
+    }
+   }
+  }
+ ]
+}

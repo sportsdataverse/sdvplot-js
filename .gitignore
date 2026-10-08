@@ -16,3 +16,4 @@ notebooks/dist/
 notebooks/src/_sdv/
 notebooks/src/data/*.json
 notebooks/src/.observablehq/
+spikes/**/spike.js
