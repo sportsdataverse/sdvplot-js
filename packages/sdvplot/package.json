@@ -30,6 +30,10 @@
       "types": "./dist/chartjs.d.ts",
       "import": "./dist/chartjs.js"
     },
+    "./chartjs/surface": {
+      "types": "./dist/chartjs-surface.d.ts",
+      "import": "./dist/chartjs-surface.js"
+    },
     "./testing": {
       "types": "./dist/testing.d.ts",
       "import": "./dist/testing.js"

@@ -9,6 +9,7 @@ export default defineConfig({
     plot: "src/plot/index.ts",
     d3: "src/d3/index.ts",
     chartjs: "src/chartjs.ts",
+    "chartjs-surface": "src/chartjs-surface.ts",
     testing: "src/testing/index.ts",
   },
   external: [

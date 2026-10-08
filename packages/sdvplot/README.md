@@ -54,7 +54,8 @@ Plot.plot({
 | `@sportsdataverse/sdvplot/react` | `TeamLogo`, `Wordmark`, `Headshot`, `useTeamColors`, `useResolve` (React >= 18, optional peer) |
 | `@sportsdataverse/sdvplot/plot` | Observable Plot marks and scales: `logos`, `wordmarks`, `headshots`, `axisLogos`, `teamColor`/`teamFill`, `meanLines`/`medianLines`, `titleImage`, `teamTiers`, `surface` (optional peers `@observablehq/plot`, `@sportsdataverse/sporty`) |
 | `@sportsdataverse/sdvplot/d3` | `appendLogos`, `appendWordmarks`, `appendHeadshots`, `teamColorScale`, `appendSurface` (optional peers `d3`, `@sportsdataverse/sporty`) |
-| `@sportsdataverse/sdvplot/chartjs` | Chart.js 4: `logoPoints`, `wordmarkPoints`, `headshotPoints`, `pointImages`, `axisLogos`, `logoWatermarks`, `teamColor`/`teamFill`, `surface` (optional peers `chart.js` >= 4.4, `@sportsdataverse/sporty`) |
+| `@sportsdataverse/sdvplot/chartjs` | Chart.js 4: `logoPoints`, `wordmarkPoints`, `headshotPoints`, `pointImages`, `axisLogos`, `logoWatermarks`, `teamColor`/`teamFill`, (optional peer `chart.js` >= 4.4; no sporty needed) |
+| `@sportsdataverse/sdvplot/chartjs/surface` | Chart.js 4 court, field or rink background: `surface` (optional peers `chart.js` >= 4.4, `@sportsdataverse/sporty`) |
 | `@sportsdataverse/sdvplot/testing` | Adapter-contract suite for renderer adapters: `checkAdapterContract`, `drawnMarks`, `drawnAxisMarks`, `visibleAxisLabels` |
 
 ## Chart.js (Astro, Svelte, React, plain scripts)
@@ -173,7 +174,7 @@ A shot chart over a court (and a hexbin as bubbles at the hex centres):
 
 ```ts
 import { toSurfaceFrame } from "@sportsdataverse/sporty";
-import { surface } from "@sportsdataverse/sdvplot/chartjs";
+import { surface } from "@sportsdataverse/sdvplot/chartjs/surface";
 import { hexbin } from "d3-hexbin";
 const court = surface("nba", { team: "BOS", displayRange: "defense" });
 const pts = toSurfaceFrame(shots, { from: "nba-legacy", x: "loc_x", y: "loc_y" })
