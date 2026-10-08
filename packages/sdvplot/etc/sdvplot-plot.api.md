@@ -177,6 +177,7 @@ export function shotCells(cells: readonly CellVsLeague[], o: ShotCellsOptions): 
 
 // @public
 export interface ShotCellsOptions {
+    clip?: boolean;
     frame?: FrameName | Frame;
     prior?: number;
     r: readonly number[] | number;

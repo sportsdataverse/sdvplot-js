@@ -105,6 +105,20 @@ test("master hex baseline falls back one foot over an empty bin: BKN against its
     [315, 1, 0],
   ]);
 });
+test("the one-foot fallback reads the bin BELOW (d - 1), not above: BKN's first 100 shots against their own curve", () => {
+  // A real slice where the empty bin's two neighbours differ: 22 ft 0/1, 23 ft empty, 24 ft 5/10.
+  const first100 = BKN.slice(0, 100);
+  const own = fgPctByDistance(first100);
+  expect(own.slice(22, 25).map((b) => [b.distance, b.attempts, b.makes, b.fgPct])).toEqual([
+    [22, 1, 0, 0],
+    [23, 0, 0, null],
+    [24, 10, 5, 0.5],
+  ]);
+  // five radius-10 cells are centred 23.x ft out; each takes bin 22's 0 (bin 24 would give 0.5, no fallback null)
+  const at23 = cellsVsDistance(first100, own, 10).filter((h) => Math.floor(Math.hypot(h.x, h.y) / 10) === 23);
+  expect(at23).toHaveLength(5);
+  expect(at23.map((h) => h.leagueFgPct)).toEqual([0, 0, 0, 0, 0]);
+});
 test("fgPctByDistance and statsBySide reject a binFt or maxFt that is not a finite number > 0", () => {
   for (const bad of [0, -1, Number.NaN, Number.POSITIVE_INFINITY]) {
     for (const f of [fgPctByDistance, statsBySide]) {

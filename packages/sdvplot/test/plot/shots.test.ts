@@ -4,6 +4,7 @@ import { basketballZones } from "@sportsdataverse/sporty";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { shootingSignature, shotCells, shotZones, surface } from "../../src/plot/index.js";
 import {
+  type CellVsLeague,
   cellsVsLeague,
   diffScale,
   fgPctByDistance,
@@ -141,4 +142,58 @@ test("shotCells shape 'square' (J38): four-corner data-space squares, id-stamped
   expect(rim?.getAttribute("fill")).toBe(
     diffScale()(shrunkDiff(h?.makes ?? 0, h?.attempts ?? 0, h?.leagueFgPct ?? 0)),
   );
+});
+
+test("shootingSignature: one data set at two widths keeps two gradients, each spanning its own x range", () => {
+  // The gradient is in user space (pixels), so the same stops at another width are another gradient. On one page a
+  // `url(#id)` resolves to the FIRST element with that id, as `getElementById` does here.
+  const pts = signaturePoints(vsLeague(fgPctByDistance(BKN), LEAGUE.byFoot));
+  const maxFt = pts.at(-1)?.distance ?? Number.NaN;
+  const figs = [700, 400].map((width) =>
+    Plot.plot({ width, y: { domain: [0, 1] }, marks: shootingSignature(pts) }),
+  );
+  document.body.append(...figs);
+  try {
+    const ids = figs.map((f) => f.querySelector("linearGradient")?.getAttribute("id"));
+    expect(new Set(ids).size).toBe(2);
+    for (const f of figs) {
+      const url = f.querySelector("g[aria-label=area]")?.getAttribute("fill") ?? ""; // the ribbon's url(#id)
+      const grad = document.getElementById(url.slice("url(#".length, -1));
+      expect(f.contains(grad)).toBe(true);
+      const x = f.scale("x");
+      expect(Number(grad?.getAttribute("x1"))).toBeCloseTo(x?.apply(0) ?? Number.NaN, 9);
+      expect(Number(grad?.getAttribute("x2"))).toBeCloseTo(x?.apply(maxFt) ?? Number.NaN, 9);
+    }
+  } finally {
+    for (const f of figs) f.remove();
+  }
+});
+
+test("shotCells drops cells centred off the plot's frame (main's `h.y <= v.top`); clip: false draws them all", () => {
+  // The REAL 2026 league hex15 index drawn as a player: 28 of its 397 centres lie past the half-court line
+  // (legacy y > 417.5, 41.75 ft from the hoop), off the defensive half court's frame.
+  const cells: CellVsLeague[] = LEAGUE.hex15.cells.map((c) => ({
+    ...c,
+    makes: Math.round((c.fgPct ?? 0) * c.attempts),
+    meanDistance: Math.hypot(c.x, c.y) / 10, // not read by the mark
+    zone: "above_break_3", // not read by the mark
+    leagueFgPct: c.fgPct,
+  }));
+  const back = new Set(cells.filter((c) => c.y > 417.5).map((c) => `${c.x},${c.y}`));
+  expect(cells).toHaveLength(397);
+  expect(back.size).toBe(28);
+  const ids = (vertical: boolean, clip?: boolean) => {
+    const court = surface("nba", { displayRange: "defense", ...(vertical ? { rotation: 90 } : {}) });
+    const frame = vertical ? "nba-legacy-vertical" : "nba-legacy";
+    const mark = shotCells(cells, clip === undefined ? { r: 15, frame } : { r: 15, frame, clip });
+    const fig = Plot.plot({ ...court.scales, width: 700, marks: [...court.marks, mark] });
+    return lastGeoPaths(fig).map((p) => p.getAttribute("data-sdv-id") ?? "");
+  };
+  for (const vertical of [false, true]) {
+    const drawn = ids(vertical);
+    expect(drawn).toHaveLength(397 - 28);
+    expect(drawn.filter((id) => back.has(id))).toEqual([]);
+    expect(ids(vertical, true)).toEqual(drawn);
+    expect(ids(vertical, false)).toHaveLength(397);
+  }
 });
