@@ -4,11 +4,48 @@
 
 ```ts
 
+// Warning: (ae-forgotten-export) The symbol "SelectionStore" needs to be exported by the entry point interact.d.ts
+//
+// @public
+export function brushFilter<R>(figure: PlotFigure, store: SelectionStore<R>, o: BrushFilterOptions<R>): BrushHandle;
+
+// @public
+export interface BrushFilterOptions<R> {
+    data: readonly R[];
+    id?: Field<R>;
+    x: Field<R>;
+    y: Field<R>;
+}
+
+// @public
+export interface BrushHandle {
+    destroy(): void;
+    move(region: {
+        x: readonly [unknown, unknown];
+        y: readonly [unknown, unknown];
+    } | null): void;
+}
+
+// @public
+export type Field<R> = (keyof R & string) | ((row: R) => unknown);
+
 // @public
 export function hasDom(): boolean;
 
 // @public
 export function highlight(root: Element, ids: ReadonlySet<string> | null): string[];
+
+// @public
+export type PlotFigure = Element & {
+    scale(name: "x" | "y"): ScaleLike | undefined;
+};
+
+// @public
+export interface ScaleLike {
+    apply(value: unknown): unknown;
+    invert?(pixel: unknown): unknown;
+    range?: Iterable<unknown>;
+}
 
 // (No @packageDocumentation comment for this package)
 
