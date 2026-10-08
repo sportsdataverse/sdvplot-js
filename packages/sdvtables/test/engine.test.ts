@@ -353,3 +353,21 @@ describe("setRows (Task 5 I1: one engine per React component)", () => {
     }
   });
 });
+
+test("Task 10: the cursor starts on row 0 with no column; setCursor clamps to the page, emits one change, is silent when equal, rejects an unknown column; a shrinking filter pulls it back", () => {
+  const t = createTable(spec, rows);
+  expect(t.state.cursor).toEqual({ row: 0, col: null });
+  const seen: string[] = [];
+  t.subscribe((e) => seen.push(e.type));
+  t.setCursor(5, "wins");
+  t.setCursor(5, "wins"); // equal: no event
+  t.setCursor(Number.NaN, null); // ignored, as setPage ignores it
+  expect(t.state.cursor).toEqual({ row: 5, col: "wins" });
+  expect(seen).toEqual(["change"]);
+  t.setCursor(99, "wins");
+  expect(t.state.cursor.row).toBe(7); // 8 rows on the page
+  expect(() => t.setCursor(0, "nope")).toThrow(TableSpecError);
+  t.setFilter("team", "l"); // LAC, LV
+  expect(t.state.cursor).toEqual({ row: 1, col: "wins" });
+  expect(t.getSnapshot().state.cursor.row).toBe(1); // the snapshot carries the clamped state
+});

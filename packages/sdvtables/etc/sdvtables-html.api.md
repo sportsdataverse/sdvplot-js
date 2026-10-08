@@ -66,7 +66,40 @@ export function handleHover<Row>(table: Table<Row>, target: EventTarget | null):
 export function handleInput<Row>(table: Table<Row>, target: EventTarget | null): void;
 
 // @public
+export function handleKeydown<Row>(table: Table<Row>, root: Element, e: KeyboardEvent): void;
+
+// @public
 export function hydrate<Row>(el: Element, table: Table<Row>): () => void;
+
+// @public
+export type KeyAction = {
+    readonly type: "cursor";
+    readonly row: number;
+    readonly col: string | null;
+} | {
+    readonly type: "sort";
+    readonly col: string;
+} | {
+    readonly type: "search";
+} | {
+    readonly type: "toggle";
+    readonly row: number;
+};
+
+// @public
+export function keyAction(key: string, k: KeyContext): KeyAction | null;
+
+// @public
+export interface KeyContext {
+    readonly cols: readonly string[];
+    // Warning: (ae-forgotten-export) The symbol "TableCursor" needs to be exported by the entry point html.d.ts
+    readonly cursor: TableCursor;
+    readonly focused: number | null;
+    readonly hotkeys: boolean;
+    readonly onRow: boolean;
+    readonly order: readonly number[];
+    readonly sorted: string | null;
+}
 
 // Warning: (ae-forgotten-export) The symbol "ColumnSpec" needs to be exported by the entry point html.d.ts
 //
@@ -128,6 +161,7 @@ export interface RenderedParts {
     readonly rows: string;
     readonly rules: string;
     readonly sheet: string;
+    readonly tableAttrs: string;
     readonly wrapperAttrs: Readonly<Record<string, string>>;
 }
 
@@ -150,6 +184,7 @@ export interface RenderOptions {
     readonly domainRows?: readonly unknown[];
     // (undocumented)
     readonly fonts?: boolean;
+    readonly grid?: TableCursor;
     readonly hidden?: readonly string[];
     readonly interactive?: boolean;
     readonly selected?: ReadonlySet<number>;
@@ -197,7 +232,7 @@ export function toElement<Row>(spec: TableSpec<Row>, rows: readonly Row[], opts?
 
 // Warnings were encountered during analysis:
 //
-// dist/html.d.ts:170:5 - (ae-forgotten-export) The symbol "Density" needs to be exported by the entry point html.d.ts
+// dist/html.d.ts:265:5 - (ae-forgotten-export) The symbol "Density" needs to be exported by the entry point html.d.ts
 
 // (No @packageDocumentation comment for this package)
 

@@ -1,6 +1,6 @@
 import type { Table } from "../engine.js";
 import { TableSpecError } from "../errors.js";
-import { captureFocus, handleClick, handleHover, handleInput } from "./controls.js";
+import { captureFocus, handleClick, handleHover, handleInput, handleKeydown } from "./controls.js";
 import { pagerLabel, renderToolbar, tableRenderOptions } from "./interactive.js";
 import { renderParts, tableHTML } from "./parts.js";
 
@@ -68,11 +68,13 @@ export function hydrate<Row>(el: Element, table: Table<Row>): () => void {
   const onClick = (e: Event): void => handleClick(table, e.target);
   const onInput = (e: Event): void => handleInput(table, e.target);
   const onHover = (e: Event): void => handleHover(table, e.target); // J31 (A7)
+  const onKeydown = (e: Event): void => handleKeydown(table, el, e as KeyboardEvent); // Task 10
 
   el.addEventListener("click", onClick);
   el.addEventListener("input", onInput);
   el.addEventListener("mouseover", onHover);
   el.addEventListener("mouseleave", onHover);
+  el.addEventListener("keydown", onKeydown);
   // J31: a hover changes no state, and re-rendering on it would replace the row under the pointer
   const unsubscribe = table.subscribe((e) => {
     if (e.type !== "hover") schedule();
@@ -85,5 +87,6 @@ export function hydrate<Row>(el: Element, table: Table<Row>): () => void {
     el.removeEventListener("input", onInput);
     el.removeEventListener("mouseover", onHover);
     el.removeEventListener("mouseleave", onHover);
+    el.removeEventListener("keydown", onKeydown);
   };
 }

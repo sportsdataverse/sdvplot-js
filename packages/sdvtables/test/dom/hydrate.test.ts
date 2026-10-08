@@ -329,3 +329,109 @@ test("hiding a column restores the caret of a focused filter input; teardown twi
   off();
   expect(() => off()).not.toThrow();
 });
+
+/** Task 10: a keydown on `target`; true when nothing consumed it (dispatchEvent's return value). */
+const press = (target: Element, key: string, init: KeyboardEventInit = {}): boolean =>
+  target.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true, cancelable: true, ...init }));
+const rowAt = (el: Element, i: number): HTMLElement =>
+  el.querySelector<HTMLElement>(`[data-sdv-body] tr[data-row="${i}"]`) as HTMLElement;
+const tabStops = (el: Element): string[] =>
+  Array.from(
+    el.querySelectorAll('[data-sdv-body] tr[tabindex="0"]'),
+    (r) => r.getAttribute("data-row") ?? "",
+  );
+
+test("Task 10 (A48): j/k move the one tab stop and focus with it; Enter and Space toggle aria-selected; focus survives each re-render", async () => {
+  const t = createTable(spec, rows);
+  const el = mount(renderHTML(t));
+  hydrate(el, t);
+  expect(tabStops(el)).toEqual(["0"]);
+  rowAt(el, 0).focus();
+  expect(press(rowAt(el, 0), "j")).toBe(false); // consumed
+  expect(press(rowAt(el, 1), "j")).toBe(false); // the engine moved at once; the frame has not drawn yet
+  await frame();
+  expect(t.state.cursor).toEqual({ row: 2, col: null });
+  expect(tabStops(el)).toEqual(["2"]);
+  expect(document.activeElement).toBe(rowAt(el, 2)); // the REBUILT row
+  press(rowAt(el, 2), "k");
+  await frame();
+  expect(tabStops(el)).toEqual(["1"]);
+  expect(document.activeElement).toBe(rowAt(el, 1));
+  press(rowAt(el, 1), "Enter");
+  await frame();
+  expect(t.getSelection()).toEqual(new Set(["1"])); // LAC
+  expect(rowAt(el, 1).getAttribute("aria-selected")).toBe("true");
+  expect(document.activeElement).toBe(rowAt(el, 1));
+  expect(press(rowAt(el, 1), " ")).toBe(false); // Space toggles too, and never scrolls the page
+  await frame();
+  expect(rowAt(el, 1).getAttribute("aria-selected")).toBe("false");
+});
+test("Task 10: h/l pick the column, s cycles its sort through the sort button, / jumps to the search box", async () => {
+  const t = createTable(spec, rows);
+  const el = mount(renderHTML(t));
+  hydrate(el, t);
+  rowAt(el, 0).focus();
+  press(rowAt(el, 0), "l"); // nothing sorted and no column yet: from team (the first sortable) to wins
+  await frame();
+  expect(t.state.cursor).toEqual({ row: 0, col: "wins" });
+  expect(el.querySelector("th.sdvt-col-current")?.getAttribute("data-col")).toBe("wins");
+  press(rowAt(el, 0), "s");
+  await frame();
+  expect(el.querySelector('[data-col="wins"]')?.getAttribute("aria-sort")).toBe("ascending");
+  expect(firstTeam(el)).toBe("LV");
+  expect(document.activeElement).toBe(rowAt(el, 0)); // focus keeps the cursor position
+  press(rowAt(el, 0), "s");
+  await frame();
+  expect(firstTeam(el)).toBe("KC"); // descending
+  press(rowAt(el, 0), "l");
+  press(rowAt(el, 0), "l"); // net_epa is the last sortable column (qb is not sortable): it stays
+  expect(t.state.cursor.col).toBe("net_epa");
+  press(rowAt(el, 0), "/");
+  expect(document.activeElement).toBe(el.querySelector("[data-sdv-global-filter]"));
+});
+test("Task 10: j typed in a filter input, with a modifier, or in contenteditable is not a hotkey; hotkeys: false keeps the arrows", async () => {
+  const t = createTable(spec, rows);
+  const el = mount(renderHTML(t));
+  hydrate(el, t);
+  const input = el.querySelector<HTMLInputElement>('[data-sdv-filter="team"]') as HTMLInputElement;
+  input.focus();
+  expect(press(input, "j")).toBe(true); // not consumed: the letter goes into the box
+  expect(press(input, "/")).toBe(true);
+  expect(press(rowAt(el, 0), "j", { ctrlKey: true })).toBe(true);
+  expect(press(rowAt(el, 0), "s", { metaKey: true })).toBe(true);
+  rowAt(el, 0)
+    .querySelector("td")
+    ?.insertAdjacentHTML("beforeend", '<span contenteditable="true">note</span>');
+  expect(press(el.querySelector("[contenteditable]") as Element, "j")).toBe(true);
+  expect(t.state.cursor).toEqual({ row: 0, col: null });
+  expect(t.state.sort).toBeNull();
+  expect(document.activeElement).toBe(input);
+  const off = createTable({ ...spec, interactive: { hotkeys: false } }, rows);
+  const el2 = mount(renderHTML(off));
+  hydrate(el2, off);
+  expect(press(rowAt(el2, 0), "j")).toBe(true);
+  expect(press(rowAt(el2, 0), "ArrowDown")).toBe(false);
+  expect(off.state.cursor.row).toBe(1);
+});
+test("Task 10: under groupBy, j goes to the next row SHOWN, not the next page index", async () => {
+  const grouped = defineTable<Standing>()
+    .columns((c) => [c.text("team"), c.int("wins")])
+    .groupBy("division")
+    .build();
+  const t = createTable(grouped, rows, { sort: { col: "wins", dir: "desc" } });
+  const el = mount(renderHTML(t));
+  hydrate(el, t);
+  // wins desc: KC BUF LAC DEN MIA NYJ LV NE (page indices 0-7); grouped, West first: KC LAC DEN LV | BUF MIA NYJ NE
+  const order = Array.from(el.querySelectorAll("[data-sdv-body] tr[data-row]"), (r) =>
+    r.getAttribute("data-row"),
+  );
+  expect(order).toEqual(["0", "2", "3", "6", "1", "4", "5", "7"]);
+  rowAt(el, 0).focus();
+  press(rowAt(el, 0), "j"); // KC -> LAC (page index 2), not BUF (1)
+  await frame();
+  expect(t.state.cursor.row).toBe(2);
+  expect(document.activeElement?.querySelector("td")?.textContent).toBe("LAC");
+  press(rowAt(el, 2), "j"); // LAC -> DEN (3), the next row shown
+  await frame();
+  expect(document.activeElement?.querySelector("td")?.textContent).toBe("DEN");
+});

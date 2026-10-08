@@ -1,7 +1,7 @@
 // src/html/parts.ts — Phase 4's renderHTML body (moved from index.ts), split into strings so the static path,
 // renderHTML(table), hydrate and <SdvTable/> share ONE renderer (Phase 5 Task 2).
 import { warn } from "@sportsdataverse/sdvplot";
-import type { Sort } from "../engine.js";
+import type { Sort, TableCursor } from "../engine.js";
 import { TableSpecError } from "../errors.js";
 import type { ColumnSpec, Decoration, TableSpec, ThemeRef } from "../spec.js";
 import { fnv1a32, tableId } from "../table-id.js";
@@ -33,6 +33,13 @@ export interface RenderOptions {
    * a rendered row missing from it is colored from its own value (a rank fill gets none) and warns once per column.
    */
   readonly domainRows?: readonly unknown[];
+  /**
+   * Task 10 (A48): with `interactive`, render the table as a selectable ARIA grid: `role="grid"` and
+   * `aria-multiselectable="true"` on the table, `tabindex="0"` on the body row whose index is `grid.row` (clamped to
+   * the rows) and `"-1"` on the others, `aria-selected` on every body row, and `sdvt-col-current` on the header of
+   * `grid.col`. Ignored without `interactive`.
+   */
+  readonly grid?: TableCursor;
 }
 /** One render split into strings: `assemble` joins them into `renderHTML`'s output; `tableHTML` is the part that depends on the rows. */
 export interface RenderedParts {
@@ -62,6 +69,8 @@ export interface RenderedParts {
   readonly foot: string;
   /** decoration blocks placed after the table element (bottom border bars and legends), or "" */
   readonly after: string;
+  /** the <table> tag's attributes with a leading space (Task 10: the grid role), or "" */
+  readonly tableAttrs: string;
 }
 
 function checkKeys<Row>(spec: TableSpec<Row>, rows: readonly Row[]): void {
@@ -132,7 +141,7 @@ export function attrsText(attrs: Readonly<Record<string, string>>): string {
 const styleTag = (css: string): string => (css ? `<style>${css}</style>` : "");
 /** The table block: the decorations' own <style>, then before + <table> + after. hydrate re-renders exactly this. */
 export function tableHTML(p: RenderedParts): string {
-  return `${styleTag(p.rules)}${p.before}<table>${p.caption}<thead>${p.headRows}<tr>${p.head}</tr></thead><tbody>${p.rows}</tbody>${p.foot}</table>${p.after}`;
+  return `${styleTag(p.rules)}${p.before}<table${p.tableAttrs}>${p.caption}<thead>${p.headRows}<tr>${p.head}</tr></thead><tbody>${p.rows}</tbody>${p.foot}</table>${p.after}`;
 }
 /**
  * The fonts link, then the wrapper holding the theme sheet and `inner` (default: the table block).
@@ -170,6 +179,8 @@ export function renderParts<Row>(
       `hidden names no column ${bad.map((k) => JSON.stringify(k)).join(", ")}; columns are ${spec.columns.map((c) => c.key).join(", ")}`,
     );
   const domainRows = (opts.domainRows ?? rows) as readonly Row[]; // J31 (A4)
+  const grid = opts.interactive === true ? opts.grid : undefined; // Task 10 (A48)
+  const tabRow = grid === undefined ? -1 : Math.min(grid.row, rows.length - 1); // exactly one tab stop
   const scales = columnScales(spec, rows, warn, domainRows);
   const ctx: RenderContext<Row> = {
     spec,
@@ -202,7 +213,8 @@ export function renderParts<Row>(
       const inner = sortable
         ? `<button type="button" class="sdvt-sort" data-sdv-sort="${escapeAttr(c.key)}">${label}</button>`
         : label;
-      return `<th scope="col" class="sdvt-label sdvt-${escapeAttr(alignOf(c))}" data-col="${escapeAttr(c.key)}" data-kind="${escapeAttr(c.kind)}"${aria}${styleOf([c.width ? `width:${escapeAttr(cssValue(c.width, `column ${c.key} width`))}` : "", deco.labelStyle(c.key)])}>${inner}</th>`;
+      const current = grid?.col === c.key ? " sdvt-col-current" : "";
+      return `<th scope="col" class="sdvt-label sdvt-${escapeAttr(alignOf(c))}${current}" data-col="${escapeAttr(c.key)}" data-kind="${escapeAttr(c.kind)}"${aria}${styleOf([c.width ? `width:${escapeAttr(cssValue(c.width, `column ${c.key} width`))}` : "", deco.labelStyle(c.key)])}>${inner}</th>`;
     })
     .join("");
   const cellsOf = (row: Row, i: number): string =>
@@ -215,8 +227,12 @@ export function renderParts<Row>(
   // opt_row_striping: great_tables marks every second DISPLAYED data row (j % 2 == 1 over the body in display order, group headers not counted)
   const striped = theme.tokens.stripe !== "transparent";
   let shown = 0;
+  const gridRow = (i: number): string =>
+    grid === undefined
+      ? ""
+      : ` tabindex="${i === tabRow ? 0 : -1}" aria-selected="${opts.selected?.has(i) === true}"`;
   const trOf = (i: number, cells: string): string =>
-    `<tr class="sdvt-row${striped && shown++ % 2 === 1 ? " sdvt-stripe" : ""}${deco.rowClass(i)}${opts.selected?.has(i) === true ? " sdvt-selected" : ""}" data-row="${i}"${styleOf([deco.rowStyle(i)])}>${cells}</tr>`;
+    `<tr class="sdvt-row${striped && shown++ % 2 === 1 ? " sdvt-stripe" : ""}${deco.rowClass(i)}${opts.selected?.has(i) === true ? " sdvt-selected" : ""}" data-row="${i}"${gridRow(i)}${styleOf([deco.rowStyle(i)])}>${cells}</tr>`;
   let body: string[] = [];
   const snake = spec.decorations.find(
     (d): d is Extract<Decoration<Row>, { type: "snake" }> => d.type === "snake",
@@ -297,6 +313,7 @@ export function renderParts<Row>(
         ? `<tfoot>${deco.foot.map((f) => `<tr><td colspan="${span}">${f}</td></tr>`).join("")}</tfoot>`
         : "",
     after: deco.after,
+    tableAttrs: grid === undefined ? "" : ' role="grid" aria-multiselectable="true"',
   };
 }
 // ponytail: renders the empty table to get the font link; cheap and always consistent with renderHTML

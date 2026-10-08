@@ -2,6 +2,7 @@ import {
   type CSSProperties,
   Fragment,
   type ReactElement,
+  type KeyboardEvent as ReactKeyboardEvent,
   type SyntheticEvent,
   createElement,
   useCallback,
@@ -12,7 +13,7 @@ import {
   useSyncExternalStore,
 } from "react";
 import { type Sort, type Table, type TableOptions, type TableSnapshot, createTable } from "../engine.js";
-import { captureFocus, handleClick, handleHover, handleInput } from "../html/controls.js";
+import { captureFocus, handleClick, handleHover, handleInput, handleKeydown } from "../html/controls.js";
 import { SR_ONLY, filterInputs, pagerLabel, tableRenderOptions } from "../html/interactive.js";
 import { type RenderOptions, type RenderedParts, renderParts, tableHTML } from "../html/parts.js";
 import type { TableSpec } from "../spec.js";
@@ -255,6 +256,10 @@ function TableView<Row>({
       onClick: (e: SyntheticEvent) => handleClick(table, e.target),
       onMouseOver: (e: SyntheticEvent) => handleHover(table, e.target), // J31 (A8): no attribute, so SSR is unchanged
       onMouseLeave: (e: SyntheticEvent) => handleHover(table, e.target),
+      // Task 10: hotkeys and the grid's keys, as in hydrate; an event prop writes no attribute
+      onKeyDown: (e: ReactKeyboardEvent) => {
+        if (ref.current) handleKeydown(table, ref.current, e.nativeEvent);
+      },
     },
     // biome-ignore lint/security/noDangerouslySetInnerHtml: escaped renderer output (see `raw`)
     p.sheet ? createElement("style", { dangerouslySetInnerHTML: raw(p.sheet) }) : null,

@@ -55,7 +55,8 @@ export function renderHTML<Row>(
   return assemble(renderParts(a, (b as readonly Row[] | undefined) ?? [], c));
 }
 export { createTable } from "../engine.js";
-export { handleClick, handleHover, handleInput, rowIdAt } from "./controls.js";
+export { handleClick, handleHover, handleInput, handleKeydown, keyAction, rowIdAt } from "./controls.js";
+export type { KeyAction, KeyContext } from "./controls.js";
 export { hydrate } from "./hydrate.js";
 export {
   pagerLabel,

@@ -28,7 +28,9 @@ test("interactive layout: style, toolbar, body block, no pager when pageSize is 
     /^<div class="sdvt sdvt-theme-sdv sdvt-t-[0-9a-f]{8}" id="sdvt-[0-9a-f]{8}" data-sdvt-theme="sdv" data-sdvt-density="compact"><style>/,
   );
   expect(html).toContain('</style><div class="sdvt-toolbar">');
-  expect(html).toContain('</div><div class="sdvt-body" data-sdv-body=""><table>');
+  expect(html).toContain(
+    '</div><div class="sdvt-body" data-sdv-body=""><table role="grid" aria-multiselectable="true">',
+  );
   expect(html).toContain(
     'data-col="wins" data-kind="int" aria-sort="descending"><button type="button" class="sdvt-sort" data-sdv-sort="wins">Wins</button>',
   );
@@ -262,4 +264,23 @@ test("A49: the tiers missing-level warning reads the source rows, not the page",
     setWarningHandler(() => {});
   }
   expect(msgs).toEqual(['tier(s) North are not in "division", so they get no rows; it holds West, East']);
+});
+
+test("Task 10 (A48): an interactive table is a selectable grid with ONE tab stop; a static table is not", () => {
+  expect(renderHTML(spec, rows)).not.toMatch(/role="grid"|tabindex|aria-selected|sdvt-col-current"/);
+  const t = createTable(spec, many, { pageSize: 10 });
+  t.setPage(1);
+  t.setCursor(3, "wins");
+  t.setSelection(new Set(["12"])); // T13, the third row of page 2 (no rowKey: ids are source indices)
+  const html = renderHTML(t, { fonts: false });
+  expect(html).toContain('<table role="grid" aria-multiselectable="true">');
+  expect(html.match(/ tabindex="0"/g)?.length).toBe(1);
+  expect(html.match(/ tabindex="-1"/g)?.length).toBe(9);
+  expect(html).toContain('data-row="3" tabindex="0" aria-selected="false"');
+  expect(html).toContain(
+    '<tr class="sdvt-row sdvt-selected" data-row="2" tabindex="-1" aria-selected="true"',
+  );
+  expect(html.match(/aria-selected="true"/g)?.length).toBe(1);
+  expect(html).toMatch(/<th scope="col" class="[^"]*\bsdvt-col-current" data-col="wins"/);
+  expect(html.match(/sdvt-col-current"/g)?.length).toBe(1);
 });

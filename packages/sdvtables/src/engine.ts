@@ -16,6 +16,14 @@ export type TableEvent =
   | { readonly type: "change" }
   | { readonly type: "hover"; readonly id: string | null }
   | { readonly type: "select"; readonly ids: ReadonlySet<string> };
+/**
+ * Task 10 (A45, A48): the keyboard cursor of an interactive table. `row` is the body row holding the grid's one tab
+ * stop, as a page-relative index (that row's `data-row`); `col` is the column `s` sorts, null until `h`/`l` picks one.
+ */
+export interface TableCursor {
+  readonly row: number;
+  readonly col: string | null;
+}
 
 /** The whole user-controlled state of a table: sort, filters, page, hidden columns, and the J31 link fields. Immutable; every mutation replaces it. */
 export interface TableState<Row> {
@@ -32,6 +40,8 @@ export interface TableState<Row> {
   readonly externalFilter: RowFilter<Row> | null;
   /** J31: row ids (see `rowId`); NOT pruned to the rows present, so a linked store's ids round-trip intact */
   readonly selection: ReadonlySet<string>;
+  /** Task 10: the keyboard cursor; its row is kept on the current page */
+  readonly cursor: TableCursor;
 }
 /** What `Table.getSnapshot()` returns: the state plus the derived visible page. Referentially stable until the next mutation. */
 export interface TableSnapshot<Row> {
@@ -82,6 +92,11 @@ export interface Table<Row> {
   getSelection(): ReadonlySet<string>;
   /** J31: emits `{ type: "hover" }` without changing state; the same id twice in a row is a no-op */
   setHover(id: string | null): void;
+  /**
+   * Task 10: move the keyboard cursor. `row` is clamped to the current page; `col` must name a spec column, or be
+   * null. One `"change"` event; an equal cursor (after clamping) is a no-op, and a non-finite `row` is ignored.
+   */
+  setCursor(row: number, col: string | null): void;
   subscribe(fn: (event: TableEvent) => void): () => void;
   /** referentially stable until the next mutation — what useSyncExternalStore reads */
   getSnapshot(): TableSnapshot<Row>;
@@ -238,6 +253,7 @@ export function createTable<Row>(
     hidden: [],
     externalFilter: null,
     selection: new Set(),
+    cursor: { row: 0, col: null },
   };
   const listeners = new Set<(event: TableEvent) => void>();
   const emit = (event: TableEvent): void => {
@@ -287,6 +303,12 @@ export function createTable<Row>(
     if (state.page > snapshot.pageCount - 1) {
       state = { ...state, page: snapshot.pageCount - 1 };
       snapshot = compute();
+    }
+    const last = Math.max(0, snapshot.rows.length - 1);
+    if (state.cursor.row > last) {
+      // Task 10: a filter, page or new rows that shrink the page pull the cursor row back onto it
+      state = { ...state, cursor: { ...state.cursor, row: last } };
+      snapshot = { ...snapshot, state };
     }
     emit(event);
   };
@@ -357,6 +379,13 @@ export function createTable<Row>(
       update({ selection }, { type: "select", ids: selection });
     },
     getSelection: () => state.selection,
+    setCursor(row, col) {
+      if (!Number.isFinite(row)) return; // as setPage: NaN/±Infinity is a caller bug, not a row
+      if (col !== null) findColumn(spec, col);
+      const r = Math.max(0, Math.min(Math.trunc(row), snapshot.rows.length - 1));
+      if (r === state.cursor.row && col === state.cursor.col) return;
+      update({ cursor: { row: r, col } });
+    },
     setHover(id) {
       if (id === hovered) return;
       hovered = id;

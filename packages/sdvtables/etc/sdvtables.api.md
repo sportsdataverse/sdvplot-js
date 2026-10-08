@@ -618,6 +618,7 @@ export interface Table<Row> {
     rowId(row: Row): string;
     // (undocumented)
     readonly rows: readonly Row[];
+    setCursor(row: number, col: string | null): void;
     setExternalFilter(filter: RowFilter<Row> | null): void;
     // (undocumented)
     setFilter(col: string, filter: FilterValue<Row> | null | undefined): void;
@@ -714,6 +715,14 @@ export class TableBuilder<Row> {
 }
 
 // @public
+export interface TableCursor {
+    // (undocumented)
+    readonly col: string | null;
+    // (undocumented)
+    readonly row: number;
+}
+
+// @public
 export type TableEvent = {
     readonly type: "change";
 } | {
@@ -752,6 +761,7 @@ export interface TableSpec<Row> {
     readonly id?: string;
     readonly interactive?: {
         readonly pageSize?: number;
+        readonly hotkeys?: boolean;
     };
     readonly rowKey?: keyof Row & string;
     // (undocumented)
@@ -764,6 +774,7 @@ export class TableSpecError extends SdvplotError {
 
 // @public
 export interface TableState<Row> {
+    readonly cursor: TableCursor;
     readonly externalFilter: RowFilter<Row> | null;
     // (undocumented)
     readonly filters: Readonly<Record<string, FilterValue<Row>>>;

@@ -31,6 +31,7 @@ export type {
   Sort,
   SortDir,
   Table,
+  TableCursor,
   TableEvent,
   TableOptions,
   TableSnapshot,

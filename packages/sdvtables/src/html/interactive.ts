@@ -14,6 +14,8 @@ export function tableRenderOptions<Row>(table: Table<Row>): RenderOptions {
     // A49: always the full source rows, so colours, legends, outlier limits and row-accent palettes hold still
     // while the user pages, types, sorts or brushes, and index row selectors mean source rows
     domainRows: table.allRows,
+    // Task 10 (A48): a selectable grid whose one tab stop is the cursor row
+    grid: table.state.cursor,
   };
 }
 

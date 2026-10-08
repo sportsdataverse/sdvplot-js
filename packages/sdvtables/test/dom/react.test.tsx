@@ -391,3 +391,38 @@ test("M3: a non-interactive render of table= shows its current (filtered, sorted
   act(() => t.setFilter("team", "ny"));
   expect(shown()).toEqual(["NYJ"]);
 });
+
+test("Task 10: keys drive <SdvTable/>: j moves the tab stop and focus to the rebuilt row, Enter selects, l + s sort, / searches; a letter typed in a box is not a hotkey", () => {
+  const { container } = render(<SdvTable spec={spec} rows={rows} interactive />);
+  const row = (i: number): HTMLElement =>
+    container.querySelector<HTMLElement>(`[data-sdv-body] tr[data-row="${i}"]`) as HTMLElement;
+  const first = row(0);
+  first.focus();
+  expect(fireEvent.keyDown(first, { key: "j" })).toBe(false); // consumed
+  expect(row(0)).not.toBe(first); // the table block was rebuilt
+  expect(row(0).getAttribute("tabindex")).toBe("-1");
+  expect(row(1).getAttribute("tabindex")).toBe("0");
+  expect(document.activeElement).toBe(row(1)); // layout-effect restore, by data-row
+  fireEvent.keyDown(row(1), { key: "Enter" });
+  expect(row(1).getAttribute("aria-selected")).toBe("true");
+  expect(document.activeElement).toBe(row(1));
+  fireEvent.keyDown(row(1), { key: "l" });
+  fireEvent.keyDown(row(1), { key: "s" });
+  expect(container.querySelector('[data-col="wins"]')?.getAttribute("aria-sort")).toBe("ascending");
+  const search = screen.getByLabelText("Search all columns");
+  expect(fireEvent.keyDown(search, { key: "j" })).toBe(true); // typed into the box: not a hotkey
+  fireEvent.keyDown(row(1), { key: "/" });
+  expect(document.activeElement).toBe(search);
+});
+test("Task 10 (A50): SSR equality on a grid: cursor row, current column, a selection, page 2", () => {
+  const t = createTable(spec, many, { pageSize: 10 });
+  t.setPage(1);
+  t.setCursor(3, "wins");
+  t.setSelection(new Set(["12"]));
+  const [react, html] = both(t);
+  expect(html).toContain('<table role="grid" aria-multiselectable="true">');
+  expect(html).toContain('data-row="3" tabindex="0" aria-selected="false"');
+  expect(html).toContain('data-row="2" tabindex="-1" aria-selected="true"');
+  expect(html).toContain(" sdvt-col-current");
+  expect(react).toBe(html);
+});
