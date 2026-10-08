@@ -31,6 +31,9 @@ Plot.plot({ ...surfaceScales(scene), marks: surfaceMark(scene) });
 import { appendSurface } from "@sportsdataverse/sporty/d3";
 ```
 
+`surfaceMark(scene, { ariaDescription })` describes the surface's polygons for assistive technology; the default is the
+scene's league and sport, such as "nba basketball surface".
+
 Paint onto a canvas (a browser `CanvasRenderingContext2D`, or `@napi-rs/canvas` in Node; no DOM types needed):
 
 ```ts
