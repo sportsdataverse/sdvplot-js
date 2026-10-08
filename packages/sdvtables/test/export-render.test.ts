@@ -353,12 +353,15 @@ describe.skipIf(!process.env.SDV_RENDER_TESTS)("playwright rendering (SDV_RENDER
     expect(Math.abs(wide.height - 675)).toBeLessThanOrEqual(1);
   }, 60_000);
   test("wide table is not clipped (Review Focus 5)", async () => {
+    // Real rows, wide: the 32 teams of `many` (NFL_2024) pivoted to one column each, headed by team and division, and
+    // one row each for their 2024 wins, losses, points for and points against (nflverse games.csv and nflseedR
+    // divisions; provenance: fixtures/nfl-2024/README.md).
     type Wide = Record<string, number>;
-    const wideRows: Wide[] = Array.from({ length: 3 }, (_, r) =>
-      Object.fromEntries(Array.from({ length: 30 }, (_, c) => [`stat_${c}`, r * 30 + c])),
+    const wideRows: Wide[] = (["wins", "losses", "pf", "pa"] as const).map((k) =>
+      Object.fromEntries(many.map((t) => [t.team, t[k]])),
     );
     const wideSpec = defineTable<Wide>()
-      .columns((c) => Array.from({ length: 30 }, (_, i) => c.int(`stat_${i}`, { label: `Statistic ${i}` })))
+      .columns((c) => many.map((t) => c.int(t.team, { label: `${t.team} (${t.conf} ${t.division})` })))
       .theme("sdv", { density: "comfortable" })
       .build();
     const out = dims(await tableToPNG(wideSpec, wideRows, { deviceScaleFactor: 1 }));
