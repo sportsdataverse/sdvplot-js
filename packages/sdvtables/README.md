@@ -284,7 +284,8 @@ Every interactive table, linked or not, underlines the row under the pointer, or
 holds one hover id, so a linked table lights the first id the figure hovers. `getHover()` returns it, so a view
 attached later (a remount, a second hydrate) shows it. Unmounting while the pointer is on a row leaves that hover in
 place, because a removed row fires no `mouseleave`. reactable's `highlight` defaults to `FALSE`; to drop the underline,
-add `tr.sdvt-hover>td.sdvt-cell{background-image:none}` to the page. A selection or brush from a linked figure
+add `tr.sdvt-hover>td.sdvt-cell{background-image:none}` to the page. The built-in rule is wrapped in `:where()`, so
+this one plain rule wins wherever the page puts it. A selection or brush from a linked figure
 rebuilds the table body, so a scroll position inside a cell resets.
 
 Engine non-goals: virtualization, column resize/reorder/pin, a grouping UI and server-side paging (slice the rows
