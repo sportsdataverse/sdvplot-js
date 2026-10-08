@@ -189,6 +189,22 @@ export function socialCard(
  * True when `e` is Node's "cannot find" (`ERR_MODULE_NOT_FOUND` / `MODULE_NOT_FOUND`) for the optional peer `name`
  * itself, on the error or under a loader's wrapper (vitest's mock error, say); a file missing inside an installed peer
  * is not.
+ *
+ * @example
+ * ```ts
+ * import { createRequire } from "node:module";
+ * import { peerMissing } from "@sportsdataverse/sdvplot/export";
+ *
+ * // Node's resolver, asked for a package that is not installed, throws MODULE_NOT_FOUND naming it
+ * const name = "@sportsdataverse/no-such-peer";
+ * let error: unknown;
+ * try {
+ *   createRequire(import.meta.url).resolve(name);
+ * } catch (e) {
+ *   error = e;
+ * }
+ * peerMissing(error, name); // true; peerMissing(error, "@resvg/resvg-js") is false
+ * ```
  */
 export function peerMissing(e: unknown, name: string): boolean {
   const quoted = new RegExp(`['"]${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}['"]`);

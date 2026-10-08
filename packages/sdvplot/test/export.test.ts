@@ -572,6 +572,57 @@ describe("toPNG remote images", () => {
         expect(sum / (shared.w * shared.h * 3)).toBeLessThan(3);
       }
     });
+    test("the one raster is OVERSAMPLE (2) × the href's largest drawn box, in output pixels, rounded up", async () => {
+      // the 1-px ink test above cannot see the oversampling (a 1× raster draws the same ink box), so read the PNG
+      // each use inlines from the SVG handed to the final Resvg
+      serveLogos();
+      const seen: string[] = [];
+      vi.doMock("@resvg/resvg-js", async (importOriginal) => {
+        const m = await importOriginal<typeof import("@resvg/resvg-js")>();
+        const Resvg = new Proxy(m.Resvg, {
+          construct: (target, args: ConstructorParameters<typeof m.Resvg>) => {
+            seen.push(String(args[0]));
+            return Reflect.construct(target, args);
+          },
+        });
+        return { ...m, Resvg };
+      });
+      vi.resetModules();
+      const { toPNG: spied } = await import("../src/export/index.js"); // it imports resvg at call time
+      // NYG is 500 × 500, its largest use 45 user units; MTL's viewBox is 960 × 640, its largest use 40
+      const fig = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="100">${[
+        `href="https://example.test/nyg.png" width="30" height="20"`,
+        `href="https://example.test/nyg.png" x="100" width="20" height="45"`,
+        `href="https://example.test/mtl.svg" x="200" width="40" height="10"`,
+        `href="https://example.test/mtl.svg" x="300" width="10" height="10"`,
+      ]
+        .map((a) => `<image ${a}/>`)
+        .join("")}</svg>`;
+      const inlined = async (o: { scale?: number; width?: number }) => {
+        seen.length = 0;
+        await spied(fig, { background: "white", ...o });
+        return Array.from(
+          (seen.at(-1) ?? "").matchAll(/<image\b[^>]*\bhref="data:image\/png;base64,([^"]+)"/g),
+          (m) => png(Buffer.from(m[1] as string, "base64")),
+        );
+      };
+      // zoom = output px per user unit: `scale`, or `width` over the figure's 400
+      for (const [o, zoom] of [
+        [{ scale: 1 }, 1],
+        [{ scale: 2.5 }, 2.5],
+        [{ width: 290 }, 290 / 400], // 2 × 0.725 × 45 = 65.25 → 66: up, not to nearest
+      ] as const) {
+        const nyg = Math.ceil(2 * zoom * 45);
+        const mtl = Math.ceil(2 * zoom * 40);
+        expect(await inlined(o)).toEqual([
+          { width: nyg, height: nyg },
+          { width: nyg, height: nyg },
+          { width: mtl, height: Math.round((640 * mtl) / 960) },
+          { width: mtl, height: Math.round((640 * mtl) / 960) },
+        ]);
+      }
+      vi.doUnmock("@resvg/resvg-js");
+    });
   });
 });
 
