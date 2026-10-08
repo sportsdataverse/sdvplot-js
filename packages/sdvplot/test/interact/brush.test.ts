@@ -65,6 +65,17 @@ test("a brushed region selects the ids inside and sets the same region as a row 
   expect([...store.getState().selected]).toEqual(["LAC", "DEN", "BUF"]);
   expect(passing(store)).toEqual(["LAC", "DEN", "BUF"]);
 });
+test("move() brushes the caller's own data range: a row ON a bound is inside (2024 AFC: DEN at 10+ wins, NYJ at 5+)", () => {
+  // the pixel round trip is inexact: on this 640 px chart invert(apply(10)) is 10.000000000000002, past DEN's 10
+  const { store, brush } = setup();
+  brush.move({ x: [10, 16], y: [0, 0.2] }); // "10+ wins"
+  expect([...store.getState().selected]).toEqual(["KC", "LAC", "DEN", "BUF"]);
+  expect(passing(store)).toEqual(["KC", "LAC", "DEN", "BUF"]);
+  brush.move({ x: [5, 16], y: [-0.2, 0.2] }); // "5+ wins"
+  expect([...store.getState().selected]).toEqual(["KC", "LAC", "DEN", "BUF", "MIA", "NYJ"]);
+  brush.move({ x: [4, 11], y: [-0.2, 0.101] }); // both bounds ON rows: LV at 4 wins, LAC at 11 and 0.101
+  expect([...store.getState().selected]).toEqual(["LAC", "LV", "MIA", "NYJ"]);
+});
 test("a brush over no point: predicate set, selected EMPTY, focus dims everything; clearing resets both (Review Focus 2)", () => {
   const { store, brush } = setup();
   brush.move({ x: [0.5, 2], y: [0.15, 0.19] }); // no 2024 AFC team won fewer than 4

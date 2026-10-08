@@ -34,7 +34,10 @@ export interface BrushFilterOptions<R> {
 }
 /** A live brush: drive it programmatically, or remove it. */
 export interface BrushFilterHandle {
-  /** Brush a region in DATA coordinates, one range per brushed axis (`null` clears), as if the user had dragged it. */
+  /**
+   * Brush a region in DATA coordinates, one range per brushed axis (`null` clears), as if the user had dragged it. Rows
+   * are tested against these exact bounds, never their pixel round trip: a row on a bound is inside.
+   */
   move(region: { x?: readonly [unknown, unknown]; y?: readonly [unknown, unknown] } | null): void;
   /** Remove the overlay and stop following the store; clears its selection and predicate if this brush set them. */
   destroy(): void;
@@ -228,6 +231,9 @@ export function brushFilter<R>(
   let mine: RowFilter<R> | null = null;
   let picked: ReadonlySet<string> | null = null; // the `selected` this brush wrote with `mine`
   let last = ""; // d3 emits "brush" then "end" for one gesture: one store update per distinct region
+  // move()'s own data region while d3 emits it (synchronously): the pixel round trip is inexact, and
+  // invert(apply(10)) = 10.000000000000002 would leave a row at 10 outside a brush starting at 10
+  let asked: { x?: [number, number]; y?: [number, number] } | null = null;
   const idOf = (row: R, i: number): string => (o.id === undefined ? String(i) : toId(get(row, o.id)));
   const b = (xs && ys ? brush<unknown>() : xs ? brushX<unknown>() : brushY<unknown>()).extent([
     [x0px, y0px],
@@ -264,8 +270,10 @@ export function brushFilter<R>(
             [sel[0][1], (sel[1] as [number, number])[1]],
           ];
     const tests: [Field<R>, number, number][] = [];
-    if (o.x !== undefined && px) tests.push([o.x, ...span(xs?.invert?.(px[0]), xs?.invert?.(px[1]))]);
-    if (o.y !== undefined && py) tests.push([o.y, ...span(ys?.invert?.(py[0]), ys?.invert?.(py[1]))]);
+    if (o.x !== undefined && px)
+      tests.push([o.x, ...(asked?.x ?? span(xs?.invert?.(px[0]), xs?.invert?.(px[1])))]);
+    if (o.y !== undefined && py)
+      tests.push([o.y, ...(asked?.y ?? span(ys?.invert?.(py[0]), ys?.invert?.(py[1])))]);
     const key = tests.map(([, lo, hi]) => `${lo}|${hi}`).join("|");
     if (key === last) return;
     const inside: RowFilter<R> = (row) =>
@@ -307,15 +315,23 @@ export function brushFilter<R>(
       }
       const px = at(xs, region.x, "x");
       const py = at(ys, region.y, "y");
-      g.call(
-        b.move,
-        px && py
-          ? [
-              [px[0], py[0]],
-              [px[1], py[1]],
-            ]
-          : (px ?? py),
-      );
+      asked = {
+        ...(px && region.x && { x: span(region.x[0], region.x[1]) }),
+        ...(py && region.y && { y: span(region.y[0], region.y[1]) }),
+      };
+      try {
+        g.call(
+          b.move,
+          px && py
+            ? [
+                [px[0], py[0]],
+                [px[1], py[1]],
+              ]
+            : (px ?? py),
+        );
+      } finally {
+        asked = null;
+      }
     },
     destroy() {
       off();
