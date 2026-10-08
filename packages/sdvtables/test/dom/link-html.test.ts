@@ -169,6 +169,26 @@ test("Enter in the frame after a brush on the old LV row toggles nothing", () =>
   lv?.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }));
   expect([...store.getState().selected]).toEqual(["KC", "LAC", "DEN", "BUF"]); // BUF not toggled off for LV
 });
+test("Space or Enter on the old LV row in the frame after a brush is consumed: it toggles nothing and never scrolls the page", () => {
+  for (const key of [" ", "Enter"]) {
+    const { svg, el, store } = setup();
+    const lv = rowAt(el, 3);
+    lv.focus();
+    brushTop4(svg, store);
+    expect(press(lv, key), key).toBe(false); // the flush replaced the row; Space would scroll it away (real Chromium)
+    expect([...store.getState().selected], key).toEqual(["KC", "LAC", "DEN", "BUF"]);
+  }
+});
+test("Enter on a focused sort button in the frame after a brush still sorts (only a replaced ROW consumes the key)", () => {
+  const { svg, el, store, table } = setup();
+  el.querySelector<HTMLElement>('[data-sdv-sort="wins"]')?.focus();
+  brushTop4(svg, store);
+  const ok = press(document.activeElement, "Enter");
+  expect(ok).toBe(true); // not consumed: the browser activates the button
+  // as Chromium does: the activation goes to the button focus was restored to, the rebuilt one
+  if (ok) (document.activeElement as HTMLElement).click();
+  expect(table.state.sort).toEqual({ col: "wins", dir: "asc" });
+});
 test("Space on a hydrated grid row selects it; the store and the figure follow (A37)", () => {
   const { svg, el, store } = setup();
   const den = el.querySelector<HTMLElement>('[data-sdv-body] tr.sdvt-row[data-row="2"]');
