@@ -44,8 +44,11 @@ const first = (ids: ReadonlySet<string>): string | null => {
   for (const id of ids) return id;
   return null;
 };
-/** A data mark's element under the event: its stamp, never an axis decoration's (`data-sdv-axis`, A39). */
-const MARK = "[data-sdv-id]:not([data-sdv-axis])";
+/**
+ * A data mark's element under the event: its stamp, never an axis decoration's (`data-sdv-axis`, A39), nor an empty
+ * stamp (`toId`'s missing id), which names no row to hover or toggle.
+ */
+const MARK = '[data-sdv-id]:not([data-sdv-id=""]):not([data-sdv-axis])';
 /** The stamped mark an event in `plot` landed in; `closest` alone climbs past `plot` to a stamped ancestor. */
 const markAt = (plot: Element, e: Event): Element | null => {
   const t = e.target as Node | null;

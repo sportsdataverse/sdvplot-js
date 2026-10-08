@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import * as Plot from "@observablehq/plot";
 import { expect, test, vi } from "vitest";
+import { STANDINGS, type Standing } from "../../../sdvtables/test/fixtures/standings.js";
 import { InputError } from "../../src/errors.js";
 import { linkSelection } from "../../src/interact/index.js";
 import { linkIds } from "../../src/plot/index.js";
@@ -140,4 +141,37 @@ test("teardown removes the roles, the listeners and the store subscription", () 
   expect(selected(store)).toEqual([PHI]);
   store.set({ selected: [IND] });
   expect(svg.querySelectorAll("[aria-checked]")).toHaveLength(0);
+});
+test("a mark stamped with an empty id (a missing key) is no checkbox and no hover target: it could never toggle", () => {
+  // 2024 AFC, one cell per team, keyed by team only where the team has a net EPA: NE's is blanked, so its id is missing
+  const svg = Plot.plot({
+    width: 640,
+    height: 60,
+    x: { type: "band" },
+    marks: [
+      Plot.cell(STANDINGS, {
+        x: "team",
+        fill: "wins",
+        render: linkIds(STANDINGS, (r: Standing) => (r.net_epa === null ? null : r.team)),
+      }),
+    ],
+  });
+  const ne = svg.querySelector('[data-sdv-id=""]');
+  expect(ne).not.toBeNull(); // toId(null): the stamp a missing id gets
+  const store = createSelection<Standing>();
+  linkSelection(store, { plot: svg, select: "toggle" });
+  expect(svg.querySelectorAll('[role="checkbox"]')).toHaveLength(7);
+  expect(["role", "tabindex", "aria-checked"].map((a) => ne?.getAttribute(a) ?? null)).toEqual([
+    null,
+    null,
+    null,
+  ]);
+  const fn = vi.fn();
+  store.subscribe(fn);
+  ne?.dispatchEvent(new MouseEvent("mouseover", { bubbles: true }));
+  click(ne);
+  expect(key(ne, "Enter").defaultPrevented).toBe(false);
+  expect(fn).not.toHaveBeenCalled(); // no "" hover dimming all eight cells, no selection
+  click(cell(svg, "BUF")); // the keyed cells still toggle
+  expect([...store.getState().selected]).toEqual(["BUF"]);
 });
