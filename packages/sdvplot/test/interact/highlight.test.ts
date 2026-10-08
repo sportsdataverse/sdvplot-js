@@ -82,7 +82,7 @@ const pointAt = (svg: Element, c: Element | null | undefined): void => {
 
 beforeAll(() => loadLeague("nfl"));
 
-test("10,000 points: stamped without reading a live collection; a hover changes two marks' classes and the root's, and never redraws (Review Focus 4)", () => {
+test("10,000 points: stamping reads no live collection; a hover touches two marks and the root, never redraws", () => {
   const pts = courtVertices(10_000);
   expect(pts).toHaveLength(10_000);
   const { value: svg, reads } = liveReads(() =>
