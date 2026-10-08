@@ -60,7 +60,7 @@ const hexes = Plot.plot({
     shotCells(cells, {
       r: sizeCells(cells, NBA_LEAGUE_2026.hex15).r,
       frame,
-      tip: { maxRadius: 18 },
+      tip: { maxRadius: 18, pointerEvents: "none" }, // a pinned tip lets a click through to the hexagon under it
       title: (h: CellVsLeague) =>
         [
           BASKETBALL_ZONE_LABELS[h.zone],

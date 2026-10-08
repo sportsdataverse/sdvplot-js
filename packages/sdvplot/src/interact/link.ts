@@ -35,7 +35,9 @@ export interface LinkTargets<Row, Datum = unknown> {
   /**
    * `"toggle"`: each stamped mark of `plot` becomes a checkbox (`role`, `tabindex="0"`, `aria-checked` kept in step
    * with the store), and a click, Enter or Space toggles its id in `selected`. Throws `InputError` when a mark sits
-   * in an `<a href>`: a checkbox inside a link is nested interactive content with two tab stops.
+   * in an `<a href>`: a checkbox inside a link is nested interactive content with two tab stops. On a Plot figure
+   * with a `tip`, a click also pins Plot's tip; give the tip `pointerEvents: "none"` so the pinned tip never takes a
+   * click meant for a mark under it.
    */
   select?: "toggle";
 }

@@ -83,7 +83,9 @@ export function courtFigure(
         r: sizeCells(cells, index).r,
         shape,
         frame: "nba-legacy-vertical",
-        tip: { maxRadius: 18 }, // main's nearest hex within 18 px (hexShotChart.ts:164-176)
+        // main's nearest hex within 18 px (hexShotChart.ts:164-176); a pinned tip never takes a click meant for a
+        // cell under it (a click pins Plot's tip, and a pinned tip takes pointer events)
+        tip: { maxRadius: 18, pointerEvents: "none" },
         title: mainLines,
       }),
     ],

@@ -94,8 +94,10 @@ toggles its id in the store's `selected`, and the other cells dim. Its ``hover: 
 writes the cell Plot's tip points at, the nearest within `tip: { maxRadius: 18 }`, as `main` does. `linkCursor`
 follows one shot distance: on the court a ring around the hoop (`shape: { axis: "ring", center: [0, -41.75] }` in the
 vertical frame), on the signature a rule, and the signature writes the distance under the pointer. Hexagon ids and
-zone names are two id spaces, so each gets its own store; on one store a hovered hexagon would dim every zone. Squares
-link the same way.
+zone names are two id spaces, so each gets its own store; on one store a hovered hexagon would dim every zone. A click
+also pins Plot's tip, so give it `pointerEvents: "none"` (`tip: { maxRadius: 18, pointerEvents: "none" }`): the pinned
+tip then never takes a click meant for a hexagon under it, and its hexagon stays hovered until the next click on the
+court. Squares link the same way.
 
 <Live id="sdvplot/interact/shot-kit" />
 

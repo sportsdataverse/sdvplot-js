@@ -112,6 +112,11 @@ test("click-to-select a hex (J36(b)): a click on the rim hex puts '0,0' in selec
   const rim = k.cells.find((h) => h.x === 0 && h.y === 0);
   expect([rim?.makes, rim?.attempts]).toEqual([147, 181]);
   expectToggles(k, store, "0,0");
+  // a click also pins Plot's tip (pointerdown); a pinned tip must not take the clicks meant for the cells under it
+  const [x, y] = drawnCentres(k).find((c) => c.id === "0,0")?.p ?? [0, 0];
+  fire(k.court, "pointermove", x + 3, y);
+  fire(k.court, "pointerdown", x + 3, y);
+  expect(k.court.querySelector("g[aria-label=tip]")?.getAttribute("pointer-events")).toBe("none");
   expect(warnings).toEqual([]);
 });
 
