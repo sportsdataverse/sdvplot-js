@@ -1,18 +1,23 @@
 /** The Vega-Lite adapter: logos, wordmarks and headshots as a native `image` mark layer on a plain spec object.
  *  Pure: vega-lite is never imported at runtime; a NEW layered spec is returned. */
 import {
+  type AxisOptions,
   type HeadshotOptions,
   type MarkOptions,
   type Placement,
   type Row,
   aspect,
+  axisLetter,
+  axisPlacements,
   checkAlpha,
   checkHeight,
+  colorList,
   imageSources,
   markPlacements,
 } from "./_web.js";
-import type { DrawnMark } from "./_web.js";
+import type { DrawnAxisMark, DrawnMark } from "./_web.js";
 import { InputError, UnsupportedTargetError } from "./errors.js";
+import type { IdSystem, League, SeasonInput } from "./types.js";
 export type { AxisOptions, DrawnAxisMark, DrawnMark, HeadshotOptions, MarkOptions, Row } from "./_web.js";
 export { embedSources } from "./_web.js"; // public: the README tells callers to build `embed` with it
 
@@ -43,6 +48,8 @@ export interface ImageLayer {
 }
 
 const DEFAULT_HEIGHT = 300; // px: Vega-Lite's continuous view height when neither chart nor config sets one
+const AXIS_GAP = 6; // px between the axis line and the axis images (past Vega-Lite's 5 px ticks)
+const LABEL_PADDING = 2; // px: Vega-Lite's default axis labelPadding
 const URL = "sdvplot_url";
 const TEAM = "sdvplot_team";
 const DISCRETE = new Set(["nominal", "ordinal"]);
@@ -250,4 +257,133 @@ export function drawnMarks(spec: VegaLiteSpec): DrawnMark[] {
         (r): DrawnMark => [String(r[TEAM]), r[xk], r[yk], l.mark.height / ref, String(r[URL])],
       );
     });
+}
+
+const BLANKED = /^indexof\((\[.*?\]), datum\.label\) >= 0/;
+
+/** A discrete axis' categories in display order: explicit scale domain or sort list, else the inline data. */
+function categoriesOf(spec: VegaLiteSpec, u: VegaLiteSpec, enc: Enc): unknown[] {
+  if (Array.isArray(enc.scale?.domain)) return enc.scale.domain;
+  const sort = "sort" in enc ? enc.sort : "ascending";
+  const data = (u.data ?? spec.data ?? {}) as { name?: string; values?: Record<string, unknown>[] };
+  const rows =
+    data.name !== undefined
+      ? (spec.datasets?.[data.name] as Record<string, unknown>[] | undefined)
+      : data.values;
+  if (rows === undefined) {
+    if (Array.isArray(sort)) return sort;
+    throw new InputError(
+      "withAxisLogos reads the categories from inline data; give the axis an explicit sort=[...] list",
+    );
+  }
+  const key = unescapeField(String(enc.field));
+  const seen = [...new Set(rows.map((r) => r[key]).filter((v) => v !== null && v !== undefined))];
+  if (Array.isArray(sort)) return [...sort, ...seen.filter((c) => !sort.includes(c))];
+  if (sort === "ascending" || sort === "descending")
+    return seen.sort((a, b) => String(a).localeCompare(String(b)) * (sort === "descending" ? -1 : 1));
+  return seen; // sort null or a field sort: data order
+}
+/** The channel object the spec reads the axis from (the first unit encoding it with a field), inside a deep copy. */
+function targetChannel(spec: VegaLiteSpec, channel: "x" | "y"): Enc {
+  for (const u of units(spec)) {
+    const e = (u.encoding as Record<string, unknown> | undefined)?.[channel];
+    if (typeof e === "object" && e !== null && "field" in e) return e as Enc;
+  }
+  throw new InputError(`the spec has no ${channel} encoding with a field`);
+}
+
+export function withAxisLogos(spec: VegaLiteSpec, axis: "x" | "y", o: AxisOptions): VegaLiteSpec;
+export function withAxisLogos<F extends object>(spec: F, axis: "x" | "y", o: AxisOptions): F;
+export function withAxisLogos(spec: object, axis: "x" | "y", o: AxisOptions): object {
+  const letter = axisLetter(axis);
+  const h = checkHeight(o.height ?? 0.1);
+  const s = specOf(spec);
+  const [u, enc] = unit(s, letter);
+  if (!DISCRETE.has(String(enc.type)))
+    throw new InputError(`withAxisLogos needs a nominal or ordinal ${letter} axis (team names on the axis)`);
+  if (enc.axis === null) throw new InputError(`the chart's ${letter} axis is hidden (axis: null)`);
+  const sort = sortOf(enc, letter);
+  const cats = categoriesOf(s, u, enc);
+  const ps = axisPlacements(cats.map(String), letter, o);
+  const chartH = chartHeight(s);
+  const hPx = h * chartH;
+  const widest = ps.length ? Math.max(...ps.map(aspect)) : 1;
+  const pos = ps.map((p) => Number(letter === "x" ? p.x : p.y));
+  const blank = JSON.stringify(pos.map((i) => String(cats[i])));
+  const old = (typeof enc.axis === "object" && enc.axis !== null ? enc.axis : {}) as Record<
+    string,
+    unknown
+  > & { labelExpr?: string; labelPadding?: number };
+  const room = (letter === "x" ? hPx : hPx * widest) + AXIS_GAP;
+  const expr = `indexof(${blank}, datum.label) >= 0 ? '' : ${old.labelExpr !== undefined ? `(${old.labelExpr})` : "datum.label"}`;
+  const base = structuredClone(s);
+  targetChannel(base, letter).axis = {
+    ...old,
+    labelExpr: expr,
+    labelPadding: (old.labelPadding ?? LABEL_PADDING) + room,
+  };
+  const key = unescapeField(String(enc.field));
+  const sources = imageSources(ps, o.embed);
+  const values = ps.map((p, i) => ({ [key]: cats[pos[i]!], [URL]: sources[i]!, [TEAM]: p.id }));
+  const channel: Enc = {
+    field: enc.field ?? letter,
+    type: String(enc.type),
+    ...("sort" in enc ? { sort } : {}),
+  };
+  const url = { field: URL, type: "nominal" as const };
+  const layer: ImageLayer =
+    letter === "x"
+      ? {
+          name: "sdvplot_axis_x",
+          data: { values },
+          mark: { type: "image", width: hPx * widest, height: hPx, aspect: true, baseline: "top" },
+          encoding: { x: channel, y: { value: chartH + AXIS_GAP }, url },
+        }
+      : {
+          name: "sdvplot_axis_y",
+          data: { values },
+          mark: { type: "image", width: hPx * widest, height: hPx, aspect: true, align: "right" },
+          encoding: { y: channel, x: { value: -AXIS_GAP }, url },
+        };
+  return layered(base, layer);
+}
+
+/** `{ domain, range }` for `encoding.color.scale`: the values as given, their team colours. */
+export function teamColorScale(
+  league: League,
+  teams: readonly unknown[],
+  o: { which?: "primary" | "secondary"; season?: SeasonInput; idSystem?: IdSystem; fallback?: string } = {},
+): { domain: string[]; range: string[] } {
+  return {
+    domain: teams.map(String),
+    range: colorList(league, teams, o).map((c) => c ?? o.fallback ?? "#808080"),
+  };
+}
+
+/** Test hook: [teamId, category position, height] per image on `axis`, in tick order. */
+export function drawnAxisMarks(spec: VegaLiteSpec, axis: "x" | "y"): DrawnAxisMark[] {
+  const letter = axisLetter(axis);
+  const s = specOf(spec);
+  const [u, enc] = unit(s, letter);
+  const cats = categoriesOf(s, u, enc);
+  const ref = chartHeight(s);
+  return named(s, `sdvplot_axis_${letter}`)
+    .flatMap((l) => {
+      const key = unescapeField(String((l.encoding[letter] as Enc).field));
+      return l.data.values.map(
+        (r): DrawnAxisMark => [String(r[TEAM]), cats.indexOf(r[key]), l.mark.height / ref],
+      );
+    })
+    .sort((a, b) => a[1] - b[1]);
+}
+/** Test hook: the labels on `axis` its labelExpr still shows as text. */
+export function visibleAxisLabels(spec: VegaLiteSpec, axis: "x" | "y"): string[] {
+  const letter = axisLetter(axis);
+  const s = specOf(spec);
+  const [u, enc] = unit(s, letter);
+  const m = BLANKED.exec(String((enc.axis as { labelExpr?: string } | undefined)?.labelExpr ?? ""));
+  const blanked = new Set<string>(m ? (JSON.parse(m[1]!) as string[]) : []);
+  return categoriesOf(s, u, enc)
+    .map(String)
+    .filter((c) => !blanked.has(c));
 }

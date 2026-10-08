@@ -4,8 +4,12 @@ import { InputError, UnsupportedTargetError } from "../src/errors.js";
 import { resetWarnings, resolveSync, setWarningHandler } from "../src/index.js";
 import {
   type VegaLiteSpec,
+  drawnAxisMarks,
   drawnMarks,
   logoLayer,
+  teamColorScale,
+  visibleAxisLabels,
+  withAxisLogos,
   withHeadshots,
   withLogos,
   withWordmarks,
@@ -240,5 +244,119 @@ describe("withLogos", () => {
     const marks = JSON.stringify(vg.marks);
     expect(marks).toContain('"type":"image"');
     expect(marks).toContain("sdvplot_url");
+  });
+});
+
+describe("withAxisLogos", () => {
+  const bars = (labels: string[], extra: Record<string, unknown> = {}): VegaLiteSpec => ({
+    data: { values: labels.map((t, i) => ({ team: t, w: i + 1 })) },
+    mark: "bar",
+    encoding: {
+      x: { field: "team", type: "nominal", sort: null, ...extra },
+      y: { field: "w", type: "quantitative" },
+    },
+  });
+
+  test("x axis: labelExpr blanks only resolved labels, labelPadding grows, images hang below the plot", () => {
+    const spy = vi.fn();
+    setWarningHandler(spy);
+    const out = withAxisLogos({ ...bars(["KC", "XXX", "BUF"]), height: 200 }, "x", {
+      league: "nfl",
+      height: 0.1,
+    });
+    setWarningHandler(null);
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(drawnAxisMarks(out, "x")).toEqual([
+      [ID(KC), 0, 0.1],
+      [ID(BUF), 2, 0.1],
+    ]);
+    expect(visibleAxisLabels(out, "x")).toEqual(["XXX"]);
+    const axis = (
+      (out.layer![0] as VegaLiteSpec).encoding!.x as { axis: { labelExpr: string; labelPadding: number } }
+    ).axis;
+    expect(axis.labelExpr).toBe(`indexof(["KC","BUF"], datum.label) >= 0 ? '' : datum.label`);
+    expect(axis.labelPadding).toBe(2 + 20 + 6);
+    const layer = out.layer![1] as {
+      name: string;
+      mark: { baseline: string; height: number };
+      encoding: { y: { value: number }; x: { field: string; sort: unknown } };
+    };
+    expect(layer.name).toBe("sdvplot_axis_x");
+    expect(layer.mark).toMatchObject({ baseline: "top", height: 20 });
+    expect(layer.encoding.y).toEqual({ value: 206 });
+    expect(layer.encoding.x).toMatchObject({ field: "team", sort: null });
+  });
+
+  test("y axis: images end left of the axis; an existing labelExpr is wrapped; the axis titles survive the layer", () => {
+    const spec: VegaLiteSpec = {
+      height: 100,
+      data: { values: [{ team: "KC", w: 1 }] },
+      mark: "bar",
+      encoding: {
+        y: {
+          field: "team",
+          type: "nominal",
+          title: "Team",
+          axis: { labelExpr: "upper(datum.label)", labelPadding: 4 },
+        },
+        x: { field: "w", type: "quantitative", title: "Wins" },
+      },
+    };
+    const out = withAxisLogos(spec, "y", { league: "nfl", height: 0.1 });
+    const yAxis = (out.layer![0] as VegaLiteSpec).encoding!.y as {
+      title: string;
+      axis: { labelExpr: string; labelPadding: number };
+    };
+    expect(yAxis.title).toBe("Team");
+    expect(yAxis.axis.labelExpr).toBe(`indexof(["KC"], datum.label) >= 0 ? '' : (upper(datum.label))`);
+    expect(yAxis.axis.labelPadding).toBeGreaterThan(4 + 10);
+    const layer = out.layer![1] as { mark: { align: string }; encoding: { x: { value: number } } };
+    expect(layer.mark.align).toBe("right");
+    expect(layer.encoding.x).toEqual({ value: -6 });
+  });
+
+  test("categories come from scale.domain or sort list, else inline data in sort order; no data and no list raises", () => {
+    expect(
+      drawnAxisMarks(
+        withAxisLogos({ ...bars(["BUF", "KC"], { scale: { domain: ["KC", "BUF"] } }), height: 100 }, "x", {
+          league: "nfl",
+        }),
+        "x",
+      ).map((m) => m[1]),
+    ).toEqual([0, 1]);
+    expect(
+      drawnAxisMarks(
+        withAxisLogos({ ...bars(["BUF", "KC"], { sort: "ascending" }), height: 100 }, "x", { league: "nfl" }),
+        "x",
+      ).map((m) => m[0]),
+    ).toEqual([ID(BUF), ID(KC)]);
+    expect(() =>
+      withAxisLogos(
+        {
+          height: 100,
+          data: { url: "x.csv" },
+          mark: "bar",
+          encoding: { x: { field: "team", type: "nominal" }, y: { field: "w", type: "quantitative" } },
+        },
+        "x",
+        { league: "nfl" },
+      ),
+    ).toThrow(/explicit sort=\[\.\.\.\] list/);
+  });
+
+  test("needs a discrete axis that is not hidden", () => {
+    expect(() => withAxisLogos(points(), "x", { league: "nfl" })).toThrow(
+      /needs a nominal or ordinal x axis/,
+    );
+    expect(() => withAxisLogos(bars(["KC"], { axis: null }), "x", { league: "nfl" })).toThrow(
+      /x axis is hidden/,
+    );
+  });
+
+  test("teamColorScale: domain is the values given, range their colours (fallback for unknown)", () => {
+    const s = teamColorScale("nfl", [KC, "XXX", BUF], { fallback: "#999999" });
+    expect(s.domain).toEqual([KC, "XXX", BUF]);
+    expect(s.range[1]).toBe("#999999");
+    expect(s.range[0]).toMatch(/^#/);
   });
 });
