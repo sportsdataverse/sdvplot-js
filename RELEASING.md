@@ -16,8 +16,8 @@ token and trusted publishing (OIDC) is configured afterwards.
 1. **Confirm the npm org.** <https://www.npmjs.com/org/sportsdataverse> must be an organization you own (free plan;
    every package public). The `sportsdataverse` scope exists on the registry, but the registry cannot tell an org
    from a user account anonymously, so check the page while logged in.
-2. **Formalize the J3 licence understanding in writing.** `@sportsdataverse/sporty` ports sportyR (GPL-3) under MIT;
-   see `NOTICE.md`. Do this before anything is published.
+2. **J3 licence: done.** J3 settled 2026-10-08: option C, NOTICE only; see spec row J3. `@sportsdataverse/sporty`
+   ships under MIT at 0.1.0, and its existing `NOTICE.md` is the formalization. Nothing to do here; do not re-open it.
 3. **Check the token.** The `NPM_TOKEN` secret must be a granular access token with read and write on the
    `@sportsdataverse` scope (it creates new packages there), "Bypass 2FA" enabled (CI cannot answer a 2FA prompt), and
    an expiry after the release date (write tokens last at most 90 days).
