@@ -9,6 +9,9 @@ export default defineConfig({
     plot: "src/plot/index.ts",
     d3: "src/d3/index.ts",
     testing: "src/testing/index.ts",
+    plotly: "src/plotly.ts",
+    vega: "src/vega.ts",
+    echarts: "src/echarts.ts",
   },
   external: [
     "react",

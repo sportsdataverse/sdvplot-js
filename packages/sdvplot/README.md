@@ -70,6 +70,96 @@ The backgrounds default to `#ffffff` (light) and `#181a1b` (dark); pass `theme: 
 | `@sportsdataverse/sdvplot/plot` | Observable Plot marks and scales: `logos`, `wordmarks`, `headshots`, `axisLogos`, `teamColor`/`teamFill`, `meanLines`/`medianLines`, `titleImage`, `teamTiers`, `surface` (optional peers `@observablehq/plot`, `@sportsdataverse/sporty`) |
 | `@sportsdataverse/sdvplot/d3` | `appendLogos`, `appendWordmarks`, `appendHeadshots`, `teamColorScale`, `appendSurface` (optional peers `d3`, `@sportsdataverse/sporty`) |
 | `@sportsdataverse/sdvplot/testing` | Adapter-contract suite for renderer adapters: `checkAdapterContract`, `drawnMarks`, `drawnAxisMarks`, `visibleAxisLabels` |
+| `@sportsdataverse/sdvplot/plotly` | `withLogos`, `withWordmarks`, `withHeadshots`, `withAxisLogos`, `teamColorway`, `embedSources` (no runtime dependency) |
+| `@sportsdataverse/sdvplot/vega` | `withLogos`, `withWordmarks`, `withHeadshots`, `logoLayer`, `withAxisLogos`, `teamColorScale`, `embedSources` (no runtime dependency) |
+| `@sportsdataverse/sdvplot/echarts` | `withLogos`, `withWordmarks`, `withHeadshots`, `withAxisLogos`, `teamColorPalette`, `embedSources` (no runtime dependency) |
+
+## Spec adapters (Plotly, Vega-Lite, ECharts) — zero runtime deps
+
+These patch a plain spec object and never import the charting library: use whatever plotly.js / vega-embed / echarts
+build you already load. Each verb returns a NEW spec and leaves its input alone. The verbs are synchronous, so load the
+team data first (`preloadAll()` or `loadLeague(league)`).
+
+```ts
+import * as Plotly from "plotly.js"; // any build: plotly.js-dist-min works the same
+import { preloadAll } from "@sportsdataverse/sdvplot";
+import { withLogos } from "@sportsdataverse/sdvplot/plotly";
+
+await preloadAll();
+const rows = [
+  { epa: 0.21, sr: 0.48, team: "KC" },
+  { epa: 0.12, sr: 0.45, team: "BUF" },
+];
+// TypeScript: type the figure as plotly.js's own and the same type comes back for Plotly.newPlot (JS needs no type)
+const base: { data: Plotly.Data[]; layout: Partial<Plotly.Layout> } = {
+  data: [{ type: "scatter", mode: "markers", x: rows.map((r) => r.epa), y: rows.map((r) => r.sr) }],
+  layout: {},
+};
+const fig = withLogos(base, rows, { x: "epa", y: "sr", team: "team", league: "nfl", height: 0.12 });
+await Plotly.newPlot(document.getElementById("chart")!, fig.data, fig.layout);
+```
+
+Vega-Lite's `TopLevelSpec` and echarts' `EChartsOption` come back as themselves the same way.
+
+Options every adapter takes (`withLogos` / `withWordmarks` / `withHeadshots` are the mark verbs):
+
+| Option | Verbs | Meaning |
+| --- | --- | --- |
+| `x`, `y` | marks | Row columns holding each image's position |
+| `team` | `withLogos`, `withWordmarks` | Row column holding the team (abbreviation, name or id) |
+| `player` | `withHeadshots` | Row column holding the player id |
+| `league` | all | `"nfl"`, `"nba"`, `"cfb"`, ... |
+| `season` | logos, wordmarks, `withAxisLogos` | A season; for the mark verbs also the name of a row column holding each row's season |
+| `height` | all | Image height as a fraction of the plot area's height, in (0, 1]; default 0.1 |
+| `alpha` | marks | Opacity in [0, 1]; default 1 |
+| `variant` | logos, wordmarks, `withAxisLogos` | Logo variant, e.g. `"dark"` |
+| `idSystem` | all | How the team values are read (default `"auto"`); for headshots `"espn"` (default) or `"gsis"` (needs `loadGsis()`) |
+| `markType` | `withAxisLogos` | `"logo"` (default) or `"wordmark"` |
+| `embed` | all | `await embedSources(urls)` (each subpath exports it): inlines the images as data URIs (offline HTML, static export) |
+
+An unknown team or player is skipped with one warning per call. The colour helpers (`teamColorway`, `teamColorScale`,
+`teamColorPalette`) take `(league, teams, { which, season, idSystem, fallback })`: `which` is `"primary"` (default) or
+`"secondary"`, and an unknown team gets `fallback` (default `"#808080"`).
+
+**Plotly** (`layout.images`):
+
+| Option | Verbs | Meaning |
+| --- | --- | --- |
+| `xref`, `yref` | all | The subplot's axes, e.g. `"x2"`, `"y2"`; default `"x"`, `"y"` |
+| `layer` | marks | `"above"` (default) or `"below"` the traces |
+
+`height` is a fraction of the subplot. The mark verbs PIN the axis ranges (with half a mark of room), because a
+data-placed image is sized in axis units; set `layout.xaxis.range` yourself to keep your own. `withAxisLogos` sizes
+margins in pixels from `layout.width`/`layout.height` (Plotly's 700 × 450 when unset). x-axis images hang under their
+subplot and `margin.b` grows by what reaches below the figure; under an upper subplot they hang into the one below.
+
+**Vega-Lite** (a native `image` layer):
+
+| Option | Verbs | Meaning |
+| --- | --- | --- |
+| `chartHeight` | `logoLayer` | The chart height in px that `height` is a fraction of; default 300 |
+| `xType`, `yType` | `logoLayer` | The layer's encoding types (its fields are `x` and `y`); default `"quantitative"` |
+
+The verbs size from the chart's own `height` (else `config.view.continuousHeight`, else 300 px); a discrete y axis needs
+`height`. A discrete `sort` that Vega-Lite drops once a layer is added raises: sort with a list (`sort: [...]`). The
+shorthand `"-y"` works where Vega-Lite keeps it; on a stacked bar or area it sums the measure, which Vega-Lite drops,
+so it raises too. A `count` sort is written out as its order (a list) on both layers, so the image rows do not add to
+the counts; that needs inline data with no `transform`. `withAxisLogos` assumes the default axis orient (x at the
+bottom, y on the left): with `orient: "top"` or `"right"` the images land on the opposite side.
+
+**ECharts** (a `custom` series; axis logos as rich-text labels):
+
+| Option | Verbs | Meaning |
+| --- | --- | --- |
+| `xAxisIndex`, `yAxisIndex` | marks | The axes (and so the grid) the series draws on; default 0. Calls on other axes (or another `z`) get their own series |
+| `z` | marks | The series' z; default 100 |
+| `axisIndex` | `withAxisLogos` | Which x (or y) axis, for an option with several; default 0 |
+| `chartHeight` | `withAxisLogos` | The canvas height in px (an option has none); default 400 |
+
+Mark images are `height` × the grid's height at render time (they follow zoom and resize; no instance needed).
+Axis images are `height` of the axis' grid on a `chartHeight` px canvas: `grid.height`, else `chartHeight` less
+`grid.top` and `grid.bottom` (ECharts' 65 and 80 px when unset); `containLabel` can shrink the drawn grid a little
+below that. The helper series have no `name`, so a default `legend: {}` lists only your series.
 
 ## Data provenance
 
