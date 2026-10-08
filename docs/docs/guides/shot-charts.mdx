@@ -85,6 +85,22 @@ them: a mark added after them paints over the tip.
 `shotCells`' `dropOutside` (default true) leaves out cells whose centre is outside the frame, so a tip never points
 at a cell that is not drawn; Plot's own `clip` passes through and cuts paths at the frame instead.
 
+## Linking
+
+Each cell's path carries `data-sdv-id`, the cell's legacy centre as `"x,y"`, and each zone's carries the zone's name,
+so `@sportsdataverse/sdvplot/interact` links the charts with no glue code.
+`linkSelection(store, { plot, select: "toggle" })` makes every hexagon (or zone) a checkbox: a click, Enter or Space
+toggles its id in the store's `selected`, and the other cells dim. Its ``hover: { id: (h) => `${h.x},${h.y}` }``
+writes the cell Plot's tip points at, the nearest within `tip: { maxRadius: 18 }`, as `main` does. `linkCursor`
+follows one shot distance: on the court a ring around the hoop (`shape: { axis: "ring", center: [0, -41.75] }` in the
+vertical frame), on the signature a rule, and the signature writes the distance under the pointer. Hexagon ids and
+zone names are two id spaces, so each gets its own store; on one store a hovered hexagon would dim every zone. Squares
+link the same way.
+
+<Live id="sdvplot/interact/shot-kit" />
+
+The [linked shot dashboard](../examples/shot-dashboard.mdx) adds `master`'s bar and side charts on the same distance.
+
 ## Legends
 
 The colours come from `diffScale()`, a function from a difference to a colour. Its `.plot` is the same scale in
