@@ -1,18 +1,13 @@
 import type { Table } from "../engine.js";
 import { TableSpecError } from "../errors.js";
-import { handleClick, handleHover, handleInput } from "./controls.js";
+import { captureFocus, handleClick, handleHover, handleInput } from "./controls.js";
 import { pagerLabel, renderToolbar, tableRenderOptions } from "./interactive.js";
 import { renderParts, tableHTML } from "./parts.js";
-
-// M5: the attributes that name a control; a control rebuilt under focus gets focus back by name
-const CONTROLS = ["data-sdv-sort", "data-sdv-filter", "data-sdv-global-filter", "data-sdv-page"] as const;
 
 const edge = (button: Element | null, atEdge: boolean): void => {
   if (atEdge) button?.setAttribute("aria-disabled", "true");
   else button?.removeAttribute("aria-disabled");
 };
-
-const FOCUSABLE = "a[href],button,input,select,textarea,[tabindex]";
 
 /**
  * Progressive enhancement for markup produced by `renderHTML(table)`: one delegated click + input listener drive the
@@ -34,25 +29,7 @@ export function hydrate<Row>(el: Element, table: Table<Row>): () => void {
   const render = (): void => {
     cancel = undefined;
     const root = el.getRootNode() as Document | ShadowRoot;
-    const focused = root.activeElement ?? el.ownerDocument.activeElement;
-    const inside = focused !== null && el.contains(focused);
-    const name = inside ? CONTROLS.find((a) => focused.hasAttribute(a)) : undefined;
-    const value = name === undefined ? null : focused?.getAttribute(name);
-    const caret =
-      focused instanceof HTMLInputElement
-        ? { start: focused.selectionStart, end: focused.selectionEnd }
-        : undefined;
-    // a focusable element inside a custom cell: row id + cell key + its index among that cell's focusables
-    const cellTd =
-      inside && name === undefined ? focused.closest("[data-sdv-body] tr[data-row] td[data-col]") : null;
-    const cellAt =
-      cellTd && focused
-        ? {
-            row: cellTd.parentElement?.getAttribute("data-row"),
-            col: cellTd.getAttribute("data-col"),
-            n: Array.from(cellTd.querySelectorAll(FOCUSABLE)).indexOf(focused),
-          }
-        : undefined;
+    const restore = captureFocus(el);
     const p = renderParts(table.spec, table.rows, { css: "none", ...tableRenderOptions(table) });
     body.innerHTML = tableHTML(p);
     // M8: a hidden column's filter input leaves the toolbar (and comes back), as in renderHTML(table) and <SdvTable/>
@@ -73,20 +50,7 @@ export function hydrate<Row>(el: Element, table: Table<Row>): () => void {
       const want = typeof f === "string" ? f : "";
       if (input.value !== want) input.value = want;
     }
-    if (name !== undefined && focused && !el.contains(focused)) {
-      const next = Array.from(el.querySelectorAll<HTMLElement>(`[${name}]`)).find(
-        (n) => n.getAttribute(name) === value,
-      );
-      next?.focus();
-      if (next instanceof HTMLInputElement && caret?.start != null && caret.end != null)
-        next.setSelectionRange(caret.start, caret.end);
-    } else if (cellAt && focused && !el.contains(focused) && cellAt.n >= 0) {
-      const tds = Array.from(el.querySelectorAll("[data-sdv-body] tr[data-row]"))
-        .find((r) => r.getAttribute("data-row") === cellAt.row)
-        ?.querySelectorAll("td[data-col]");
-      const cell = Array.from(tds ?? []).find((c) => c.getAttribute("data-col") === cellAt.col);
-      cell?.querySelectorAll<HTMLElement>(FOCUSABLE)[cellAt.n]?.focus();
-    }
+    restore();
   };
   // M6: one render per animation frame however many changes land in it (typing in an unpaged 1000-row table
   // re-rendered ~660 KB per keystroke); a timer where there is no requestAnimationFrame

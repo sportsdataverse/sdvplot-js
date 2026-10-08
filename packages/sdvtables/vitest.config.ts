@@ -13,7 +13,7 @@ export default defineConfig({
   test: {
     testTimeout: 60_000,
     hookTimeout: 60_000,
-    include: ["test/**/*.test.ts"],
+    include: ["test/**/*.test.ts", "test/**/*.test.tsx"],
     typecheck: { enabled: true, include: ["test/**/*.test-d.ts"] },
   },
 });

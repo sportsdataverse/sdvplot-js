@@ -42,3 +42,51 @@ export function handleInput<Row>(table: Table<Row>, target: EventTarget | null):
 export function handleHover<Row>(table: Table<Row>, target: EventTarget | null): void {
   table.setHover(rowIdAt(table, target));
 }
+
+// M5: the attributes that name a control; a control rebuilt under focus gets focus back by name
+const CONTROLS = ["data-sdv-sort", "data-sdv-filter", "data-sdv-global-filter", "data-sdv-page"] as const;
+const FOCUSABLE = "a[href],button,input,select,textarea,[tabindex]";
+
+/**
+ * Remembers what has focus inside `el` by names a re-render keeps: a control by its `data-sdv-*` attribute (and an
+ * input's caret), a focusable element inside a rendered cell by row, column key and its index among that cell's
+ * focusables. Call it before a re-render; the returned function, called after it, moves focus to the rebuilt element
+ * when the re-render replaced the focused one (shadow-root mounts included), and does nothing otherwise. Shared by
+ * hydrate and `<SdvTable/>`.
+ */
+export function captureFocus(el: Element): () => void {
+  const root = el.getRootNode() as Document | ShadowRoot;
+  const focused = root.activeElement ?? el.ownerDocument.activeElement;
+  if (focused === null || !el.contains(focused)) return () => {};
+  const name = CONTROLS.find((a) => focused.hasAttribute(a));
+  const value = name === undefined ? null : focused.getAttribute(name);
+  const caret =
+    focused instanceof HTMLInputElement
+      ? { start: focused.selectionStart, end: focused.selectionEnd }
+      : undefined;
+  const td = name === undefined ? focused.closest("[data-sdv-body] tr[data-row] td[data-col]") : null;
+  const cellAt = td
+    ? {
+        row: td.parentElement?.getAttribute("data-row"),
+        col: td.getAttribute("data-col"),
+        n: Array.from(td.querySelectorAll(FOCUSABLE)).indexOf(focused),
+      }
+    : undefined;
+  return () => {
+    if (el.contains(focused)) return;
+    if (name !== undefined) {
+      const next = Array.from(el.querySelectorAll<HTMLElement>(`[${name}]`)).find(
+        (n) => n.getAttribute(name) === value,
+      );
+      next?.focus();
+      if (next instanceof HTMLInputElement && caret?.start != null && caret.end != null)
+        next.setSelectionRange(caret.start, caret.end);
+    } else if (cellAt && cellAt.n >= 0) {
+      const tds = Array.from(el.querySelectorAll("[data-sdv-body] tr[data-row]"))
+        .find((r) => r.getAttribute("data-row") === cellAt.row)
+        ?.querySelectorAll("td[data-col]");
+      const cell = Array.from(tds ?? []).find((c) => c.getAttribute("data-col") === cellAt.col);
+      cell?.querySelectorAll<HTMLElement>(FOCUSABLE)[cellAt.n]?.focus();
+    }
+  };
+}

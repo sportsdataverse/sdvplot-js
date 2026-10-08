@@ -41,7 +41,7 @@ export function filterInputs<Row>(
 }
 
 // a <label> that screen readers announce and sighted users never see; inline so the shared theme sheet stays unchanged
-const SR_ONLY =
+export const SR_ONLY: string =
   "position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0";
 /** `label` and `placeholder` are escaped HTML; `data` is a trusted attribute. */
 const searchInput = (
