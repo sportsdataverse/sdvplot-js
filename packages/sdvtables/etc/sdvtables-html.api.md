@@ -75,7 +75,7 @@ export { labelOf }
 // @public
 export function leaguesOf<Row>(spec: TableSpec<Row>): League[];
 
-// @public (undocumented)
+// @public
 export function pagerLabel<Row>(table: Table<Row>): string;
 
 // @public
@@ -153,7 +153,7 @@ export interface RenderOptions {
     readonly sort?: Sort | null;
 }
 
-// @public (undocumented)
+// @public
 export function renderPager<Row>(table: Table<Row>): string;
 
 // @public
@@ -193,7 +193,7 @@ export function toElement<Row>(spec: TableSpec<Row>, rows: readonly Row[], opts?
 
 // Warnings were encountered during analysis:
 //
-// dist/html.d.ts:143:5 - (ae-forgotten-export) The symbol "Density" needs to be exported by the entry point html.d.ts
+// dist/html.d.ts:147:5 - (ae-forgotten-export) The symbol "Density" needs to be exported by the entry point html.d.ts
 
 // (No @packageDocumentation comment for this package)
 

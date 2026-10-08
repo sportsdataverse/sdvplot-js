@@ -1,8 +1,9 @@
 import { type Table, nextSortDir } from "../engine.js";
 
-/** J31: the engine id of the body row an event landed in; null for a header, toolbar, group row, or outside. */
+/** J31: the engine id of the body row an event landed in; null for a header, toolbar, pager, group row, or outside the table. */
 export function rowIdAt<Row>(table: Table<Row>, target: EventTarget | null): string | null {
-  const tr = target instanceof Element ? target.closest("tr[data-row]") : null;
+  // scoped to the body block: a host page or outer table with its own tr[data-row] is never read as one of ours
+  const tr = target instanceof Element ? target.closest("[data-sdv-body] tr.sdvt-row[data-row]") : null;
   const row = tr === null ? undefined : table.rows[Number(tr.getAttribute("data-row"))];
   const id = row === undefined ? "" : table.rowId(row);
   return id === "" ? null : id;

@@ -578,8 +578,8 @@ export type RowSelector<Row> = readonly number[] | Predicate<Row>;
 // @public
 export function secondaryOn(bg: string, fg: string, target?: number): string;
 
-// @public (undocumented)
-export function selectRows<Row>(sel: RowSelector<Row>, rows: readonly Row[]): number[];
+// @public
+export function selectRows<Row>(sel: RowSelector<Row>, rows: readonly Row[], source?: readonly Row[]): number[];
 
 // @public (undocumented)
 export function snakeAlign<Row>(rows: readonly Row[], o?: {

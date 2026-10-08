@@ -37,7 +37,7 @@ test("interactive opts: aria-sort + sort button on sortable columns only; hidden
   expect(p.head).toContain(
     '<th scope="col" class="sdvt-label sdvt-right" data-col="wins" data-kind="int" aria-sort="descending"><button type="button" class="sdvt-sort" data-sdv-sort="wins">Wins</button></th>',
   );
-  expect(p.head).toContain('data-col="team" data-kind="text" aria-sort="none"><button');
+  expect(p.head).toContain('data-col="team" data-kind="text"><button'); // M4: aria-sort only on the sorted header
   expect(p.head).toContain(
     '<th scope="col" class="sdvt-label sdvt-left" data-col="qb" data-kind="text">Quarterback</th>',
   );

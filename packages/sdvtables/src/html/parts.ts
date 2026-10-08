@@ -17,7 +17,7 @@ import { expandTiers, snakeLayout } from "./layout.js";
 export interface RenderOptions {
   readonly css?: "inline" | "none";
   readonly fonts?: boolean;
-  /** Phase 5: emit aria-sort + a sort button on every `sortable !== false` column */
+  /** Phase 5: a sort button on every `sortable !== false` column, and aria-sort on the sorted one */
   readonly interactive?: boolean;
   /** Phase 5: the engine's current sort, for aria-sort */
   readonly sort?: Sort | null;
@@ -26,7 +26,9 @@ export interface RenderOptions {
   /** J31 (A5): page-relative indices of selected rows → `sdvt-selected` on their <tr> */
   readonly selected?: ReadonlySet<number>;
   /**
-   * J31 (A4): rows the scale/legend domains are computed from; default the rendered rows.
+   * J31 (A4): rows the scale/legend domains, outlier limits and row-accent levels are computed from, and the rows
+   * an index row selector (`boldRows([5])`) counts in; default the rendered rows. Interactive renders pass the
+   * table's full source rows (A49), so nothing re-colours or moves while the user pages, filters, sorts or brushes.
    * It must hold the same row OBJECTS as `rows` (matched by identity, as the engine passes them), not equal copies:
    * a rendered row missing from it is colored from its own value (a rank fill gets none) and warns once per column.
    */
@@ -190,7 +192,8 @@ export function renderParts<Row>(
     .map((c) => {
       const label = `${deco.label(c, (deco.labelText.get(c.key) ?? labelOf(c)) + deco.labelSuffix(c.key))}${c.subheader ? `<span class="sdvt-subheader">${escapeHtml(c.subheader)}</span>` : ""}`;
       const sortable = opts.interactive === true && c.sortable !== false;
-      const aria = sortable ? ` aria-sort="${sortAria(opts.sort, c.key)}"` : "";
+      const dir = sortAria(opts.sort, c.key);
+      const aria = sortable && dir !== "none" ? ` aria-sort="${dir}"` : ""; // ARIA 1.2: only the sorted header carries it
       const inner = sortable
         ? `<button type="button" class="sdvt-sort" data-sdv-sort="${escapeAttr(c.key)}">${label}</button>`
         : label;

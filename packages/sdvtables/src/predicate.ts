@@ -34,12 +34,23 @@ export function matches<Row>(p: Predicate<Row>, row: Row): boolean {
     }
   }
 }
-export function selectRows<Row>(sel: RowSelector<Row>, rows: readonly Row[]): number[] {
+/**
+ * The indices into `rows` that `sel` picks. A predicate tests each row; an index array names positions in `source`
+ * (default `rows`), matched to `rows` by identity. An interactive render passes the table's source rows, so `[5]`
+ * stays the sixth data row whatever page, filter or sort shows it (A49). Throws `TableSpecError` for an index outside `source`.
+ */
+export function selectRows<Row>(
+  sel: RowSelector<Row>,
+  rows: readonly Row[],
+  source: readonly Row[] = rows,
+): number[] {
   if (Array.isArray(sel)) {
     for (const i of sel)
-      if (!Number.isInteger(i) || i < 0 || i >= rows.length)
-        throw new TableSpecError(`row ${i} is outside 0..${rows.length - 1}`);
-    return [...sel];
+      if (!Number.isInteger(i) || i < 0 || i >= source.length)
+        throw new TableSpecError(`row ${i} is outside 0..${source.length - 1}`);
+    if (source === rows) return [...sel];
+    const want = new Set(sel.map((i) => source[i])); // ponytail: one Set per selector, O(rows); no index map needed
+    return rows.flatMap((r, i) => (want.has(r) ? [i] : []));
   }
   const out: number[] = [];
   rows.forEach((r, i) => {
