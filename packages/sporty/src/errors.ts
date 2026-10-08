@@ -7,3 +7,5 @@ export class SportyError extends Error {
 export class UnknownLeagueError extends SportyError {}
 export class UnknownDisplayRangeError extends SportyError {}
 export class UnknownUnitError extends SportyError {}
+/** A scene or option that cannot be drawn (e.g. a `custom` league with an empty bbox). */
+export class InputError extends SportyError {}

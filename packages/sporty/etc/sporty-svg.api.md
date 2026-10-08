@@ -6,6 +6,7 @@
 
 // @public (undocumented)
 export interface SvgOptions {
+    arcs?: "sampled" | "svg";
     // Warning: (ae-forgotten-export) The symbol "Color" needs to be exported by the entry point svg.d.ts
     //
     // (undocumented)
