@@ -25,10 +25,16 @@ vi.mock("@sportsdataverse/examples/browser", async () => ({
 // A string, not a literal: the examples' tsc stays out of the docs (its @docusaurus and @theme aliases)
 const LIVE: string = "../../docs/src/components/Live.tsx";
 
+// The first wait covers the first dynamic import of Live's browser table and draw(), which can take well over
+// vi.waitFor's default 1 s when the machine is busy (a full `pnpm test` beside a typecheck): it timed out once on
+// 2026-10-08. Raise the ceiling, not the expectation, as packages/sdvplot/test/react/primitives.test.tsx does.
 const settled = (id: string) =>
-  vi.waitFor(() => {
-    if (gates[id] === undefined) throw new Error(`${id} has not started drawing`);
-  });
+  vi.waitFor(
+    () => {
+      if (gates[id] === undefined) throw new Error(`${id} has not started drawing`);
+    },
+    { timeout: 15_000 },
+  );
 
 test("a cancelled drawing that fails late leaves the newer chart, and nothing of its own", async () => {
   Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
