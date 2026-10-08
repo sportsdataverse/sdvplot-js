@@ -30,6 +30,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [check]
     continue-on-error: true
+    # measured: theme pass ~1 min, export renders ~1 min, plus install and chromium; a hung browser stops here, not at 6 h
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -43,7 +45,7 @@ jobs:
       - id: themes
         continue-on-error: true
         run: pnpm --filter @sportsdataverse/sdvtables render:themes
-      - run: pnpm --filter @sportsdataverse/sdvtables test -- test/export-render.test.ts
+      - run: pnpm --filter @sportsdataverse/sdvtables test test/export-render.test.ts
         env: { SDV_RENDER_TESTS: "1" }
       - if: ${{ !cancelled() }}
         run: |
@@ -57,4 +59,5 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
       - if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
-        with: { name: sdvtables-theme-pass, path: packages/sdvtables/theme-pass/, if-no-files-found: warn }
+        # overwrite: a "Re-run jobs" uploads under the same name instead of failing with a conflict
+        with: { name: sdvtables-theme-pass, path: packages/sdvtables/theme-pass/, if-no-files-found: warn, overwrite: true }
