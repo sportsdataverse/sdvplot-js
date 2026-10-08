@@ -99,6 +99,24 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
       await figure
         .locator(".sdv-live-output")
         .screenshot({ path: join(SHOTS, `${id.replace(/\//g, "_")}.png`) });
+    // A Plotly bar's hover names its category: withAxisLogos hides the tick labels rather than blanking them, since
+    // plotly.js reads a category's hover label from its tick text (blanked, hovering KC read "(, 15)").
+    const bar = figure.locator(".js-plotly-plot .bars path").first();
+    if (lib === "plotly" && (await bar.count()) > 0) {
+      const name = await figure
+        .locator(".js-plotly-plot")
+        .evaluate((gd) => String((gd as unknown as { data: { x: unknown[] }[] }).data[0]?.x[0]));
+      const box = await bar.boundingBox();
+      if (box === null) throw new Error(`${id}: the first bar has no box`);
+      await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+      const hover = figure.locator(".hoverlayer .hovertext").first();
+      await hover.waitFor({ timeout: 5_000 });
+      expect(await hover.textContent(), "the hover names the bar's category").toContain(name);
+      if (SHOTS !== undefined)
+        await figure
+          .locator(".sdv-live-output")
+          .screenshot({ path: join(SHOTS, `${id.replace(/\//g, "_")}_hover.png`) });
+    }
     expect(errors).toEqual([]);
     await page.close();
   });
