@@ -34,6 +34,7 @@ export interface PlotlyAxis {
   tickmode?: string;
   tickvals?: readonly unknown[];
   ticktext?: readonly string[];
+  showticklabels?: boolean;
 }
 export interface LayoutImage {
   source: string;
@@ -450,7 +451,10 @@ export interface PlotlyAxisOptions extends AxisOptions {
  *  approximate under autosize (images stay correctly placed in paper/data units).
  *  x: images hang under the subplot in its y domain units (`height` of that subplot, exact), and `margin.b` grows by
  *  what they reach below the paper; under an upper subplot they hang into the subplot below.
- *  y: images sit left of the plot in data y; the range is pinned to the category bands so `sizey = h × span`. */
+ *  y: images sit left of the plot in data y; the range is pinned to the category bands so `sizey = h × span`.
+ *  Hover still names each category: the labels are hidden (`showticklabels: false`), not blanked, because Plotly's hover
+ *  reads a tick's text. With an unresolved category only those keep a tick, so a drawn one loses its tick mark and grid
+ *  line (both off by default on a category axis). */
 export function withAxisLogos(figure: PlotlyFigure, axis: "x" | "y", o: PlotlyAxisOptions): PlotlyFigure;
 export function withAxisLogos<F extends object>(figure: F, axis: "x" | "y", o: PlotlyAxisOptions): F;
 export function withAxisLogos(figure: object, axis: "x" | "y", o: PlotlyAxisOptions): object {
@@ -470,9 +474,19 @@ export function withAxisLogos(figure: object, axis: "x" | "y", o: PlotlyAxisOpti
   const placements = axisPlacements(labels, letter, o);
   const ax = axisOf(fig.layout!, cref, letter);
   const drawn = new Set(placements.map((p) => Number(letter === "x" ? p.x : p.y)));
+  // Plotly's hover label of a category is its tick text (axes.tickText), so a drawn category never gets a blank one:
+  // every category drawn, hide the labels and keep a tick per category; else only the unresolved categories keep one.
+  const keep = cats.flatMap((_, i) => (drawn.has(i) ? [] : [i]));
   ax.tickmode = "array";
-  ax.tickvals = cats;
-  ax.ticktext = labels.map((lab, i) => (drawn.has(i) ? "" : lab));
+  if (keep.length === 0) {
+    ax.showticklabels = false;
+    ax.tickvals = cats;
+    ax.ticktext = labels;
+  } else {
+    ax.showticklabels = true; // undo an earlier all-drawn call on this axis
+    ax.tickvals = keep.map((i) => cats[i]);
+    ax.ticktext = keep.map((i) => labels[i]!);
+  }
   if (placements.length === 0) return fig;
   const layout = fig.layout!;
   const plotH = plotSize(layout, xref, yref)[1];
@@ -558,5 +572,6 @@ export function drawnAxisMarks(figure: PlotlyFigure, axis: "x" | "y"): DrawnAxis
 /** Test hook: the tick labels on `axis` still shown as text. */
 export function visibleAxisLabels(figure: PlotlyFigure, axis: "x" | "y"): string[] {
   const letter = axisLetter(axis);
-  return [...(figureOf(figure).layout![axisKey(letter, letter)]?.ticktext ?? [])].filter((t) => t !== "");
+  const ax = figureOf(figure).layout![axisKey(letter, letter)];
+  return ax?.showticklabels === false ? [] : [...(ax?.ticktext ?? [])].filter((t) => t !== "");
 }
