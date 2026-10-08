@@ -5,12 +5,14 @@ import {
   useLayoutEffect,
   useRef,
   useState,
+  useSyncExternalStore,
 } from "react";
 import { type ColorOptions, palette } from "../colors.js";
 import { type EspnHeadshotLeague, HEADSHOT_ASPECT, headshotUrl, loadGsis } from "../headshots.js";
 import { getLeagueSync, loadLeague } from "../index-data.js";
 import { type LogoUrlOptions, logoUrlSync } from "../marks.js";
 import { type ResolveOptions, type Value, resolveSync } from "../resolve.js";
+import type { SelectionState, SelectionStore } from "../selection.js";
 import type { HeadshotIdSystem, League, MarkType, TeamId, Variant } from "../types.js";
 
 type ImgProps = Omit<ImgHTMLAttributes<HTMLImageElement>, "src" | "alt" | "height" | "width">;
@@ -245,4 +247,40 @@ export function useResolve(
     };
   }, [league]);
   return ready === undefined ? undefined : (value, opts) => resolveSync(value, ready, opts);
+}
+
+/**
+ * The state of a `createSelection` store (J31), re-rendering on every change and never on a no-op patch. On the
+ * server, and in the first client render, it reads the store's current state, so server and client markup agree.
+ * Redrawing from it is the component's choice: filter rows with `state.predicate`, emphasise `state.selected`.
+ *
+ * @example
+ * ```tsx
+ * import { createSelection } from "@sportsdataverse/sdvplot";
+ * import { useSelection } from "@sportsdataverse/sdvplot/react";
+ * import type { ReactElement } from "react";
+ *
+ * const store = createSelection();
+ * store.set({ selected: ["KC", "BUF"] });
+ * function Picked(): ReactElement {
+ *   const { selected } = useSelection(store); // re-renders on every change of the store
+ *   return (
+ *     <table>
+ *       <tbody>
+ *         {[...selected].map((id) => (
+ *           <tr key={id}>
+ *             <td>{id}</td>
+ *           </tr>
+ *         ))}
+ *       </tbody>
+ *     </table>
+ *   );
+ * }
+ * <Picked />;
+ * ```
+ */
+export function useSelection<Row>(store: SelectionStore<Row>): SelectionState<Row> {
+  // The store's methods are closures (no `this`), so they pass unbound; getState is referentially stable between
+  // changes, which is all useSyncExternalStore needs.
+  return useSyncExternalStore(store.subscribe, store.getState, store.getState);
 }
