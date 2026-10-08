@@ -8,11 +8,11 @@ export type {
   MarkOptions,
 } from "./marks.js";
 export { axisLogos } from "./axis.js";
-export type { Axis, AxisLogosOptions } from "./axis.js";
+export type { Axis, AxisLogosOptions, AxisPassThrough } from "./axis.js";
 export { teamColor, teamFill } from "./scales.js";
 export type { TeamColorOptions } from "./scales.js";
 export { meanLines, medianLines } from "./lines.js";
-export type { RefLineOptions } from "./lines.js";
+export type { RefLineOptions, RuleLinePassThrough } from "./lines.js";
 export { titleImage } from "./title.js";
 export type { TitleImageOptions } from "./title.js";
 export { teamTiers } from "./tiers.js";

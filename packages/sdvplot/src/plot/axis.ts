@@ -4,7 +4,21 @@ import { stampImage } from "../stamp.js";
 import type { IdSystem, League, MarkType, SeasonInput, Variant } from "../types.js";
 
 export type Axis = "x" | "y" | "fx" | "fy";
-export interface AxisLogosOptions {
+/**
+ * Plot's axis options sdvplot does not own pass through: `ticks`, `tickSpacing`, `tickPadding`, `tickRotate`,
+ * `fontSize`, `fill`, `ariaLabel`, `ariaDescription`, `facetAnchor`, `className`, the margins, and the rest.
+ * sdvplot owns `tickFormat` and `render` (the tick text becomes the image); `anchor`, `tickSize` and `label` are
+ * sdvplot's own options below.
+ */
+export type AxisPassThrough = Omit<
+  Plot.AxisXOptions,
+  "tickFormat" | "render" | "anchor" | "tickSize" | "label"
+>;
+/**
+ * Options for `axisLogos`. Each drawn image is named by the tick it replaces ("KC logo", "KC wordmark"), so assistive
+ * technology reads the category the text showed.
+ */
+export interface AxisLogosOptions extends AxisPassThrough {
   league: League;
   season?: SeasonInput;
   /** Fraction of the frame height in (0, 1]; default 0.1. */
@@ -27,6 +41,18 @@ const AXIS: Record<Axis, (options: Plot.AxisXOptions) => Plot.Markish> = {
 
 /** Axis mark whose tick text is swapped for the team image; categories that do not resolve keep their text. */
 export function axisLogos(axis: Axis, o: AxisLogosOptions): Plot.Markish {
+  const {
+    league: _l,
+    season: _s,
+    height: _h,
+    variant: _v,
+    markType: _m,
+    idSystem: _i,
+    anchor: _a,
+    tickSize: _t,
+    label: _b,
+    ...pass
+  } = o;
   const height = checkHeight(o.height ?? 0.1);
   const kind = o.markType ?? "logo";
   const tickSize = o.tickSize ?? 6;
@@ -82,6 +108,7 @@ export function axisLogos(axis: Axis, o: AxisLogosOptions): Plot.Markish {
       img.setAttribute("preserveAspectRatio", "xMidYMid meet");
       img.setAttribute("data-sdv-axis", axis);
       img.setAttribute("data-sdv-tick", String(tick));
+      img.setAttribute("aria-label", `${labels[k]} ${kind}`); // the tick text it replaces, as the Vega adapter (PR #28)
       stampImage(img, p, kind, px, frame, cx, cy);
       t.replaceWith(img);
     });
@@ -89,12 +116,14 @@ export function axisLogos(axis: Axis, o: AxisLogosOptions): Plot.Markish {
   };
   // ponytail: margin is sized for the default 400px plot; pass height/margins explicitly for other plot heights
   const margin = Math.round(height * 400) + tickSize + 8;
+  const marginKey = `margin${side[0]?.toUpperCase()}${side.slice(1)}` as keyof AxisPassThrough;
   return AXIS[axis]({
+    ...pass,
     tickFormat: (d: unknown) => String(d),
     tickSize,
     label: o.label ?? null,
     ...(o.anchor ? { anchor: o.anchor } : {}),
-    [`margin${side[0]?.toUpperCase()}${side.slice(1)}`]: margin,
+    [marginKey]: pass[marginKey] ?? pass.margin ?? margin, // a caller's own margin on the anchored side wins
     render,
   } as Plot.AxisXOptions);
 }

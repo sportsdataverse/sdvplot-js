@@ -2,7 +2,13 @@ import * as Plot from "@observablehq/plot";
 import { InputError } from "../errors.js";
 import type { Channel, Data } from "./marks.js";
 
-export interface RefLineOptions<R> {
+/**
+ * Plot's rule options sdvplot does not own pass through to both rules: `fx`, `fy`, `tip`, `title`, `className`,
+ * `ariaLabel`, `ariaDescription`, `dx`, `dy`, `clip`, and the rest. sdvplot owns the rule positions (`x`, `y`, `x1`,
+ * `x2`, `y1`, `y2`): the reducer computes them per facet, top-level or mark-level.
+ */
+export type RuleLinePassThrough = Omit<Plot.RuleXOptions, "x" | "y" | "x1" | "x2" | "y1" | "y2">;
+export interface RefLineOptions<R> extends RuleLinePassThrough {
   x?: Channel<R>;
   y?: Channel<R>;
   /** Default "red". */
@@ -17,7 +23,9 @@ export interface RefLineOptions<R> {
 function refLines<R>(data: Data<R>, o: RefLineOptions<R>, reducer: "mean" | "median"): Plot.Markish[] {
   if (o.x === undefined && o.y === undefined)
     throw new InputError(`${reducer}Lines() needs an x and/or a y channel`);
+  const { x: _x, y: _y, ...pass } = o;
   const style = {
+    ...pass,
     stroke: o.stroke ?? "red",
     strokeDasharray: o.strokeDasharray ?? "4 4",
     strokeWidth: o.strokeWidth ?? 1,

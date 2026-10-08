@@ -1,0 +1,93 @@
+// @vitest-environment jsdom
+// Phase 11 (J39, J41): the other Plot-facing exports pass Plot's options through and name what they draw.
+import * as Plot from "@observablehq/plot";
+import { surfaceMark } from "@sportsdataverse/sporty/plot";
+import { beforeAll, expect, test } from "vitest";
+import { STANDINGS } from "../../../sdvtables/test/fixtures/standings.js";
+import { loadLeague } from "../../src/index.js";
+import { axisLogos, meanLines, surface, teamTiers } from "../../src/plot/index.js";
+import { centreOf, pointAt, stubBBox, tipText } from "./_pointer.js";
+
+beforeAll(async () => {
+  stubBBox();
+  await loadLeague("nfl");
+});
+
+test("meanLines: mark-level fx gives one mean per division; tip passes through", () => {
+  const fig = Plot.plot({
+    width: 640,
+    height: 300,
+    marks: [
+      Plot.dot(STANDINGS, { x: "wins", y: "pf", fx: "division" }),
+      ...meanLines(STANDINGS, { x: "wins", fx: "division", tip: true }),
+    ],
+  });
+  const rules = fig.querySelectorAll("g[aria-label=rule] line");
+  expect(rules).toHaveLength(2);
+  // West's mean is 10 wins, East's 7.5: without fx each facet would draw the same overall mean (8.75)
+  expect(new Set(Array.from(rules, (l) => l.getAttribute("x1"))).size).toBe(2);
+  expect(fig.querySelectorAll("g[aria-label=tip]")).toHaveLength(1);
+});
+
+test("axisLogos: each image is named by the tick it replaces; Plot's axis options pass through", () => {
+  const fig = Plot.plot({
+    marks: [
+      Plot.barY(STANDINGS, { x: "team", y: "wins" }),
+      axisLogos("x", { league: "nfl", ariaDescription: "2024 AFC teams" }),
+    ],
+  });
+  const labels = Array.from(fig.querySelectorAll("image")).map((i) => i.getAttribute("aria-label"));
+  // a band scale sorts its domain, so the images follow the ticks alphabetically
+  expect(labels).toEqual(["BUF", "DEN", "KC", "LAC", "LV", "MIA", "NE", "NYJ"].map((t) => `${t} logo`));
+  expect(fig.querySelector("g[aria-description='2024 AFC teams']")).not.toBeNull();
+  // a wordmark axis names its images by the mark type
+  const wm = Plot.plot({
+    marks: [
+      Plot.barX(STANDINGS, { y: "team", x: "wins" }),
+      axisLogos("y", { league: "nfl", markType: "wordmark" }),
+    ],
+  });
+  expect(wm.querySelector("image")?.getAttribute("aria-label")).toBe("BUF wordmark");
+});
+
+test("axisLogos: a caller's margin on the anchored side (or all sides) wins over the computed one", () => {
+  const frameBottom = (o: Parameters<typeof axisLogos>[1]): number => {
+    const svg = Plot.plot({ marks: [Plot.barY(STANDINGS, { x: "team", y: "wins" }), axisLogos("x", o)] });
+    const rect = svg.querySelector("rect") as Element;
+    return (
+      Number(svg.getAttribute("height")) -
+      Number(rect.getAttribute("y")) -
+      Number(rect.getAttribute("height"))
+    );
+  };
+  expect(frameBottom({ league: "nfl" })).toBe(Math.round(0.1 * 400) + 6 + 8); // the computed margin
+  expect(frameBottom({ league: "nfl", marginBottom: 80 })).toBe(80);
+  expect(frameBottom({ league: "nfl", margin: 70 })).toBe(70);
+});
+
+test("teamTiers: tip names the team; the figure is labelled by its title", () => {
+  const rows = STANDINGS.map((r) => ({ team: r.team, tier_no: r.wins >= 13 ? 1 : r.wins >= 8 ? 2 : 3 }));
+  const fig = Plot.plot(teamTiers(rows, { league: "nfl", title: "2024 AFC tiers", tip: true }));
+  const svg = fig.querySelector("svg") ?? fig;
+  expect(svg.getAttribute("aria-label")).toBe("2024 AFC tiers");
+  const img = fig.querySelector("image") as Element;
+  const [x, y] = centreOf(img);
+  pointAt(svg, x, y);
+  expect(tipText(fig)).toMatch(/^​?(KC|BUF)$/); // tier 1, ranked: the first image drawn
+});
+
+test("surface: the court's polygons carry an aria-description", () => {
+  const court = surface("nba", { displayRange: "defense" });
+  const fig = Plot.plot({ ...court.scales, marks: court.marks });
+  expect(fig.querySelector("g[aria-label=geo][aria-description]")?.getAttribute("aria-description")).toBe(
+    "nba basketball surface",
+  );
+  // a caller's description replaces the default
+  const own = Plot.plot({
+    ...court.scales,
+    marks: surfaceMark(court.scene, { ariaDescription: "half court, defensive end" }),
+  });
+  expect(own.querySelector("g[aria-label=geo][aria-description]")?.getAttribute("aria-description")).toBe(
+    "half court, defensive end",
+  );
+});
