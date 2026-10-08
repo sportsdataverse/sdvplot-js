@@ -3,7 +3,7 @@ import { join, relative } from "node:path";
 import ts from "typescript";
 import { expect, test } from "vitest";
 import { abs } from "../sources.js";
-import { NBA_SHOTS, STANDINGS } from "../src/data.js";
+import { BKN_SHOTS_2026, NBA_SHOTS, STANDINGS } from "../src/data.js";
 
 /**
  * Real data, never invented rows. An example takes its rows from `@sportsdataverse/examples/data`, where
@@ -57,13 +57,16 @@ const ALLOW: Readonly<Record<string, string>> = {
 
 /**
  * Package TSDoc @example blocks, generated into src/generated/api: a reader copies them, so they cannot import the
- * examples' data module. Each of their rows must instead be a real row: a captured shot (NBA_SHOTS), or a 2024 team
- * whose every other value is its STANDINGS value. A tier_no must be the tier of that team's 2024 wins (13 or more,
+ * examples' data module. Each of their rows must instead be a real row: a captured shot (NBA_SHOTS) or a release
+ * shot (BKN_SHOTS_2026), every value of the row that shot's, or a 2024 team whose every other value is its STANDINGS
+ * value. A tier_no must be the tier of that team's 2024 wins (13 or more,
  * 8 to 12, fewer: the tiers sdvplot/plot/nfl-team-tiers draws).
  */
 function isReal(row: Record<string, unknown>): boolean {
   if ("x_legacy" in row)
-    return NBA_SHOTS.some((s) => Object.entries(row).every(([k, v]) => s[k as keyof typeof s] === v));
+    return [...NBA_SHOTS, ...BKN_SHOTS_2026].some((s) =>
+      Object.entries(row).every(([k, v]) => (s as Record<string, unknown>)[k] === v),
+    );
   const s = STANDINGS.find((t) => t.team === row.team);
   if (s === undefined) return false;
   return Object.entries(row).every(([k, v]) =>

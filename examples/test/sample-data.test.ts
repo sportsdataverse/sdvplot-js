@@ -2,6 +2,9 @@ import { readFileSync } from "node:fs";
 import { expect, test } from "vitest";
 import { abs } from "../sources.js";
 import {
+  BKN_SHOTS_2026,
+  NBA_LEAGUE_2026,
+  NBA_LEAGUE_SQUARE_2026,
   NBA_SHOTS,
   NBA_STANDINGS,
   NHL_SHOTS,
@@ -153,8 +156,40 @@ test("the NBA shots are the captured stats.nba.com rows, unchanged", () => {
   );
 });
 
+test("BKN_SHOTS_2026 and the 2026 league context are the committed fixtures/shots files, unchanged", () => {
+  const read = (f: string) => JSON.parse(readFileSync(abs(`fixtures/shots/${f}`), "utf8"));
+  const cols = read("nba-2026-bkn-2000-columns.json");
+  expect(cols.source.sha256).toBe("5322edd790cd828cb5b6593bdcb1dd3ba50d0cc10680ee1ba4dc5dbaaa9f11cb");
+  expect(BKN_SHOTS_2026).toEqual(
+    (cols.x_legacy as number[]).map((x, i) => ({
+      x_legacy: x,
+      y_legacy: cols.y_legacy[i],
+      shot_distance: cols.shot_distance[i],
+      shot_value: cols.shot_value[i],
+      shot_result: cols.made[i] === 1 ? "Made" : "Missed",
+    })),
+  );
+  // the counts fixtures/shots/README.md measured on blazing-the-nets' parquet
+  const n = (f: (s: (typeof BKN_SHOTS_2026)[number]) => boolean) => BKN_SHOTS_2026.filter(f).length;
+  expect([
+    BKN_SHOTS_2026.length,
+    n((s) => s.shot_result === "Made"),
+    n((s) => s.shot_value === 3),
+    n((s) => s.x_legacy === 0),
+  ]).toEqual([2000, 890, 968, 76]);
+  const league = read("nba-2026-league.json");
+  expect(NBA_LEAGUE_2026.byFoot).toEqual(league.byFoot);
+  expect(NBA_LEAGUE_2026.hex15.cells).toEqual(league.hex15.hexes);
+  expect(NBA_LEAGUE_SQUARE_2026.cells).toEqual(read("nba-2026-league-square.json").square10.hexes);
+  // every one of the 219,159 regular-season shots sits in one cell and one zone of each index
+  for (const idx of [NBA_LEAGUE_2026.hex10, NBA_LEAGUE_2026.hex15, NBA_LEAGUE_SQUARE_2026]) {
+    expect(idx.cells.reduce((a, c) => a + c.attempts, 0)).toBe(219_159);
+    expect(Object.values(idx.zones).reduce((a, z) => a + z.attempts, 0)).toBe(219_159);
+  }
+});
+
 test("no example types a shot by hand: every x_legacy/y_legacy pair in example code is a captured row", () => {
-  const captured = new Set(NBA_SHOTS.map((s) => `${s.x_legacy},${s.y_legacy}`));
+  const captured = new Set([...NBA_SHOTS, ...BKN_SHOTS_2026].map((s) => `${s.x_legacy},${s.y_legacy}`));
   const typed = EXAMPLES.flatMap((e) =>
     [...e.code.matchAll(/x_legacy:\s*(-?\d+(?:\.\d+)?),\s*y_legacy:\s*(-?\d+(?:\.\d+)?)/g)].map((m) => ({
       id: e.id,

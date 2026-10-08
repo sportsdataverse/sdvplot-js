@@ -6,6 +6,21 @@ export { STANDINGS } from "../../packages/sdvtables/test/fixtures/standings.js";
 export type { Standing } from "../../packages/sdvtables/test/fixtures/standings.js";
 
 /**
+ * Brooklyn's 2025-26 shots and that season's league context, as `sdvplot/shots` reads them. BKN_SHOTS_2026: the first
+ * 2000 Brooklyn rows of the sportsdataverse-data `nba_stats_shots` release (`shots_2026.parquet`), as release rows
+ * (`x_legacy`/`y_legacy` in tenths of a foot from the hoop, `shot_distance`, `shot_value`, `shot_result`).
+ * NBA_LEAGUE_2026: the 219,159 regular-season shots of the same release by foot, by 3 ft, by side and in radius-10 and
+ * radius-15 hexagons, computed by blazing-the-nets' own code. NBA_LEAGUE_SQUARE_2026: the same shots in squares of a
+ * radius-10 hexagon's area, binned by sdvplot's `squarebin` (context data, not an oracle). Provenance, hashes and the
+ * command: fixtures/shots/README.md.
+ */
+export {
+  BKN as BKN_SHOTS_2026,
+  LEAGUE as NBA_LEAGUE_2026,
+  LEAGUE_SQUARE as NBA_LEAGUE_SQUARE_2026,
+} from "../../packages/sdvplot/test/shots/fixture.js";
+
+/**
  * Super Bowl LIX (Kansas City at Philadelphia, 2025-02-09; PHI won 40-22): ESPN's home (PHI) win probability after
  * each of 186 plays, against minutes played (the play's start clock). Real: ESPN Site v2 `summary?event=401671889`,
  * `winprobability` joined to `drives.previous[].plays[]` by `playId` (one pregame row has no play), as captured in
