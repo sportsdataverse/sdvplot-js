@@ -683,7 +683,8 @@ export function applyDecorations<Row>(
           const v = cellValue(r, d.tierKey);
           return isBlank(v) ? null : String(v);
         };
-        const held = [...new Set(rows.map(tierOf).filter((t): t is string => t !== null))];
+        // A49: the levels the SOURCE rows hold, so a page or filter without a level warns nothing
+        const held = [...new Set(ctx.domainRows.map(tierOf).filter((t): t is string => t !== null))];
         const missing = d.levels.filter((l) => !held.includes(l));
         if (missing.length > 0)
           ctx.warn(

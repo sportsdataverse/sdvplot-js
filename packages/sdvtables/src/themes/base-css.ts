@@ -35,7 +35,7 @@ export function BASE_CSS(sel: string): string {
     `${s} .sdvt-toolbar input{font:inherit;padding:2px 6px;border:1px solid var(--sdvt-rule);background:var(--sdvt-bg);color:var(--sdvt-text)}`,
     `${s} .sdvt-pager{display:flex;gap:8px;align-items:center;justify-content:flex-end;margin-top:6px}`,
     `${s} .sdvt-page{font:inherit;cursor:pointer}`,
-    `${s} .sdvt-page[disabled]{opacity:.4;cursor:default}`,
+    `${s} .sdvt-page[aria-disabled="true"]{opacity:.4;cursor:default}`, // M1: aria-disabled, so focus stays on an edge button
     `${s} tr.sdvt-selected>td{box-shadow:inset 0 0 0 9999px rgba(127,127,127,.18)}`,
   ].join("\n");
 }

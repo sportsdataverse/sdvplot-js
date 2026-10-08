@@ -52,19 +52,21 @@ test("toolbar: global filter first, then one input per filterable column, each w
     ].join("")}</div>`,
   );
 });
-test("pager renders the current page only; disabled at the edges", () => {
+test("pager renders the current page only; aria-disabled at the edges (M1); the label is a polite live region (M2)", () => {
   const t = createTable(spec, many, { pageSize: 10 });
   expect(renderPager(t)).toBe(
-    '<nav class="sdvt-pager" data-sdv-pager="" aria-label="Pagination"><button type="button" class="sdvt-page" data-sdv-page="prev" aria-label="Previous page" disabled="">‹</button><span class="sdvt-page-label" data-sdv-page-label="">1 / 3</span><button type="button" class="sdvt-page" data-sdv-page="next" aria-label="Next page">›</button></nav>',
+    '<nav class="sdvt-pager" data-sdv-pager="" aria-label="Pagination"><button type="button" class="sdvt-page" data-sdv-page="prev" aria-label="Previous page" aria-disabled="true">‹</button><span class="sdvt-page-label" data-sdv-page-label="" aria-live="polite">Page 1 of 3</span><button type="button" class="sdvt-page" data-sdv-page="next" aria-label="Next page">›</button></nav>',
   );
   t.setPage(2);
   const html = renderHTML(t);
   expect(html).toContain(
-    'data-sdv-page-label="">3 / 3</span><button type="button" class="sdvt-page" data-sdv-page="next" aria-label="Next page" disabled="">',
+    'data-sdv-page-label="" aria-live="polite">Page 3 of 3</span><button type="button" class="sdvt-page" data-sdv-page="next" aria-label="Next page" aria-disabled="true">',
   );
   expect(html.match(/<tr class="sdvt-row"/g)?.length).toBe(5);
   expect(html).toContain("T21");
   expect(html).not.toContain("T01");
+  expect(html).toContain(' .sdvt-page[aria-disabled="true"]{opacity:.4;cursor:default}');
+  expect(html).not.toContain(" disabled");
 });
 test("hidden columns disappear from head and body", () => {
   const t = createTable(spec, rows);
@@ -221,4 +223,43 @@ test("A49 (I2): index row selectors name SOURCE rows in an interactive render, u
     setWarningHandler(() => {});
   }
   expect(msgs.filter((m) => m.includes("matched no rows"))).toEqual([]);
+});
+test("M8: a filter label is the SHOWN header text; a hidden column (engine or decoration) renders no input", () => {
+  const s = defineTable<Standing>()
+    .columns((c) => [
+      c.text("team", { filterable: true }),
+      c.text("qb", { filterable: true }),
+      c.int("pf", { filterable: true }),
+      c.text("division", { filterable: true }),
+    ])
+    .marginalia(["qb"], { label: "Signal caller" })
+    .scaleNote(["pf"], { where: "label" })
+    .rowAccent("division", { palette: ["#ff0000", "#0000ff"] }) // hides its key column by default
+    .build();
+  const t = createTable(s, rows);
+  t.setFilter("qb", "Jo");
+  const html = renderHTML(t);
+  expect(html).toContain('placeholder="Filter Signal caller"');
+  expect(html).toContain('placeholder="Filter Pf (000s)"');
+  expect(html).not.toContain('data-sdv-filter="division"');
+  expect(renderToolbar(t)).toBe(html.match(/<div class="sdvt-toolbar">.*?<\/div>/)?.[0]); // the default labels agree
+  t.toggleColumn("qb");
+  const hid = renderHTML(t);
+  expect(hid).not.toContain('data-sdv-filter="qb"'); // the filter stays active in the engine, with no input
+  expect(t.state.filters.qb).toBe("Jo");
+  expect(hid).toContain(`id="${tableId(s)}-filter-1" class="sdvt-filter" data-sdv-filter="pf"`); // ids stay dense
+});
+test("A49: the tiers missing-level warning reads the source rows, not the page", () => {
+  const s = defineTable<Standing>()
+    .columns((c) => [c.text("team"), c.text("division")])
+    .tiers(["West", "East", "North"], "division", [], { colors: ["#ff0000", "#00ff00", "#0000ff"] })
+    .build();
+  const msgs: string[] = [];
+  setWarningHandler((m) => msgs.push(m));
+  try {
+    renderHTML(createTable(s, rows, { pageSize: 3 })); // page 1: KC LAC DEN, all West
+  } finally {
+    setWarningHandler(() => {});
+  }
+  expect(msgs).toEqual(['tier(s) North are not in "division", so they get no rows; it holds West, East']);
 });

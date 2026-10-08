@@ -123,6 +123,7 @@ export interface RenderedParts {
     readonly head: string;
     readonly headRows: string;
     readonly id: string;
+    readonly labels: ReadonlyMap<string, string>;
     readonly link: string;
     readonly rows: string;
     readonly rules: string;
@@ -163,7 +164,7 @@ export function renderPager<Row>(table: Table<Row>): string;
 export function renderParts<Row>(input: TableSpec<Row>, rows: readonly Row[], opts?: RenderOptions): RenderedParts;
 
 // @public
-export function renderToolbar<Row>(table: Table<Row>): string;
+export function renderToolbar<Row>(table: Table<Row>, labels?: ReadonlyMap<string, string>): string;
 
 // @public
 export function rowIdAt<Row>(table: Table<Row>, target: EventTarget | null): string | null;
@@ -196,7 +197,7 @@ export function toElement<Row>(spec: TableSpec<Row>, rows: readonly Row[], opts?
 
 // Warnings were encountered during analysis:
 //
-// dist/html.d.ts:154:5 - (ae-forgotten-export) The symbol "Density" needs to be exported by the entry point html.d.ts
+// dist/html.d.ts:165:5 - (ae-forgotten-export) The symbol "Density" needs to be exported by the entry point html.d.ts
 
 // (No @packageDocumentation comment for this package)
 

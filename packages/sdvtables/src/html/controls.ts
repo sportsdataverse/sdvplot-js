@@ -22,6 +22,7 @@ export function handleClick<Row>(table: Table<Row>, target: EventTarget | null):
     table.setSelection(next);
     return;
   }
+  if (el.getAttribute("aria-disabled") === "true") return; // M1: an edge pager button keeps focus and does nothing
   const sortCol = el.getAttribute("data-sdv-sort");
   const page = el.getAttribute("data-sdv-page");
   if (sortCol !== null) table.setSort(sortCol, nextSortDir(table.state.sort, sortCol));

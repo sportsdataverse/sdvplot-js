@@ -54,6 +54,8 @@ export interface RenderedParts {
   readonly headRows: string;
   /** the <th> cells of the main header row */
   readonly head: string;
+  /** each SHOWN column's header text, unescaped, keyed by column key (a marginalia rename and scaleNote suffix included): the toolbar's filter labels */
+  readonly labels: ReadonlyMap<string, string>;
   /** every body <tr> (group header rows included) */
   readonly rows: string;
   /** the tfoot element (source notes, footnotes), or "" */
@@ -188,9 +190,12 @@ export function renderParts<Row>(
   const visible = spec.columns.filter((c) => !deco.hiddenColumns.has(c.key) && !engineHidden.includes(c.key));
   const ncol = visible.length;
   const span = Math.max(1, ncol); // every column hidden: a colspan is never 0
+  const labels = new Map(
+    visible.map((c) => [c.key, (deco.labelText.get(c.key) ?? labelOf(c)) + deco.labelSuffix(c.key)] as const),
+  );
   let head = visible
     .map((c) => {
-      const label = `${deco.label(c, (deco.labelText.get(c.key) ?? labelOf(c)) + deco.labelSuffix(c.key))}${c.subheader ? `<span class="sdvt-subheader">${escapeHtml(c.subheader)}</span>` : ""}`;
+      const label = `${deco.label(c, labels.get(c.key) as string)}${c.subheader ? `<span class="sdvt-subheader">${escapeHtml(c.subheader)}</span>` : ""}`;
       const sortable = opts.interactive === true && c.sortable !== false;
       const dir = sortAria(opts.sort, c.key);
       const aria = sortable && dir !== "none" ? ` aria-sort="${dir}"` : ""; // ARIA 1.2: only the sorted header carries it
@@ -285,6 +290,7 @@ export function renderParts<Row>(
     caption: deco.caption ? `<caption>${deco.caption}</caption>` : "",
     headRows: deco.headRows,
     head,
+    labels,
     rows: body.join(""),
     foot:
       deco.foot.length > 0
