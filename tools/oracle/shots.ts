@@ -1,6 +1,8 @@
 // Golden outputs of blazing-the-nets' OWN shot-chart code on real 2026 NBA shots (spec §7: real data only).
 // Usage (repo root): SHOTS_PARQUET=<path to shots_2026.parquet> [BTN_REPO=../blazing-the-nets] pnpm oracle:shots
-// Writes fixtures/shots/{nba-2026-bkn-2000-columns.json, nba-2026-league.json, oracle.json}. Never hand-edit them.
+// Writes fixtures/shots/{nba-2026-bkn-2000-columns.json, nba-2026-league.json, oracle.json} (blazing-the-nets' own
+// output) and nba-2026-league-square.json (context DATA binned by sdvplot's own squarebin, not an oracle; J38 S16).
+// Never hand-edit them.
 import { execFileSync, execSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
@@ -10,6 +12,7 @@ import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { parquetReadObjects } from "hyparquet";
 import { compressors } from "hyparquet-compressors";
+import { binner } from "../../packages/sdvplot/src/bins/index.js";
 
 const BTN = resolve(process.env.BTN_REPO ?? "../blazing-the-nets");
 const MAIN = "31427b8"; // blazing-the-nets main: lib/data/aggregate.ts, lib/charts/{shootingSignature,theme,hexShotChart}.ts
@@ -90,6 +93,18 @@ try {
 
   const idx10 = A.leagueHexIndex(league, 10);
   const idx15 = A.leagueHexIndex(league, 15); // main's HEX_RADIUS (lib/dashboard.ts:25)
+  // J38 S16: the same league on squares of a radius-10 hexagon's area, binned by OUR squarebin (blazing-the-nets has
+  // no square bins, so this is context data, not an oracle). The shots are hex10's (main's onCourt filter), and the
+  // zone rates are hex10's, because they do not depend on the lattice.
+  const sq = binner({ shape: "square", radius: 10, equalArea: true });
+  const square = {
+    ...sq.lattice,
+    hexes: sq.bins(league.filter(A.onCourt), { x: (s) => s.x_legacy, y: (s) => s.y_legacy }).map((b) => {
+      const makes = b.filter((s) => s.shot_result === "Made").length;
+      return { x: b.x, y: b.y, attempts: b.length, fgPct: makes / b.length };
+    }),
+    zones: idx10.zones,
+  };
   const lgFoot = A.fgPctByDistance(league);
   const lgBin3 = A.fgPctByDistance(league, 3); // BAR_BIN_FT (lib/dashboard.ts:26)
   const vs = A.vsLeague(A.fgPctByDistance(bkn), lgFoot);
@@ -178,6 +193,13 @@ try {
       binLeftRight: B.binLeftRight(master, 35),
       ribbon: R.ribbonShots(master, 35),
     },
+  });
+  write("nba-2026-league-square.json", {
+    source: {
+      ...source.shots,
+      binner: "sdvplot squarebin (equal area to a radius-10 hexagon); data, not an oracle",
+    },
+    square10: square,
   });
 } finally {
   rmSync(tmp, { recursive: true, force: true });
