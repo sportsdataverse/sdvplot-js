@@ -36,8 +36,8 @@ export interface RenderOptions {
   /**
    * Task 10 (A48): with `interactive`, render the table as a selectable ARIA grid: `role="grid"` and
    * `aria-multiselectable="true"` on the table, `tabindex="0"` on the body row whose index is `grid.row` (clamped to
-   * the rows) and `"-1"` on the others, `aria-selected` on every body row, and `sdvt-col-current` on the header of
-   * `grid.col`. Ignored without `interactive`.
+   * the rows) and `"-1"` on the others, `aria-selected` on every body row, and `sdvt-col-current` plus
+   * `aria-current="true"` on the header of `grid.col`. Ignored without `interactive`.
    */
   readonly grid?: TableCursor;
 }
@@ -213,8 +213,11 @@ export function renderParts<Row>(
       const inner = sortable
         ? `<button type="button" class="sdvt-sort" data-sdv-sort="${escapeAttr(c.key)}">${label}</button>`
         : label;
-      const current = grid?.col === c.key ? " sdvt-col-current" : "";
-      return `<th scope="col" class="sdvt-label sdvt-${escapeAttr(alignOf(c))}${current}" data-col="${escapeAttr(c.key)}" data-kind="${escapeAttr(c.kind)}"${aria}${styleOf([c.width ? `width:${escapeAttr(cssValue(c.width, `column ${c.key} width`))}` : "", deco.labelStyle(c.key)])}>${inner}</th>`;
+      const isCurrent = grid?.col === c.key;
+      const current = isCurrent ? " sdvt-col-current" : "";
+      // fix 1 (I2): the column `s` sorts, for assistive tech too (the class is only the visual marker)
+      const currentAria = isCurrent ? ' aria-current="true"' : "";
+      return `<th scope="col" class="sdvt-label sdvt-${escapeAttr(alignOf(c))}${current}" data-col="${escapeAttr(c.key)}" data-kind="${escapeAttr(c.kind)}"${currentAria}${aria}${styleOf([c.width ? `width:${escapeAttr(cssValue(c.width, `column ${c.key} width`))}` : "", deco.labelStyle(c.key)])}>${inner}</th>`;
     })
     .join("");
   const cellsOf = (row: Row, i: number): string =>

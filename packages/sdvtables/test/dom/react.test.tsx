@@ -145,7 +145,9 @@ test("SSR equality, all 21 column kinds on STANDINGS: static, and interactive wi
   t.setFilter("team", "n"); // DEN NYJ NE
   t.setPage(1);
   t.setSelection(new Set([t.rowId(WIDE[7] as Wide)])); // NE, alone on the last page
+  t.setCursor(0, "srs_ranks"); // fix 1 (I2): the cursor column's aria-current
   const [react, html] = both(t);
+  expect(html).toContain('data-col="srs_ranks" data-kind="colorRanks" aria-current="true"');
   expect(html).toContain('class="sdvt-toolbar"');
   expect(html).toContain(" sdvt-selected");
   expect(html).toContain('aria-sort="descending"');
@@ -193,7 +195,10 @@ test("SSR equality under every theme, static and interactive", () => {
     );
     const t = createTable(s, STANDINGS, { pageSize: 4 });
     t.setSort("net_epa", "asc");
-    expect(both(t)[0], name).toBe(both(t)[1]);
+    t.setCursor(2, "net_epa"); // fix 1 (I2): aria-current on the sorted header, beside aria-sort
+    const [react, html] = both(t);
+    expect(html, name).toContain('aria-current="true" aria-sort="ascending"');
+    expect(react, name).toBe(html);
   }
 });
 test("interactive table sorts, pages and filters in the browser; the filter input keeps focus", () => {
@@ -424,5 +429,6 @@ test("Task 10 (A50): SSR equality on a grid: cursor row, current column, a selec
   expect(html).toContain('data-row="3" tabindex="0" aria-selected="false"');
   expect(html).toContain('data-row="2" tabindex="-1" aria-selected="true"');
   expect(html).toContain(" sdvt-col-current");
+  expect(html).toContain('data-col="wins" data-kind="int" aria-current="true"'); // fix 1 (I2)
   expect(react).toBe(html);
 });

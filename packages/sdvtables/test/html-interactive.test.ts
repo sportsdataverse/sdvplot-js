@@ -267,7 +267,9 @@ test("A49: the tiers missing-level warning reads the source rows, not the page",
 });
 
 test("Task 10 (A48): an interactive table is a selectable grid with ONE tab stop; a static table is not", () => {
-  expect(renderHTML(spec, rows)).not.toMatch(/role="grid"|tabindex|aria-selected|sdvt-col-current"/);
+  expect(renderHTML(spec, rows)).not.toMatch(
+    /role="grid"|tabindex|aria-selected|sdvt-col-current"|aria-current/,
+  );
   const t = createTable(spec, many, { pageSize: 10 });
   t.setPage(1);
   t.setCursor(3, "wins");
@@ -283,4 +285,9 @@ test("Task 10 (A48): an interactive table is a selectable grid with ONE tab stop
   expect(html.match(/aria-selected="true"/g)?.length).toBe(1);
   expect(html).toMatch(/<th scope="col" class="[^"]*\bsdvt-col-current" data-col="wins"/);
   expect(html.match(/sdvt-col-current"/g)?.length).toBe(1);
+  // fix 1 (I2): the column cursor is exposed to assistive tech, on the same header
+  expect(html).toMatch(
+    /<th scope="col" class="[^"]*\bsdvt-col-current" data-col="wins" data-kind="int" aria-current="true"/,
+  );
+  expect(html.match(/aria-current="true"/g)?.length).toBe(1);
 });

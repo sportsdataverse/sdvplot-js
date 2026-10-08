@@ -90,3 +90,14 @@ test("Task 10: hotkeys: false turns off j/k/h/l/s and /, never the arrows, Enter
   expect(keyAction("Enter", off)).toEqual({ type: "toggle", row: 0 });
   expect(keyAction(" ", off)).toEqual({ type: "toggle", row: 0 });
 });
+test("Task 10 fix 1 (5): h/l and Left/Right from a link or button inside a row are that control's; j/k still move", () => {
+  const inCell = at({ focused: 2, onRow: false }); // the key landed on a focusable inside row 2, not on the row
+  for (const key of ["h", "l", "ArrowLeft", "ArrowRight"]) expect(keyAction(key, inCell), key).toBeNull();
+  expect(keyAction("j", inCell)).toEqual({ type: "cursor", row: 3, col: null });
+  // from the header, toolbar or pager (no row): still the grid's column keys
+  expect(keyAction("l", at({ focused: null, onRow: false }))).toEqual({
+    type: "cursor",
+    row: 0,
+    col: "wins",
+  });
+});

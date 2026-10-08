@@ -111,7 +111,10 @@ export type KeyAction =
 export interface KeyContext {
   /** the `data-row` of the body row the key landed in, or null (toolbar, header, pager) */
   readonly focused: number | null;
-  /** the key landed on that body row itself, not on a link or button inside it */
+  /**
+   * the key landed on that body row itself, not on a link or button inside it (that control keeps its Enter, Space
+   * and left/right keys)
+   */
   readonly onRow: boolean;
   /** the engine's cursor (`table.state.cursor`) */
   readonly cursor: TableCursor;
@@ -150,7 +153,10 @@ const clamp = (i: number, n: number): number => Math.max(0, Math.min(i, n - 1));
  * up arrows) move the cursor row in display order, and enter the grid at the cursor row when the key came from
  * outside the rows; `h`/`l` (left and right arrows) move the cursor column over the shown sortable columns, starting
  * from the cursor column, else the sorted one, else the first; `s` sorts that column; `/` goes to the search box;
- * Enter and Space toggle the selection of the row the key landed on. Moves stop at the edges.
+ * Enter and Space toggle the selection of the row the key landed on. Moves stop at the edges: `j`/`k` stop at the
+ * first and last row of the CURRENT page and never turn it (the pager does), `h`/`l` at the first and last sortable
+ * column. A left/right key that lands on a link or button inside a row (`focused` set, `onRow` false) is that
+ * control's: null.
  *
  * @example
  * ```ts
@@ -184,6 +190,7 @@ export function keyAction(key: string, k: KeyContext): KeyAction | null {
     }
     case "left":
     case "right": {
+      if (k.focused !== null && !k.onRow) return null; // fix 1: a link or button in a cell keeps its own left/right
       const step = what === "right" ? 1 : -1;
       const next = col === null ? undefined : k.cols[clamp(k.cols.indexOf(col) + step, k.cols.length)];
       return next === undefined ? null : { type: "cursor", row, col: next };
@@ -206,7 +213,9 @@ const TEXT_FIELD = 'input,textarea,select,[contenteditable]:not([contenteditable
  * select, contenteditable). Otherwise {@link keyAction} decides, and a key that acts is consumed (`preventDefault`):
  * a cursor move focuses the destination row BEFORE the engine re-renders, so the re-render's focus restore keeps it
  * there; `s` and Enter/Space go through {@link handleClick} on the column's sort button or on the row, exactly as a
- * click; `/` focuses the search box. `spec.interactive.hotkeys: false` leaves only the arrows, Enter and Space.
+ * click, once per press (a held key's repeats are consumed but toggle nothing); `/` focuses the search box, and passes
+ * through to the browser (quick-find) when `root` has none. `spec.interactive.hotkeys: false` leaves only the arrows,
+ * Enter and Space.
  *
  * @example
  * ```ts
@@ -248,13 +257,15 @@ export function handleKeydown<Row>(table: Table<Row>, root: Element, e: Keyboard
     order: rows.map((r) => Number(r.getAttribute("data-row"))),
     hotkeys: table.spec.interactive?.hotkeys !== false,
   });
-  if (action === null) return;
+  const box = action?.type === "search" ? root.querySelector<HTMLElement>("[data-sdv-global-filter]") : null;
+  if (action === null || (action.type === "search" && box === null)) return; // fix 1 (I1): no box, `/` is the browser's
   e.preventDefault();
-  if (action.type === "search") root.querySelector<HTMLElement>("[data-sdv-global-filter]")?.focus();
+  if (action.type === "search") box?.focus();
   else if (action.type === "sort")
     handleClick(table, sorts.find((b) => b.getAttribute("data-sdv-sort") === action.col) ?? null);
-  else if (action.type === "toggle") handleClick(table, rowEl);
-  else {
+  else if (action.type === "toggle") {
+    if (!e.repeat) handleClick(table, rowEl); // fix 1: holding Enter or Space toggles once, not at key-repeat rate
+  } else {
     // focus first: hydrate and <SdvTable/> restore focus to the focused row's data-row after the re-render
     rows.find((r) => r.getAttribute("data-row") === String(action.row))?.focus();
     table.setCursor(action.row, action.col);

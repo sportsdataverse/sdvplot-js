@@ -435,3 +435,66 @@ test("Task 10: under groupBy, j goes to the next row SHOWN, not the next page in
   await frame();
   expect(document.activeElement?.querySelector("td")?.textContent).toBe("DEN");
 });
+
+test("Task 10 fix 1 (I1): with no search box, / is not consumed, so the browser's quick-find keeps it", () => {
+  const t = createTable(spec, rows);
+  const el = mount(renderHTML(t));
+  el.querySelector("[data-sdv-global-filter]")?.remove(); // host markup without the global search box
+  hydrate(el, t);
+  rowAt(el, 0).focus();
+  const slash = new KeyboardEvent("keydown", { key: "/", bubbles: true, cancelable: true });
+  rowAt(el, 0).dispatchEvent(slash);
+  expect(slash.defaultPrevented).toBe(false);
+  expect(document.activeElement).toBe(rowAt(el, 0));
+});
+test("Task 10 fix 1 (I2): the cursor column's header carries aria-current, one at a time, beside the visual class", async () => {
+  const t = createTable(spec, rows);
+  const el = mount(renderHTML(t));
+  hydrate(el, t);
+  const current = (): (string | null)[] =>
+    Array.from(el.querySelectorAll('[data-sdv-body] th[aria-current="true"]'), (th) =>
+      th.getAttribute("data-col"),
+    );
+  expect(current()).toEqual([]); // no column picked yet
+  rowAt(el, 0).focus();
+  press(rowAt(el, 0), "l");
+  await frame();
+  expect(current()).toEqual(["wins"]);
+  expect(el.querySelector("th.sdvt-col-current")?.getAttribute("aria-current")).toBe("true");
+  press(rowAt(el, 0), "l");
+  await frame();
+  expect(current()).toEqual(["net_epa"]);
+});
+test("Task 10 fix 1 (4): a held Enter or Space toggles once; the repeats are consumed, so the page never scrolls", async () => {
+  const t = createTable(spec, rows);
+  const el = mount(renderHTML(t));
+  hydrate(el, t);
+  rowAt(el, 1).focus();
+  expect(press(rowAt(el, 1), " ")).toBe(false);
+  await frame();
+  // each repeat is checked on its own: an even number of toggles would hide the bug
+  for (const key of [" ", "Enter", " "]) {
+    expect(press(rowAt(el, 1), key, { repeat: true }), key).toBe(false);
+    expect(t.getSelection(), key).toEqual(new Set(["1"]));
+  }
+  await frame();
+  expect(t.getSelection()).toEqual(new Set(["1"])); // LAC, toggled once
+  expect(rowAt(el, 1).getAttribute("aria-selected")).toBe("true");
+});
+test("Task 10 fix 1 (5): h/l and Left/Right on a link inside a cell pass through; j still leaves the cell for the next row", async () => {
+  const t = createTable(spec, rows);
+  const el = mount(renderHTML(t));
+  hydrate(el, t);
+  // a cell that renders a link (custom cell html; sdvtables has no link kind), as the focus-restore test does
+  rowAt(el, 1)
+    .querySelector('td[data-col="team"]')
+    ?.insertAdjacentHTML("beforeend", ' <a href="#lac">LAC</a>');
+  const link = rowAt(el, 1).querySelector("a") as HTMLElement;
+  link.focus();
+  for (const key of ["ArrowRight", "ArrowLeft", "l", "h"]) expect(press(link, key), key).toBe(true);
+  expect(t.state.cursor).toEqual({ row: 0, col: null });
+  expect(document.activeElement).toBe(link);
+  expect(press(link, "j")).toBe(false);
+  await frame();
+  expect(document.activeElement).toBe(rowAt(el, 2));
+});
