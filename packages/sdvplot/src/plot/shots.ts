@@ -9,11 +9,10 @@ import {
   type FrameName,
 } from "@sportsdataverse/sporty";
 import { type BinShape, cellPoints } from "../bins/index.js";
-import { contentId } from "../content-id.js";
 import { InputError } from "../errors.js";
 import { type CellVsLeague, LEAGUE_PRIOR_ATTEMPTS, shrunkDiff } from "../shots/aggregate.js";
 import { type DiffScale, diffScale } from "../shots/diff.js";
-import type { SignaturePoint } from "../shots/signature.js";
+import { type SignaturePoint, signatureGradient } from "../shots/signature.js";
 
 type Point = [number, number];
 interface ShotFeature {
@@ -259,16 +258,9 @@ export function shootingSignature(
   points: readonly SignaturePoint[],
   o: ShootingSignatureOptions = {},
 ): Plot.Markish[] {
-  const fill = o.fill ?? diffScale();
   const curve = o.curve ?? "monotone-x";
-  const drawn = points.filter((p) => p.fgPct !== null);
-  const maxShare = Math.max(0, ...drawn.map((p) => p.share)) || 1;
+  const { maxShare, maxFt, stops, id: gradientId } = signatureGradient(points, o.fill ?? diffScale());
   const half = o.halfWidth ?? ((p: SignaturePoint, m: number) => Math.max((p.share / m) * 20, 0.75) / 190);
-  const maxFt = points.at(-1)?.distance ?? 0;
-  const stops = drawn
-    .filter((_, i) => i % 2 === 0) // every other sample (`:192`)
-    .map((p) => [maxFt ? (p.distance / maxFt) * 100 : 0, fill(p.colourDiff)] as const);
-  const stopsText = stops.map((s) => s.join(" ")).join(";");
   const marks: Plot.Markish[] = [];
   if (o.league ?? true) {
     const leagueLine = (strong: boolean) =>
@@ -299,9 +291,7 @@ export function shootingSignature(
         if (g === null) return null;
         const x = scales.x as (v: number) => number;
         const [x1, x2] = [String(x(0)), String(x(maxFt))];
-        // The gradient spans pixels (userSpaceOnUse), so the id hashes that x range with the colours: the same
-        // signature at two widths gets two gradients, and a page's `url(#id)` never takes another chart's range.
-        const id = contentId("sdv-signature", `${x1} ${x2}|${stopsText}`);
+        const id = gradientId(x1, x2); // hashes the pixel range with the colours (signatureGradient)
         g.setAttribute("fill", `url(#${id})`); // Plot sets a constant fill on the mark's <g>
         const doc = context.document;
         const grad = doc.createElementNS(SVG_NS, "linearGradient");

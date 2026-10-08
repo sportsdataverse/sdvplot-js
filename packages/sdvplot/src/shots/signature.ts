@@ -1,4 +1,5 @@
 // signaturePoints ports blazing-the-nets `main` lib/charts/shootingSignature.ts:13-100 (@31427b8).
+import { contentId } from "../content-id.js";
 import { InputError } from "../errors.js";
 import { LEAGUE_PRIOR_ATTEMPTS, shrunkDiff } from "./aggregate.js";
 import type { DistanceVsLeague } from "./distance.js";
@@ -127,4 +128,34 @@ export function signaturePoints(
       colourDiff: ok && leagueFgPct !== null ? shrunkDiff(m, a, leagueFgPct, prior) : null,
     };
   });
+}
+
+/**
+ * What the Plot and d3 signatures share, so the two cannot drift (`main` `shootingSignature.ts:126-131`, `:183-193`):
+ * the busiest drawn share, the last distance, the gradient's stops (every other drawn sample, as percentages of
+ * [0, maxFt]) and its id for a pixel x range. The gradient is in user space (pixels), so the id hashes that range
+ * with the colours: the same signature at two widths never shares one, and two signatures never steal each other's
+ * (`master`'s fixed id did, `Gradient.js:10`). Internal: not exported from `sdvplot/shots`.
+ */
+export function signatureGradient(
+  points: readonly SignaturePoint[],
+  fill: (diff: number | null) => string,
+): {
+  readonly maxShare: number;
+  readonly maxFt: number;
+  readonly stops: readonly (readonly [offset: number, colour: string])[];
+  readonly id: (x1: string, x2: string) => string;
+} {
+  const drawn = points.filter((p) => p.fgPct !== null);
+  const maxFt = points.at(-1)?.distance ?? 0;
+  const stops = drawn
+    .filter((_, i) => i % 2 === 0)
+    .map((p) => [maxFt ? (p.distance / maxFt) * 100 : 0, fill(p.colourDiff)] as const);
+  const text = stops.map((s) => s.join(" ")).join(";");
+  return {
+    maxShare: Math.max(0, ...drawn.map((p) => p.share)) || 1,
+    maxFt,
+    stops,
+    id: (x1, x2) => contentId("sdv-signature", `${x1} ${x2}|${text}`),
+  };
 }
