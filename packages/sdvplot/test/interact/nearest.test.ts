@@ -246,6 +246,24 @@ test("destroy removes the listeners and the tooltip, and clears the hover it set
   again.destroy();
   expect(hovered(store)).toEqual(["0"]);
 });
+test("destroy right after update(points) still clears the hover this handle wrote: a rescale keeps its ownership", () => {
+  const svg = shotChart();
+  const store = createSelection<BknShot>();
+  const hover = nearestHover(svg, store, { points: points(), radius: 18, label });
+  at(svg, "pointermove", PX + 10, PY);
+  expect(hovered(store)).toEqual(["825"]);
+  svg.setAttribute("viewBox", "0 0 250 235"); // the chart is rescaled, then torn down before the pointer moves again
+  hover.update(points(0.5));
+  hover.destroy();
+  expect(hovered(store)).toEqual([]);
+  // and an update still leaves another writer's hover alone
+  const again = nearestHover(svg, store, { points: points(), radius: 18 });
+  at(svg, "pointermove", PX + 10, PY);
+  store.set({ hover: ["0"] });
+  again.update(points());
+  again.destroy();
+  expect(hovered(store)).toEqual(["0"]);
+});
 test("argument errors throw InputError: a negative radius or padding, an unknown dimension, a root that is not an <svg>", () => {
   const store = createSelection();
   const svg = shotChart();

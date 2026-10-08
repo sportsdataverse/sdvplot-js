@@ -123,11 +123,13 @@ export function nearestHover<R>(
     }
   };
   index(o.points);
-  let cur: string | null | undefined; // the id this handle last wrote; undefined: unknown, so the next event writes
+  let cur: string | null | undefined; // the id last shown; undefined: unknown, so the next event writes and re-places
+  let wrote: string | null = null; // the hover id this handle last wrote, which destroy clears if still current
   const to = (p: HoverPoint | undefined): void => {
     const id = p === undefined ? null : p.id;
     if (id === cur) return;
     cur = id;
+    wrote = id;
     store.set({ hover: id === null ? [] : [id] });
     const shown = p !== undefined && label ? label(p.id) : null;
     if (shown && p) tip?.show(p.x, p.y, shown.lines, shown.swatch);
@@ -162,8 +164,9 @@ export function nearestHover<R>(
       for (const [type, fn, capture] of listeners) svg.removeEventListener(type, fn, { capture });
       tip?.destroy();
       const h = store.getState().hover;
-      if (typeof cur === "string" && h.size === 1 && h.has(cur)) store.set({ hover: [] });
+      if (wrote !== null && h.size === 1 && h.has(wrote)) store.set({ hover: [] });
       cur = undefined;
+      wrote = null;
     },
   };
 }
