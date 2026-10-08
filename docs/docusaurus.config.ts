@@ -1,11 +1,16 @@
+import { resolve } from "node:path";
 import type * as Preset from "@docusaurus/preset-classic";
 import type { Config } from "@docusaurus/types";
 import { themes as prismThemes } from "prism-react-renderer";
+import remarkLive from "../examples/scripts/remark-live";
+// Imported, not named by path, so the build cache tracks it: editing this config or a module it imports evicts it.
+import sdvExamples from "./plugins/sdv-examples";
 
 // This runs in Node.js - no browser APIs here.
 
 const sdvplot = "../packages/sdvplot";
 const sporty = "../packages/sporty";
+const sdvtables = "../packages/sdvtables";
 
 const config: Config = {
   title: "sdvplot-js",
@@ -42,7 +47,13 @@ const config: Config = {
     [
       "classic",
       {
-        docs: { sidebarPath: "./sidebars.ts", routeBasePath: "/" },
+        docs: {
+          sidebarPath: "./sidebars.ts",
+          routeBasePath: "/",
+          remarkPlugins: [
+            [remarkLive, { outDir: resolve("../examples/out"), snippetDir: resolve("../examples/snippets") }],
+          ],
+        },
         blog: false,
         theme: { customCss: "./src/css/custom.css" },
       } satisfies Preset.Options,
@@ -50,6 +61,7 @@ const config: Config = {
   ],
 
   plugins: [
+    sdvExamples,
     [
       "docusaurus-plugin-typedoc",
       {
@@ -61,6 +73,11 @@ const config: Config = {
           `${sdvplot}/src/d3/index.ts`,
           `${sdvplot}/src/bins/index.ts`,
           `${sdvplot}/src/shots/index.ts`,
+          `${sdvplot}/src/chartjs.ts`,
+          `${sdvplot}/src/chartjs-surface.ts`,
+          `${sdvplot}/src/plotly.ts`,
+          `${sdvplot}/src/vega.ts`,
+          `${sdvplot}/src/echarts.ts`,
           `${sdvplot}/src/testing/index.ts`,
         ],
         tsconfig: `${sdvplot}/tsconfig.json`,
@@ -78,9 +95,20 @@ const config: Config = {
           `${sporty}/src/specs/index.ts`,
           `${sporty}/src/plot.ts`,
           `${sporty}/src/d3.ts`,
+          `${sporty}/src/canvas.ts`,
         ],
         tsconfig: `${sporty}/tsconfig.json`,
         out: "docs/api/sporty",
+        readme: "none",
+      },
+    ],
+    [
+      "docusaurus-plugin-typedoc",
+      {
+        id: "sdvtables",
+        entryPoints: [`${sdvtables}/src/index.ts`, `${sdvtables}/src/html/index.ts`],
+        tsconfig: `${sdvtables}/tsconfig.json`,
+        out: "docs/api/sdvtables",
         readme: "none",
       },
     ],
@@ -94,6 +122,8 @@ const config: Config = {
       logo: { alt: "sdvplot-js hex mark", src: "img/sdvplot-js-mark.svg" },
       items: [
         { type: "docSidebar", sidebarId: "docsSidebar", position: "left", label: "Docs" },
+        { to: "/gallery/", label: "Gallery", position: "left" },
+        { href: "pathname:///notebooks/", label: "Notebooks", position: "left" },
         { href: "https://github.com/sportsdataverse/sdvplot-js", label: "GitHub", position: "right" },
       ],
     },

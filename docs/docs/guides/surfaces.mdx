@@ -1,0 +1,149 @@
+---
+title: Playing surfaces
+sidebar_position: 8
+---
+
+`@sportsdataverse/sporty` is a port of [sportyR](https://sportyr.sportsdataverse.org): the courts, rinks, fields,
+pitches and sheets of nine sports, built to each league's published dimensions. A surface is a scene of polygons in
+the league's units, centred on the middle of the playing area, so tracking or event data in those units lands where
+it happened. Build the scene once, then draw it with whichever renderer you use, and move your data onto it with a
+coordinate frame.
+
+## One call, any sport
+
+`surface(sport, league, options)` returns a scene; `toSVG` turns it into an SVG string. The options are typed per
+sport, so a display range such as `"offense"` is checked against basketball's list.
+
+<Live id="api/sporty/surface" />
+
+<Live id="sporty/core/surface-generic" />
+
+Each sport also has its own entry point (`basketballCourt`, `hockeyRink`, `footballField`, `soccerPitch`,
+`baseballField`, `tennisCourt`, `volleyballCourt`, `curlingSheet`, `lacrosseField`), typed to that sport's leagues.
+
+<Live id="sporty/core/typed-entries" />
+
+## What each sport offers
+
+`leagues`, `displayRanges`, `features` and `colorKeys` list what a sport accepts; they are the lists the option types
+are built from. The numbers behind each league are in the `*_SPECS` tables, also exported without the drawing code
+from `@sportsdataverse/sporty/specs`.
+
+<Live id="sporty/core/discovery" />
+
+<Live id="sporty/core/spec-tables" />
+
+## Changing the surface
+
+`updates` overrides any dimension of the league's spec, and `colorUpdates` recolours any colour key.
+
+<Live id="sporty/core/param-updates" />
+
+<Live id="sporty/core/color-updates" />
+
+`displayRange` crops the scene to part of the surface (a half, a zone); `rotation`, `xTrans` and `yTrans` move it,
+`units` rebuilds it in another unit, and `arcResolution` sets how many points each arc is sampled with.
+
+<Live id="sporty/core/display-ranges" />
+
+<Live id="sporty/core/rotation-translation" />
+
+<Live id="sporty/core/units" />
+
+<Live id="sporty/core/arc-resolution" />
+
+## SVG
+
+`toSVG(scene, { width, height, background, precision, id })` needs no DOM: the same string comes out in Node, a worker
+or a browser. `arcs: "svg"` writes each circle as one arc command instead of sampled points.
+
+<Live id="api/sporty/toSVG" />
+
+<Live id="sporty/svg/to-svg-options" />
+
+<Live id="sporty/svg/svg-arcs" />
+
+## Observable Plot
+
+`surfaceScales` fixes Plot's x and y to the scene (one unit the same length on both axes, no axes) and `surfaceMark`
+draws the scene through them, so data in the same units lands in place. `sceneToGeoJSON` gives one GeoJSON polygon
+per feature for any tool that reads GeoJSON, and `isVisiblePolygon` is the rule every renderer uses to skip invisible
+features.
+
+<Live id="api/sporty/surfaceMark" />
+
+<Live id="sporty/plot/surface-mark" />
+
+<Live id="sporty/plot/geojson" />
+
+<Live id="sporty/plot/visible-polygons" />
+
+## D3 and canvas
+
+`appendSurface(selection, scene, x, y)` from `@sportsdataverse/sporty/d3` draws through your scale functions.
+`drawScene(context, scene, { width })` from `@sportsdataverse/sporty/canvas` paints on any 2D context: a browser canvas, or
+`@napi-rs/canvas` in Node.
+
+<Live id="sporty/d3/append-surface" />
+
+<Live id="sporty/canvas/draw-scene" />
+
+## Moving data onto the surface
+
+Feeds report positions in their own frames: tenths of a foot from the hoop, a 0-100 yardline, a pixel canvas.
+`toSurfaceFrame(rows, { from })` converts each row to surface coordinates with one of the built-in `FRAMES`, adding
+`surface_x` and `surface_y` columns.
+
+<Live id="api/sporty/toSurfaceFrame" />
+
+<Live id="sporty/frames/registry" />
+
+<Live id="sporty/frames/nba-legacy" />
+
+<Live id="sporty/frames/espn-football" />
+
+<Live id="sporty/frames/hockeytech" />
+
+`frameBottomLeft(length, width)` handles the common feed with the origin at a corner, and a `Frame` of your own is
+two functions and a description.
+
+<Live id="sporty/frames/bottom-left" />
+
+<Live id="sporty/frames/custom-frame" />
+
+## Building blocks
+
+A surface feature is one or more rings of points from the shape primitives, placed, reflected and rotated by the
+transforms; both are exported for drawing your own features.
+
+<Live id="sporty/core/shapes" />
+
+<Live id="sporty/core/transforms" />
+
+## Errors
+
+Every error is a `SportyError`. A league name is any string at compile time, so an unknown one throws
+`UnknownLeagueError` when the surface is built; an unknown display range or unit has its own class.
+
+<Live id="sporty/core/errors" />
+
+## In team colours
+
+sdvplot's `surface(league, { team })` paints a sporty surface in a team's colours (`colorUpdates` maps the colours to
+sporty's colour keys, `SURFACES` maps each sdvplot league to the sporty surface it draws) and returns Plot marks and scales; the same
+scene powers sdvplot's D3 and Chart.js surfaces.
+
+<Live id="api/sdvplot/surface" />
+
+<Live id="sdvplot/plot/surface-team" />
+
+## Every league
+
+The gallery draws every league of every sport, for example the
+[PLL lacrosse field](/gallery/sporty/surfaces/lacrosse-pll); see [every surface](/gallery/sporty/#every-surface).
+
+<Live id="sporty/surfaces/lacrosse-pll" />
+
+In the gallery: [Surfaces, options, units, shapes](/gallery/sporty/#surfaces-options-units-shapes), the
+[SVG](/gallery/sporty/#svg-renderer) and [canvas](/gallery/sporty/#canvas-renderer) renderers, [Coordinate
+frames](/gallery/sporty/#coordinate-frames) and [Every surface](/gallery/sporty/#every-surface).

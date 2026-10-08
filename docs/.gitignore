@@ -20,4 +20,5 @@ yarn-debug.log*
 yarn-error.log*
 
 # typedoc output (generated at build time)
-/docs/api
+/docs/api/*
+!/docs/api/_category_.json

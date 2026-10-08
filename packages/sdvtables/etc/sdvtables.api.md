@@ -473,7 +473,7 @@ export type Decoration<Row> = {
 // @public (undocumented)
 export type DecorationType = Decoration<never>["type"];
 
-// @public (undocumented)
+// @public
 export function defineTable<Row>(): TableBuilder<Row>;
 
 // Warning: (ae-forgotten-export) The symbol "DensitySizes" needs to be exported by the entry point index.d.ts

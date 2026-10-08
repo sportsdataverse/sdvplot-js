@@ -1,0 +1,81 @@
+---
+title: Cell kinds
+sidebar_position: 11
+---
+
+A column's kind decides what its cells show: the value as written, a formatted number, a colour, a logo. sdvtables
+has 21 kinds, one `c.<kind>(key, options)` call each, with sdvplotR's defaults; all of them render on the same eight
+AFC teams, so you can compare them directly. Kinds that look a team up (`logo`, `wordmark`, the team colours) need
+the league loaded, which `prepare` and `renderHTMLAsync` do.
+
+## Text and numbers
+
+`text` shows the value as written; `int` and `num` format numbers (digits, a forced sign, a prefix or suffix), and a
+missing value stays blank.
+
+<Live id="sdvtables/kinds/text" />
+
+<Live id="sdvtables/kinds/int" />
+
+<Live id="sdvtables/kinds/num" />
+
+`pct` multiplies a share by 100, `rank` writes ordinals, `delta(from, to)` shows `to - from` with an arrow, and
+`tally` writes a record from several columns, optionally with one part's share.
+
+<Live id="sdvtables/kinds/pct" />
+
+<Live id="sdvtables/kinds/rank" />
+
+<Live id="sdvtables/kinds/delta" />
+
+<Live id="sdvtables/kinds/tally" />
+
+## Colour on a scale
+
+`colorPills` puts each value in a pill coloured on a scale and `colorRanks` fills the cell, green to red
+(`RANK_PALETTE`; `reverse` when lower is better). Pass a `domain` so two tables share a scale.
+
+<Live id="sdvtables/kinds/colorPills" />
+
+<Live id="sdvtables/kinds/colorRanks" />
+
+`percentileBar` places a marker on a track; `colorResults` fills a whole row by its W or L.
+
+<Live id="sdvtables/kinds/percentileBar" />
+
+<Live id="sdvtables/kinds/colorResults" />
+
+## Flags
+
+`highlight` marks the cells that match a predicate, `highlightNa` marks missing values, and `indicatorBox` fills a box
+for the values listed as `truthy`.
+
+<Live id="sdvtables/kinds/highlight" />
+
+<Live id="sdvtables/kinds/highlightNa" />
+
+<Live id="sdvtables/kinds/indicatorBox" />
+
+## Teams and players
+
+`logo` and `wordmark` look the team up in the league data and show its archived mark; `headshot` builds an ESPN
+headshot from the player id alone, and `image` shows any URL a row holds.
+
+<Live id="sdvtables/kinds/logo" />
+
+<Live id="sdvtables/kinds/wordmark" />
+
+<Live id="sdvtables/kinds/headshot" />
+
+<Live id="sdvtables/kinds/image" />
+
+`teamColorBar` draws a bar in the team colour, `teamColorBg` tints the cell, and `mergeStackTeamColor` stacks two
+values with the lower one in the team colour.
+
+<Live id="sdvtables/kinds/teamColorBar" />
+
+<Live id="sdvtables/kinds/teamColorBg" />
+
+<Live id="sdvtables/kinds/mergeStackTeamColor" />
+
+In the gallery: [Every cell kind](/gallery/sdvtables/#every-cell-kind).

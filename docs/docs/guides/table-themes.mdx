@@ -1,0 +1,48 @@
+---
+title: Table themes
+sidebar_position: 10
+---
+
+A theme sets everything about a table that is not its data: fonts, colours, rules, spacing. sdvtables ships the 20
+themes of sdvplotR and gtUtils, each one function call on the builder, so a table can match a site, a publication or
+a team without any CSS of your own. The [theme gallery](/gallery/sdvtables/#every-theme) shows all 20 on the same
+rows.
+
+## One theme
+
+`.theme(name)` picks a theme by name. Most themes load their Google Fonts with the table.
+
+<Live id="sdvtables/themes/midnight" />
+
+## A team's own colours
+
+`sdvTeam` fills the header with a team's primary colour: pass `{ league, team }` as its options. The title takes
+`onColor` of the fill, and the subtitle `secondaryOn`, a blend of the title ink toward the fill that still reads at
+4.5:1.
+
+<Live id="sdvtables/themes/sdvTeam" />
+
+<Live id="sdvtables/themes-api/secondary-on" />
+
+## Density
+
+`.theme(name, { density })` scales type and padding from `DENSITY`: compact, comfortable or social.
+
+<Live id="sdvtables/themes-api/density" />
+
+## Comparing themes
+
+`themePreview(spec, rows, names)` renders one table per theme (all 20 when `names` is left out), for choosing one.
+
+<Live id="api/sdvtables/themePreview" />
+
+<Live id="sdvtables/html/theme-preview" />
+
+## The registry
+
+`THEMES` maps each name in `THEME_NAMES` to the function that builds it, and `resolveTheme` picks and calls one.
+A theme's tokens (`TOKEN_KEYS`) become CSS custom properties on the table.
+
+<Live id="sdvtables/themes-api/registry" />
+
+In the gallery: [Every theme](/gallery/sdvtables/#every-theme) and [Theme API](/gallery/sdvtables/#theme-api).

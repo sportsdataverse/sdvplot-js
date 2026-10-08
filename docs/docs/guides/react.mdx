@@ -1,0 +1,41 @@
+---
+title: React
+sidebar_position: 6
+---
+
+A React page that shows logos or headshots otherwise needs its own loading code: await the league data, hold it in
+state, guard the first render. `@sportsdataverse/sdvplot/react` does that for you in components and hooks (React 18 or
+later). Each loads its league on first use and renders nothing until the data is there, which also keeps server
+rendering safe: the server and the first client render agree on an empty result. They use `useState` and `useEffect`,
+so in a framework with server components (Next.js), use them from a client component.
+
+## Logos and wordmarks
+
+`<TeamLogo team league />` renders an `<img>` of the team's logo (nothing for an unknown team); `size` sets its
+height, and `season` and `variant` choose the mark. `<Wordmark />` takes the same props.
+
+<Live id="api/sdvplot/TeamLogo" />
+
+<Live id="sdvplot/react/team-logo" />
+
+<Live id="sdvplot/react/wordmark" />
+
+## Headshots
+
+`<Headshot playerId league />` renders an ESPN headshot from the player id; with `idSystem="gsis"` it renders once
+the gsis id map has loaded.
+
+<Live id="api/sdvplot/Headshot" />
+
+<Live id="sdvplot/react/headshot" />
+
+## Hooks
+
+`useTeamColors(league)` returns `{ team: "#hex" }` for the league, `undefined` until it has loaded. `useResolve(league)`
+returns a synchronous resolver once the league has loaded, here turning what a user typed into team ids.
+
+<Live id="sdvplot/react/use-team-colors" />
+
+<Live id="sdvplot/react/use-resolve" />
+
+In the gallery: [React](/gallery/sdvplot/#react).

@@ -127,6 +127,25 @@ function build<R>(input: Data<R>, o: MarkOptions<R>, kind: "logo" | "wordmark"):
   });
   return imageMark(data, xs.length, placed, { height, alpha, kind, title: o.title, ariaLabel: o.ariaLabel });
 }
+/**
+ * Team logos as an Observable Plot mark at (x, y), `height` a fraction of the frame height. Needs
+ * `loadLeague(league)` first; a team that does not resolve is left out, with one warning.
+ *
+ * @example
+ * ```ts
+ * import * as Plot from "@observablehq/plot";
+ * import { loadLeague } from "@sportsdataverse/sdvplot";
+ * import { logos } from "@sportsdataverse/sdvplot/plot";
+ *
+ * await loadLeague("nfl");
+ * const afc = [
+ *   { team: "KC", pf: 385, pa: 326 },
+ *   { team: "BUF", pf: 525, pa: 368 },
+ *   { team: "DEN", pf: 425, pa: 311 },
+ * ];
+ * Plot.plot({ marks: [logos(afc, { league: "nfl", x: "pf", y: "pa", team: "team" })] });
+ * ```
+ */
 export function logos<R>(data: Data<R>, o: MarkOptions<R>): Plot.Markish {
   return build(data, o, "logo");
 }

@@ -57,7 +57,17 @@ export async function loadGsis(): Promise<void> {
   return gsisPending;
 }
 
-/** Sync port of `_headshots.headshot_url`. ESPN ids need no data; gsis ids need `await loadGsis()` (or `preloadAll()`) first. */
+/**
+ * Sync port of `_headshots.headshot_url`. ESPN ids need no data; gsis ids need `await loadGsis()` (or `preloadAll()`)
+ * first.
+ *
+ * @example
+ * ```ts
+ * import { headshotUrl } from "@sportsdataverse/sdvplot";
+ *
+ * headshotUrl("3139477", "nfl"); // Patrick Mahomes, by ESPN athlete id
+ * ```
+ */
 export function headshotUrl(
   playerId: Value,
   league: EspnHeadshotLeague,

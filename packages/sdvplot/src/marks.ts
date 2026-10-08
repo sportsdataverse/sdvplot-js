@@ -92,6 +92,17 @@ export function logoUrlSync(team: Value, league: League, o: LogoUrlOptions = {})
   }
   return row.archive_url;
 }
+/**
+ * Archive URL of a team's logo (or wordmark, `markType`) for the season, loading the league first; `undefined` for an
+ * unknown team (the resolver warns) or when no mark of that type is archived (one warning).
+ *
+ * @example
+ * ```ts
+ * import { logoUrl } from "@sportsdataverse/sdvplot";
+ *
+ * await logoUrl("KC", "nfl", { markType: "wordmark" });
+ * ```
+ */
 export async function logoUrl(
   team: Value,
   league: League,

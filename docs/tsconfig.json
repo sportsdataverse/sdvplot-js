@@ -5,7 +5,14 @@
   "extends": "@docusaurus/tsconfig",
   "compilerOptions": {
     "baseUrl": ".",
-    "strict": true
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "verbatimModuleSyntax": true,
+    "paths": {
+      "@site/*": ["./*"],
+      "@sportsdataverse/examples/loaders": ["./plugins/no-loaders.ts"]
+    }
   },
   "exclude": [".docusaurus", "build"]
 }

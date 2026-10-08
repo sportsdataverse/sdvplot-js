@@ -21,9 +21,10 @@ import { toSVG } from "@sportsdataverse/sporty/svg";
 
 writeFileSync("nba.svg", toSVG(basketballCourt("nba")));
 
-// Move source data into the surface frame (feet, surface origin), then plot it over the SVG.
-const shots = toSurfaceFrame([{ x_legacy: 120, y_legacy: 35 }], { from: "nba-legacy" });
-// [{ x_legacy: 120, y_legacy: 35, surface_x: -38.25, surface_y: 12 }] -> plot (surface_x, surface_y) in feet
+// Move source data into the surface frame (feet, surface origin), then plot it over the SVG. This shot is LeBron
+// James's made three at Denver, 2023-10-24 (stats.nba.com shotchartdetail, game 0022300061, event 510).
+const shots = toSurfaceFrame([{ x_legacy: -53, y_legacy: 285 }], { from: "nba-legacy" });
+// [{ x_legacy: -53, y_legacy: 285, surface_x: -13.25, surface_y: -5.3 }] -> plot (surface_x, surface_y) in feet
 ```
 
 Draw a surface with Observable Plot or d3 (optional peers):

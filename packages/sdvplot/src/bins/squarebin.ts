@@ -56,10 +56,14 @@ const EQUAL_AREA = Math.sqrt(1.5 * Math.sqrt(3));
  * ```ts
  * import { squarebin } from "@sportsdataverse/sdvplot/bins";
  *
- * // (5, -5) sits on two cell edges and goes to the higher cell on each axis: [[0, 0, 2], [10, 0, 1]]
- * squarebin([{ x: 0, y: 0 }, { x: 3, y: 4 }, { x: 5, y: -5 }], { side: 10, x: (p) => p.x, y: (p) => p.y }).map(
- *   (b) => [b.x, b.y, b.length],
- * );
+ * // three Brooklyn shots of 2025-26 (sportsdataverse-data nba_stats_shots); x = 5 sits on a cell edge and goes to
+ * // the higher cell: [[0, 0, 1], [0, 10, 1], [10, 90, 1]]
+ * const shots = [
+ *   { x_legacy: 0, y_legacy: 0 },
+ *   { x_legacy: -1, y_legacy: 7 },
+ *   { x_legacy: 5, y_legacy: 91 },
+ * ];
+ * squarebin(shots, { side: 10, x: (s) => s.x_legacy, y: (s) => s.y_legacy }).map((b) => [b.x, b.y, b.length]);
  * ```
  */
 export function squarebin<T>(
@@ -154,7 +158,13 @@ export function cellPath(shape: BinShape, size: number): string {
  * import { binner } from "@sportsdataverse/sdvplot/bins";
  *
  * const b = binner({ shape: "square", radius: 10, equalArea: true }); // side 16.1185…: a radius-10 hexagon's area
- * b.bins([{ x: 0, y: 0 }, { x: 9, y: 0 }], { x: (p) => p.x, y: (p) => p.y }).map((c) => [c.x, c.y, c.length]);
+ * // three Brooklyn shots of 2025-26 (sportsdataverse-data nba_stats_shots): the two at the rim share a square
+ * const shots = [
+ *   { x_legacy: 0, y_legacy: 0 },
+ *   { x_legacy: -1, y_legacy: 7 },
+ *   { x_legacy: -44, y_legacy: 252 },
+ * ];
+ * b.bins(shots, { x: (s) => s.x_legacy, y: (s) => s.y_legacy }).map((c) => [c.x, c.y, c.length]);
  * ```
  */
 export function binner(o: BinnerOptions): Binner {

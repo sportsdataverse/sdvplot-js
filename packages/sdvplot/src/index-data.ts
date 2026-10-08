@@ -17,7 +17,19 @@ export function checkLeague(league: string): asserts league is League {
   if (!(LEAGUES as readonly string[]).includes(league))
     throw new InputError(`unknown league ${JSON.stringify(league)}; known leagues: ${LEAGUES.join(", ")}`);
 }
-/** Async throughout: an unknown league rejects (never throws synchronously); a failed chunk load can be retried. */
+/**
+ * Load a league's bundled teams, aliases and marks (one code-split chunk; nothing is downloaded). Every `*Sync`
+ * function needs it first. Async throughout: an unknown league rejects (never throws synchronously); a failed chunk
+ * load can be retried.
+ *
+ * @example
+ * ```ts
+ * import { loadLeague } from "@sportsdataverse/sdvplot";
+ *
+ * const nfl = await loadLeague("nfl");
+ * nfl.teams.find((t) => t.abbr === "KC");
+ * ```
+ */
 export async function loadLeague(league: League): Promise<LeagueData> {
   checkLeague(league);
   const hit = loaded.get(league);
@@ -59,4 +71,9 @@ export function seasonBounds(league?: League): readonly [number, number] | null 
   const first = league ? (LEAGUE_META[league].firstSeason ?? INDEX_FIRST_SEASON) : INDEX_FIRST_SEASON;
   return [first, last];
 }
+/**
+ * The latest season any dated alias of `league` names (the last relocation or rename the index records), or `null`
+ * when no alias is dated. It is not the current season: the NHL's is 1997. A value resolved without a season is
+ * matched at this season first.
+ */
 export const latestSeason = (league: League): number | null => LEAGUE_META[league].latestSeason;

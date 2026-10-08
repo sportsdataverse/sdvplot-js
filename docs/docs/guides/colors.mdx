@@ -1,0 +1,47 @@
+---
+title: Team colours
+sidebar_position: 2
+---
+
+A team's colours carry its identity on a chart as strongly as its logo, and they are the part a reader notices when
+they are wrong. sdvplot ships each team's primary and secondary colour with the league data, so colour lookups need
+no network and no hand-kept table. This guide covers the lookups, the colour arithmetic for text and contrast, and
+picking two colours that tell a matchup apart.
+
+## A palette keyed by your values
+
+`palette(league, values)` returns `{ value: "#hex" }` keyed by whatever you passed, ready to hand to any chart
+library's colour option. Without `values` it covers the whole league, keyed by abbreviation.
+
+<Live id="api/sdvplot/palette" />
+
+<Live id="sdvplot/core/palette-swatches" />
+
+## Primary and secondary, in your order
+
+`teamColors(league, values, { which })` returns one colour per value, in order; `which: "secondary"` picks the second
+colour. `teamColorsSync` is the same call once the league is loaded.
+
+<Live id="api/sdvplot/teamColors" />
+
+<Live id="sdvplot/core/team-colors" />
+
+## Text on a colour, and contrast
+
+`onColor` picks black or white text for a fill, `contrast` is the WCAG ratio between two colours, `luminance` the
+relative luminance it is built on. `mix` blends two colours, `solid` flattens a translucent colour over white, and
+`hex6` writes any hex form as `#rrggbb`.
+
+<Live id="sdvplot/core/contrast" />
+
+## Two colours for one matchup
+
+Two teams that share a colour (two reds, two navies) need a pair that reads apart. `matchupColors(teamA, teamB)` is
+Game on Paper's picker: one pair for a light page and one for a dark page, each keeping a team's primary whenever it
+works. `matchupColorsSync` is the same once the league is loaded.
+
+<Live id="api/sdvplot/matchupColors" />
+
+<Live id="api/sdvplot/matchupColorsSync" />
+
+In the gallery: [Identity, colours, marks](/gallery/sdvplot/#identity-colours-marks).

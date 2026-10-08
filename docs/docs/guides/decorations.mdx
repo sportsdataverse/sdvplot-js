@@ -1,0 +1,98 @@
+---
+title: Decorations
+sidebar_position: 12
+---
+
+Decorations are everything around and across the cells: titles and notes, rules and stripes, rows picked out,
+legends, a long table folded into blocks. Each is one builder method (sdvplotR's `gt_*` helpers, renamed), they stack
+in any order, and like the rest of a spec they are plain data. All 25 are shown here on the same eight AFC teams.
+
+## Titles and notes
+
+`title` and `subtitle` caption the table; `titleHeader` adds a kicker and a date. `sourceNote` writes a footnote
+(escaped unless you mark it `unsafe`), and `caption538` a ruled note and source line in the FiveThirtyEight style.
+
+<Live id="sdvtables/decorations/title" />
+
+<Live id="sdvtables/decorations/subtitle" />
+
+<Live id="sdvtables/decorations/titleHeader" />
+
+<Live id="sdvtables/decorations/sourceNote" />
+
+<Live id="sdvtables/decorations/caption538" />
+
+`socialTag` adds handles with their icons, `watermark` faint text (or an image) behind the rows, and `font` one Google
+font for the whole table.
+
+<Live id="sdvtables/decorations/socialTag" />
+
+<Live id="sdvtables/decorations/watermark" />
+
+<Live id="sdvtables/decorations/font" />
+
+## Rules, bars and stripes
+
+`borderBars` draws colour bars above or below the table, `borderGrid` rules between columns, and `cutline` a dashed
+line after the nth row.
+
+<Live id="sdvtables/decorations/borderBars" />
+
+<Live id="sdvtables/decorations/borderGrid" />
+
+<Live id="sdvtables/decorations/cutline" />
+
+## Groups
+
+`groupBy(key)` adds a heading row per group, in the order the rows arrive; `groupStripes` shades every other group.
+
+<Live id="sdvtables/decorations/groupBy" />
+
+<Live id="sdvtables/decorations/groupStripes" />
+
+## Rows picked out
+
+Each takes a predicate or row indices. `boldRows` sets rows in bold, `spotlight` lights one row and dims the rest, and
+`rowAccent` colours each row's edge by a column's value.
+
+<Live id="sdvtables/decorations/boldRows" />
+
+<Live id="sdvtables/decorations/spotlight" />
+
+<Live id="sdvtables/decorations/rowAccent" />
+
+## Reading the numbers
+
+`legendContinuous` keys a colour scale (by default the one a `colorPills` column recorded) and `legendDiscrete` a set
+of named colours. `scaleNote` divides columns and says so, `outliers` flags values beyond 1.5 IQR, and `significance`
+adds stars from a p-value column.
+
+<Live id="sdvtables/decorations/legendContinuous" />
+
+<Live id="sdvtables/decorations/legendDiscrete" />
+
+<Live id="sdvtables/decorations/scaleNote" />
+
+<Live id="sdvtables/decorations/outliers" />
+
+<Live id="sdvtables/decorations/significance" />
+
+## Layout
+
+`wrapLabels` wraps long column labels, `marginalia` sets a column as side notes, and `tiers` turns rows into a tier
+list with one row per tier.
+
+<Live id="sdvtables/decorations/wrapLabels" />
+
+<Live id="sdvtables/decorations/marginalia" />
+
+<Live id="sdvtables/decorations/tiers" />
+
+`snake` folds a long table into side-by-side blocks; `snakeAlign` is the split it uses, for laying out blocks
+yourself.
+
+<Live id="sdvtables/decorations/snake" />
+
+<Live id="sdvtables/layout/snake-align" />
+
+In the gallery: [Every decoration](/gallery/sdvtables/#every-decoration) and [Layout](/gallery/sdvtables/#layout).

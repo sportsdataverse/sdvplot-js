@@ -27,7 +27,16 @@ export interface TeamLogoProps extends ImgProps {
   alt?: string;
 }
 
-/** Team logo `<img>`. Loads the league index on first use; renders nothing until resolved and for an unknown team. */
+/**
+ * Team logo `<img>`. Loads the league index on first use; renders nothing until resolved and for an unknown team.
+ *
+ * @example
+ * ```tsx
+ * import { TeamLogo } from "@sportsdataverse/sdvplot/react";
+ *
+ * <TeamLogo team="KC" league="nfl" size={64} />;
+ * ```
+ */
 export function TeamLogo({
   team,
   league,
@@ -103,7 +112,18 @@ const initialsOf = (name: string): string =>
 // useLayoutEffect warns during React 18 server rendering; on the server no effect runs anyway.
 const useClientLayoutEffect = typeof document === "undefined" ? useEffect : useLayoutEffect;
 
-/** Player headshot `<img>`: sync for ESPN ids; gsis ids render once the gsis map has loaded. Renders nothing for an unknown/malformed id, or a league/idSystem `headshotUrl` rejects. */
+/**
+ * Player headshot `<img>`: sync for ESPN ids; gsis ids render once the gsis map has loaded. Renders nothing for an
+ * unknown/malformed id, or a league/idSystem `headshotUrl` rejects, unless `fallback="initials"` and a `name` are
+ * given, which show the player's initials instead.
+ *
+ * @example
+ * ```tsx
+ * import { Headshot } from "@sportsdataverse/sdvplot/react";
+ *
+ * <Headshot playerId="3918298" league="nfl" height={80} alt="Josh Allen" />;
+ * ```
+ */
 export function Headshot({
   playerId,
   league,

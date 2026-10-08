@@ -92,8 +92,8 @@ test("colorResults column fills the row by exact W/L; cutline after 3 rows with 
     STANDINGS.slice(0, 4),
     { css: "none" },
   );
-  expect(html.match(/<td [^>]*style="background-color:#C84630;color:white"/g)).toHaveLength(6); // rows 0-2 are L, two cells each
-  expect(html.match(/<td [^>]*style="background-color:#5DA271;color:white"/g)).toHaveLength(2);
+  expect(html.match(/<td [^>]*style="background-color:#C84630;color:white"/g)).toHaveLength(4); // rows 0 and 3 (KC, LV) are L, two cells each
+  expect(html.match(/<td [^>]*style="background-color:#5DA271;color:white"/g)).toHaveLength(4);
   expect(html).toMatch(/data-col="result_last"[^>]*>L<\/td>/);
   const cut = renderHTML(T.cutline(3, { label: ["Playoff line"] }).build(), STANDINGS);
   // after = 3 rows above the line (_cells.py:840): the rule is the top border of 0-based row 3, and the "below" label sits on that row
@@ -113,8 +113,8 @@ test("fills survive a striped group: every td of a colorResults row carries the 
   const html = renderHTML(t.groupBy("division").groupStripes({ start: 1 }).build(), STANDINGS, {
     css: "none",
   });
-  const row3 = /data-row="3"[^>]*>(.*?)<\/tr>/.exec(html)?.[1] ?? ""; // LV, W, in a striped group
-  expect(row3.match(/<td [^>]*style="background-color:#5DA271;color:white"/g)).toHaveLength(2);
+  const row3 = /data-row="3"[^>]*>(.*?)<\/tr>/.exec(html)?.[1] ?? ""; // LV, L, in a striped group
+  expect(row3.match(/<td [^>]*style="background-color:#C84630;color:white"/g)).toHaveLength(2);
   expect(tr(html, 3)).toContain("sdvt-gstripe");
 });
 test("two cutlines keep their own colour and label", () => {

@@ -14,7 +14,18 @@ export interface SvgOptions {
 const esc = (s: string): string =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
-/** Render a Scene to an SVG string (no DOM; Node and browser). Y is flipped via a `<g>` transform. */
+/**
+ * Render a Scene to an SVG string (no DOM; Node and browser). Y is flipped via a `<g>` transform.
+ *
+ * @example
+ * ```ts
+ * import { surface } from "@sportsdataverse/sporty";
+ * import { toSVG } from "@sportsdataverse/sporty/svg";
+ *
+ * // arcs: "svg" writes circles as arc commands and precision trims the digits: a smaller file, the same court
+ * toSVG(surface("basketball", "nba"), { width: 480, background: "#f5f0e1", arcs: "svg", precision: 2 });
+ * ```
+ */
 export function toSVG(scene: Scene, o: SvgOptions = {}): string {
   const [x0, y0, x1, y1] = scene.bbox;
   const p = o.precision ?? 4;

@@ -111,7 +111,7 @@ export interface HeadshotOptions<R> {
 // @public (undocumented)
 export function headshots<R>(data: Data<R>, o: HeadshotOptions<R>): Plot.Markish;
 
-// @public (undocumented)
+// @public
 export function logos<R>(data: Data<R>, o: MarkOptions<R>): Plot.Markish;
 
 // @public (undocumented)

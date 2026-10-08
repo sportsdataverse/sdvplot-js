@@ -78,7 +78,30 @@ const teamMark =
       ...(o.idSystem === undefined ? {} : { idSystem: o.idSystem }),
       ...(o.season === undefined ? {} : { season: o.season }),
     });
-/** Append `<g class="sdv-logos">` of team logos at (x, y) through the caller's scale functions. Needs `loadLeague(league)` first. */
+/**
+ * Append `<g class="sdv-logos">` of team logos at (x, y) through the caller's scale functions. Needs
+ * `loadLeague(league)` first.
+ *
+ * @example
+ * ```ts
+ * import { loadLeague } from "@sportsdataverse/sdvplot";
+ * import { appendLogos } from "@sportsdataverse/sdvplot/d3";
+ * import * as d3 from "d3";
+ *
+ * await loadLeague("nfl");
+ * const x = d3.scaleLinear([250, 550], [0, 480]);
+ * const y = d3.scaleLinear([280, 420], [240, 0]);
+ * const svg = d3.select(document.createElement("div")).append("svg").attr("viewBox", [0, 0, 480, 240]);
+ * appendLogos(svg, [385, 525, 425], [326, 368, 311], ["KC", "BUF", "DEN"], {
+ *   league: "nfl",
+ *   x: (v) => x(Number(v)),
+ *   y: (v) => y(Number(v)),
+ *   frameHeight: 240,
+ *   height: 0.2,
+ * });
+ * svg.node();
+ * ```
+ */
 export const appendLogos: AppendTeamMarks = teamMark("logo");
 /** As `appendLogos`, with wordmarks. */
 export const appendWordmarks: AppendTeamMarks = teamMark("wordmark");
@@ -124,7 +147,19 @@ export function appendHeadshots<G extends SVGElement, D>(
   return g;
 }
 
-/** A d3 ordinal scale from team (id or abbr) to team colour; anything unresolved maps to `naValue` (default "grey"). */
+/**
+ * A d3 ordinal scale from team (id or abbr) to team colour; anything unresolved maps to `naValue` (default "grey").
+ *
+ * @example
+ * ```ts
+ * import { loadLeague } from "@sportsdataverse/sdvplot";
+ * import { teamColorScale } from "@sportsdataverse/sdvplot/d3";
+ *
+ * await loadLeague("nba");
+ * const color = teamColorScale("nba", { values: ["LAL", "BOS"] });
+ * ["LAL", "BOS", "not a team"].map(color);
+ * ```
+ */
 export function teamColorScale(
   league: League,
   o: {

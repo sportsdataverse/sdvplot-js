@@ -1,0 +1,73 @@
+---
+title: Identity and resolution
+sidebar_position: 1
+---
+
+Every other function in sdvplot starts by turning what you have (an abbreviation, an ESPN id, a full name, a
+relocated franchise's old code) into one stable `team_id` for a league. Get this step right and logos, colours and
+headshots follow; get it wrong and a chart silently drops a team. This guide shows how a value becomes a team, what
+happens when it does not, and how to see the data behind the answer.
+
+## Loading a league
+
+League data ships with the package as one chunk per league. `loadLeague` imports it once (nothing is downloaded)
+and returns the league's index; every `…Sync` function needs its league loaded first, while the async ones load it
+themselves.
+
+<Live id="api/sdvplot/loadLeague" />
+
+## A value becomes a team id
+
+`resolve` reads each value through the id systems in `PRIORITY` order and returns one `team_id` per value. Name the
+system with `idSystem` when you know it; the systems in `EXPLICIT_ONLY` are never tried unless you name them.
+
+<Live id="api/sdvplot/resolve" />
+
+<Live id="sdvplot/core/resolve-id-systems" />
+
+## Seasons and relocations
+
+A franchise keeps its `team_id` across moves: `OAK` in 2019 and `LV` in 2024 are the same Raiders, `QUE` in 1994 and
+`COL` in 2024 the same NHL franchise. Pass `season` and an abbreviation resolves to whoever held it that year.
+
+<Live id="sdvplot/core/resolve-relocations" />
+
+## Every team, and candidates for a typo
+
+`teams` lists a league's teams. `suggest` ranks candidates for a value that did not resolve; it never picks one for
+you.
+
+<Live id="sdvplot/core/teams" />
+
+<Live id="sdvplot/core/suggest" />
+
+## How values and seasons are compared
+
+Values compare as normalised text (`normValue`: an integral float loses its `.0`, case and accents fold), and a
+season is one year (`normSeason`; a split season is its ending year). `seasonBounds` and `latestSeason` give a
+league's range: `latestSeason` is the latest season any dated alias names, not the current season.
+
+<Live id="sdvplot/core/normalize" />
+
+## Columns to rows
+
+Every mark takes an array of row objects. `rowsFrom` turns column-shaped data (an R data frame or a pandas habit)
+into rows.
+
+<Live id="sdvplot/core/rows-from" />
+
+## Warnings, strict mode and errors
+
+A value that does not resolve becomes `undefined` with a warning, given once per distinct set of unresolved values
+for the life of the process: a call that repeats it is silent until `resetWarnings()`. `setWarningHandler` routes
+warnings elsewhere. `strict: true` throws `UnresolvedTeamError` instead.
+
+<Live id="sdvplot/core/warnings-and-strict" />
+
+Every error is an `SdvplotError`. `InputError` means the call itself is wrong (here an unknown league, which the
+types also reject); `DownloadError` is an `OfflineError` you can catch to fall back to the bundled data; and
+`UnsupportedTargetError` means the code ran somewhere it cannot draw.
+
+<Live id="sdvplot/core/errors" />
+
+In the gallery: [Identity, colours, marks](/gallery/sdvplot/#identity-colours-marks).

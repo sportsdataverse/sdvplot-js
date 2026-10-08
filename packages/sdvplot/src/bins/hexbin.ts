@@ -24,7 +24,14 @@ export type BinOf<T> = T[] & { x: number; y: number };
  * ```ts
  * import { hexbin } from "@sportsdataverse/sdvplot/bins";
  *
- * hexbin([{ x: 0, y: 0 }, { x: 3, y: 4 }], { radius: 10, x: (p) => p.x, y: (p) => p.y }).length;
+ * // three Brooklyn shots of 2025-26 in tenths of a foot from the hoop (sportsdataverse-data nba_stats_shots): the
+ * // two at the rim share a 1 ft hexagon, so this is 2
+ * const shots = [
+ *   { x_legacy: 0, y_legacy: 0 },
+ *   { x_legacy: -1, y_legacy: 7 },
+ *   { x_legacy: -44, y_legacy: 252 },
+ * ];
+ * hexbin(shots, { radius: 10, x: (s) => s.x_legacy, y: (s) => s.y_legacy }).length;
  * ```
  */
 export function hexbin<T>(

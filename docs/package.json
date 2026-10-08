@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "docusaurus": "docusaurus",
-    "start": "docusaurus start",
-    "build": "docusaurus build",
+    "start": "pnpm --filter @sportsdataverse/examples prerender && docusaurus start",
+    "build": "pnpm --filter @sportsdataverse/examples prerender && npm run build --prefix ../notebooks && node --env-file=build.env --max-old-space-size=6144 ./node_modules/@docusaurus/core/bin/docusaurus.mjs build && pnpm --filter @sportsdataverse/examples check-build",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",
@@ -27,6 +27,7 @@
     "@docusaurus/tsconfig": "3.10.2",
     "@docusaurus/types": "3.10.2",
     "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.3.0",
     "docusaurus-plugin-typedoc": "^1.4.3",
     "typedoc": "^0.28.20",
     "typedoc-plugin-markdown": "^4.13.1",

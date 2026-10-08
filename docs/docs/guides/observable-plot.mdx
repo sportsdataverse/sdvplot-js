@@ -1,0 +1,69 @@
+---
+title: Observable Plot
+sidebar_position: 4
+---
+
+[Observable Plot](https://observablehq.com/plot/) is the first-class target: every sdvplot helper for it is an
+ordinary Plot mark or scale option, so it composes with Plot's own marks, facets and transforms. Load the league
+first (`await loadLeague("nfl")`), then pass the marks to `Plot.plot` like any other.
+
+## Logos at data points
+
+`logos(rows, { league, x, y, team })` draws each row's team logo at its position; `height` is a fraction of the
+plot's height, so the logos scale with the figure.
+
+<Live id="api/sdvplot/logos" />
+
+<Live id="sdvplot/plot/logos-scatter" />
+
+## Wordmarks and headshots
+
+`wordmarks` draws the team's wordmark instead, centred on its point. `headshots` takes a `player` column of ESPN
+ids, which need no league data.
+
+<Live id="sdvplot/plot/wordmarks" />
+
+<Live id="sdvplot/plot/headshots-qbs" />
+
+## Logos on an axis
+
+`axisLogos("x", { league })` turns an axis's tick labels into logos; a value that resolves to no team keeps its text.
+
+<Live id="api/sdvplot/axisLogos" />
+
+<Live id="sdvplot/plot/axis-logos-y" />
+
+<Live id="sdvplot/plot/nfl-standings" />
+
+## A colour scale of team colours
+
+`teamColor(league, { values })` is a Plot colour-scale option that maps a team column to team colours. Plot has one
+colour scale for `fill` and `stroke`, so `teamFill` is the same function; `legend: true` adds a legend and
+`which: "secondary"` switches colour.
+
+<Live id="api/sdvplot/teamColor" />
+
+<Live id="sdvplot/plot/team-fill" />
+
+## Reference lines and a logo in the title
+
+`meanLines` and `medianLines` draw rules at the mean or median of `x` and `y`, per facet. `titleImage` puts a team
+logo in a figure's title.
+
+<Live id="sdvplot/plot/ref-lines" />
+
+<Live id="sdvplot/plot/title-image" />
+
+## Team tiers
+
+`teamTiers(rows, { league })` returns a whole tier chart's Plot options from rows of `team` and `tier_no`.
+`prepareTiers` computes the same positions and labels without Plot, and `wrapLabel` and the `TIER_*` constants are
+the pieces it uses.
+
+<Live id="api/sdvplot/teamTiers" />
+
+<Live id="sdvplot/plot/nfl-team-tiers" />
+
+<Live id="sdvplot/core/tiers-data" />
+
+In the gallery: [Observable Plot](/gallery/sdvplot/#observable-plot).

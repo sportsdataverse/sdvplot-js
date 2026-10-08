@@ -2,57 +2,50 @@
 title: Basketball (NBA / WNBA / NCAA)
 ---
 
-These snippets run as written in an Observable notebook, where `Plot` is preloaded (drop the `import * as Plot` line there). In Node, pass a DOM `document` to `Plot.plot({ document, … })`; see [Node and SSR](../intro.mdx#node-and-ssr).
+A shot chart is the basketball figure: shots in the feed's coordinates, moved onto a court drawn to the league's
+dimensions, often in the home team's colours. Each figure on this page is drawn by the code under it, and the same code
+runs in CI on every pull request; in Node, see [Node and SSR](../guides/node-ssr.mdx).
 
-## Shot chart — court in team colours, dots, team colour scale
+## Shot chart: a court in team colours, dots, logos
 
-```js
-import * as Plot from "@observablehq/plot";
-import { loadLeague } from "@sportsdataverse/sdvplot";
-import { logos, surface, teamColor } from "@sportsdataverse/sdvplot/plot";
-import { toSurfaceFrame } from "@sportsdataverse/sporty";
+Every shot of the fourth quarter of the Lakers at the Nuggets on 24 October 2023, from stats.nba.com (see
+[Sample data](/sample-data#nba_shots-one-quarter-of-shots)). sdvplot's `surface("nba", { team })` paints the court;
+`toSurfaceFrame` moves the shots from stats.nba.com coordinates into court feet, and the defensive half is all that
+shows.
 
-await loadLeague("nba");
+<Live id="sdvplot/plot/nba-shot-chart" />
 
-// stats.nba.com shots: columns x_legacy/y_legacy (the frame's defaults), tenths of a foot from the hoop.
-// Every shot lands on the -x half, so draw the defensive half only: displayRange "defense".
-const rawShots = [
-  { x_legacy: 10, y_legacy: 120, team: "LAL", made: true },
-  { x_legacy: -50, y_legacy: 230, team: "BOS", made: false },
-];
-const shots = toSurfaceFrame(rawShots, { from: "nba-legacy" });
-const court = surface("nba", { team: "LAL", displayRange: "defense" });
-Plot.plot({
-  ...court.scales,
-  width: 940,
-  color: teamColor("nba", { values: shots.map((s) => s.team) }),
-  marks: [
-    ...court.marks,
-    Plot.dot(shots, { x: "surface_x", y: "surface_y", fill: "team", r: 5 }),
-    logos(shots, { league: "nba", x: "surface_x", y: "surface_y", team: "team", height: 0.08 }),
-  ],
-});
-```
+## From stats.nba.com coordinates to court feet
 
-## Standings — bars with logos on the axis
+The `nba-legacy` frame reads `x_legacy`/`y_legacy` (tenths of a foot from the hoop, x across the court) and returns
+`surface_x`/`surface_y` in court feet.
 
-```js
-import * as Plot from "@observablehq/plot";
-import { loadLeague } from "@sportsdataverse/sdvplot";
-import { axisLogos, teamColor } from "@sportsdataverse/sdvplot/plot";
+<Live id="sporty/frames/nba-legacy" />
 
-await loadLeague("nba");
-const standings = [
-  { team: "LAL", wins: 14 },
-  { team: "BOS", wins: 11 },
-  { team: "GSW", wins: 7 },
-];
-Plot.plot({
-  height: 300,
-  marks: [
-    Plot.barY(standings, { x: "team", y: "wins", fill: "team" }),
-    axisLogos("x", { league: "nba", height: 0.12 }),
-  ],
-  color: teamColor("nba", { values: standings.map((s) => s.team) }),
-});
-```
+## Standings: bars with logos on the axis
+
+The Pacific Division's 2023-24 wins, from stats.nba.com (see
+[Sample data](/sample-data#nba_standings-the-pacific-division-2023-24)).
+
+<Live id="sdvplot/plot/nba-standings" />
+
+## The same court in D3 and Chart.js
+
+<Live id="sdvplot/d3/append-surface" />
+
+<Live id="sdvplot/chartjs/court-shots" />
+
+## Recolouring and resizing the court
+
+`colorUpdates` recolours any of the court's colour keys, and `updates` changes any dimension: here the NBA lane at its
+1951-1964 width.
+
+<Live id="sporty/core/color-updates" />
+
+<Live id="sporty/core/param-updates" />
+
+## Every basketball court
+
+[FIBA](/gallery/sporty/surfaces/basketball-fiba), [NBA](/gallery/sporty/surfaces/basketball-nba),
+[NBA G League](/gallery/sporty/surfaces/basketball-nba-g-league), [WNBA](/gallery/sporty/surfaces/basketball-wnba),
+[NCAA](/gallery/sporty/surfaces/basketball-ncaa) and [NFHS](/gallery/sporty/surfaces/basketball-nfhs).

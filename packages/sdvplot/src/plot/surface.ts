@@ -20,6 +20,18 @@ export interface SurfaceOpts extends SurfaceSceneOptions {
 /**
  * Plot marks + scales for a team-painted sporty surface. Only an unsupported league throws `InputError`; sporty's own
  * errors (`SportyError` subclasses: unknown displayRange/unit, bad arcResolution) propagate unwrapped.
+ *
+ * @example
+ * ```ts
+ * import * as Plot from "@observablehq/plot";
+ * import { loadLeague } from "@sportsdataverse/sdvplot";
+ * import { surface } from "@sportsdataverse/sdvplot/plot";
+ *
+ * await loadLeague("nhl");
+ * // arcResolution: points per arc (default 200); 24 is plenty at 480 px and keeps the SVG small
+ * const rink = surface("nhl", { team: "BOS", displayRange: "offense", arcResolution: 24 });
+ * Plot.plot({ ...rink.scales, width: 480, marks: rink.marks });
+ * ```
  */
 export function surface(
   league: League,

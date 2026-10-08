@@ -20,7 +20,17 @@ function colorMap(league: League, col: "color_primary" | "color_secondary"): Map
   return m;
 }
 
-/** `{team: "#hex"}` for a league. Without `teams`: keyed by abbr, or team_id where abbr is null/shared (one warning). With `teams`: keyed by the caller's own values; first team wins on a reused value. */
+/**
+ * `{team: "#hex"}` for a league. Without `teams`: keyed by abbr, or team_id where abbr is null/shared (one warning).
+ * With `teams`: keyed by the caller's own values; first team wins on a reused value.
+ *
+ * @example
+ * ```ts
+ * import { palette } from "@sportsdataverse/sdvplot";
+ *
+ * await palette("nfl", ["KC", "BUF", "PHI"]);
+ * ```
+ */
 export async function palette(
   league: League,
   teams?: Value | readonly Value[],
@@ -107,6 +117,17 @@ export function teamColorPairSync(
   return { primary: pick("color_primary"), secondary: pick("color_secondary") };
 }
 
+/**
+ * Team colour(s), loading the league first: one team gives one `#hex` (or `undefined`), an array gives one per team.
+ * `which: "secondary"` picks the second colour; an unknown team gives `undefined` and one warning.
+ *
+ * @example
+ * ```ts
+ * import { teamColors } from "@sportsdataverse/sdvplot";
+ *
+ * await teamColors("nba", ["LAL", "BOS"], { which: "secondary" });
+ * ```
+ */
 export async function teamColors<T extends Value | readonly Value[]>(
   league: League,
   teams: T,

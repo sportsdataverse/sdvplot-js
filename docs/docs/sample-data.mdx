@@ -1,0 +1,100 @@
+---
+title: Sample data
+sidebar_position: 5
+---
+
+The examples on this site draw real data, never invented rows. The datasets below are shared between them, all
+exported by the examples workspace as `@sportsdataverse/examples/data`. For every one, a test
+(`examples/test/sample-data.test.ts`) re-derives every value from captures committed in `fixtures/examples` (`fixtures/shots` for the shot-chart data), so
+a hand-typed number fails the examples gate. A second test fails when an example types its own table of rows instead of
+importing one of these.
+
+## STANDINGS: eight AFC teams, 2024
+
+Eight rows of the 2024 NFL regular season, the AFC West and AFC East. Each column's source:
+
+- `wins`, `losses`, `ties`, `pf`, `pa`: the team's 17 games in nflverse `games.csv`, which holds all 272 of the 2024 regular
+  season.
+- `result_last`: the team's week 18 result (its last regular-season game), from the same file.
+- `qb`: the quarterback who started the most of the team's games in that file; `qb_espn_id`: his ESPN id, from nflverse
+  `players.csv`.
+- `srs_rank`: the team's rank among all 32 by the Simple Rating System, computed from every regular-season game: the
+  ratings that best fit each home margin as the difference of the two teams' ratings (least squares), summing to
+  zero. The test solves it again.
+- `net_epa`: offensive EPA per play minus the EPA per play its defence allowed, over rush and pass plays with an EPA
+  in nflverse's 2024 play-by-play. New England's value is left `null` on purpose, so every example also shows how a
+  missing value renders.
+
+`tools/sample-data/nfl_2024.py` writes the three trimmed nflverse files the test reads.
+
+<Live id="sdvtables/spec/sample-data" />
+
+## NBA_SHOTS: one quarter of shots
+
+Every field-goal attempt of the fourth quarter of the Lakers at the Nuggets on 24 October 2023 (game 0022300061,
+opening night; Denver won 119-107): 38 shots, 22 by Denver and 16 by Los Angeles. They come from stats.nba.com's
+`shotchartdetail` for that game, captured with sportsdataverse-py, with `LOC_X`/`LOC_Y` renamed to the `nba-legacy`
+frame's `x_legacy`/`y_legacy` (tenths of a foot from the hoop). Made shots are green here, misses red.
+
+<Live id="sporty/frames/nba-legacy" />
+
+## SUPER_BOWL_LIX_WP: one game's win probability
+
+Super Bowl LIX (9 February 2025, Philadelphia the home team; Philadelphia won 40-22 over Kansas City): ESPN's win probability for
+Philadelphia after each of 186 plays, against minutes played. It comes from ESPN's game summary (event 401671889),
+its `winprobability` entries joined to the plays they follow. The logos behind the lines are the teams' marks from the
+sdvplot archive.
+
+<Live id="sdvplot/chartjs/win-probability" />
+
+## NBA_STANDINGS: the Pacific Division, 2023-24
+
+The five Pacific Division teams' final 2023-24 regular-season records (the season of `NBA_SHOTS`): stats.nba.com's
+`leaguestandingsv3`, as captured by sportsdataverse-py, with `TeamName` as `team` (the nickname, which sdvplot
+resolves), `WINS`, `LOSSES` and `DivisionRank`.
+
+<Live id="sdvplot/plot/nba-standings" />
+
+## NHL_STANDINGS: the Atlantic Division, 2025-26
+
+The eight Atlantic Division teams' final 2025-26 regular-season records (82 games each), from the NHL's api-web
+`standings/now`, as captured by sportsdataverse-py on 24 May 2026: wins, losses, overtime losses and points.
+
+<Live id="sdvplot/plot/nhl-standings" />
+
+## NHL_SHOTS: one period of shots
+
+Every goal, shot on goal and missed shot of the first period of game 7 of the 2024 Stanley Cup Final (Edmonton at
+Florida, 24 June 2024; Florida won 2-1): 27 shots, 11 by Edmonton and 16 by Florida. They come from the NHL's api-web
+play-by-play for game 2023030417, as captured by sportsdataverse-py, with `xCoord`/`yCoord` (feet from centre ice) as
+`x`/`y`. Florida shot at the -x end that period.
+
+<Live id="sdvplot/plot/nhl-shot-map" />
+
+## SUPER_BOWL_LIX_TDS: one game's touchdowns
+
+Super Bowl LIX's six offensive touchdowns, three for each team, from the same ESPN game summary as `SUPER_BOWL_LIX_WP`:
+each play's offence and the line of scrimmage it started from (`start.yardLine`, 0-100 from Philadelphia's goal line).
+ESPN gives no position across the field.
+
+<Live id="sporty/frames/espn-football" />
+
+## PWHL_GOALS: one game's goals
+
+The four goals of PWHL Boston at PWHL Montreal on 2 March 2024 (game 42; Montreal won 3-1), from HockeyTech's
+`gameCenterPlayByPlay`, as captured by sportsdataverse-py: scorer, team, period, time and the canvas position
+(`xLocation`/`yLocation`, pixels on the 600 × 300 canvas).
+
+<Live id="sporty/frames/hockeytech" />
+
+## BKN_SHOTS_2026 and NBA_LEAGUE_2026: a team's shots and the league
+
+The shot-chart examples' data, from the sportsdataverse-data `nba_stats_shots` release (`shots_2026.parquet`,
+stats.nba.com's 2025-26 shots). `BKN_SHOTS_2026` is the first 2000 Brooklyn rows of the release (890 made, 968
+threes), as blazing-the-nets keeps them for its own tests. `NBA_LEAGUE_2026` is the league context of the 219,159
+regular-season shots, computed by blazing-the-nets' own code: FG% by foot, by 3 ft and by side, and indexes of 1 ft
+and 1.5 ft hexagons with each zone's rate. `NBA_LEAGUE_SQUARE_2026` bins the same shots into squares of a 1 ft
+hexagon's area with sdvplot's `squarebin`; nothing outside sdvplot computes squares, so it is context, not an oracle.
+`fixtures/shots/README.md` records each file's source, hash and command.
+
+<Live id="sdvplot/shots/hex-chart" />
