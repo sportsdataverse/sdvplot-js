@@ -199,7 +199,7 @@ function imageMark<R>(
     throw new InputError("pass alpha (a constant) or opacity (Plot's channel), not both");
   const alpha = checkAlpha(o.alpha ?? 1);
   const keys = values(data, key);
-  const ids = o.id === undefined ? undefined : values(data, o.id).map(toId);
+  const ids = o.id == null ? undefined : values(data, o.id).map(toId); // null is no channel, as in Plot
   if (ids !== undefined && ids.length !== keys.length)
     throw new InputError(`id needs one value per row, got ${ids.length} for ${keys.length} rows`);
   // x / y feed only the skip-and-warn check (a missing x or y); Plot draws from its own channels

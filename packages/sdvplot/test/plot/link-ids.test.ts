@@ -174,3 +174,10 @@ test("`id` is one value per row, like every channel: an array of another length 
     "id needs one value per row, got 2 for 8 rows",
   );
 });
+test("`id: null` is no id, as Plot treats a null channel: the resolved ESPN ids stay", () => {
+  // from JS, or `id: cond ? "team" : null`
+  const svg = Plot.plot({
+    marks: [logos(STANDINGS, { league: "nfl", ...pos, team: "team", id: null as never })],
+  });
+  expect(stamped(svg, "image")).toEqual(["12", "24", "7", "13", "2", "15", "20", "17"]);
+});
