@@ -11,6 +11,9 @@ export default defineConfig({
     chartjs: "src/chartjs.ts",
     "chartjs-surface": "src/chartjs-surface.ts",
     testing: "src/testing/index.ts",
+    plotly: "src/plotly.ts",
+    vega: "src/vega.ts",
+    echarts: "src/echarts.ts",
   },
   external: [
     "react",

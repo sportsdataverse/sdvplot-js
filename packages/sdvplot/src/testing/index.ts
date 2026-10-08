@@ -105,6 +105,22 @@ async function counted<R>(fn: () => R | Promise<R>): Promise<[R, number]> {
     setWarningHandler(null);
   }
 }
+/** Plain data: an array, or an object whose prototype is Object.prototype or null (not a class instance or DOM node). */
+const plain = (v: unknown): v is object =>
+  Array.isArray(v) ||
+  (typeof v === "object" && v !== null && [Object.prototype, null].includes(Object.getPrototypeOf(v)));
+/** Freezes the plain-data part of `v` (plain objects and arrays, recursively); class instances are left alone. */
+function deepFreeze<V>(v: V): V {
+  if (plain(v) && !Object.isFrozen(v)) {
+    Object.freeze(v);
+    for (const x of Object.values(v)) deepFreeze(x);
+  }
+  return v;
+}
+/** The plain-data part of `v` as JSON, class instances as "[object]". */
+const snapshot = (v: unknown): string =>
+  JSON.stringify(v, (_k, x: unknown) => (typeof x === "object" && x !== null && !plain(x) ? "[object]" : x));
+
 /** null when `fn` threw InputError; otherwise what went wrong, for the failure message. */
 async function notInputError(fn: () => unknown): Promise<string | null> {
   try {
@@ -126,7 +142,8 @@ export interface ContractOptions<T> {
 }
 
 /**
- * Port of Python `sdvplot.testing.check_adapter_contract` (rules 0-8). Rejects with a `ContractError`
+ * Port of Python `sdvplot.testing.check_adapter_contract` (rules 0-8), plus rule 9: no verb mutates its input (the
+ * target's plain-data part and the position and value arrays, deep-frozen). Rejects with a `ContractError`
  * naming the first rule broken. Warnings are once per call (one message listing every unresolved value).
  * Resets the warning handler to null (the default) when done: the previous handler cannot be restored.
  */
@@ -284,6 +301,37 @@ export async function checkAdapterContract<T>(a: ContractAdapter<T>, o: Contract
       const why = await notInputError(() => call(bad));
       if (why) fail("rule 8 (alpha)", `${name} with alpha ${bad} must throw InputError, ${why}`);
     }
+  // rule 9: no input mutation. A write into a frozen input throws (strict mode); the snapshot catches the rest.
+  const frozen = <V>(v: V): V => deepFreeze(structuredClone(v));
+  const inputVerbs: [string, () => T, (t: T) => unknown][] = [
+    ["addLogos", o.makeTarget, (t) => a.addLogos(t, frozen(xs), frozen(ys), frozen([ka, kb]), { league })],
+    [
+      "addWordmarks",
+      o.makeTarget,
+      (t) => a.addWordmarks(t, frozen(xs), frozen(ys), frozen([wa, wb]), { league }),
+    ],
+    [
+      "addHeadshots",
+      o.makeTarget,
+      (t) => a.addHeadshots(t, frozen(xs), frozen(ys), frozen([p, q]), { league: hl }),
+    ],
+  ];
+  const mk = o.makeAxisTarget;
+  if (a.supportsAxisLogos && mk)
+    inputVerbs.push(["axisLogos", () => mk([ka, kb]), (t) => a.axisLogos(t, "x", { league })]);
+  for (const [name, make, call] of inputVerbs) {
+    const t = deepFreeze(make());
+    const before = snapshot(t);
+    try {
+      await call(t);
+    } catch (e) {
+      fail(
+        "rule 9 (no input mutation)",
+        `${name} threw on a frozen input: ${e instanceof Error ? e.message : String(e)}`,
+      );
+    }
+    if (snapshot(t) !== before) fail("rule 9 (no input mutation)", `${name} changed its input target`);
+  }
   setWarningHandler(null);
 }
 
