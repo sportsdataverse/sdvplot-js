@@ -3,6 +3,7 @@
 import * as Plot from "@observablehq/plot";
 import { BASKETBALL_ZONE_LABELS, FRAMES, basketballZones } from "@sportsdataverse/sporty";
 import { beforeAll, expect, test } from "vitest";
+import { InputError } from "../../src/index.js";
 import { shootingSignature, shotCells, shotZones, surface } from "../../src/plot/index.js";
 import {
   type CellVsLeague,
@@ -150,6 +151,36 @@ test("shotCells composes a caller's render (outermost), initializer (after the f
   pointAt(fig, px(fig, "x", -41.75), px(fig, "y", 0));
   expect(tipText(fig)).toMatch(/vs league \(shrunk\)\s*\+4\.\d\d%/);
   expect(tipText(fig)).toMatch(/FG%\s*81\.2%.*League FG%\s*76\.3%/);
+});
+
+test("a row-making transform or initializer on a shot mark throws InputError (each path is stamped by input row)", () => {
+  const cells = cellsVsLeague(BKN, LEAGUE.hex15);
+  const court = surface("nba", { displayRange: "defense" });
+  const draw = (m: Plot.Markish | Plot.Markish[]) => () =>
+    Plot.plot({ ...court.scales, width: 500, marks: [...court.marks, m] });
+  // Plot.hexbin keeps the cells as data but bins its channels; unguarded, cell i's path would show bin i
+  expect(draw(shotCells(cells, Plot.hexbin({}, { r: 15, tip: true, binWidth: 60 })))).toThrow(InputError);
+  const firstFive: Plot.TransformFunction = (data) => ({
+    data: Array.from(data).slice(0, 5),
+    facets: [[0, 1, 2, 3, 4]],
+  });
+  expect(draw(shotCells(cells, { r: 15, transform: firstFive }))).toThrow(InputError);
+  const areas = basketballZones("nba", { scale: 10 });
+  expect(draw(shotZones(areas, { fill: () => "#ddd", transform: firstFive }))).toThrow(InputError);
+  const perBin: Plot.InitializerFunction = (data) => ({
+    data,
+    facets: [[0]],
+    channels: { fill: { value: ["red"] } },
+  });
+  expect(draw(shotZones(areas, { fill: () => "#ddd", initializer: perBin }))).toThrow(InputError);
+  // row-preserving still passes: a filter initializer on the zones
+  const fig = draw(
+    shotZones(areas, {
+      fill: () => "#ddd",
+      initializer: (data, facets) => ({ data, facets: facets.map((I) => I.filter((i) => i > 0)) }),
+    }),
+  )();
+  expect(fig.querySelectorAll("path[data-sdv-id]")).toHaveLength(areas.length - 1);
 });
 
 test("shotZones labels are aria-hidden (the paths carry the names); a signature TipOptions format merges per key", () => {

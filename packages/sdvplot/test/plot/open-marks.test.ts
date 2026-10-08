@@ -159,6 +159,39 @@ test("an aggregating transform (group, bin, hexbin) throws InputError: one image
   ).toThrow(InputError);
 });
 
+test("Plot.hexbin keeps the data but bins the channels: 8 rows in 3 bins throw InputError and draw nothing", () => {
+  // measured: binWidth 640 bins the 8 rows as {KC, LAC, DEN, BUF}, {LV, MIA, NE}, {NYJ}; unguarded it drew 3 images
+  // named "KC logo | LAC logo | DEN logo", rows 0..2 rather than the bins' members
+  let svg: Element | undefined;
+  expect(() => {
+    svg = Plot.plot({
+      marks: [
+        logos(STANDINGS, Plot.hexbin({}, { league: "nfl", x: "wins", y: "pf", team: "team", binWidth: 640 })),
+      ],
+    });
+  }).toThrow(InputError);
+  expect(svg).toBeUndefined();
+});
+
+test("dodgeY without r runs as the mark (Plot's dodge reads this.r): Plot's default 3 px radius, every logo drawn", () => {
+  const svg = Plot.plot({ marks: [logos(TEAMS, Plot.dodgeY({ league: "nfl", team: "team", x: "net" }))] });
+  expect(svg.querySelectorAll("image")).toHaveLength(32);
+});
+
+test("a 1:1 hexbin across facets (one bin per row, renumbered per facet) throws InputError", () => {
+  // every row its own bin, so each channel still has 8 values; but East's bins are 0..3, which are West's rows
+  expect(() =>
+    Plot.plot({
+      marks: [
+        logos(
+          STANDINGS,
+          Plot.hexbin({}, { league: "nfl", x: "wins", y: "pf", team: "team", fx: "division", binWidth: 1 }),
+        ),
+      ],
+    }),
+  ).toThrow(InputError);
+});
+
 test("accessibility: each image is named by its team (the Vega adapter's rule, PR #28); ariaDescription passes through", () => {
   const svg = Plot.plot({
     marks: [

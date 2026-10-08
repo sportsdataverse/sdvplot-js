@@ -14,7 +14,7 @@ import { InputError } from "../errors.js";
 import { type CellVsLeague, LEAGUE_PRIOR_ATTEMPTS, type Split, shrunkDiff } from "../shots/aggregate.js";
 import { type DiffScale, diffScale } from "../shots/diff.js";
 import { type SignaturePoint, signatureGradient } from "../shots/signature.js";
-import { compose } from "./marks.js";
+import { compose, sameRows } from "./marks.js";
 
 type Point = [number, number];
 type Polygon = { type: "Polygon"; coordinates: [Point[]] };
@@ -150,7 +150,8 @@ export interface ShotCellsOptions extends GeoPassThrough {
  * `tip: true` shows attempts, FG%, league FG% and the shrunk difference (formats `.1%`, `+.1%`; a `tip` object's
  * `format` overrides them key by key); every other
  * `Plot.geo` option passes through, and the cells are the mark's data, so `fx`/`fy`, `filter`, `sort` (replacing the
- * default order) and `title` read the caller's fields.
+ * default order) and `title` read the caller's fields. A `transform` or `initializer` that makes new rows
+ * (`Plot.group`, `Plot.hexbin`) throws `InputError`.
  *
  * @example
  * ```ts
@@ -183,6 +184,7 @@ export function shotCells(cells: readonly CellVsLeague[], o: ShotCellsOptions): 
     sort = (a: CellVsLeague, b: CellVsLeague) => a.attempts - b.attempts,
     tip,
     channels,
+    transform,
     initializer,
     render,
     ...pass
@@ -209,6 +211,8 @@ export function shotCells(cells: readonly CellVsLeague[], o: ShotCellsOptions): 
   };
   const geo: Plot.GeoOptions = {
     ...pass,
+    // each path is stamped by its input row, so a transform that makes new rows throws (sameRows)
+    ...(transform === undefined ? {} : { transform: sameRows(transform) }),
     // r = 0 gives a null geometry, which Plot drops (the default `defined` filter)
     geometry: (h: CellVsLeague, i: number) =>
       size(i) > 0
@@ -247,7 +251,7 @@ export function shotCells(cells: readonly CellVsLeague[], o: ShotCellsOptions): 
   const framed = Plot.initializer(geo, inFrame);
   return Plot.geo(
     cells as CellVsLeague[],
-    initializer === undefined ? framed : Plot.initializer(framed, initializer),
+    initializer === undefined ? framed : Plot.initializer(framed, sameRows(initializer)),
   );
 }
 
@@ -294,13 +298,27 @@ export interface ShotZonesOptions extends GeoPassThrough {
  * ```
  */
 export function shotZones(areas: readonly BasketballZoneArea[], o: ShotZonesOptions): Plot.Markish[] {
-  const { fill, text, frame, stats, fillOpacity = 0.85, tip, channels, render, ...pass } = o;
+  const {
+    fill,
+    text,
+    frame,
+    stats,
+    fillOpacity = 0.85,
+    tip,
+    channels,
+    transform,
+    initializer,
+    render,
+    ...pass
+  } = o;
   const f = frameOf(frame);
   const rings = areas.map((a) => ring(a.points, f));
   const marks: Plot.Markish[] = [
     Plot.geo(areas as BasketballZoneArea[], {
       ariaLabel: (a: BasketballZoneArea) => BASKETBALL_ZONE_LABELS[a.zone], // each path names its zone
       ...pass,
+      ...(transform === undefined ? {} : { transform: sameRows(transform) }),
+      ...(initializer === undefined ? {} : { initializer: sameRows(initializer) }),
       geometry: (_a: BasketballZoneArea, i: number) => polygon(rings[i] as Point[]),
       fill: (a: BasketballZoneArea) => fill(a.zone),
       fillOpacity,

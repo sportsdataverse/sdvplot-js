@@ -560,7 +560,8 @@ The d3 twins are `appendLegend` (colour bar plus a cell size key) and `appendSig
   `shootingSignature` ([tips](#tips-and-the-figures-value)). `shotCells` leaves out a cell centred outside the plot's
   frame (`dropOutside`, default `true`; it was `clip`), so a tip never points at a cell that is not drawn, and Plot's
   own `clip` passes through. The shot marks draw your `cells` and `areas` as the mark's data, so `fx`/`fy`,
-  `channels` and the tip read your fields; every other Plot geo option passes through.
+  `channels` and the tip read your fields; every other Plot geo option passes through. As on the image marks, a
+  `transform` or `initializer` that makes new rows (`Plot.group`, `Plot.hexbin`) throws `InputError`.
 - The binners (`hexbin`, `squarebin`, `binner`, `hexagonPath`, `squarePath`, `cellPath`, `cellPoints`) import from
   `sdvplot/shots` or from the sporty-free `sdvplot/bins`. The types the Plot and d3 marks take (`CellVsLeague`,
   `SignaturePoint`, `DiffScale`, `BinShape`) are exported from `sdvplot/shots`, and `BinShape` from `sdvplot/bins` too,

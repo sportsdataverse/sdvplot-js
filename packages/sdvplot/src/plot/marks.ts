@@ -127,17 +127,33 @@ export function compose(
 }
 
 const ONE_PER_ROW =
-  "sdvplot image marks draw one image per input row, so a transform that makes new rows (bin, group, hexbin) cannot run on them: aggregate first, then draw the result";
-/** Row-preserving transforms (filter, sort, stack, window, select, dodge, pointer) are fine; aggregating ones throw. */
-function sameRows<F extends (data: never[], ...rest: never[]) => { data?: unknown }>(
-  f: F | undefined,
-): F | undefined {
-  if (f === undefined) return undefined;
-  return ((data: never[], ...rest: never[]) => {
-    const out = f(data, ...rest);
+  "sdvplot marks draw one shape per input row (an image, a cell, a zone), so a transform that makes new rows (bin, group, hexbin) cannot run on them: aggregate first, then draw the result";
+type StepOut = {
+  data?: unknown;
+  facets?: readonly Iterable<number>[];
+  channels?: Record<string, { value?: ArrayLike<unknown> | null } | undefined>;
+};
+/**
+ * Guard a caller's `transform` or `initializer`: row-preserving ones (filter, sort, stack, window, select, dodge) pass;
+ * one that makes new rows throws `InputError`. A transform such as `Plot.group` returns new data; an initializer such
+ * as `Plot.hexbin` keeps the data but returns channels with one value per bin, and facets of bin indices. So the
+ * returned data must be the input, every returned channel one value per input row, and every returned facet a subset
+ * of its input facet. Runs as the mark (dodge reads `this.r`). Not re-exported from the subpath barrel.
+ * @internal
+ */
+export function sameRows<F extends (...args: never[]) => unknown>(f: F): F {
+  return function (this: unknown, data: unknown, facets?: readonly Iterable<number>[], ...rest: unknown[]) {
+    const out = (f as unknown as (...a: unknown[]) => StepOut).call(this, data, facets, ...rest);
     if (out.data !== undefined && out.data !== data) throw new InputError(ONE_PER_ROW);
+    const n = Array.isArray(data) ? data.length : (data as { numRows?: number } | null)?.numRows;
+    for (const c of Object.values(out.channels ?? {}))
+      if (c?.value != null && c.value.length !== n) throw new InputError(ONE_PER_ROW);
+    out.facets?.forEach((I, k) => {
+      const own = new Set(facets?.[k]);
+      for (const i of I) if (!own.has(i)) throw new InputError(ONE_PER_ROW);
+    });
     return out;
-  }) as F;
+  } as unknown as F;
 }
 
 // The mark is built on the caller's own data (not on the placements) so Plot's top-level `facet: {data}` identity
@@ -201,8 +217,6 @@ function imageMark<R>(
   } = o as typeof o & { team?: unknown; player?: unknown };
   const { team: _t, player: _p, ...pass } = rest as typeof rest & { team?: unknown; player?: unknown };
   const name = kind === "headshot" ? "player" : "team";
-  const t = sameRows(transform as never);
-  const init = sameRows(initializer as never);
   return Plot.image(data as Plot.Data, {
     ...pass,
     src: src as Plot.ChannelValue,
@@ -210,8 +224,8 @@ function imageMark<R>(
     // an accessible name per image, as the Vega adapter's (PR #28): "KC logo", "3139477 headshot"
     ariaLabel: o.ariaLabel ?? names.map((n) => `${n} ${kind}`),
     channels: { [name]: { value: keys, label: name }, ...channels },
-    ...(t === undefined ? {} : { transform: t }),
-    ...(init === undefined ? {} : { initializer: init }),
+    ...(transform === undefined ? {} : { transform: sameRows(transform) }),
+    ...(initializer === undefined ? {} : { initializer: sameRows(initializer) }),
     render: compose(render, sizeRender(height, placed, kind)),
   });
 }
