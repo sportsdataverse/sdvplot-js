@@ -8,14 +8,18 @@ request; in Node, see [Node and SSR](../guides/node-ssr.mdx).
 
 ## Shot map: a rink in team colours, dots, logos
 
-HockeyTech events on the 850 × 400 canvas move onto a 200 × 85 ft rink painted in Boston's colours.
+Every shot of the first period of game 7 of the 2024 Stanley Cup Final (Edmonton at Florida), from NHL api-web (see
+[Sample data](/sample-data#nhl_shots-one-period-of-shots)). The NHL reports shots in feet from centre ice, the frame
+sporty's rink is drawn in, so they plot as captured on a rink painted in Florida's colours.
 
 <Live id="sdvplot/plot/nhl-shot-map" />
 
 ## HockeyTech canvases
 
-HockeyTech leagues report events on one of two pixel canvases (850 × 400 or 600 × 300, origin top-left, y down);
-`hockeytech-a` and `hockeytech-b` map both onto the rink.
+HockeyTech leagues report events on a pixel canvas (origin top-left, y down); `hockeytech-a` (850 × 400) and
+`hockeytech-b` (600 × 300) map one onto the rink. Every HockeyTech capture so far, the PWHL's included, is on
+600 × 300, so a PWHL game's goals go through `hockeytech-b` (see
+[Sample data](/sample-data#pwhl_goals-one-games-goals)).
 
 <Live id="sporty/frames/hockeytech" />
 

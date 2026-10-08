@@ -8,12 +8,16 @@ runs in CI on every pull request; in Node, see [Node and SSR](../guides/node-ssr
 
 ## Play map: a field in team colours, dots, logos
 
+Super Bowl LIX's six offensive touchdowns, each at the line of scrimmage it started from, from ESPN's game summary (see
+[Sample data](/sample-data#super_bowl_lix_tds-one-games-touchdowns)).
+
 <Live id="sdvplot/plot/nfl-play-map" />
 
 ## ESPN yardlines
 
-ESPN plays carry `x` as a 0-100 yardline and `y` in yards from the middle; the `espn-football-0-100` frame centres the
-field so that midfield is `x = 0`.
+ESPN plays carry a 0-100 yardline, measured from the home team's goal line, and no position across the field; the
+`espn-football-0-100` frame centres the field so that midfield is `x = 0`, and passes a `y` through when a source has
+one.
 
 <Live id="sporty/frames/espn-football" />
 
@@ -29,7 +33,7 @@ field so that midfield is `x = 0`.
 
 ## Team tiers
 
-`teamTiers` takes rows of `team` plus `tier_no` (and optionally `tier_rank`).
+`teamTiers` takes rows of `team` plus `tier_no` (and optionally `tier_rank`); here the tiers come from 2024 wins.
 
 <Live id="sdvplot/plot/nfl-team-tiers" />
 
