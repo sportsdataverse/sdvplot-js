@@ -72,7 +72,12 @@ export default function remarkLive(o: {
         const ext = name.split(".").pop() ?? "";
         // the JSX element becomes a markdown code node in place
         for (const k of ["name", "attributes", "children"] as const) delete n[k];
-        Object.assign(n, { type: "code", lang: LANG[ext] ?? ext, meta: `title="${name.split("/").pop()}"`, value });
+        Object.assign(n, {
+          type: "code",
+          lang: LANG[ext] ?? ext,
+          meta: `title="${name.split("/").pop()}"`,
+          value,
+        });
         return;
       }
       if ((n.type === "mdxJsxFlowElement" || n.type === "mdxJsxTextElement") && n.name === "Live") {
