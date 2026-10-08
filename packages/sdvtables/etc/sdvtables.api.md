@@ -29,10 +29,10 @@ export const aliasFor: (name: string) => Alias | undefined;
 // @public (undocumented)
 export type Align = "left" | "center" | "right";
 
-// @public (undocumented)
+// @beta
 export function applyFilters<Row>(spec: TableSpec<Row>, rows: readonly Row[], state: TableState<Row>): Row[];
 
-// @public (undocumented)
+// @beta
 export function applySort<Row>(spec: TableSpec<Row>, rows: readonly Row[], sort: Sort | null): Row[];
 
 // @public (undocumented)
@@ -267,7 +267,7 @@ export type ColumnSpec<Row> = (ColumnBase<Row> & {
 // @public (undocumented)
 export type Comparator = (a: unknown, b: unknown) => number;
 
-// @public (undocumented)
+// @beta
 export function comparatorFor<Row>(col: ColumnSpec<Row>, rows: readonly Row[]): Comparator;
 
 // @public
@@ -502,7 +502,7 @@ export type Density = "comfortable" | "compact" | "social";
 // @public
 export type FilterValue<Row> = ValuePredicate<Row> | string | number | boolean;
 
-// @public (undocumented)
+// @beta
 export function findColumn<Row>(spec: TableSpec<Row>, key: string): ColumnSpec<Row>;
 
 // @public (undocumented)
@@ -538,7 +538,7 @@ export type NumericKey<Row> = {
     [K in keyof Row]-?: Row[K] extends number | null | undefined ? K : never;
 }[keyof Row] & keyof Row & string;
 
-// @public (undocumented)
+// @beta
 export function paginate<Row>(rows: readonly Row[], page: number, pageSize: number): {
     rows: Row[];
     pageCount: number;

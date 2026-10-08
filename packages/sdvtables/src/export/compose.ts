@@ -38,6 +38,13 @@ const COMPOSE_CSS =
   ".sdvt-compose-rule{border-bottom:1px solid #8A8A8A;padding-bottom:6px}" +
   ".sdvt-compose-label{font-size:12px;font-weight:600;color:#555555;text-align:left;margin:0 0 6px}";
 
+/**
+ * A group value as `batchToPNG` puts it in a file name (Python `gt_save_batch`): each run of characters outside
+ * `A-Za-z0-9._-` becomes "-", the ends are trimmed of "-", and it is lower-cased.
+ * Export plumbing: it may change before 1.0.
+ *
+ * @beta
+ */
 export function slug(value: unknown): string {
   return String(value)
     .replace(/[^A-Za-z0-9._-]+/g, "-")

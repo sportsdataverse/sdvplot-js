@@ -70,7 +70,7 @@ export interface PNGOptions {
     width?: number;
 }
 
-// @public (undocumented)
+// @beta
 export function slug(value: unknown): string;
 
 // Warning: (ae-forgotten-export) The symbol "TableSpec" needs to be exported by the entry point export.d.ts

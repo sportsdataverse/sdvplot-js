@@ -143,6 +143,13 @@ export const compareDate: Comparator = (a, b) => {
 
 const fieldOf = <Row>(row: Row, key: string): unknown => (row as Record<string, unknown>)[key];
 
+/**
+ * The comparator `applySort` uses for `col`: its own `compare`, else numeric for a numeric kind or numeric samples, by
+ * time for `Date` samples, else `en`-locale text.
+ * Engine plumbing for custom renderers: it may change before 1.0.
+ *
+ * @beta
+ */
 export function comparatorFor<Row>(col: ColumnSpec<Row>, rows: readonly Row[]): Comparator {
   if (col.compare) return col.compare as Comparator; // Phase 4 types it on Row[K]; the engine compares unknowns
   if (NUMERIC_KINDS.has(col.kind)) return compareNum;
@@ -162,6 +169,12 @@ export function withMissingLast(cmp: Comparator, dir: SortDir): Comparator {
   };
 }
 
+/**
+ * The spec's column with this key; throws `TableSpecError` naming every column when there is none.
+ * Engine plumbing for custom renderers: it may change before 1.0.
+ *
+ * @beta
+ */
 export function findColumn<Row>(spec: TableSpec<Row>, key: string): ColumnSpec<Row> {
   const col = spec.columns.find((c) => c.key === key);
   if (!col)
@@ -171,6 +184,12 @@ export function findColumn<Row>(spec: TableSpec<Row>, key: string): ColumnSpec<R
   return col;
 }
 
+/**
+ * A sorted copy of `rows` (stable; missing values last in both directions); `sort` null keeps the input order.
+ * Engine plumbing for custom renderers: it may change before 1.0.
+ *
+ * @beta
+ */
 export function applySort<Row>(spec: TableSpec<Row>, rows: readonly Row[], sort: Sort | null): Row[] {
   if (!sort) return [...rows];
   const col = findColumn(spec, sort.col);
@@ -189,6 +208,13 @@ export function matches<Row>(filter: FilterValue<Row>, value: unknown, row: Row)
 }
 
 // ponytail: O(rows × columns) scan per change; index the lower-cased text if tables pass ~50k rows.
+/**
+ * The rows `state` keeps, in input order: its external filter, every column filter and the global search over the
+ * visible columns, all ANDed.
+ * Engine plumbing for custom renderers: it may change before 1.0.
+ *
+ * @beta
+ */
 export function applyFilters<Row>(spec: TableSpec<Row>, rows: readonly Row[], state: TableState<Row>): Row[] {
   const active = Object.entries(state.filters).map(([key, f]) => [findColumn(spec, key), f] as const);
   const q = state.globalFilter.trim().toLowerCase();
@@ -207,6 +233,13 @@ export function applyFilters<Row>(spec: TableSpec<Row>, rows: readonly Row[], st
   );
 }
 
+/**
+ * Page `page` (0-based, clamped to the pages there are) of `rows` at `pageSize` (Infinity: all of them), and the
+ * page count, at least 1.
+ * Engine plumbing for custom renderers: it may change before 1.0.
+ *
+ * @beta
+ */
 export function paginate<Row>(
   rows: readonly Row[],
   page: number,
