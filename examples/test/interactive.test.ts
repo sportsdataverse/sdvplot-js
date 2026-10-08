@@ -93,8 +93,14 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
     const named =
       lib === "vega"
         ? figure.locator('svg.marks [role="graphics-symbol"][aria-label]')
-        : figure.locator('.sdv-live-output [role="img"][aria-label]');
+        : figure.locator('.sdv-live-output :is([role="img"], [role="figure"])[aria-label]');
     expect(await named.count(), "an accessible name").toBeGreaterThan(0);
+    const nested =
+      '.sdv-live-output [role="img"] :is(button, a[href], summary, input, [tabindex]:not([tabindex="-1"]))';
+    expect(
+      await figure.locator(nested).count(),
+      "no control inside an img (its children are presentational)",
+    ).toBe(0);
     if (SHOTS !== undefined)
       await figure
         .locator(".sdv-live-output")

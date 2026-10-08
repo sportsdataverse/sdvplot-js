@@ -23,9 +23,9 @@ export async function draw(el: HTMLElement, s: BrowserSpec): Promise<() => void>
 }
 
 /** A fixed-size chart's box in `el`, named for assistive technology: these charts have no accessible name of their own. */
-export function figureBox(el: HTMLElement, label: string): HTMLDivElement {
+export function figureBox(el: HTMLElement, label: string, role: "img" | "figure" = "img"): HTMLDivElement {
   const box = el.appendChild(document.createElement("div"));
-  box.setAttribute("role", "img");
+  box.setAttribute("role", role);
   box.setAttribute("aria-label", label);
   return box;
 }

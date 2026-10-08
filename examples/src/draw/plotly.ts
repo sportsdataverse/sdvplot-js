@@ -3,7 +3,8 @@ import { type Draw, figureBox } from "./index.js";
 
 /** plotly.js (the basic bundle: bar, scatter, pie) draws the figure; its hover, zoom and modebar come with it. */
 const draw: Draw<"plotly"> = async (el, s) => {
-  const box = figureBox(el, s.label);
+  // a figure, not an img: an img's children are presentational, and the modebar's buttons are controls
+  const box = figureBox(el, s.label, "figure");
   // newPlot writes into the figure it is given (trace uids, autoranges): draw a copy, the module's stays as written
   const { data, layout, config } = structuredClone(s.figure);
   await Plotly.newPlot(box, data, layout, { displaylogo: false, ...config });
