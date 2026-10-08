@@ -109,6 +109,13 @@ two functions and a description.
 
 <Live id="sporty/frames/bottom-left" />
 
+The same frame draws a pass map: StatsBomb's open data in socceraction's SPADL is in metres from the bottom-left
+corner of a 105 × 68 m pitch, so `frameBottomLeft(105, 68)` moves it onto sporty's FIFA pitch drawn at 105 × 68
+(`updates: { pitch_length: 105, pitch_width: 68 }`), and `Plot.arrow` draws each pass. Data: StatsBomb open data,
+credited in the figure's caption.
+
+<Live id="sporty/plot/pass-map" />
+
 <Live id="sporty/frames/custom-frame" />
 
 ## Building blocks

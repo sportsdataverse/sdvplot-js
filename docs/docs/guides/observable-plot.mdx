@@ -16,6 +16,34 @@ plot's height, so the logos scale with the figure.
 
 <Live id="sdvplot/plot/logos-scatter" />
 
+## Plot's own options and transforms
+
+The image marks (`logos`, `wordmarks`, `headshots`) take every `Plot.image` option sdvplot does not own (`tip`, `href`,
+`title`, `fx`/`fy`, `sort`, `filter`, `dx`/`dy`, `className`, `clip`, …) and wrap in Plot's row-preserving transforms:
+`Plot.dodgeY` and `Plot.dodgeX` for a beeswarm, `Plot.stackY`, `Plot.windowY`, `Plot.selectLast` and `Plot.pointer`.
+`height` stays a fraction of the frame, or of each facet's frame under `fx`/`fy`. Under a dodge, `r` is the collision
+radius in pixels (about half the drawn height): it spaces the logos and is never drawn. A transform that makes new
+rows (`Plot.bin`, `Plot.group`, `Plot.hexbin`) throws, because one image per input row cannot survive it; aggregate
+the rows first.
+
+<Live id="sdvplot/plot/logos-beeswarm" />
+
+<Live id="sdvplot/plot/logos-facets" />
+
+<Live id="api/sdvplot/logos-2" />
+
+## Hover
+
+`tip: true` on any sdvplot Plot mark adds Plot's own tip, opt-in as in Plot. The default channels are the team for
+logos and wordmarks (the player id for headshots); attempts, FG%, league FG% and the shrunk difference for
+`shotCells`; the zone, and given `stats` its makes/attempts and FG%, for `shotZones`; distance, FG%, league FG% and
+shot share for `shootingSignature`.
+A tip object's `format` overrides those formats key by key. What is under the pointer is the figure's `value`, with
+an `input` event on each change, as for any Plot mark. A server-rendered figure carries an empty tip group that does
+nothing until the page runs the chart. Hover a logo below; each one also links to its team's page.
+
+<Live id="sdvplot/plot/logos-tip" />
+
 ## Wordmarks and headshots
 
 `wordmarks` draws the team's wordmark instead, centred on its point. `headshots` takes a `player` column of ESPN
@@ -65,5 +93,19 @@ the pieces it uses.
 <Live id="sdvplot/plot/nfl-team-tiers" />
 
 <Live id="sdvplot/core/tiers-data" />
+
+## More of Plot, with sports data
+
+sdvplot's colours and logos mixed with Plot's own marks and transforms: `Plot.differenceY` shading a win probability
+in each team's colour, `Plot.windowY` for rolling form with `Plot.selectLast` placing a logo at the end of each line,
+`Plot.density` contours of shots on a court, and `Plot.waffleY` for a shot diet.
+
+<Live id="sdvplot/plot/win-probability-difference" />
+
+<Live id="sdvplot/plot/rolling-form" />
+
+<Live id="sdvplot/plot/shot-density" />
+
+<Live id="sdvplot/plot/shot-diet-waffle" />
 
 In the gallery: [Observable Plot](/gallery/sdvplot/#observable-plot).
