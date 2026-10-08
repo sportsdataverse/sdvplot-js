@@ -2,7 +2,7 @@
 // Phase 10 Task 10 (J36(b); S11, S22): the shot kit (court, zones, signature) linked through sdvplot/interact over
 // Brooklyn's 2000 real 2025-26 shots against the 2025-26 league. No new primitive: Phase 8's linkSelection (toggle,
 // Plot-tip hover), linkCursor and highlight on the marks' own `data-sdv-id` stamps.
-import { BASKETBALL_ZONES, FRAMES } from "@sportsdataverse/sporty";
+import { BASKETBALL_ZONES, BASKETBALL_ZONE_LABELS, FRAMES } from "@sportsdataverse/sporty";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { resetWarnings, setWarningHandler } from "../../src/index.js";
 import { highlight } from "../../src/interact/index.js";
@@ -147,6 +147,30 @@ test("zones select by name: a click on the paint selects 'paint'; every zone id 
   expect(warnings).toEqual([]);
   expect(highlight(k.zones, new Set(["paint"]))).toEqual([]);
   expect(highlight(k.zones, new Set(BASKETBALL_ZONES))).toEqual([]); // all six drawn
+});
+
+test("a toggled zone or cell keeps its own accessible name: the label's text wins over linkSelection's id fallback, and teardown gives it back", () => {
+  const store = createSelection<BknShot>();
+  const zones = createSelection<BknShot>();
+  const k = kit();
+  const off = linkKit(k, store, zones);
+  const named = (e: Element | null) => [e?.getAttribute("role"), e?.getAttribute("aria-label")];
+  const paint = k.zones.querySelector('path[data-sdv-id="paint"]');
+  // the zone's name and its visible label, "136/326" (shotZones' `text`), not its link id "paint"
+  expect(named(paint)).toEqual(["checkbox", "Paint (non-RA), 136/326"]);
+  const byZone = statsByZone(BKN);
+  for (const z of BASKETBALL_ZONES)
+    expect(named(k.zones.querySelector(`path[data-sdv-id="${z}"]`))).toEqual([
+      "checkbox",
+      `${BASKETBALL_ZONE_LABELS[z]}, ${byZone[z].makes}/${byZone[z].attempts}`,
+    ]);
+  expect(named(cell(k, "0,0"))).toEqual(["checkbox", "147 of 181 made, 81.2%"]);
+  const cells = Array.from(k.court.querySelectorAll("[data-sdv-id]"));
+  expect(cells).toHaveLength(211);
+  for (const c of cells) expect(c.getAttribute("aria-label")).not.toBe(c.getAttribute("data-sdv-id"));
+  off();
+  expect(named(paint)).toEqual([null, "Paint (non-RA), 136/326"]);
+  expect(named(cell(k, "0,0"))).toEqual([null, "147 of 181 made, 81.2%"]);
 });
 
 // main lib/charts/hexShotChart.ts:164-194: the nearest hex centre within 18 px, and its four lines (:183-189, with
