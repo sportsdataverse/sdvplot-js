@@ -4,6 +4,7 @@
 import { FRAMES } from "@sportsdataverse/sporty";
 import * as d3 from "d3";
 import { describe, expect, test, vi } from "vitest";
+import { resetWarnings, setWarningHandler } from "../../src/index.js";
 import { linkSelection, nearestHover } from "../../src/interact/index.js";
 import { type SelectionStore, createSelection, toId } from "../../src/selection.js";
 import { stubBBox, tipText } from "../plot/_pointer.js";
@@ -76,10 +77,14 @@ function isolated<T extends { readonly p: readonly [number, number] }>(
   throw new Error("no point isolated by 19 px");
 }
 
-function setup(shape: Shape): { d: Dashboard; store: SelectionStore<BknShot>; updates: () => number } {
-  const d = dashboard(shape);
+function setup(shape: Shape): {
+  d: Dashboard & { teardown: () => void };
+  store: SelectionStore<BknShot>;
+  updates: () => number;
+} {
   const store = createSelection<BknShot>();
-  link(d, store);
+  const drawn = dashboard(shape);
+  const d = { ...drawn, teardown: link(drawn, store) };
   const fn = vi.fn();
   store.subscribe(fn);
   return { d, store, updates: () => fn.mock.calls.length };
@@ -256,6 +261,43 @@ describe.each<Shape>(["hex", "square"])("%s cells", (shape) => {
     expect([...store.getState().hover]).toEqual([]);
     expect(store.getState().cursor).toBe(cursor);
   });
+});
+
+// Found in the browser (docs/docs/examples/shot-dashboard.mdx): the menu swapped the hovered hex court for the square
+// one, the stale hex id stayed in the store, and the square court warned "none of the linked ids is drawn".
+test("redrawing the court while a cell is hovered: the old link's teardown clears its hover; the cursor survives", () => {
+  const { d, store } = setup("hex");
+  const f = FRAMES["nba-legacy-vertical"];
+  const cell = d.court.querySelector("path[data-sdv-id]");
+  const h = d.cells.find((c) => `${c.x},${c.y}` === cell?.getAttribute("data-sdv-id"));
+  if (h === undefined) throw new Error("no drawn cell");
+  store.set({ cursor: { field: D, value: 26.5 } });
+  const cursor = store.getState().cursor;
+  fire(
+    d.court,
+    "pointermove",
+    px(d.court, "x", f.x({ x: h.x }) ?? 0),
+    px(d.court, "y", f.y({ y: h.y }) ?? 0),
+  );
+  expect([...store.getState().hover]).toEqual([`${h.x},${h.y}`]);
+  const off = link(d, store); // a second link of the same figures: torn down below, it wrote nothing
+  off();
+  expect([...store.getState().hover]).toEqual([`${h.x},${h.y}`]); // another link's hover is not this one's to clear
+  const warnings: string[] = [];
+  resetWarnings();
+  setWarningHandler((m) => warnings.push(m));
+  try {
+    d.teardown(); // the menu's swap: the hex court's links go, the square court's arrive
+    expect([...store.getState().hover]).toEqual([]);
+    expect(store.getState().cursor).toBe(cursor);
+    const squares = dashboard("square");
+    link(squares, store);
+    expect(warnings).toEqual([]);
+    expect(shown(squares.court)).toBe(true); // the new court rings the surviving cursor at once
+    expect(squares.court.classList.contains("sdv-focus")).toBe(false);
+  } finally {
+    setWarningHandler(null);
+  }
 });
 
 test("nearestHover on a d3 rendering of the same shots: within 18 px hovers and shows the tooltip; the cursor stays (RF 9)", () => {

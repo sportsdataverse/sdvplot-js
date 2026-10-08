@@ -119,6 +119,23 @@ test("teardown detaches the figure and the table", () => {
   expect(table.getSelection().size).toBe(0);
 });
 
+test("unlinking a table whose row is hovered clears that hover, so the figure stops dimming; a later hover stays", () => {
+  const svg = figure();
+  const table = createTable(keyed, STANDINGS);
+  const store = createSelection<Standing>();
+  linkSelection(store, { plot: svg });
+  const offTable = linkSelection(store, { table });
+  table.setHover("BUF"); // the pointer on Buffalo's row
+  expect(lit(svg)).toEqual(["BUF"]);
+  offTable(); // the table unmounts under the pointer: no mouseleave will come
+  expect(store.getState().hover.size).toBe(0);
+  expect(svg.classList.contains("sdv-focus")).toBe(false);
+  const again = linkSelection(store, { table });
+  store.set({ hover: ["KC"] }); // the figure's hover, not the table's
+  again();
+  expect([...store.getState().hover]).toEqual(["KC"]);
+});
+
 // Brooklyn's 2025-26 shots (fixtures/shots): legacy court coordinates in tenths of a foot, the hoop at the origin.
 const shotSpec = defineTable<BknShot>()
   .columns((c) => [c.text("game_id"), c.int("shot_distance"), c.int("shot_value"), c.text("shot_result")])

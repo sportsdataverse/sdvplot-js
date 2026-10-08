@@ -72,6 +72,18 @@ test("a figure mark hover writes store.hover; moving off every mark or leaving t
   expect(hover(store)).toEqual([]);
   expect(svg.classList.contains("sdv-focus")).toBe(false);
 });
+test("teardown under the pointer clears the hover this figure wrote, never another writer's", () => {
+  const svg = scatter();
+  const store = createSelection<Standing>();
+  const off = linkSelection(store, { plot: svg });
+  over(svg.querySelector('[data-sdv-id="LV"]'));
+  off(); // the figure is redrawn while hovered: no mouseleave will come
+  expect(hover(store)).toEqual([]);
+  const again = linkSelection(store, { plot: svg });
+  store.set({ hover: ["KC"] }); // another writer's hover
+  again();
+  expect(hover(store)).toEqual(["KC"]);
+});
 test("an axis logo is never a hover target: it carries an ESPN id, but it is a decoration (A39)", () => {
   const svg = Plot.plot({
     marks: [
