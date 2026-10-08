@@ -78,7 +78,7 @@ export const appendWordmarks: AppendTeamMarks;
 // Warning: (ae-forgotten-export) The symbol "Frame" needs to be exported by the entry point d3.d.ts
 //
 // @public (undocumented)
-export interface D3HeadshotOptions extends Frame {
+export interface D3HeadshotOptions extends Frame, FaceOptions {
     // Warning: (ae-forgotten-export) The symbol "HeadshotIdSystem" needs to be exported by the entry point d3.d.ts
     idSystem?: HeadshotIdSystem;
     // Warning: (ae-forgotten-export) The symbol "EspnHeadshotLeague" needs to be exported by the entry point d3.d.ts
@@ -116,6 +116,13 @@ export interface D3SurfaceOptions extends SurfaceSceneOptions {
 }
 
 // @public
+export interface FaceOptions {
+    clip?: "circle";
+    placeholder?: string | ((id: string) => string);
+    ring?: string | ((id: string) => string);
+}
+
+// @public
 export function teamColorScale(league: League, o?: {
     which?: Which;
     season?: SeasonInput;
@@ -126,8 +133,8 @@ export function teamColorScale(league: League, o?: {
 
 // Warnings were encountered during analysis:
 //
-// dist/d3.d.ts:37:9 - (ae-forgotten-export) The symbol "BinShape" needs to be exported by the entry point d3.d.ts
-// dist/d3.d.ts:127:5 - (ae-forgotten-export) The symbol "Which" needs to be exported by the entry point d3.d.ts
+// dist/d3.d.ts:50:9 - (ae-forgotten-export) The symbol "BinShape" needs to be exported by the entry point d3.d.ts
+// dist/d3.d.ts:165:5 - (ae-forgotten-export) The symbol "Which" needs to be exported by the entry point d3.d.ts
 
 // (No @packageDocumentation comment for this package)
 

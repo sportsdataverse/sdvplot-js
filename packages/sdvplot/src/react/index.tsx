@@ -69,8 +69,28 @@ export interface HeadshotProps extends ImgProps {
   idSystem?: HeadshotIdSystem;
   /** Height in px (default 60); width follows the 600:436 headshot aspect. */
   height?: number;
+  /** Default `name`, then "Player headshot". `""` marks it decorative (the initials box is then `aria-hidden`). */
   alt?: string;
+  /**
+   * `"initials"`: when there is no headshot URL or the image fails to load, show up to three initials of `name` in a
+   * box of the headshot's size (blazing-the-nets `main` `components/Headshot.tsx:15-29`). Default `"none"`: a failed
+   * load leaves the `<img>`, and an id with no URL renders nothing.
+   */
+  fallback?: "none" | "initials";
+  /** The player's name, for the initials and the default alt text. */
+  name?: string;
 }
+
+/**
+ * The first character of every space-separated word, up to three, as blazing-the-nets `main` does
+ * (`Headshot.tsx:16-20`): suffixes and particles are words ("Brian Thomas Jr." is "BTJ"), "De'Von" is one word.
+ */
+const initialsOf = (name: string): string =>
+  name
+    .split(" ")
+    .map((w) => w[0] ?? "")
+    .join("")
+    .slice(0, 3);
 
 /** Player headshot `<img>`: sync for ESPN ids; gsis ids render once the gsis map has loaded. Renders nothing for an unknown/malformed id, or a league/idSystem `headshotUrl` rejects. */
 export function Headshot({
@@ -78,10 +98,13 @@ export function Headshot({
   league,
   idSystem,
   height = 60,
-  alt = "Player headshot",
+  alt,
+  fallback = "none",
+  name,
   ...imgProps
 }: HeadshotProps): ReactElement | null {
   const [, setGsisReady] = useState(false); // re-render once loadGsis resolves
+  const [failed, setFailed] = useState<string | undefined>(); // the src that failed to load
   useEffect(() => {
     if (idSystem !== "gsis") return;
     let live = true;
@@ -99,12 +122,45 @@ export function Headshot({
   try {
     src = headshotUrl(playerId, league, idSystem === undefined ? {} : { idSystem });
   } catch {
-    return null;
+    src = undefined;
   }
-  if (src === undefined) return null;
+  const label = alt ?? name ?? "Player headshot";
+  const width = Math.round(height * HEADSHOT_ASPECT);
+  if (src === undefined || (fallback === "initials" && src === failed)) {
+    if (fallback !== "initials" || name === undefined) return null;
+    return (
+      <span
+        {...(label === "" ? { "aria-hidden": true } : { role: "img", "aria-label": label })}
+        className={imgProps.className}
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width,
+          height,
+          background: "var(--sdv-line, #e2e2e2)",
+          color: "var(--sdv-muted, #525252)",
+          ...imgProps.style,
+        }}
+      >
+        {initialsOf(name)}
+      </span>
+    );
+  }
+  const shown = src;
   return (
     // biome-ignore lint/a11y/useAltText: alt always defaults to a string; imgProps cannot carry it
-    <img src={src} alt={alt} height={height} width={Math.round(height * HEADSHOT_ASPECT)} {...imgProps} />
+    <img
+      src={shown}
+      alt={label}
+      height={height}
+      width={width}
+      {...imgProps}
+      onError={(e) => {
+        setFailed(shown);
+        imgProps.onError?.(e);
+      }}
+    />
   );
 }
 
