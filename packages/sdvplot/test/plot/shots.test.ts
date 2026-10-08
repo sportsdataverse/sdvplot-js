@@ -182,10 +182,13 @@ test("shotCells drops cells centred off the plot's frame (main's `h.y <= v.top`)
   const back = new Set(cells.filter((c) => c.y > 417.5).map((c) => `${c.x},${c.y}`));
   expect(cells).toHaveLength(397);
   expect(back.size).toBe(28);
-  const ids = (vertical: boolean, clip?: boolean) => {
+  const ids = (vertical: boolean, dropOutside?: boolean) => {
     const court = surface("nba", { displayRange: "defense", ...(vertical ? { rotation: 90 } : {}) });
     const frame = vertical ? "nba-legacy-vertical" : "nba-legacy";
-    const mark = shotCells(cells, clip === undefined ? { r: 15, frame } : { r: 15, frame, clip });
+    const mark = shotCells(
+      cells,
+      dropOutside === undefined ? { r: 15, frame } : { r: 15, frame, dropOutside },
+    );
     const fig = Plot.plot({ ...court.scales, width: 700, marks: [...court.marks, mark] });
     return lastGeoPaths(fig).map((p) => p.getAttribute("data-sdv-id") ?? "");
   };

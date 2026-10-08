@@ -2,6 +2,7 @@
 // drawn in data space, so they sit on a sporty court at any orientation.
 import * as Plot from "@observablehq/plot";
 import {
+  BASKETBALL_ZONE_LABELS,
   type BasketballZone,
   type BasketballZoneArea,
   FRAMES,
@@ -10,28 +11,35 @@ import {
 } from "@sportsdataverse/sporty";
 import { type BinShape, cellPoints } from "../bins/index.js";
 import { InputError } from "../errors.js";
-import { type CellVsLeague, LEAGUE_PRIOR_ATTEMPTS, shrunkDiff } from "../shots/aggregate.js";
+import { type CellVsLeague, LEAGUE_PRIOR_ATTEMPTS, type Split, shrunkDiff } from "../shots/aggregate.js";
 import { type DiffScale, diffScale } from "../shots/diff.js";
 import { type SignaturePoint, signatureGradient } from "../shots/signature.js";
+import { compose } from "./marks.js";
 
 type Point = [number, number];
-interface ShotFeature {
-  type: "Feature";
-  properties: { id: string; fill: string };
-  geometry: { type: "Polygon"; coordinates: [Point[]] };
-}
+type Polygon = { type: "Polygon"; coordinates: [Point[]] };
 
-/** Stamp `data-sdv-id` on each feature's path (one path per index entry), so `sdvplot/interact` can link them. */
+/** Stamp `data-sdv-id` on each drawn path (one path per index entry), so `sdvplot/interact` can link them. */
 const stampIds =
-  (features: readonly ShotFeature[]): Plot.RenderFunction =>
+  (id: (i: number) => string): Plot.RenderFunction =>
   (index, scales, values, dimensions, context, next) => {
     const g = next?.(index, scales, values, dimensions, context) ?? null;
     if (g === null) return null;
     const paths = g.querySelectorAll("path");
     if (paths.length !== index.length) return g; // never mislabel
-    index.forEach((i, k) => paths[k]?.setAttribute("data-sdv-id", features[i]?.properties.id ?? ""));
+    index.forEach((i, k) => paths[k]?.setAttribute("data-sdv-id", id(i)));
     return g;
   };
+
+/** A caller's `tip: true` gains sdvplot's default formats; a tip options object keeps its own. */
+function withFormat(
+  tip: NonNullable<Plot.MarkOptions["tip"]>,
+  format: Record<string, string | boolean>,
+): NonNullable<Plot.MarkOptions["tip"]> {
+  if (tip === false) return tip;
+  if (tip === true || typeof tip === "string") return { ...(tip === true ? {} : { pointer: tip }), format };
+  return { format, ...tip };
+}
 
 function frameOf(f: FrameName | Frame | undefined): Frame {
   const frame = typeof f === "object" ? f : FRAMES[f ?? "nba-legacy"];
@@ -52,14 +60,13 @@ function ring(points: readonly (readonly [number, number])[], f: Frame): Point[]
   if (first !== undefined) out.push([first[0], first[1]]);
   return out;
 }
-const polygon = (id: string, fill: string, coordinates: Point[]): ShotFeature => ({
-  type: "Feature",
-  properties: { id, fill },
-  geometry: { type: "Polygon", coordinates: [coordinates] },
-});
+const polygon = (coordinates: Point[]): Polygon => ({ type: "Polygon", coordinates: [coordinates] });
+
+/** Plot's geo options sdvplot does not own pass through (tip, title, href, fx, fy, filter, className, clip, …). */
+export type GeoPassThrough = Omit<Plot.GeoOptions, "geometry" | "fill" | "r" | "x" | "y">;
 
 /** Options for `shotCells`. */
-export interface ShotCellsOptions {
+export interface ShotCellsOptions extends GeoPassThrough {
   /**
    * Size per cell in legacy tenths (`sizeCells(cells, …).r`) or one size for all: a hexagon's circumradius, or a
    * square's side. 0 hides a cell.
@@ -74,24 +81,27 @@ export interface ShotCellsOptions {
   /** Legacy tenths to plot coordinates: a sporty frame name or `Frame`; default `"nba-legacy"`. */
   frame?: FrameName | Frame;
   /** Default `var(--sdv-muted, #525252)`, so near-average cells stay visible (`hexShotChart.ts:159-161`). */
-  stroke?: string;
+  stroke?: Plot.ChannelValueSpec;
   /** Default 0.85 px. */
-  strokeWidth?: number;
+  strokeWidth?: Plot.ChannelValueSpec;
   /**
    * Drop the cells centred outside the plot's frame, as blazing-the-nets `main` drops those past its viewport
-   * (`hexShotChart.ts:74`), so a backcourt heave is not drawn over the margin; a cell centred inside is drawn whole
-   * (this is not Plot's `clip`, which cuts paths). Default true; false draws every cell.
+   * (`hexShotChart.ts:74`); a cell centred inside is drawn whole. Not Plot's `clip` (which cuts paths, and passes
+   * through). Default true. Was `clip` before Phase 11.
    */
-  clip?: boolean;
+  dropOutside?: boolean;
 }
 
 /**
  * Data-space hexagons or squares (the dual encoding: `r` from `sizeCells`, `fill` from `diffScale`) drawn as
  * `Plot.geo` through the plot's x/y scales, so they sit on a sporty court at any orientation. Fewest attempts first,
  * so busy cells stay on top (blazing-the-nets `main` `lib/charts/hexShotChart.ts:79`); `r = 0` is not drawn, nor
- * (by default, `clip`) a cell centred outside the plot's frame. Each path carries `data-sdv-id="x,y"`, the cell's
+ * (by default, `dropOutside`) a cell centred outside the plot's frame. Each path carries `data-sdv-id="x,y"`, the cell's
  * legacy centre. Marks paint in array order: after `...court.marks` the cells cover the court lines under them, as
  * in `main`.
+ * `tip: true` shows attempts, FG%, league FG% and the shrunk difference (formats `.1%`, `+.1%`); every other
+ * `Plot.geo` option passes through, and the cells are the mark's data, so `fx`/`fy`, `filter`, `sort` (replacing the
+ * default order) and `title` read the caller's fields.
  *
  * @example
  * ```ts
@@ -104,53 +114,86 @@ export interface ShotCellsOptions {
  * ```
  */
 export function shotCells(cells: readonly CellVsLeague[], o: ShotCellsOptions): Plot.Markish {
-  const f = frameOf(o.frame);
-  const shape = o.shape ?? "hex";
-  const scale = o.scale ?? diffScale();
-  const k = o.prior ?? LEAGUE_PRIOR_ATTEMPTS;
-  // `colourDiff` (hexShotChart.ts:48-51): no colour without a league rate or attempts.
-  const colour = (h: CellVsLeague): string =>
-    scale(
-      h.leagueFgPct === null || h.attempts === 0 ? null : shrunkDiff(h.makes, h.attempts, h.leagueFgPct, k),
-    );
-  const size = (i: number): number => (typeof o.r === "number" ? o.r : (o.r[i] ?? 0));
-  // fewest attempts first (a stable sort), so busy cells stay on top (hexShotChart.ts:79)
-  const order = cells
-    .map((_, i) => i)
-    .filter((i) => size(i) > 0)
-    .sort((a, b) => (cells[a]?.attempts ?? 0) - (cells[b]?.attempts ?? 0));
-  const centres: Point[] = [];
-  const features = order.map((i) => {
-    const h = cells[i] as CellVsLeague;
-    centres.push(toPlot([h.x, h.y], f));
-    const pts = cellPoints(shape, size(i)).map(([vx, vy]): Point => [h.x + vx, h.y + vy]);
-    return polygon(`${h.x},${h.y}`, colour(h), ring(pts, f));
-  });
-  const stamp = stampIds(features);
-  return Plot.geo(features, {
-    fill: (d: ShotFeature) => d.properties.fill,
-    stroke: o.stroke ?? "var(--sdv-muted, #525252)",
-    strokeWidth: o.strokeWidth ?? 0.85,
-    render(index, scales, values, dimensions, context, next) {
-      const { x, y } = scales;
-      const { width, height, marginTop, marginRight, marginBottom, marginLeft } = dimensions;
-      // `main` keeps `h.y <= v.top` (its viewport's top edge); here the frame is the plot's, at any orientation
-      const inFrame = (i: number): boolean => {
-        const [cx, cy] = centres[i] as Point;
-        const px: number = x?.(cx);
-        const py: number = y?.(cy);
-        return (
-          px >= marginLeft && px <= width - marginRight && py >= marginTop && py <= height - marginBottom
-        );
-      };
-      const kept = (o.clip ?? true) && x && y ? index.filter(inFrame) : index;
-      return stamp(kept, scales, values, dimensions, context, next);
+  const {
+    r,
+    shape = "hex",
+    scale = diffScale(),
+    prior = LEAGUE_PRIOR_ATTEMPTS,
+    frame,
+    dropOutside = true,
+    stroke = "var(--sdv-muted, #525252)",
+    strokeWidth = 0.85,
+    sort = (a: CellVsLeague, b: CellVsLeague) => a.attempts - b.attempts,
+    tip,
+    channels,
+    initializer,
+    render,
+    ...pass
+  } = o;
+  const f = frameOf(frame);
+  const diff = (h: CellVsLeague): number | null =>
+    h.leagueFgPct === null || h.attempts === 0 ? null : shrunkDiff(h.makes, h.attempts, h.leagueFgPct, prior);
+  const size = (i: number): number => (typeof r === "number" ? r : (r[i] ?? 0));
+  const centre = (h: CellVsLeague): Point => toPlot([h.x, h.y], f);
+  // ponytail: pixel filter in an initializer (not render), so a tip never points at a dropped cell
+  const inFrame: Plot.InitializerFunction = (data, facets, _channels, scales, dimensions) => {
+    const { x, y } = scales;
+    if (!dropOutside || !x || !y) return { data, facets };
+    const { width, height, marginTop, marginRight, marginBottom, marginLeft } = dimensions;
+    const keep = (i: number): boolean => {
+      const [cx, cy] = centre(data[i] as CellVsLeague);
+      const px: number = x(cx);
+      const py: number = y(cy);
+      return px >= marginLeft && px <= width - marginRight && py >= marginTop && py <= height - marginBottom;
+    };
+    return { data, facets: facets.map((I) => I.filter(keep)) };
+  };
+  const geo: Plot.GeoOptions = {
+    ...pass,
+    // r = 0 gives a null geometry, which Plot drops (the default `defined` filter)
+    geometry: (h: CellVsLeague, i: number) =>
+      size(i) > 0
+        ? polygon(
+            ring(
+              cellPoints(shape, size(i)).map(([vx, vy]) => [h.x + vx, h.y + vy]),
+              f,
+            ),
+          )
+        : null,
+    fill: (h: CellVsLeague) => scale(diff(h)),
+    stroke,
+    strokeWidth,
+    sort: sort as NonNullable<Plot.MarkOptions["sort"]>,
+    ...(tip === undefined || tip === null
+      ? {}
+      : {
+          tip: withFormat(tip, { attempts: true, fgPct: ".1%", leagueFgPct: ".1%", diff: "+.1%" }),
+          x: (h: CellVsLeague) => centre(h)[0],
+          y: (h: CellVsLeague) => centre(h)[1],
+        }),
+    channels: {
+      attempts: { value: "attempts", label: "Attempts" },
+      fgPct: { value: "fgPct", label: "FG%" },
+      leagueFgPct: { value: "leagueFgPct", label: "League FG%" },
+      diff: { value: diff, label: "vs league (shrunk)" },
+      ...channels,
     },
-  });
+    render: compose(
+      render,
+      stampIds((i) => `${cells[i]?.x},${cells[i]?.y}`),
+    ),
+  };
+  // An explicit initializer makes Plot ignore sort/filter/reverse; Plot.initializer folds them in first, then the
+  // frame filter, then the caller's own initializer.
+  const framed = Plot.initializer(geo, inFrame);
+  return Plot.geo(
+    cells as CellVsLeague[],
+    initializer === undefined ? framed : Plot.initializer(framed, initializer),
+  );
 }
 
 /** Options for `shotZones`. */
-export interface ShotZonesOptions {
+export interface ShotZonesOptions extends GeoPassThrough {
   /** Fill per zone (e.g. `diffScale()` of the zone's shrunk diff). */
   fill: (zone: BasketballZone) => string;
   /** A label per zone at its anchor, haloed so it reads over any fill (`hexShotChart.ts:83-95`); omit for none. */
@@ -158,7 +201,9 @@ export interface ShotZonesOptions {
   /** The SAME frame as the shots (zones built with `scale: 10` are in legacy tenths); default `"nba-legacy"`. */
   frame?: FrameName | Frame;
   /** Default 0.85 (`hexShotChart.ts:110`). */
-  fillOpacity?: number;
+  fillOpacity?: Plot.ChannelValueSpec;
+  /** Per-zone makes and attempts (`statsByZone(shots)`): with `tip`, each zone shows them. */
+  stats?: Readonly<Record<BasketballZone, Split>>;
 }
 
 /**
@@ -171,6 +216,8 @@ export interface ShotZonesOptions {
  * filled polygons), so add a second `surface` after the zones instead, its `colorUpdates` setting `plot_background`,
  * `defensive_half_court`, `offensive_half_court`, `court_apron`, `two_point_range`, `painted_area`,
  * `center_circle_fill` and `free_throw_circle_fill` to `"#00000000"`: only the lines remain.
+ * The areas are the mark's data and each path is named by its zone; `tip: true` shows the zone and, with `stats`
+ * (`statsByZone(shots)`), its makes/attempts and FG%. Every other `Plot.geo` option passes through.
  *
  * @example
  * ```ts
@@ -184,16 +231,37 @@ export interface ShotZonesOptions {
  * ```
  */
 export function shotZones(areas: readonly BasketballZoneArea[], o: ShotZonesOptions): Plot.Markish[] {
-  const f = frameOf(o.frame);
-  const features = areas.map((a) => polygon(a.zone, o.fill(a.zone), ring(a.points, f)));
+  const { fill, text, frame, stats, fillOpacity = 0.85, tip, channels, render, ...pass } = o;
+  const f = frameOf(frame);
   const marks: Plot.Markish[] = [
-    Plot.geo(features, {
-      fill: (d: ShotFeature) => d.properties.fill,
-      fillOpacity: o.fillOpacity ?? 0.85,
-      render: stampIds(features),
+    Plot.geo(areas as BasketballZoneArea[], {
+      ariaLabel: (a: BasketballZoneArea) => BASKETBALL_ZONE_LABELS[a.zone], // each path names its zone
+      ...pass,
+      geometry: (a: BasketballZoneArea) => polygon(ring(a.points, f)),
+      fill: (a: BasketballZoneArea) => fill(a.zone),
+      fillOpacity,
+      ...(tip === undefined || tip === null
+        ? {}
+        : { tip: withFormat(tip, { zone: true, made: true, fgPct: ".1%" }) }),
+      channels: {
+        zone: { value: (a: BasketballZoneArea) => BASKETBALL_ZONE_LABELS[a.zone], label: "Zone" },
+        ...(stats === undefined
+          ? {}
+          : {
+              made: {
+                value: (a: BasketballZoneArea) => `${stats[a.zone].makes}/${stats[a.zone].attempts}`,
+                label: "Made",
+              },
+              fgPct: { value: (a: BasketballZoneArea) => stats[a.zone].fgPct, label: "FG%" },
+            }),
+        ...channels,
+      },
+      render: compose(
+        render,
+        stampIds((i) => areas[i]?.zone ?? ""),
+      ),
     }),
   ];
-  const text = o.text;
   if (text) {
     const labels = areas.map((a) => {
       const [x, y] = toPlot(a.label, f);
@@ -210,6 +278,7 @@ export function shotZones(areas: readonly BasketballZoneArea[], o: ShotZonesOpti
         strokeWidth: 3,
         strokeLinejoin: "round",
         paintOrder: "stroke",
+        ariaHidden: "true", // the zone paths carry the names; the labels repeat them
       }),
     );
   }
@@ -230,6 +299,8 @@ export interface ShootingSignatureOptions {
   halfWidth?: (p: SignaturePoint, maxShare: number) => number;
   /** The dashed league line, faint everywhere and full strength under the ribbon (`:165-181`); default true. */
   league?: boolean;
+  /** A tip that follows the pointer along x: distance, FG%, league FG% and shot share (`Plot.tip` + `Plot.pointerX`). */
+  tip?: boolean | Plot.TipOptions;
 }
 
 const SVG_NS = "http://www.w3.org/2000/svg";
@@ -244,6 +315,7 @@ const SVG_NS = "http://www.w3.org/2000/svg";
  * y is not clamped: the ribbon's edges are `fgPct ± halfWidth` in y units, so near 0% or 100% they pass a [0, 1]
  * domain (`main` clamps the ribbon's centre instead, which misstates FG%). To clamp them, pass
  * `y: { domain: [0, 1], clamp: true }`.
+ * `tip` adds a `Plot.tip` that follows the pointer along x (`Plot.pointerX`): distance, FG%, league FG% and share.
  *
  * @example
  * ```ts
@@ -314,5 +386,23 @@ export function shootingSignature(
       },
     }),
   );
+  if (o.tip) {
+    const own = o.tip === true ? {} : o.tip;
+    marks.push(
+      Plot.tip(
+        points,
+        Plot.pointerX({
+          x: { value: "distance", label: "Distance" },
+          y: { value: (p: SignaturePoint) => p.fgPct ?? Number.NaN, label: "FG%" },
+          channels: {
+            leagueFgPct: { value: "leagueFgPct", label: "League FG%" },
+            share: { value: "share", label: "Share of shots" },
+          },
+          format: { x: (d: number) => `${d} ft`, y: ".1%", leagueFgPct: ".1%", share: ".1%" },
+          ...own,
+        }),
+      ),
+    );
+  }
   return marks;
 }
