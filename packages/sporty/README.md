@@ -128,12 +128,6 @@ Three test files are gated: `canvas.render.test.ts` runs wherever `@napi-rs/canv
 
 3D surfaces (Phase 7).
 
-## Owner steps (before the first publish)
-
-1. Create the `sportsdataverse` organization on npm.
-2. Enable OIDC trusted publishing for `@sportsdataverse/sporty` (repository `sportsdataverse/sdvplot-js`, release workflow).
-3. Formalize the J3 licence understanding in writing before first publish (spec §9).
-
 ## License
 
 MIT. See [NOTICE.md](NOTICE.md) for the ported sportyR/sportypy material.

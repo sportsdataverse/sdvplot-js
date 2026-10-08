@@ -464,12 +464,6 @@ SDVPLOT_PY_REPO=/path/to/sdvplot pnpm build:index
 
 Parity is enforced by the Python oracle (`pnpm oracle:sdvplot`): the test suite replays every input × resolve/team colours/logo URLs/palette, plus headshot cases, against the Python package and requires 100% agreement.
 
-## Owner steps (before the first publish)
-
-1. Create the `sportsdataverse` organization on npm.
-2. Enable OIDC trusted publishing for `@sportsdataverse/sdvplot` (repository `sportsdataverse/sdvplot-js`, release workflow).
-3. Formalize the J3 licence understanding in writing before first publish (spec §9).
-
 ## License
 
 MIT. See [NOTICE.md](NOTICE.md) for the sdvplot/sdvplotR material.
