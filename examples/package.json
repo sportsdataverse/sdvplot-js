@@ -10,7 +10,7 @@
   },
   "scripts": {
     "gen": "tsx scripts/gen.ts",
-    "test": "vitest run",
+    "test": "tsx scripts/gen.ts && vitest run",
     "typecheck": "tsx scripts/gen.ts && tsc -p tsconfig.json",
     "prerender": "tsx scripts/prerender.ts",
     "check-build": "tsx scripts/check-build.ts"

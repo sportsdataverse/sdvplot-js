@@ -2,6 +2,9 @@ import { mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from
 import { createRequire } from "node:module";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
+import { STANDINGS } from "@sportsdataverse/examples/data";
+import { defineTable } from "@sportsdataverse/sdvtables";
+import { prepare, renderHTML } from "@sportsdataverse/sdvtables/html";
 import { hockeyRink } from "@sportsdataverse/sporty";
 import { toSVG } from "@sportsdataverse/sporty/svg";
 import { beforeAll, expect, test } from "vitest";
@@ -21,13 +24,15 @@ const row = (id: string, pkg: Prerendered["package"], markup: string): Prerender
   kind: "markup",
   markup,
 });
-// Phase 4 (sdvtables/html) is not on this branch: Task 8 swaps this literal for
-// renderHTML(spec, STANDINGS). The quotes, braces and entities are what MDX would mangle if the plugin did.
-const table =
-  '<table class="sdv-table"><thead><tr><th>Team</th><th>W</th></tr></thead><tbody>' +
-  '<tr><td><img src="data:image/png;base64,AAAA" alt="KC"> {KC}</td><td>14</td></tr>' +
-  "<tr><td>A&amp;M &lt;&gt; `x`</td><td>7</td></tr></tbody></table>";
-beforeAll(() => {
+// A real rendered table: an inline <style> full of braces, quoted attributes and <img> URLs, all of which MDX
+// would mangle if the plugin handed it markup instead of a string prop.
+let table = "";
+beforeAll(async () => {
+  const spec = defineTable<(typeof STANDINGS)[number]>()
+    .columns((c) => [c.logo("team", { league: "nfl" }), c.int("wins")])
+    .build();
+  await prepare(spec);
+  table = renderHTML(spec, STANDINGS);
   for (const r of [
     row("sdvtables/html/t", "sdvtables", table),
     row("sporty/svg/rink", "sporty", toSVG(hockeyRink("nhl"))),
