@@ -65,6 +65,40 @@ function placeOf(align: string, places: Readonly<Record<string, string>>): strin
   return place;
 }
 
+/** A table's wrapper as `assemble` writes it (class, then id); ids match /^[A-Za-z][\w-]*$/, so no regex escaping. */
+const WRAPPER = /<div class="sdvt [^"]*" id="([A-Za-z][\w-]*)"/g;
+
+/**
+ * One spec composed twice renders one wrapper id twice: every repeat gets the first free `-2`, `-3`… suffix, on its
+ * wrapper (and the `id`/`for` of its controls) and on the `#id` selectors of its own `<style>`s, so each table
+ * keeps its decorations. A table is the markup from its wrapper to the next one.
+ */
+function uniqueIds(body: string): string {
+  const starts = [...body.matchAll(WRAPPER)];
+  const taken = new Set(starts.map((m) => m[1] as string));
+  if (taken.size === starts.length) return body;
+  const seen = new Set<string>();
+  let out = body.slice(0, starts[0]?.index);
+  starts.forEach((m, i) => {
+    const id = m[1] as string;
+    let table = body.slice(m.index, starts[i + 1]?.index);
+    if (seen.has(id)) {
+      let n = 2;
+      while (taken.has(`${id}-${n}`)) n++;
+      const to = `${id}-${n}`;
+      taken.add(to);
+      table = table
+        .replace(new RegExp(`(\\s(?:id|for)=")${id}(?=["-])`, "g"), `$1${to}`)
+        .replace(/<style>[\s\S]*?<\/style>/g, (css) =>
+          css.replace(new RegExp(`#${id}(?![\\w-])`, "g"), `#${to}`),
+        );
+    }
+    seen.add(id);
+    out += table;
+  });
+  return out;
+}
+
 /** Title/subtitle above, caption/source note below — the shared frame of gt_grid and gt_stack_tables. */
 export function composePage(
   body: string,
@@ -72,13 +106,13 @@ export function composePage(
 ): string {
   const head =
     title || subtitle
-      ? `<header class="sdvt-compose-head">${title ? `<h1 class="sdvt-compose-title">${escapeHtml(title)}</h1>` : ""}${subtitle ? `<p class="sdvt-compose-subtitle">${escapeHtml(subtitle)}</p>` : ""}</header>`
+      ? `<header class="sdvt-compose-head">${title ? `<div class="sdvt-compose-title">${escapeHtml(title)}</div>` : ""}${subtitle ? `<p class="sdvt-compose-subtitle">${escapeHtml(subtitle)}</p>` : ""}</header>`
       : "";
   const foot =
     caption || sourceNote
       ? `<footer class="sdvt-compose-foot">${caption ? `<p class="sdvt-compose-caption${captionRule ? " sdvt-compose-rule" : ""}">${escapeHtml(caption)}</p>` : ""}${sourceNote ? `<p class="sdvt-compose-source">${escapeHtml(sourceNote)}</p>` : ""}</footer>`
       : "";
-  return `<div class="sdvt-compose"><style>${COMPOSE_CSS}</style>${head}${body}${foot}</div>`;
+  return `<div class="sdvt-compose"><style>${COMPOSE_CSS}</style>${head}${uniqueIds(body)}${foot}</div>`;
 }
 
 /** Port of gt_grid: small multiples, `ncol` across, rows follow from the count. */

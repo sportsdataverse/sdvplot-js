@@ -1,8 +1,10 @@
 import { InputError } from "@sportsdataverse/sdvplot";
 import { expect, test } from "vitest";
+import { defineTable } from "../src/define.js";
 import { gridTables, slug, stackTables } from "../src/export/compose.js";
 import { renderHTML } from "../src/html/index.js";
 import { rows, spec } from "./fixtures/engine.js";
+import type { Standing } from "./fixtures/standings.js";
 
 const east = { spec, rows: rows.slice(0, 2) };
 const west = { spec, rows: rows.slice(2) };
@@ -28,7 +30,7 @@ test("labels recycle and are escaped; title/caption compose with Python's style 
   });
   expect(html.match(/<div class="sdvt-compose-label">A&amp;E<\/div>/g)?.length).toBe(2);
   expect(html).toContain("align-items:end");
-  expect(html).toContain('<h1 class="sdvt-compose-title">Division leaders</h1>');
+  expect(html).toContain('<div class="sdvt-compose-title">Division leaders</div>'); // Python gt_grid: htmltools.div
   expect(html).toContain(
     '<footer class="sdvt-compose-foot"><p class="sdvt-compose-caption sdvt-compose-rule">Data: ESPN</p><p class="sdvt-compose-source">@sdv</p></footer>',
   );
@@ -58,4 +60,27 @@ test("slug matches Python _slug", () => {
   expect(slug(" AFC West! ")).toBe("afc-west");
   expect(slug(2024)).toBe("2024");
   expect(slug("a.b_c-d")).toBe("a.b_c-d");
+});
+test("one spec composed twice: unique wrapper ids, each table's decoration rules scoped to its own id", () => {
+  const decorated = defineTable<Standing>()
+    .columns((c) => [c.text("team"), c.int("wins")])
+    .cutline(3)
+    .build();
+  const id = /id="(sdvt-[0-9a-f]{8})"/.exec(renderHTML(decorated, rows))?.[1] as string;
+  const item = { spec: decorated, rows };
+  for (const html of [gridTables([item, item, item]), stackTables([item, item, item])]) {
+    const ids = [...html.matchAll(/<div class="sdvt [^"]*" id="([^"]+)"/g)].map((m) => m[1]);
+    expect(ids).toEqual([id, `${id}-2`, `${id}-3`]);
+    const every = html.match(/\sid="[^"]+"/g) ?? [];
+    expect(every.length).toBe(3);
+    expect(new Set(every).size).toBe(every.length);
+    html
+      .split(/(?=<div class="sdvt )/)
+      .slice(1)
+      .forEach((table, i) => {
+        const scoped = [...table.matchAll(/#(sdvt-[\w-]+)/g)].map((m) => m[1]);
+        expect(scoped.length).toBeGreaterThan(0);
+        expect(new Set(scoped)).toEqual(new Set([ids[i]]));
+      });
+  }
 });

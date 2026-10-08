@@ -292,27 +292,37 @@ export async function toPNG(
     text = text.replace(open, () => tag.replace(/^<svg/i, () => `<svg${add}`));
   }
 
-  let resvg = new mod.Resvg(text, opts);
-  const hrefs = [...new Set(resvg.imagesToResolve())]; // remote hrefs resvg cannot load itself
+  // the remote hrefs resvg cannot load itself, from a parse without the system-font scan (text does not change them)
+  const hrefs = [...new Set(new mod.Resvg(text, { font: { loadSystemFonts: false } }).imagesToResolve())];
+  let bodies: Uint8Array[] = [];
   if (hrefs.length > 0 && images === "skip") {
     warn(
       `toPNG:skip:${hrefs.join(" ")}`,
       `toPNG left out ${hrefs.length} remote image(s): ${hrefs.join(", ")}`,
     );
   } else if (hrefs.length > 0) {
-    const bodies = await mapLimit(hrefs, FETCH_LIMIT, download);
-    // resolveImage takes PNG/JPEG/GIF only; an SVG mark goes in as a data URI, which resvg draws as a nested SVG
-    const vector = bodies.map((b) => new TextDecoder().decode(b.subarray(0, 64)).trimStart().startsWith("<"));
-    if (vector.includes(true)) {
-      for (const [i, href] of hrefs.entries()) {
-        if (!vector[i]) continue;
-        const uri = `data:image/svg+xml;base64,${Buffer.from(bodies[i] as Uint8Array).toString("base64")}`;
-        text = text.replace(hrefAttr(href), (_m, attr: string, q: string) => `${attr}${q}${uri}${q}`);
-      }
-      resvg = new mod.Resvg(text, opts);
+    bodies = await mapLimit(hrefs, FETCH_LIMIT, download);
+    // every image goes in as a data URI, so ONE Resvg draws them all: resolveImage costs ~150 ms a call
+    for (const [i, href] of hrefs.entries()) {
+      const b = bodies[i] as Uint8Array;
+      const uri = `data:${imageType(b)};base64,${Buffer.from(b).toString("base64")}`;
+      text = text.replace(hrefAttr(href), (_m, attr: string, q: string) => `${attr}${q}${uri}${q}`);
     }
+  }
+  const resvg = new mod.Resvg(text, opts);
+  if (bodies.length > 0) {
+    // an href escaped in a way hrefAttr does not match is still drawn, the slow way (resolveImage: raster only)
+    const left = new Set(resvg.imagesToResolve());
     for (const [i, href] of hrefs.entries())
-      if (!vector[i]) resvg.resolveImage(href, Buffer.from(bodies[i] as Uint8Array));
+      if (left.has(href)) resvg.resolveImage(href, Buffer.from(bodies[i] as Uint8Array));
   }
   return new Uint8Array(resvg.render().asPng());
+}
+
+/** A downloaded image's data-URI type from its first bytes: SVG markup, JPEG, GIF, else PNG. */
+function imageType(b: Uint8Array): string {
+  if (new TextDecoder().decode(b.subarray(0, 64)).trimStart().startsWith("<")) return "image/svg+xml";
+  if (b[0] === 0xff && b[1] === 0xd8) return "image/jpeg";
+  if (b[0] === 0x47 && b[1] === 0x49 && b[2] === 0x46) return "image/gif";
+  return "image/png";
 }

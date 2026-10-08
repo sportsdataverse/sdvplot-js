@@ -405,6 +405,73 @@ describe("toPNG remote images", () => {
     for (let i = 0; i < 50; i++)
       expect(at((i % 10) * 40 + 20, Math.floor(i / 10) * 40 + 20)).toEqual([...colour(i), 255]);
   });
+  test("a failed download: the first error wins, no new download starts, no unhandled rejection", async () => {
+    const href = (i: number) => `https://example.test/img/${i}.png`;
+    const images = Array.from(
+      { length: 20 },
+      (_, i) => `<image href="${href(i)}" width="4" height="4"/>`,
+    ).join("");
+    const unhandled: unknown[] = [];
+    const onUnhandled = (e: unknown) => unhandled.push(e);
+    process.on("unhandledRejection", onUnhandled);
+    try {
+      const fetch = vi.fn(async (url: string) => {
+        const i = Number(/(\d+)\.png$/.exec(url)?.[1]);
+        // href 1 fails first, href 3 fails later while the rest of the first eight are still downloading
+        await new Promise((r) => setTimeout(r, i === 1 ? 1 : i === 3 ? 10 : 30));
+        if (i === 1 || i === 3) return new Response("gone", { status: 404 });
+        return new Response(NYG.slice(), { status: 200, headers: { "content-type": "image/png" } });
+      });
+      vi.stubGlobal("fetch", fetch);
+      await expect(
+        toPNG(`<svg xmlns="http://www.w3.org/2000/svg" width="80" height="4">${images}</svg>`),
+      ).rejects.toSatisfy((e: unknown) => e instanceof DownloadError && e.url === href(1));
+      await new Promise((r) => setTimeout(r, 60)); // let the in-flight downloads (and href 3's failure) settle
+      expect(fetch).toHaveBeenCalledTimes(8);
+      expect(unhandled).toEqual([]);
+    } finally {
+      process.off("unhandledRejection", onUnhandled);
+    }
+  });
+  test("an href written with a numeric entity (not inlined by the attribute match) is still drawn", async () => {
+    const fetch = serve(NYG, "image/png");
+    vi.stubGlobal("fetch", fetch);
+    const out = await toPNG(
+      `<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><image href="https://example.test/a&#38;b.png" width="80" height="80"/></svg>`,
+      { background: "white" },
+    );
+    expect(fetch.mock.calls[0]![0]).toBe("https://example.test/a&b.png");
+    expect(inked(out, { x: 0, y: 0, width: 80, height: 80 })).toBeGreaterThan(0.1);
+  });
+  test("32 unique real logos render with one resvg pass in under 2 s, every logo drawn", async () => {
+    const href = (i: number) => `https://example.test/logo/${i}.${i % 2 === 1 ? "svg" : "png"}`;
+    const box = (i: number) => ({ x: (i % 8) * 80, y: Math.floor(i / 8) * 80, width: 80, height: 80 });
+    const images = Array.from({ length: 32 }, (_, i) => {
+      const b = box(i);
+      return `<image href="${href(i)}" x="${b.x}" y="${b.y}" width="${b.width}" height="${b.height}"/>`;
+    }).join("");
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(
+        async (url: string) =>
+          new Response(url.endsWith(".svg") ? MTL.slice() : NYG.slice(), {
+            status: 200,
+            headers: { "content-type": url.endsWith(".svg") ? "image/svg+xml" : "image/png" },
+          }),
+      ),
+    );
+    const t0 = performance.now();
+    const out = await toPNG(
+      `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="320">${images}</svg>`,
+      {
+        background: "white",
+      },
+    );
+    const ms = performance.now() - t0;
+    console.log(`toPNG, 32 unique real logos: ${ms.toFixed(0)} ms`);
+    for (let i = 0; i < 32; i++) expect(inked(out, box(i))).toBeGreaterThan(0.1);
+    expect(ms).toBeLessThan(2000);
+  });
 });
 
 describe("toPNG optional peer", () => {
