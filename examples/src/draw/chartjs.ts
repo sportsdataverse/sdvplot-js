@@ -19,6 +19,9 @@ const draw: Draw<"chartjs"> = async (el, s) => {
   canvas.setAttribute("role", "img");
   canvas.setAttribute("aria-label", s.label);
   const chart = new Chart(canvas, s.config() as ChartConfiguration);
+  // On a narrow screen it scales down as the PNG does (Chart.js maps pointer events through the CSS size)
+  canvas.style.maxWidth = "100%";
+  canvas.style.height = "auto";
   return () => {
     chart.destroy();
     canvas.remove();
