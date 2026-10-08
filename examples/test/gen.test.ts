@@ -3,7 +3,8 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import ts from "typescript";
 import { expect, test } from "vitest";
-import { codeOf, docModule, extractDocExamples, metaOf } from "../scripts/lib.js";
+import { codeOf, docModule, extractDocExamples, metaOf, registryModules } from "../scripts/lib.js";
+import type { ExampleEntry } from "../src/contract.js";
 
 const MODULE = `import * as Plot from "@observablehq/plot";
 import type { ExampleMeta } from "../../contract.js";
@@ -101,4 +102,66 @@ test("Review Focus 5: a docstring example that drifts from the API fails to comp
     .getPreEmitDiagnostics(program)
     .map((d) => ts.flattenDiagnosticMessageText(d.messageText, "\n"));
   expect(messages).toEqual([expect.stringContaining("'count' does not exist in type '{ n: number; }'")]);
+});
+
+// Phase 5's peerMissing docstring, as a synthetic source: its example imports node:module and the /export subpath.
+const NODE_SOURCE = `/**
+ * True when \`e\` is Node's "cannot find" for the optional peer \`name\` itself.
+ *
+ * @example
+ * \`\`\`ts
+ * import { createRequire } from "node:module";
+ * import { peerMissing } from "@sportsdataverse/sdvplot/export";
+ *
+ * const name = "@sportsdataverse/no-such-peer";
+ * let error: unknown;
+ * try {
+ *   createRequire(import.meta.url).resolve(name);
+ * } catch (e) {
+ *   error = e;
+ * }
+ * peerMissing(error, name);
+ * \`\`\`
+ */
+export function peerMissing(e: unknown, name: string): boolean {
+  return false;
+}
+`;
+
+test("a docstring example importing node:* or an /export subpath is tagged node: re-run in Node, never bundled", () => {
+  const entryOf = (code: string, id: string): ExampleEntry => {
+    const text = docModule({
+      symbol: id,
+      lang: "ts",
+      code,
+      from: "export/index.ts",
+      contract: "./contract.js",
+    });
+    return {
+      id,
+      package: "sdvplot",
+      ...metaOf(text, `${id}.ts`),
+      code: "",
+      lang: "ts",
+      file: `src/${id}.ts`,
+    };
+  };
+  const [ex] = extractDocExamples(NODE_SOURCE, "export/index.ts");
+  if (ex === undefined) throw new Error("no example extracted");
+  const viaNode = entryOf(ex.code, "via-node");
+  const viaExport = entryOf(
+    'import { peerMissing } from "@sportsdataverse/sdvtables/export";\n\npeerMissing(1, "x");\n',
+    "via-export",
+  );
+  const browser = entryOf(
+    'import { diffScale } from "@sportsdataverse/sdvplot/shots";\n\ndiffScale();\n',
+    "browser",
+  );
+  expect(viaNode.tags).toEqual(["docstring", "via-node", "node"]);
+  expect(viaExport.tags).toEqual(["docstring", "via-export", "node"]);
+  expect(browser.tags).toEqual(["docstring", "browser"]);
+  const { loaders } = registryModules([viaNode, viaExport, browser]);
+  expect(loaders).not.toContain('"via-node"');
+  expect(loaders).not.toContain('"via-export"');
+  expect(loaders).toContain('"browser": () => import("./browser.js")');
 });
