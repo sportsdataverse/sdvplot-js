@@ -44,3 +44,31 @@ Written by `uv run tools/sample-data/nfl_2024.py` from nflverse-data release ass
 - `nfl_epa_2024_reg.csv`: per team, the number and summed EPA of its offensive plays and of the plays its defence
   faced, from `pbp/play_by_play_2024.parquet` (regular season, `pass == 1 | rush == 1`, `epa` not null; sums rounded to
   6 decimals).
+
+## Captures from sportsdataverse-py
+
+Written by `uv run tools/sample-data/sdv_py_captures.py` from fixtures committed in sportsdataverse-py
+(`tests/fixtures/`, read at sportsdataverse-py 82249b4, 2026-10-07). Each file keeps whole records only, every kept
+record unchanged; `examples/src/data.ts` holds them with columns renamed, and `examples/test/sample-data.test.ts`
+checks the two are equal.
+
+- `nba_leaguestandingsv3_2023_24_pacific.json` (`NBA_STANDINGS`): stats.nba.com `leaguestandingsv3`, Season 2023-24,
+  Regular Season: the final 2023-24 standings. From `nba_stats/leaguestandingsv3_2023_24.json` (sportsdataverse-py
+  `nba_stats_leaguestandingsv3(season="2023-24", return_parsed=False)`, captured 2026-07-08, 30 rows). Trimmed:
+  `Standings` keeps the 5 rows whose `Division` is `Pacific`.
+- `nhl_standings_20252026_atlantic.json` (`NHL_STANDINGS`): NHL api-web `/v1/standings/now`, the final 2025-26
+  regular-season standings (rows dated 2026-04-17, 82 games each; `standingsDateTimeUtc` 2026-05-25T00:38:00Z). From
+  `nhl_api_web/standings_now.json` (captured 2026-05-24, 32 rows). Trimmed: `standings` keeps the 8 rows whose
+  `divisionName` is `Atlantic`.
+- `nhl_pbp_2023030417_p1_shots.json` (`NHL_SHOTS`): NHL api-web `/v1/gamecenter/2023030417/play-by-play`, game 7 of
+  the 2024 Stanley Cup Final, Edmonton at Florida, 2024-06-24 (Florida won 2-1). From `nhl_api_web/pbp_2024_scf_g7.json`
+  (captured 2026-05-24, 331 plays). Trimmed: keeps `id`, `season`, `gameType`, `gameDate`, `awayTeam` and `homeTeam`,
+  and the 27 `plays` of period 1 whose `typeDescKey` is `goal`, `shot-on-goal` or `missed-shot`.
+- `espn_nfl_summary_401671889_offense_tds.json` (`SUPER_BOWL_LIX_TDS`): ESPN Site v2 `summary?event=401671889`,
+  Super Bowl LIX, Kansas City at Philadelphia, 2025-02-09 (Philadelphia won 40-22). From `espn/summary_nfl.json`.
+  Trimmed: `header` keeps only `id` and each competitor's `homeAway` and `team.id`/`team.abbreviation`; `plays` are
+  the 6 plays from `drives.previous[].plays[]` whose `type.text` is `Rushing Touchdown` or `Passing Touchdown`.
+- `pwhl_pbp_42_shots.json` (`PWHL_GOALS`): HockeyTech `statviewfeed/gameCenterPlayByPlay`, PWHL game 42, PWHL Boston
+  at PWHL Montreal, 2024-03-02 (Montreal won 3-1, per sportsdataverse-py's `hockeytech/pwhl_game_summary_42.json`).
+  From `hockeytech/pwhl_pbp_42.json` (173 events). Trimmed: the 70 events whose `event` is `shot` or `goal`; the data
+  module takes the 4 goals, and the test reads every event's `xLocation`/`yLocation` to pin the canvas size.
