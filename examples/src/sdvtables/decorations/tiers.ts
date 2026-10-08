@@ -5,7 +5,7 @@ import { renderHTMLAsync } from "@sportsdataverse/sdvtables/html";
 import type { ExampleMeta } from "../../contract.js";
 
 export const meta = {
-  title: "tiers: a tier list, one row per tier",
+  title: "tiers: a tier list of 8 AFC teams, one row per tier",
   tags: ["decoration", "tiers", "gt_tiers", "nfl"],
 } satisfies ExampleMeta;
 
@@ -17,6 +17,8 @@ const rows = levels.map((tier) => {
   const logos = STANDINGS.filter((r) => tierOf(r.srs_rank) === tier).map(
     (r) => logoUrlSync(r.team, "nfl") ?? null,
   );
+  // four image columns: a fifth team in a tier would be dropped without a word
+  if (logos.length > 4) throw new Error(`${tier} has ${logos.length} teams but 4 image columns`);
   return { tier, t1: logos[0] ?? null, t2: logos[1] ?? null, t3: logos[2] ?? null, t4: logos[3] ?? null };
 });
 const spec = defineTable<(typeof rows)[number]>()
@@ -26,6 +28,6 @@ const spec = defineTable<(typeof rows)[number]>()
     imgHeight: "44px",
     style: "light",
   })
-  .title("AFC, 2024: SRS tiers")
+  .title("8 AFC teams, 2024: SRS tiers")
   .build();
 export default await renderHTMLAsync(spec, rows);

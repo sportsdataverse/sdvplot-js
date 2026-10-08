@@ -23,6 +23,7 @@ const SECTIONS: Readonly<Record<string, string>> = {
   frames: "Coordinate frames",
   spec: "Table spec",
   themes: "Every theme",
+  "themes-api": "Theme API",
   kinds: "Every cell kind",
   decorations: "Every decoration",
   html: "HTML renderer",

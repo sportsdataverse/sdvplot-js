@@ -27,6 +27,6 @@ const spec = defineTable<(typeof rows)[number]>()
     c.num("p", { label: "p vs .500", digits: 3 }),
   ])
   .significance([{ estimate: "win_share", p: "p" }], { hideP: false })
-  .title("AFC, 2024: which records beat a coin flip?")
+  .title("8 AFC teams, 2024: which records beat a coin flip?")
   .build();
 export default await renderHTMLAsync(spec, rows);
