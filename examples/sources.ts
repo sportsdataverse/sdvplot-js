@@ -18,6 +18,8 @@ export const SOURCES: Readonly<Record<string, string>> = {
   "@sportsdataverse/sdvplot": "packages/sdvplot/src/index.ts",
   "@sportsdataverse/sdvplot/plot": "packages/sdvplot/src/plot/index.ts",
   "@sportsdataverse/sdvplot/d3": "packages/sdvplot/src/d3/index.ts",
+  "@sportsdataverse/sdvplot/bins": "packages/sdvplot/src/bins/index.ts",
+  "@sportsdataverse/sdvplot/shots": "packages/sdvplot/src/shots/index.ts",
   "@sportsdataverse/sdvplot/react": "packages/sdvplot/src/react/index.tsx",
   "@sportsdataverse/sdvplot/testing": "packages/sdvplot/src/testing/index.ts",
   "@sportsdataverse/sdvplot/chartjs": "packages/sdvplot/src/chartjs.ts",
