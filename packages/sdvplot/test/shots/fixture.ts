@@ -3,7 +3,7 @@
 import columns from "../../../../fixtures/shots/nba-2026-bkn-2000-columns.json" with { type: "json" };
 import square from "../../../../fixtures/shots/nba-2026-league-square.json" with { type: "json" };
 import league from "../../../../fixtures/shots/nba-2026-league.json" with { type: "json" };
-import type { LeagueIndex, ShotRow } from "../../src/shots/index.js";
+import type { DistanceBin, LeagueIndex, ShotRow, SideBin } from "../../src/shots/index.js";
 
 /** The 2000 BKN shots of blazing-the-nets' own fixture (first 2000 BKN rows of shots_2026.parquet), as release rows. */
 export const BKN: readonly ShotRow[] = columns.x_legacy.map((x, i) => ({
@@ -15,6 +15,9 @@ export const BKN: readonly ShotRow[] = columns.x_legacy.map((x, i) => ({
 }));
 
 export interface LeagueFixture {
+  readonly byFoot: readonly DistanceBin[];
+  readonly byBin3: readonly DistanceBin[];
+  readonly sides3: readonly SideBin[];
   readonly hex10: LeagueIndex;
   readonly hex15: LeagueIndex;
 }

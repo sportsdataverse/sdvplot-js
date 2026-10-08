@@ -21,3 +21,7 @@ export type {
   SizeRule,
   Split,
 } from "./aggregate.js";
+export { cellsVsDistance, fgPctByDistance, statsBySide, vsLeague } from "./distance.js";
+export type { DistanceBin, DistanceVsLeague, SideBin } from "./distance.js";
+export { signaturePoints } from "./signature.js";
+export type { SignatureOptions, SignaturePoint } from "./signature.js";

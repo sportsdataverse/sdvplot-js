@@ -71,6 +71,9 @@ export interface CellSizes {
 }
 
 // @public
+export function cellsVsDistance(player: readonly ShotRow[], byFoot: readonly DistanceBin[], cell?: number | BinnerOptions): CellVsLeague[];
+
+// @public
 export function cellsVsLeague(player: readonly ShotRow[], league: LeagueIndex, minLeague?: number): CellVsLeague[];
 
 // @public (undocumented)
@@ -110,6 +113,22 @@ export interface DiffScaleOptions {
     palette?: DiffPalette;
     theme?: "light" | "dark";
 }
+
+// @public (undocumented)
+export interface DistanceBin extends Split {
+    readonly distance: number;
+    readonly share: number;
+}
+
+// @public (undocumented)
+export interface DistanceVsLeague extends DistanceBin {
+    readonly diff: number | null;
+    // (undocumented)
+    readonly leagueFgPct: number | null;
+}
+
+// @public
+export function fgPctByDistance(shots: readonly ShotRow[], binFt?: number, maxFt?: number): DistanceBin[];
 
 // @public
 export function hexagonPath(r: number): string;
@@ -169,6 +188,41 @@ export interface ShotRow {
 // @public
 export function shrunkDiff(makes: number, attempts: number, league: number, k?: number): number;
 
+// @public (undocumented)
+export interface SideBin {
+    // (undocumented)
+    readonly centre: Split;
+    // (undocumented)
+    readonly distance: number;
+    // (undocumented)
+    readonly left: Split;
+    // (undocumented)
+    readonly right: Split;
+}
+
+// @public (undocumented)
+export interface SignatureOptions {
+    minAttempts?: number;
+    prior?: number;
+    smooth?: boolean;
+    step?: number;
+}
+
+// @public (undocumented)
+export interface SignaturePoint {
+    readonly colourDiff: number | null;
+    // (undocumented)
+    readonly distance: number;
+    readonly fgPct: number | null;
+    // (undocumented)
+    readonly leagueFgPct: number | null;
+    // (undocumented)
+    readonly share: number;
+}
+
+// @public
+export function signaturePoints(bins: readonly DistanceVsLeague[], o?: SignatureOptions): SignaturePoint[];
+
 // @public
 export function sizeCells(cells: readonly {
     readonly attempts: number;
@@ -200,7 +254,13 @@ export function squarebin<T>(points: readonly T[], o: {
 export function squarePath(s: number): string;
 
 // @public
+export function statsBySide(shots: readonly ShotRow[], binFt?: number, maxFt?: number, centreHalfWidth?: number | false): SideBin[];
+
+// @public
 export function statsByZone(shots: readonly ShotRow[]): Record<BasketballZone, Split>;
+
+// @public
+export function vsLeague(player: readonly DistanceBin[], league: readonly DistanceBin[]): DistanceVsLeague[];
 
 // (No @packageDocumentation comment for this package)
 
