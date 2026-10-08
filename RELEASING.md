@@ -18,13 +18,17 @@ token and trusted publishing (OIDC) is configured afterwards.
    from a user account anonymously, so check the page while logged in.
 2. **J3 licence: done.** J3 settled 2026-10-08: option C, NOTICE only; see spec row J3. `@sportsdataverse/sporty`
    ships under MIT at 0.1.0, and its existing `NOTICE.md` is the formalization. Nothing to do here; do not re-open it.
-3. **Check the token.** The `NPM_TOKEN` secret must be a granular access token with read and write on the
-   `@sportsdataverse` scope (it creates new packages there), "Bypass 2FA" enabled (CI cannot answer a 2FA prompt), and
-   an expiry after the release date (write tokens last at most 90 days).
-4. **Give the publish step the token.** In `.github/workflows/release.yml`, add
-   `NODE_AUTH_TOKEN: "${{ secrets.NPM_TOKEN }}"` to the `env` of the `changesets/action` step. `setup-node`'s
-   `registry-url` writes the `.npmrc` that npm reads, and that file reads `NODE_AUTH_TOKEN`; an `NPM_TOKEN` variable
-   makes `changesets/action` write `~/.npmrc`, which npm then ignores.
+3. **Check the token: done.** Owner confirmed token scope (2026-10-08). The `NPM_TOKEN` secret must stay a granular
+   access token with read and write on the `@sportsdataverse` scope (it creates new packages there), "Bypass 2FA"
+   enabled (CI cannot answer a 2FA prompt), and an expiry after the release date (write tokens last at most 90 days).
+4. **Give the publish step the token: done.** Wired 2026-10-08 in #32; owner confirmed token scope.
+   `.github/workflows/release.yml` passes `NODE_AUTH_TOKEN: "${{ secrets.NPM_TOKEN }}"` to the `changesets/action`
+   step. `setup-node`'s `registry-url` writes the `.npmrc` that npm reads, and that file reads `NODE_AUTH_TOKEN`; an
+   `NPM_TOKEN` variable would make `changesets/action` write `~/.npmrc`, which npm then ignores.
+
+Open from here: step 5 (merge the version PR once every phase has landed; check step 1 before it), then 6 (trusted
+publishers), 7 (Node 24, drop the token) and the optional 8.
+
 5. **Merge the version PR only when every phase has landed.** All three packages ship together at 0.1.0. After the
    release job finishes, confirm each package exists:
    `npm view @sportsdataverse/sdvplot version`, and the same for `sporty` and `sdvtables`.
