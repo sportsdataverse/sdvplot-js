@@ -10,6 +10,21 @@ export type Draw<L extends BrowserSpec["lib"]> = (el: HTMLElement, s: Of<L>) => 
  * so only a page that shows one loads it. Resolves to what removes the chart.
  */
 export async function draw(el: HTMLElement, s: BrowserSpec): Promise<() => void> {
+  // Its own slot: a drawing that throws (or one a newer drawing replaced) removes what it drew and nothing else.
+  const slot = el.appendChild(document.createElement("div"));
+  try {
+    const remove = await drawWith(slot, s);
+    return () => {
+      remove();
+      slot.remove();
+    };
+  } catch (e) {
+    slot.remove();
+    throw e;
+  }
+}
+
+async function drawWith(el: HTMLElement, s: BrowserSpec): Promise<() => void> {
   switch (s.lib) {
     case "plotly":
       return (await import(/* webpackChunkName: "draw-plotly" */ "./plotly.js")).default(el, s);

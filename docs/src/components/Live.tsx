@@ -109,8 +109,7 @@ export default function Live(p: LiveProps): ReactElement {
           setMounted(true);
         },
         (e: unknown) => {
-          el.replaceChildren(); // whatever the library drew before it threw
-          if (!cancelled) fail(e);
+          if (!cancelled) fail(e); // draw() has removed what it drew; a cancelled run leaves el to the newer one
         },
       );
     return () => {
