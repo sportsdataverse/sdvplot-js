@@ -29,7 +29,7 @@
     "pack:check": "pnpm pack --pack-destination temp >/dev/null && attw temp/*.tgz --profile esm-only && publint --strict"
   },
   "peerDependencies": {
-    "@sportsdataverse/sdvplot": "workspace:^"
+    "@sportsdataverse/sdvplot": "workspace:^0"
   },
   "devDependencies": {
     "@sportsdataverse/sdvplot": "workspace:^",
