@@ -26,7 +26,8 @@ function Teams(): ReactElement {
             key={id}
             type="button"
             aria-pressed={picked}
-            style={{ fontWeight: picked ? 700 : 400, outline: hover.has(id) ? "2px solid" : "none" }}
+            // the hover outline, else none set: an inline "none" would hide the keyboard focus ring
+            style={{ fontWeight: picked ? 700 : 400, outline: hover.has(id) ? "2px solid" : undefined }}
             onPointerEnter={() => store.set({ hover: [id] })}
             onPointerLeave={() => store.set({ hover: [] })}
             onClick={() => store.set({ selected: picked ? [] : [id] })}

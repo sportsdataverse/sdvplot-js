@@ -285,6 +285,8 @@ export function problems(entry: ExampleEntry, r: RunResult): string[] {
   if (!network && r.fetched.length > 0) p.push(`fetched without the "network" tag: ${r.fetched.join(" | ")}`);
   if (network && r.fetched.length === 0) p.push(`has the "network" tag but did not fetch`);
   if (/\bNaN\b/.test(r.markup)) p.push("output contains NaN");
+  // WCAG 2.4.7: an inline outline:none beats the browser's focus ring, so a Tab user cannot see the focused control
+  if (/outline:\s*none/i.test(r.markup)) p.push("removes the focus outline (outline: none)");
   const warns = entry.tags.includes("warns");
   if (!warns && r.warnings.length > 0) p.push(`warned without the "warns" tag: ${r.warnings.join(" | ")}`);
   if (!warns && PLOT_WARNING_BADGE.test(r.markup))
