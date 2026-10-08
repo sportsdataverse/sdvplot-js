@@ -50,9 +50,9 @@ test("StrictMode: the owned engine survives the double render and effect replay;
   const filter = (): HTMLInputElement => screen.getByLabelText("Filter Team") as HTMLInputElement;
   fireEvent.click(screen.getByRole("button", { name: "Wins" }));
   fireEvent.click(screen.getByRole("button", { name: "Wins" })); // desc
-  fireEvent.input(filter(), { target: { value: "T1" } }); // T19..T10
+  fireEvent.input(filter(), { target: { value: "n" } }); // MIN DEN CIN IND NO | NYJ NE NYG TEN
   fireEvent.click(screen.getByRole("button", { name: "Next page" }));
-  fireEvent.click(container.querySelector('[data-sdv-body] tr[data-row="2"]') as Element); // T12
+  fireEvent.click(container.querySelector('[data-sdv-body] tr[data-row="2"]') as Element); // NYG
   const live = built.filter((t) => t.state.sort !== null);
   expect(live).toHaveLength(1); // the controls drive exactly one engine
   const table = live[0] as Table<Standing>;
@@ -60,10 +60,10 @@ test("StrictMode: the owned engine survives the double render and effect replay;
   table.subscribe((e) => events.push(e.type));
 
   const kept = (): void => {
-    expect(filter().value).toBe("T1");
+    expect(filter().value).toBe("n");
     expect(container.querySelector('th[data-col="wins"]')?.getAttribute("aria-sort")).toBe("descending");
     expect(screen.getByText("Page 2 of 2")).toBeTruthy();
-    expect(container.querySelector('tr.sdvt-selected [data-col="team"]')?.textContent).toBe("T12");
+    expect(container.querySelector('tr.sdvt-selected [data-col="team"]')?.textContent).toBe("NYG");
   };
   kept();
   rerender(<Parent data={many} />); // fresh equal rows, rendered twice by StrictMode

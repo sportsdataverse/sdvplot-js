@@ -97,13 +97,13 @@ test("filter input filters without being re-rendered; pager pages; label and ari
   expect(prev?.getAttribute("aria-disabled")).toBe("true");
   next?.click();
   await frame();
-  expect(label()).toBe("Page 2 of 3");
+  expect(label()).toBe("Page 2 of 4");
   expect(prev?.hasAttribute("aria-disabled")).toBe(false);
-  expect(firstTeam(el)).toBe("T11");
+  expect(firstTeam(el)).toBe("DET");
   const input = el.querySelector<HTMLInputElement>('[data-sdv-filter="team"]');
   if (!input) throw new Error("no filter input");
   input.focus();
-  input.value = "T0";
+  input.value = "n"; // CIN DEN IND MIN NE NO NYG NYJ TEN
   input.dispatchEvent(new Event("input", { bubbles: true }));
   await frame();
   expect(el.querySelectorAll("[data-sdv-body] tbody tr").length).toBe(9);
@@ -157,7 +157,7 @@ test("M6: ten synchronous changes draw ONE render on the next frame; the engine 
   const writes = countWrites(el.querySelector("[data-sdv-body]") as Element);
   hydrate(el, t);
   const input = el.querySelector<HTMLInputElement>("[data-sdv-global-filter]") as HTMLInputElement;
-  for (const text of ["T", "T0", "T1", "T2", "T", "T0", "T1", "T2", "T", "T2"]) {
+  for (const text of ["N", "NY", "N", "NE", "N", "NY", "N", "NE", "N", "NY"]) {
     input.value = text;
     input.dispatchEvent(new Event("input", { bubbles: true }));
     expect(t.state.globalFilter).toBe(text); // handleInput stays synchronous
@@ -165,8 +165,8 @@ test("M6: ten synchronous changes draw ONE render on the next frame; the engine 
   expect(writes.n).toBe(0);
   await frame();
   expect(writes.n).toBe(1);
-  expect(firstTeam(el)).toBe("T20");
-  expect(el.querySelectorAll("[data-sdv-body] tbody tr").length).toBe(6); // T20..T25
+  expect(firstTeam(el)).toBe("NYG");
+  expect(el.querySelectorAll("[data-sdv-body] tbody tr").length).toBe(2); // NYG, NYJ
 });
 test("M6: without requestAnimationFrame the render falls back to a timer", async () => {
   vi.stubGlobal("requestAnimationFrame", undefined);
@@ -197,11 +197,11 @@ test("M1 + M2: Next keeps focus to the last page, the edge click is a no-op, the
   expect(el.querySelector("[data-sdv-page-label]")?.getAttribute("aria-live")).toBe("polite");
   const next = el.querySelector<HTMLButtonElement>('[data-sdv-page="next"]') as HTMLButtonElement;
   next.focus();
-  next.click();
-  await frame();
-  next.click();
-  await frame();
-  expect(t.state.page).toBe(2);
+  for (let i = 0; i < 3; i++) {
+    next.click();
+    await frame();
+  }
+  expect(t.state.page).toBe(3);
   expect(next.getAttribute("aria-disabled")).toBe("true");
   expect(next.disabled).toBe(false); // a disabled button would drop focus to <body>
   expect(document.activeElement).toBe(next);

@@ -1,5 +1,6 @@
 import { defineTable } from "../../src/define.js";
 import type { TableSpec } from "../../src/spec.js";
+import { NFL_2024 } from "./nfl-2024.js";
 import { STANDINGS, type Standing } from "./standings.js";
 
 export type Row = Standing;
@@ -15,8 +16,5 @@ export const spec: TableSpec<Row> = defineTable<Row>()
   .theme("sdv", { density: "compact" })
   .build();
 
-/** 25 rows for pagination: team "T01".."T25", wins 1..25, the rest cycled from STANDINGS. */
-export const many: readonly Row[] = Array.from({ length: 25 }, (_, i) => {
-  const base = STANDINGS[i % STANDINGS.length] as Standing;
-  return { ...base, team: `T${String(i + 1).padStart(2, "0")}`, wins: i + 1 };
-});
+/** Real rows for pagination: all 32 teams of the 2024 NFL regular season, A to Z (see nfl-2024.ts). */
+export const many: readonly Row[] = NFL_2024;

@@ -328,7 +328,7 @@ describe.skipIf(!process.env.SDV_RENDER_TESTS)("playwright rendering (SDV_RENDER
       dir,
       deviceScaleFactor: 1,
     });
-    expect(files).toEqual([join(dir, "by-afc.png")]);
+    expect(files).toEqual([join(dir, "by-nfc.png"), join(dir, "by-afc.png")]); // first seen first: ARI is NFC
     const grouped = await batchToPNG(rows, "wins", (r) => ({ spec, rows: r }), "w-{group}.png", {
       dir,
       deviceScaleFactor: 1,

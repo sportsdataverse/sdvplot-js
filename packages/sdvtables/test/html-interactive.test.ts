@@ -57,16 +57,16 @@ test("toolbar: global filter first, then one input per filterable column, each w
 test("pager renders the current page only; aria-disabled at the edges (M1); the label is a polite live region (M2)", () => {
   const t = createTable(spec, many, { pageSize: 10 });
   expect(renderPager(t)).toBe(
-    '<nav class="sdvt-pager" data-sdv-pager="" aria-label="Pagination"><button type="button" class="sdvt-page" data-sdv-page="prev" aria-label="Previous page" aria-disabled="true">‹</button><span class="sdvt-page-label" data-sdv-page-label="" aria-live="polite">Page 1 of 3</span><button type="button" class="sdvt-page" data-sdv-page="next" aria-label="Next page">›</button></nav>',
+    '<nav class="sdvt-pager" data-sdv-pager="" aria-label="Pagination"><button type="button" class="sdvt-page" data-sdv-page="prev" aria-label="Previous page" aria-disabled="true">‹</button><span class="sdvt-page-label" data-sdv-page-label="" aria-live="polite">Page 1 of 4</span><button type="button" class="sdvt-page" data-sdv-page="next" aria-label="Next page">›</button></nav>',
   );
-  t.setPage(2);
+  t.setPage(3);
   const html = renderHTML(t);
   expect(html).toContain(
-    'data-sdv-page-label="" aria-live="polite">Page 3 of 3</span><button type="button" class="sdvt-page" data-sdv-page="next" aria-label="Next page" aria-disabled="true">',
+    'data-sdv-page-label="" aria-live="polite">Page 4 of 4</span><button type="button" class="sdvt-page" data-sdv-page="next" aria-label="Next page" aria-disabled="true">',
   );
-  expect(html.match(/<tr class="sdvt-row"/g)?.length).toBe(5);
-  expect(html).toContain("T21");
-  expect(html).not.toContain("T01");
+  expect(html.match(/<tr class="sdvt-row"/g)?.length).toBe(2); // TEN, WAS
+  expect(html).toContain(">TEN<");
+  expect(html).not.toContain(">ARI<");
   expect(html).toContain(' .sdvt-page[aria-disabled="true"]{opacity:.4;cursor:default}');
   expect(html).not.toContain(" disabled");
 });
@@ -103,14 +103,14 @@ test("a continuous legend with columns: spans domainRows, so its range holds sti
     .legendContinuous({ columns: ["wins"] })
     .build();
   const t = createTable(legend, many, { pageSize: 10 });
-  t.setExternalFilter((r) => r.wins > 1); // a brush: cells and legend take their domain from all 25 rows
+  t.setExternalFilter((r) => r.wins > 3); // a brush that hides the 3-win teams: the domain still spans all 32 rows
   const legendOf = (html: string): string | undefined =>
     html.match(/<div class="sdvt-legend[\s\S]*?<\/div><\/div>/)?.[0];
   const page1 = legendOf(renderHTML(t));
   t.setPage(1);
   const page2 = legendOf(renderHTML(t));
-  expect(page1).toContain('<span class="sdvt-legend-lab">1</span>');
-  expect(page1).toContain('<span class="sdvt-legend-lab">25</span>');
+  expect(page1).toContain('<span class="sdvt-legend-lab">3</span>');
+  expect(page1).toContain('<span class="sdvt-legend-lab">15</span>');
   expect(page2).toBe(page1);
 });
 test("snake is rejected for an interactive table: one <tr> holds several rows, so sort, selection and hover would miss", () => {
@@ -273,7 +273,7 @@ test("Task 10 (A48): an interactive table is a selectable grid with ONE tab stop
   const t = createTable(spec, many, { pageSize: 10 });
   t.setPage(1);
   t.setCursor(3, "wins");
-  t.setSelection(new Set(["12"])); // T13, the third row of page 2 (no rowKey: ids are source indices)
+  t.setSelection(new Set(["12"])); // HOU, the third row of page 2 (no rowKey: ids are source indices)
   const html = renderHTML(t, { fonts: false });
   expect(html).toContain('<table role="grid" aria-multiselectable="true">');
   expect(html.match(/ tabindex="0"/g)?.length).toBe(1);

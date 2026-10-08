@@ -130,9 +130,9 @@ describe("filtering", () => {
     const t = createTable(spec, many, { pageSize: 10 });
     t.setPage(2);
     expect(t.state.page).toBe(2);
-    t.setGlobalFilter("T0"); // T01..T09
+    t.setGlobalFilter("ny"); // NYG, NYJ
     expect(t.state.page).toBe(0);
-    expect(t.filteredCount).toBe(9);
+    expect(t.filteredCount).toBe(2);
     expect(t.pageCount).toBe(1);
   });
 });
@@ -145,16 +145,16 @@ describe("pagination", () => {
   });
   test("setPage clamps; setPageSize validates; spec.interactive.pageSize is the default", () => {
     const t = createTable(spec, many, { pageSize: 10 });
-    expect(t.pageCount).toBe(3);
+    expect(t.pageCount).toBe(4);
     t.setPage(99);
-    expect(t.state.page).toBe(2);
+    expect(t.state.page).toBe(3);
     t.setPage(-1);
     expect(t.state.page).toBe(0);
     expect(() => t.setPageSize(0)).toThrow(TableSpecError);
     expect(() => t.setPageSize(2.5)).toThrow(TableSpecError);
     t.setPageSize(Number.POSITIVE_INFINITY);
-    expect(t.rows.length).toBe(25);
-    expect(createTable({ ...spec, interactive: { pageSize: 5 } }, many).pageCount).toBe(5);
+    expect(t.rows.length).toBe(32);
+    expect(createTable({ ...spec, interactive: { pageSize: 5 } }, many).pageCount).toBe(7);
   });
   test("setPage ignores non-finite input", () => {
     const t = createTable(spec, many, { pageSize: 10 });
@@ -165,7 +165,7 @@ describe("pagination", () => {
     t.setPage(Number.POSITIVE_INFINITY);
     expect(t.state.page).toBe(1);
     expect(t.rows.length).toBe(10);
-    expect(t.pageCount).toBe(3);
+    expect(t.pageCount).toBe(4);
     expect(fn).not.toHaveBeenCalled();
   });
 });
@@ -230,12 +230,12 @@ describe("J31 seam: rowKey, external filter, selection, events", () => {
     const fewWins = (r: Standing): boolean => r.wins <= 4;
     t.setExternalFilter(fewWins);
     expect(t.state.page).toBe(0);
-    expect(teams(t)).toEqual(["T01", "T02", "T03", "T04"]);
+    expect(teams(t)).toEqual(["CLE", "JAX", "LV", "NE", "NYG", "TEN"]);
     t.setExternalFilter(fewWins);
-    t.setGlobalFilter("T0");
-    expect(t.filteredCount).toBe(4);
+    t.setGlobalFilter("j"); // Jameis Winston, JAX, Daniel Jones
+    expect(teams(t)).toEqual(["CLE", "JAX", "NYG"]);
     t.setExternalFilter(null);
-    expect(t.filteredCount).toBe(9);
+    expect(t.filteredCount).toBe(14);
     expect(events).toEqual(["change", "change", "change", "change"]);
   });
   test("an external filter that empties the table leaves pageCount 1 and page 0", () => {
@@ -294,14 +294,14 @@ describe("J31 seam: rowKey, external filter, selection, events", () => {
 describe("setRows (Task 5 I1: one engine per React component)", () => {
   const keyed = { ...spec, rowKey: "team" } satisfies typeof spec;
   test("replaces the source rows; keeps sort, filters, external filter, hidden columns, selection and page; one event", () => {
-    const t = createTable(keyed, many, { pageSize: 5 });
-    const ext = (r: Standing): boolean => r.wins !== 19;
+    const t = createTable(keyed, many, { pageSize: 3 });
+    const ext = (r: Standing): boolean => r.team !== "NO";
     t.setSort("wins", "desc");
-    t.setFilter("team", "T1"); // T10..T19
-    t.setGlobalFilter("t");
-    t.setExternalFilter(ext); // drops T19
+    t.setFilter("team", "N"); // CIN DEN IND MIN NE NO NYG NYJ TEN
+    t.setGlobalFilter("-"); // a negative net EPA: IND NE NO NYG NYJ TEN
+    t.setExternalFilter(ext); // drops NO
     t.toggleColumn("qb");
-    t.setSelection(new Set(["T12"]));
+    t.setSelection(new Set(["NYG"]));
     t.setPage(1);
     const seen: unknown[] = [];
     t.subscribe((e) => seen.push(e));
@@ -311,14 +311,14 @@ describe("setRows (Task 5 I1: one engine per React component)", () => {
     expect(t.allRows).toBe(next);
     expect(t.state).toMatchObject({
       sort: { col: "wins", dir: "desc" },
-      filters: { team: "T1" },
-      globalFilter: "t",
+      filters: { team: "N" },
+      globalFilter: "-",
       externalFilter: ext,
       hidden: ["qb"],
       page: 1,
     });
-    expect(t.getSelection()).toEqual(new Set(["T12"]));
-    expect(teams(t)).toEqual(["T13", "T12", "T11", "T10"]);
+    expect(t.getSelection()).toEqual(new Set(["NYG"]));
+    expect(teams(t)).toEqual(["NYG", "TEN"]); // IND 8, NYJ 5, NE 4 | NYG 3, TEN 3
     expect(t.rows.every((r) => next.includes(r))).toBe(true); // the new objects, not the old
     expect(tableRenderOptions(t).domainRows).toBe(next); // A49 colour domains follow the new source rows
   });
@@ -330,7 +330,7 @@ describe("setRows (Task 5 I1: one engine per React component)", () => {
     t.setRows(many.slice(0, 12));
     expect(t.state.page).toBe(1);
     expect(t.pageCount).toBe(2);
-    expect(teams(t)).toEqual(["T11", "T12"]);
+    expect(teams(t)).toEqual(["DET", "GB"]);
     expect(seen).toEqual(["change"]);
   });
   test("without a rowKey, ids are indices into the NEW rows", () => {

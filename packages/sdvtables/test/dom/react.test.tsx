@@ -205,21 +205,21 @@ test("interactive table sorts, pages and filters in the browser; the filter inpu
   render(<SdvTable spec={spec} rows={many} interactive pageSize={10} />);
   const first = (): string | null =>
     document.querySelector("[data-sdv-body] tbody tr td")?.textContent ?? null;
-  expect(first()).toBe("T01");
+  expect(first()).toBe("ARI");
   fireEvent.click(screen.getByRole("button", { name: "Wins" }));
   fireEvent.click(screen.getByRole("button", { name: "Wins" }));
-  expect(first()).toBe("T25");
+  expect(first()).toBe("DET"); // 15 wins, as KC: the tie keeps input order
   fireEvent.click(screen.getByRole("button", { name: "Next page" }));
-  expect(screen.getByText("Page 2 of 3")).toBeTruthy();
+  expect(screen.getByText("Page 2 of 4")).toBeTruthy();
   const input = screen.getByLabelText("Filter Team") as HTMLInputElement;
   input.focus();
-  fireEvent.input(input, { target: { value: "T0" } });
+  fireEvent.input(input, { target: { value: "n" } }); // CIN DEN IND MIN NE NO NYG NYJ TEN
   expect(document.querySelectorAll("[data-sdv-body] tbody tr").length).toBe(9);
   expect(screen.getByText("Page 1 of 1")).toBeTruthy();
   expect(document.activeElement).toBe(input);
-  expect(input.value).toBe("T0");
-  fireEvent.input(screen.getByLabelText("Search all columns"), { target: { value: "T25" } });
-  expect(document.querySelectorAll("[data-sdv-body] tbody tr").length).toBe(0); // T0 and T25 never meet
+  expect(input.value).toBe("n");
+  fireEvent.input(screen.getByLabelText("Search all columns"), { target: { value: "Mahomes" } });
+  expect(document.querySelectorAll("[data-sdv-body] tbody tr").length).toBe(0); // KC has no "n"
 });
 test("A50: Next keeps focus to the last page, the edge click is a no-op, the label is a polite live region", () => {
   const t = createTable(spec, many, { pageSize: 10 });
@@ -229,9 +229,8 @@ test("A50: Next keeps focus to the last page, the edge click is a no-op, the lab
   expect(container.querySelector("[data-sdv-page-label]")?.getAttribute("aria-live")).toBe("polite");
   expect(prev.getAttribute("aria-disabled")).toBe("true");
   next.focus();
-  fireEvent.click(next);
-  fireEvent.click(next);
-  expect(t.state.page).toBe(2);
+  for (let i = 0; i < 3; i++) fireEvent.click(next);
+  expect(t.state.page).toBe(3);
   expect(prev.getAttribute("aria-disabled")).toBeNull();
   expect(next.getAttribute("aria-disabled")).toBe("true");
   expect(next.disabled).toBe(false); // a disabled button would drop focus to <body>
@@ -240,7 +239,7 @@ test("A50: Next keeps focus to the last page, the edge click is a no-op, the lab
   t.subscribe((e) => seen.push(e));
   fireEvent.click(next);
   expect(seen).toEqual([]);
-  expect(container.querySelector("[data-sdv-page-label]")?.textContent).toBe("Page 3 of 3");
+  expect(container.querySelector("[data-sdv-page-label]")?.textContent).toBe("Page 4 of 4");
 });
 test("A50: a keyboard sort keeps focus on the re-rendered sort button (layout-effect restore)", () => {
   const { container } = render(<SdvTable spec={spec} rows={rows} interactive />);
@@ -346,29 +345,29 @@ test("I1 + M4: a parent re-rendering fresh equal rows and an inline spec keeps s
   fireEvent.click(screen.getByRole("button", { name: "Wins" }));
   fireEvent.click(screen.getByRole("button", { name: "Wins" })); // desc
   filter().focus();
-  fireEvent.input(filter(), { target: { value: "T1" } }); // T19..T10
+  fireEvent.input(filter(), { target: { value: "n" } }); // MIN DEN CIN IND NO | NYJ NE NYG TEN
   fireEvent.click(screen.getByRole("button", { name: "Next page" }));
-  fireEvent.click(container.querySelector('[data-sdv-body] tr[data-row="2"]') as Element); // T12
+  fireEvent.click(container.querySelector('[data-sdv-body] tr[data-row="2"]') as Element); // NYG
   const kept = (): void => {
-    expect(filter().value).toBe("T1");
+    expect(filter().value).toBe("n");
     expect(container.querySelector('th[data-col="wins"]')?.getAttribute("aria-sort")).toBe("descending");
     expect(screen.getByText("Page 2 of 2")).toBeTruthy();
-    expect(bodyTeams()).toEqual(["T14", "T13", "T12", "T11", "T10"]);
-    expect(container.querySelector('tr.sdvt-selected [data-col="team"]')?.textContent).toBe("T12");
+    expect(bodyTeams()).toEqual(["NYJ", "NE", "NYG", "TEN"]);
+    expect(container.querySelector('tr.sdvt-selected [data-col="team"]')?.textContent).toBe("NYG");
   };
   kept();
   rerender(<Parent data={many} pageSize={10} sort={{ col: "team", dir: "asc" }} />); // fresh rows + spec, new initial props
   kept();
   expect(document.activeElement).toBe(filter());
   rerender(
-    <Parent data={many.map((r) => (r.team === "T12" ? { ...r, qb: "Changed QB" } : r))} pageSize={10} />,
+    <Parent data={many.map((r) => (r.team === "NYG" ? { ...r, qb: "Changed QB" } : r))} pageSize={10} />,
   );
   kept();
   expect(container.querySelector('tr.sdvt-selected [data-col="qb"]')?.textContent).toBe("Changed QB");
   rerender(<Parent data={many} pageSize={10} narrow />); // a different spec: a new engine from the current props
   expect(container.querySelector('th[data-col="qb"]')).toBeNull();
   expect(filter().value).toBe("");
-  expect(screen.getByText("Page 1 of 3")).toBeTruthy();
+  expect(screen.getByText("Page 1 of 4")).toBeTruthy();
   expect(container.querySelector("tr.sdvt-selected")).toBeNull();
 });
 test("I2: with table= no owned engine is built; spec and rows are optional, and ignored when passed", () => {
@@ -379,7 +378,7 @@ test("I2: with table= no owned engine is built; spec and rows are optional, and 
   expect(filter).not.toHaveBeenCalled();
   expect(container.querySelectorAll("[data-sdv-body] tbody tr").length).toBe(10);
   rerender(<SdvTable table={t} interactive />);
-  expect(screen.getByText("Page 1 of 3")).toBeTruthy();
+  expect(screen.getByText("Page 1 of 4")).toBeTruthy();
 });
 test("M3: a non-interactive render of table= shows its current (filtered, sorted) rows and follows the engine", () => {
   const t = createTable(spec, rows);
