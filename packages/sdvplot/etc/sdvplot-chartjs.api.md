@@ -17,6 +17,7 @@ export interface AxisLogoOptions {
     //
     // (undocumented)
     league: League;
+    loadImage?: (url: string) => Promise<ImageLike>;
     // (undocumented)
     markType?: "logo" | "wordmark";
     scaleId?: string;
@@ -52,12 +53,21 @@ export interface HeadshotPointOptions {
     //
     // (undocumented)
     league: EspnHeadshotLeague;
+    loadImage?: (url: string) => Promise<ImageLike>;
     // (undocumented)
     radius?: number;
 }
 
 // @public
 export function headshotPoints(players: readonly Value[], o: HeadshotPointOptions): PointStyles;
+
+// @public
+export interface ImageLike {
+    // (undocumented)
+    readonly height: number;
+    // (undocumented)
+    readonly width: number;
+}
 
 // @public
 export function logoPoints(teams: readonly Value[], o: PointOptions): PointStyles;
@@ -76,6 +86,7 @@ export interface PointOptions {
     idSystem?: IdSystem;
     // (undocumented)
     league: League;
+    loadImage?: (url: string) => Promise<ImageLike>;
     radius?: number;
     // (undocumented)
     season?: SeasonInput | readonly SeasonInput[];
@@ -120,6 +131,7 @@ export interface WatermarkOptions {
     inset?: number;
     // (undocumented)
     league: League;
+    loadImage?: (url: string) => Promise<ImageLike>;
     // (undocumented)
     season?: SeasonInput | readonly SeasonInput[];
     size?: number;
