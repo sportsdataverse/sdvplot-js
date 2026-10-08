@@ -3,7 +3,7 @@ import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as Plot from "@observablehq/plot";
-import { beforeAll, expect, test } from "vitest";
+import { beforeAll, expect, test, vi } from "vitest";
 import { STANDINGS } from "../../../sdvtables/test/fixtures/standings.js";
 import { loadLeague } from "../../src/index.js";
 import { highlight } from "../../src/interact/index.js";
@@ -39,6 +39,37 @@ const dimmed = (root: Element): Element[] => {
   return Array.from(root.querySelectorAll(css.slice(0, css.indexOf("{"))));
 };
 const tick = (): Promise<void> => new Promise((r) => setTimeout(r, 0));
+/**
+ * Every read of a live child collection (`children`, `childNodes`: an index, `length`, `item`, the iterator) while
+ * `fn` runs. jsdom re-walks such a collection after each DOM write, so reading one per element made stamping 10,000
+ * dots O(n²) (22.5 s at review, still under the 60 s timeout; A39). A count cannot flake under load as a clock can.
+ */
+function liveReads<T>(fn: () => T): { value: T; reads: number } {
+  let reads = 0;
+  // the real getter, read BEFORE spyOn replaces it (reading it after would hand back the spy: endless recursion)
+  const counted = <C extends object>(proto: object, key: string) => {
+    const get = Object.getOwnPropertyDescriptor(proto, key)?.get;
+    return function (this: Node): C {
+      return new Proxy(get?.call(this) as C, {
+        get(live, p) {
+          reads++;
+          return Reflect.get(live, p, live);
+        },
+      });
+    };
+  };
+  const children = counted<HTMLCollection>(Element.prototype, "children");
+  const childNodes = counted<NodeListOf<ChildNode>>(Node.prototype, "childNodes");
+  const spies = [
+    vi.spyOn(Element.prototype, "children", "get").mockImplementation(children),
+    vi.spyOn(Node.prototype, "childNodes", "get").mockImplementation(childNodes),
+  ];
+  try {
+    return { value: fn(), reads };
+  } finally {
+    for (const s of spies) s.mockRestore();
+  }
+}
 /** Move the pointer onto a drawn circle (jsdom has no layout: Plot reads clientX/Y as svg coordinates). */
 const pointAt = (svg: Element, c: Element | null | undefined): void => {
   svg.dispatchEvent(
@@ -51,10 +82,14 @@ const pointAt = (svg: Element, c: Element | null | undefined): void => {
 
 beforeAll(() => loadLeague("nfl"));
 
-test("10,000 points: a hover changes two marks' classes and the root's, and never redraws (Review Focus 4)", () => {
+test("10,000 points: stamped without reading a live collection; a hover changes two marks' classes and the root's, and never redraws (Review Focus 4)", () => {
   const pts = courtVertices(10_000);
   expect(pts).toHaveLength(10_000);
-  const svg = Plot.plot({ marks: [Plot.dot(pts, { x: "x", y: "y", r: 1, render: linkIds(pts, "id") })] });
+  const { value: svg, reads } = liveReads(() =>
+    Plot.plot({ marks: [Plot.dot(pts, { x: "x", y: "y", r: 1, render: linkIds(pts, "id") })] }),
+  );
+  // O(1), not per element: Plot reads none, and indexing g.children per dot would read 10,000+ (measured 0)
+  expect(reads).toBeLessThan(100);
   const first = svg.querySelector("circle");
   expect(svg.querySelectorAll("circle[data-sdv-id]")).toHaveLength(10_000);
   highlight(svg, null); // builds the id index once and adds the dimming rule
