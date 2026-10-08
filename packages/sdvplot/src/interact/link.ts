@@ -46,6 +46,12 @@ const first = (ids: ReadonlySet<string>): string | null => {
 };
 /** A data mark's element under the event: its stamp, never an axis decoration's (`data-sdv-axis`, A39). */
 const MARK = "[data-sdv-id]:not([data-sdv-axis])";
+/** The stamped mark an event in `plot` landed in; `closest` alone climbs past `plot` to a stamped ancestor. */
+const markAt = (plot: Element, e: Event): Element | null => {
+  const t = e.target as Node | null;
+  const mark = t?.nodeType === 1 ? (t as Element).closest(MARK) : null;
+  return mark && plot.contains(mark) ? mark : null;
+};
 
 /**
  * Wire a figure and/or a table to a selection store (J31). Figure: pointer hover → `hover` (see
@@ -147,8 +153,7 @@ export function linkSelection<Row, Datum = unknown>(
   };
   if (plot && hover === true) {
     on(plot, "mouseover", (e) => {
-      const t = e.target as Node | null;
-      const mark = t?.nodeType === 1 ? (t as Element).closest(MARK) : null;
+      const mark = markAt(plot, e);
       store.set({ hover: mark ? [mark.getAttribute("data-sdv-id") ?? ""] : [] });
     });
     on(plot, "mouseleave", () => store.set({ hover: [] }));
@@ -210,8 +215,7 @@ function toggles<Row>(plot: Element, store: SelectionStore<Row>, marks: readonly
     m.setAttribute("aria-checked", String(shown.has(id)));
   }
   const flip = (e: Event): void => {
-    const t = e.target as Node | null;
-    const id = t?.nodeType === 1 ? (t as Element).closest(MARK)?.getAttribute("data-sdv-id") : null;
+    const id = markAt(plot, e)?.getAttribute("data-sdv-id");
     if (!id) return;
     if (e.type === "keydown") {
       const key = (e as KeyboardEvent).key;

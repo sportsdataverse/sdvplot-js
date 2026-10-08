@@ -188,3 +188,16 @@ test("teardown removes the figure's hover listeners and its store subscription",
   store.set({ selected: ["KC"] });
   expect(lit(svg)).toEqual([]);
 });
+test("a stamped element around the figure is never read as a mark: closest(MARK) stops at the figure", () => {
+  const svg = scatter();
+  const outer = document.createElement("div");
+  outer.setAttribute("data-sdv-id", "AFC"); // e.g. a stamped mark of an outer chart
+  outer.append(svg);
+  const store = createSelection<Standing>();
+  linkSelection(store, { plot: svg, select: "toggle" });
+  const tick = svg.querySelector('g[aria-label="x-axis tick"]'); // inside the figure, not a mark
+  over(tick);
+  expect(hover(store)).toEqual([]);
+  tick?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+  expect(store.getState().selected.size).toBe(0);
+});
