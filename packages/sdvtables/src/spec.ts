@@ -468,4 +468,6 @@ export interface TableSpec<Row> {
   readonly theme: ThemeRef;
   /** Phase 5 — ignored by renderHTML. */
   readonly interactive?: { readonly pageSize?: number };
+  /** J31: the column whose value is a row's link id (`String(row[rowKey])`); absent → the row's index in the input rows. */
+  readonly rowKey?: keyof Row & string;
 }

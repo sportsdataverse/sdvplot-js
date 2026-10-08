@@ -30,6 +30,12 @@ export const aliasFor: (name: string) => Alias | undefined;
 export type Align = "left" | "center" | "right";
 
 // @public (undocumented)
+export function applyFilters<Row>(spec: TableSpec<Row>, rows: readonly Row[], state: TableState<Row>): Row[];
+
+// @public (undocumented)
+export function applySort<Row>(spec: TableSpec<Row>, rows: readonly Row[], sort: Sort | null): Row[];
+
+// @public (undocumented)
 export interface ColumnBase<Row, K extends keyof Row & string = keyof Row & string> {
     // (undocumented)
     readonly align?: Align;
@@ -259,6 +265,15 @@ export type ColumnSpec<Row> = (ColumnBase<Row> & {
 });
 
 // @public (undocumented)
+export type Comparator = (a: unknown, b: unknown) => number;
+
+// @public (undocumented)
+export function comparatorFor<Row>(col: ColumnSpec<Row>, rows: readonly Row[]): Comparator;
+
+// @public (undocumented)
+export function createTable<Row>(spec: TableSpec<Row>, rows: readonly Row[], options?: TableOptions): Table<Row>;
+
+// @public (undocumented)
 export type Decoration<Row> = {
     readonly type: "title";
     readonly text: string;
@@ -485,6 +500,12 @@ export const DENSITY: Readonly<Record<Density, DensitySizes>>;
 export type Density = "comfortable" | "compact" | "social";
 
 // @public (undocumented)
+export type FilterValue<Row> = RowPredicate<Row> | string | number | boolean;
+
+// @public (undocumented)
+export function findColumn<Row>(spec: TableSpec<Row>, key: string): ColumnSpec<Row>;
+
+// @public (undocumented)
 export type FormatType = "number" | "comma" | "currency" | "percent";
 
 // @public (undocumented)
@@ -501,12 +522,27 @@ export interface GoogleFont {
 export const GT_ALIASES: Readonly<Record<string, Alias>>;
 
 // @public (undocumented)
+export function isMissing(v: unknown): boolean;
+
+// @public (undocumented)
 export function matches<Row>(p: Predicate<Row>, row: Row): boolean;
+
+// @public
+export function nextSortDir(current: Sort | null, col: string): SortDir | null;
+
+// @public
+export const NUMERIC_KINDS: ReadonlySet<string>;
 
 // @public
 export type NumericKey<Row> = {
     [K in keyof Row]-?: Row[K] extends number | null | undefined ? K : never;
 }[keyof Row] & keyof Row & string;
+
+// @public (undocumented)
+export function paginate<Row>(rows: readonly Row[], page: number, pageSize: number): {
+    rows: Row[];
+    pageCount: number;
+};
 
 // @public
 export const PAL_MIDNIGHT: readonly string[];
@@ -530,6 +566,12 @@ export const RANK_PALETTE: readonly string[];
 // @public (undocumented)
 export function resolveTheme(ref: ThemeRef): Theme;
 
+// @public
+export type RowFilter<Row> = (row: Row) => boolean;
+
+// @public (undocumented)
+export type RowPredicate<Row> = (value: unknown, row: Row) => boolean;
+
 // @public (undocumented)
 export type RowSelector<Row> = readonly number[] | Predicate<Row>;
 
@@ -547,9 +589,58 @@ export function snakeAlign<Row>(rows: readonly Row[], o?: {
 }): (Row | null)[][];
 
 // @public (undocumented)
+export interface Sort {
+    // (undocumented)
+    readonly col: string;
+    // (undocumented)
+    readonly dir: SortDir;
+}
+
+// @public (undocumented)
+export type SortDir = "asc" | "desc";
+
+// @public (undocumented)
 export type StringKey<Row> = {
     [K in keyof Row]-?: Row[K] extends string | null | undefined ? K : never;
 }[keyof Row] & keyof Row & string;
+
+// @public (undocumented)
+export interface Table<Row> {
+    // (undocumented)
+    readonly allRows: readonly Row[];
+    readonly columns: readonly ColumnSpec<Row>[];
+    // (undocumented)
+    readonly filteredCount: number;
+    // (undocumented)
+    getSelection(): ReadonlySet<string>;
+    getSnapshot(): TableSnapshot<Row>;
+    // (undocumented)
+    readonly pageCount: number;
+    rowId(row: Row): string;
+    // (undocumented)
+    readonly rows: readonly Row[];
+    setExternalFilter(filter: RowFilter<Row> | null): void;
+    // (undocumented)
+    setFilter(col: string, filter: FilterValue<Row> | null | undefined): void;
+    // (undocumented)
+    setGlobalFilter(text: string): void;
+    setHover(id: string | null): void;
+    // (undocumented)
+    setPage(n: number): void;
+    // (undocumented)
+    setPageSize(n: number): void;
+    setSelection(ids: ReadonlySet<string>): void;
+    // (undocumented)
+    setSort(col: string, dir: SortDir | null): void;
+    // (undocumented)
+    readonly spec: TableSpec<Row>;
+    // (undocumented)
+    readonly state: TableState<Row>;
+    // (undocumented)
+    subscribe(fn: (event: TableEvent) => void): () => void;
+    // (undocumented)
+    toggleColumn(col: string, visible?: boolean): void;
+}
 
 // @public (undocumented)
 export class TableBuilder<Row> {
@@ -586,6 +677,7 @@ export class TableBuilder<Row> {
     outliers(columns: readonly (keyof Row & string)[], o?: Partial<Omit<D<Row, "outliers">, "type" | "columns">>): TableBuilder<Row>;
     // (undocumented)
     rowAccent(key: keyof Row & string, o?: Partial<Omit<D<Row, "rowAccent">, "type" | "key">>): TableBuilder<Row>;
+    rowKey(key: keyof Row & string): TableBuilder<Row>;
     // (undocumented)
     scaleNote(columns: readonly (keyof Row & string)[], o?: Partial<Omit<D<Row, "scaleNote">, "type" | "columns">>): TableBuilder<Row>;
     // (undocumented)
@@ -621,6 +713,35 @@ export class TableBuilder<Row> {
     wrapLabels(o?: Partial<Omit<D<Row, "wrapLabels">, "type">>): TableBuilder<Row>;
 }
 
+// @public
+export type TableEvent = {
+    readonly type: "change";
+} | {
+    readonly type: "hover";
+    readonly id: string | null;
+} | {
+    readonly type: "select";
+    readonly ids: ReadonlySet<string>;
+};
+
+// @public (undocumented)
+export interface TableOptions {
+    // (undocumented)
+    readonly pageSize?: number;
+    // (undocumented)
+    readonly sort?: Sort;
+}
+
+// @public (undocumented)
+export interface TableSnapshot<Row> {
+    // (undocumented)
+    readonly filteredCount: number;
+    readonly pageCount: number;
+    readonly rows: readonly Row[];
+    // (undocumented)
+    readonly state: TableState<Row>;
+}
+
 // @public (undocumented)
 export interface TableSpec<Row> {
     // (undocumented)
@@ -632,12 +753,28 @@ export interface TableSpec<Row> {
     readonly interactive?: {
         readonly pageSize?: number;
     };
+    readonly rowKey?: keyof Row & string;
     // (undocumented)
     readonly theme: ThemeRef;
 }
 
 // @public (undocumented)
 export class TableSpecError extends SdvplotError {
+}
+
+// @public (undocumented)
+export interface TableState<Row> {
+    readonly externalFilter: RowFilter<Row> | null;
+    // (undocumented)
+    readonly filters: Readonly<Record<string, FilterValue<Row>>>;
+    // (undocumented)
+    readonly globalFilter: string;
+    readonly hidden: readonly string[];
+    readonly page: number;
+    readonly pageSize: number;
+    readonly selection: ReadonlySet<string>;
+    // (undocumented)
+    readonly sort: Sort | null;
 }
 
 // @public (undocumented)
@@ -814,6 +951,9 @@ export const TOKEN_KEYS: readonly (keyof ThemeTokens)[];
 
 // @public
 export const VERSION: string;
+
+// @public
+export function withMissingLast(cmp: Comparator, dir: SortDir): Comparator;
 
 // (No @packageDocumentation comment for this package)
 
