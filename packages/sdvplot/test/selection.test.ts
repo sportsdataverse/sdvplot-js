@@ -5,6 +5,26 @@ import { InputError } from "../src/errors.js";
 import { createSelection, focusIds, sameIds, toId } from "../src/selection.js";
 
 describe("createSelection", () => {
+  test("a snapshot is read-only at runtime too: its sets and cursor cannot change behind the listeners' backs", () => {
+    // a JavaScript caller has no ReadonlySet type to stop it; the empty set every store starts with is shared
+    const store = createSelection<Standing>();
+    const other = createSelection<Standing>();
+    const fn = vi.fn();
+    store.subscribe(fn);
+    expect(() => (store.getState().selected as Set<string>).add("KC")).toThrow(TypeError);
+    expect([...other.getState().selected]).toEqual([]);
+    store.set({ selected: ["KC", "BUF"], cursor: { field: "wins", value: 13 } }); // 2024: BUF won 13
+    const s = store.getState();
+    expect(() => (s.selected as Set<string>).delete("KC")).toThrow(TypeError);
+    expect(() => (s.hover as Set<string>).clear()).toThrow(TypeError);
+    expect(() => {
+      (s.cursor as { value: number }).value = 15;
+    }).toThrow(TypeError);
+    expect([[...s.selected], s.cursor?.value, fn.mock.calls.length]).toEqual([["KC", "BUF"], 13, 1]);
+    store.set({ selected: ["BUF", "KC"] }); // an equal set is still a no-op
+    expect([store.getState(), fn.mock.calls.length]).toEqual([s, 1]);
+    expect(new Set(s.selected).add("LAC").size).toBe(3); // a copy is the caller's own
+  });
   test("starts idle; getState is the same object until a change", () => {
     const s = createSelection<Standing>();
     const a = s.getState();
