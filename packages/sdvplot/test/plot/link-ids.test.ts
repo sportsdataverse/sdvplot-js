@@ -171,7 +171,14 @@ test("`id` is one value per row, like every channel: an array of another length 
   const twoTeams = STANDINGS.slice(0, 2).map((r) => r.team);
   expect(() => logos(STANDINGS, { league: "nfl", ...pos, team: "team", id: twoTeams })).toThrow(InputError);
   expect(() => logos(STANDINGS, { league: "nfl", ...pos, team: "team", id: twoTeams })).toThrow(
-    "id needs one value per row, got 2 for 8 rows",
+    "id and team need one value per row: id has 2, team has 8",
+  );
+  // a short team (or player) array is the mismatch: the message names it, never blaming id alone
+  expect(() => logos(STANDINGS, { league: "nfl", ...pos, team: ["KC", "BUF"], id: "team" })).toThrow(
+    "id and team need one value per row: id has 8, team has 2",
+  );
+  expect(() => headshots(STANDINGS, { league: "nfl", ...pos, player: ["3139477"], id: "team" })).toThrow(
+    "id and player need one value per row: id has 8, player has 1",
   );
 });
 test("`id: null` is no id, as Plot treats a null channel: the resolved ESPN ids stay", () => {

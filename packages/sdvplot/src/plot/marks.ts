@@ -200,8 +200,11 @@ function imageMark<R>(
   const alpha = checkAlpha(o.alpha ?? 1);
   const keys = values(data, key);
   const ids = o.id == null ? undefined : values(data, o.id).map(toId); // null is no channel, as in Plot
+  const name = kind === "headshot" ? "player" : "team";
   if (ids !== undefined && ids.length !== keys.length)
-    throw new InputError(`id needs one value per row, got ${ids.length} for ${keys.length} rows`);
+    throw new InputError(
+      `id and ${name} need one value per row: id has ${ids.length}, ${name} has ${keys.length}`,
+    );
   // x / y feed only the skip-and-warn check (a missing x or y); Plot draws from its own channels
   const zeros = keys.map(() => 0);
   const xs = given(data, o.x) ?? zeros;
@@ -244,7 +247,6 @@ function imageMark<R>(
     ...rest
   } = o as typeof o & { team?: unknown; player?: unknown };
   const { team: _t, player: _p, ...pass } = rest as typeof rest & { team?: unknown; player?: unknown };
-  const name = kind === "headshot" ? "player" : "team";
   return Plot.image(data as Plot.Data, {
     ...pass,
     src: src as Plot.ChannelValue,
