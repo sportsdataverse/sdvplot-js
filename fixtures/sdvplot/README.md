@@ -17,3 +17,13 @@ Python `sdvplot` answers for real inputs sampled from its own index; the TS port
 - source: the CDN `marks.csv` as cached 2026-10-05 (`/root/.cache/sdvplot/manifest/marks.csv`, 44,462 rows, the file the committed shards were built from; CRLF line endings kept)
 - selection: header + every `level == team` row whose `source:entity_id` is a `mark` alias of nfl team 13 (LV) or 14 (LA Rams), or of nhl team 37 (VGK), across every source; 66 rows, byte-exact (quoted fields preserved)
 - regenerate: select those rows from the cached manifest (python `csv` to classify, copy the original lines), then re-run `pnpm --filter sdvplot test manifest`
+
+## logos/
+
+Real archived mark images, named `<sha256>.<ext>` exactly as the CDN serves them, for render tests that cannot fetch
+(`packages/sdvplot/test/chartjs/node.test.ts`).
+
+- `aab854c59098d4f465c1c6f31b580f2a38d2ed4f5c0c03df2da76f62f5378dc4.png`: MLB team 19 (LAD) `logo` / `default`, source
+  `espn`, 500 x 500, 8,909 bytes (manifest row in `packages/sdvplot/src/data/marks/mlb.ts`, first seen 2026-09-26);
+  archive URL `https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/aa/aab854c59098d4f465c1c6f31b580f2a38d2ed4f5c0c03df2da76f62f5378dc4.png`
+- copied 2026-10-08 from the Python `sdvplot` image cache (fetched 2026-10-05); `sha256sum` matches the file name
