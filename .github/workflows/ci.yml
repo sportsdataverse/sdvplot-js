@@ -4,8 +4,9 @@ permissions: { contents: read }
 jobs:
   check:
     runs-on: ubuntu-latest
-    # tsup's dts worker type-checks the ~20 MB of generated data shards once per entry point; 8 GB OOMed at 10 entries (PR #24). ubuntu-latest has 16 GB. Structural fix tracked separately.
-    env: { NODE_OPTIONS: "--max-old-space-size=12288" }
+    # tsc and tsup's dts worker type-check the ~20 MB of generated data shards. patches/tsup@8.5.1.patch makes the
+    # dts worker build one ts.Program instead of one per entry directory: the build peaks ~3 GB at any entry count.
+    env: { NODE_OPTIONS: "--max-old-space-size=8192" }
     strategy: { fail-fast: false, matrix: { node: [20, 22] } }
     steps:
       - uses: actions/checkout@v4
