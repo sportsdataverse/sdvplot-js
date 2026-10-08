@@ -257,6 +257,53 @@ test("leaving clears the cursor this figure wrote in one update, never one an ap
   expect(cursorOf(store)).toBeNull();
 });
 
+test("an equal cursor set first by the app stays the app's: entering its bin writes nothing, and leaving keeps it", () => {
+  // the store keeps an equal cursor's identity (a no-op patch), so this figure wrote nothing it could clear
+  const svg = share();
+  const store = createSelection();
+  store.set({ cursor: { field: D, value: 12.5 } }); // the app preloads 12.5 ft
+  const fn = vi.fn();
+  store.subscribe(fn);
+  const snap = (v: number): number => Math.floor(v) + 0.5;
+  const off = linkCursor(svg, store, {
+    field: D,
+    shape: { axis: "x", scale: scale(svg, "x"), width: 1 },
+    snap,
+  });
+  overX(svg, "pointermove", 12.3); // the same snapped 12-13 ft bin
+  fire(svg, "pointerleave", 0, 0);
+  expect([cursorOf(store), fn.mock.calls.length]).toEqual([{ field: D, value: 12.5 }, 0]);
+  overX(svg, "pointermove", 12.6); // back in, then torn down: still the app's
+  off();
+  expect([cursorOf(store), fn.mock.calls.length]).toEqual([{ field: D, value: 12.5 }, 0]);
+  // a value it does write is its own: 13.1 ft writes 13.5, and leaving clears it
+  linkCursor(svg, store, { field: D, shape: { axis: "x", scale: scale(svg, "x"), width: 1 }, snap });
+  overX(svg, "pointermove", 13.1);
+  fire(svg, "pointerleave", 0, 0);
+  expect([cursorOf(store), fn.mock.calls.length]).toEqual([null, 2]);
+});
+test("a shape missing a required scale throws InputError, in Node too, never a TypeError (a JavaScript caller)", () => {
+  const svg = share();
+  const store = createSelection();
+  const bad = [
+    { axis: "x" }, // no scale
+    { axis: "x", scale: { range: [0, 640] } }, // no apply
+    { axis: "y", scale: scale(svg, "y"), cross: {} }, // a cross with no apply
+    { axis: "ring", x: scale(court(), "x"), center: HOOP }, // no y
+  ] as unknown as LinkCursorOptions["shape"][];
+  for (const node of [false, true]) {
+    if (node) vi.stubGlobal("window", undefined);
+    try {
+      for (const shape of bad)
+        expect(() => linkCursor(svg, store, { field: D, shape, emit: false }), JSON.stringify(shape)).toThrow(
+          InputError,
+        );
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  }
+});
+
 test("a cursor naming another field hides this figure's cursor", () => {
   const svg = share();
   const store = createSelection();

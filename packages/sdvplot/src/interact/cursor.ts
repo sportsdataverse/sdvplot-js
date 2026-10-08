@@ -82,16 +82,17 @@ const box = (svg: Element): { x: [number, number]; y: [number, number] } => {
  * (linear x), the band holding it on FG% bars (a band scale), a band on a side chart (y), a rule on a curve, a ring
  * around the hoop. Moving inside one snapped bin writes nothing; crossing a bin edge is one update; leaving the figure
  * (`pointerleave`, `pointercancel`) or the axis' range clears the cursor this figure wrote, while the store still holds
- * it: never one an app `store.set` or another figure wrote since. A cursor never dims marks or
- * filters a table (it is not an id). A store change moves attributes only: no element is added or removed, so a cursor
- * costs O(1) per figure. The move and press listeners capture, so a Plot `tip` that stops a press from reaching other
- * listeners does not stop this one; the leave listeners do not, so a mark's own `pointerleave` (the pointer crossing
- * a bar's edge inside one bin) writes nothing. Styled by `--sdv-cursor-color` and `--sdv-cursor-width`. Returns a teardown
- * FUNCTION, not a handle, because teardown is all it has (as `linkSelection`'s; `brushFilter`, `nearestHover` and
- * `tooltip` return a handle with `destroy()`). The scales' pixel ranges are read once, so after a resize, relink. The
- * teardown removes the cursor and its listeners, and clears the store's cursor when it still holds the value this figure last
- * wrote (as `linkSelection`'s teardown does with its hover): a chart redrawn under the pointer leaves no cursor that no
- * pointer drives. Throws `InputError` on a bad option, in Node too; a no-op without a DOM.
+ * it: never one an app `store.set` or another figure wrote since, nor an equal one set before (the store kept that one,
+ * so this figure wrote none). A cursor never dims marks or filters a table (it is not an id). A store change moves
+ * attributes only: no element is added or removed, so a cursor costs O(1) per figure. The move and press listeners
+ * capture, so a Plot `tip` that stops a press from reaching other listeners does not stop this one; the leave listeners
+ * do not, so a mark's own `pointerleave` (the pointer crossing a bar's edge inside one bin) writes nothing. Styled by
+ * `--sdv-cursor-color` and `--sdv-cursor-width`. Returns a teardown FUNCTION, not a handle, because teardown is all it
+ * has (as `linkSelection`'s; `brushFilter`, `nearestHover` and `tooltip` return a handle with `destroy()`). The scales'
+ * pixel ranges are read once, so after a resize, relink. The teardown removes the cursor and its listeners, and clears
+ * the store's cursor when it still holds the one this figure last wrote (as `linkSelection`'s teardown does with its
+ * hover): a chart redrawn under the pointer leaves no cursor that no pointer drives. Throws `InputError` on a bad
+ * option, in Node too; a no-op without a DOM.
  *
  * @example
  * ```ts
@@ -134,6 +135,17 @@ export function linkCursor<R>(root: Element, store: SelectionStore<R>, o: LinkCu
   const ring = shape.axis === "ring" ? { ...shape, x: scaleOf(shape.x), y: scaleOf(shape.y) } : null;
   const line =
     shape.axis === "ring" ? null : { ...shape, scale: scaleOf(shape.scale), cross: scaleOf(shape.cross) };
+  // a JavaScript caller can leave one out: name it here, in Node too, never a TypeError (or a throw in the browser later)
+  const isScale = (s: unknown): boolean =>
+    typeof (s as { apply?: unknown } | undefined)?.apply === "function";
+  if (
+    ring
+      ? !isScale(ring.x) || !isScale(ring.y)
+      : !isScale(line?.scale) || (shape.cross !== undefined && !isScale(line?.cross))
+  )
+    throw new InputError(
+      `linkCursor: shape.${ring ? "x and shape.y" : shape.cross === undefined ? "scale" : "scale and shape.cross"} must be scales, a Plot figure's or d3's`,
+    );
   if (ring) {
     if (!ring.center.every(Number.isFinite))
       throw new InputError(
@@ -299,10 +311,10 @@ export function linkCursor<R>(root: Element, store: SelectionStore<R>, o: LinkCu
   offs.push(() => g.remove());
   sync(store.getState().cursor);
 
-  let wrote: Cursor | null = null; // the cursor this figure last wrote
-  /** Clear the store's cursor only while it holds the value this figure wrote: never an app's or another figure's. */
+  let wrote: Cursor | null = null; // the store's cursor object this figure wrote
+  /** Clear the store's cursor only while it holds the one this figure wrote: never an app's or another figure's. */
   const clear = (): void => {
-    if (wrote !== null && sameCursor(store.getState().cursor, wrote)) store.set({ cursor: null });
+    if (wrote !== null && store.getState().cursor === wrote) store.set({ cursor: null });
     wrote = null;
   };
   if (line && emit) {
@@ -329,8 +341,12 @@ export function linkCursor<R>(root: Element, store: SelectionStore<R>, o: LinkCu
       const v = valueAt(line.axis === "x" ? mx : my);
       if (v === null || !Number.isFinite(v)) clear();
       else {
-        wrote = { field: o.field, value: v };
-        store.set({ cursor: wrote });
+        const had = store.getState().cursor;
+        store.set({ cursor: { field: o.field, value: v } });
+        const now = store.getState().cursor;
+        // owned by identity, as a brush owns `selected`: the cursor this write made, or one this figure already
+        // owned. An equal cursor set first elsewhere keeps its identity (the store drops a no-op), so it stays theirs
+        wrote = now !== had || had === wrote ? now : null;
       }
     };
     const on = (type: string, fn: (e: Event) => void, capture: boolean): void => {
