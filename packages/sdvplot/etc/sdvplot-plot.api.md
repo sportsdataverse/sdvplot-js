@@ -59,7 +59,7 @@ export interface AxisLogosOptions extends AxisPassThrough {
 }
 
 // @public
-export type AxisPassThrough = Omit<Plot.AxisXOptions, "tickFormat" | "render" | "anchor" | "tickSize" | "label">;
+export type AxisPassThrough = Omit<Plot.AxisXOptions, "tickFormat" | "anchor" | "tickSize" | "label">;
 
 // Warning: (ae-forgotten-export) The symbol "Value" needs to be exported by the entry point plot.d.ts
 //

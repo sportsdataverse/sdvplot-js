@@ -11,7 +11,9 @@ import { Selection as Selection_2 } from 'd3';
 // Warning: (ae-forgotten-export) The symbol "Scene" needs to be exported by the entry point d3.d.ts
 //
 // @public
-export function appendSurface<G extends SVGGElement | SVGSVGElement, D>(selection: Sel<G, D>, scene: Scene, x: (v: number) => number, y: (v: number) => number): Sel<SVGGElement, D>;
+export function appendSurface<G extends SVGGElement | SVGSVGElement, D>(selection: Sel<G, D>, scene: Scene, x: (v: number) => number, y: (v: number) => number, o?: {
+    ariaDescription?: string;
+}): Sel<SVGGElement, D>;
 
 // (No @packageDocumentation comment for this package)
 

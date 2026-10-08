@@ -110,6 +110,7 @@ export interface D3MarkOptions extends Frame {
 //
 // @public (undocumented)
 export interface D3SurfaceOptions extends SurfaceSceneOptions {
+    ariaDescription?: string;
     // (undocumented)
     x: (v: number) => number;
     // (undocumented)
