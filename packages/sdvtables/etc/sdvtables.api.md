@@ -499,8 +499,8 @@ export const DENSITY: Readonly<Record<Density, DensitySizes>>;
 // @public (undocumented)
 export type Density = "comfortable" | "compact" | "social";
 
-// @public (undocumented)
-export type FilterValue<Row> = RowPredicate<Row> | string | number | boolean;
+// @public
+export type FilterValue<Row> = ValuePredicate<Row> | string | number | boolean;
 
 // @public (undocumented)
 export function findColumn<Row>(spec: TableSpec<Row>, key: string): ColumnSpec<Row>;
@@ -568,9 +568,6 @@ export function resolveTheme(ref: ThemeRef): Theme;
 
 // @public
 export type RowFilter<Row> = (row: Row) => boolean;
-
-// @public (undocumented)
-export type RowPredicate<Row> = (value: unknown, row: Row) => boolean;
 
 // @public (undocumented)
 export type RowSelector<Row> = readonly number[] | Predicate<Row>;
@@ -959,6 +956,9 @@ export interface ThemeTokens {
 
 // @public (undocumented)
 export const TOKEN_KEYS: readonly (keyof ThemeTokens)[];
+
+// @public
+export type ValuePredicate<Row> = (value: unknown, row: Row) => boolean;
 
 // @public
 export const VERSION: string;

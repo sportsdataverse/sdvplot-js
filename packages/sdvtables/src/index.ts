@@ -26,7 +26,6 @@ export {
 export type {
   Comparator,
   FilterValue,
-  Predicate as RowPredicate,
   RowFilter,
   Sort,
   SortDir,
@@ -36,4 +35,5 @@ export type {
   TableOptions,
   TableSnapshot,
   TableState,
+  ValuePredicate,
 } from "./engine.js";

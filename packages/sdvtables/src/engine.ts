@@ -6,8 +6,10 @@ export interface Sort {
   readonly col: string;
   readonly dir: SortDir;
 }
-export type Predicate<Row> = (value: unknown, row: Row) => boolean;
-export type FilterValue<Row> = Predicate<Row> | string | number | boolean;
+/** A column filter as a function: tests the column's cell `value` (the whole `row` comes along for context). */
+export type ValuePredicate<Row> = (value: unknown, row: Row) => boolean;
+/** What `setFilter` takes for a column: a predicate on its value, a case-insensitive substring, or an exact number or boolean. */
+export type FilterValue<Row> = ValuePredicate<Row> | string | number | boolean;
 export type Comparator = (a: unknown, b: unknown) => number;
 /** J31: a row-level test set from outside the table (Phase 8 `linkSelection` passes a brush region). */
 export type RowFilter<Row> = (row: Row) => boolean;
