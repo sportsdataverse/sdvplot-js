@@ -247,6 +247,10 @@ export class OfflineError extends SdvplotError {
 export function onColor(background: string): string;
 
 // @public
+export class OptionalDependencyError extends SdvplotError {
+}
+
+// @public
 export function palette(league: League, teams?: Value | readonly Value[], opts?: ColorOptions): Promise<Record<string, string>>;
 
 // @public

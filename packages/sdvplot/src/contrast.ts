@@ -41,7 +41,7 @@ export function onColor(background: string): string {
 }
 
 /** Python's builtin round(): half to even (inputs are non-negative). */
-function roundHalfEven(x: number): number {
+export function roundHalfEven(x: number): number {
   const f = Math.floor(x);
   const d = x - f;
   return d > 0.5 || (d === 0.5 && f % 2 !== 0) ? f + 1 : f;

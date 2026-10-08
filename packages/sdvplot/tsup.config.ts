@@ -9,6 +9,7 @@ export default defineConfig({
     plot: "src/plot/index.ts",
     d3: "src/d3/index.ts",
     testing: "src/testing/index.ts",
+    export: "src/export/index.ts",
   },
   external: [
     "react",
@@ -18,6 +19,7 @@ export default defineConfig({
     "@sportsdataverse/sporty",
     "@sportsdataverse/sporty/plot",
     "@sportsdataverse/sporty/d3",
+    "@resvg/resvg-js",
   ],
   format: ["esm"],
   dts: true,
