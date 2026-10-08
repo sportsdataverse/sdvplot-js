@@ -43,6 +43,8 @@ export interface RunResult {
   readonly value: unknown;
   readonly warnings: readonly string[];
   readonly fetched: readonly string[];
+  /** The module exports `browser`, a BrowserSpec. */
+  readonly browser: boolean;
 }
 
 const urlOf = (input: string | URL | Request): string =>
@@ -224,13 +226,14 @@ export async function runExample(
   setWarningHandler((m) => warnings.push(m));
   try {
     const restore = entry.tags.includes("node") ? hideBrowser() : browserCanvas();
-    let value: unknown;
+    let mod: { default: unknown };
     try {
-      value = (await load()).default;
+      mod = await load();
     } finally {
       restore();
     }
-    return { ...(await toMarkup(value, entry.id)), value, warnings, fetched };
+    const value = mod.default;
+    return { ...(await toMarkup(value, entry.id)), value, warnings, fetched, browser: "browser" in mod };
   } finally {
     globalThis.fetch = realFetch;
     console.warn = realWarn;

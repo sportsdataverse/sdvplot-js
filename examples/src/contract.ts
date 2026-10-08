@@ -35,4 +35,41 @@ export type OutputKind = "node" | "markup" | "react" | "value";
 export interface Prerendered extends ExampleEntry {
   readonly kind: OutputKind;
   readonly markup: string;
+  /** The example also exports `browser` (a BrowserSpec): its library draws it on the page, over this markup. */
+  readonly browser?: true;
 }
+/**
+ * What an adapter example hands the docs to draw in the browser, next to its static default export: the library's
+ * own input (`export const browser = { lib: "plotly", figure, label } as const`). `<Live>` loads the library once
+ * the example nears the viewport and swaps the static copy for the live chart. The browser runs the example only up
+ * to this export (scripts/gen.ts writes that much as its own module), so the static render after it (@napi-rs/canvas,
+ * SSR, headless Vega) never reaches the page. `label` is the chart's accessible name (`role="img"`); Vega has none
+ * because its SVG names each mark itself (sdvplot's images read "KC logo").
+ */
+export type BrowserSpec =
+  | {
+      readonly lib: "plotly";
+      readonly figure: {
+        readonly data: readonly object[];
+        readonly layout?: object;
+        readonly config?: object;
+      };
+      readonly label: string;
+    }
+  /** A Vega-Lite spec, which vega-embed compiles and draws on the SVG renderer. */
+  | { readonly lib: "vega"; readonly spec: object }
+  | {
+      readonly lib: "echarts";
+      readonly option: object;
+      readonly width: number;
+      readonly height: number;
+      readonly label: string;
+    }
+  /** `config` builds a fresh Chart.js config per chart: Chart.js keeps state on what it is given. */
+  | {
+      readonly lib: "chartjs";
+      readonly config: () => object;
+      readonly width: number;
+      readonly height: number;
+      readonly label: string;
+    };

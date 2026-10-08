@@ -6,6 +6,7 @@
   "exports": {
     "./data": "./src/data.ts",
     "./loaders": "./src/loaders.gen.ts",
+    "./browser": "./src/browser.gen.ts",
     "./sources": "./sources.ts"
   },
   "scripts": {
@@ -27,9 +28,11 @@
     "echarts": "^6.1.0",
     "jsdom": "^26.1.0",
     "linkedom": "^0.18",
+    "plotly.js-basic-dist-min": "^4.1.2",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "vega": "^6.4.0",
+    "vega-embed": "^7.3.0",
     "vega-lite": "^6.4.3"
   }
 }
