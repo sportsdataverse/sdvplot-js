@@ -61,6 +61,10 @@
       "types": "./dist/testing.d.ts",
       "import": "./dist/testing.js"
     },
+    "./export": {
+      "types": "./dist/export.d.ts",
+      "import": "./dist/export.js"
+    },
     "./plotly": {
       "types": "./dist/plotly.d.ts",
       "import": "./dist/plotly.js"
@@ -77,6 +81,7 @@
   },
   "peerDependencies": {
     "@observablehq/plot": ">=0.6.16",
+    "@resvg/resvg-js": ">=2.6",
     "@sportsdataverse/sporty": "workspace:^0",
     "chart.js": ">=4.4",
     "d3": ">=7",
@@ -84,6 +89,9 @@
   },
   "peerDependenciesMeta": {
     "@observablehq/plot": {
+      "optional": true
+    },
+    "@resvg/resvg-js": {
       "optional": true
     },
     "@sportsdataverse/sporty": {
@@ -119,6 +127,7 @@
   "devDependencies": {
     "@napi-rs/canvas": "^1.0.10",
     "@observablehq/plot": "^0.6.17",
+    "@resvg/resvg-js": "^2.6.2",
     "@sportsdataverse/sporty": "workspace:^",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/jest-dom": "^7.0.1",

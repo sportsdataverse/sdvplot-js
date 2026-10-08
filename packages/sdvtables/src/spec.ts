@@ -466,6 +466,12 @@ export interface TableSpec<Row> {
   readonly columns: readonly ColumnSpec<Row>[];
   readonly decorations: readonly Decoration<Row>[];
   readonly theme: ThemeRef;
-  /** Phase 5 — ignored by renderHTML. */
-  readonly interactive?: { readonly pageSize?: number };
+  /**
+   * Phase 5, read by the engine and its renderers (a static `renderHTML(spec, rows)` ignores it): `pageSize` is
+   * `createTable`'s default page size; `hotkeys: false` turns off the j/k/h/l/s and `/` keys (Task 10), leaving the
+   * grid's arrow keys, Enter and Space.
+   */
+  readonly interactive?: { readonly pageSize?: number; readonly hotkeys?: boolean };
+  /** J31: the column whose value is a row's link id (`String(row[rowKey])`); absent → the row's index in the input rows. */
+  readonly rowKey?: keyof Row & string;
 }

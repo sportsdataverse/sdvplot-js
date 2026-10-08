@@ -43,7 +43,7 @@ test("skeleton: wrapper id, scoped style once, caption, th scope, data hooks, es
   const bad = renderHTML(base.build(), [
     { ...STANDINGS[0]!, qb: `<img src=x onerror=alert(1)> O'Neal & "Shaq"` },
   ]);
-  expect(bad).toContain("&lt;img src=x onerror=alert(1)&gt; O&#39;Neal &amp; &quot;Shaq&quot;");
+  expect(bad).toContain("&lt;img src=x onerror=alert(1)&gt; O&#x27;Neal &amp; &quot;Shaq&quot;");
   expect(bad).not.toContain("<img src=x");
 });
 test("deterministic: same inputs → identical string; JSON round-trip of the spec renders the same", () => {

@@ -85,6 +85,7 @@ The backgrounds default to `#ffffff` (light) and `#181a1b` (dark); pass `theme: 
 | `@sportsdataverse/sdvplot/shots` | Shot-chart data and colour, no Plot or d3: the `./bins` binners, `diffScale`, `binShots`, `leagueIndex`, `cellsVsLeague`, `cellsVsDistance`, `shrunkDiff`, `LEAGUE_PRIOR_ATTEMPTS`, `sizeCells`, `statsByZone`, `fgPctByDistance`, `vsLeague`, `statsBySide`, `signaturePoints` (optional peer `@sportsdataverse/sporty`, for the zones) |
 | `@sportsdataverse/sdvplot/chartjs` | Chart.js 4: `logoPoints`, `wordmarkPoints`, `headshotPoints`, `pointImages`, `axisLogos`, `logoWatermarks`, `teamColor`/`teamFill` (optional peer `chart.js` >= 4.4; no sporty needed) |
 | `@sportsdataverse/sdvplot/chartjs/surface` | Chart.js 4 court, field or rink background: `surface` (optional peers `chart.js` >= 4.4, `@sportsdataverse/sporty`) |
+| `@sportsdataverse/sdvplot/export` | Node only: `toPNG` (SVG to PNG; optional peer `@resvg/resvg-js`), `socialCard` (fixed-ratio framing, `gt_social_crop`), `svgSize`, `parseAspect`, `parseGravity`, `checkColor`, `canvasFor`, `offsetFor`, `peerMissing` |
 | `@sportsdataverse/sdvplot/testing` | Adapter-contract suite for renderer adapters: `checkAdapterContract`, `drawnMarks`, `drawnAxisMarks`, `visibleAxisLabels` |
 | `@sportsdataverse/sdvplot/plotly` | `withLogos`, `withWordmarks`, `withHeadshots`, `withAxisLogos`, `teamColorway`, `embedSources` (no runtime dependency) |
 | `@sportsdataverse/sdvplot/vega` | `withLogos`, `withWordmarks`, `withHeadshots`, `logoLayer`, `withAxisLogos`, `teamColorScale`, `embedSources` (no runtime dependency) |
@@ -599,6 +600,58 @@ The d3 twins are `appendLegend` (colour bar plus a cell size key) and `appendSig
 - `<Headshot fallback="initials" name="…">` (React) shows the player's initials when there is no headshot or it fails
   to load, server-rendered pages included. The initials box reads a new CSS variable, `--sdv-line` (its background;
   default `#e2e2e2`), and `--sdv-muted` for the text.
+
+## Export (Node; peer: @resvg/resvg-js)
+
+`sdvplot/export` turns an SVG figure into a PNG with `@resvg/resvg-js`, an optional peer
+(`pnpm add -D @resvg/resvg-js`; without it `toPNG` throws `OptionalDependencyError`). `socialCard` frames the figure
+for a social post the way sdvplot's and sdvplotR's `gt_social_crop` do: padded, then the short side extended to the
+ratio, never cropped.
+
+```ts
+import { writeFile } from "node:fs/promises";
+import * as Plot from "@observablehq/plot";
+import { loadLeague } from "@sportsdataverse/sdvplot";
+import { socialCard, toPNG } from "@sportsdataverse/sdvplot/export";
+import { logos } from "@sportsdataverse/sdvplot/plot";
+import { JSDOM } from "jsdom";
+
+await loadLeague("nfl");
+// 2024 AFC regular season, points for and against (nflverse games)
+const afc = [
+  { team: "KC", pf: 385, pa: 326 },
+  { team: "LAC", pf: 402, pa: 301 },
+  { team: "DEN", pf: 425, pa: 311 },
+  { team: "LV", pf: 309, pa: 434 },
+  { team: "BUF", pf: 525, pa: 368 },
+  { team: "MIA", pf: 345, pa: 364 },
+  { team: "NYJ", pf: 338, pa: 404 },
+  { team: "NE", pf: 289, pa: 417 },
+];
+const svg = Plot.plot({
+  document: new JSDOM("").window.document, // Plot in Node
+  width: 640,
+  inset: 24,
+  grid: true,
+  x: { label: "Points for" },
+  y: { label: "Points against", reverse: true },
+  marks: [logos(afc, { league: "nfl", x: "pf", y: "pa", team: "team" })],
+});
+const png = await toPNG(socialCard(svg.outerHTML, { aspect: "16:9", padding: 60 }), { width: 1600 });
+await writeFile("afc.png", png);
+```
+
+- `toPNG(svg, { width, scale, background, color, images })` takes an SVG string or an element with `outerHTML`, and
+  adds the `xmlns` declarations an HTML-serialized figure lacks. Remote `<image>`s (logos, headshots) are downloaded
+  once each, at most 8 at a time; a failed download throws `DownloadError`, and `images: "skip"` leaves them out with
+  one warning. `color` is what `currentColor` (Plot's axes and text) resolves to; by default the SVG's own
+  root `color`, else black or white, whichever contrasts more with `background`.
+- `socialCard(svg, { aspect, padding, background, gravity, color })`: `aspect` is `"1:1"` (the default), `"16:9"`,
+  `"4:5"`, `"9:16"`, `"1.91:1"`, `"4x5"` or a number, and `gravity` is one of the nine ImageMagick names. Python's and
+  R's final `width=` rescale is `toPNG(…, { width })`.
+- `toPNG` draws SVG only. A Plot figure with a `title`, `subtitle`, `caption` or legend is an HTML `<figure>`: pass the
+  `<svg>` inside it (`figure.querySelector("svg")`), which leaves out the HTML parts.
+- Tables go to PNG through `@sportsdataverse/sdvtables/export` (playwright).
 
 ## Data provenance
 

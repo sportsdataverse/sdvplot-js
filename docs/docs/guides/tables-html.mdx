@@ -43,4 +43,67 @@ the fonts once in its `<head>`.
 
 <Live id="sdvtables/html/to-element" />
 
-In the gallery: [HTML renderer](/gallery/sdvtables/#html-renderer).
+## Sort, filter, page
+
+`createTable(spec, rows, options)` is sdvtables' own headless engine: sort, a search box over every shown column, a
+filter box per `filterable` column, paging, column visibility and row selection, with immutable snapshots and
+`subscribe`. `renderHTML(table)` draws it with sort buttons (`aria-sort` on the sorted header), the boxes and a pager,
+and `hydrate(el, table)` makes that markup live: each change re-renders only the table block and the pager. Missing
+values sort last in both directions. Click a header, type in a box or page through the eight teams below.
+
+<Live id="sdvtables/interactive/hydrate" />
+
+hydrate batches its re-render into the next animation frame, so the example above changes one frame after the click
+or keystroke: a script that reads the table straight after the event sees the old rows. Your own wiring and `useTable`
+update synchronously.
+
+Inside an interactive table, j and k move between the rows of the page, h and l pick a column, s sorts it, / jumps to
+the search box, and Enter or Space selects the row. The arrow keys move like j, k, h and l. With
+`spec.interactive.hotkeys: false` the letters and / are off and only the arrows, Enter and Space are left. Enter and
+Space select only when a row itself has focus, not a link or button inside it. `keyAction` is that mapping as a pure
+function, and `handleKeydown` the listener hydrate and `<SdvTable/>` attach.
+
+<Live id="api/sdvtables/keyAction" />
+
+<Live id="api/sdvtables/handleKeydown" />
+
+The sort rules are plain functions too: a header click cycles ascending, descending, unsorted (`nextSortDir`), and a
+missing value sorts last whichever way (`withMissingLast`, `isMissing`).
+
+<Live id="sdvtables/interactive/pure-helpers" />
+
+### Driven from outside
+
+With `.rowKey("team")` a row's id is its team, so another view can name rows: `setSelection(ids)`,
+`setExternalFilter(row => …)` (ANDed with the table's own filters) and `setHover(id)` drive the table, and
+`subscribe` reports `select`, `hover` and `change`. Setting the same selection, or the same filter FUNCTION, again
+notifies nobody, so a two-way link between a chart and a table cannot loop. An inline `row => …` is a new function on
+every call, so it does notify.
+
+<Live id="sdvtables/interactive/linked-seam" />
+
+### Your own markup and wiring
+
+hydrate is a thin layer over exported parts. `handleClick`, `handleInput` and `handleHover` are the listeners it
+attaches, and `rowIdAt` names the row under an event; `renderParts`, `tableHTML` and `tableRenderOptions` re-render
+the table block from the engine's state.
+
+<Live id="sdvtables/interactive/own-wiring" />
+
+`renderParts` returns the pieces `renderHTML(table)` joins, so a page can lay them out its own way: here the pager
+sits above the table and the search box below it. hydrate finds the block, the pager and the boxes wherever they sit.
+
+<Live id="sdvtables/interactive/custom-renderer" />
+
+### React
+
+`<SdvTable/>` renders the markup `renderHTML` does, less the fonts `<link>` (static without `interactive`), and wires
+it with the same handlers. The page's `<head>` carries the link instead: the one `fontsLinkFor(spec)` returns. `useTable`
+gives a component the engine and a snapshot that re-renders it on every change.
+
+<Live id="sdvtables/react/sdv-table" />
+
+<Live id="sdvtables/react/use-table" />
+
+In the gallery: [HTML renderer](/gallery/sdvtables/#html-renderer), [Interactive
+tables](/gallery/sdvtables/#interactive-tables) and [React](/gallery/sdvtables/#react).

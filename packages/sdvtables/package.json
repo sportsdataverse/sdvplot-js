@@ -30,6 +30,14 @@
       "types": "./dist/html.d.ts",
       "import": "./dist/html.js"
     },
+    "./react": {
+      "types": "./dist/react.d.ts",
+      "import": "./dist/react.js"
+    },
+    "./export": {
+      "types": "./dist/export.d.ts",
+      "import": "./dist/export.js"
+    },
     "./package.json": "./package.json"
   },
   "scripts": {
@@ -38,14 +46,31 @@
     "test": "vitest run",
     "api:report": "node ../../tools/api-extractor-all.mjs --local",
     "api:check": "node ../../tools/api-extractor-all.mjs",
-    "pack:check": "node ../../tools/pack-check.mjs"
+    "pack:check": "node ../../tools/pack-check.mjs",
+    "render:themes": "vitest run test/theme-pass.test.ts"
   },
   "peerDependencies": {
-    "@sportsdataverse/sdvplot": "workspace:^0"
+    "@sportsdataverse/sdvplot": "workspace:^0",
+    "playwright": ">=1.45",
+    "react": ">=18"
+  },
+  "peerDependenciesMeta": {
+    "playwright": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@sportsdataverse/sdvplot": "workspace:^",
-    "happy-dom": "^15.11.0"
+    "@testing-library/react": "^16.3.3",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "happy-dom": "^15.11.0",
+    "playwright": "^1.64.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
   },
   "repository": {
     "type": "git",

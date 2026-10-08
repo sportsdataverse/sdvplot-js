@@ -22,6 +22,7 @@ export {
   DownloadError,
   InputError,
   OfflineError,
+  OptionalDependencyError,
   SdvplotError,
   UnresolvedTeamError,
   UnsupportedTargetError,

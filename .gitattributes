@@ -8,3 +8,5 @@
 packages/sdvplot/src/data/** -text
 # fixtures-version.test.ts hashes the vendored JSON against fixtures/sporty/VERSION; keep its bytes on every checkout
 packages/sporty/data/** -text
+# content-addressed logo fixtures: the file name is the sha256 of these exact bytes
+fixtures/sdvplot/logos/** -text

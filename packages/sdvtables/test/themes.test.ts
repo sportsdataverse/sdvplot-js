@@ -1,6 +1,7 @@
 import { onColor, preloadAll } from "@sportsdataverse/sdvplot";
 import { expect, test } from "vitest";
 import { fontsLink } from "../src/html/fonts.js";
+import { BASE_CSS } from "../src/themes/base-css.js";
 import { THEMES, THEME_NAMES, resolveTheme } from "../src/themes/index.js";
 import { adjustLuminance } from "../src/themes/luminance.js";
 import { secondaryOn } from "../src/themes/sdv.js";
@@ -431,4 +432,7 @@ test("every color option of every themed table is validated", () => {
   ] as const)
     expect(() => tk(name, { [arg]: "blue" }), name).toThrow(new RegExp(`${arg} must be a hex color`));
   expect(() => tk("sofa", { style: "sepia" })).toThrow(/light.*dark/);
+});
+test("A47: cell images keep their size under a host img{max-width:100%} reset", () => {
+  expect(BASE_CSS(".sdvt-t-x").split("\n")).toContain(".sdvt-t-x img{max-width:none}");
 });

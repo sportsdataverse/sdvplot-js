@@ -11,3 +11,29 @@ export type { GoogleFont, Theme, ThemeDef, ThemeTokens } from "./themes/index.js
 export { DENSITY, TOKEN_KEYS } from "./themes/tokens.js";
 export { secondaryOn } from "./themes/sdv.js";
 export { type Alias, GT_ALIASES, PAL_MIDNIGHT, aliasFor } from "./aliases.js";
+export {
+  NUMERIC_KINDS,
+  applyFilters,
+  applySort,
+  comparatorFor,
+  createTable,
+  findColumn,
+  isMissing,
+  nextSortDir,
+  paginate,
+  withMissingLast,
+} from "./engine.js";
+export type {
+  Comparator,
+  FilterValue,
+  RowFilter,
+  Sort,
+  SortDir,
+  Table,
+  TableCursor,
+  TableEvent,
+  TableOptions,
+  TableSnapshot,
+  TableState,
+  ValuePredicate,
+} from "./engine.js";
