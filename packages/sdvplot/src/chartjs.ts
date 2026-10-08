@@ -4,7 +4,8 @@
  * here is a dataset option or a plugin object, so Svelte, Astro, React or plain scripts pass it to `new Chart(...)`
  * unchanged.
  * The sporty court background lives in `sdvplot/chartjs/surface`, so this entry never needs `@sportsdataverse/sporty`.
- * Call after `loadLeague(league)` / `preloadAll()`; point styles and plugins need a DOM (build them client-side).
+ * Call after `loadLeague(league)` / `preloadAll()`; point styles and plugins need a DOM (build them client-side) unless
+ * given `loadImage`, which in Node is `@napi-rs/canvas`'s.
  */
 import type { Chart, Plugin, PointStyle, Scale, Tick } from "chart.js";
 import { teamColorsSync } from "./colors.js";
@@ -26,6 +27,11 @@ export interface PointOptions {
   fallback?: PointStyle | "text";
   /** The chart's background colour, so the text fallback reads on it (default white, or black with `variant: "dark"`). */
   background?: string;
+  /**
+   * Loads each image instead of a DOM image element, so this also runs in Node: pass `@napi-rs/canvas`'s `loadImage`.
+   * See {@link ImageLike}.
+   */
+  loadImage?: (url: string) => Promise<ImageLike>;
 }
 export interface HeadshotPointOptions {
   league: EspnHeadshotLeague;
@@ -34,11 +40,27 @@ export interface HeadshotPointOptions {
   fallback?: PointStyle | "text";
   /** The chart's background colour, so the text fallback reads on it (default white). */
   background?: string;
+  /**
+   * Loads each image instead of a DOM image element, so this also runs in Node: pass `@napi-rs/canvas`'s `loadImage`.
+   * See {@link ImageLike}.
+   */
+  loadImage?: (url: string) => Promise<ImageLike>;
 }
 /** Spread into a scatter / bubble / line dataset: one style per data point, in data order. */
 export interface PointStyles {
   pointStyle: PointStyle[];
   pointRadius: number;
+}
+
+/**
+ * An image a `loadImage` option resolves: anything the chart's 2D context can `drawImage`, such as `@napi-rs/canvas`'s
+ * `Image` in Node or an `HTMLImageElement` in the browser. `loadImage` is called once per URL and drawn size, and the
+ * image's `width` and `height` are then set to that size (Chart.js draws an image point style at its own size), so
+ * resolve a new image on every call, as `@napi-rs/canvas`'s `loadImage` does.
+ */
+export interface ImageLike {
+  readonly width: number;
+  readonly height: number;
 }
 
 function needDom(what: string): Document {
@@ -69,12 +91,66 @@ function image(url: string, h: number, aspect: number): HTMLImageElement {
   }
   return img;
 }
+type LoadImage = (url: string) => Promise<ImageLike>;
+/** A `loadImage` image at its drawn size: `img` is undefined while it loads and null if it failed. */
+class Loading {
+  img: ImageLike | null | undefined = undefined;
+  /** Point-style slots to fill, then charts to redraw, all in the first reaction to the loader's promise. */
+  readonly slots: [PointStyle[], number][] = [];
+  readonly on = new Set<() => void>();
+  constructor(
+    readonly width: number,
+    readonly height: number,
+  ) {}
+}
+type Mark = HTMLImageElement | Loading;
+const DRAWN = ["[object HTMLImageElement]", "[object HTMLCanvasElement]"];
+/** Chart.js draws a point-style image at its own width x height, and only one that stringifies as a DOM image or canvas. */
+function sized(img: ImageLike, w: number, h: number): ImageLike {
+  const own = (value: unknown): PropertyDescriptor => ({ value, writable: true, configurable: true });
+  const tag: PropertyDescriptorMap = DRAWN.includes(String(img)) ? {} : { toString: own(() => DRAWN[0]) };
+  Object.defineProperties(img, { width: own(w), height: own(h), ...tag });
+  return img;
+}
+// ponytail: unbounded like `images`; per loader, so two loaders never share an image.
+const loads = new WeakMap<LoadImage, Map<string, Loading>>();
+function loading(load: LoadImage, url: string, h: number, aspect: number): Loading {
+  const w = Math.round(h * aspect);
+  const key = `${w}x${h} ${url}`;
+  const byKey = loads.get(load) ?? new Map<string, Loading>();
+  loads.set(load, byKey);
+  let m = byKey.get(key);
+  if (m === undefined) {
+    const it = new Loading(w, h);
+    // everything runs here, in the promise's first reaction, so a caller awaiting the same promises sees it all done
+    const land = (img: ImageLike | null): void => {
+      it.img = img;
+      if (img !== null) for (const [styles, i] of it.slots) styles[i] = img as unknown as PointStyle;
+      it.slots.length = 0;
+      const redraws = [...it.on];
+      it.on.clear();
+      for (const f of redraws) f();
+    };
+    void load(url).then(
+      (img) => land(sized(img, w, h)),
+      (e: unknown) => {
+        warn(`chartjs:loadImage:${url}`, `loadImage failed for ${url} (${String(e)}), so it is not drawn`);
+        land(null);
+      },
+    );
+    m = it;
+    byKey.set(key, m);
+  }
+  return m;
+}
 /** Game on Paper's light-theme or dark-theme canvas text colour, whichever reads better on `background`. */
 function textInk(background: string): string {
   return contrast("#555555", background) >= contrast("#e8e6e3", background) ? "#555555" : "#e8e6e3";
 }
 function textStyle(label: string, h: number, ink: string): HTMLCanvasElement | "circle" {
-  const c = needDom("a text point style").createElement("canvas");
+  // ponytail: Node (only reachable with loadImage) has no canvas to letter the label on, so it draws a circle
+  if (typeof document === "undefined") return "circle";
+  const c = document.createElement("canvas");
   const g = c.getContext("2d");
   if (g === null) return "circle";
   const font = `bold ${Math.round(h * 0.45)}px sans-serif`;
@@ -93,13 +169,18 @@ function imagesFor(
   values: readonly Value[],
   h: number,
   place: PlaceOptions,
-): (HTMLImageElement | undefined)[] {
-  const out = new Array<HTMLImageElement | undefined>(values.length);
+  load: LoadImage | undefined,
+): (Mark | undefined)[] {
+  const out = new Array<Mark | undefined>(values.length);
   // The row index as x keeps data order; placeSync drops what it cannot draw and warns once per call (J28).
   const idx = values.map((_, i) => i);
-  for (const p of placeSync(idx, idx, values, place)) out[p.index] = image(p.url, h, p.aspect ?? 1);
+  for (const p of placeSync(idx, idx, values, place))
+    out[p.index] =
+      load === undefined ? image(p.url, h, p.aspect ?? 1) : loading(load, p.url, h, p.aspect ?? 1);
   return out;
 }
+/** The point-style arrays still waiting on a `loadImage` image, for `pointImages` to refresh. */
+const pending = new WeakMap<object, Loading[]>();
 function points(
   values: readonly Value[],
   kind: Kind,
@@ -107,16 +188,28 @@ function points(
   fallback: PointStyle | "text" | undefined,
   background: string | undefined,
   place: PlaceOptions,
+  load: LoadImage | undefined,
 ): PointStyles {
-  needDom("point styles"); // before resolving, so SSR fails without a resolve warning
+  if (load === undefined) needDom("point styles"); // before resolving, so SSR fails without a resolve warning
   const r = radius ?? 12;
   if (!(Number.isFinite(r) && r > 0))
     throw new InputError(`radius is a point radius in px > 0, got ${String(radius)}`);
   const ink = textInk(background ?? (place.variant === "dark" ? "#000000" : "#ffffff")); // a bad colour throws here
   const styles = new Array<PointStyle>(values.length);
-  imagesFor(values, 2 * r, { ...place, kind }).forEach((img, i) => {
-    if (img !== undefined) styles[i] = img;
+  const waiting: Loading[] = [];
+  imagesFor(values, 2 * r, { ...place, kind }, load).forEach((m, i) => {
+    if (m === undefined) return;
+    if (!(m instanceof Loading)) {
+      styles[i] = m;
+      return;
+    }
+    // until it lands the slot draws nothing, as a loading image does; Chart.js re-reads the array on update
+    styles[i] = (m.img ?? false) as PointStyle;
+    if (m.img !== undefined) return;
+    m.slots.push([styles, i]);
+    waiting.push(m);
   });
+  if (waiting.length > 0) pending.set(styles, waiting);
   for (let i = 0; i < values.length; i++)
     styles[i] ??=
       fallback === undefined || fallback === "text"
@@ -125,8 +218,8 @@ function points(
   return { pointStyle: styles, pointRadius: r };
 }
 function teamPoints(teams: readonly Value[], kind: "logo" | "wordmark", o: PointOptions): PointStyles {
-  const { league, radius, fallback, background, ...rest } = o;
-  return points(teams, kind, radius, fallback, background, { league, ...rest });
+  const { league, radius, fallback, background, loadImage, ...rest } = o;
+  return points(teams, kind, radius, fallback, background, { league, ...rest }, loadImage);
 }
 /** Team logos as point styles: `{ data, ...logoPoints(teams, { league: "nfl", radius: 12 }) }`. Add `pointImages` to `plugins`. */
 export function logoPoints(teams: readonly Value[], o: PointOptions): PointStyles {
@@ -138,29 +231,63 @@ export function wordmarkPoints(teams: readonly Value[], o: PointOptions): PointS
 }
 /** ESPN player headshots as point styles; `idSystem: "gsis"` needs `loadGsis()` first. */
 export function headshotPoints(players: readonly Value[], o: HeadshotPointOptions): PointStyles {
-  return points(players, "headshot", o.radius, o.fallback, o.background, {
-    league: o.league,
-    idSystem: o.idSystem ?? "espn",
-  });
+  return points(
+    players,
+    "headshot",
+    o.radius,
+    o.fallback,
+    o.background,
+    { league: o.league, idSystem: o.idSystem ?? "espn" },
+    o.loadImage,
+  );
 }
 
-const redraws = new WeakMap<Chart, { redraw: () => void; stop: AbortController }>();
+type Redraws = { redraw: () => void; refresh: () => void; stop: AbortController };
+const redraws = new WeakMap<Chart, Redraws>();
 const isImage = (v: unknown): v is HTMLImageElement =>
   Object.prototype.toString.call(v) === "[object HTMLImageElement]"; // Chart.js's own test (drawPointLegend)
-/** Redraw `chart` once `img` loads; one listener per (image, chart) because addEventListener ignores a repeat. */
-function redrawOnLoad(chart: Chart, img: HTMLImageElement): void {
-  if (img.complete) return;
+function redrawsOf(chart: Chart): Redraws {
   let r = redraws.get(chart);
   if (r === undefined) {
     r = {
       redraw: () => {
         if (chart.ctx) chart.draw(); // null once destroyed
       },
+      refresh: () => {
+        if (chart.ctx) chart.update("none"); // re-reads the point styles, which a draw does not
+      },
       stop: new AbortController(),
     };
     redraws.set(chart, r);
   }
+  return r;
+}
+/** Redraw `chart` once `img` loads; one listener per (image, chart) because addEventListener ignores a repeat. */
+function redrawOnLoad(chart: Chart, img: HTMLImageElement): void {
+  if (img.complete) return;
+  const r = redrawsOf(chart);
   img.addEventListener("load", r.redraw, { once: true, signal: r.stop.signal });
+}
+/** As `redrawOnLoad`, for a `loadImage` image still loading; the same per-chart abort drops it on destroy. */
+function redrawOnLanding(chart: Chart, m: Loading, how: "redraw" | "refresh"): void {
+  const r = redrawsOf(chart);
+  const f = r[how];
+  if (m.on.has(f)) return;
+  m.on.add(f);
+  r.stop.signal.addEventListener("abort", () => m.on.delete(f), { once: true });
+}
+/** The image to paint now, or undefined with a redraw arranged for when it loads (a broken image is skipped). */
+function paint(chart: Chart, m: Mark | undefined): HTMLImageElement | undefined {
+  if (m === undefined) return undefined;
+  if (m instanceof Loading) {
+    if (m.img === undefined) redrawOnLanding(chart, m, "redraw");
+    return (m.img ?? undefined) as HTMLImageElement | undefined; // drawImage takes it as one; only its size is read
+  }
+  if (!m.complete || m.naturalWidth === 0) {
+    redrawOnLoad(chart, m);
+    return undefined;
+  }
+  return m;
 }
 /** `afterDestroy`: drop the chart's pending load listeners, so a late (or never-loading) image cannot hold or redraw it. */
 function forget(chart: Chart): void {
@@ -175,6 +302,8 @@ export const pointImages: Plugin = {
     for (const ds of chart.data.datasets) {
       const s = (ds as { pointStyle?: unknown }).pointStyle;
       for (const v of Array.isArray(s) ? s : [s]) if (isImage(v)) redrawOnLoad(chart, v);
+      for (const m of (Array.isArray(s) && pending.get(s)) || [])
+        if (m.img === undefined) redrawOnLanding(chart, m, "refresh");
     }
   },
 };
@@ -228,6 +357,11 @@ export interface AxisLogoOptions {
   idSystem?: IdSystem;
   /** The category scale's id (default: the axis letter). */
   scaleId?: string;
+  /**
+   * Loads each image instead of a DOM image element, so this also runs in Node: pass `@napi-rs/canvas`'s `loadImage`.
+   * See {@link ImageLike}.
+   */
+  loadImage?: (url: string) => Promise<ImageLike>;
 }
 type TickCallback = (this: Scale, value: number | string, index: number, ticks: Tick[]) => unknown;
 /**
@@ -238,9 +372,9 @@ type TickCallback = (this: Scale, value: number | string, index: number, ticks: 
 export function axisLogos(axis: "x" | "y", o: AxisLogoOptions): Plugin {
   if (axis !== "x" && axis !== "y")
     throw new InputError(`axis must be "x" or "y", got ${JSON.stringify(axis)}`);
-  const { league, size = 24, markType = "logo", scaleId = axis, ...rest } = o;
+  const { league, size = 24, markType = "logo", scaleId = axis, loadImage, ...rest } = o;
   checkSize(size, "size");
-  const byChart = new WeakMap<Chart, { m: Map<string, HTMLImageElement>; band: number }>();
+  const byChart = new WeakMap<Chart, { m: Map<string, Mark>; band: number }>();
   const bases = new WeakMap<TickCallback, number>(); // each wired callback -> the padding it was wired over
   return {
     id: `sdvplotAxisLogos${axis.toUpperCase()}`,
@@ -263,8 +397,8 @@ export function axisLogos(axis: "x" | "y", o: AxisLogoOptions): Plugin {
         return;
       }
       const labels = (chart.data.labels ?? []).map(String);
-      const m = new Map<string, HTMLImageElement>();
-      imagesFor(labels, size, { league, kind: markType, ...rest }).forEach((img, i) => {
+      const m = new Map<string, Mark>();
+      imagesFor(labels, size, { league, kind: markType, ...rest }, loadImage).forEach((img, i) => {
         if (img !== undefined) m.set(labels[i] ?? "", img);
       });
       // the band the images fill: their height on x, the widest mark on y (a wordmark is several times its height)
@@ -298,9 +432,8 @@ export function axisLogos(axis: "x" | "y", o: AxisLogoOptions): Plugin {
       };
       const gap = (grid.display && grid.drawTicks ? grid.tickLength : 0) + ticks.padding - band;
       scale.ticks.forEach((t, i) => {
-        const img = m.get(scale.getLabelForValue(t.value));
+        const img = paint(chart, m.get(scale.getLabelForValue(t.value)));
         if (img === undefined) return;
-        if (!img.complete || img.naturalWidth === 0) return redrawOnLoad(chart, img); // a broken image is skipped
         const at = scale.getPixelForTick(i);
         const { width: w, height: h } = img;
         const x =
@@ -324,6 +457,11 @@ export interface WatermarkOptions {
   season?: SeasonInput | readonly SeasonInput[];
   variant?: Variant;
   idSystem?: IdSystem;
+  /**
+   * Loads each image instead of a DOM image element, so this also runs in Node: pass `@napi-rs/canvas`'s `loadImage`.
+   * See {@link ImageLike}.
+   */
+  loadImage?: (url: string) => Promise<ImageLike>;
 }
 /**
  * Faint team logos behind the datasets (Game on Paper's win-probability chart): the first team sits top-left of the
@@ -332,11 +470,11 @@ export interface WatermarkOptions {
  * light mark by polarity, so no `onerror` retry is needed.
  */
 export function logoWatermarks(teams: readonly Value[], o: WatermarkOptions): Plugin {
-  needDom("logo watermarks"); // before resolving, so SSR fails without a resolve warning
-  const { league, size = 75, alpha = 0.4, inset = 8, ...rest } = o;
+  if (o.loadImage === undefined) needDom("logo watermarks"); // before resolving, so SSR fails without a resolve warning
+  const { league, size = 75, alpha = 0.4, inset = 8, loadImage, ...rest } = o;
   checkSize(size, "size");
   const a = checkAlpha(alpha);
-  const imgs = imagesFor(teams, size, { league, kind: "logo", ...rest });
+  const imgs = imagesFor(teams, size, { league, kind: "logo", ...rest }, loadImage);
   const n = imgs.length;
   return {
     id: "sdvplotLogoWatermarks",
@@ -346,9 +484,9 @@ export function logoWatermarks(teams: readonly Value[], o: WatermarkOptions): Pl
       if (!ar) return; // a draw before the first layout
       ctx.save();
       ctx.globalAlpha = a;
-      imgs.forEach((img, i) => {
+      imgs.forEach((m, i) => {
+        const img = paint(chart, m);
         if (img === undefined) return;
-        if (!img.complete || img.naturalWidth === 0) return redrawOnLoad(chart, img); // a broken image is skipped
         const t = n > 1 ? i / (n - 1) : 0;
         const y = ar.top + inset + t * (ar.bottom - ar.top - 2 * inset - img.height);
         ctx.drawImage(img, ar.left + inset, y, img.width, img.height);

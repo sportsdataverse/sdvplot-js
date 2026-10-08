@@ -166,7 +166,8 @@ below that. The helper series have no `name`, so a default `legend: {}` lists on
 ## Chart.js (Astro, Svelte, React, plain scripts)
 
 `@sportsdataverse/sdvplot/chartjs` returns Chart.js 4 dataset options and plugin objects, so no framework needs a
-wrapper. Load the league first, and build point styles and plugins in the browser (they create `<img>`/`<canvas>`).
+wrapper. Load the league first, and build point styles and plugins in the browser (they create `<img>`/`<canvas>`), or
+pass `loadImage` to render in Node ([below](#server-side-rendering-node)).
 
 An Astro page with a Svelte 5 island (Game on Paper's stack):
 
@@ -323,6 +324,46 @@ new Chart(canvas, {
   follow-up in sporty so `drawScene` keeps text upright). It needs
   `@sportsdataverse/sporty`, as `sdvplot/d3` does.
 - Destroying a chart drops its pending image listeners, so unmounting before the logos arrive is safe.
+
+### Server-side rendering (Node)
+
+Pass `loadImage` and no DOM image is made: Chart.js renders on `@napi-rs/canvas` (server-rendered PNGs, social
+cards). `@napi-rs/canvas`'s own `loadImage` fits as it is; wrap it to keep the promises, and once they settle the chart
+is complete:
+
+```ts
+import { writeFile } from "node:fs/promises";
+import { createCanvas, loadImage } from "@napi-rs/canvas";
+import { Chart, registerables } from "chart.js";
+import { loadLeague } from "@sportsdataverse/sdvplot";
+import { logoWatermarks, teamColor } from "@sportsdataverse/sdvplot/chartjs";
+
+Chart.register(...registerables);
+await loadLeague("cfb");
+const loads: Promise<unknown>[] = [];
+const load = (url: string) => {
+  const p = loadImage(url); // fetches the CDN URL
+  loads.push(p);
+  return p;
+};
+const canvas = createCanvas(800, 450);
+const chart = new Chart(canvas as unknown as HTMLCanvasElement, {
+  type: "line",
+  data: { labels: seconds, datasets: [{ data: homeWp, borderColor: teamColor("UGA", "cfb"), pointRadius: 0 }] },
+  options: { responsive: false, animation: false },
+  plugins: [logoWatermarks(["UGA", "ALA"], { league: "cfb", loadImage: load })],
+});
+await Promise.all(loads); // each image redraws the chart as it lands, before this resumes
+await writeFile("wp.png", canvas.toBuffer("image/png"));
+chart.destroy();
+```
+
+- Every image helper takes it: `logoPoints`, `wordmarkPoints`, `headshotPoints`, `axisLogos`, `logoWatermarks`. Point
+  styles still need `pointImages` in `plugins`, which updates the chart as they land.
+- `loadImage` is called once per URL and drawn size (per loader function), and the image's `width` and `height` are set
+  to that size, so resolve a new image on every call, as `@napi-rs/canvas`'s does.
+- In Node an unknown team's text fallback is a circle (there is no canvas to letter it on); pass `fallback` for another
+  style. A load that fails warns once and is skipped.
 
 ## Data provenance
 
