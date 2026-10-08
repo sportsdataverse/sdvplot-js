@@ -24,6 +24,7 @@ export const SOURCES: Readonly<Record<string, string>> = {
   "@sportsdataverse/sporty/svg": "packages/sporty/src/svg.ts",
   "@sportsdataverse/sporty/specs": "packages/sporty/src/specs/index.ts",
   "@sportsdataverse/sporty/plot": "packages/sporty/src/plot.ts",
+  "@sportsdataverse/sporty/canvas": "packages/sporty/src/canvas.ts",
   "@sportsdataverse/sporty/d3": "packages/sporty/src/d3.ts",
   "@sportsdataverse/sdvtables": "packages/sdvtables/src/index.ts",
   "@sportsdataverse/sdvtables/html": "packages/sdvtables/src/html/index.ts",
