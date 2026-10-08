@@ -4,8 +4,18 @@
 
 ```ts
 
+import { BasketballColorKey } from '@sportsdataverse/sporty';
+import { BasketballDisplayRange } from '@sportsdataverse/sporty';
+import { BasketballParamUpdates } from '@sportsdataverse/sporty';
+import { FootballColorKey } from '@sportsdataverse/sporty';
+import { FootballDisplayRange } from '@sportsdataverse/sporty';
+import { FootballParamUpdates } from '@sportsdataverse/sporty';
+import { HockeyColorKey } from '@sportsdataverse/sporty';
+import { HockeyDisplayRange } from '@sportsdataverse/sporty';
+import { HockeyParamUpdates } from '@sportsdataverse/sporty';
 import { Plugin as Plugin_2 } from 'chart.js';
 import { PointStyle } from 'chart.js';
+import { Scene } from '@sportsdataverse/sporty';
 
 // @public (undocumented)
 export interface AxisLogoOptions {
@@ -34,6 +44,25 @@ export interface AxisLogoOptions {
 // @public
 export function axisLogos(axis: "x" | "y", o: AxisLogoOptions): Plugin_2;
 
+// @public (undocumented)
+export interface ChartSurface {
+    plugin: Plugin_2;
+    scales: {
+        x: LinearScale;
+        y: LinearScale;
+    };
+    // (undocumented)
+    scene: Scene;
+}
+
+// Warning: (ae-forgotten-export) The symbol "SurfaceSceneOptions" needs to be exported by the entry point chartjs.d.ts
+//
+// @public (undocumented)
+export interface ChartSurfaceOptions extends SurfaceSceneOptions {
+    xAxisID?: string;
+    yAxisID?: string;
+}
+
 // Warning: (ae-forgotten-export) The symbol "Value" needs to be exported by the entry point chartjs.d.ts
 //
 // @public (undocumented)
@@ -58,6 +87,16 @@ export interface HeadshotPointOptions {
 
 // @public
 export function headshotPoints(players: readonly Value[], o: HeadshotPointOptions): PointStyles;
+
+// @public (undocumented)
+export interface LinearScale {
+    // (undocumented)
+    max: number;
+    // (undocumented)
+    min: number;
+    // (undocumented)
+    type: "linear";
+}
 
 // @public
 export function logoPoints(teams: readonly Value[], o: PointOptions): PointStyles;
@@ -90,6 +129,9 @@ export interface PointStyles {
     // (undocumented)
     pointStyle: PointStyle[];
 }
+
+// @public
+export function surface(league: League, o?: ChartSurfaceOptions): ChartSurface;
 
 // @public
 export function teamColor<T extends Value | readonly Value[]>(teams: T, league: League, o?: TeamColorOptions): ColorsFor<T>;

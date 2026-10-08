@@ -54,7 +54,7 @@ Plot.plot({
 | `@sportsdataverse/sdvplot/react` | `TeamLogo`, `Wordmark`, `Headshot`, `useTeamColors`, `useResolve` (React >= 18, optional peer) |
 | `@sportsdataverse/sdvplot/plot` | Observable Plot marks and scales: `logos`, `wordmarks`, `headshots`, `axisLogos`, `teamColor`/`teamFill`, `meanLines`/`medianLines`, `titleImage`, `teamTiers`, `surface` (optional peers `@observablehq/plot`, `@sportsdataverse/sporty`) |
 | `@sportsdataverse/sdvplot/d3` | `appendLogos`, `appendWordmarks`, `appendHeadshots`, `teamColorScale`, `appendSurface` (optional peers `d3`, `@sportsdataverse/sporty`) |
-| `@sportsdataverse/sdvplot/chartjs` | Chart.js 4: `logoPoints`, `wordmarkPoints`, `headshotPoints`, `pointImages`, `axisLogos`, `logoWatermarks`, `teamColor`/`teamFill` (optional peer `chart.js` >= 4.4) |
+| `@sportsdataverse/sdvplot/chartjs` | Chart.js 4: `logoPoints`, `wordmarkPoints`, `headshotPoints`, `pointImages`, `axisLogos`, `logoWatermarks`, `teamColor`/`teamFill`, `surface` (optional peers `chart.js` >= 4.4, `@sportsdataverse/sporty`) |
 | `@sportsdataverse/sdvplot/testing` | Adapter-contract suite for renderer adapters: `checkAdapterContract`, `drawnMarks`, `drawnAxisMarks`, `visibleAxisLabels` |
 
 ## Chart.js (Astro, Svelte, React, plain scripts)
@@ -169,6 +169,25 @@ new Chart(canvas, {
 });
 ```
 
+A shot chart over a court (and a hexbin as bubbles at the hex centres):
+
+```ts
+import { toSurfaceFrame } from "@sportsdataverse/sporty";
+import { surface } from "@sportsdataverse/sdvplot/chartjs";
+import { hexbin } from "d3-hexbin";
+const court = surface("nba", { team: "BOS", displayRange: "defense" });
+const pts = toSurfaceFrame(shots, { from: "nba-legacy", x: "loc_x", y: "loc_y" })
+  .map((s) => ({ x: s.surface_x ?? Number.NaN, y: s.surface_y ?? Number.NaN }));
+const bins = hexbin<{ x: number; y: number }>().x((d) => d.x).y((d) => d.y).radius(1.5)(pts); // radius in feet
+const [x0, y0, x1, y1] = court.scene.bbox;
+new Chart(canvas, {
+  type: "bubble",
+  data: { datasets: [{ data: bins.map((b) => ({ x: b.x, y: b.y, r: 2 * Math.sqrt(b.length) })) }] },
+  options: { scales: court.scales, aspectRatio: (x1 - x0) / (y1 - y0) },
+  plugins: [court.plugin],
+});
+```
+
 - Sizes are pixels: `radius` (point styles), `size` (axis logos, watermarks) — Chart.js draws an image at its own size.
 - Add `pointImages` to `plugins` with any `*Points`: Chart.js does not redraw when an `<img>` finishes loading.
 - An unknown team draws its own label as text (or pass `fallback: "circle"`), with one warning per call; the text is
@@ -176,6 +195,11 @@ new Chart(canvas, {
 - Dark theme: `variant: "dark"` (read `prefers-color-scheme` as Game on Paper does); a team with no dark mark falls back to a light one by polarity, so no `onerror` retry is needed.
 - Two teams on one chart: `teamColor(team, league, { which: "secondary" })` is the alternate. A helper that picks a contrast-checked pair of team colours for each theme is planned.
 - `axisLogos` needs a category axis (any other scale is left as it is, with one warning); on `y` the axis widens to the widest mark, so wordmarks fit; unresolved labels keep their text; your own scale options are not modified, and replacing `chart.options` (`chart.options = next; chart.update()`) keeps the logos.
+- `surface` paints before the datasets, clipped to the chart area, through the chart's own scales (so it follows
+  resizes and a reversed axis); keep both axes linear (`court.scales`; any other scale is left unpainted, with one
+  warning). An `xlim` or `ylim` of zero width throws `InputError` when the surface is built. With `logoWatermarks` on the
+  same chart, list `court.plugin` first: both paint before the datasets, in `plugins` order. It needs
+  `@sportsdataverse/sporty`, as `sdvplot/d3` does.
 - Destroying a chart drops its pending image listeners, so unmounting before the logos arrive is safe.
 
 ## Data provenance

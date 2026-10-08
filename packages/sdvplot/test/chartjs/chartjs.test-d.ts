@@ -5,6 +5,7 @@ import {
   logoPoints,
   logoWatermarks,
   pointImages,
+  surface,
   teamColor,
   teamFill,
 } from "../../src/chartjs.js";
@@ -52,4 +53,16 @@ test("axis logos and watermarks are plain plugins for bar and line configs", () 
     plugins: [logoWatermarks(["KC", "BUF"], { league: "nfl", size: 75, alpha: 0.4 })],
   };
   expectTypeOf([bar, wp]).not.toBeNever();
+});
+
+test("the surface plugin and scales slot into a scatter config", () => {
+  expectTypeOf(surface("nba").plugin).toMatchTypeOf<Plugin<"scatter">>();
+  const court = surface("nba");
+  const shots: ChartConfiguration<"scatter"> = {
+    type: "scatter",
+    data: { datasets: [{ data: [{ x: 0, y: 0 }] }] },
+    options: { scales: court.scales },
+    plugins: [court.plugin],
+  };
+  expectTypeOf(shots).not.toBeNever();
 });

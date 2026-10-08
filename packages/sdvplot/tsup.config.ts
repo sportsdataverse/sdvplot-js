@@ -20,6 +20,7 @@ export default defineConfig({
     "@sportsdataverse/sporty",
     "@sportsdataverse/sporty/plot",
     "@sportsdataverse/sporty/d3",
+    "@sportsdataverse/sporty/canvas",
   ],
   format: ["esm"],
   dts: true,
