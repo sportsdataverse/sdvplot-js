@@ -54,7 +54,128 @@ Plot.plot({
 | `@sportsdataverse/sdvplot/react` | `TeamLogo`, `Wordmark`, `Headshot`, `useTeamColors`, `useResolve` (React >= 18, optional peer) |
 | `@sportsdataverse/sdvplot/plot` | Observable Plot marks and scales: `logos`, `wordmarks`, `headshots`, `axisLogos`, `teamColor`/`teamFill`, `meanLines`/`medianLines`, `titleImage`, `teamTiers`, `surface` (optional peers `@observablehq/plot`, `@sportsdataverse/sporty`) |
 | `@sportsdataverse/sdvplot/d3` | `appendLogos`, `appendWordmarks`, `appendHeadshots`, `teamColorScale`, `appendSurface` (optional peers `d3`, `@sportsdataverse/sporty`) |
+| `@sportsdataverse/sdvplot/chartjs` | Chart.js 4: `logoPoints`, `wordmarkPoints`, `headshotPoints`, `pointImages`, `axisLogos`, `logoWatermarks`, `teamColor`/`teamFill` (optional peer `chart.js` >= 4.4) |
 | `@sportsdataverse/sdvplot/testing` | Adapter-contract suite for renderer adapters: `checkAdapterContract`, `drawnMarks`, `drawnAxisMarks`, `visibleAxisLabels` |
+
+## Chart.js (Astro, Svelte, React, plain scripts)
+
+`@sportsdataverse/sdvplot/chartjs` returns Chart.js 4 dataset options and plugin objects, so no framework needs a
+wrapper. Load the league first, and build point styles and plugins in the browser (they create `<img>`/`<canvas>`).
+
+An Astro page with a Svelte 5 island (Game on Paper's stack):
+
+```astro
+---
+// src/pages/teams.astro
+import TeamScatter from "../components/TeamScatter.svelte";
+const rows = await getTeamRows(); // [{ team: "UGA", epa: 0.21, sr: 0.48 }, …]
+---
+<TeamScatter client:only="svelte" rows={rows} />
+```
+
+```svelte
+<!-- src/components/TeamScatter.svelte -->
+<script lang="ts">
+  import Chart from "chart.js/auto";
+  import { loadLeague } from "@sportsdataverse/sdvplot";
+  import { logoPoints, pointImages } from "@sportsdataverse/sdvplot/chartjs";
+
+  let { rows }: { rows: { team: string; epa: number; sr: number }[] } = $props();
+  let canvas: HTMLCanvasElement;
+
+  $effect(() => { // runs in the browser only, never during SSR
+    let chart: Chart | undefined;
+    let live = true;
+    loadLeague("cfb").then(() => {
+      if (!live) return;
+      chart = new Chart(canvas, {
+        type: "scatter",
+        data: { datasets: [{ data: rows.map((r) => ({ x: r.epa, y: r.sr })), ...logoPoints(rows.map((r) => r.team), { league: "cfb", radius: 14 }) }] },
+        plugins: [pointImages],
+      });
+    });
+    return () => { live = false; chart?.destroy(); };
+  });
+</script>
+
+<canvas bind:this={canvas}></canvas>
+```
+
+An expected-points line per team with its logo at the line's end (Game on Paper's EP chart, team colours from sdvplot):
+
+```ts
+// TODO(Task 15): matchupColors — a contrast-checked pair for the two teams on each theme; explicit team colours for now
+new Chart(canvas, {
+  type: "scatter",
+  data: {
+    datasets: Object.entries(series).map(([team, pts]) => ({ // series: { KC: [{ x, y }, …], BUF: […] }
+      label: team,
+      data: pts,
+      showLine: true,
+      borderWidth: 3,
+      borderColor: teamColor(team, "nfl"),
+      backgroundColor: teamColor(team, "nfl", { alpha: 0.5 }),
+      pointStyle: logoPoints([team], { league: "nfl", radius: 14 }).pointStyle, // one style, repeated per point
+      pointRadius: pts.map((_, i) => (i === pts.length - 1 ? 14 : 0)), // drawn only at the line's end
+    })),
+  },
+  plugins: [pointImages],
+});
+```
+
+A radar in team colours (the datasets Game on Paper's `utils/radar.ts` builds for `TeamRadarChart.svelte` and
+`MatchupRadarChart.svelte`):
+
+```ts
+import { teamColor, teamFill } from "@sportsdataverse/sdvplot/chartjs";
+// TODO(Task 15): matchupColors — the two-team pair; explicit team colours for now
+const pct = { UGA: [91, 80, 67], ALA: [85, 88, 54] };
+const data = {
+  labels: ["EPA/Play", "Success %", "Explosive %"],
+  datasets: Object.entries(pct).map(([team, values]) => ({
+    label: team,
+    data: values,
+    fill: true,
+    backgroundColor: teamFill(team, "cfb"), // rgba(r, g, b, 0.2)
+    borderColor: teamColor(team, "cfb"),
+    pointBackgroundColor: teamColor(team, "cfb"),
+    pointBorderColor: "#fff", // radar.ts:70-80 rings each point in white
+    pointHoverBackgroundColor: "#fff",
+    pointHoverBorderColor: teamColor(team, "cfb"),
+  })),
+};
+```
+
+Faint team logos behind a line (Game on Paper's win-probability chart): the first team top-left of the chart area, the
+last bottom-left, at 0.4 opacity and 75 px tall by default:
+
+```ts
+import { logoWatermarks, teamColor } from "@sportsdataverse/sdvplot/chartjs";
+const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+// TODO(Task 15): matchupColors — the home/away pair; explicit team colours for now
+new Chart(canvas, {
+  type: "line",
+  data: { labels: seconds, datasets: [{ data: homeWp, borderColor: teamColor("UGA", "cfb"), pointRadius: 0 }] },
+  plugins: [logoWatermarks(["UGA", "ALA"], { league: "cfb", variant: dark ? "dark" : "default" })],
+});
+```
+
+Logos on a category axis:
+
+```ts
+new Chart(canvas, {
+  type: "bar",
+  data: { labels: ["KC", "BUF", "BAL"], datasets: [{ data: [0.21, 0.18, 0.15], backgroundColor: teamColor(["KC", "BUF", "BAL"], "nfl") }] },
+  plugins: [axisLogos("x", { league: "nfl", size: 28 })],
+});
+```
+
+- Sizes are pixels: `radius` (point styles), `size` (axis logos, watermarks) — Chart.js draws an image at its own size.
+- Add `pointImages` to `plugins` with any `*Points`: Chart.js does not redraw when an `<img>` finishes loading.
+- An unknown team draws its own label as text (or pass `fallback: "circle"`), with one warning per call.
+- Dark theme: `variant: "dark"` (read `prefers-color-scheme` as Game on Paper does); a team with no dark mark falls back to a light one by polarity, so no `onerror` retry is needed.
+- Two teams on one chart: `teamColor(team, league, { which: "secondary" })` is the alternate; a contrast-checked pair per theme is `matchupColors` (Task 15, pending).
+- `axisLogos` needs a category axis; unresolved labels keep their text; your own scale options are not modified, and replacing `chart.options` (`chart.options = next; chart.update()`) keeps the logos.
 
 ## Data provenance
 

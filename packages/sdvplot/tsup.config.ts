@@ -8,6 +8,7 @@ export default defineConfig({
     react: "src/react/index.tsx",
     plot: "src/plot/index.ts",
     d3: "src/d3/index.ts",
+    chartjs: "src/chartjs.ts",
     testing: "src/testing/index.ts",
   },
   external: [
@@ -15,6 +16,7 @@ export default defineConfig({
     "react/jsx-runtime",
     "@observablehq/plot",
     "d3",
+    "chart.js",
     "@sportsdataverse/sporty",
     "@sportsdataverse/sporty/plot",
     "@sportsdataverse/sporty/d3",
