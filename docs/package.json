@@ -5,7 +5,7 @@
   "scripts": {
     "docusaurus": "docusaurus",
     "start": "pnpm --filter @sportsdataverse/examples prerender && docusaurus start",
-    "build": "pnpm --filter @sportsdataverse/examples prerender && node --max-old-space-size=6144 ./node_modules/@docusaurus/core/bin/docusaurus.mjs build && pnpm --filter @sportsdataverse/examples check-build",
+    "build": "pnpm --filter @sportsdataverse/examples prerender && npm run build --prefix ../notebooks && node --max-old-space-size=6144 ./node_modules/@docusaurus/core/bin/docusaurus.mjs build && pnpm --filter @sportsdataverse/examples check-build",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",
