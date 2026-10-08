@@ -45,6 +45,13 @@ export type {
   BasketballDisplayRange,
   BasketballFeature,
 } from "./basketball/types.js";
+export {
+  BASKETBALL_ZONES,
+  BASKETBALL_ZONE_LABELS,
+  basketballZoneOf,
+  basketballZones,
+} from "./basketball/zones.js";
+export type { BasketballZone, BasketballZoneArea, ZoneOptions } from "./basketball/zones.js";
 export { HOCKEY_COLOR_KEYS, HOCKEY_DISPLAY_RANGES, HOCKEY_FEATURES } from "./hockey/types.js";
 export type { HockeyColorKey, HockeyDisplayRange, HockeyFeature } from "./hockey/types.js";
 export { FOOTBALL_COLOR_KEYS, FOOTBALL_DISPLAY_RANGES, FOOTBALL_FEATURES } from "./football/types.js";

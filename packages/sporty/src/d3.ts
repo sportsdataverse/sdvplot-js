@@ -1,7 +1,8 @@
-import type { Selection } from "d3";
+import type { BaseType, Selection } from "d3";
 import { type Scene, hidden, isVisiblePolygon, isVisibleText } from "./scene.js";
 
-type Sel<G extends Element> = Selection<G, unknown, null, undefined>;
+/** A selection of `G` with any datum and parent: d3's `Selection` is invariant in its datum, so `unknown` would reject `create("svg")`. */
+type Sel<G extends Element, D> = Selection<G, D, BaseType, unknown>;
 
 /**
  * Append a Scene to a d3 selection as `<g class="sporty-surface">`, drawn through the caller's x/y
@@ -9,12 +10,12 @@ type Sel<G extends Element> = Selection<G, unknown, null, undefined>;
  * same skips as `toSVG` (see `isVisiblePolygon` / `isVisibleText`). Text font size is the number
  * height (`fitBox[1] / 1.5`) mapped through `y`.
  */
-export function appendSurface<G extends SVGGElement | SVGSVGElement>(
-  selection: Sel<G>,
+export function appendSurface<G extends SVGGElement | SVGSVGElement, D>(
+  selection: Sel<G, D>,
   scene: Scene,
   x: (v: number) => number,
   y: (v: number) => number,
-): Sel<SVGGElement> {
+): Sel<SVGGElement, D> {
   const g = selection.append("g").attr("class", "sporty-surface");
   const [x0, y0, x1, y1] = scene.bbox;
   if (scene.background !== undefined)

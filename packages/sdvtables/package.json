@@ -29,7 +29,7 @@
     "pack:check": "node ../../tools/pack-check.mjs"
   },
   "peerDependencies": {
-    "@sportsdataverse/sdvplot": "workspace:^"
+    "@sportsdataverse/sdvplot": "workspace:^0"
   },
   "devDependencies": {
     "@sportsdataverse/sdvplot": "workspace:^",

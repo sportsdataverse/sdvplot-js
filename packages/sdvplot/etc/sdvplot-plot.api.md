@@ -7,9 +7,13 @@
 import { BasketballColorKey } from '@sportsdataverse/sporty';
 import { BasketballDisplayRange } from '@sportsdataverse/sporty';
 import { BasketballParamUpdates } from '@sportsdataverse/sporty';
+import { BasketballZone } from '@sportsdataverse/sporty';
+import { BasketballZoneArea } from '@sportsdataverse/sporty';
 import { FootballColorKey } from '@sportsdataverse/sporty';
 import { FootballDisplayRange } from '@sportsdataverse/sporty';
 import { FootballParamUpdates } from '@sportsdataverse/sporty';
+import { Frame } from '@sportsdataverse/sporty';
+import { FrameName } from '@sportsdataverse/sporty';
 import { HockeyColorKey } from '@sportsdataverse/sporty';
 import { HockeyDisplayRange } from '@sportsdataverse/sporty';
 import { HockeyParamUpdates } from '@sportsdataverse/sporty';
@@ -150,6 +154,49 @@ export interface RefLineOptions<R> {
     x?: Channel<R>;
     // (undocumented)
     y?: Channel<R>;
+}
+
+// Warning: (ae-forgotten-export) The symbol "SignaturePoint" needs to be exported by the entry point plot.d.ts
+//
+// @public
+export function shootingSignature(points: readonly SignaturePoint[], o?: ShootingSignatureOptions): Plot.Markish[];
+
+// @public
+export interface ShootingSignatureOptions {
+    curve?: "monotone-x" | "basis";
+    // Warning: (ae-forgotten-export) The symbol "DiffScale" needs to be exported by the entry point plot.d.ts
+    fill?: DiffScale;
+    halfWidth?: (p: SignaturePoint, maxShare: number) => number;
+    league?: boolean;
+}
+
+// Warning: (ae-forgotten-export) The symbol "CellVsLeague" needs to be exported by the entry point plot.d.ts
+//
+// @public
+export function shotCells(cells: readonly CellVsLeague[], o: ShotCellsOptions): Plot.Markish;
+
+// @public
+export interface ShotCellsOptions {
+    clip?: boolean;
+    frame?: FrameName | Frame;
+    prior?: number;
+    r: readonly number[] | number;
+    scale?: DiffScale;
+    // Warning: (ae-forgotten-export) The symbol "BinShape" needs to be exported by the entry point plot.d.ts
+    shape?: BinShape;
+    stroke?: string;
+    strokeWidth?: number;
+}
+
+// @public
+export function shotZones(areas: readonly BasketballZoneArea[], o: ShotZonesOptions): Plot.Markish[];
+
+// @public
+export interface ShotZonesOptions {
+    fill: (zone: BasketballZone) => string;
+    fillOpacity?: number;
+    frame?: FrameName | Frame;
+    text?: (zone: BasketballZone) => string;
 }
 
 // Warning: (ae-forgotten-export) The symbol "Placement" needs to be exported by the entry point plot.d.ts

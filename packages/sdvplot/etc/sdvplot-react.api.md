@@ -14,8 +14,8 @@ export function Headshot(input: HeadshotProps): ReactElement | null;
 //
 // @public (undocumented)
 export interface HeadshotProps extends ImgProps {
-    // (undocumented)
     alt?: string;
+    fallback?: "none" | "initials";
     height?: number;
     // Warning: (ae-forgotten-export) The symbol "HeadshotIdSystem" needs to be exported by the entry point react.d.ts
     //
@@ -25,6 +25,7 @@ export interface HeadshotProps extends ImgProps {
     //
     // (undocumented)
     league: EspnHeadshotLeague;
+    name?: string;
     // Warning: (ae-forgotten-export) The symbol "Value" needs to be exported by the entry point react.d.ts
     //
     // (undocumented)
@@ -74,7 +75,7 @@ export function Wordmark(props: Omit<TeamLogoProps, "markType">): ReactElement |
 
 // Warnings were encountered during analysis:
 //
-// dist/react.d.ts:54:5 - (ae-forgotten-export) The symbol "ColorOptions" needs to be exported by the entry point react.d.ts
+// dist/react.d.ts:64:5 - (ae-forgotten-export) The symbol "ColorOptions" needs to be exported by the entry point react.d.ts
 
 // (No @packageDocumentation comment for this package)
 
