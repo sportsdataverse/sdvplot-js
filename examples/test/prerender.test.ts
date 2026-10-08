@@ -63,6 +63,6 @@ test("a worker that dies mid-run fails the gate, counting the examples that neve
   );
   await expect(
     prerender({ root, files: ["crash.test.ts"], out: join(root, "out"), static: join(root, "static") }),
-  ).rejects.toThrow(/2 example\(s\) failed or did not run, [1-9]\d* unhandled error/);
+  ).rejects.toThrow(/2 example\(s\) failed or did not run, 1 unhandled error\(s\)/);
   process.exitCode = undefined; // the crashed inner run set it; this worker is fine
 });

@@ -45,7 +45,7 @@ export async function prerender(o: PrerenderOptions): Promise<void> {
   await vitest.close();
   if (failed > 0 || errors > 0 || broken > 0 || process.exitCode)
     throw new Error(
-      `prerender: ${failed} example(s) failed or did not run, ${errors} unhandled error(s), in ${broken} file(s); the docs are never built from a failing gate`,
+      `prerender: ${failed} example(s) failed or did not run, ${errors} unhandled error(s), ${broken} failed file(s); the docs are never built from a failing gate`,
     );
   // Over-limit outputs become static files (the directory staticFile() names); stale ones go first.
   rmSync(join(o.static, "examples"), { recursive: true, force: true });
