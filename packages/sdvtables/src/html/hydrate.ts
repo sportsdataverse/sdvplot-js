@@ -21,16 +21,21 @@ const edge = (button: Element | null, atEdge: boolean): void => {
 
 /**
  * Progressive enhancement for markup produced by `renderHTML(table)`: one delegated click + input listener drive the
- * engine; each change re-renders ONLY the table block (`[data-sdv-body]`) and the pager, at most once per animation
- * frame (the engine state itself moves synchronously). Toolbar inputs are rebuilt only when a column is hidden or
- * shown; otherwise their values are synced from the engine state, so an external filter change shows in the box.
- * A row hover (the pointer's, or a linked figure's through `linkSelection`) re-renders nothing: the row gets the
- * `sdvt-hover` class, which survives the next re-render; a hover the engine already holds (`getHover`) shows on attach.
- * A focused control, or a focusable element inside a rendered cell, that the re-render replaced gets focus back
- * (shadow-root mounts included). Attaching does NOT reconcile the SSR markup against the engine state: render the
- * markup from the same table state you hydrate. Hydrating an element again replaces its previous binding (HMR,
- * client-side navigation, an effect without cleanup), so every control still acts once. The returned teardown is
- * idempotent. Until it runs, the table's subscriber keeps `el` alive as long as the table lives.
+ * engine; each change re-renders ONLY the table block (`[data-sdv-body]`) and the pager, once, on the next animation
+ * frame, however many changes land in it (the engine state itself moves synchronously). One exception: a click,
+ * pointer move or key on the table while a change to its rows (a sort, filter, page turn or `setRows`) waits for that
+ * frame draws it at once, so the event never reads an old row as the one now at its index; a click or key on a row
+ * this replaced acts on nothing, and Enter or Space on it is consumed, so the page does not scroll. A change that keeps
+ * the rows (a selection, the cursor, a keyed row re-sent as a new object) waits for its frame. Toolbar inputs are
+ * rebuilt only when a column is hidden or shown; otherwise their values are synced from the engine state, so an
+ * external filter change shows in the box. A row hover (the pointer's, or a linked figure's through `linkSelection`)
+ * re-renders nothing: the row gets the `sdvt-hover` class, which survives the next re-render; a hover the engine
+ * already holds (`getHover`) shows on attach. A focused control, or a focusable element inside a rendered cell, that
+ * the re-render replaced gets focus back (shadow-root mounts included). Attaching does NOT reconcile the SSR markup
+ * against the engine state: render the markup from the same table state you hydrate. Hydrating an element again
+ * replaces its previous binding (HMR, client-side navigation, an effect without cleanup) after drawing any change that
+ * binding still owed, so every control still acts once. The returned teardown is idempotent and drops a render still
+ * owed. Until it runs, the table's subscriber keeps `el` alive as long as the table lives.
  */
 export function hydrate<Row>(el: Element, table: Table<Row>): () => void {
   const body = el.querySelector("[data-sdv-body]");

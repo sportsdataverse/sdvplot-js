@@ -252,7 +252,9 @@ table.setFilter("division", "east"); // BUF, MIA, NYJ, NE; back to the first pag
 
 `renderHTML(table)` draws sort buttons in the headers (`aria-sort` on the sorted one), a search box and the filter
 boxes above the table, and a pager below it. `hydrate(el, table)` attaches delegated listeners and re-renders only the
-table block and the pager, at most once per animation frame; it returns a teardown. Render the markup from the same
+table block and the pager, once, on the next animation frame, however many changes land in it; it returns a teardown.
+A click, pointer move or key that arrives while a change to the rows (a sort, filter, page turn or `setRows`) waits for
+that frame draws it first, so the event never acts on an old row at a new row's index. Render the markup from the same
 table state you hydrate: attaching does not reconcile the two.
 
 Inside an interactive table: j/k (↓/↑) move between the rows of the page and never turn it (the pager does), h/l
