@@ -185,12 +185,19 @@ export function socialCard(
   return `<svg xmlns="${SVG_NS}"${inked} width="${cw}" height="${ch}" viewBox="0 0 ${cw} ${ch}"><rect width="${cw}" height="${ch}" fill="${background}"/>${inner}</svg>`;
 }
 
-/** Node's "cannot find" for the peer itself, on the error or under a loader's wrapper (vitest's mock error, say). */
-const peerMissing = (e: unknown): boolean =>
-  e instanceof Error &&
-  ((/MODULE_NOT_FOUND/.test(String((e as { code?: unknown }).code)) &&
-    /['"]@resvg\/resvg-js['"]/.test(e.message)) ||
-    peerMissing(e.cause));
+/**
+ * True when `e` is Node's "cannot find" (`ERR_MODULE_NOT_FOUND` / `MODULE_NOT_FOUND`) for the optional peer `name`
+ * itself, on the error or under a loader's wrapper (vitest's mock error, say); a file missing inside an installed peer
+ * is not.
+ */
+export function peerMissing(e: unknown, name: string): boolean {
+  const quoted = new RegExp(`['"]${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}['"]`);
+  return (
+    e instanceof Error &&
+    ((/MODULE_NOT_FOUND/.test(String((e as { code?: unknown }).code)) && quoted.test(e.message)) ||
+      peerMissing(e.cause, name))
+  );
+}
 
 /** The bytes at `url`; a network failure or a non-2xx answer is a DownloadError. */
 async function download(url: string): Promise<Uint8Array> {
@@ -254,7 +261,7 @@ export async function toPNG(
   let text = typeof svg === "string" ? svg : svg.outerHTML;
   const mod = await import("@resvg/resvg-js").catch((e: unknown) => {
     throw new OptionalDependencyError(
-      peerMissing(e)
+      peerMissing(e, "@resvg/resvg-js")
         ? "toPNG needs the optional peer @resvg/resvg-js, which is not installed: pnpm add @resvg/resvg-js"
         : `toPNG could not load the optional peer @resvg/resvg-js (installed, but it failed to load): ${String(e)}`,
       { cause: e },
@@ -293,7 +300,8 @@ export async function toPNG(
   }
 
   // the remote hrefs resvg cannot load itself, from a parse without the system-font scan (text does not change them)
-  const hrefs = [...new Set(new mod.Resvg(text, { font: { loadSystemFonts: false } }).imagesToResolve())];
+  const probe = new mod.Resvg(text, NO_FONTS);
+  const hrefs = [...new Set(probe.imagesToResolve())];
   let bodies: Uint8Array[] = [];
   if (hrefs.length > 0 && images === "skip") {
     warn(
@@ -302,11 +310,21 @@ export async function toPNG(
     );
   } else if (hrefs.length > 0) {
     bodies = await mapLimit(hrefs, FETCH_LIMIT, download);
+    const zoom = fitTo.mode === "width" ? fitTo.value / probe.width : scale;
+    const tags = text.match(/<image\b[^>]*>/gi) ?? [];
     // every image goes in as a data URI, so ONE Resvg draws them all: resolveImage costs ~150 ms a call
     for (const [i, href] of hrefs.entries()) {
       const b = bodies[i] as Uint8Array;
-      const uri = `data:${imageType(b)};base64,${Buffer.from(b).toString("base64")}`;
-      text = text.replace(hrefAttr(href), (_m, attr: string, q: string) => `${attr}${q}${uri}${q}`);
+      let uri = dataURI(b);
+      const re = hrefAttr(href);
+      const small = shrink(
+        mod,
+        uri,
+        tags.filter((t) => t.search(re) >= 0),
+        zoom,
+      );
+      if (small !== undefined) uri = dataURI(small);
+      text = text.replace(re, (_m, attr: string, q: string) => `${attr}${q}${uri}${q}`);
     }
   }
   const resvg = new mod.Resvg(text, opts);
@@ -318,6 +336,48 @@ export async function toPNG(
   }
   return new Uint8Array(resvg.render().asPng());
 }
+
+const NO_FONTS = { font: { loadSystemFonts: false } };
+/** A shared image's one raster is this many times its largest box: headroom for a transform that enlarges it. */
+const OVERSAMPLE = 2;
+
+/**
+ * resvg decodes an `<image>` per element, at the image's own size: 2000 uses of a 500 px logo held 2 GB for 6 s (a
+ * `<use>` or resolveImage costs the same). An image used more than once is therefore drawn once, at OVERSAMPLE times its
+ * largest box in output pixels, and every use inlines that small PNG. A single use keeps the original.
+ */
+function shrink(
+  mod: typeof import("@resvg/resvg-js"),
+  uri: string,
+  uses: readonly string[],
+  zoom: number,
+): Uint8Array | undefined {
+  if (uses.length < 2) return undefined;
+  let side = 0;
+  for (const tag of uses) {
+    const w = userUnits(attrOf(tag, "width"));
+    const h = userUnits(attrOf(tag, "height"));
+    // ponytail: a use without a numeric size (auto, %) keeps the full image, and its per-use decode
+    if (!(w > 0 && h > 0)) return undefined;
+    side = Math.max(side, w, h);
+  }
+  // the image's own size, read from its header (an image with no width/height is drawn at it)
+  const own = new mod.Resvg(
+    `<svg xmlns="${SVG_NS}" width="1" height="1"><image href="${uri}"/></svg>`,
+    NO_FONTS,
+  ).getBBox();
+  const k = own ? Math.ceil(OVERSAMPLE * zoom * side) / Math.max(own.width, own.height) : 1;
+  if (!own || !(k < 1)) return undefined;
+  const [w, h] = [Math.max(1, Math.round(own.width * k)), Math.max(1, Math.round(own.height * k))];
+  return new mod.Resvg(
+    `<svg xmlns="${SVG_NS}" width="${w}" height="${h}"><image href="${uri}" width="${w}" height="${h}" preserveAspectRatio="none"/></svg>`,
+    NO_FONTS,
+  )
+    .render()
+    .asPng();
+}
+
+const dataURI = (b: Uint8Array): string => `data:${imageType(b)};base64,${Buffer.from(b).toString("base64")}`;
 
 /** A downloaded image's data-URI type from its first bytes: SVG markup, JPEG, GIF, else PNG. */
 function imageType(b: Uint8Array): string {

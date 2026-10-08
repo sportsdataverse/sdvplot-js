@@ -472,6 +472,107 @@ describe("toPNG remote images", () => {
     for (let i = 0; i < 32; i++) expect(inked(out, box(i))).toBeGreaterThan(0.1);
     expect(ms).toBeLessThan(2000);
   });
+  describe("an href used many times is decoded once, at the size it is drawn", () => {
+    // resvg decodes an <image> per element at its intrinsic size: 2000 uses of the 500 px NYG logo held 2 GB for 6 s
+    const serveLogos = () =>
+      vi.stubGlobal(
+        "fetch",
+        vi.fn(
+          async (url: string) =>
+            new Response(/\.svg(\?|$)/.test(url) ? MTL.slice() : NYG.slice(), { status: 200 }),
+        ),
+      );
+    const box = (i: number) => ({ x: (i % 50) * 20, y: Math.floor(i / 50) * 20, width: 20, height: 20 });
+    const grid = (n: number, href: (i: number) => string): string =>
+      `<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="${Math.ceil(n / 50) * 20}">${Array.from(
+        { length: n },
+        (_, i) => {
+          const b = box(i);
+          return `<image href="${href(i)}" x="${b.x}" y="${b.y}" width="${b.width}" height="${b.height}"/>`;
+        },
+      ).join("")}</svg>`;
+    test("2000 uses of one logo and 300 uses of four render fast, every use drawn", async () => {
+      serveLogos();
+      let t0 = performance.now();
+      const one = await toPNG(
+        grid(2000, () => "https://example.test/logo/nyg.png"),
+        { background: "white" },
+      );
+      const msOne = performance.now() - t0;
+      t0 = performance.now();
+      const four = await toPNG(
+        grid(300, (i) => `https://example.test/logo/${i % 4}.${i % 2 === 1 ? "svg" : "png"}`),
+        { background: "white" },
+      );
+      const msFour = performance.now() - t0;
+      console.log(
+        `toPNG, 2000 uses of 1 href: ${msOne.toFixed(0)} ms; 300 uses of 4: ${msFour.toFixed(0)} ms`,
+      );
+      for (const i of [0, 51, 777, 1999]) expect(inked(one, box(i))).toBeGreaterThan(0.1);
+      for (const i of [0, 1, 2, 3, 150, 299]) expect(inked(four, box(i))).toBeGreaterThan(0.1);
+      expect(msOne).toBeLessThan(1500);
+      expect(msFour).toBeLessThan(1000);
+    });
+    test("drawn as the full-size image would be: boxes of any shape, `preserveAspectRatio`, a scale", async () => {
+      serveLogos();
+      const shapes = [
+        `width="20" height="20"`,
+        `width="40" height="20"`,
+        `width="20" height="40"`,
+        `width="40" height="20" preserveAspectRatio="none"`,
+        `width="30" height="30" preserveAspectRatio="xMinYMin slice"`,
+      ];
+      // one href per logo (the shared path) against a distinct query per use (each drawn from the full image)
+      const fig = (href: (logo: string, i: number) => string): string =>
+        `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="100">${Array.from(
+          { length: 20 },
+          (_, i) =>
+            `<image href="${href(i % 2 ? "mtl.svg" : "nyg.png", i)}" x="${(i % 10) * 40}" y="${Math.floor(i / 10) * 50}" ${shapes[i % shapes.length]}/>`,
+        ).join("")}</svg>`;
+      for (const scale of [1, 2.5]) {
+        const shared = pixels(
+          await toPNG(
+            fig((logo) => `https://example.test/${logo}`),
+            { background: "white", scale },
+          ),
+        );
+        const full = pixels(
+          await toPNG(
+            fig((logo, i) => `https://example.test/${logo}?use=${i}`),
+            { background: "white", scale },
+          ),
+        );
+        // each logo's ink box (pixels darker than near-white) within its 40 x 50 cell: the same to a pixel
+        const ink = (p: typeof shared, i: number): number[] => {
+          let [x0, y0, x1, y1] = [Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY, -1, -1];
+          const [cx, cy] = [Math.round((i % 10) * 40 * scale), Math.round(Math.floor(i / 10) * 50 * scale)];
+          for (let y = cy; y < Math.min(cy + 50 * scale, p.h); y++)
+            for (let x = cx; x < Math.min(cx + 40 * scale, p.w); x++)
+              if (
+                p
+                  .at(x, y)
+                  .slice(0, 3)
+                  .some((v) => v < 250)
+              )
+                [x0, y0, x1, y1] = [Math.min(x0, x), Math.min(y0, y), Math.max(x1, x), Math.max(y1, y)];
+          return [x0, y0, x1, y1];
+        };
+        for (let i = 0; i < 20; i++) {
+          const [a, b] = [ink(shared, i), ink(full, i)];
+          for (let k = 0; k < 4; k++)
+            expect(Math.abs((a[k] as number) - (b[k] as number))).toBeLessThanOrEqual(1);
+        }
+        // and the pixels differ only by resampling (two steps instead of one): ~1.4 of 255 on average
+        let sum = 0;
+        for (let y = 0; y < shared.h; y++)
+          for (let x = 0; x < shared.w; x++) {
+            const [a, b] = [shared.at(x, y), full.at(x, y)];
+            for (let k = 0; k < 3; k++) sum += Math.abs((a[k] as number) - (b[k] as number));
+          }
+        expect(sum / (shared.w * shared.h * 3)).toBeLessThan(3);
+      }
+    });
+  });
 });
 
 describe("toPNG optional peer", () => {

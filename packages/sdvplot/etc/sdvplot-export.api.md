@@ -26,6 +26,9 @@ export function parseAspect(aspect: Aspect): number;
 export function parseGravity(gravity: string): Gravity;
 
 // @public
+export function peerMissing(e: unknown, name: string): boolean;
+
+// @public
 export function socialCard(svg: string, input?: SocialCardOptions): string;
 
 // @public
