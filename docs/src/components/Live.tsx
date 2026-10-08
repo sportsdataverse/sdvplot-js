@@ -54,7 +54,8 @@ export default function Live(p: LiveProps): ReactElement {
       cancelled = true;
     };
   }, [p.id, p.kind, p.thumb]);
-  // A static file is embedded as a document (never <img>: that would not load the external logo <image>s).
+  // A static file is embedded as a document (never <img>: that would not load the external logo <image>s); the
+  // wrapper is the scrolling container that keeps the fixed-size frame inside the column.
   const output =
     p.src === undefined ? (
       <div
@@ -64,15 +65,9 @@ export default function Live(p: LiveProps): ReactElement {
         dangerouslySetInnerHTML={{ __html: p.markup ?? "" }}
       />
     ) : (
-      <iframe
-        className="sdv-live-static"
-        hidden={mounted}
-        src={src}
-        title={p.title}
-        width={p.width}
-        height={p.height}
-        loading="lazy"
-      />
+      <div className="sdv-live-static" hidden={mounted}>
+        <iframe src={src} title={p.title} width={p.width} height={p.height} loading="lazy" />
+      </div>
     );
   if (p.thumb)
     return (

@@ -35,6 +35,7 @@
 }
 .sdv-live-static,
 .sdv-live-output {
+  max-width: 100%;
   overflow-x: auto;
 }
 .sdv-live-static svg,
@@ -42,11 +43,13 @@
   max-width: 100%;
   height: auto;
 }
-iframe.sdv-live-static {
+/* a static file embedded as a document; an SVG one keeps its own width/height attributes */
+.sdv-live-static iframe {
+  display: block;
   border: 0;
 }
-/* an .html output; an SVG one carries its own width/height and scrolls with its container */
-iframe.sdv-live-static:not([width]) {
+/* an .html output has no intrinsic size */
+.sdv-live-static iframe:not([width]) {
   width: 100%;
   height: 32rem;
 }

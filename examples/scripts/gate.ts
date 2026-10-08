@@ -19,6 +19,18 @@ export interface PrerenderOptions {
 const tests = (t: Task): Task[] => (t.type === "suite" ? t.tasks.flatMap(tests) : [t]);
 
 /**
+ * Plot output is HTML-serialised (`outerHTML`), so its root <svg> declares no namespace. Inline that is fine; served
+ * as its own document it parses as generic XML (0×0 shapes, "no style information"). Declare it, and xlink if used.
+ */
+export function svgDocument(markup: string): string {
+  const open = /^\s*<svg\b[^>]*/.exec(markup)?.[0] ?? "";
+  let ns = /\sxmlns=/.test(open) ? "" : ' xmlns="http://www.w3.org/2000/svg"';
+  if (/\bxlink:/.test(markup) && !/\sxmlns:xlink=/.test(open))
+    ns += ' xmlns:xlink="http://www.w3.org/1999/xlink"';
+  return markup.replace(/^(\s*<svg\b)/, `$1${ns}`);
+}
+
+/**
  * The gate IS the prerenderer: the same run that proves every example works writes what the docs serve. Throws
  * when any test fails (or did not run), so the docs are never built from a failing gate.
  */
@@ -49,6 +61,6 @@ export async function prerender(o: PrerenderOptions): Promise<void> {
     if (!overLimit(row.markup)) continue;
     const file = join(o.static, staticFile(row));
     mkdirSync(dirname(file), { recursive: true });
-    writeFileSync(file, row.markup);
+    writeFileSync(file, file.endsWith(".svg") ? svgDocument(row.markup) : row.markup);
   }
 }
