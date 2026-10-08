@@ -188,6 +188,23 @@ test("S21: the radius-10 baseline reads master's foot on every cell but the 13 w
     0.5717731325829557, 0.6686506853055206,
   ]);
 });
+test("cellsVsDistance reads its table as feet, so it refuses bins that are not 1 ft from 0 (M5)", () => {
+  // 3-ft bins would read bin 9 (27 ft) for a cell 9 ft out
+  expect(() => cellsVsDistance(BKN, LEAGUE.byBin3, 10)).toThrow(InputError);
+  expect(() => cellsVsDistance(BKN, fgPctByDistance(BKN, 3), 10)).toThrow(
+    "cellsVsDistance needs 1-ft distance bins from 0 (fgPctByDistance(shots, 1)); bin 1 is at 3 ft",
+  );
+  expect(() => cellsVsDistance(BKN, LEAGUE.byFoot.slice(1), 10)).toThrow(/bin 0 is at 1 ft/);
+  expect(cellsVsDistance(BKN, LEAGUE.byFoot.slice(0, 20), 10)).toHaveLength(374); // a shorter 1-ft table is fine
+});
+test("statsBySide refuses a negative or non-finite centreHalfWidth (M5): -7.5 would put x = 3 on the left", () => {
+  for (const bad of [-7.5, -1e-9, Number.NaN, Number.POSITIVE_INFINITY])
+    expect(() => statsBySide(BKN, 1, 35, bad)).toThrow(InputError);
+  expect(() => statsBySide(BKN, 1, 35, -7.5)).toThrow(
+    "statsBySide centreHalfWidth must be a finite number >= 0 or false, got -7.5",
+  );
+  expect(statsBySide(BKN, 1, 35, 0)).toEqual(statsBySide(BKN));
+});
 test("fgPctByDistance and statsBySide reject a binFt or maxFt that is not a finite number > 0", () => {
   for (const bad of [0, -1, Number.NaN, Number.POSITIVE_INFINITY]) {
     for (const f of [fgPctByDistance, statsBySide]) {

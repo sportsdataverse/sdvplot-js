@@ -40,8 +40,12 @@ export const split = (attempts: number, makes: number): Split => ({
 export const shotZone = (s: ShotRow): BasketballZone =>
   basketballZoneOf(s.x_legacy, s.y_legacy, s.shot_value, { scale: 10 });
 
-/** Inside the sidelines and in front of the baseline (aggregate.ts:81-84); releases carry a few impossible points. */
-const onCourt = (s: ShotRow): boolean => Math.abs(s.x_legacy) <= 250 && s.y_legacy >= -52.5;
+/**
+ * Inside the sidelines and in front of the baseline (aggregate.ts:81-84); releases carry a few impossible points.
+ * Also finite: `main` lets `y_legacy = Infinity` through. x's bound already rejects NaN and ±Infinity.
+ */
+const onCourt = (s: ShotRow): boolean =>
+  Math.abs(s.x_legacy) <= 250 && s.y_legacy >= -52.5 && Number.isFinite(s.y_legacy);
 
 export interface CellBin extends Split {
   /** Cell centre, legacy tenths. */
@@ -53,7 +57,8 @@ export interface CellBin extends Split {
 }
 
 /**
- * Bin shots in DATA space (legacy tenths), dropping off-court points (aggregate.ts:86-104). `cell` is a hexagon
+ * Bin shots in DATA space (legacy tenths), dropping off-court points (aggregate.ts:86-104) and points with a
+ * non-finite coordinate (`main` lets `y_legacy = Infinity` through). `cell` is a hexagon
  * radius (10 = a 1 ft hex) or any `binner` lattice, e.g. `{ shape: "square", side: 15 }`. Bins come out in
  * first-seen order (d3-hexbin's, for hexagons).
  *

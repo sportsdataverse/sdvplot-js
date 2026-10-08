@@ -81,7 +81,7 @@ export interface DiffScaleOptions {
   palette?: DiffPalette;
   /** `"dark"` swaps RdBu's near-white centre for `#303030` so an average mark recedes (`theme.ts:52-58`). Ignored by `"master"`. */
   theme?: "light" | "dark";
-  /** Saturation in FG% fraction; default 0.15 (`theme.ts:29`). `"master"` keeps its own stops. */
+  /** Saturation in FG% fraction, finite and above 0 (else InputError); default 0.15 (`theme.ts:29`). `"master"` keeps its own stops. */
   domain?: number;
   /** Colour for `null` (no league figure); default `var(--sdv-muted, #525252)`. */
   nullColor?: string;
@@ -118,7 +118,8 @@ export interface DiffScale {
 export function diffScale(o: DiffScaleOptions = {}): DiffScale {
   const palette = o.palette ?? "rdbu";
   const D = o.domain ?? 0.15;
-  if (!(D > 0)) throw new InputError(`diffScale domain must be > 0, got ${String(D)}`);
+  if (!(Number.isFinite(D) && D > 0))
+    throw new InputError(`diffScale domain must be a finite number > 0, got ${String(D)}`);
   const nullColor = o.nullColor ?? "var(--sdv-muted, #525252)";
   let colour: (d: number) => string;
   let plot: DiffScale["plot"];

@@ -8,6 +8,8 @@ import { shotZone } from "../../src/shots/aggregate.js";
 import {
   type LeagueCell,
   type LeagueIndex,
+  type ShotRow,
+  binShots,
   binner,
   cellsVsLeague,
   leagueIndex,
@@ -23,6 +25,21 @@ test("fixture sanity: 2000 shots, 890 made, 968 threes, 1998 within 35 ft", () =
   expect(BKN.filter((s) => s.shot_result === "Made").length).toBe(890);
   expect(BKN.filter((s) => s.shot_value === 3).length).toBe(968);
   expect(BKN.filter((s) => s.shot_distance <= 35).length).toBe(1998);
+});
+test("binShots drops a shot with a non-finite coordinate, as it drops off-court ones (M5; main lets y = Infinity in)", () => {
+  const shot = BKN[0] as ShotRow;
+  const odd = [
+    { ...shot, y_legacy: Number.POSITIVE_INFINITY },
+    { ...shot, y_legacy: Number.NaN },
+    { ...shot, x_legacy: Number.NEGATIVE_INFINITY },
+    { ...shot, x_legacy: Number.NaN },
+  ];
+  for (const cell of [15, { shape: "square", side: 15 }] as const) {
+    expect(binShots(odd, cell)).toEqual([]);
+    expect(binShots([...BKN, ...odd], cell)).toEqual(binShots(BKN, cell));
+  }
+  // so the league index cells, and the size caps read from them, never see one (zones count every shot: main parity)
+  expect(leagueIndex([...BKN, ...odd], 15).cells).toEqual(leagueIndex(BKN, 15).cells);
 });
 test("zones: every shot in main's zone; statsByZone equal", () => {
   expect(BKN.map((s) => BASKETBALL_ZONES.indexOf(shotZone(s))).join("")).toBe(ORACLE.main.zoneOf);

@@ -91,7 +91,8 @@ export interface SideBin {
 /**
  * Left / centre / right of the hoop by distance (aggregate.ts:218-240): left is `x < -centreHalfWidth`, right is
  * `x > centreHalfWidth`. The default 0 puts `x == 0` in centre (`main`); `false` drops it, as `master`'s
- * `binLeftRight` did (`src/utils/visuals/bin.ts:36-42`). `binFt` and `maxFt` as for `fgPctByDistance`.
+ * `binLeftRight` did (`src/utils/visuals/bin.ts:36-42`). `binFt` and `maxFt` as for `fgPctByDistance`; a
+ * `centreHalfWidth` that is negative or not finite throws InputError.
  *
  * @example
  * ```ts
@@ -106,6 +107,10 @@ export function statsBySide(
   maxFt = 35,
   centreHalfWidth: number | false = 0,
 ): SideBin[] {
+  if (centreHalfWidth !== false && !(Number.isFinite(centreHalfWidth) && centreHalfWidth >= 0))
+    throw new InputError(
+      `statsBySide centreHalfWidth must be a finite number >= 0 or false, got ${String(centreHalfWidth)}`,
+    );
   const half = centreHalfWidth === false ? 0 : centreHalfWidth;
   const acc = Array.from({ length: binCount(binFt, maxFt) }, () => ({
     left: [0, 0],
@@ -134,7 +139,8 @@ export function statsBySide(
 /**
  * Player cells against the league FG% at the cell centre's distance, `floor(|centre| / 10)` ft, falling back one
  * foot when that bin is empty (blazing-the-nets `master` `src/components/Hexagon/index.js:44-49`). `cell` is a
- * hexagon radius (default 10, master's) or any `binner` lattice, e.g. `{ shape: "square", side: 10 }`.
+ * hexagon radius (default 10, master's) or any `binner` lattice, e.g. `{ shape: "square", side: 10 }`. `byFoot` is
+ * read as feet, so it must be 1-ft bins from 0 (`fgPctByDistance(league)`), else InputError.
  *
  * The distance is `Math.hypot(x, y)`, a deliberate divergence from master's `Math.sqrt(x ** 2 + y ** 2)`
  * (`src/lib/distance.js:3-4`). On a hexagon centre exactly a whole number of feet out, such as (15√3, 15) at 3 ft,
@@ -155,6 +161,11 @@ export function cellsVsDistance(
   byFoot: readonly DistanceBin[],
   cell: number | BinnerOptions = 10,
 ): CellVsLeague[] {
+  const bad = byFoot.findIndex((b, i) => b.distance !== i);
+  if (bad >= 0)
+    throw new InputError(
+      `cellsVsDistance needs 1-ft distance bins from 0 (fgPctByDistance(shots, 1)); bin ${bad} is at ${String(byFoot[bad]?.distance)} ft`,
+    );
   return binShots(player, cell).map((h) => {
     // hypot, not master's sqrt(x ** 2 + y ** 2) (distance.js:3-4), which reads a whole-foot centre one foot short
     const d = Math.floor(Math.hypot(h.x, h.y) / 10);

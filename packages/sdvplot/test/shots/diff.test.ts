@@ -3,6 +3,7 @@ import * as Plot from "@observablehq/plot";
 import { scaleLinear } from "d3";
 import { expect, test } from "vitest";
 import ORACLE from "../../../../fixtures/shots/oracle.json" with { type: "json" };
+import { InputError } from "../../src/errors.js";
 import { diffScale } from "../../src/shots/index.js";
 
 const XS: number[] = ORACLE.main.diff.x;
@@ -43,4 +44,12 @@ test("null is nullColor; a non-positive domain throws", () => {
   expect(diffScale()(null)).toBe("var(--sdv-muted, #525252)");
   expect(diffScale({ nullColor: "none" })(null)).toBe("none");
   expect(() => diffScale({ domain: 0 })).toThrow(/domain/);
+});
+test("diffScale refuses a non-finite or non-positive domain (M5): Infinity painted every diff neutral", () => {
+  for (const domain of [0, -0.15, Number.NaN, Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY])
+    expect(() => diffScale({ domain })).toThrow(InputError);
+  expect(() => diffScale({ domain: Number.POSITIVE_INFINITY })).toThrow(
+    "diffScale domain must be a finite number > 0, got Infinity",
+  );
+  expect(diffScale({ domain: 0.3 })(0.3)).toBe(diffScale()(0.15)); // a finite domain still saturates at its end
 });
