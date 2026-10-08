@@ -49,8 +49,13 @@ export const FRAMES: {
    * (`"nba-legacy"` instead gives unrotated points.)
    */
   readonly "nba-legacy-vertical": Frame;
-  readonly "hockeytech-a": Frame;
-  readonly "hockeytech-b": Frame;
+  /**
+   * HockeyTech play-by-play `xLocation`/`yLocation` (PWHL, AHL, OHL, ECHL, ...): a 600x300 canvas, top-left origin,
+   * y down, centre ice at (300, 150), onto a 200x85 ft rink (y up). The canvas is stylised rather than true to scale:
+   * converted end-zone faceoff dots land at about ±67 ft and ±52 ft against regulation ±69 ft, so the converted feet
+   * are approximate.
+   */
+  readonly hockeytech: Frame;
   readonly "espn-football-0-100": Frame;
 } = {
   "nba-legacy": {
@@ -77,17 +82,11 @@ export const FRAMES: {
     description:
       "stats.nba.com shot frame with the hoop at the bottom: points already in a rotation-90 scene's rotated frame (do not rotate them again); x across with its sign kept, y toward half court",
   },
-  "hockeytech-a": {
-    x: (r: Row): number | null => canvasX(r.x, 850),
-    y: (r: Row): number | null => canvasY(r.y, 400),
-    description:
-      "HockeyTech 850x400 canvas, top-left origin -> 200x85 ft centre origin (generalises fastRhockey's 600x300 transform)",
-  },
-  "hockeytech-b": {
+  hockeytech: {
     x: (r: Row): number | null => canvasX(r.x, 600),
     y: (r: Row): number | null => canvasY(r.y, 300),
     description:
-      "HockeyTech 600x300 canvas, top-left origin -> 200x85 ft centre origin (fastRhockey hockeytech_analytics: x/3-100, 42.5-y*85/300)",
+      "HockeyTech 600x300 canvas, top-left origin -> 200x85 ft centre origin (fastRhockey hockeytech_analytics: x/3-100, 42.5-y*85/300). The canvas is stylised rather than true to scale: converted end-zone faceoff dots land at about ±67 ft and ±52 ft against regulation ±69 ft, so the converted feet are approximate",
   },
   "espn-football-0-100": {
     x: (r: Row): number | null => {
