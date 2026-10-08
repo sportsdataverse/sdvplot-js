@@ -54,6 +54,15 @@ const setup = () => {
   linkSelection(store, { plot: svg, table });
   return { svg, table, el, store };
 };
+/** A brush over the top four (KC, LAC, DEN, BUF): the engine moves now, the DOM a frame later (old row 3: LV). */
+const brushTop4 = (
+  svg: ReturnType<typeof Plot.plot>,
+  store: ReturnType<typeof createSelection<Standing>>,
+): void =>
+  brushFilter(svg, store, { data: STANDINGS, x: "wins", y: "net_epa", id: "team" }).move({
+    x: [9.5, 16],
+    y: [0, 0.2],
+  });
 
 test("hovering a hydrated table row highlights its dot; leaving the table clears it", () => {
   const { svg, el } = setup();
@@ -98,6 +107,17 @@ test("a hover while a re-render is pending waits for it: never the old body's ro
   expect(hovered(el)).toEqual([]);
   await frame();
   expect(hovered(el)).toEqual(["BUF"]);
+});
+test("the hydrated table never narrows a two-id store hover: it lights the first and writes nothing back (A29)", async () => {
+  const { svg, el, store } = setup();
+  store.set({ hover: ["KC", "BUF"] }); // an app's own two-id hover
+  expect([...store.getState().hover]).toEqual(["KC", "BUF"]);
+  expect(lit(svg)).toEqual(["KC", "BUF"]);
+  expect(hovered(el)).toEqual(["KC"]); // a table holds one hover id: the first
+  brushTop4(svg, store); // the guard holds across a pending render too
+  await frame();
+  expect([...store.getState().hover]).toEqual(["KC", "BUF"]);
+  expect(hovered(el)).toEqual(["KC"]);
 });
 test("Space on a hydrated grid row selects it; the store and the figure follow (A37)", () => {
   const { svg, el, store } = setup();

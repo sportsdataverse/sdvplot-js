@@ -30,6 +30,8 @@ const hovered = (): (string | null | undefined)[] =>
   Array.from(document.querySelectorAll("[data-sdv-body] tr.sdvt-hover")).map(
     (tr) => tr.querySelector('[data-col="team"]')?.textContent,
   );
+const lit = (root: Element): (string | null)[] =>
+  Array.from(root.querySelectorAll(".sdv-hl")).map((e) => e.getAttribute("data-sdv-id"));
 
 test("useTable + linkSelection + <SdvTable table/>: row hover and click reach the store; the store filters the table", () => {
   const store = createSelection<Standing>();
@@ -66,4 +68,21 @@ test("React: a figure hover lights the table row and survives a brush re-render 
     svg.dispatchEvent(new MouseEvent("mouseleave"));
   });
   expect(hovered()).toEqual([]);
+});
+test("React: <SdvTable/> never narrows a two-id store hover: it lights the first and writes nothing back (A29)", () => {
+  const store = createSelection<Standing>();
+  const svg = figure();
+  render(<Linked store={store} plot={svg} />);
+  act(() => store.set({ hover: ["KC", "BUF"] }));
+  expect([...store.getState().hover]).toEqual(["KC", "BUF"]);
+  expect(lit(svg)).toEqual(["KC", "BUF"]);
+  expect(hovered()).toEqual(["KC"]); // a table holds one hover id: the first
+  act(() => {
+    brushFilter(svg, store, { data: STANDINGS, x: "wins", y: "net_epa", id: "team" }).move({
+      x: [9.5, 16],
+      y: [0, 0.2],
+    });
+  });
+  expect([...store.getState().hover]).toEqual(["KC", "BUF"]);
+  expect(hovered()).toEqual(["KC"]);
 });
