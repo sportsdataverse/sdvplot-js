@@ -13,5 +13,5 @@ jobs:
       # changeset status needs a local `main`; this push-to-main checkout has one, a pull_request checkout does not.
       - run: node scripts/check-release-plan.mjs
       - uses: changesets/action@v1
-        with: { publish: pnpm release, version: pnpm changeset version, commit: "chore(release): version packages", title: "chore(release): version packages" }
+        with: { publish: pnpm release, version: pnpm version-packages, commit: "chore(release): version packages", title: "chore(release): version packages" }
         env: { GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}", NPM_CONFIG_PROVENANCE: "true", NODE_AUTH_TOKEN: "${{ secrets.NPM_TOKEN }}" }
