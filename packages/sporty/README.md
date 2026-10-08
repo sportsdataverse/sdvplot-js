@@ -35,10 +35,10 @@ Paint onto a canvas (a browser `CanvasRenderingContext2D`, or `@napi-rs/canvas` 
 ```ts
 import { drawScene } from "@sportsdataverse/sporty/canvas";
 
-const { width, height } = drawScene(ctx, basketballCourt("nba"), { width: 800 }); // or { scale: 8 } px per unit
+const { width, height } = drawScene(ctx, basketballCourt("nba"), { width: 800 }); // or { width, height } to fit a box, or { scale: 8 } px per unit
 ```
 
-`toSVG(scene, { arcs: "svg" })` replaces each detected circle run with one SVG `A` command instead of emitting every sampled point as `L`; the default `"sampled"` keeps the Scene's points verbatim.
+`toSVG(scene, { arcs: "svg" })` replaces each detected circle run with SVG `A` commands, one per quarter turn (`ceil(span / 90°)` per run, so a full circle is four), instead of emitting every sampled point as `L`; the default `"sampled"` keeps the Scene's points verbatim. Under `arcs: "svg"`, `arcResolution` no longer affects how circles look (it still sets how many points the Scene carries).
 
 `surface(sport, league, opts)` dispatches by sport; `leagues`, `features`, `displayRanges` and `colorKeys` list what each sport accepts. Options mirror sportyR: `updates` (parameter overrides), `colorUpdates`, `rotation`, `xTrans`, `yTrans`, `units` (`ft`, `m`, `yd`, `in`, `cm`, `mm`, any case, or a full name such as `"feet"`; anything else throws `UnknownUnitError`), `displayRange`, `xlim`, `ylim`, `arcResolution` (points per arc, an integer >= 2, default 200). Options are typed per sport, so a misspelled option or key is a compile error.
 
@@ -100,7 +100,7 @@ Drift gates in CI: `pnpm codegen --check` (specs match the vendored JSON) and `t
 
 ## Performance
 
-Local baseline from `test/perf.test.ts` (median of 10 runs after 5 warm-ups; the test asserts build < 50 ms and `toSVG` < 20 ms, and is skipped on CI because shared runners are noisy — these numbers are documented, not gated there). Measured 2026-10-07 on a 12th Gen Intel Core i9-12900K, Node v24.15.0:
+Local baseline from `test/perf.test.ts` (median of 10 runs after 5 warm-ups; the test asserts build < 50 ms and `toSVG` < 20 ms and is opt-in: `SDV_PERF_TESTS=1 pnpm vitest run perf`, skipped otherwise because the budgets are absolute and shared runners are noisy — these numbers are documented, not gated). Measured 2026-10-07 on a 12th Gen Intel Core i9-12900K, Node v24.15.0:
 
 | Operation | Median |
 | --- | --- |
@@ -109,6 +109,8 @@ Local baseline from `test/perf.test.ts` (median of 10 runs after 5 warm-ups; the
 | `toSVG(scene, { arcs: "svg" })` | 1.8 ms |
 
 Across three runs the medians ranged 2.5–3.2 ms (build), 4.8–8.0 ms (`toSVG`) and 0.8–1.8 ms (`arcs: "svg"`).
+
+Three test files are gated: `canvas.render.test.ts` runs wherever `@napi-rs/canvas` installs (CI included); `svg-arcs.render.test.ts` rasterizes both path variants through resvg and needs `SDV_RENDER_TESTS=1`; `perf.test.ts` needs `SDV_PERF_TESTS=1`.
 
 ## Roadmap
 

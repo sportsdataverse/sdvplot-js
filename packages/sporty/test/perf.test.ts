@@ -13,7 +13,8 @@ const median = (f: () => void) => {
   return t.sort((a, b) => a - b)[5]!;
 };
 
-test.skipIf(process.env.CI)(
+// Opt-in (SDV_PERF_TESTS=1): absolute budgets measured on one machine; a slow laptop or a busy parallel run would fail them.
+test.skipIf(!process.env.SDV_PERF_TESTS)(
   "basketballCourt(nba, 200) builds in < 50 ms and toSVG renders in < 20 ms (median of 10; local baseline only)",
   () => {
     const build = median(() => basketballCourt("nba", { arcResolution: 200 }));

@@ -2,4 +2,4 @@
 "@sportsdataverse/sporty": minor
 ---
 
-`@sportsdataverse/sporty/canvas` renderer (`drawScene`, `SceneCanvasContext`; DOM-free, takes a browser 2D context or an `@napi-rs/canvas` one in Node); `toSVG` gains `arcs: "svg"`, which replaces detected circle runs with SVG `A` commands; a performance baseline for scene build and SVG render (`test/perf.test.ts`, documented in the README, not gated on CI).
+`@sportsdataverse/sporty/canvas` renderer (`drawScene`, `SceneCanvasContext`; DOM-free, takes a browser 2D context or an `@napi-rs/canvas` one in Node); `toSVG` gains `arcs: "svg"`, which replaces detected circle runs with SVG `A` commands (one per quarter turn).
