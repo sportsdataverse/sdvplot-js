@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import { type Canvas, createCanvas } from "@napi-rs/canvas";
 import { MANIFEST_URL, resetManifestCache, resetWarnings, setWarningHandler } from "@sportsdataverse/sdvplot";
 import { type ReactElement, act, isValidElement } from "react";
 import { createRoot } from "react-dom/client";
@@ -175,6 +176,34 @@ function hideBrowser(): () => void {
 }
 
 /**
+ * A browser has a 2D canvas and jsdom does not: Observable Plot paints a continuous legend's ramp on one
+ * (`Plot.legend`). Back each jsdom `<canvas>` with an @napi-rs/canvas of its size while a browser example runs.
+ */
+function browserCanvas(): () => void {
+  const proto = HTMLCanvasElement.prototype;
+  const saved = (["getContext", "toDataURL"] as const).map(
+    (k) => [k, Object.getOwnPropertyDescriptor(proto, k)] as const,
+  );
+  const backing = new WeakMap<HTMLCanvasElement, Canvas>();
+  const of = (el: HTMLCanvasElement): Canvas => {
+    const c = backing.get(el) ?? createCanvas(el.width, el.height);
+    backing.set(el, c);
+    return c;
+  };
+  const define = (k: string, value: (this: HTMLCanvasElement, type?: string) => unknown) =>
+    Object.defineProperty(proto, k, { configurable: true, writable: true, value });
+  define("getContext", function (type) {
+    return type === "2d" ? of(this).getContext("2d") : null;
+  });
+  define("toDataURL", function () {
+    return of(this).toDataURL("image/png");
+  });
+  return () => {
+    for (const [k, d] of saved) if (d !== undefined) Object.defineProperty(proto, k, d);
+  };
+}
+
+/**
  * Load (= run) one example offline, collecting its warnings (sdvplot's, and any console.warn: Plot reports one
  * that way) and every fetch it attempted. Per-process state is reset before and after, so an example sees the same
  * state whatever ran before it (or whether it runs alone).
@@ -194,7 +223,7 @@ export async function runExample(
   resetManifestCache();
   setWarningHandler((m) => warnings.push(m));
   try {
-    const restore = entry.tags.includes("node") ? hideBrowser() : () => {};
+    const restore = entry.tags.includes("node") ? hideBrowser() : browserCanvas();
     let value: unknown;
     try {
       value = (await load()).default;
