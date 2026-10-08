@@ -1,11 +1,35 @@
-# @sportsdataverse/sdvplot
+# **@sportsdataverse/sdvplot** <a href='https://plot.sportsdataverse.org/'><img src='https://raw.githubusercontent.com/sportsdataverse/sdvplot-js/main/docs/static/img/sdvplot-js-logo.png' align="right" width="25%" min-width="120px" alt="sdvplot-js hex logo" /></a>
+
+<!-- badges: start -->
+
+[![npm](https://img.shields.io/npm/v/@sportsdataverse/sdvplot?label=sdvplot&logo=npm&style=for-the-badge)](https://www.npmjs.com/package/@sportsdataverse/sdvplot)
+[![Downloads](https://img.shields.io/npm/dm/@sportsdataverse/sdvplot?style=for-the-badge)](https://www.npmjs.com/package/@sportsdataverse/sdvplot)
+[![Total downloads](https://img.shields.io/npm/dt/@sportsdataverse/sdvplot?style=for-the-badge)](https://www.npmjs.com/package/@sportsdataverse/sdvplot)
+[![Node](https://img.shields.io/node/v/@sportsdataverse/sdvplot?logo=nodedotjs&logoColor=white&style=for-the-badge)](https://nodejs.org/)
+[![Unpacked size](https://img.shields.io/npm/unpacked-size/@sportsdataverse/sdvplot?style=for-the-badge)](https://www.npmjs.com/package/@sportsdataverse/sdvplot?activeTab=code)
+[![ci](https://img.shields.io/github/actions/workflow/status/sportsdataverse/sdvplot-js/ci.yml?branch=main&label=ci&logo=github&style=for-the-badge)](https://github.com/sportsdataverse/sdvplot-js/actions/workflows/ci.yml)
+[![release](https://img.shields.io/github/actions/workflow/status/sportsdataverse/sdvplot-js/release.yml?branch=main&label=release&logo=github&style=for-the-badge)](https://github.com/sportsdataverse/sdvplot-js/actions/workflows/release.yml)
+[![docs](https://img.shields.io/github/deployments/sportsdataverse/sdvplot-js/Production?label=docs&logo=vercel&style=for-the-badge)](https://plot.sportsdataverse.org)
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg?style=for-the-badge&logo=github)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![License](https://img.shields.io/github/license/sportsdataverse/sdvplot-js?style=for-the-badge)](https://github.com/sportsdataverse/sdvplot-js/blob/main/LICENSE)
+[![Contributors](https://img.shields.io/github/contributors/sportsdataverse/sdvplot-js?style=for-the-badge)](https://github.com/sportsdataverse/sdvplot-js/graphs/contributors)
+[![Twitter Follow](https://img.shields.io/twitter/follow/SportsDataverse?color=blue&label=%40SportsDataverse&logo=x&style=for-the-badge)](https://x.com/SportsDataverse)
+
+<!-- badges: end -->
 
 Team identity, colors, logos, wordmarks and headshots for SportsDataverse plots. TypeScript port of the Python `sdvplot` package (and `sdvplotR`).
 
-## Install
+Part of [sdvplot-js](https://github.com/sportsdataverse/sdvplot-js#readme) · [Documentation](https://plot.sportsdataverse.org) · [API reference](https://plot.sportsdataverse.org/api/sdvplot/) ·
+[Gallery](https://plot.sportsdataverse.org/gallery/sdvplot/) · [Notebooks](https://plot.sportsdataverse.org/notebooks/) · [Source](https://github.com/sportsdataverse/sdvplot-js/tree/main/packages/sdvplot)
+
+## **Installation**
 
 ```sh
 npm install @sportsdataverse/sdvplot
+# or
+pnpm add @sportsdataverse/sdvplot
+# or
+yarn add @sportsdataverse/sdvplot
 ```
 
 ESM only, Node >= 20.18.1. The core and the `bins`, `testing`, `plotly`, `vega` and `echarts` subpaths need no
@@ -22,7 +46,7 @@ npm install @sportsdataverse/sdvplot @sportsdataverse/sporty @observablehq/plot
 
 The table under [Subpaths](#subpaths) lists each subpath's peers.
 
-## Quick start
+## **Quick start**
 
 ```ts
 import { resolve, palette, logoUrl } from "@sportsdataverse/sdvplot";
@@ -67,7 +91,7 @@ Plot.plot({
 `resolveSync`, `teamColorsSync`, `logoUrlSync` and `selectMarkSync` are available once `loadLeague(league)` (or `preloadAll()`) has run.
 `headshotUrl` is sync; gsis ids additionally need `loadGsis()` (or `preloadAll()`) first — the nflverse map is its own ~3 MB chunk, loaded only on demand. Mark rows never store `archive_url`: it is derived from `sha256` + `ext` at load time, so only the content-addressed CDN URL can ever reach a page.
 
-## Two-team colours
+## **Two-team colours**
 
 `matchupColors(teamA, teamB, { league })` picks colours that tell two teams apart on one chart (Game on Paper's "game colours"). It returns one `[teamA, teamB]` pair per theme: each colour reads at WCAG 2.5:1 or better on that theme's background, and the two are at least 20 apart in CIEDE2000. The primaries are kept whenever they work; otherwise teamB's secondary is tried, then teamA's, then both, and only then is a colour's lightness moved.
 
@@ -82,7 +106,7 @@ const [home, away] = window.matchMedia("(prefers-color-scheme: dark)").matches ?
 
 The backgrounds default to `#ffffff` (light) and `#181a1b` (dark); pass `theme: { light, dark }` for your own. `matchupColorsSync` is the same once the league is loaded. Parity: the pairs match Game on Paper's `pickGameColors` exactly on 69 real college-football matchups (`fixtures/matchup-colors`).
 
-## Subpaths
+## **Subpaths**
 
 | Import | Contents |
 | --- | --- |
@@ -101,7 +125,7 @@ The backgrounds default to `#ffffff` (light) and `#181a1b` (dark); pass `theme: 
 | `@sportsdataverse/sdvplot/vega` | `withLogos`, `withWordmarks`, `withHeadshots`, `logoLayer`, `withAxisLogos`, `teamColorScale`, `embedSources` (no runtime dependency) |
 | `@sportsdataverse/sdvplot/echarts` | `withLogos`, `withWordmarks`, `withHeadshots`, `withAxisLogos`, `teamColorPalette`, `embedSources` (no runtime dependency) |
 
-## Observable Plot: Plot's own options, transforms and tips
+## **Observable Plot: Plot's own options, transforms and tips**
 
 The `sdvplot/plot` marks compute only what Plot cannot: each row's image URL, its aspect, its size as a fraction of
 the frame, and skip-and-warn for a team that does not resolve. Everything else is Observable Plot's. The image marks
@@ -204,7 +228,7 @@ basketball surface"; `ariaDescription` replaces it): `surfaceMark`, `toSVG` and 
 included. Plotly, ECharts and Chart.js draw to a canvas or to layout images, so
 the chart is named through each library (see each adapter below).
 
-## Spec adapters (Plotly, Vega-Lite, ECharts) — zero runtime deps
+## **Spec adapters (Plotly, Vega-Lite, ECharts) — zero runtime deps**
 
 These patch a plain spec object and never import the charting library: use whatever plotly.js / vega-embed / echarts
 build you already load. Each verb returns a NEW spec and leaves its input alone. The verbs are synchronous, so load the
@@ -298,7 +322,7 @@ below that. The helper series have no `name`, so a default `legend: {}` lists on
 (in the browser; server-side rendering writes none); without a `description` ECharts writes one from every series,
 the logo series too.
 
-## Chart.js (Astro, Svelte, React, plain scripts)
+## **Chart.js (Astro, Svelte, React, plain scripts)**
 
 `@sportsdataverse/sdvplot/chartjs` returns Chart.js 4 dataset options and plugin objects, so no framework needs a
 wrapper. Load the league first, and build point styles and plugins in the browser (they create `<img>`/`<canvas>`), or
@@ -526,7 +550,7 @@ chart.destroy();
 - In Node an unknown team's text fallback is a circle (there is no canvas to letter it on); pass `fallback` for another
   style. A load that fails warns once and is skipped.
 
-## Shot charts
+## **Shot charts**
 
 `sdvplot/shots` computes the shot charts of both blazing-the-nets apps (`main` by default, the 2021 `master` through
 options) with no Plot or d3 import; `sdvplot/plot` and `sdvplot/d3` draw them. The input is `nba_stats_shots` release
@@ -617,7 +641,7 @@ The d3 twins are `appendLegend` (colour bar plus a cell size key) and `appendSig
   to load, server-rendered pages included. The initials box reads a new CSS variable, `--sdv-line` (its background;
   default `#e2e2e2`), and `--sdv-muted` for the text.
 
-## Export (Node; peer: @resvg/resvg-js)
+## **Export (Node; peer: @resvg/resvg-js)**
 
 `sdvplot/export` turns an SVG figure into a PNG with `@resvg/resvg-js`, an optional peer
 (`pnpm add -D @resvg/resvg-js`; without it `toPNG` throws `OptionalDependencyError`). `socialCard` frames the figure
@@ -669,7 +693,7 @@ await writeFile("afc.png", png);
   `<svg>` inside it (`figure.querySelector("svg")`), which leaves out the HTML parts.
 - Tables go to PNG through `@sportsdataverse/sdvtables/export` (playwright).
 
-## Linked interactivity
+## **Linked interactivity**
 
 One selection store links any number of figures and tables. `createSelection()` holds the ids under the pointer
 (`hover`), the picked ids (`selected`), a brush region as a row test (`predicate`) and one shared hover value
@@ -774,7 +798,7 @@ brushFilter(fig, store, { data: rows, x: "wins", y: "net_epa", id: "team" });
 The docs run these live: [Linked figure and table](https://plot.sportsdataverse.org/examples/linked), and a five-chart
 [linked shot dashboard](https://plot.sportsdataverse.org/examples/shot-dashboard) on one store.
 
-## Data provenance
+## **Data provenance**
 
 Curation lives only in the Python `sdvplot` repo (spec J4); this package ships generated per-league `.ts` shards (J13, `src/data/**`, never hand-edited) and a best-marks slice of the CDN manifest (J14), regenerated with `SDVPLOT_PY_REPO=… pnpm build:index` (which also writes `src/data/CHECKSUMS`) and drift-gated in CI by `pnpm build:index --check` (digest verification). Regenerate with:
 
@@ -784,6 +808,98 @@ SDVPLOT_PY_REPO=/path/to/sdvplot pnpm build:index
 
 Parity is enforced by the Python oracle (`pnpm oracle:sdvplot`): the test suite replays every input × resolve/team colours/logo URLs/palette, plus headshot cases, against the Python package and requires 100% agreement.
 
-## License
+## **Documentation**
 
-MIT. See [NOTICE.md](NOTICE.md) for the sdvplot/sdvplotR material.
+The [**sdvplot-js** documentation website](https://plot.sportsdataverse.org) has the
+[sdvplot gallery](https://plot.sportsdataverse.org/gallery/sdvplot/), the [notebooks](https://plot.sportsdataverse.org/notebooks/) and the
+[sdvplot API reference](https://plot.sportsdataverse.org/api/sdvplot/), one page per subpath, plus:
+
+**Guides:**
+[Identity and resolution](https://plot.sportsdataverse.org/guides/identity) ·
+[Team colours](https://plot.sportsdataverse.org/guides/colors) ·
+[Logos, wordmarks, headshots](https://plot.sportsdataverse.org/guides/marks) ·
+[Observable Plot](https://plot.sportsdataverse.org/guides/observable-plot) ·
+[D3](https://plot.sportsdataverse.org/guides/d3) ·
+[React](https://plot.sportsdataverse.org/guides/react) ·
+[Plotly, Vega-Lite, ECharts and Chart.js](https://plot.sportsdataverse.org/guides/chart-libraries) ·
+[Shot charts](https://plot.sportsdataverse.org/guides/shot-charts) ·
+[Node and SSR](https://plot.sportsdataverse.org/guides/node-ssr) ·
+[Export to PNG](https://plot.sportsdataverse.org/guides/export)
+
+**Examples:**
+[Basketball](https://plot.sportsdataverse.org/examples/basketball) ·
+[Football](https://plot.sportsdataverse.org/examples/football) ·
+[Hockey](https://plot.sportsdataverse.org/examples/hockey) ·
+[Linked figures and tables](https://plot.sportsdataverse.org/examples/linked) ·
+[A linked shot dashboard](https://plot.sportsdataverse.org/examples/shot-dashboard)
+
+**Coming from elsewhere:**
+[sdvplot (Python), sdvplotR and sportyR](https://plot.sportsdataverse.org/guides/migrating) ·
+[Game on Paper (Chart.js + Astro/Svelte)](https://plot.sportsdataverse.org/guides/game-on-paper) ·
+[blazing-the-nets (Next/React + d3)](https://plot.sportsdataverse.org/guides/blazing-the-nets)
+
+The [repository README](https://github.com/sportsdataverse/sdvplot-js#readme) covers all three packages and development.
+
+## **Logos, trademarks and data**
+
+Team names, logos, wordmarks and player headshots are trademarks or copyrighted works of their respective leagues,
+teams, schools and other rights holders. `@sportsdataverse/sdvplot` is not affiliated with, sponsored by or endorsed
+by any of them, and using it to draw a mark grants no right to use it. The package ships no logo or headshot files:
+it carries an index of team names, ids and colors and the addresses of the archived marks, and the marks are
+fetched at runtime from the [SportsDataverse logo archive](https://github.com/sportsdataverse/sdv-assets),
+headshots from ESPN (or, for NFL gsis ids, the headshot URLs in nflverse's player table). Use of any mark in your own
+work is governed by that owner's terms, and following them is your responsibility.
+
+The NFL team colors and the gsis-id headshot map behind `loadGsis()` come from
+[nflverse-data](https://github.com/nflverse/nflverse-data) by the nflverse project, licensed
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/): headshot URLs, not images. The team index is curated in
+[sdvplot](https://sdvplot.sportsdataverse.org/) (Python, MIT). The `bins` and `shots` subpaths port d3-hexbin,
+d3-interpolate, d3-scale-chromatic (ColorBrewer's RdBu) and d3-array under their own licences.
+
+The [MIT license](https://github.com/sportsdataverse/sdvplot-js/blob/main/LICENSE) covers the code; team data belongs to its respective owners and sources.
+[NOTICE.md](https://github.com/sportsdataverse/sdvplot-js/blob/main/packages/sdvplot/NOTICE.md) records the sdvplot/sdvplotR, nflverse and d3 material and its licences.
+
+## **The SportsDataverse**
+
+`@sportsdataverse/sdvplot` is one of the three [sdvplot-js](https://github.com/sportsdataverse/sdvplot-js#readme) packages, with [`@sportsdataverse/sporty`](https://github.com/sportsdataverse/sdvplot-js/tree/main/packages/sporty#readme) and [`@sportsdataverse/sdvtables`](https://github.com/sportsdataverse/sdvplot-js/tree/main/packages/sdvtables#readme).
+
+| Package | Sport / Scope |
+| --- | --- |
+| [**sdvplot**](https://sdvplot.sportsdataverse.org/) | The Python package sdvplot-js ports |
+| [**sdvplotR**](https://sdvplotR.sportsdataverse.org/) | The R package sdvplot mirrors |
+| [**sportyR**](https://github.com/sportsdataverse/sportyR) · [**sportypy**](https://sportypy.sportsdataverse.org/) | Playing-surface plots for R and Python, which `@sportsdataverse/sporty` ports |
+| [**sportsdataverse.js**](https://js.sportsdataverse.org/) | SportsDataverse data for Node.js and TypeScript |
+| [**sportsdataverse-py**](https://py.sportsdataverse.org/) | SportsDataverse data for Python: NFL, CFB, NBA, WNBA, MBB, WBB, MLB, NHL, PWHL, soccer and more |
+| [**sportsdataverse-R**](https://r.sportsdataverse.org/) | The R packages: hoopR, wehoop, cfbfastR, fastRhockey, baseballr and more |
+
+See the full ecosystem at [sportsdataverse.org](https://sportsdataverse.org/).
+
+## **Follow the [SportsDataverse](https://x.com/SportsDataverse) on X and star this repo**
+
+[![Twitter Follow](https://img.shields.io/twitter/follow/SportsDataverse?color=blue&label=%40SportsDataverse&logo=x&style=for-the-badge)](https://x.com/SportsDataverse)
+[![GitHub stars](https://img.shields.io/github/stars/sportsdataverse/sdvplot-js.svg?color=eee&logo=github&style=for-the-badge&label=Star%20sdvplot-js&maxAge=2592000)](https://github.com/sportsdataverse/sdvplot-js/stargazers)
+
+## **Our Authors**
+
+- [Saiem Gilani](https://x.com/saiemgilani)
+  <a href="https://x.com/saiemgilani" target="blank"><img src="https://img.shields.io/twitter/follow/saiemgilani?color=blue&label=%40saiemgilani&logo=x&style=for-the-badge" alt="@saiemgilani" /></a>
+  <a href="https://github.com/saiemgilani" target="blank"><img src="https://img.shields.io/github/followers/saiemgilani?color=eee&logo=Github&style=for-the-badge" alt="@saiemgilani" /></a>
+
+## **Citations**
+
+To cite [**`@sportsdataverse/sdvplot`**](https://plot.sportsdataverse.org) in publications, cite sdvplot-js:
+
+BibTex Citation
+
+```bibtex
+@misc{gilani_2026_sdvplot_js,
+  author = {Gilani, Saiem},
+  title = {sdvplot-js: Team identity, colors, logos, surfaces and tables for JavaScript and TypeScript plots},
+  url = {https://plot.sportsdataverse.org},
+  year = {2026}
+}
+```
+
+## **License**
+
+MIT. See [NOTICE.md](https://github.com/sportsdataverse/sdvplot-js/blob/main/packages/sdvplot/NOTICE.md) for the sdvplot/sdvplotR, nflverse and d3 material.
