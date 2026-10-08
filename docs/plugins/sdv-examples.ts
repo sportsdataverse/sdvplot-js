@@ -10,6 +10,7 @@ const dir = (pkg: string): string => dirname(require.resolve(`${pkg}/package.jso
 /**
  * Bundles the examples (and the package SOURCE they import, exactly as the gate runs them) into the client build;
  * the server build gets no example code at all (its loaders are an empty stub; <Live> only loads in an effect).
+ * Makes each docs page depend on the example outputs its <Live> tags inline (examples/scripts/live-deps.cjs).
  * After the build, copies the Observable Framework notebooks into /notebooks.
  */
 export default function sdvExamples(_context: LoadContext): Plugin {
@@ -28,6 +29,20 @@ export default function sdvExamples(_context: LoadContext): Plugin {
           },
           // Package and example sources import "./x.js" for "./x.ts" (NodeNext); webpack needs telling.
           extensionAlias: { ".js": [".ts", ".tsx", ".js"] },
+        },
+        module: {
+          rules: [
+            // A page holding <Live id> is compiled from examples/out/<id>.json too: a warm cache must see it change.
+            {
+              test: /\.mdx?$/,
+              // An MDX rule without include breaks Docusaurus' fallback MDX rule (it excludes every MDX rule's include).
+              include: abs("docs/docs/"),
+              enforce: "pre",
+              use: [
+                { loader: abs("examples/scripts/live-deps.cjs"), options: { outDir: abs("examples/out") } },
+              ],
+            },
+          ],
         },
         plugins: [new utils.currentBundler.instance.DefinePlugin(DEFINES)],
       };

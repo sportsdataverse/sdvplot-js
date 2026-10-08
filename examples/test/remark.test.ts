@@ -1,10 +1,12 @@
-import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { createRequire } from "node:module";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { hockeyRink } from "@sportsdataverse/sporty";
 import { toSVG } from "@sportsdataverse/sporty/svg";
 import { beforeAll, expect, test } from "vitest";
 import remarkLive, { INLINE_LIMIT } from "../scripts/remark-live.js";
+import { abs } from "../sources.js";
 import type { Prerendered } from "../src/contract.js";
 
 const out = mkdtempSync(join(tmpdir(), "sdv-out-"));
@@ -68,4 +70,28 @@ test("an unknown or repeated <Live id> fails the docs build", () => {
   const twice = live("sdvtables/html/t");
   twice.children.push(...live("sdvtables/html/t").children);
   expect(() => remarkLive({ outDir: out })(twice, { path: "b.mdx" })).toThrow("appears twice");
+});
+
+interface LoaderContext {
+  getOptions(): { outDir: string };
+  addDependency(file: string): void;
+}
+const liveDeps: ((this: LoaderContext, source: string) => string) & { liveIds(source: string): string[] } =
+  createRequire(import.meta.url)("../scripts/live-deps.cjs");
+
+test("a page depends on the outputs its <Live> tags inline, so a warm build cache recompiles it when one changes", () => {
+  const deps: string[] = [];
+  const page = `# A\n\n<Live id="sdvplot/core/a" />\n\n<Live\n  id='sdvplot/plot/b'\n  thumb href="/gallery/b" />\n`;
+  const ctx: LoaderContext = {
+    getOptions: () => ({ outDir: "out" }),
+    addDependency: (f) => void deps.push(f),
+  };
+  expect(liveDeps.call(ctx, page)).toBe(page);
+  expect(deps).toEqual([join("out", "sdvplot/core/a.json"), join("out", "sdvplot/plot/b.json")]);
+  // Every <Live> on a hand-written or generated docs page names its id where the loader finds it.
+  const docs = abs("docs/docs");
+  for (const p of readdirSync(docs, { recursive: true, encoding: "utf8" }).filter((f) => /\.mdx?$/.test(f))) {
+    const text = readFileSync(join(docs, p), "utf8");
+    expect(liveDeps.liveIds(text).length, p).toBe(text.match(/<Live\b/g)?.length ?? 0);
+  }
 });

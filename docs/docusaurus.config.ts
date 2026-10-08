@@ -3,6 +3,8 @@ import type * as Preset from "@docusaurus/preset-classic";
 import type { Config } from "@docusaurus/types";
 import { themes as prismThemes } from "prism-react-renderer";
 import remarkLive from "../examples/scripts/remark-live";
+// Imported, not named by path, so the build cache tracks it: editing this config or a module it imports evicts it.
+import sdvExamples from "./plugins/sdv-examples";
 
 // This runs in Node.js - no browser APIs here.
 
@@ -56,7 +58,7 @@ const config: Config = {
   ],
 
   plugins: [
-    "./plugins/sdv-examples.ts",
+    sdvExamples,
     [
       "docusaurus-plugin-typedoc",
       {
