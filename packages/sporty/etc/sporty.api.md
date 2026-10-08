@@ -733,6 +733,10 @@ export type HockeyParamUpdates = {
 export function hockeyRink(league: HockeyLeague | (string & {}), opts?: SurfaceOptions<HockeyParamUpdates, HockeyColorKey, HockeyDisplayRange>): Scene;
 
 // @public
+export class InputError extends SportyError {
+}
+
+// @public
 export const LACROSSE_COLOR_KEYS: readonly ["plot_background", "field_apron", "defensive_zone", "neutral_zone", "offensive_zone", "team_a_bench", "team_b_bench", "team_a_penalty_box", "team_b_penalty_box", "off_field_officials_box", "boards", "end_line", "sideline", "center_line", "wing_line", "restraining_line", "defensive_area_line", "goal_line", "referee_crease", "referee_crease_fill", "goal_circle", "goal_circle_fill", "goal_arc", "goal_fan", "goal_fan_hash_mark", "goal_mouth_hash_mark", "goal_mouth", "below_goal_marking", "goal_frame", "goal_net", "center_circle", "center_face_off_marker", "corner_face_off_marker", "change_area_outline", "change_area_fill"];
 
 // @public

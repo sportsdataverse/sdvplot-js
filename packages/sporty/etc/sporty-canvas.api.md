@@ -61,8 +61,6 @@ export interface SceneCanvasContext {
     // (undocumented)
     scale(x: number, y: number): void;
     // (undocumented)
-    setTransform(a: number, b: number, c: number, d: number, e: number, f: number): void;
-    // (undocumented)
     stroke(): void;
     // (undocumented)
     strokeStyle: unknown;
@@ -70,6 +68,8 @@ export interface SceneCanvasContext {
     textAlign: string;
     // (undocumented)
     textBaseline: string;
+    // (undocumented)
+    transform(a: number, b: number, c: number, d: number, e: number, f: number): void;
     // (undocumented)
     translate(x: number, y: number): void;
 }

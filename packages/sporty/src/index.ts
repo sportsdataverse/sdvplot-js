@@ -22,7 +22,13 @@ export type {
   TextFeature,
   Units,
 } from "./scene.js";
-export { SportyError, UnknownDisplayRangeError, UnknownLeagueError, UnknownUnitError } from "./errors.js";
+export {
+  InputError,
+  SportyError,
+  UnknownDisplayRangeError,
+  UnknownLeagueError,
+  UnknownUnitError,
+} from "./errors.js";
 export { FT_PER_UNIT, convertPoints, convertUnits, normalizeUnit } from "./units.js";
 export { placeFeature, reflectCoords, rotateCoords } from "./transform.js";
 export type { Placement } from "./transform.js";

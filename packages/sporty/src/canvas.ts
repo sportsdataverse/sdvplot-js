@@ -1,3 +1,4 @@
+import { InputError } from "./errors.js";
 import { type Color, type Feature, type Scene, hidden, isVisiblePolygon, isVisibleText } from "./scene.js";
 
 /**
@@ -8,7 +9,7 @@ import { type Color, type Feature, type Scene, hidden, isVisiblePolygon, isVisib
 export interface SceneCanvasContext {
   save(): void;
   restore(): void;
-  setTransform(a: number, b: number, c: number, d: number, e: number, f: number): void;
+  transform(a: number, b: number, c: number, d: number, e: number, f: number): void;
   beginPath(): void;
   moveTo(x: number, y: number): void;
   lineTo(x: number, y: number): void;
@@ -38,8 +39,12 @@ export interface DrawSceneOptions {
 }
 
 /**
- * Paints `scene` into the top-left `width x height` pixels of `ctx` and returns the size used.
- * Give `width` (default 800, like `toSVG`) or `scale` (px per unit; the box size follows).
+ * Paints `scene` at the origin of `ctx` and returns the size drawn, in the caller's current units.
+ * Give `width` (default 800, like `toSVG`; the height follows the aspect), `width` and `height` (the scene
+ * is fitted into the box, like `toSVG`'s viewBox, and the returned size is the fitted one), or `scale`
+ * (px per unit; the box size follows). The scene transform composes with the caller's (a HiDPI
+ * `ctx.scale(dpr, dpr)` survives) and the context is restored afterwards.
+ * Throws `InputError` when the scene's bbox is empty (the `custom` leagues of some sports).
  */
 export function drawScene(
   ctx: SceneCanvasContext,
@@ -49,10 +54,16 @@ export function drawScene(
   const [x0, y0, x1, y1] = scene.bbox;
   const bw = x1 - x0;
   const bh = y1 - y0;
-  const scale = opts.scale ?? (opts.width ?? 800) / bw;
-  const width = opts.scale === undefined ? (opts.width ?? 800) : Math.round(bw * scale);
-  const height = opts.height ?? Math.round(bh * scale);
-  ctx.setTransform(scale, 0, 0, -scale, -x0 * scale, y1 * scale);
+  if (!(bw > 0 && bh > 0 && Number.isFinite(bw + bh)))
+    throw new InputError(
+      `${scene.sport} "${scene.league}" has an empty bbox [${scene.bbox.join(", ")}]; nothing to draw`,
+    );
+  const box = opts.width ?? 800;
+  const scale = opts.scale ?? (opts.height === undefined ? box / bw : Math.min(box / bw, opts.height / bh));
+  const width = Math.round(bw * scale);
+  const height = Math.round(bh * scale);
+  ctx.save();
+  ctx.transform(scale, 0, 0, -scale, -x0 * scale, y1 * scale);
   const bg = opts.background ?? scene.background;
   if (bg !== undefined) {
     ctx.fillStyle = bg;
@@ -94,5 +105,6 @@ export function drawScene(
       ctx.restore();
     }
   }
+  ctx.restore();
   return { width, height, scale };
 }
