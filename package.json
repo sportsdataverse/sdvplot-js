@@ -21,6 +21,7 @@
     "oracle:sdvplot": "uv run --project ${SDVPLOT_PY_REPO:-../sdvplot} python tools/oracle/sdvplot.py",
     "oracle:sporty": "Rscript tools/oracle/sporty.R",
     "oracle:shots": "tsx tools/oracle/shots.ts",
+    "oracle:matchup-colors": "tsx tools/oracle/matchup-colors.ts",
     "changeset": "changeset",
     "release": "pnpm build && changeset publish"
   },
@@ -37,5 +38,8 @@
     "typescript": "^5.6.0",
     "vitest": "^2.1.0"
   },
-  "pnpm": { "overrides": { "jsdom": "^26.1.0" } }
+  "pnpm": {
+    "overrides": { "jsdom": "^26.1.0" },
+    "patchedDependencies": { "tsup@8.5.1": "patches/tsup@8.5.1.patch" }
+  }
 }

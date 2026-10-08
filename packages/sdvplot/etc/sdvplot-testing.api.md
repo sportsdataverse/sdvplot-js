@@ -103,8 +103,8 @@ export function visibleAxisLabels(node: ParentNode, axis: Axis): string[];
 
 // Warnings were encountered during analysis:
 //
-// dist/testing.d.ts:28:9 - (ae-forgotten-export) The symbol "EspnHeadshotLeague" needs to be exported by the entry point testing.d.ts
-// dist/testing.d.ts:32:9 - (ae-forgotten-export) The symbol "League" needs to be exported by the entry point testing.d.ts
+// dist/testing.d.ts:30:9 - (ae-forgotten-export) The symbol "EspnHeadshotLeague" needs to be exported by the entry point testing.d.ts
+// dist/testing.d.ts:34:9 - (ae-forgotten-export) The symbol "League" needs to be exported by the entry point testing.d.ts
 
 // (No @packageDocumentation comment for this package)
 
