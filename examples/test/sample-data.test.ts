@@ -12,6 +12,7 @@ import {
   PWHL_GOALS,
   STANDINGS,
   SUPER_BOWL_LIX_TDS,
+  SUPER_BOWL_LIX_WP,
 } from "../src/data.js";
 import { EXAMPLES } from "../src/registry.gen.js";
 
@@ -290,6 +291,26 @@ test("SUPER_BOWL_LIX_TDS are the captured ESPN touchdown plays, unchanged", () =
       }),
     ),
   );
+});
+
+test("SUPER_BOWL_LIX_WP is ESPN's captured win probability, each entry joined to the play it follows", () => {
+  const body = capture("espn_nfl_summary_401671889_wp.json") as {
+    winprobability: { playId: string; homeWinPercentage: number }[];
+    plays: { id: string; period: { number: number }; clock: { displayValue: string } }[];
+  };
+  const plays = new Map(body.plays.map((p) => [p.id, p]));
+  const seconds = (clock: string): number => {
+    const [m = 0, s = 0] = clock.split(":").map(Number);
+    return m * 60 + s;
+  };
+  const rows = body.winprobability.flatMap((w) => {
+    const p = plays.get(w.playId); // the one pregame entry follows no play
+    if (p === undefined) return [];
+    const minute = (p.period.number - 1) * 15 + (900 - seconds(p.clock.displayValue)) / 60;
+    return [{ minute: Math.round(minute * 100) / 100, home_wp: w.homeWinPercentage }];
+  });
+  expect(body.winprobability).toHaveLength(187);
+  expect(SUPER_BOWL_LIX_WP).toEqual(rows); // 186
 });
 
 test("PWHL_GOALS are the captured HockeyTech goals, unchanged, on the 600 x 300 canvas", () => {

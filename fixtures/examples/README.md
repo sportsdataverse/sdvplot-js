@@ -49,8 +49,8 @@ Written by `uv run tools/sample-data/nfl_2024.py` from nflverse-data release ass
 
 Written by `uv run tools/sample-data/sdv_py_captures.py` from fixtures committed in sportsdataverse-py
 (`tests/fixtures/`, read at sportsdataverse-py 82249b4, 2026-10-07). Each file keeps whole records only, every kept
-record unchanged; `examples/src/data.ts` holds them with columns renamed, and `examples/test/sample-data.test.ts`
-checks the two are equal.
+record unchanged (the one exception, the win-probability file's plays, says so); `examples/src/data.ts` holds them with
+columns renamed, and `examples/test/sample-data.test.ts` checks the two are equal.
 
 - `nba_leaguestandingsv3_2023_24_pacific.json` (`NBA_STANDINGS`): stats.nba.com `leaguestandingsv3`, Season 2023-24,
   Regular Season: the final 2023-24 standings. From `nba_stats/leaguestandingsv3_2023_24.json` (sportsdataverse-py
@@ -68,6 +68,12 @@ checks the two are equal.
   Super Bowl LIX, Kansas City at Philadelphia, 2025-02-09 (Philadelphia won 40-22). From `espn/summary_nfl.json`.
   Trimmed: `header` keeps only `id` and each competitor's `homeAway` and `team.id`/`team.abbreviation`; `plays` are
   the 6 plays from `drives.previous[].plays[]` whose `type.text` is `Rushing Touchdown` or `Passing Touchdown`.
+- `espn_nfl_summary_401671889_wp.json` (`SUPER_BOWL_LIX_WP`): the same game summary, from the same
+  `espn/summary_nfl.json` (sha256 `a5d1837cac50162d0a74ec97ecdada7d2dc53f8e50f7fb54e2dad007be870b40`, last changed in
+  sportsdataverse-py 755f9e4 of 2026-05-24; read at 29d2006, 2026-10-08). Trimmed: `winprobability` keeps all 187
+  entries, unchanged; `plays` holds all 186 plays of `drives.previous[].plays[]`, each cut to `id`, `period.number` and
+  `clock.displayValue`. The test joins each entry to its play by `playId` (one pregame entry has none) and turns the
+  play's period and clock into minutes played, rounded to 0.01.
 - `pwhl_pbp_42_shots.json` (`PWHL_GOALS`): HockeyTech `statviewfeed/gameCenterPlayByPlay`, PWHL game 42, PWHL Boston
   at PWHL Montreal, 2024-03-02 (Montreal won 3-1, per sportsdataverse-py's `hockeytech/pwhl_game_summary_42.json`).
   From `hockeytech/pwhl_pbp_42.json` (173 events). Trimmed: the 70 events whose `event` is `shot` or `goal`; the data

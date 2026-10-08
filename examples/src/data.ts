@@ -24,7 +24,8 @@ export {
  * Super Bowl LIX (Kansas City at Philadelphia, 2025-02-09; PHI won 40-22): ESPN's home (PHI) win probability after
  * each of 186 plays, against minutes played (the play's start clock). Real: ESPN Site v2 `summary?event=401671889`,
  * `winprobability` joined to `drives.previous[].plays[]` by `playId` (one pregame row has no play), as captured in
- * sportsdataverse-py `tests/fixtures/espn/summary_nfl.json`.
+ * sportsdataverse-py `tests/fixtures/espn/summary_nfl.json`, trimmed to
+ * fixtures/examples/espn_nfl_summary_401671889_wp.json; examples/test/sample-data.test.ts rebuilds these rows from it.
  */
 export const SUPER_BOWL_LIX_WP: readonly { readonly minute: number; readonly home_wp: number }[] = (
   [

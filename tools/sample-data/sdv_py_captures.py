@@ -1,9 +1,9 @@
 # /// script
 # requires-python = ">=3.10"
 # ///
-"""Trims five captures committed in sportsdataverse-py (tests/fixtures) into fixtures/examples, where
-examples/test/sample-data.test.ts checks the examples' data against them. Every kept record is copied unchanged;
-only whole records (rows, plays, events) are dropped.
+"""Trims captures committed in sportsdataverse-py (tests/fixtures) into fixtures/examples, where
+examples/test/sample-data.test.ts checks the examples' data against them. Every kept record is copied unchanged and
+only whole records (rows, plays, events) are dropped, except in the win-probability file: its plays keep three fields.
 
 - nba_leaguestandingsv3_2023_24_pacific.json: nba_stats/leaguestandingsv3_2023_24.json, the Standings rows whose
   Division is "Pacific".
@@ -14,6 +14,8 @@ only whole records (rows, plays, events) are dropped.
 - espn_nfl_summary_401671889_offense_tds.json: espn/summary_nfl.json, the competitors' homeAway and team id and
   abbreviation from the header, and the plays (from drives.previous[].plays[]) whose type is Rushing Touchdown or
   Passing Touchdown.
+- espn_nfl_summary_401671889_wp.json: espn/summary_nfl.json, every winprobability entry, unchanged, and every play
+  (from drives.previous[].plays[]) cut to its id, period.number and clock.displayValue: what the rows join on.
 - pwhl_pbp_42_shots.json: hockeytech/pwhl_pbp_42.json, the events whose event is shot or goal.
 
 Run: `uv run tools/sample-data/sdv_py_captures.py` (reads ../sdv-py), or `--sdv-py <path to a sportsdataverse-py
@@ -83,6 +85,20 @@ def main() -> None:
         "espn_nfl_summary_401671889_offense_tds.json",
         {"header": {"id": summary["header"]["id"], "competitions": [{"competitors": competitors}]}, "plays": tds},
     )
+
+    wp = summary["winprobability"]
+    assert len(wp) == 187, len(wp)
+    plays = [
+        {
+            "id": p["id"],
+            "period": {"number": p["period"]["number"]},
+            "clock": {"displayValue": p["clock"]["displayValue"]},
+        }
+        for d in summary["drives"]["previous"]
+        for p in d["plays"]
+    ]
+    assert len(plays) == 186, len(plays)
+    write("espn_nfl_summary_401671889_wp.json", {"winprobability": wp, "plays": plays})
 
     pwhl = [e for e in read(fx, "hockeytech/pwhl_pbp_42.json") if e["event"] in ("shot", "goal")]
     assert len(pwhl) == 70, len(pwhl)
