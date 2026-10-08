@@ -45,11 +45,6 @@ const EXEMPT: readonly (readonly [spec: string, name: RegExp | "*", reason: stri
     /^sizeRender$/,
     "the render transform logos/wordmarks/headshots are built on; every example of those marks draws through it",
   ],
-  [
-    "@sportsdataverse/sdvplot/chartjs",
-    /^(logoPoints|wordmarkPoints|headshotPoints|pointImages|axisLogos)$/,
-    "browser-only: each builds <img> elements and paints them once loaded (UnsupportedTargetError in Node, see sdvplot/core/errors); the gate's Node has no DOM and its jsdom never loads an image, so no output could show them",
-  ],
   ["@sportsdataverse/sdvplot/plotly", /^(drawnMarks|drawnAxisMarks|visibleAxisLabels)$/, HOOKS],
   ["@sportsdataverse/sdvplot/vega", /^(drawnMarks|drawnAxisMarks|visibleAxisLabels)$/, HOOKS],
   ["@sportsdataverse/sdvplot/echarts", /^(drawnMarks|drawnAxisMarks|visibleAxisLabels)$/, HOOKS],

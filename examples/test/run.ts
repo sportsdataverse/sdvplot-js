@@ -5,18 +5,33 @@ import { createRoot } from "react-dom/client";
 import { abs } from "../sources.js";
 import type { ExampleEntry, OutputKind } from "../src/contract.js";
 
-/** Logo PNGs the archive serves under their sha256; fixtures/examples/<sha256>.png holds the same bytes. */
+/** Mark PNGs the archive serves under their sha256; fixtures/examples/<sha256>.png holds the same bytes. */
 const CDN_SHA256 = "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256";
 export const LOGO_FIXTURES: readonly string[] = [
-  "3d77958dc6373768919bb2681cbe1b143f56c07a1f013460def665a5026a7f3d", // KC
-  "5400f85bd93129c056717a771da57a97225e15f39c0022107ce89ef993f15bb0", // LAC
+  "3d77958dc6373768919bb2681cbe1b143f56c07a1f013460def665a5026a7f3d", // KC logo
+  "5400f85bd93129c056717a771da57a97225e15f39c0022107ce89ef993f15bb0", // LAC logo
+  "c98bec2be32e27b19f79f5da86ac6ef133c78d75ab78aadb28ef36696c3213e8", // DEN logo
+  "25fbb03e972ae872fa024026b73c7b63ef9f23c2f2c51f87d1614d800dcee6e7", // LV logo
+  "2875f50f8b756ed5ea3866105b4683f5c603aa542e2c7f7870287e1d3d006100", // PHI logo
+  "16a2c7e0cd5dcf2e6bdc646c0b22bf03e575f505aa4b843a0ebfdaf19650257b", // KC wordmark
+  "ad87ef1e14816a93f9cf06e2f356c526902186abfc4c729e8e01088a84e98cb7", // LAC wordmark
+  "ddced0c3708afd6977d26e85c6efd4ddf3f045fb4527dd88e940e5952653875d", // DEN wordmark
+  "c22afa5471cd8e08e9c42f06df3d90f6b88b1b95fc16b4da5e610737a8fe7dac", // LV wordmark
 ];
+/** ESPN headshots (the AFC West's starters in STANDINGS) as the combiner serves them at 96 x 70. */
+const HEADSHOT_FIXTURES: readonly string[] = ["3139477", "4038941", "4426338", "4038524"];
 
 /** The only URLs an example may fetch, and only when tagged "network": each answers from a committed fixture. */
 export const FIXTURES: Readonly<Record<string, string>> = {
   [MANIFEST_URL]: "fixtures/sdvplot/manifest_sample.csv",
   ...Object.fromEntries(
     LOGO_FIXTURES.map((h) => [`${CDN_SHA256}/${h.slice(0, 2)}/${h}.png`, `fixtures/examples/${h}.png`]),
+  ),
+  ...Object.fromEntries(
+    HEADSHOT_FIXTURES.map((id) => [
+      `https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/${id}.png&w=96&h=70`,
+      `fixtures/examples/espn-headshot-nfl-${id}-96x70.png`,
+    ]),
   ),
 };
 const CONTENT_TYPE: Readonly<Record<string, string>> = { csv: "text/csv", png: "image/png" };

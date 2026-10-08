@@ -75,14 +75,29 @@ under the datasets and scales that keep a foot the same length on both axes.
 
 <Live id="sdvplot/chartjs/court-shots" />
 
-The image helpers (`logoPoints`, `wordmarkPoints`, `headshotPoints`, `pointImages`, `axisLogos`, `logoWatermarks`)
-build `<img>` elements, so they run in the browser; the
-[package README](https://github.com/sportsdataverse/sdvplot-js/tree/main/packages/sdvplot#chartjs-astro-svelte-react-plain-scripts)
-shows them in a complete component.
+The image helpers (`logoPoints`, `wordmarkPoints`, `headshotPoints`, `axisLogos`, `logoWatermarks`) build `<img>`
+elements in the browser. Give them a `loadImage` option and they load each image through it instead, which is how
+these examples draw them in Node: the loader fetches the mark and decodes it with `@napi-rs/canvas`, and the example
+awaits the loads before taking the PNG. Point styles also need the `pointImages` plugin, which updates the chart as
+each image lands.
+
+<Live id="sdvplot/chartjs/logo-points" />
+
+`axisLogos("x")` paints a category axis's team labels as logos and blanks their text.
+
+<Live id="sdvplot/chartjs/axis-logos" />
+
+`wordmarkPoints` does the same with wordmarks, about 3.6 times as wide as they are tall, and `headshotPoints` with ESPN
+headshots, built from the player id alone. ESPN's image server resizes on request, so this loader asks for a small
+copy rather than the full-size original.
+
+<Live id="sdvplot/chartjs/wordmark-points" />
+
+<Live id="sdvplot/chartjs/headshot-points" />
 
 ## A matchup in two colours
 
 `matchupColors(home, away)` returns a pair that reads apart on a light page and one for a dark page; here the light
-pair colours Super Bowl LIX's win probability.
+pair colours Super Bowl LIX's win probability, and `logoWatermarks` puts the two teams' logos faintly behind it.
 
 <Live id="sdvplot/chartjs/win-probability" />
