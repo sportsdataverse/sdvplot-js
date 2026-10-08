@@ -110,6 +110,7 @@ export interface D3MarkOptions extends Frame {
 //
 // @public (undocumented)
 export interface D3SurfaceOptions extends SurfaceSceneOptions {
+    ariaDescription?: string;
     // (undocumented)
     x: (v: number) => number;
     // (undocumented)
@@ -135,7 +136,7 @@ export function teamColorScale(league: League, o?: {
 // Warnings were encountered during analysis:
 //
 // dist/d3.d.ts:51:9 - (ae-forgotten-export) The symbol "BinShape" needs to be exported by the entry point d3.d.ts
-// dist/d3.d.ts:214:5 - (ae-forgotten-export) The symbol "Which" needs to be exported by the entry point d3.d.ts
+// dist/d3.d.ts:219:5 - (ae-forgotten-export) The symbol "Which" needs to be exported by the entry point d3.d.ts
 
 // (No @packageDocumentation comment for this package)
 

@@ -3,6 +3,18 @@
   "version": "0.0.0",
   "description": "Publication tables for SportsDataverse data — TableSpec, 18+3 themes, team logos/headshots/colors, static HTML renderer. TypeScript port of sdvplotR gt_* / gtUtils",
   "license": "MIT",
+  "keywords": [
+    "sportsdataverse",
+    "sports",
+    "sports-analytics",
+    "tables",
+    "html-tables",
+    "gt",
+    "great-tables",
+    "team-logos"
+  ],
+  "homepage": "https://plot.sportsdataverse.org",
+  "bugs": "https://github.com/sportsdataverse/sdvplot-js/issues",
   "type": "module",
   "sideEffects": false,
   "engines": {
@@ -64,7 +76,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/sportsdataverse/sdvplot-js",
+    "url": "git+https://github.com/sportsdataverse/sdvplot-js.git",
     "directory": "packages/sdvtables"
   },
   "publishConfig": {

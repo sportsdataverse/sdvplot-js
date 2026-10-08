@@ -1,5 +1,5 @@
 import { execSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, utimesSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { build } from "esbuild";
 import { DEFINES, SOURCES, abs } from "../../examples/sources.js";
@@ -36,9 +36,16 @@ await build({
 });
 
 // 2. Sample data the pages read with FileAttachment (real rows: spec §7; provenance in examples/src/data.ts).
+// Framework stamps each attachment with its file's mtime: a fixed one (the epoch) keeps two builds byte-identical.
 mkdirSync(join(NB, "src/data"), { recursive: true });
-writeFileSync(join(NB, "src/data/standings.json"), `${JSON.stringify(STANDINGS)}\n`);
-writeFileSync(join(NB, "src/data/nba_shots.json"), `${JSON.stringify(NBA_SHOTS)}\n`);
+for (const [name, rows] of [
+  ["standings", STANDINGS],
+  ["nba_shots", NBA_SHOTS],
+] as const) {
+  const file = join(NB, `src/data/${name}.json`);
+  writeFileSync(file, `${JSON.stringify(rows)}\n`);
+  utimesSync(file, 0, 0);
+}
 
 // 3. Build, then prove the output is hermetic and serves from /notebooks/.
 rmSync(join(NB, "dist"), { recursive: true, force: true });

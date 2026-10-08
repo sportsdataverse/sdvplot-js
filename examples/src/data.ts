@@ -457,3 +457,189 @@ export const PWHL_GOALS: readonly PwhlGoal[] = [
   { goal_id: "259", team: "BOS", period: 2, time: "14:55", scorer: "Hilary Knight", x: 470, y: 117 },
   { goal_id: "262", team: "MTL", period: 3, time: "2:29", scorer: "Erin Ambrose", x: 196, y: 61 },
 ];
+/**
+ * Every NFL team's 2024 regular-season EPA: the count and sum over its offensive rush or pass plays and over the plays its
+ * defence faced (nflverse play_by_play_2024, `epa` not null), as tools/sample-data/nfl_2024.py wrote them to
+ * fixtures/examples/nfl_epa_2024_reg.csv. EPA per play = off_epa / off_plays; net = that minus def_epa / def_plays.
+ */
+export type NflTeamEpa = {
+  readonly team: string;
+  readonly off_plays: number;
+  readonly off_epa: number;
+  readonly def_plays: number;
+  readonly def_epa: number;
+};
+// biome-ignore format: one captured row per line
+export const NFL_TEAM_EPA_2024: readonly NflTeamEpa[] = [
+  { team: "ARI", off_plays: 1087, off_epa: 73.809165, def_plays: 1070, def_epa: 54.177387 },
+  { team: "ATL", off_plays: 1127, off_epa: 46.14526, def_plays: 1097, def_epa: 48.644795 },
+  { team: "BAL", off_plays: 1091, off_epa: 215.262498, def_plays: 1121, def_epa: -20.28258 },
+  { team: "BUF", off_plays: 1065, off_epa: 199.021083, def_plays: 1095, def_epa: -3.401672 },
+  { team: "CAR", off_plays: 1026, off_epa: -41.937003, def_plays: 1195, def_epa: 184.562136 },
+  { team: "CHI", off_plays: 1119, off_epa: -83.48176, def_plays: 1055, def_epa: -1.237265 },
+  { team: "CIN", off_plays: 1121, off_epa: 119.292182, def_plays: 1120, def_epa: 61.259235 },
+  { team: "CLE", off_plays: 1176, off_epa: -206.387941, def_plays: 1051, def_epa: 18.142769 },
+  { team: "DAL", off_plays: 1158, off_epa: -103.964276, def_plays: 1083, def_epa: 73.328438 },
+  { team: "DEN", off_plays: 1083, off_epa: 10.467473, def_plays: 1143, def_epa: -112.212835 },
+  { team: "DET", off_plays: 1125, off_epa: 174.612954, def_plays: 1087, def_epa: -49.044067 },
+  { team: "GB", off_plays: 1071, off_epa: 86.105787, def_plays: 1074, def_epa: -72.690398 },
+  { team: "HOU", off_plays: 1093, off_epa: -43.192981, def_plays: 1087, def_epa: -58.700021 },
+  { team: "IND", off_plays: 1075, off_epa: -50.807559, def_plays: 1139, def_epa: 6.980636 },
+  { team: "JAX", off_plays: 1025, off_epa: -22.06423, def_plays: 1175, def_epa: 149.341772 },
+  { team: "KC", off_plays: 1124, off_epa: 77.364799, def_plays: 1071, def_epa: 6.16244 },
+  { team: "LA", off_plays: 1074, off_epa: 36.402885, def_plays: 1105, def_epa: 54.903476 },
+  { team: "LAC", off_plays: 1044, off_epa: 46.996383, def_plays: 1082, def_epa: -60.059686 },
+  { team: "LV", off_plays: 1108, off_epa: -145.694045, def_plays: 1086, def_epa: 15.441067 },
+  { team: "MIA", off_plays: 1128, off_epa: -45.334382, def_plays: 1048, def_epa: -22.286327 },
+  { team: "MIN", off_plays: 1090, off_epa: 40.299129, def_plays: 1125, def_epa: -100.043535 },
+  { team: "NE", off_plays: 1082, off_epa: -85.386839, def_plays: 1106, def_epa: 91.822065 },
+  { team: "NO", off_plays: 1080, off_epa: -63.456766, def_plays: 1156, def_epa: 41.114773 },
+  { team: "NYG", off_plays: 1103, off_epa: -101.204208, def_plays: 1074, def_epa: 75.717242 },
+  { team: "NYJ", off_plays: 1063, off_epa: 0.844244, def_plays: 1129, def_epa: 51.806296 },
+  { team: "PHI", off_plays: 1129, off_epa: 124.85914, def_plays: 1038, def_epa: -88.769119 },
+  { team: "PIT", off_plays: 1110, off_epa: -31.647861, def_plays: 1083, def_epa: -22.688261 },
+  { team: "SEA", off_plays: 1083, off_epa: -16.803398, def_plays: 1116, def_epa: -20.323364 },
+  { team: "SF", off_plays: 1064, off_epa: 64.535054, def_plays: 1051, def_epa: 54.315427 },
+  { team: "TB", off_plays: 1128, off_epa: 148.94236, def_plays: 1104, def_epa: 18.273819 },
+  { team: "TEN", off_plays: 1088, off_epa: -110.350422, def_plays: 1043, def_epa: 51.892051 },
+  { team: "WAS", off_plays: 1142, off_epa: 159.216485, def_plays: 1073, def_epa: 46.316515 },
+];
+/** One 2024 regular-season game from nflverse `games.csv` (fixtures/examples/nfl_games_2024_reg.csv). */
+export type NflGame = {
+  readonly game_id: string;
+  readonly week: number;
+  readonly away_team: string;
+  readonly away_score: number;
+  readonly home_team: string;
+  readonly home_score: number;
+};
+/** Every 2024 regular-season game of the Chiefs or the Eagles (34; they did not meet until Super Bowl LIX). */
+// biome-ignore format: one captured game per line
+export const KC_PHI_GAMES_2024: readonly NflGame[] = [
+  { game_id: "2024_01_BAL_KC", week: 1, away_team: "BAL", away_score: 20, home_team: "KC", home_score: 27 },
+  { game_id: "2024_01_GB_PHI", week: 1, away_team: "GB", away_score: 29, home_team: "PHI", home_score: 34 },
+  { game_id: "2024_02_CIN_KC", week: 2, away_team: "CIN", away_score: 25, home_team: "KC", home_score: 26 },
+  { game_id: "2024_02_ATL_PHI", week: 2, away_team: "ATL", away_score: 22, home_team: "PHI", home_score: 21 },
+  { game_id: "2024_03_PHI_NO", week: 3, away_team: "PHI", away_score: 15, home_team: "NO", home_score: 12 },
+  { game_id: "2024_03_KC_ATL", week: 3, away_team: "KC", away_score: 22, home_team: "ATL", home_score: 17 },
+  { game_id: "2024_04_PHI_TB", week: 4, away_team: "PHI", away_score: 16, home_team: "TB", home_score: 33 },
+  { game_id: "2024_04_KC_LAC", week: 4, away_team: "KC", away_score: 17, home_team: "LAC", home_score: 10 },
+  { game_id: "2024_05_NO_KC", week: 5, away_team: "NO", away_score: 13, home_team: "KC", home_score: 26 },
+  { game_id: "2024_06_CLE_PHI", week: 6, away_team: "CLE", away_score: 16, home_team: "PHI", home_score: 20 },
+  { game_id: "2024_07_PHI_NYG", week: 7, away_team: "PHI", away_score: 28, home_team: "NYG", home_score: 3 },
+  { game_id: "2024_07_KC_SF", week: 7, away_team: "KC", away_score: 28, home_team: "SF", home_score: 18 },
+  { game_id: "2024_08_PHI_CIN", week: 8, away_team: "PHI", away_score: 37, home_team: "CIN", home_score: 17 },
+  { game_id: "2024_08_KC_LV", week: 8, away_team: "KC", away_score: 27, home_team: "LV", home_score: 20 },
+  { game_id: "2024_09_JAX_PHI", week: 9, away_team: "JAX", away_score: 23, home_team: "PHI", home_score: 28 },
+  { game_id: "2024_09_TB_KC", week: 9, away_team: "TB", away_score: 24, home_team: "KC", home_score: 30 },
+  { game_id: "2024_10_DEN_KC", week: 10, away_team: "DEN", away_score: 14, home_team: "KC", home_score: 16 },
+  { game_id: "2024_10_PHI_DAL", week: 10, away_team: "PHI", away_score: 34, home_team: "DAL", home_score: 6 },
+  { game_id: "2024_11_WAS_PHI", week: 11, away_team: "WAS", away_score: 18, home_team: "PHI", home_score: 26 },
+  { game_id: "2024_11_KC_BUF", week: 11, away_team: "KC", away_score: 21, home_team: "BUF", home_score: 30 },
+  { game_id: "2024_12_KC_CAR", week: 12, away_team: "KC", away_score: 30, home_team: "CAR", home_score: 27 },
+  { game_id: "2024_12_PHI_LA", week: 12, away_team: "PHI", away_score: 37, home_team: "LA", home_score: 20 },
+  { game_id: "2024_13_LV_KC", week: 13, away_team: "LV", away_score: 17, home_team: "KC", home_score: 19 },
+  { game_id: "2024_13_PHI_BAL", week: 13, away_team: "PHI", away_score: 24, home_team: "BAL", home_score: 19 },
+  { game_id: "2024_14_CAR_PHI", week: 14, away_team: "CAR", away_score: 16, home_team: "PHI", home_score: 22 },
+  { game_id: "2024_14_LAC_KC", week: 14, away_team: "LAC", away_score: 17, home_team: "KC", home_score: 19 },
+  { game_id: "2024_15_KC_CLE", week: 15, away_team: "KC", away_score: 21, home_team: "CLE", home_score: 7 },
+  { game_id: "2024_15_PIT_PHI", week: 15, away_team: "PIT", away_score: 13, home_team: "PHI", home_score: 27 },
+  { game_id: "2024_16_HOU_KC", week: 16, away_team: "HOU", away_score: 19, home_team: "KC", home_score: 27 },
+  { game_id: "2024_16_PHI_WAS", week: 16, away_team: "PHI", away_score: 33, home_team: "WAS", home_score: 36 },
+  { game_id: "2024_17_KC_PIT", week: 17, away_team: "KC", away_score: 29, home_team: "PIT", home_score: 10 },
+  { game_id: "2024_17_DAL_PHI", week: 17, away_team: "DAL", away_score: 7, home_team: "PHI", home_score: 41 },
+  { game_id: "2024_18_NYG_PHI", week: 18, away_team: "NYG", away_score: 13, home_team: "PHI", home_score: 20 },
+  { game_id: "2024_18_KC_DEN", week: 18, away_team: "KC", away_score: 0, home_team: "DEN", home_score: 38 },
+];
+/**
+ * One SPADL action (socceraction 1.5.3) of StatsBomb open-data match 8658: metres from the bottom-left corner of a
+ * 105 x 68 pitch, attacking left to right (fixtures/examples/spadl_8658_france_h1_passes.csv).
+ */
+export type SpadlPass = {
+  readonly action_id: number;
+  readonly time_seconds: number;
+  readonly player_id: number;
+  readonly start_x: number;
+  readonly start_y: number;
+  readonly end_x: number;
+  readonly end_y: number;
+};
+/** France's 75 completed first-half passes in the 2018 World Cup final (StatsBomb open data, attribution required). */
+// biome-ignore format: one captured pass per line
+export const WC2018_FINAL_FRANCE_PASSES: readonly SpadlPass[] = [
+  { action_id: 42, time_seconds: 61.947, player_id: 5487, start_x: 54.68750000000001, start_y: 6.375, end_x: 56.4375, end_y: 1.2750000000000057 },
+  { action_id: 46, time_seconds: 74.667, player_id: 5485, start_x: 22.3125, start_y: 9.775000000000006, end_x: 6.5625, end_y: 31.875 },
+  { action_id: 48, time_seconds: 77.227, player_id: 3099, start_x: 6.5625, start_y: 31.875, end_x: 16.1875, end_y: 43.775 },
+  { action_id: 51, time_seconds: 96.867, player_id: 5492, start_x: 35.4375, start_y: 42.925, end_x: 48.5625, end_y: 44.625 },
+  { action_id: 53, time_seconds: 99.027, player_id: 4375, start_x: 47.6875, start_y: 45.475, end_x: 33.6875, end_y: 48.875 },
+  { action_id: 55, time_seconds: 101.787, player_id: 5492, start_x: 36.3125, start_y: 47.175, end_x: 59.9375, end_y: 46.325 },
+  { action_id: 56, time_seconds: 102.88, player_id: 3604, start_x: 59.9375, start_y: 46.325, end_x: 56.4375, end_y: 46.325 },
+  { action_id: 57, time_seconds: 103.44, player_id: 4375, start_x: 56.4375, start_y: 46.325, end_x: 52.9375, end_y: 42.075 },
+  { action_id: 58, time_seconds: 105.44, player_id: 3604, start_x: 52.9375, start_y: 42.075, end_x: 38.9375, end_y: 27.625 },
+  { action_id: 60, time_seconds: 107.107, player_id: 5485, start_x: 38.9375, start_y: 27.625, end_x: 47.6875, end_y: 12.325000000000003 },
+  { action_id: 107, time_seconds: 259.227, player_id: 4375, start_x: 9.1875, start_y: 64.175, end_x: 6.5625, end_y: 55.675 },
+  { action_id: 109, time_seconds: 260.427, player_id: 3961, start_x: 7.4375, start_y: 55.675, end_x: 9.1875, end_y: 65.875 },
+  { action_id: 111, time_seconds: 261.787, player_id: 5484, start_x: 9.1875, start_y: 65.875, end_x: 6.5625, end_y: 57.375 },
+  { action_id: 126, time_seconds: 293.147, player_id: 3961, start_x: 22.3125, start_y: 65.025, end_x: 11.8125, end_y: 56.525 },
+  { action_id: 131, time_seconds: 318.107, player_id: 5485, start_x: 22.3125, start_y: 14.025000000000006, end_x: 30.187499999999996, end_y: 21.674999999999997 },
+  { action_id: 133, time_seconds: 320.067, player_id: 20004, start_x: 29.3125, start_y: 21.674999999999997, end_x: 22.3125, end_y: 43.775 },
+  { action_id: 137, time_seconds: 345.707, player_id: 3961, start_x: 47.6875, start_y: 58.225, end_x: 40.6875, end_y: 59.925 },
+  { action_id: 139, time_seconds: 346.747, player_id: 5492, start_x: 40.6875, start_y: 59.925, end_x: 47.6875, end_y: 59.925 },
+  { action_id: 141, time_seconds: 348.987, player_id: 3961, start_x: 46.8125, start_y: 55.675, end_x: 38.9375, end_y: 33.575 },
+  { action_id: 143, time_seconds: 353.867, player_id: 20004, start_x: 46.8125, start_y: 29.325000000000003, end_x: 52.0625, end_y: 5.525000000000006 },
+  { action_id: 145, time_seconds: 357.027, player_id: 5476, start_x: 49.4375, start_y: 8.075000000000003, end_x: 39.8125, end_y: 14.025000000000006 },
+  { action_id: 147, time_seconds: 359.187, player_id: 5485, start_x: 38.9375, start_y: 17.424999999999997, end_x: 35.4375, end_y: 42.075 },
+  { action_id: 149, time_seconds: 362.547, player_id: 5492, start_x: 38.9375, start_y: 42.925, end_x: 47.6875, end_y: 64.175 },
+  { action_id: 198, time_seconds: 572.867, player_id: 3099, start_x: 8.3125, start_y: 41.225, end_x: 28.437499999999996, end_y: 49.725 },
+  { action_id: 242, time_seconds: 680.267, player_id: 3604, start_x: 66.0625, start_y: 26.775000000000006, end_x: 59.0625, end_y: 23.375 },
+  { action_id: 244, time_seconds: 681.427, player_id: 20004, start_x: 59.0625, start_y: 23.375, end_x: 69.5625, end_y: 51.425 },
+  { action_id: 252, time_seconds: 707.027, player_id: 20004, start_x: 67.8125, start_y: 64.175, end_x: 53.81249999999999, end_y: 63.325 },
+  { action_id: 254, time_seconds: 708.987, player_id: 5492, start_x: 54.68750000000001, start_y: 61.625, end_x: 49.4375, end_y: 39.525 },
+  { action_id: 256, time_seconds: 712.547, player_id: 5485, start_x: 50.3125, start_y: 28.474999999999994, end_x: 58.1875, end_y: 2.125 },
+  { action_id: 258, time_seconds: 716.667, player_id: 5476, start_x: 58.1875, start_y: 8.924999999999997, end_x: 46.8125, end_y: 14.025000000000006 },
+  { action_id: 260, time_seconds: 719.947, player_id: 5485, start_x: 44.1875, start_y: 17.424999999999997, end_x: 50.3125, end_y: 12.325000000000003 },
+  { action_id: 262, time_seconds: 722.787, player_id: 5476, start_x: 42.4375, start_y: 11.474999999999994, end_x: 11.8125, end_y: 24.224999999999994 },
+  { action_id: 270, time_seconds: 737.187, player_id: 4375, start_x: 46.8125, start_y: 44.625, end_x: 48.5625, end_y: 65.875 },
+  { action_id: 271, time_seconds: 739.547, player_id: 5484, start_x: 48.5625, start_y: 65.875, end_x: 57.31249999999999, end_y: 63.325 },
+  { action_id: 272, time_seconds: 740.467, player_id: 5487, start_x: 57.31249999999999, start_y: 63.325, end_x: 45.0625, end_y: 60.775 },
+  { action_id: 274, time_seconds: 742.787, player_id: 4375, start_x: 45.0625, start_y: 60.775, end_x: 38.0625, end_y: 46.325 },
+  { action_id: 276, time_seconds: 744.907, player_id: 5492, start_x: 38.0625, start_y: 46.325, end_x: 39.8125, end_y: 26.775000000000006 },
+  { action_id: 278, time_seconds: 748.587, player_id: 5485, start_x: 45.0625, start_y: 23.375, end_x: 56.4375, end_y: 1.2750000000000057 },
+  { action_id: 284, time_seconds: 761.347, player_id: 5485, start_x: 36.3125, start_y: 8.075000000000003, end_x: 35.4375, end_y: 39.525 },
+  { action_id: 324, time_seconds: 947.107, player_id: 5484, start_x: 31.0625, start_y: 65.875, end_x: 30.187499999999996, end_y: 58.225 },
+  { action_id: 326, time_seconds: 947.627, player_id: 3961, start_x: 30.187499999999996, start_y: 58.225, end_x: 37.1875, end_y: 64.175 },
+  { action_id: 328, time_seconds: 949.107, player_id: 4375, start_x: 38.0625, start_y: 62.475, end_x: 43.3125, end_y: 42.075 },
+  { action_id: 330, time_seconds: 951.347, player_id: 20004, start_x: 41.5625, start_y: 39.525, end_x: 48.5625, end_y: 4.674999999999997 },
+  { action_id: 334, time_seconds: 956.787, player_id: 3009, start_x: 38.9375, start_y: 14.875, end_x: 24.9375, end_y: 22.525000000000006 },
+  { action_id: 336, time_seconds: 959.107, player_id: 5485, start_x: 23.1875, start_y: 23.375, end_x: 33.6875, end_y: 42.075 },
+  { action_id: 338, time_seconds: 962.107, player_id: 3961, start_x: 38.9375, start_y: 42.925, end_x: 45.9375, end_y: 43.775 },
+  { action_id: 339, time_seconds: 963.16, player_id: 4375, start_x: 45.9375, start_y: 43.775, end_x: 39.8125, end_y: 48.875 },
+  { action_id: 353, time_seconds: 980.267, player_id: 3604, start_x: 79.1875, start_y: 2.125, end_x: 49.4375, end_y: 14.025000000000006 },
+  { action_id: 355, time_seconds: 984.467, player_id: 5485, start_x: 49.4375, start_y: 21.674999999999997, end_x: 57.31249999999999, end_y: 62.475 },
+  { action_id: 359, time_seconds: 993.787, player_id: 5487, start_x: 82.6875, start_y: 25.075000000000003, end_x: 93.1875, end_y: 12.325000000000003 },
+  { action_id: 372, time_seconds: 1012.507, player_id: 5485, start_x: 70.4375, start_y: 9.775000000000006, end_x: 80.0625, end_y: 20.825000000000003 },
+  { action_id: 394, time_seconds: 1182.867, player_id: 5484, start_x: 17.0625, start_y: 53.125, end_x: 28.437499999999996, end_y: 53.975 },
+  { action_id: 396, time_seconds: 1185.267, player_id: 3961, start_x: 29.3125, start_y: 58.225, end_x: 29.3125, end_y: 66.725 },
+  { action_id: 398, time_seconds: 1185.947, player_id: 4375, start_x: 29.3125, start_y: 66.725, end_x: 38.9375, end_y: 59.925 },
+  { action_id: 411, time_seconds: 1309.547, player_id: 5492, start_x: 41.5625, start_y: 65.875, end_x: 21.4375, end_y: 42.925 },
+  { action_id: 427, time_seconds: 1341.107, player_id: 4375, start_x: 49.4375, start_y: 47.175, end_x: 55.5625, end_y: 38.675 },
+  { action_id: 428, time_seconds: 1343.067, player_id: 20004, start_x: 55.5625, start_y: 38.675, end_x: 78.3125, end_y: 25.924999999999997 },
+  { action_id: 449, time_seconds: 1457.227, player_id: 5487, start_x: 70.4375, start_y: 45.475, end_x: 73.9375, end_y: 65.875 },
+  { action_id: 454, time_seconds: 1491.307, player_id: 4375, start_x: 59.0625, start_y: 63.325, end_x: 70.4375, end_y: 46.325 },
+  { action_id: 463, time_seconds: 1512.387, player_id: 5492, start_x: 37.1875, start_y: 53.975, end_x: 57.31249999999999, end_y: 48.025 },
+  { action_id: 466, time_seconds: 1534.347, player_id: 5485, start_x: 27.5625, start_y: 25.075000000000003, end_x: 27.5625, end_y: 54.825 },
+  { action_id: 482, time_seconds: 1590.307, player_id: 5487, start_x: 54.68750000000001, start_y: 46.325, end_x: 41.5625, end_y: 7.224999999999994 },
+  { action_id: 484, time_seconds: 1596.147, player_id: 5476, start_x: 46.8125, start_y: 4.674999999999997, end_x: 58.1875, end_y: 1.2750000000000057 },
+  { action_id: 485, time_seconds: 1597.227, player_id: 3009, start_x: 58.1875, start_y: 1.2750000000000057, end_x: 60.81250000000001, end_y: 8.075000000000003 },
+  { action_id: 512, time_seconds: 1784.267, player_id: 5485, start_x: 59.9375, start_y: 31.025000000000006, end_x: 13.562500000000002, end_y: 33.575 },
+  { action_id: 514, time_seconds: 1789.427, player_id: 3099, start_x: 15.312500000000002, start_y: 31.875, end_x: 60.81250000000001, end_y: 5.525000000000006 },
+  { action_id: 526, time_seconds: 1840.427, player_id: 20004, start_x: 31.937499999999996, start_y: 61.625, end_x: 39.8125, end_y: 51.425 },
+  { action_id: 599, time_seconds: 2382.107, player_id: 3099, start_x: 12.6875, start_y: 25.075000000000003, end_x: 65.1875, end_y: 17.424999999999997 },
+  { action_id: 600, time_seconds: 2385.067, player_id: 3604, start_x: 64.3125, start_y: 17.424999999999997, end_x: 63.43749999999999, end_y: 2.9749999999999943 },
+  { action_id: 692, time_seconds: 2765.027, player_id: 5485, start_x: 36.3125, start_y: 36.125, end_x: 48.5625, end_y: 43.775 },
+  { action_id: 696, time_seconds: 2767.787, player_id: 5487, start_x: 45.0625, start_y: 43.775, end_x: 41.5625, end_y: 41.225 },
+  { action_id: 698, time_seconds: 2768.987, player_id: 4375, start_x: 41.5625, start_y: 41.225, end_x: 32.8125, end_y: 39.525 },
+  { action_id: 700, time_seconds: 2770.547, player_id: 5492, start_x: 32.8125, start_y: 39.525, end_x: 56.4375, end_y: 25.075000000000003 },
+  { action_id: 708, time_seconds: 2795.987, player_id: 3099, start_x: 15.312500000000002, start_y: 39.525, end_x: 84.4375, end_y: 28.474999999999994 },
+  { action_id: 723, time_seconds: 2826.92, player_id: 3604, start_x: 60.81250000000001, start_y: 49.725, end_x: 60.81250000000001, end_y: 44.625 },
+];

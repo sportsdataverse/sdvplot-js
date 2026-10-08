@@ -3,6 +3,20 @@
   "version": "0.0.0",
   "description": "Sport surfaces (geometry and dimensions) for SportsDataverse plots — TypeScript port of sportyR/sportypy",
   "license": "MIT",
+  "keywords": [
+    "sportsdataverse",
+    "sports",
+    "sports-analytics",
+    "data-visualization",
+    "court",
+    "field",
+    "rink",
+    "pitch",
+    "svg",
+    "sportyR"
+  ],
+  "homepage": "https://plot.sportsdataverse.org",
+  "bugs": "https://github.com/sportsdataverse/sdvplot-js/issues",
   "type": "module",
   "sideEffects": false,
   "engines": { "node": ">=20.18.1" },
@@ -26,7 +40,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/sportsdataverse/sdvplot-js",
+    "url": "git+https://github.com/sportsdataverse/sdvplot-js.git",
     "directory": "packages/sporty"
   },
   "publishConfig": { "access": "public", "provenance": true },

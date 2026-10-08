@@ -2,7 +2,32 @@ import Link from "@docusaurus/Link";
 import useBaseUrl from "@docusaurus/useBaseUrl";
 import { LOADERS } from "@sportsdataverse/examples/loaders";
 import CodeBlock from "@theme/CodeBlock";
-import { type ReactElement, isValidElement, useEffect, useRef, useState } from "react";
+import {
+  Component,
+  type ReactElement,
+  type ReactNode,
+  isValidElement,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+
+/** A React example that throws while rendering in the browser reports to its <Live>, not to the page's crash screen. */
+class Boundary extends Component<
+  { onError: (e: unknown) => void; children: ReactNode },
+  { failed: boolean }
+> {
+  override state = { failed: false };
+  static getDerivedStateFromError(): { failed: boolean } {
+    return { failed: true };
+  }
+  override componentDidCatch(e: unknown): void {
+    this.props.onError(e);
+  }
+  override render(): ReactNode {
+    return this.state.failed ? null : this.props.children;
+  }
+}
 
 /** Props: `id` (+ `thumb`/`href` on gallery cards) come from the MDX; the rest are injected by remark-live at build. */
 export interface LiveProps {
@@ -11,6 +36,8 @@ export interface LiveProps {
   readonly code: string;
   readonly lang: "ts" | "tsx";
   readonly title: string;
+  /** The example's tags, space-separated: a data source's tag adds the credit its terms ask for. */
+  readonly tags?: string;
   /** The prerendered output, inline (≤ 64 KB) … */
   readonly markup?: string;
   /** … or the URL of the prerendered file, with the root <svg>'s size when it is an SVG. */
@@ -25,17 +52,42 @@ export interface LiveProps {
 /**
  * An example: the prerendered output (static HTML, so the page is complete without JavaScript), the code that
  * produced it, and, for DOM and React outputs that have a browser loader, a live re-run that replaces the static
- * copy. A re-run that throws shows the error over the static output; it never leaves a blank.
+ * copy once the example comes within a screen of the viewport. A re-run that throws shows the error over the static
+ * output; it never leaves a blank.
  */
 export default function Live(p: LiveProps): ReactElement {
+  const figure = useRef<HTMLElement>(null);
   const host = useRef<HTMLDivElement>(null);
+  const [near, setNear] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [element, setElement] = useState<ReactElement | null>(null);
   const [error, setError] = useState<string | null>(null);
   const src = useBaseUrl(p.src ?? "");
+  const statsbombLogo = useBaseUrl("/img/statsbomb-logo.png");
+  const live = !p.thumb && LOADERS[p.id] !== undefined && (p.kind === "node" || p.kind === "react");
+  // Re-run only near the viewport: the prerendered copy already shows, so a guide does not load every example's
+  // chunk at once (the shot-charts guide's gsis map alone is 0.5 MB compressed).
+  useEffect(() => {
+    const el = figure.current;
+    if (!live || el === null) return;
+    if (typeof IntersectionObserver === "undefined") {
+      setNear(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((e) => e.isIntersecting)) return;
+        setNear(true);
+        io.disconnect();
+      },
+      { rootMargin: "100% 0px" }, // one screen above and below
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [live]);
   useEffect(() => {
     const load = LOADERS[p.id];
-    if (p.thumb || load === undefined || (p.kind !== "node" && p.kind !== "react")) return;
+    if (!near || load === undefined) return;
     let cancelled = false;
     load().then(
       (m) => {
@@ -47,13 +99,19 @@ export default function Live(p: LiveProps): ReactElement {
         setMounted(true);
       },
       (e: unknown) => {
-        if (!cancelled) setError(e instanceof Error ? e.message : String(e));
+        if (!cancelled) fail(e);
       },
     );
     return () => {
       cancelled = true;
     };
-  }, [p.id, p.kind, p.thumb]);
+  }, [near, p.id]);
+  // A load or a render that throws: drop the live output and bring the static copy back under the alert.
+  function fail(e: unknown): void {
+    setError(e instanceof Error ? e.message : String(e));
+    setElement(null);
+    setMounted(false);
+  }
   // A static file is embedded as a document (never <img>: that would not load the external logo <image>s); the
   // wrapper is the scrolling container that keeps the fixed-size frame inside the column. A card shows a static
   // SVG as an <img> instead: it scales to the card (a fixed-size frame would be a crop), and losing the logos in a
@@ -78,19 +136,32 @@ export default function Live(p: LiveProps): ReactElement {
         <iframe src={src} title={p.title} width={p.width} height={p.height} loading="lazy" />
       </div>
     );
+  // StatsBomb's open-data terms: published analysis of their data carries the StatsBomb logo with the credit. A card is
+  // already a link, so its logo is not one.
+  const credit = (linked: boolean): ReactElement | null => {
+    if (!(p.tags ?? "").split(" ").includes("statsbomb")) return null;
+    const logo = <img src={statsbombLogo} alt="StatsBomb" width={100} height={16} />;
+    return (
+      <span className="sdv-credit">
+        {linked ? <a href="https://statsbomb.com">{logo}</a> : logo} Data: StatsBomb open data
+      </span>
+    );
+  };
   if (p.thumb)
     return (
       <Link className="sdv-card" to={p.href ?? "/gallery/"}>
         {output}
+        {credit(false)}
         <span>{p.title}</span>
       </Link>
     );
   return (
-    <figure className="sdv-live" data-example={p.id}>
+    <figure className="sdv-live" data-example={p.id} ref={figure}>
       {output}
       <div className="sdv-live-output" ref={host}>
-        {element}
+        <Boundary onError={fail}>{element}</Boundary>
       </div>
+      {credit(true)}
       {error !== null && (
         <p role="alert" className="sdv-live-error">
           This example threw in your browser: {error}

@@ -225,3 +225,16 @@ test("the size-key note wraps like main's drawNotes (theme.ts:94-106) to width -
     ],
   });
 });
+
+test("accessible names: the d3 signature's ribbon and the legend's colour bar are named", () => {
+  const pts = signaturePoints(vsLeague(fgPctByDistance(BKN), LEAGUE.byFoot));
+  const g = newG();
+  appendSignature(g, pts, { x: scaleLinear([0, 35], [0, 640]), y: scaleLinear([0, 1], [190, 0]) });
+  const ribbon = [...(g.node() as SVGGElement).querySelectorAll("path")].at(-1);
+  expect(ribbon?.getAttribute("aria-label")).toBe("shooting signature: FG% by distance against the league");
+  const legend = newG();
+  appendLegend(legend, diffScale());
+  expect((legend.node() as SVGGElement).querySelector("rect")?.getAttribute("aria-label")).toBe(
+    "colour key, FG% vs league: −15.0 to +15.0",
+  );
+});

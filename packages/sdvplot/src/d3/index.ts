@@ -2,7 +2,7 @@ import { appendSurface as sportyAppendSurface } from "@sportsdataverse/sporty/d3
 import { type BaseType, type ScaleOrdinal, type Selection, scaleOrdinal } from "d3";
 import { InputError } from "../errors.js";
 import type { EspnHeadshotLeague } from "../headshots.js";
-import { type Kind, checkAlpha, checkHeight, placeSync } from "../placement.js";
+import { type Kind, checkAlpha, checkHeight, placeSync, placedName } from "../placement.js";
 import type { Value } from "../resolve.js";
 import { stampImage } from "../stamp.js";
 import { type SurfaceSceneOptions, surfaceScene } from "../surfaces.js";
@@ -22,6 +22,11 @@ interface Frame {
   frameHeight: number;
   height?: number;
   alpha?: number;
+  /**
+   * Each image's accessible name from its input value and index; default the team ("KC logo", whatever id system the
+   * values use) or the player id ("3139477 headshot").
+   */
+  ariaLabel?: (value: Value, i: number) => string;
 }
 export interface D3MarkOptions extends Frame {
   league: League;
@@ -58,6 +63,8 @@ function draw<G extends SVGElement, D>(
     if (node === null) continue;
     stampImage(node, p, kind, px, o.frameHeight, o.x(p.x), o.y(p.y));
     img.attr("data-sdv-x", String(p.x)).attr("data-sdv-y", String(p.y));
+    const raw = ids[p.index] as Value;
+    img.attr("aria-label", o.ariaLabel?.(raw, p.index) ?? `${placedName(p, place.league, raw)} ${kind}`);
   }
   return g;
 }
@@ -181,6 +188,8 @@ export function teamColorScale(
 export interface D3SurfaceOptions extends SurfaceSceneOptions {
   x: (v: number) => number;
   y: (v: number) => number;
+  /** Describes the surface for assistive technology; default sporty's ("nba basketball surface" and so on). */
+  ariaDescription?: string;
 }
 /** Paint a league's surface (in `team`'s colours) into `sel` through the caller's x/y scales. Throws InputError for a league with no surface. */
 export function appendSurface<G extends SVGGElement | SVGSVGElement, D>(
@@ -188,8 +197,14 @@ export function appendSurface<G extends SVGGElement | SVGSVGElement, D>(
   league: League,
   o: D3SurfaceOptions,
 ): Sel<SVGGElement, D> {
-  const { x, y, ...scene } = o;
-  return sportyAppendSurface(sel, surfaceScene(league, scene), x, y);
+  const { x, y, ariaDescription, ...scene } = o;
+  return sportyAppendSurface(
+    sel,
+    surfaceScene(league, scene),
+    x,
+    y,
+    ariaDescription === undefined ? {} : { ariaDescription },
+  );
 }
 export { appendLegend, appendSignature } from "./shots.js";
 export type { AppendLegendOptions, AppendSignatureOptions } from "./shots.js";

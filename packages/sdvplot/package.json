@@ -3,6 +3,21 @@
   "version": "0.0.0",
   "description": "Team identity, colors, logos and headshots for SportsDataverse plots — TypeScript port of sdvplot/sdvplotR",
   "license": "MIT",
+  "keywords": [
+    "sportsdataverse",
+    "sports",
+    "sports-analytics",
+    "data-visualization",
+    "team-colors",
+    "team-logos",
+    "headshots",
+    "observable-plot",
+    "d3",
+    "chartjs",
+    "react"
+  ],
+  "homepage": "https://plot.sportsdataverse.org",
+  "bugs": "https://github.com/sportsdataverse/sdvplot-js/issues",
   "type": "module",
   "sideEffects": false,
   "engines": {
@@ -106,7 +121,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/sportsdataverse/sdvplot-js",
+    "url": "git+https://github.com/sportsdataverse/sdvplot-js.git",
     "directory": "packages/sdvplot"
   },
   "publishConfig": {

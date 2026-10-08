@@ -141,3 +141,12 @@ test("precision 0 keeps integers intact", () => {
   expect(svg).toMatch(/d="M -?\d{2,3} -?\d{2,3} /);
   expect(svg).toContain('width="800"');
 });
+
+test("toSVG describes the surface, as surfaceMark does: default '<league> <sport> surface', or ariaDescription", () => {
+  expect(toSVG(basketballCourt("nba"))).toContain(
+    '<g transform="scale(1,-1)" aria-description="nba basketball surface">',
+  );
+  expect(toSVG(basketballCourt("nba"), { ariaDescription: 'half court "A"' })).toContain(
+    'aria-description="half court &quot;A&quot;"',
+  );
+});

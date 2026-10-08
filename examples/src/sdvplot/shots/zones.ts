@@ -31,6 +31,8 @@ export default Plot.plot({
       fill: (z) => colour(diff(z)),
       text: (z) => `${player[z].makes}/${player[z].attempts}`,
       frame: "nba-legacy-vertical",
+      stats: player,
+      tip: true,
     }),
   ],
 });

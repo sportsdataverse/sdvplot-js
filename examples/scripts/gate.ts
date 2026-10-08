@@ -36,14 +36,16 @@ export async function prerender(o: PrerenderOptions): Promise<void> {
   });
   if (vitest === undefined) throw new Error("prerender: vitest did not start");
   const files = vitest.state.getFiles();
+  // Not "failed" but "did not pass": when a native crash kills the worker, its remaining tests have no result at all.
   const failed = files
     .flatMap((f) => f.tasks.flatMap(tests))
-    .filter((t) => t.result?.state === "fail").length;
+    .filter((t) => t.mode !== "skip" && t.mode !== "todo" && t.result?.state !== "pass").length;
+  const errors = vitest.state.getUnhandledErrors().length; // "Worker exited unexpectedly" is one
   const broken = vitest.state.getFailedFilepaths().length;
   await vitest.close();
-  if (failed > 0 || broken > 0 || process.exitCode)
+  if (failed > 0 || errors > 0 || broken > 0 || process.exitCode)
     throw new Error(
-      `prerender: ${failed} example(s) failed in ${broken} file(s); the docs are never built from a failing gate`,
+      `prerender: ${failed} example(s) failed or did not run, ${errors} unhandled error(s), ${broken} failed file(s); the docs are never built from a failing gate`,
     );
   // Over-limit outputs become static files (the directory staticFile() names); stale ones go first.
   rmSync(join(o.static, "examples"), { recursive: true, force: true });
@@ -53,6 +55,12 @@ export async function prerender(o: PrerenderOptions): Promise<void> {
     if (!overLimit(row.markup)) continue;
     const file = join(o.static, staticFile(row));
     mkdirSync(dirname(file), { recursive: true });
-    writeFileSync(file, file.endsWith(".svg") ? svgDocument(row.markup) : row.markup);
+    // An .html file is an iframe document: without a doctype it renders in quirks mode.
+    writeFileSync(
+      file,
+      file.endsWith(".svg")
+        ? svgDocument(row.markup)
+        : `<!doctype html>\n<meta charset="utf-8">\n${row.markup}`,
+    );
   }
 }

@@ -5,7 +5,7 @@ import { type BinShape, cellPath } from "../bins/index.js";
 import { contentId } from "../content-id.js";
 import { InputError } from "../errors.js";
 import { type DiffScale, diffScale } from "../shots/diff.js";
-import { type SignaturePoint, signatureGradient } from "../shots/signature.js";
+import { SIGNATURE_NAME, type SignaturePoint, signatureGradient } from "../shots/signature.js";
 
 /** Any `<g>` selection, whatever its datum (d3's `Selection` is invariant in it; see `Sel` in ./index.ts). */
 type G<D> = Selection<SVGGElement, D, BaseType, unknown>;
@@ -101,14 +101,15 @@ export function appendLegend<D>(
   const grad = g.append("defs").append("linearGradient").attr("id", id);
   for (const [offset, colour] of stops)
     grad.append("stop").attr("offset", `${offset}%`).attr("stop-color", colour);
+  const format = o.format ?? ((d: number) => (d === 0 ? "0" : fmtPts(d)));
   g.append("rect")
     .attr("x", x)
     .attr("y", y)
     .attr("width", width)
     .attr("height", 8)
     .attr("rx", 2)
+    .attr("aria-label", `colour key, FG% vs league: ${format(lo)} to ${format(hi)}`)
     .style("fill", `url(#${id})`);
-  const format = o.format ?? ((d: number) => (d === 0 ? "0" : fmtPts(d)));
   for (const d of o.ticks ?? (lo < 0 && hi > 0 ? [lo, 0, hi] : [lo, hi])) {
     g.append("text")
       .attr("x", x + ((d - lo) / (hi - lo)) * width)
@@ -259,6 +260,7 @@ export function appendSignature<D>(
     .curve(curve);
   g.append("path")
     .attr("d", ribbon([...points]) ?? "")
+    .attr("aria-label", SIGNATURE_NAME)
     .style("fill", `url(#${id})`)
     .style("stroke", "currentColor")
     .style("stroke-opacity", 0.2)

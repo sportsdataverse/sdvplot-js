@@ -303,7 +303,9 @@ describe("toPNG remote images", () => {
     expect(fetch).toHaveBeenCalledTimes(1);
     expect(fetch.mock.calls[0]![0]).toBe(href);
     expect(inked(out, box)).toBeGreaterThan(0.1);
-    expect(pixels(out).at(5, 5)).toEqual([255, 255, 255, 255]); // outside the logo: background
+    // outside the logo: background. Right of the logo, in its row: the top-left corner holds Plot's inferred "↑ y" label
+    const beside = pixels(out).at(Math.round(box.x + box.width + 40), Math.round(box.y + box.height / 2));
+    expect(beside).toEqual([255, 255, 255, 255]);
   });
   test("an SVG logo (MTL, nhl) is inlined too; a repeated href is fetched once", async () => {
     const { fig, box } = logoScatter("nhl", "MTL");
