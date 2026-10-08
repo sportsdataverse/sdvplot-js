@@ -46,7 +46,7 @@ const { width, height } = drawScene(ctx, basketballCourt("nba"), { width: 800 })
 
 | Import | Contents |
 | --- | --- |
-| `@sportsdataverse/sporty` | `surface`, `SPORTS`, `basketballCourt`, `hockeyRink`, `footballField`, `soccerPitch`, `baseballField`, `tennisCourt`, `volleyballCourt`, `curlingSheet`, `lacrosseField`, `Scene`, `toSurfaceFrame`, `FRAMES`, errors |
+| `@sportsdataverse/sporty` | `surface`, `SPORTS`, `basketballCourt`, `hockeyRink`, `footballField`, `soccerPitch`, `baseballField`, `tennisCourt`, `volleyballCourt`, `curlingSheet`, `lacrosseField`, `Scene`, `toSurfaceFrame`, `FRAMES`, `basketballZoneOf`, `basketballZones`, `BASKETBALL_ZONES`, `BASKETBALL_ZONE_LABELS`, errors |
 | `@sportsdataverse/sporty/svg` | `toSVG` (`width`, `height`, `background`, `precision`, `id`, `arcs: "sampled" \| "svg"`) |
 | `@sportsdataverse/sporty/specs` | generated parameter specs for all sports |
 | `@sportsdataverse/sporty/plot` | `surfaceMark`, `surfaceScales`, `sceneToGeoJSON` (optional peer `@observablehq/plot`) |
@@ -74,9 +74,12 @@ const { width, height } = drawScene(ctx, basketballCourt("nba"), { width: 800 })
 | Name | Source | Formula |
 | --- | --- | --- |
 | `nba-legacy` | stats.nba.com shots (tenths of a foot, hoop origin; inputs default to `x_legacy`/`y_legacy`). Shots land on the -x half: pair with `displayRange: "defense"` | `surface_x = -47 + 5.25 + y/10`, `surface_y = x/10` |
+| `nba-legacy-vertical` | The same shots with the hoop at the bottom, for a `rotation: 90` scene: points come out already in the rotated frame (do not rotate them again); x across with its sign kept, y toward half court | `surface_x = x/10`, `surface_y = -47 + 5.25 + y/10` |
 | `hockeytech-a` | HockeyTech 850x400 canvas, top-left origin | `(x - 425) * 200/850`, `(200 - y) * 85/400` |
 | `hockeytech-b` | HockeyTech 600x300 canvas (fastRhockey) | `x/3 - 100`, `42.5 - y*85/300` |
 | `espn-football-0-100` | ESPN yardline 0-100 | `x - 50`, `y` unchanged |
+
+Basketball shot zones: `basketballZoneOf(x, y, shotValue, { league, scale })` names the stats.nba.com zone of a basket-centred shot (`BASKETBALL_ZONES`, display names in `BASKETBALL_ZONE_LABELS`), and `basketballZones(league, { scale, top })` returns the six zones as fillable rings. Both are basket-centred, not in a surface frame: map the rings through the same frame as the shots (for legacy shots on the hoop-at-the-bottom chart, `scale: 10` and `FRAMES["nba-legacy-vertical"]`).
 
 ## Provenance and parity
 

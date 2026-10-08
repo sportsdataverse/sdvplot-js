@@ -12,3 +12,5 @@ export { teamTiers } from "./tiers.js";
 export type { TeamTiersOptions } from "./tiers.js";
 export { SURFACES, SURFACE_BASE, colorUpdates, surface } from "./surface.js";
 export type { SurfaceOpts } from "./surface.js";
+export { shootingSignature, shotCells, shotZones } from "./shots.js";
+export type { ShootingSignatureOptions, ShotCellsOptions, ShotZonesOptions } from "./shots.js";
