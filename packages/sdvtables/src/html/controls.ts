@@ -17,8 +17,10 @@ export function rowIdAt<Row>(table: Table<Row>, target: EventTarget | null): str
  * A class toggle, never `innerHTML`, so it writes only the rows whose state changes. Shared by hydrate and
  * `<SdvTable/>`, which call it on each `hover` event AND after each body render, since a render rebuilds the rows.
  */
-// ponytail: O(rows on the page) reads per hover: 0.84 ms a hover in Chromium on an unpaged 2,000-row table (measured);
-// past that, keep an id → <tr> map rebuilt in render
+// ponytail: O(rows on the page) reads per hover. Measured in the Phase 8 Task 5 review on a synthetic DOM of the same
+// shape as an unpaged 2,000-row table, not a hydrated one: 0.84 ms a hover in headless Chromium (26.5 ms in jsdom),
+// 0.19 ms at pageSize 25. Linear, so ~4 ms at 10,000 rows on one page, a quarter of a 60 Hz frame: past that, keep an
+// id → <tr> map rebuilt in render
 export function applyHover<Row>(root: Element, table: Table<Row>, id: string | null): void {
   for (const tr of Array.from(root.querySelectorAll(BODY_ROW))) {
     const row = id === null ? undefined : table.rows[Number(tr.getAttribute("data-row"))];
