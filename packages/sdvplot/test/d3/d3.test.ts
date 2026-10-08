@@ -1,8 +1,16 @@
 // @vitest-environment jsdom
 import { scaleLinear, select } from "d3";
 import { afterEach, beforeAll, beforeEach, expect, test } from "vitest";
-import { appendLogos, appendSurface, teamColorScale } from "../../src/d3/index.js";
-import { InputError, loadLeague, resetWarnings, setWarningHandler, teamColorsSync } from "../../src/index.js";
+import { STANDINGS } from "../../../sdvtables/test/fixtures/standings.js";
+import { appendHeadshots, appendLogos, appendSurface, teamColorScale } from "../../src/d3/index.js";
+import {
+  InputError,
+  loadLeague,
+  resetWarnings,
+  resolveSync,
+  setWarningHandler,
+  teamColorsSync,
+} from "../../src/index.js";
 import { drawnMarks } from "../../src/testing/index.js";
 
 beforeAll(async () => {
@@ -36,6 +44,30 @@ test("appendLogos draws data-stamped images sized by frameHeight", () => {
   ]);
   expect(m[0]?.height).toBeCloseTo(0.2, 6);
   expect(Number(svg.select("image").attr("height"))).toBeCloseTo(70, 6);
+});
+
+test("each image is named: logos by the team whatever the id system, headshots by player id; a caller's ariaLabel wins (J41)", () => {
+  const ids = resolveSync(
+    STANDINGS.map((r) => r.team),
+    "nfl",
+  ) as string[];
+  expect(ids[0]).toBe("12"); // KC's team_id: the key really is an id
+  const xs = STANDINGS.map((r) => r.wins);
+  const ys = STANDINGS.map((r) => -r.wins / 2);
+  const names = (g: { selectAll: (s: string) => { nodes: () => Element[] } }) =>
+    g
+      .selectAll("image")
+      .nodes()
+      .map((n) => n.getAttribute("aria-label"));
+  const svg = select(document.body).append("svg");
+  const o = { league: "nfl", ...pos, frameHeight: 350 } as const;
+  expect(names(appendLogos(svg, xs, ys, ids, { ...o, idSystem: "team_id" }))).toEqual(
+    STANDINGS.map((r) => `${r.team} logo`),
+  );
+  const qbs = STANDINGS.map((r) => r.qb_espn_id);
+  expect(names(appendHeadshots(svg, xs, ys, qbs, o))[0]).toBe("3139477 headshot");
+  const own = appendHeadshots(svg, xs, ys, qbs, { ...o, ariaLabel: (_id, i) => STANDINGS[i]?.qb ?? "" });
+  expect(names(own).slice(0, 2)).toEqual(["Patrick Mahomes", "Justin Herbert"]);
 });
 
 test("frameHeight must be a finite number > 0", () => {
@@ -72,6 +104,17 @@ test("appendSurface paints the lane for a team and draws through the scales", ()
   expect((lane.attr("fill") ?? "").toLowerCase()).toBe(
     (teamColorsSync("nba", ["BOS"], { which: "primary" })[0] ?? "").toLowerCase(),
   );
+});
+
+test("appendSurface describes the surface (sporty's default, or ariaDescription)", () => {
+  const xy = { x: (v: number) => v * 10 + 500, y: (v: number) => 250 - v * 10 };
+  const svg = select(document.body).append("svg");
+  expect(appendSurface(svg, "nba", { team: "BOS", ...xy }).attr("aria-description")).toBe(
+    "nba basketball surface",
+  );
+  expect(
+    appendSurface(svg, "nba", { ...xy, ariaDescription: "Celtics court" }).attr("aria-description"),
+  ).toBe("Celtics court");
 });
 
 test("appendSurface throws InputError for a league with no surface", () => {

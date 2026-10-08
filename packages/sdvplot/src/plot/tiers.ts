@@ -4,7 +4,13 @@ import type { League } from "../types.js";
 import { logos } from "./marks.js";
 
 /** Options for a tier plot (see `prepareTiers`), plus `devel` (draw team abbreviations as text, not logos) and `width` (px, default 640). */
-export type TeamTiersOptions = TiersOptions & { league: League; devel?: boolean; width?: number };
+export type TeamTiersOptions = TiersOptions & {
+  league: League;
+  devel?: boolean;
+  width?: number;
+  /** Plot's tip on the logos, naming the team on hover (opt-in; default false). Ignored with `devel`. */
+  tip?: boolean;
+};
 
 /**
  * A tier plot as `Plot.plot` options (SSR-composable; the caller runs `Plot.plot`): tier 1 on top, logos ranked
@@ -47,6 +53,7 @@ export function teamTiers(rows: readonly TierRow[], o: TeamTiersOptions): Plot.P
           height: t.height,
           alpha: t.alpha,
           variant: t.variant,
+          ...(o.tip ? { tip: true, title: "label" } : {}),
         }),
   ];
   return {
@@ -54,7 +61,7 @@ export function teamTiers(rows: readonly TierRow[], o: TeamTiersOptions): Plot.P
     height: 480,
     marginLeft: 110,
     style: { background: t.theme.bg, color: t.theme.text, fontFamily: "sans-serif" },
-    ...(t.title ? { title: t.title } : {}),
+    ...(t.title ? { title: t.title, ariaLabel: t.title } : {}), // the figure is named by its title
     ...(t.subtitle ? { subtitle: t.subtitle } : {}),
     ...(t.caption ? { caption: t.caption } : {}),
     x: { domain: t.xlim, axis: null },

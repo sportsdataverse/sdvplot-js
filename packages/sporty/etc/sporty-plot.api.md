@@ -41,6 +41,7 @@ export interface SurfaceFeatureProps {
 // @public
 export function surfaceMark(scene: Scene, o?: {
     textFontSize?: number;
+    ariaDescription?: string;
 }): Plot.Markish[];
 
 // @public (undocumented)

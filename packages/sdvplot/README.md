@@ -91,6 +91,109 @@ The backgrounds default to `#ffffff` (light) and `#181a1b` (dark); pass `theme: 
 | `@sportsdataverse/sdvplot/vega` | `withLogos`, `withWordmarks`, `withHeadshots`, `logoLayer`, `withAxisLogos`, `teamColorScale`, `embedSources` (no runtime dependency) |
 | `@sportsdataverse/sdvplot/echarts` | `withLogos`, `withWordmarks`, `withHeadshots`, `withAxisLogos`, `teamColorPalette`, `embedSources` (no runtime dependency) |
 
+## Observable Plot: Plot's own options, transforms and tips
+
+The `sdvplot/plot` marks compute only what Plot cannot: each row's image URL, its aspect, its size as a fraction of
+the frame, and skip-and-warn for a team that does not resolve. Everything else is Observable Plot's. The image marks
+(`logos`, `wordmarks`, `headshots`) take every `Plot.image` option except `src`, `width`, `height`, `r` and
+`preserveAspectRatio`: `x` and `y` (a field name, an accessor or an array), `tip`, `href` and `target`, `title`, `fx`
+and `fy`, `sort`, `filter` and `reverse`, `dx` and `dy`, `className`, `clip`, `opacity` and `channels`. `axisLogos`,
+`meanLines` and `medianLines` take Plot's options too, `teamTiers` takes `tip`, and the shot marks take both
+([Shot charts](#shot-charts)).
+
+- Plot's row-preserving transforms wrap the image marks: `Plot.dodgeY` and `Plot.dodgeX` (a logo beeswarm),
+  `Plot.stackY`, `Plot.windowY`, `Plot.selectLast` and `Plot.pointer`. A transform that makes new rows (`Plot.bin`,
+  `Plot.group`, `Plot.hexbin`) throws `InputError`, because one image per input row cannot survive it: aggregate the
+  rows first, then draw the result.
+- `height` stays a fraction of the frame, or of each facet's frame under `fx` or `fy`.
+- Column-name `x` and `y` label the axes, as on any Plot mark (`x: "wins"` gives `wins →`); pass
+  `x: { label: null }` to `Plot.plot` to hide one.
+- Under a dodge, `r` is the collision radius in pixels. Half the drawn height makes neighbours just touch; a smaller
+  `r` lets them overlap. It never clips or sizes an image. Plot's own image mark uses `r` to clip the image to a
+  circle, while sdvplot uses `r` only for dodge spacing and never clips.
+- `alpha` is the Python sdvplot name for a constant `opacity`, kept for parity; Plot's `opacity` also takes a per-row
+  channel. Passing both throws `InputError`.
+- A `render`, `transform` or `initializer` you pass is composed with sdvplot's, never replaced: your `render` sees the
+  sized image, and `Plot.pointer` stays outermost.
+
+```js
+import * as Plot from "@observablehq/plot";
+import { loadLeague } from "@sportsdataverse/sdvplot";
+import { logos, meanLines } from "@sportsdataverse/sdvplot/plot";
+
+await loadLeague("nfl");
+// The 2024 AFC West and East (regular season): wins and points for from the repo's STANDINGS sample
+// (packages/sdvtables/test/fixtures/standings.ts, nflverse games.csv); net EPA per rush or pass play, offence minus
+// defence, from fixtures/examples/nfl_epa_2024_reg.csv (nflverse play_by_play_2024)
+const afc = [
+  { team: "KC", division: "West", wins: 15, pf: 385, net_epa: 0.063 },
+  { team: "LAC", division: "West", wins: 11, pf: 402, net_epa: 0.101 },
+  { team: "DEN", division: "West", wins: 10, pf: 425, net_epa: 0.108 },
+  { team: "LV", division: "West", wins: 4, pf: 309, net_epa: -0.146 },
+  { team: "BUF", division: "East", wins: 13, pf: 525, net_epa: 0.19 },
+  { team: "MIA", division: "East", wins: 8, pf: 345, net_epa: -0.019 },
+  { team: "NYJ", division: "East", wins: 5, pf: 338, net_epa: -0.045 },
+  { team: "NE", division: "East", wins: 4, pf: 289, net_epa: -0.162 },
+];
+
+// A beeswarm: the frame is 150 - 20 - 30 = 100 px, so each logo is 0.2 x 100 = 20 px tall and r = 10 px touches
+const beeswarm = Plot.plot({
+  height: 150,
+  marginTop: 20,
+  marginBottom: 30,
+  marks: [logos(afc, Plot.dodgeY({ league: "nfl", team: "team", x: "net_epa", r: 10, height: 0.2 }))],
+});
+
+// Small multiples: mark-level fx, one facet per division, each with its own mean
+const facets = Plot.plot({
+  marks: [
+    ...meanLines(afc, { x: "wins", fx: "division" }),
+    logos(afc, { league: "nfl", x: "wins", y: "pf", team: "team", fx: "division", height: 0.15 }),
+  ],
+});
+```
+
+### Tips and the figure's value
+
+`tip: true` adds Plot's own tip, opt-in as everywhere in Plot. The default channels are the team, named as its image
+is ("KC" for rows keyed by `team_id` too; the player id for headshots), with `x` and `y` on the image marks; attempts, FG%, league FG% and the shrunk difference on `shotCells`;
+the zone, and given `stats` its makes/attempts and FG%, on `shotZones`; distance, FG%, league FG% and shot share on
+`shootingSignature`. A tip object's `format` overrides sdvplot's formats key by key. What is under the pointer is the
+figure's `value`, with an `input` event on each change, as for any Plot mark. A server-rendered figure carries one
+empty tip group, inert until the page runs the chart.
+
+```js
+// Hover a logo for its team, wins and points for; each logo also links to its team's page
+const fig = Plot.plot({
+  marks: [
+    logos(afc, {
+      league: "nfl",
+      x: "wins",
+      y: "pf",
+      team: "team",
+      tip: true,
+      href: (d) => `https://www.espn.com/nfl/team/_/name/${d.team.toLowerCase()}`,
+      target: "_blank",
+    }),
+  ],
+});
+fig.addEventListener("input", () => console.log(fig.value?.team)); // "KC" while KC's logo is pointed at
+```
+
+### Accessible names
+
+Every image an SVG renderer draws is named by its subject: "KC logo", "KC wordmark", "3139477 headshot". Logos and
+wordmarks are named by the resolved team whatever id system the rows use (`team_id` included), on the Plot image marks
+and `axisLogos`, the Vega image layers and d3's `appendLogos`, `appendWordmarks` and `appendHeadshots`. On the Plot
+marks `ariaLabel` is Plot's per-image channel, so a string is a column name (`ariaLabel: "qb"`) and an accessor or an
+array gives any other text; the d3 helpers take `ariaLabel: (value, i) => text`. `shotZones` names each path by its
+zone and `shotCells` each cell by its makes, attempts and FG% ("147 of 181 made, 81.2%"), the shooting signature's
+ribbon is named in Plot and d3, `appendLegend` names its colour bar, a titled `teamTiers` figure is labelled by its
+title, and `ariaDescription` passes through to a mark's group. sporty describes every surface it draws ("nba
+basketball surface"; `ariaDescription` replaces it): `surfaceMark`, `toSVG` and d3's `appendSurface`, sdvplot's
+included. Plotly, ECharts and Chart.js draw to a canvas or to layout images, so
+the chart is named through each library (see each adapter below).
+
 ## Spec adapters (Plotly, Vega-Lite, ECharts) — zero runtime deps
 
 These patch a plain spec object and never import the charting library: use whatever plotly.js / vega-embed / echarts
@@ -151,6 +254,8 @@ An unknown team or player is skipped with one warning per call. The colour helpe
 data-placed image is sized in axis units; set `layout.xaxis.range` yourself to keep your own. `withAxisLogos` sizes
 margins in pixels from `layout.width`/`layout.height` (Plotly's 700 × 450 when unset). x-axis images hang under their
 subplot and `margin.b` grows by what reaches below the figure; under an upper subplot they hang into the one below.
+Accessible name: plotly.js has no accessibility option and layout images carry no name, so name the chart on the
+element you pass to `Plotly.newPlot` (`role="img"` and an `aria-label`).
 
 **Vega-Lite** (a native `image` layer):
 
@@ -178,7 +283,10 @@ bottom, y on the left): with `orient: "top"` or `"right"` the images land on the
 Mark images are `height` × the grid's height at render time (they follow zoom and resize; no instance needed).
 Axis images are `height` of the axis' grid on a `chartHeight` px canvas: `grid.height`, else `chartHeight` less
 `grid.top` and `grid.bottom` (ECharts' 65 and 80 px when unset); `containLabel` can shrink the drawn grid a little
-below that. The helper series have no `name`, so a default `legend: {}` lists only your series.
+below that. The helper series have no `name`, so a default `legend: {}` lists only your series. Accessible name:
+`aria: { enabled: true, label: { description: "…" } }` gives the chart's container `role="img"` and that `aria-label`
+(in the browser; server-side rendering writes none); without a `description` ECharts writes one from every series,
+the logo series too.
 
 ## Chart.js (Astro, Svelte, React, plain scripts)
 
@@ -362,6 +470,8 @@ new Chart(canvas, {
   follow-up in sporty so `drawScene` keeps text upright). It needs
   `@sportsdataverse/sporty`, as `sdvplot/d3` does.
 - Destroying a chart drops its pending image listeners, so unmounting before the logos arrive is safe.
+- Accessible name: Chart.js adds none (it draws pixels), so name the chart on the canvas: `role="img"` and an
+  `aria-label`, or fallback content between `<canvas>` and `</canvas>`.
 
 ### Server-side rendering (Node)
 
@@ -465,6 +575,12 @@ The d3 twins are `appendLegend` (colour bar plus a cell size key) and `appendSig
 - Hexagons or squares (J38): every lattice option takes `{ radius }` (hexagons, as both apps), `{ shape: "square", side }`,
   or `{ shape: "square", radius, equalArea: true }` (squares of that hexagon's area). Pass the same `shape` to
   `shotCells` and to `appendLegend`'s `size` key. `binner` bins any x/y data, not only shots.
+- Hover: `tip: true` on `shotCells`, `shotZones` (given `stats: statsByZone(shots)`, each zone's makes/attempts) and
+  `shootingSignature` ([tips](#tips-and-the-figures-value)). `shotCells` leaves out a cell centred outside the plot's
+  frame (`dropOutside`, default `true`; it was `clip`), so a tip never points at a cell that is not drawn, and Plot's
+  own `clip` passes through. The shot marks draw your `cells` and `areas` as the mark's data, so `fx`/`fy`,
+  `channels` and the tip read your fields; every other Plot geo option passes through. As on the image marks, a
+  `transform` or `initializer` that makes new rows (`Plot.group`, `Plot.hexbin`) throws `InputError`.
 - The binners (`hexbin`, `squarebin`, `binner`, `hexagonPath`, `squarePath`, `cellPath`, `cellPoints`) import from
   `sdvplot/shots` or from the sporty-free `sdvplot/bins`. The types the Plot and d3 marks take (`CellVsLeague`,
   `SignaturePoint`, `DiffScale`, `BinShape`) are exported from `sdvplot/shots`, and `BinShape` from `sdvplot/bins` too,
@@ -472,10 +588,13 @@ The d3 twins are `appendLegend` (colour bar plus a cell size key) and `appendSig
 - `shootingSignature` does not clamp y: the ribbon's edges are `fgPct ± halfWidth`, so near 0% or 100% they pass a
   [0, 1] domain (`main` clamps the ribbon's centre, which misstates FG%). Pass `y: { domain: [0, 1], clamp: true }` to
   clamp. `appendSignature` uses your `y` scale as it is; a clamped scale clamps the centre.
-- Marks paint in array order, so zone fills after `...court.marks` dim the court lines under them. Drawing the court
-  last would hide the zones under its floor; for lines on top, add a second `surface` after the zones whose
-  `colorUpdates` set `plot_background`, `defensive_half_court`, `offensive_half_court`, `court_apron`,
-  `two_point_range`, `painted_area`, `center_circle_fill` and `free_throw_circle_fill` to `"#00000000"`.
+- Marks paint in array order. `shotZones` returns the zone paths, then the labels, then the tip, and
+  `shootingSignature`'s tip is its last mark too, so spread these marks last, or add other marks before them: a mark
+  added after them paints over the tip. Zone fills after `...court.marks` dim the court lines under them, and drawing
+  the court last would hide the zones under its floor. For lines on top, put a second `surface` right after the zone
+  paths, its `colorUpdates` setting `plot_background`, `defensive_half_court`, `offensive_half_court`, `court_apron`,
+  `two_point_range`, `painted_area`, `center_circle_fill` and `free_throw_circle_fill` to `"#00000000"`:
+  `const [paths, ...rest] = shotZones(areas, o)`, then `marks: [...court.marks, paths, ...lines.marks, ...rest]`.
 - Faces: `appendHeadshots(…, { clip: "circle", ring, placeholder })` draws circular headshots. The image is drawn 2.3
   radii tall so the head fills the circle, so `drawnMarks` reports 1.15 × `height` for a face.
 - `<Headshot fallback="initials" name="…">` (React) shows the player's initials when there is no headshot or it fails

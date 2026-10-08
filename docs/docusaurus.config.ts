@@ -62,6 +62,9 @@ const config: Config = {
 
   plugins: [
     sdvExamples,
+    // sanitizeComments escapes { } < > outside code in doc comments, so the pages are MDX-safe. sdvplot's open marks
+    // inherit Plot's own option docs, and Plot's "a {value, order} object" would otherwise be read as a JSX expression
+    // and fail the build.
     [
       "docusaurus-plugin-typedoc",
       {
@@ -83,6 +86,7 @@ const config: Config = {
         ],
         tsconfig: `${sdvplot}/tsconfig.json`,
         out: "docs/api/sdvplot",
+        sanitizeComments: true,
         readme: "none",
       },
     ],
@@ -100,6 +104,7 @@ const config: Config = {
         ],
         tsconfig: `${sporty}/tsconfig.json`,
         out: "docs/api/sporty",
+        sanitizeComments: true,
         readme: "none",
       },
     ],
@@ -115,6 +120,7 @@ const config: Config = {
         ],
         tsconfig: `${sdvtables}/tsconfig.json`,
         out: "docs/api/sdvtables",
+        sanitizeComments: true,
         readme: "none",
       },
     ],

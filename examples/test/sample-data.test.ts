@@ -3,16 +3,19 @@ import { expect, test } from "vitest";
 import { abs } from "../sources.js";
 import {
   BKN_SHOTS_2026,
+  KC_PHI_GAMES_2024,
   NBA_LEAGUE_2026,
   NBA_LEAGUE_SQUARE_2026,
   NBA_SHOTS,
   NBA_STANDINGS,
+  NFL_TEAM_EPA_2024,
   NHL_SHOTS,
   NHL_STANDINGS,
   PWHL_GOALS,
   STANDINGS,
   SUPER_BOWL_LIX_TDS,
   SUPER_BOWL_LIX_WP,
+  WC2018_FINAL_FRANCE_PASSES,
 } from "../src/data.js";
 import { EXAMPLES } from "../src/registry.gen.js";
 
@@ -345,4 +348,50 @@ test("PWHL_GOALS are the captured HockeyTech goals, unchanged, on the 600 x 300 
   const xs = events.map((e) => e.details.xLocation);
   const ys = events.map((e) => e.details.yLocation);
   expect([Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)]).toEqual([31, 573, 11, 292]);
+});
+
+test("NFL_TEAM_EPA_2024 is every row of the committed nflverse EPA table, unchanged", () => {
+  expect(NFL_TEAM_EPA_2024).toEqual(
+    csv("fixtures/examples/nfl_epa_2024_reg.csv").map((r) => ({
+      team: r.team,
+      off_plays: Number(r.off_plays),
+      off_epa: Number(r.off_epa),
+      def_plays: Number(r.def_plays),
+      def_epa: Number(r.def_epa),
+    })),
+  );
+  expect(NFL_TEAM_EPA_2024).toHaveLength(32);
+});
+
+test("KC_PHI_GAMES_2024 is every 2024 regular-season game with KC or PHI, unchanged", () => {
+  const ours = (g: Record<string, string>) =>
+    ["KC", "PHI"].some((t) => g.away_team === t || g.home_team === t);
+  expect(KC_PHI_GAMES_2024).toEqual(
+    csv("fixtures/examples/nfl_games_2024_reg.csv")
+      .filter(ours)
+      .map((g) => ({
+        game_id: g.game_id,
+        week: Number(g.week),
+        away_team: g.away_team,
+        away_score: Number(g.away_score),
+        home_team: g.home_team,
+        home_score: Number(g.home_score),
+      })),
+  );
+  expect(KC_PHI_GAMES_2024).toHaveLength(34);
+});
+
+test("WC2018_FINAL_FRANCE_PASSES are the captured SPADL rows, unchanged", () => {
+  expect(WC2018_FINAL_FRANCE_PASSES).toEqual(
+    csv("fixtures/examples/spadl_8658_france_h1_passes.csv").map((r) => ({
+      action_id: Number(r.action_id),
+      time_seconds: Number(r.time_seconds),
+      player_id: Number(r.player_id),
+      start_x: Number(r.start_x),
+      start_y: Number(r.start_y),
+      end_x: Number(r.end_x),
+      end_y: Number(r.end_y),
+    })),
+  );
+  expect(WC2018_FINAL_FRANCE_PASSES).toHaveLength(75);
 });
