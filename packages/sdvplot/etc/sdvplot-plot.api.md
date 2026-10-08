@@ -112,6 +112,9 @@ export interface HeadshotOptions<R> {
 export function headshots<R>(data: Data<R>, o: HeadshotOptions<R>): Plot.Markish;
 
 // @public
+export function linkIds<R>(data: Data<R>, id?: Channel<R>): Plot.RenderFunction;
+
+// @public
 export function logos<R>(data: Data<R>, o: MarkOptions<R>): Plot.Markish;
 
 // @public (undocumented)

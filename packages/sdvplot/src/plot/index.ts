@@ -1,5 +1,6 @@
 export { headshots, logos, sizeRender, wordmarks } from "./marks.js";
 export type { Channel, Data, HeadshotOptions, MarkOptions } from "./marks.js";
+export { linkIds } from "./link.js";
 export { axisLogos } from "./axis.js";
 export type { Axis, AxisLogosOptions } from "./axis.js";
 export { teamColor, teamFill } from "./scales.js";
