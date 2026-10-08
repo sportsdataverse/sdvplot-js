@@ -205,6 +205,40 @@ test("pointerleave, pointercancel and a pointer outside the axis range each clea
   expect(store.getState().cursor).toEqual({ field: "shot_value", value: 3 });
 });
 
+test("leaving clears the cursor this figure wrote in one update, never one an app or another figure set since (Review Focus 8)", () => {
+  const [s, b] = [share(), fg3()];
+  const store = createSelection();
+  const fn = vi.fn();
+  store.subscribe(fn);
+  const snap = (v: number): number => Math.floor(v) + 0.5;
+  linkCursor(s, store, { field: D, shape: { axis: "x", scale: scale(s, "x"), width: 1 }, snap });
+  linkCursor(b, store, { field: D, shape: { axis: "x", scale: scale(b, "x") } });
+  const [x0] = span(s, "x");
+  const [y0, y1] = span(s, "y");
+  // its own: 12.3 ft writes 12.5, and leaving clears it in one update
+  overX(s, "pointermove", 12.3);
+  let before = fn.mock.calls.length;
+  fire(s, "pointerleave", 0, 0);
+  expect([cursorOf(store), fn.mock.calls.length - before]).toEqual([null, 1]);
+  // the app sets 20.5 while the pointer is still over the share chart: leaving, cancelling or the margin keeps it
+  for (const end of ["pointerleave", "pointercancel", "outside"] as const) {
+    overX(s, "pointermove", 12.3);
+    store.set({ cursor: { field: D, value: 20.5 } });
+    before = fn.mock.calls.length;
+    if (end === "outside") fire(s, "pointermove", x0 - 3, (y0 + y1) / 2);
+    else fire(s, end, 0, 0);
+    expect([cursorOf(store), fn.mock.calls.length - before]).toEqual([{ field: D, value: 20.5 }, 0]);
+  }
+  // another figure (a second pointer on the FG% bars) wrote the 9-11 ft band's 10.5: the share chart's leave keeps it
+  overX(s, "pointermove", 12.3);
+  fire(b, "pointermove", px(b, "x", 9) + (scale(b, "x").bandwidth ?? 0) / 2, (y0 + y1) / 2);
+  expect(cursorOf(store)).toEqual({ field: D, value: 10.5 });
+  fire(s, "pointerleave", 0, 0);
+  expect(cursorOf(store)).toEqual({ field: D, value: 10.5 });
+  fire(b, "pointerleave", 0, 0); // and the bars' own leave clears it, once
+  expect(cursorOf(store)).toBeNull();
+});
+
 test("a cursor naming another field hides this figure's cursor", () => {
   const svg = share();
   const store = createSelection();

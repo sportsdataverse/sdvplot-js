@@ -727,7 +727,8 @@ brushFilter(fig, store, { data: rows, x: "wins", y: "net_epa", id: "team" });
   the value under the pointer back: a rule, or a band `width` data units wide, on an x or y scale; the band holding the
   value on a band scale; or a ring around a centre (`axis: "ring"`, such as a shot distance around the hoop).
   Options: `snap`, `label` and `dot`. Moving inside one snapped bin writes nothing, and leaving the figure clears the
-  cursor. A cursor is not an id: it never dims marks or filters a table. The store's `Cursor` is unrelated to
+  cursor it wrote, never one another figure or `store.set` wrote since. A cursor is not an id: it never dims marks or
+  filters a table. The store's `Cursor` is unrelated to
   sdvtables' `TableCursor`, the keyboard grid's current row.
 - **`nearestHover(svg, store, { points, radius, dimension })`** hovers the nearest mark of a d3-drawn (or any
   non-Plot) figure within `radius` px, in the plane or along one axis, and its `label` option shows `tooltip`'s

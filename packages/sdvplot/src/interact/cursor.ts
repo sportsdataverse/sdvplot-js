@@ -80,7 +80,8 @@ const box = (svg: Element): { x: [number, number]; y: [number, number] } => {
  * write the value under the pointer back. Every linked chart follows the same number its own way: a band on share bars
  * (linear x), the band holding it on FG% bars (a band scale), a band on a side chart (y), a rule on a curve, a ring
  * around the hoop. Moving inside one snapped bin writes nothing; crossing a bin edge is one update; leaving the figure
- * (`pointerleave`, `pointercancel`) or the axis' range clears this field's cursor. A cursor never dims marks or
+ * (`pointerleave`, `pointercancel`) or the axis' range clears the cursor this figure wrote, while the store still holds
+ * it: never one an app `store.set` or another figure wrote since. A cursor never dims marks or
  * filters a table (it is not an id). A store change moves attributes only: no element is added or removed, so a cursor
  * costs O(1) per figure. The pointer listeners capture, so a Plot `tip` that stops a press from reaching other
  * listeners does not stop this one. Styled by `--sdv-cursor-color` and `--sdv-cursor-width`. Returns a teardown that
@@ -292,12 +293,13 @@ export function linkCursor<R>(root: Element, store: SelectionStore<R>, o: LinkCu
   offs.push(() => g.remove());
   sync(store.getState().cursor);
 
-  let wrote: Cursor | null = null; // the cursor this figure last wrote, which its teardown clears if still current
+  let wrote: Cursor | null = null; // the cursor this figure last wrote
+  /** Clear the store's cursor only while it holds the value this figure wrote: never an app's or another figure's. */
+  const clear = (): void => {
+    if (wrote !== null && sameCursor(store.getState().cursor, wrote)) store.set({ cursor: null });
+    wrote = null;
+  };
   if (line && emit) {
-    const clear = (): void => {
-      wrote = null;
-      if (store.getState().cursor?.field === o.field) store.set({ cursor: null }); // only this field's
-    };
     /** The value under the pointer along this axis, or null outside the axis' pixel range. */
     const valueAt = (p: number): number | null => {
       const [p0, p1] = along;
@@ -336,7 +338,6 @@ export function linkCursor<R>(root: Element, store: SelectionStore<R>, o: LinkCu
   }
   return () => {
     for (const off of offs) off();
-    if (wrote !== null && sameCursor(store.getState().cursor, wrote)) store.set({ cursor: null });
-    wrote = null;
+    clear();
   };
 }
