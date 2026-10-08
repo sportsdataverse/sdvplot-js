@@ -42,6 +42,8 @@ export interface LinkSelectionOptions<Row, Datum = unknown> {
    * `title` channel (a `<title>`); a mark with neither is named by its link id until teardown. Throws `InputError` when
    * a mark sits in an `<a href>`: a checkbox inside a link is nested interactive content with two tab stops; and, with
    * a DOM, when the figure already has a live toggle link, whose click would then toggle twice (tear it down first).
+   * On a Plot figure with a `tip`, a click also pins Plot's tip; give the tip `pointerEvents: "none"` so the pinned tip
+   * never takes a click meant for a mark under it.
    */
   select?: "toggle";
 }

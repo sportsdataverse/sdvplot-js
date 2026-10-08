@@ -12,6 +12,7 @@ const SECTIONS: Readonly<Record<string, string>> = {
   plot: "Observable Plot",
   d3: "D3",
   shots: "Shot charts",
+  interact: "Linked interactivity",
   react: "React",
   plotly: "Plotly",
   vega: "Vega-Lite",

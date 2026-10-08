@@ -15,67 +15,26 @@ import {
   type Fig,
   HOOP,
   type Shape,
+  at,
   by3,
   byFoot,
   dashboard,
+  fire,
+  isolated,
   link,
+  part,
+  px,
+  shown,
   sides,
+  span,
 } from "./_dashboard.js";
 
 stubBBox(); // jsdom has no text metrics: Plot measures a shown tip with getBBox
 
-const px = (f: Fig, n: "x" | "y", v: number): number => Number(f.scale(n)?.apply(v));
-const span = (f: Fig, n: "x" | "y"): [number, number] => {
-  const r = Array.from(f.scale(n)?.range ?? [], Number);
-  return [Math.min(...r), Math.max(...r)];
-};
-const cursorG = (f: Element): Element | null => f.querySelector("g.sdv-cursor");
-const part = (f: Element, tag: string): Element => {
-  const el = cursorG(f)?.querySelector(tag);
-  if (!el) throw new Error(`no cursor ${tag}`);
-  return el;
-};
-const at = (el: Element, a: string): number => Number(el.getAttribute(a));
-const shown = (f: Element): boolean => cursorG(f)?.getAttribute("display") !== "none";
-/** A pointer event in svg pixels (jsdom: d3.pointer and Plot's pointer read clientX/Y as svg px; no PointerEvent). */
-const fire = (target: Element, type: string, clientX: number, clientY: number): void => {
-  const e = new MouseEvent(type, { bubbles: true, cancelable: true, clientX, clientY });
-  Object.defineProperty(e, "pointerType", { value: "mouse" });
-  target.dispatchEvent(e);
-};
 /** The pointer at `ft` along an x-axis chart, halfway up its plot area. */
 const overX = (f: Fig, ft: number): void => fire(f, "pointermove", px(f, "x", ft), span(f, "y")[0] + 10);
 /** The pointer at `ft` up the side chart's y axis, beside its centre column. */
 const overY = (f: Fig, ft: number): void => fire(f, "pointermove", span(f, "x")[0] + 10, px(f, "y", ft));
-
-/**
- * A point that is still the nearest of `ps` 17 and 19 px out in one of 8 directions, both probes `inside`: there, only
- * a radius of 18 px tells the two probes apart. Outermost points first (`far`), where such a point is.
- */
-function isolated<T extends { readonly p: readonly [number, number] }>(
-  ps: readonly T[],
-  far: (t: T) => number,
-  inside: (x: number, y: number) => boolean,
-): { c: T; probe: (r: number) => [number, number] } {
-  const nearest = (x: number, y: number): T | undefined => {
-    let best: T | undefined;
-    let gap = Number.POSITIVE_INFINITY;
-    for (const t of ps) {
-      const g = Math.hypot(t.p[0] - x, t.p[1] - y);
-      if (g < gap) [best, gap] = [t, g];
-    }
-    return best;
-  };
-  for (const c of [...ps].sort((a, b) => far(b) - far(a)))
-    for (let k = 0; k < 8; k++) {
-      const probe = (r: number): [number, number] => [
-        c.p[0] + r * Math.cos((k * Math.PI) / 4),
-        c.p[1] + r * Math.sin((k * Math.PI) / 4),
-      ];
-      if ([17, 19].every((r) => inside(...probe(r)) && nearest(...probe(r)) === c)) return { c, probe };
-    }
-  throw new Error("no point isolated by 19 px");
-}
 
 function setup(shape: Shape): {
   d: Dashboard & { teardown: () => void };

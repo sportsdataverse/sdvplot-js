@@ -105,6 +105,49 @@ test("shot dashboard: the menu swaps the court under a hovered cell, both ways, 
   }
 });
 
+test("shot kit: a hovered or clicked hexagon dims no zone and warns nothing; a zone click leaves the court alone; a pinned tip lets clicks through", async () => {
+  const root = await figure("sdvplot/interact/shot-kit");
+  const [court, zones] = Array.from(root.children) as Element[];
+  if (court === undefined || zones === undefined) throw new Error("the kit draws a court and zones");
+  const warnings: string[] = [];
+  resetWarnings();
+  setWarningHandler((m) => warnings.push(m));
+  try {
+    Object.defineProperty(court, "value", { value: { x: 0, y: 0 }, configurable: true }); // Plot's tip on the rim
+    court.dispatchEvent(new Event("input", { bubbles: true }));
+    expect(court.classList.contains("sdv-focus")).toBe(true);
+    court.querySelector('[data-sdv-id="0,0"]')?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    expect(court.querySelector('[data-sdv-id="0,0"]')?.getAttribute("aria-checked")).toBe("true");
+    expect(zones.classList.contains("sdv-focus")).toBe(false);
+    zones.querySelector('[data-sdv-id="paint"]')?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    expect(Array.from(zones.querySelectorAll(".sdv-hl"), (e) => e.getAttribute("data-sdv-id"))).toEqual([
+      "paint",
+    ]);
+    expect(Array.from(court.querySelectorAll(".sdv-hl"), (e) => e.getAttribute("data-sdv-id"))).toEqual([
+      "0,0",
+    ]);
+    expect(zones.querySelector("g[aria-label=text]")?.getAttribute("pointer-events")).toBe("none");
+    // a press on the rim pins Plot's tip; the pinned tip must not take the clicks meant for the hexagons under it
+    const d = court.querySelector('path[data-sdv-id="0,0"]')?.getAttribute("d") ?? "";
+    const pts = [...d.matchAll(/[ML]([-\d.e]+),([-\d.e]+)/g)].map((m) => [Number(m[1]), Number(m[2])]);
+    const mean = (k: 0 | 1): number => pts.reduce((sum, p) => sum + (p[k] ?? 0), 0) / pts.length; // the centre
+    for (const type of ["pointermove", "pointerdown"]) {
+      const e = new MouseEvent(type, {
+        bubbles: true,
+        cancelable: true,
+        clientX: mean(0) + 3,
+        clientY: mean(1),
+      });
+      Object.defineProperty(e, "pointerType", { value: "mouse" });
+      court.dispatchEvent(e);
+    }
+    expect(court.querySelector("g[aria-label=tip]")?.getAttribute("pointer-events")).toBe("none");
+    expect(warnings).toEqual([]);
+  } finally {
+    setWarningHandler(null);
+  }
+});
+
 // The shot dashboard's five figures in page order: court, signature, share, FG% and side.
 type Fig = SVGSVGElement & {
   scale: (n: string) => {
