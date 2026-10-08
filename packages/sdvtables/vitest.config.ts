@@ -10,6 +10,9 @@ export default defineConfig({
         new URL("../sdvplot/src/export/index.ts", import.meta.url),
       ),
       "@sportsdataverse/sdvplot": fileURLToPath(new URL("../sdvplot/src/index.ts", import.meta.url)),
+      // the export guide's snippet (examples/snippets/export) imports this package by name; the render test runs it
+      "@sportsdataverse/sdvtables/export": fileURLToPath(new URL("src/export/index.ts", import.meta.url)),
+      "@sportsdataverse/sdvtables": fileURLToPath(new URL("src/index.ts", import.meta.url)),
     },
   },
   define: {

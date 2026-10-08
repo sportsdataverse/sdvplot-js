@@ -1,7 +1,8 @@
 import { readFileSync } from "node:fs";
-import { mkdtemp, readFile, readdir } from "node:fs/promises";
+import { copyFile, mkdtemp, readFile, readdir } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { basename, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { inflateSync } from "node:zlib";
 import { InputError, OptionalDependencyError, SdvplotError } from "@sportsdataverse/sdvplot";
 import { afterEach, describe, expect, test, vi } from "vitest";
@@ -352,6 +353,33 @@ describe.skipIf(!process.env.SDV_RENDER_TESTS)("playwright rendering (SDV_RENDER
     expect(wide.width).toBe(1200);
     expect(Math.abs(wide.height - 675)).toBeLessThanOrEqual(1);
   }, 60_000);
+  // guides/export.mdx shows examples/snippets/export/standings-png.ts and the first PNG it writes, committed as
+  // docs/static/img/sdvtables-export-afc.png. `pnpm --filter @sportsdataverse/examples render:export-png` regenerates
+  // that image: it runs this test with SDV_EXPORT_GUIDE_PNG set to the image's path.
+  test("the export guide's snippet still writes its PNGs", async () => {
+    const snippet = fileURLToPath(
+      new URL("../../../examples/snippets/export/standings-png.ts", import.meta.url),
+    );
+    // a computed specifier: tsc does not pull the examples workspace into this package's program
+    const { exportStandings } = (await import(/* @vite-ignore */ snippet)) as {
+      exportStandings: (rows: readonly Standing[], dir: string) => Promise<string[]>;
+    };
+    const dir = await mkdtemp(join(tmpdir(), "sdvt-guide-"));
+    const files = await exportStandings(rows, dir); // STANDINGS, the 8 real 2024 AFC rows the docs use
+    expect(files.map((f) => basename(f))).toEqual([
+      "afc.png",
+      "afc-post.png",
+      "afc-grid.png",
+      "afc-west.png",
+      "afc-east.png",
+    ]);
+    for (const f of files)
+      expect(Array.from((await readFile(f)).subarray(0, 4))).toEqual([0x89, 0x50, 0x4e, 0x47]);
+    const table = files[0] as string;
+    expect(dims(new Uint8Array(await readFile(table))).width).toBe(900);
+    const out = process.env.SDV_EXPORT_GUIDE_PNG;
+    if (out) await copyFile(table, out);
+  }, 120_000);
   test("wide table is not clipped (Review Focus 5)", async () => {
     // Real rows, wide: the 32 teams of `many` (NFL_2024) pivoted to one column each, headed by team and division, and
     // one row each for their 2024 wins, losses, points for and points against (nflverse games.csv and nflseedR
