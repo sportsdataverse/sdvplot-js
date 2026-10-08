@@ -4,11 +4,13 @@ sidebar_label: Linked figure and table
 ---
 
 One selection store links any number of figures and tables (`@sportsdataverse/sdvplot/interact`). The store holds the
-ids under the pointer, the picked ids, a brush region and one shared hover value, and every linked view follows it with
-a class toggle, never a redraw. A figure's marks carry their ids as `data-sdv-id` (`linkIds`, the `id` option on the
-image marks, or one `.attr` in d3); a table carries the same ids through its `rowKey`. The figures on this page run
-live: brush, hover, click. In Node the interact calls are no-ops, so the server-rendered markup is unchanged. The
-[sdvplot README](https://github.com/sportsdataverse/sdvplot-js/tree/main/packages/sdvplot#linked-interactivity) lists
+ids under the pointer, the picked ids, a brush region and one shared hover value. Every linked figure follows it with a
+class toggle, never a redraw. A linked table underlines a hovered row the same way, but a selection or a brush
+re-renders its body: a selection marks rows, and a brush filters them. A figure's marks carry their ids as
+`data-sdv-id` (`linkIds`, the `id` option on the image marks, or one `.attr` in d3); a table carries the same ids
+through its `rowKey`. The figures on this page run live: brush, hover, click. In Node the interact calls are no-ops, so
+the server-rendered markup is unchanged. The [sdvplot
+README](https://github.com/sportsdataverse/sdvplot-js/tree/main/packages/sdvplot#linked-interactivity) lists
 the rules: matching ids, tips, tearing a link down, the CSS custom properties.
 
 ## A brushable scatter and a hydrated table
