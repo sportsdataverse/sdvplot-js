@@ -1,6 +1,6 @@
 # @sportsdataverse/sporty
 
-Sport surfaces (courts, rinks, fields) as plain geometry for SportsDataverse plots. TypeScript port of the R package [sportyR](https://github.com/sportsdataverse/sportyR) 2.2.3: every surface is a `Scene` of polygons and text, rendered by `@sportsdataverse/sporty/svg` today and by canvas/plot/d3 renderers later.
+Sport surfaces (courts, rinks, fields) as plain geometry for SportsDataverse plots. TypeScript port of the R package [sportyR](https://github.com/sportsdataverse/sportyR) 2.2.3: every surface is a `Scene` of polygons and text, rendered by the `svg`, `canvas`, `plot` and `d3` subpaths.
 
 ## Quick start
 
@@ -30,6 +30,16 @@ Plot.plot({ ...surfaceScales(scene), marks: surfaceMark(scene) });
 import { appendSurface } from "@sportsdataverse/sporty/d3";
 ```
 
+Paint onto a canvas (a browser `CanvasRenderingContext2D`, or `@napi-rs/canvas` in Node; no DOM types needed):
+
+```ts
+import { drawScene } from "@sportsdataverse/sporty/canvas";
+
+const { width, height } = drawScene(ctx, basketballCourt("nba"), { width: 800 }); // or { scale: 8 } px per unit
+```
+
+`toSVG(scene, { arcs: "svg" })` replaces each detected circle run with one SVG `A` command instead of emitting every sampled point as `L`; the default `"sampled"` keeps the Scene's points verbatim.
+
 `surface(sport, league, opts)` dispatches by sport; `leagues`, `features`, `displayRanges` and `colorKeys` list what each sport accepts. Options mirror sportyR: `updates` (parameter overrides), `colorUpdates`, `rotation`, `xTrans`, `yTrans`, `units` (`ft`, `m`, `yd`, `in`, `cm`, `mm`, any case, or a full name such as `"feet"`; anything else throws `UnknownUnitError`), `displayRange`, `xlim`, `ylim`, `arcResolution` (points per arc, an integer >= 2, default 200). Options are typed per sport, so a misspelled option or key is a compile error.
 
 ## Subpaths
@@ -37,7 +47,7 @@ import { appendSurface } from "@sportsdataverse/sporty/d3";
 | Import | Contents |
 | --- | --- |
 | `@sportsdataverse/sporty` | `surface`, `SPORTS`, `basketballCourt`, `hockeyRink`, `footballField`, `soccerPitch`, `baseballField`, `tennisCourt`, `volleyballCourt`, `curlingSheet`, `lacrosseField`, `Scene`, `toSurfaceFrame`, `FRAMES`, errors |
-| `@sportsdataverse/sporty/svg` | `toSVG` |
+| `@sportsdataverse/sporty/svg` | `toSVG` (`width`, `height`, `background`, `precision`, `id`, `arcs: "sampled" \| "svg"`) |
 | `@sportsdataverse/sporty/specs` | generated parameter specs for all sports |
 | `@sportsdataverse/sporty/plot` | `surfaceMark`, `surfaceScales`, `sceneToGeoJSON` (optional peer `@observablehq/plot`) |
 | `@sportsdataverse/sporty/canvas` | `drawScene`, `SceneCanvasContext` (DOM-free; takes a browser 2D context or an `@napi-rs/canvas` one in Node) |
@@ -88,9 +98,21 @@ Drift gates in CI: `pnpm codegen --check` (specs match the vendored JSON) and `t
 - Lacrosse: the five parameters R reads but no league defines (`nzone_length`, `board_thickness`, `center_face_off_marker_radius`, `corner_face_off_marker_bar_width`, `corner_face_off_marker_bar_length`) are fixed at 0 as R draws them, and `updates` cannot set them.
 - Text features carry a `fitBox` (the ggfittext box) that the SVG renderer fits by height only.
 
+## Performance
+
+Local baseline from `test/perf.test.ts` (median of 10 runs after 5 warm-ups; the test asserts build < 50 ms and `toSVG` < 20 ms, and is skipped on CI because shared runners are noisy — these numbers are documented, not gated there). Measured 2026-10-07 on a 12th Gen Intel Core i9-12900K, Node v24.15.0:
+
+| Operation | Median |
+| --- | --- |
+| `basketballCourt("nba", { arcResolution: 200 })` | 3.1 ms |
+| `toSVG(scene)` | 7.6 ms |
+| `toSVG(scene, { arcs: "svg" })` | 1.8 ms |
+
+Across three runs the medians ranged 2.5–3.2 ms (build), 4.8–8.0 ms (`toSVG`) and 0.8–1.8 ms (`arcs: "svg"`).
+
 ## Roadmap
 
-The canvas renderer (Phase 6).
+3D surfaces (Phase 7).
 
 ## Owner steps (before the first publish)
 
