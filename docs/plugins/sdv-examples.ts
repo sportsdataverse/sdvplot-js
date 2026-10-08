@@ -6,6 +6,14 @@ import { DEFINES, SOURCES, abs } from "../../examples/sources";
 
 const require = createRequire(import.meta.url);
 const dir = (pkg: string): string => dirname(require.resolve(`${pkg}/package.json`));
+/** The chart libraries the browser upgrades draw with: examples/src/draw/<lib>.ts, chunk `draw-<lib>`. */
+const CHART_LIBS = ["plotly", "vega", "echarts", "chartjs"] as const;
+/**
+ * Vega's self-contained build (its d3 inside). The module build imports the d3-* packages Observable Plot imports,
+ * and a module imported from two chunks cannot be scope-hoisted into either: every Plot and D3 page grew 4.8 KB
+ * (brotli) with it. The file is UMD in a "type": "module" package, so it is parsed as auto, not as ESM.
+ */
+const VEGA = join(dirname(createRequire(abs("examples/package.json")).resolve("vega")), "vega.min.js");
 
 /**
  * Bundles the examples (and the package SOURCE they import, exactly as the gate runs them) into the client build;
@@ -24,14 +32,19 @@ export default function sdvExamples(_context: LoadContext): Plugin {
             "@sportsdataverse/examples/loaders$": isServer
               ? abs("docs/plugins/no-loaders.ts")
               : abs("examples/src/loaders.gen.ts"),
+            "@sportsdataverse/examples/browser$": isServer
+              ? abs("docs/plugins/no-loaders.ts")
+              : abs("examples/src/browser.gen.ts"),
             react: dir("react"), // one React: the docs' own
             "react-dom": dir("react-dom"),
+            vega$: VEGA,
           },
           // Package and example sources import "./x.js" for "./x.ts" (NodeNext); webpack needs telling.
           extensionAlias: { ".js": [".ts", ".tsx", ".js"] },
         },
         module: {
           rules: [
+            { test: VEGA, type: "javascript/auto" },
             // A page holding <Live id> is compiled from examples/out/<id>.json too: a warm cache must see it change.
             {
               test: /\.mdx?$/,
@@ -69,6 +82,20 @@ export default function sdvExamples(_context: LoadContext): Plugin {
                     priority: 20,
                     reuseExistingChunk: true,
                   },
+                  // Each chart library, with all it brings from node_modules, is one chunk only its draw module
+                  // loads: taken from that chunk alone, never from a chunk a page without the library loads.
+                  ...Object.fromEntries(
+                    CHART_LIBS.map((lib) => [
+                      `lib-${lib}`,
+                      {
+                        test: /[\\/]node_modules[\\/]/,
+                        chunks: (chunk: { name?: string | null }) => chunk.name === `draw-${lib}`,
+                        name: `lib-${lib}`,
+                        enforce: true,
+                        priority: 40,
+                      },
+                    ]),
+                  ),
                 },
               },
             },

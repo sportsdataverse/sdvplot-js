@@ -54,6 +54,11 @@
   width: 100%;
   height: 32rem;
 }
+.sdv-live-note {
+  margin-bottom: 0.5rem;
+  color: var(--ifm-color-emphasis-700);
+  font-style: italic;
+}
 .sdv-live-error {
   color: var(--ifm-color-danger);
   font-weight: 600;
