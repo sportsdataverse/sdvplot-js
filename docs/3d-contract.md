@@ -62,4 +62,15 @@ polygon offset per zIndex; text as decals. Team-colour painting stays in `sdvplo
    `elevation` (e.g. 0.001)? Decision: no — renderer concern.
 6. Football goal posts, soccer/lacrosse goals, baseball outfield walls: who populates, and at what defaults.
 
-## 7. Spike findings (Task 11 appends here)
+## 7. Spike findings (spikes/three-surface, three 0.170, 2026-10-07)
+
+1. Mapped cleanly: Scene (x, y) → three (x, y) with Z-up and `camera.up = (0,0,1)`; no flip needed. [observed: yes — `hockeyRink("nhl")` bbox `[-106.3, -54.3, 106.3, 54.3] ft` lands upright, 63 polygons, 0 degenerate geometries]
+2. `ExtrudeGeometry(shape, { depth: height })` + `mesh.position.z = elevation` renders boards/goal frames as prisms. [4 extruded: `boards` ×2 at 3.5 ft, `goal_frame` ×2 at 4 ft; the boards stand up and follow the corner arcs]
+3. Decals needed a per-zIndex z step of 0.001 ft to avoid z-fighting even with polygonOffset. [observed: with the step at 0 the faceoff-circle ring stipples against the ice sheet under an orthographic top-down camera; at 0.001 ft it is clean]
+4. Polygons with holes (seam outlines, R-style): `Shape` with no `holes` renders the outline fill INCORRECTLY. [observed: 46 of 63 polygons revisit a vertex (outer ring → seam → inner ring); three's earcut fills them as solid wedges/blocks — faceoff circles become red sectors, the restricted-area trapezoid a solid wedge, and the extruded `goal_frame` a solid 4 ft red box instead of a hollow frame. The centre circle and faceoff-spot rings happen to survive]
+5. `#rrggbbaa` fills → material opacity; the goal fill at 0.3 alpha reads as a net stand-in. [observed: `goal_frame_fill` `#a5acaf4d` → opacity 0.30, a faint grey slab over the crease behind the frame]
+6. `toSurfaceFrame("hockeytech-b")` points landed inside the rink; the trail at z = 0.3 ft is visible above decals. [observed: 20/20 rows inside the bbox (x −80…72 ft, |y| ≤ 25.5 ft), y flipped from the y-down canvas by the frame itself; pucks and the yellow trail sit visibly above the ice]
+7. Contract is MISSING: a vertical-surface hint (backboard would extrude as a 4 in wall of the wrong orientation).
+8. Contract is MISSING: glass above the boards (no feature), net geometry (prism is wrong), ring profile — and, from finding 4, an explicit hole representation (`holes?: Polygon[]` on `PolygonFeature`, or a documented seam convention the 3D renderer splits on); without it every outline feature is mis-filled.
+9. Contract is SUFFICIENT for: boards, solid fills (crease, benches, zones), data layers via the frame registry; NOT YET for outline/ring features (finding 4) or the hollow goal frame.
+10. Recommendation for sporty-3d: keep Z-up; add `orientation`; add `holes` (or split seamed rings at the shared vertex before building a `Shape`); renderer owns z-fighting (0.001-unit zIndex step, polygonOffset alone is not enough); `three` optional peer.
