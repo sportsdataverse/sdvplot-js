@@ -11,9 +11,18 @@ export interface DistanceBin extends Split {
   readonly share: number;
 }
 
+/** The number of `binFt` bins from 0 to `maxFt`; both must be finite numbers above 0 (else InputError, naming it). */
+function binCount(binFt: number, maxFt: number): number {
+  for (const [name, v] of Object.entries({ binFt, maxFt }))
+    if (!(Number.isFinite(v) && v > 0))
+      throw new InputError(`${name} must be a finite number > 0, got ${String(v)}`);
+  return Math.floor(maxFt / binFt) + 1;
+}
+
 /**
  * FG% by `shot_distance` in `binFt` bins from 0 to `maxFt`; longer attempts are left out (aggregate.ts:177-192).
- * The total within `maxFt` is the sum of `attempts`.
+ * The total within `maxFt` is the sum of `attempts`. `binFt` and `maxFt` must be finite numbers above 0 (else
+ * InputError).
  *
  * @example
  * ```ts
@@ -23,7 +32,7 @@ export interface DistanceBin extends Split {
  * ```
  */
 export function fgPctByDistance(shots: readonly ShotRow[], binFt = 1, maxFt = 35): DistanceBin[] {
-  const bins = Array.from({ length: Math.floor(maxFt / binFt) + 1 }, () => ({ attempts: 0, makes: 0 }));
+  const bins = Array.from({ length: binCount(binFt, maxFt) }, () => ({ attempts: 0, makes: 0 }));
   let total = 0;
   for (const s of shots) {
     if (s.shot_distance > maxFt) continue;
@@ -82,7 +91,7 @@ export interface SideBin {
 /**
  * Left / centre / right of the hoop by distance (aggregate.ts:218-240): left is `x < -centreHalfWidth`, right is
  * `x > centreHalfWidth`. The default 0 puts `x == 0` in centre (`main`); `false` drops it, as `master`'s
- * `binLeftRight` did (`src/utils/visuals/bin.ts:36-42`).
+ * `binLeftRight` did (`src/utils/visuals/bin.ts:36-42`). `binFt` and `maxFt` as for `fgPctByDistance`.
  *
  * @example
  * ```ts
@@ -98,7 +107,7 @@ export function statsBySide(
   centreHalfWidth: number | false = 0,
 ): SideBin[] {
   const half = centreHalfWidth === false ? 0 : centreHalfWidth;
-  const acc = Array.from({ length: Math.floor(maxFt / binFt) + 1 }, () => ({
+  const acc = Array.from({ length: binCount(binFt, maxFt) }, () => ({
     left: [0, 0],
     centre: [0, 0],
     right: [0, 0],

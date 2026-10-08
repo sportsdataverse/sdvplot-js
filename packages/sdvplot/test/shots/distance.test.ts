@@ -1,6 +1,7 @@
 // @vitest-environment node
 import { expect, test } from "vitest";
 import ORACLE from "../../../../fixtures/shots/oracle.json" with { type: "json" };
+import { InputError } from "../../src/errors.js";
 import {
   cellsVsDistance,
   cellsVsLeague,
@@ -89,4 +90,28 @@ test("square cells (J38): master's distance baseline is read at each square's ce
   expect(cells.filter((c) => c.leagueFgPct === null)).toHaveLength(2);
   const sq = cellsVsLeague(BKN, leagueIndex(BKN, { shape: "square", side: 10 }));
   expect(cells.map((c) => [c.x, c.y, c.attempts])).toEqual(sq.map((c) => [c.x, c.y, c.attempts]));
+});
+test("master hex baseline falls back one foot over an empty bin: BKN against its own distance curve", () => {
+  // BKN's own curve (= main's byFoot in the oracle): one 33-ft attempt, missed, and no 34-ft attempt at all.
+  const own = fgPctByDistance(BKN);
+  expect(own.slice(33, 35).map((b) => [b.distance, b.attempts, b.fgPct])).toEqual([
+    [33, 1, 0],
+    [34, 0, null],
+  ]);
+  // two radius-15 cells are centred 34.07 ft out; each takes bin 33's 0/1, not bin 34's null
+  const at34 = cellsVsDistance(BKN, own, 15).filter((h) => Math.floor(Math.hypot(h.x, h.y) / 10) === 34);
+  expect(at34.map((h) => [h.y, h.attempts, h.leagueFgPct])).toEqual([
+    [270, 1, 0],
+    [315, 1, 0],
+  ]);
+});
+test("fgPctByDistance and statsBySide reject a binFt or maxFt that is not a finite number > 0", () => {
+  for (const bad of [0, -1, Number.NaN, Number.POSITIVE_INFINITY]) {
+    for (const f of [fgPctByDistance, statsBySide]) {
+      expect(() => f(BKN, bad)).toThrow(InputError);
+      expect(() => f(BKN, 1, bad)).toThrow(InputError);
+    }
+  }
+  expect(() => fgPctByDistance(BKN, 0)).toThrow("binFt must be a finite number > 0, got 0");
+  expect(() => statsBySide(BKN, 1, -1)).toThrow("maxFt must be a finite number > 0, got -1");
 });
