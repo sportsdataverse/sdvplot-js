@@ -2,6 +2,16 @@
 
 Sport surfaces (courts, rinks, fields) as plain geometry for SportsDataverse plots. TypeScript port of the R package [sportyR](https://github.com/sportsdataverse/sportyR) 2.2.3: every surface is a `Scene` of polygons and text, rendered by the `svg`, `canvas`, `plot` and `d3` subpaths.
 
+## Install
+
+```sh
+npm install @sportsdataverse/sporty
+```
+
+ESM only, Node >= 20.18.1. The core, `svg`, `specs` and `canvas` subpaths need nothing else. Optional peers, installed
+only for the subpath you import: `@observablehq/plot` >= 0.6.16 for `/plot`, `d3` >= 7 for `/d3`, and
+`@napi-rs/canvas` >= 0.1.50 to give `/canvas` a 2D context in Node (browsers have their own).
+
 ## Quick start
 
 ```ts

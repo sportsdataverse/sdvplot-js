@@ -2,6 +2,17 @@
 
 Team identity, colors, logos, wordmarks and headshots for SportsDataverse plots. TypeScript port of the Python `sdvplot` package (and `sdvplotR`).
 
+## Install
+
+```sh
+npm install @sportsdataverse/sdvplot
+```
+
+ESM only, Node >= 20.18.1. The core and the `bins`, `testing`, `plotly`, `vega` and `echarts` subpaths need no
+peer. The others use optional peers, installed only for the subpath you import: `react` >= 18 for `/react`,
+`@observablehq/plot` >= 0.6.16 for `/plot`, `d3` >= 7 for `/d3`, `chart.js` >= 4.4 for `/chartjs`, and
+`@sportsdataverse/sporty` for surfaces and shot zones (see the table under [Subpaths](#subpaths)).
+
 ## Quick start
 
 ```ts
