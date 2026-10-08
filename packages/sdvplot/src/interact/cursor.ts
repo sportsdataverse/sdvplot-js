@@ -141,10 +141,10 @@ export function linkCursor<R>(root: Element, store: SelectionStore<R>, o: LinkCu
   if (
     ring
       ? !isScale(ring.x) || !isScale(ring.y)
-      : !isScale(line?.scale) || (shape.cross !== undefined && !isScale(line?.cross))
+      : !isScale(line?.scale) || (line?.cross !== undefined && !isScale(line.cross))
   )
     throw new InputError(
-      `linkCursor: shape.${ring ? "x and shape.y" : shape.cross === undefined ? "scale" : "scale and shape.cross"} must be scales, a Plot figure's or d3's`,
+      `linkCursor: shape.${ring ? "x and shape.y" : line?.cross === undefined ? "scale" : "scale and shape.cross"} must be scales, a Plot figure's or d3's`,
     );
   if (ring) {
     if (!ring.center.every(Number.isFinite))
