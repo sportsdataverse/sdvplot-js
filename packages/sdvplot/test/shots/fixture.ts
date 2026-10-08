@@ -14,6 +14,12 @@ export const BKN: readonly ShotRow[] = columns.x_legacy.map((x, i) => ({
   shot_result: columns.made[i] === 1 ? "Made" : "Missed",
 }));
 
+/** The committed indexes keep blazing-the-nets' key, `hexes` (byte-identical tool output); `LeagueIndex` says `cells`. */
+const index = <T extends { readonly hexes: unknown }>({ hexes, ...lattice }: T) => ({
+  ...lattice,
+  cells: hexes,
+});
+
 export interface LeagueFixture {
   readonly byFoot: readonly DistanceBin[];
   readonly byBin3: readonly DistanceBin[];
@@ -22,10 +28,16 @@ export interface LeagueFixture {
   readonly hex15: LeagueIndex;
 }
 /** The 2026 regular-season league context, computed by blazing-the-nets' own code (tools/oracle/shots.ts). */
-export const LEAGUE: LeagueFixture = league as LeagueFixture;
+export const LEAGUE: LeagueFixture = {
+  byFoot: league.byFoot,
+  byBin3: league.byBin3,
+  sides3: league.sides3,
+  hex10: index(league.hex10) as LeagueIndex,
+  hex15: index(league.hex15) as LeagueIndex,
+};
 
 /**
  * The same league on squares of a radius-10 hexagon's area, binned by sdvplot's OWN squarebin: context data, not an
  * oracle (J38 S16; fixtures/shots/README.md).
  */
-export const LEAGUE_SQUARE: LeagueIndex = square.square10 as LeagueIndex;
+export const LEAGUE_SQUARE: LeagueIndex = index(square.square10) as LeagueIndex;

@@ -166,7 +166,7 @@ export interface LeagueCell {
 
 // @public
 export type LeagueIndex = Lattice & {
-    readonly hexes: readonly LeagueCell[];
+    readonly cells: readonly LeagueCell[];
     readonly zones: Readonly<Record<BasketballZone, Split>>;
 };
 

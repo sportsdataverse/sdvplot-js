@@ -93,7 +93,12 @@ export function binShots(shots: readonly ShotRow[], cell: number | BinnerOptions
   });
 }
 
-/** League attempts behind a cell's league rate before it falls back to the zone, and the colour prior (aggregate.ts:106-110). */
+/**
+ * League attempts behind a cell's league rate before it falls back to the zone, and the colour prior: one number for
+ * both (aggregate.ts:106-110). It is blazing-the-nets' tunable, set in its commit 25c3ab9f ("shrunk colours"), not a
+ * derived or measured constant; `cellsVsLeague`'s `minLeague`, `shrunkDiff`'s `k` and `signaturePoints`' `prior`
+ * override it per call.
+ */
 export const LEAGUE_PRIOR_ATTEMPTS = 25;
 
 /**
@@ -124,10 +129,11 @@ export interface LeagueCell {
 }
 /**
  * A season's league cells and zone rates on one lattice (`{ radius }` for hexagons, `{ shape: "square", side }`):
- * plain JSON, computed once (aggregate.ts:125-146). The cells keep blazing-the-nets' key, `hexes`, for either shape.
+ * plain JSON, computed once (aggregate.ts:125-146). blazing-the-nets names the cells `hexes`; here they are `cells`
+ * for either shape, so map that key when loading its JSON.
  */
 export type LeagueIndex = Lattice & {
-  readonly hexes: readonly LeagueCell[];
+  readonly cells: readonly LeagueCell[];
   readonly zones: Readonly<Record<BasketballZone, Split>>;
 };
 export interface CellVsLeague extends CellBin {
@@ -142,14 +148,14 @@ export interface CellVsLeague extends CellBin {
  * ```ts
  * import { leagueIndex } from "@sportsdataverse/sdvplot/shots";
  *
- * leagueIndex([{ x_legacy: 0, y_legacy: 5, shot_distance: 0, shot_value: 2, shot_result: "Made" }], 15).hexes;
+ * leagueIndex([{ x_legacy: 0, y_legacy: 5, shot_distance: 0, shot_value: 2, shot_result: "Made" }], 15).cells;
  * ```
  */
 export function leagueIndex(league: readonly ShotRow[], cell: number | BinnerOptions): LeagueIndex {
   const { lattice } = latticeOf(cell);
   return {
     ...lattice,
-    hexes: binShots(league, lattice).map(({ x, y, attempts, fgPct }) => ({ x, y, attempts, fgPct })),
+    cells: binShots(league, lattice).map(({ x, y, attempts, fgPct }) => ({ x, y, attempts, fgPct })),
     zones: statsByZone(league),
   };
 }
@@ -175,7 +181,7 @@ export function cellsVsLeague(
 ): CellVsLeague[] {
   let byCentre = centres.get(league);
   if (byCentre === undefined) {
-    byCentre = new Map(league.hexes.map((h) => [`${h.x},${h.y}`, h]));
+    byCentre = new Map(league.cells.map((h) => [`${h.x},${h.y}`, h]));
     centres.set(league, byCentre);
   }
   const index = byCentre;

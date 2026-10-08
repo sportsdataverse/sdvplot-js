@@ -50,7 +50,7 @@ const EQUAL_AREA = Math.sqrt(1.5 * Math.sqrt(3));
  * is centred on the origin, so centres are `(i·side, j·side)`. Cells are half-open, `[c − side/2, c + side/2)` on
  * each axis: a point exactly on an edge goes to the higher cell, because the cell index is `Math.round(x / side)`,
  * the rounding d3-hexbin uses (`hexbin.js:33-34`). Bins come out in first-seen order; points with a NaN coordinate
- * are skipped; centres of `-0` fold to `0`.
+ * are skipped; centres of `-0` fold to `0`. Throws `InputError` unless `side` is a finite number greater than 0.
  *
  * @example
  * ```ts
@@ -67,7 +67,8 @@ export function squarebin<T>(
   o: { side: number; x: (p: T) => number; y: (p: T) => number },
 ): BinOf<T>[] {
   const s = o.side;
-  if (!(s > 0)) throw new InputError(`squarebin side must be > 0, got ${String(s)}`);
+  if (!(Number.isFinite(s) && s > 0))
+    throw new InputError(`squarebin side must be a finite number > 0, got ${String(s)}`);
   const byId = new Map<string, BinOf<T>>();
   const bins: BinOf<T>[] = [];
   for (const p of points) {

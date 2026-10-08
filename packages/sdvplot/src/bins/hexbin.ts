@@ -11,7 +11,8 @@ export type BinOf<T> = T[] & { x: number; y: number };
 /**
  * Bin points into pointy-top hexagons of circumradius `radius`, in the points' OWN units (data space, not
  * pixels). Points with a NaN coordinate are skipped. Centres of `-0` are folded to `0` (blazing-the-nets
- * `main` `lib/data/aggregate.ts:101`), so equal hexes share one key.
+ * `main` `lib/data/aggregate.ts:101`), so equal hexes share one key. Throws `InputError` unless `radius` is a finite
+ * number greater than 0.
  *
  * @example
  * ```ts
@@ -24,7 +25,8 @@ export function hexbin<T>(
   points: readonly T[],
   o: { radius: number; x: (p: T) => number; y: (p: T) => number },
 ): BinOf<T>[] {
-  if (!(o.radius > 0)) throw new InputError(`hexbin radius must be > 0, got ${String(o.radius)}`);
+  if (!(Number.isFinite(o.radius) && o.radius > 0))
+    throw new InputError(`hexbin radius must be a finite number > 0, got ${String(o.radius)}`);
   const dx = o.radius * 2 * Math.sin(THIRD_PI);
   const dy = o.radius * 1.5;
   const byId = new Map<string, BinOf<T>>();

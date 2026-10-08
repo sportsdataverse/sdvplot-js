@@ -148,3 +148,13 @@ test("binner: { radius } is exactly Task 3's hexbin, { shape: 'square' } exactly
       .length;
   expect([n(10, true), n(10, false), n(15, true), n(15, false)]).toEqual([378, 374, 214, 211]);
 });
+test("hexbin and squarebin themselves reject a size that is not a finite number > 0 with InputError, as binner does", () => {
+  for (const v of [Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY, Number.NaN, 0, -1]) {
+    const hex = (): unknown => hexbin(POINTS, { radius: v, x: X, y: Y });
+    const square = (): unknown => squarebin(POINTS, { side: v, x: X, y: Y });
+    expect(hex).toThrow(InputError);
+    expect(hex).toThrow(`hexbin radius must be a finite number > 0, got ${String(v)}`);
+    expect(square).toThrow(InputError);
+    expect(square).toThrow(`squarebin side must be a finite number > 0, got ${String(v)}`);
+  }
+});
