@@ -22,8 +22,47 @@ import { Selection as Selection_2 } from 'd3';
 // @public
 export function appendHeadshots<G extends SVGElement>(sel: Sel<G>, xs: ArrayLike<Value>, ys: ArrayLike<Value>, players: readonly Value[], o: D3HeadshotOptions): Sel<SVGGElement>;
 
+// Warning: (ae-forgotten-export) The symbol "G" needs to be exported by the entry point d3.d.ts
+// Warning: (ae-forgotten-export) The symbol "DiffScale" needs to be exported by the entry point d3.d.ts
+//
+// @public
+export function appendLegend(g: G, scale?: DiffScale, o?: AppendLegendOptions): number;
+
+// @public
+export interface AppendLegendOptions {
+    caption?: readonly string[] | null;
+    domain?: readonly [lo: number, hi: number];
+    format?: (d: number) => string;
+    notes?: readonly string[];
+    size?: {
+        readonly px: (attempts: number) => number;
+        readonly steps: readonly number[];
+        readonly shape?: BinShape;
+        readonly note?: string;
+    };
+    ticks?: readonly number[];
+    width?: number;
+    x?: number;
+    y?: number;
+}
+
 // @public
 export const appendLogos: AppendTeamMarks;
+
+// Warning: (ae-forgotten-export) The symbol "SignaturePoint" needs to be exported by the entry point d3.d.ts
+//
+// @public
+export function appendSignature(sel: G, points: readonly SignaturePoint[], o: AppendSignatureOptions): G;
+
+// @public
+export interface AppendSignatureOptions {
+    curve?: "monotone-x" | "basis";
+    fill?: DiffScale;
+    halfWidth?: (p: SignaturePoint, maxShare: number) => number;
+    league?: boolean;
+    x: (distance: number) => number;
+    y: (fgPct: number) => number;
+}
 
 // Warning: (ae-forgotten-export) The symbol "League" needs to be exported by the entry point d3.d.ts
 //
@@ -87,7 +126,8 @@ export function teamColorScale(league: League, o?: {
 
 // Warnings were encountered during analysis:
 //
-// dist/d3.d.ts:37:5 - (ae-forgotten-export) The symbol "Which" needs to be exported by the entry point d3.d.ts
+// dist/d3.d.ts:37:9 - (ae-forgotten-export) The symbol "BinShape" needs to be exported by the entry point d3.d.ts
+// dist/d3.d.ts:127:5 - (ae-forgotten-export) The symbol "Which" needs to be exported by the entry point d3.d.ts
 
 // (No @packageDocumentation comment for this package)
 

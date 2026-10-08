@@ -124,3 +124,5 @@ export function appendSurface<G extends SVGGElement | SVGSVGElement>(
   const { x, y, ...scene } = o;
   return sportyAppendSurface(sel, surfaceScene(league, scene), x, y);
 }
+export { appendLegend, appendSignature } from "./shots.js";
+export type { AppendLegendOptions, AppendSignatureOptions } from "./shots.js";
