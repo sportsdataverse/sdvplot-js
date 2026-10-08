@@ -1,6 +1,12 @@
+import type { loadImage } from "@napi-rs/canvas";
 import type { ChartConfiguration, ChartDataset, Plugin } from "chart.js";
 import { expectTypeOf, test } from "vitest";
 import {
+  type AxisLogoOptions,
+  type HeadshotPointOptions,
+  type ImageLike,
+  type PointOptions,
+  type WatermarkOptions,
   axisLogos,
   logoPoints,
   logoWatermarks,
@@ -52,4 +58,12 @@ test("axis logos and watermarks are plain plugins for bar and line configs", () 
     plugins: [logoWatermarks(["KC", "BUF"], { league: "nfl", size: 75, alpha: 0.4 })],
   };
   expectTypeOf([bar, wp]).not.toBeNever();
+});
+
+test("loadImage takes @napi-rs/canvas's loader as it is, and a DOM image is an ImageLike", () => {
+  expectTypeOf<typeof loadImage>().toMatchTypeOf<NonNullable<PointOptions["loadImage"]>>();
+  expectTypeOf<typeof loadImage>().toMatchTypeOf<NonNullable<HeadshotPointOptions["loadImage"]>>();
+  expectTypeOf<typeof loadImage>().toMatchTypeOf<NonNullable<AxisLogoOptions["loadImage"]>>();
+  expectTypeOf<typeof loadImage>().toMatchTypeOf<NonNullable<WatermarkOptions["loadImage"]>>();
+  expectTypeOf<HTMLImageElement>().toMatchTypeOf<ImageLike>();
 });

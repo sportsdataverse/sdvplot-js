@@ -20,6 +20,13 @@ Python `sdvplot` answers for real inputs sampled from its own index; the TS port
 
 ## logos/
 
+Real archived mark images, named `<sha256>.<ext>` exactly as the CDN serves them, for render tests that cannot fetch
+(`packages/sdvplot/test/chartjs/node.test.ts`).
+
+- `aab854c59098d4f465c1c6f31b580f2a38d2ed4f5c0c03df2da76f62f5378dc4.png`: MLB team 19 (LAD) `logo` / `default`, source
+  `espn`, 500 x 500, 8,909 bytes (manifest row in `packages/sdvplot/src/data/marks/mlb.ts`, first seen 2026-09-26);
+  archive URL `https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/aa/aab854c59098d4f465c1c6f31b580f2a38d2ed4f5c0c03df2da76f62f5378dc4.png`
+- copied 2026-10-08 from the Python `sdvplot` image cache (fetched 2026-10-05); `sha256sum` matches the file name
 - two real archived marks, byte-exact, named by their sha256 (the CDN archive is content-addressed:
   `https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/<sha[:2]>/<sha>.<ext>`)
 - `62e36185….png`: nfl team 19 (NYG) `logo`/`default` (source espn, 500x500 RGBA), the mark `logos()` resolves for "NYG"

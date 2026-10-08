@@ -58,6 +58,7 @@ export interface ImageLayer {
     // (undocumented)
     mark: {
         type: "image";
+        aria: true;
         width: number;
         height: number;
         aspect: true;
