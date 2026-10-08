@@ -198,10 +198,19 @@ export interface AppendSignatureOptions {
  * ```ts
  * import { create, scaleLinear } from "d3";
  * import { appendSignature } from "@sportsdataverse/sdvplot/d3";
+ * import { fgPctByDistance, signaturePoints, vsLeague } from "@sportsdataverse/sdvplot/shots";
  *
- * const points = [0, 0.25, 0.5].map((distance) => ({ distance, fgPct: 0.6, leagueFgPct: 0.55, share: 0.1, colourDiff: 0.02 }));
+ * // Brooklyn shots from the sportsdataverse-data nba_stats_shots release, 2025-26
+ * const shots = [
+ *   { x_legacy: -1, y_legacy: 7, shot_distance: 1, shot_value: 2, shot_result: "Made" },
+ *   { x_legacy: 0, y_legacy: 0, shot_distance: 0, shot_value: 2, shot_result: "Missed" },
+ *   { x_legacy: -44, y_legacy: 252, shot_distance: 26, shot_value: 3, shot_result: "Made" },
+ * ];
+ * // the makes against all three attempts, which stand in for the league (the gallery's uses the 2025-26 league)
+ * const made = fgPctByDistance(shots.filter((s) => s.shot_result === "Made"));
+ * const points = signaturePoints(vsLeague(made, fgPctByDistance(shots)), { minAttempts: 1 });
  * const svg = create("svg").attr("viewBox", "0 0 400 200");
- * appendSignature(svg.append("g"), points, { x: scaleLinear([0, 0.5], [0, 400]), y: scaleLinear([0, 1], [200, 0]) });
+ * appendSignature(svg.append("g"), points, { x: scaleLinear([0, 35], [0, 400]), y: scaleLinear([0, 1], [200, 0]) });
  * svg.node();
  * ```
  */
