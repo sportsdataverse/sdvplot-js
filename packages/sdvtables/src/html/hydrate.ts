@@ -44,11 +44,11 @@ export function hydrate<Row>(el: Element, table: Table<Row>): () => void {
   let drawn = table.rows; // the rows the body shows: the SSR markup's until the first render
   const render = (): void => {
     cancel = undefined;
-    drawn = table.rows;
     const root = el.getRootNode() as Document | ShadowRoot;
     const restore = captureFocus(el);
     const p = renderParts(table.spec, table.rows, { css: "none", ...tableRenderOptions(table) });
     body.innerHTML = tableHTML(p);
+    drawn = table.rows; // after the write: a render that throws leaves the rows the body still shows on record
     // M8: a hidden column's filter input leaves the toolbar (and comes back), as in renderHTML(table) and <SdvTable/>
     const toolbar = el.querySelector(".sdvt-toolbar");
     if (toolbar && table.state.hidden !== hidden) toolbar.outerHTML = renderToolbar(table, p.labels);

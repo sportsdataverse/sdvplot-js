@@ -158,6 +158,38 @@ test("M3: hydrating again while a render is pending draws it first, so the body 
   el.querySelector<HTMLElement>('[data-sdv-body] tr[data-row="3"] td')?.click(); // the row shown at 3: BUF
   expect(t.getSelection()).toEqual(new Set(["BUF"]));
 });
+test("a render that throws leaves the rows the body shows on record, so the next row event still redraws it first", () => {
+  let fail = false;
+  // LV's row, whose wins read throws while `fail` is set: a render that dies after the engine moved
+  const lv = Object.defineProperty({ ...(STANDINGS[3] as Standing) }, "wins", {
+    enumerable: true,
+    get: () => {
+      if (fail) throw new Error("wins unreadable");
+      return 4;
+    },
+  });
+  const t = createTable(
+    { ...spec, rowKey: "team" },
+    rows.map((r) => (r.team === "LV" ? lv : r)),
+  );
+  const el = mount(renderHTML(t));
+  let owed: FrameRequestCallback | undefined;
+  vi.stubGlobal("requestAnimationFrame", (cb: FrameRequestCallback) => {
+    owed = cb;
+    return 1;
+  });
+  vi.stubGlobal("cancelAnimationFrame", () => {
+    owed = undefined;
+  });
+  hydrate(el, t);
+  t.setSort("team", "asc"); // BUF DEN KC LAC LV MIA NE NYJ: the old row 3 (LV) is LAC's index now
+  fail = true;
+  expect(() => owed?.(0)).toThrow("wins unreadable"); // the body still shows KC LAC DEN LV ...
+  fail = false;
+  t.setSelection(new Set(["KC"])); // a render that keeps the rows is owed
+  el.querySelector<HTMLElement>('[data-sdv-body] tr[data-row="3"] td')?.click(); // the LV row shown
+  expect(t.getSelection()).toEqual(new Set(["KC"])); // redrawn first: LV's row is gone, never read as LAC
+});
 test("hydrate throws on markup without a body block", () => {
   document.body.innerHTML = "<div class='sdvt'></div>";
   const el = document.body.firstElementChild as HTMLElement;
