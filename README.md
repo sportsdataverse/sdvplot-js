@@ -122,7 +122,7 @@ Each package's README has more: a shot chart on a court with Observable Plot in
 ## **Documentation**
 
 The [**sdvplot-js** documentation website](https://plot.sportsdataverse.org) has the
-[introduction](https://plot.sportsdataverse.org/), the [gallery](https://plot.sportsdataverse.org/gallery/), the
+[introduction](https://plot.sportsdataverse.org/intro), the [gallery](https://plot.sportsdataverse.org/gallery/), the
 [notebooks](https://plot.sportsdataverse.org/notebooks/) and the API reference for
 [sdvplot](https://plot.sportsdataverse.org/api/sdvplot/), [sporty](https://plot.sportsdataverse.org/api/sporty/) and
 [sdvtables](https://plot.sportsdataverse.org/api/sdvtables/), plus:

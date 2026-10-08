@@ -55,9 +55,19 @@ test("the home page's coverage tables render the registries' own counts", async 
     expect(shots.includes("espn"), `${league} ESPN headshots`).toBe(
       Object.hasOwn(ESPN_HEADSHOT_LEAGUES, league),
     );
+    // gsis ids are nfl-only (headshotUrl); the league-id CDNs are nbaHeadshotUrl, wnba…, mlb…, nhl…
+    expect(shots.includes("gsis"), `${league} gsis headshots`).toBe(league === "nfl");
+    expect(shots.includes("league"), `${league} league-id headshots`).toBe(
+      ["nba", "wnba", "mlb", "nhl"].includes(league),
+    );
   }
   expect(container.querySelector("[data-totals]")?.textContent).toContain(
     `${LEAGUES.length} leagues and ${fmt(teams)} teams`,
+  );
+
+  const surfaces = SPORTS.reduce((n, s) => n + leagues(s).filter((l) => l !== "custom").length, 0);
+  expect(container.querySelector("[data-totals]")?.textContent).toContain(
+    `${SPORTS.length} sports and ${surfaces} league surfaces`,
   );
 
   const sports = [...container.querySelectorAll<HTMLElement>("[data-sport]")];

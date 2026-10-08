@@ -109,7 +109,8 @@ export default function Coverage({ data }: { data: Data }): ReactNode {
   for (const l of [...data.leagues].sort((a, b) => rank(a) - rank(b)))
     groups.get(LEAGUE_NAMES[l.league]?.[0] ?? OTHER)?.push(l);
   const teams = data.leagues.reduce((s, l) => s + l.teams, 0);
-  const surfaceLeagues = data.sports.reduce((s, x) => s + x.leagues.length, 0);
+  // every sport also takes "custom" (your own dimensions), which is no league
+  const surfaceLeagues = data.sports.reduce((s, x) => s + x.leagues.filter((l) => l !== "custom").length, 0);
   const tally = (r: Readonly<Record<string, number>>): string =>
     Object.entries(r)
       .sort((a, b) => b[1] - a[1])
@@ -119,8 +120,8 @@ export default function Coverage({ data }: { data: Data }): ReactNode {
     <div className="sdv-coverage">
       <p className="sdv-cov-totals" data-totals>
         <strong>{data.leagues.length}</strong> leagues and <strong>{fmt(teams)}</strong> teams in sdvplot;{" "}
-        <strong>{data.sports.length}</strong> sports and <strong>{surfaceLeagues}</strong> league surfaces in
-        sporty.
+        <strong>{data.sports.length}</strong> sports and <strong>{surfaceLeagues}</strong> league surfaces
+        (plus custom dimensions) in sporty.
       </p>
 
       <Heading as="h3" id="leagues">
@@ -161,7 +162,7 @@ export default function Coverage({ data }: { data: Data }): ReactNode {
             rows.length === 0 ? null : (
               <tbody key={group}>
                 <tr className="sdv-cov-group">
-                  <th scope="colgroup" colSpan={7}>
+                  <th scope="rowgroup" colSpan={7}>
                     {group}
                   </th>
                 </tr>
