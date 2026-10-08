@@ -1,21 +1,47 @@
-# @sportsdataverse/sdvtables
+# **@sportsdataverse/sdvtables** <a href='https://plot.sportsdataverse.org/'><img src='https://raw.githubusercontent.com/sportsdataverse/sdvplot-js/main/docs/static/img/sdvplot-js-logo.png' align="right" width="25%" min-width="120px" alt="sdvplot-js hex logo" /></a>
+
+<!-- badges: start -->
+
+[![npm](https://img.shields.io/npm/v/@sportsdataverse/sdvtables?label=sdvtables&logo=npm&style=for-the-badge)](https://www.npmjs.com/package/@sportsdataverse/sdvtables)
+[![Downloads](https://img.shields.io/npm/dm/@sportsdataverse/sdvtables?style=for-the-badge)](https://www.npmjs.com/package/@sportsdataverse/sdvtables)
+[![Total downloads](https://img.shields.io/npm/dt/@sportsdataverse/sdvtables?style=for-the-badge)](https://www.npmjs.com/package/@sportsdataverse/sdvtables)
+[![Node](https://img.shields.io/node/v/@sportsdataverse/sdvtables?logo=nodedotjs&logoColor=white&style=for-the-badge)](https://nodejs.org/)
+[![Unpacked size](https://img.shields.io/npm/unpacked-size/@sportsdataverse/sdvtables?style=for-the-badge)](https://www.npmjs.com/package/@sportsdataverse/sdvtables?activeTab=code)
+[![ci](https://img.shields.io/github/actions/workflow/status/sportsdataverse/sdvplot-js/ci.yml?branch=main&label=ci&logo=github&style=for-the-badge)](https://github.com/sportsdataverse/sdvplot-js/actions/workflows/ci.yml)
+[![release](https://img.shields.io/github/actions/workflow/status/sportsdataverse/sdvplot-js/release.yml?branch=main&label=release&logo=github&style=for-the-badge)](https://github.com/sportsdataverse/sdvplot-js/actions/workflows/release.yml)
+[![docs](https://img.shields.io/github/deployments/sportsdataverse/sdvplot-js/Production?label=docs&logo=vercel&style=for-the-badge)](https://plot.sportsdataverse.org)
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg?style=for-the-badge&logo=github)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![License](https://img.shields.io/github/license/sportsdataverse/sdvplot-js?style=for-the-badge)](https://github.com/sportsdataverse/sdvplot-js/blob/main/LICENSE)
+[![Contributors](https://img.shields.io/github/contributors/sportsdataverse/sdvplot-js?style=for-the-badge)](https://github.com/sportsdataverse/sdvplot-js/graphs/contributors)
+[![Twitter Follow](https://img.shields.io/twitter/follow/SportsDataverse?color=blue&label=%40SportsDataverse&logo=x&style=for-the-badge)](https://x.com/SportsDataverse)
+
+<!-- badges: end -->
 
 Serializable table specs rendered to HTML (static, or interactive with a headless engine) and to PNG, with
 SportsDataverse team identity and themes. A `TableSpec` is plain
 data (JSON-safe), so the same spec renders in Node, the browser and notebooks. Zero runtime dependencies beyond
 [`@sportsdataverse/sdvplot`](https://plot.sportsdataverse.org) (team logos, headshots and colors).
 
-Docs: https://plot.sportsdataverse.org. Siblings: sdvplot (Python, `great_tables` helpers) and sdvplotR (R, `gt_*`). This package ports both; the name map is [below](#gtutils--sdvplotr-names).
+Siblings: [sdvplot](https://sdvplot.sportsdataverse.org/) (Python, `great_tables` helpers) and
+[sdvplotR](https://sdvplotR.sportsdataverse.org/) (R, `gt_*`). This package ports both; the name map is
+[below](#gtutils--sdvplotr-names).
 
-## Install
+Part of [sdvplot-js](https://github.com/sportsdataverse/sdvplot-js#readme) · [Documentation](https://plot.sportsdataverse.org) · [API reference](https://plot.sportsdataverse.org/api/sdvtables/) ·
+[Gallery](https://plot.sportsdataverse.org/gallery/sdvtables/) · [Notebooks](https://plot.sportsdataverse.org/notebooks/) · [Source](https://github.com/sportsdataverse/sdvplot-js/tree/main/packages/sdvtables)
+
+## **Installation**
 
 ```sh
 npm install @sportsdataverse/sdvtables @sportsdataverse/sdvplot
+# or
+pnpm add @sportsdataverse/sdvtables @sportsdataverse/sdvplot
+# or
+yarn add @sportsdataverse/sdvtables @sportsdataverse/sdvplot
 ```
 
 ESM only, Node >= 20.18.1. `@sportsdataverse/sdvplot` is a required peer (npm 7+ and pnpm install it for you).
 
-## Quick start
+## **Quick start**
 
 ```ts
 import { defineTable } from "@sportsdataverse/sdvtables";
@@ -26,6 +52,12 @@ const spec = defineTable<{ team: string; wins: number }>()
   .theme("midnight")
   .title("AFC West")
   .build();
+const rows = [
+  { team: "KC", wins: 15 },
+  { team: "LAC", wins: 11 },
+  { team: "DEN", wins: 10 },
+  { team: "LV", wins: 4 },
+]; // the 2024 AFC West
 
 await prepare(spec); // loads leagues, team names and gsis ids the spec needs
 const html = renderHTML(spec, rows); // string (Node, SSR, notebooks)
@@ -34,7 +66,7 @@ document.body.append(toElement(spec, rows)); // browser; Observable: html`${rend
 
 `prepare(spec)` must be awaited before `renderHTML`. `renderHTMLAsync` does both.
 
-## Hosts and CSS
+## **Hosts and CSS**
 
 Every themed value is a `--sdvt-*` custom property on the table wrapper, and each element carries at most one
 `style` attribute. By default `renderHTML` inlines a scoped `<style>` block. A page that renders many tables should
@@ -58,7 +90,7 @@ fonts yourself (`fontsLink(fonts)` builds the same tag). `toElement` moves the l
 Decoration CSS is scoped to the table `#id`. Two renders of the same spec on one page therefore need distinct ids:
 call `.id("a")` / `.id("b")` on the builder.
 
-## TanStack Table interop (recipe)
+## **TanStack Table interop (recipe)**
 
 sdvtables has its own headless engine and takes no TanStack dependency. If your app already renders tables with
 `@tanstack/react-table` 8, map a `TableSpec` to `ColumnDef`s: the header comes from the spec, and each
@@ -167,7 +199,7 @@ Limits: `snake` and tier layouts change which `<tr>` holds which row, so the rec
 decorations (title, caption, stripes) are not cells and are not carried over. Written for `@tanstack/react-table` 8
 (sdv-web pins `^8.21.3`); v9 is a breaking major and is not covered.
 
-## Themes
+## **Themes**
 
 20 themes: the 18 gtUtils themes plus `sdv` (light/dark) and `sdvTeam`. Set one with
 `.theme(name, { density, options })`.
@@ -193,7 +225,7 @@ decorations (title, caption, stripes) are not cells and are not carried over. Wr
 `themePreview(spec, rows, themes?, { n, density })` from `@sportsdataverse/sdvtables/html` returns
 `Record<themeName, html>` (first `n` rows, compact).
 
-## Surface
+## **Surface**
 
 - 21 column kinds on the `c` factory (`text`, `num`, `int`, `pct`, `rank`, `delta`, `tally`, `logo`, `wordmark`,
   `headshot`, `colorPills`, `colorRanks`, `colorResults`, `percentileBar`, `indicatorBox`, `highlight`,
@@ -204,7 +236,7 @@ decorations (title, caption, stripes) are not cells and are not carried over. Wr
 - Number cells display negatives with U+2212 (a true minus); `formatValue`-style labels (legends, notes) stay ASCII.
 - Unknown team ids warn once per call per set and render as plain text.
 
-## Interactive
+## **Interactive**
 
 `createTable(spec, rows, options)` is the package's own headless engine (no table library): sort, per-column and
 global text filters, paging, column visibility and row selection, with immutable snapshots and `subscribe`. Every
@@ -316,7 +348,7 @@ function Standings() {
 sort, filters, page and selection; only a structural `spec` change builds a new engine. Without `interactive` the
 component renders the static table. The `react` entry is marked `"use client"`.
 
-## Export (Node; peer: playwright)
+## **Export (Node; peer: playwright)**
 
 `@sportsdataverse/sdvtables/export` renders tables to PNG in headless Chromium. Its functions port sdvplotR's
 `gt_save_crop`, `gt_social_crop`, `gt_save_batch`, `gt_grid` and `gt_stack_tables`, with the Python package's
@@ -363,7 +395,7 @@ await batchToPNG(rows, "division", (groupRows) => ({ spec, rows: groupRows }), "
   them, styled with the Python defaults. A spec used twice gets distinct ids, so each copy keeps its decorations.
 - For an SVG figure, use `toPNG` and `socialCard` from `@sportsdataverse/sdvplot/export` instead (no browser).
 
-## gtUtils / sdvplotR names
+## **gtUtils / sdvplotR names**
 
 All 74 sdvplotR `gt_*` / `pal_*` / `reactable_sdv_*` exports map as below (`GT_ALIASES` and `aliasFor(name)` expose
 the same table in code). Builder methods are on `defineTable()`, `c.*` inside `.columns(c => [...])`.
@@ -416,7 +448,7 @@ the same table in code). Builder methods are on `defineTable()`, `c.*` inside `.
 | `reactable_sdv_cols_label` | as `gt_sdv_cols_label` | not ported |
 | `reactable_sdv_team_color_bar` / `_bg` | `c.teamColorBar(key, {league, which, naColor, barWidth})` / `c.teamColorBg(key, {league, which, alpha, naColor})` | ported |
 
-## Known differences from Python and R
+## **Known differences from Python and R**
 
 - Indicator boxes take a value list and carry no text; legends draw discrete steps, not a gradient bar.
 - Tier images have an empty `alt`. `tally`'s column-mode share is not ported.
@@ -427,7 +459,7 @@ the same table in code). Builder methods are on `defineTable()`, `c.*` inside `.
 - `kicker` always renders uppercase; `cutline` y positions round half-up.
 - `wrapLabels` keeps internal whitespace of a label as given.
 
-## Visual pass (contributors)
+## **Visual pass (contributors)**
 
 The unit snapshots pin each theme's CSS text, not what it draws. The visual pass renders every registered theme's
 `themePreview` of a 2024 AFC standings table (title, subtitle, division groups, source note) through the `tableToPNG`
@@ -445,8 +477,86 @@ test fails if a registered theme is missing from the pass. In CI the `render-tes
 PNGs and any failed theme in the job summary, and uploads them as the `sdvtables-theme-pass` artifact; a failing theme
 never fails the build.
 
-## Data and licenses
+## **Documentation**
 
-Logos, headshots and team colors come from `@sportsdataverse/sdvplot`; the package makes no network requests of its
-own beyond the optional Google Fonts `<link>` (`fonts: false` omits it). Social icons are Font Awesome Free 6 paths
-(CC BY 4.0, https://fontawesome.com). MIT; see `NOTICE.md`.
+The [**sdvplot-js** documentation website](https://plot.sportsdataverse.org) has the
+[sdvtables gallery](https://plot.sportsdataverse.org/gallery/sdvtables/), the [notebooks](https://plot.sportsdataverse.org/notebooks/) and the
+[sdvtables API reference](https://plot.sportsdataverse.org/api/sdvtables/), one page per subpath, plus:
+
+**Guides:**
+[Tables: the spec](https://plot.sportsdataverse.org/guides/tables) ·
+[Table themes](https://plot.sportsdataverse.org/guides/table-themes) ·
+[Cell kinds](https://plot.sportsdataverse.org/guides/cell-kinds) ·
+[Decorations](https://plot.sportsdataverse.org/guides/decorations) ·
+[HTML, SSR and the host page](https://plot.sportsdataverse.org/guides/tables-html) ·
+[Export to PNG](https://plot.sportsdataverse.org/guides/export) ·
+[Node and SSR](https://plot.sportsdataverse.org/guides/node-ssr)
+
+**Examples:**
+[Linked figures and tables](https://plot.sportsdataverse.org/examples/linked) ·
+[From sdvplot (Python) and sdvplotR](https://plot.sportsdataverse.org/guides/migrating)
+
+The [repository README](https://github.com/sportsdataverse/sdvplot-js#readme) covers all three packages and development.
+
+## **Logos, trademarks and data**
+
+Team names, logos, wordmarks and player headshots are trademarks or copyrighted works of their respective leagues,
+teams, schools and other rights holders. `@sportsdataverse/sdvtables` is not affiliated with, sponsored by or endorsed
+by any of them, and using it to draw a mark grants no right to use it. The package ships no logo or headshot files:
+it draws them through `@sportsdataverse/sdvplot`, which carries only an index of team names, ids and colors, and
+the marks are fetched at runtime from the [SportsDataverse logo archive](https://github.com/sportsdataverse/sdv-assets),
+headshots from ESPN (or, for NFL gsis ids, the headshot URLs in nflverse's player table). Use of any mark in your own
+work is governed by that owner's terms, and following them is your responsibility.
+
+Logos, headshots and team colors come from `@sportsdataverse/sdvplot`; the package makes no network requests of
+its own beyond the optional Google Fonts `<link>` (`fonts: false` omits it). Social icons are Font Awesome Free 6
+paths ([CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), https://fontawesome.com). The table helpers port
+sdvplot's `great_tables` helpers (Python, MIT) and sdvplotR's `gt_*` functions (MIT).
+
+The [MIT license](https://github.com/sportsdataverse/sdvplot-js/blob/main/LICENSE) covers the code; team data belongs to its respective owners and sources.
+[NOTICE.md](https://github.com/sportsdataverse/sdvplot-js/blob/main/packages/sdvtables/NOTICE.md) records the sdvplot/sdvplotR and Font Awesome material and its licences.
+
+## **The SportsDataverse**
+
+`@sportsdataverse/sdvtables` is one of the three [sdvplot-js](https://github.com/sportsdataverse/sdvplot-js#readme) packages, with [`@sportsdataverse/sdvplot`](https://github.com/sportsdataverse/sdvplot-js/tree/main/packages/sdvplot#readme) and [`@sportsdataverse/sporty`](https://github.com/sportsdataverse/sdvplot-js/tree/main/packages/sporty#readme).
+
+| Package | Sport / Scope |
+| --- | --- |
+| [**sdvplot**](https://sdvplot.sportsdataverse.org/) | The Python package sdvplot-js ports |
+| [**sdvplotR**](https://sdvplotR.sportsdataverse.org/) | The R package sdvplot mirrors |
+| [**sportyR**](https://github.com/sportsdataverse/sportyR) · [**sportypy**](https://sportypy.sportsdataverse.org/) | Playing-surface plots for R and Python, which `@sportsdataverse/sporty` ports |
+| [**sportsdataverse.js**](https://js.sportsdataverse.org/) | SportsDataverse data for Node.js and TypeScript |
+| [**sportsdataverse-py**](https://py.sportsdataverse.org/) | SportsDataverse data for Python: NFL, CFB, NBA, WNBA, MBB, WBB, MLB, NHL, PWHL, soccer and more |
+| [**sportsdataverse-R**](https://r.sportsdataverse.org/) | The R packages: hoopR, wehoop, cfbfastR, fastRhockey, baseballr and more |
+
+See the full ecosystem at [sportsdataverse.org](https://sportsdataverse.org/).
+
+## **Follow the [SportsDataverse](https://x.com/SportsDataverse) on X and star this repo**
+
+[![Twitter Follow](https://img.shields.io/twitter/follow/SportsDataverse?color=blue&label=%40SportsDataverse&logo=x&style=for-the-badge)](https://x.com/SportsDataverse)
+[![GitHub stars](https://img.shields.io/github/stars/sportsdataverse/sdvplot-js.svg?color=eee&logo=github&style=for-the-badge&label=Star%20sdvplot-js&maxAge=2592000)](https://github.com/sportsdataverse/sdvplot-js/stargazers)
+
+## **Our Authors**
+
+- [Saiem Gilani](https://x.com/saiemgilani)
+  <a href="https://x.com/saiemgilani" target="blank"><img src="https://img.shields.io/twitter/follow/saiemgilani?color=blue&label=%40saiemgilani&logo=x&style=for-the-badge" alt="@saiemgilani" /></a>
+  <a href="https://github.com/saiemgilani" target="blank"><img src="https://img.shields.io/github/followers/saiemgilani?color=eee&logo=Github&style=for-the-badge" alt="@saiemgilani" /></a>
+
+## **Citations**
+
+To cite [**`@sportsdataverse/sdvtables`**](https://plot.sportsdataverse.org) in publications, cite sdvplot-js:
+
+BibTeX Citation
+
+```bibtex
+@misc{gilani_2026_sdvplot_js,
+  author = {Gilani, Saiem},
+  title = {sdvplot-js: Team identity, colors, logos, surfaces and tables for JavaScript and TypeScript plots},
+  url = {https://plot.sportsdataverse.org},
+  year = {2026}
+}
+```
+
+## **License**
+
+MIT. See [NOTICE.md](https://github.com/sportsdataverse/sdvplot-js/blob/main/packages/sdvtables/NOTICE.md) for the sdvplot/sdvplotR and Font Awesome material.
