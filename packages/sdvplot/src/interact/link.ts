@@ -40,7 +40,8 @@ export interface LinkSelectionOptions<Row, Datum = unknown> {
    * with the store), and a click, Enter or Space toggles its id in `selected`. Each checkbox keeps the mark's own
    * accessible name: name the marks through Plot's `ariaLabel` channel (`ariaLabel: "matchup"`, an `aria-label`) or its
    * `title` channel (a `<title>`); a mark with neither is named by its link id until teardown. Throws `InputError` when
-   * a mark sits in an `<a href>`: a checkbox inside a link is nested interactive content with two tab stops.
+   * a mark sits in an `<a href>`: a checkbox inside a link is nested interactive content with two tab stops; and, with
+   * a DOM, when the figure already has a live toggle link, whose click would then toggle twice (tear it down first).
    */
   select?: "toggle";
 }
@@ -64,6 +65,8 @@ const markAt = (figure: Element, e: Event): Element | null => {
 const warned = new WeakSet<Element>();
 /** Live links per figure: a teardown un-dims its figure only when no other link on it still follows the store. */
 const links = new WeakMap<Element, number>();
+/** Figures with a live `select: "toggle"` link: a second one would toggle each click twice, so it throws. */
+const toggling = new WeakSet<Element>();
 /** What `select: "toggle"` sets on a mark, and its teardown gives back. */
 const TOGGLE_ATTRS = ["role", "tabindex", "aria-checked", "aria-label"] as const;
 
@@ -147,6 +150,10 @@ export function linkSelection<Row, Datum = unknown>(
   if (typeof hover !== "boolean" && typeof (hover as { id?: unknown } | null)?.id !== "function")
     throw new InputError("linkSelection: hover is true, false or { id: (datum) => link id }");
   if (!hasDom()) return () => {};
+  if (figure && toggled.length > 0 && toggling.has(figure))
+    throw new InputError(
+      'linkSelection: this figure already has a live select: "toggle" link (a click would toggle twice); tear it down first',
+    );
   if (figure) links.set(figure, (links.get(figure) ?? 0) + 1);
   const offs: (() => void)[] = [];
   let wrote: string | null = null; // the hover id this link last wrote, which its teardown clears if still current
@@ -301,7 +308,9 @@ function toggles<Row>(figure: Element, store: SelectionStore<Row>, marks: readon
   });
   figure.addEventListener("click", flip);
   figure.addEventListener("keydown", flip);
+  toggling.add(figure);
   return () => {
+    toggling.delete(figure);
     off();
     figure.removeEventListener("click", flip);
     figure.removeEventListener("keydown", flip);

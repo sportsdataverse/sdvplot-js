@@ -193,6 +193,30 @@ test("each checkbox has an accessible name: its own aria-label or <title> when i
   offBare();
   expect(ids.map((id) => cell(bare, id)?.getAttribute("aria-label") ?? null)).toEqual([null, null, null]); // added, removed
 });
+test("one live toggle link per figure: a second throws InputError, since each click would toggle twice", () => {
+  const svg = strip();
+  const store = createSelection<BknGame>();
+  const off = linkSelection(store, { figure: svg, select: "toggle" });
+  expect(() => linkSelection(store, { figure: svg, select: "toggle" })).toThrow(InputError);
+  expect(() => linkSelection(createSelection<BknGame>(), { figure: svg, select: "toggle" })).toThrow(
+    InputError,
+  );
+  const fn = vi.fn();
+  store.subscribe(fn);
+  click(cell(svg, IND));
+  expect([selected(store), fn.mock.calls.length, cell(svg, IND)?.getAttribute("aria-checked")]).toEqual([
+    [IND],
+    1,
+    "true",
+  ]);
+  const hoverOnly = linkSelection(store, { figure: svg }); // a link without the toggle is fine
+  hoverOnly();
+  off();
+  const again = linkSelection(store, { figure: svg, select: "toggle" }); // after its teardown, a new one may
+  click(cell(svg, IND));
+  expect(selected(store)).toEqual([]);
+  again();
+});
 test("a mark stamped with an empty id (a missing key) is no checkbox and no hover target: it could never toggle", () => {
   // 2024 AFC, one cell per team, keyed by team only where the team has a net EPA: NE's is blanked, so its id is missing
   const svg = Plot.plot({
