@@ -88,7 +88,9 @@ export async function toMarkup(out: unknown, id: string): Promise<{ kind: Output
 
 /**
  * jsdom never loads an <img> or sends an XHR, so those paths would be silent: record them into `fetched` too
- * (problems() then flags them like a fetch). data: URIs carry their bytes and are not network.
+ * (problems() then flags them like a fetch). data: URIs carry their bytes and are not network. An <img> already in
+ * the document is a displayed image (React 19 sets `src` on every <img> it mounts), like Plot's <image href>: the
+ * output shows its URL and jsdom loads neither. A detached `new Image()` is a request, and is recorded.
  */
 function recordOtherNetworkPaths(fetched: string[]): () => void {
   const img = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, "src");
@@ -98,7 +100,7 @@ function recordOtherNetworkPaths(fetched: string[]): () => void {
     Object.defineProperty(HTMLImageElement.prototype, "src", {
       ...img,
       set(this: HTMLImageElement, v: string) {
-        if (!String(v).startsWith("data:")) fetched.push(String(v));
+        if (!this.isConnected && !String(v).startsWith("data:")) fetched.push(String(v));
         set.call(this, v);
       },
       get,

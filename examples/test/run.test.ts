@@ -94,6 +94,14 @@ test("I1/I3: a swallowed fetch, an Image src, an XHR and a network example that 
   });
   expect(ri.fetched).toEqual(["https://example.com/x.png"]);
   expect(problems(imgEntry, ri).join()).toContain("fetched without");
+  // A displayed <img> (React 19 sets `src` on each one it mounts) is output, not a request.
+  const shown = await runExample(imgEntry, async () => {
+    const el = document.body.appendChild(document.createElement("img"));
+    el.src = "https://example.com/logo.png";
+    el.remove();
+    return { default: draws };
+  });
+  expect(shown.fetched).toEqual([]);
   const xhrEntry = entry("t/xhr");
   const rx = await runExample(xhrEntry, async () => {
     new XMLHttpRequest().open("GET", "https://example.com/y.json");
