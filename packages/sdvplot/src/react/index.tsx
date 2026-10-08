@@ -1,4 +1,11 @@
-import { type ImgHTMLAttributes, type ReactElement, useEffect, useState } from "react";
+import {
+  type ImgHTMLAttributes,
+  type ReactElement,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { type ColorOptions, palette } from "../colors.js";
 import { type EspnHeadshotLeague, HEADSHOT_ASPECT, headshotUrl, loadGsis } from "../headshots.js";
 import { getLeagueSync, loadLeague } from "../index-data.js";
@@ -84,13 +91,17 @@ export interface HeadshotProps extends ImgProps {
 /**
  * The first character of every space-separated word, up to three, as blazing-the-nets `main` does
  * (`Headshot.tsx:16-20`): suffixes and particles are words ("Brian Thomas Jr." is "BTJ"), "De'Von" is one word.
+ * It differs from `main` only on an astral first character, which it keeps whole where `w[0]` leaves half of it.
  */
 const initialsOf = (name: string): string =>
   name
     .split(" ")
-    .map((w) => w[0] ?? "")
+    .map((w) => Array.from(w)[0] ?? "")
     .join("")
     .slice(0, 3);
+
+// useLayoutEffect warns during React 18 server rendering; on the server no effect runs anyway.
+const useClientLayoutEffect = typeof document === "undefined" ? useEffect : useLayoutEffect;
 
 /** Player headshot `<img>`: sync for ESPN ids; gsis ids render once the gsis map has loaded. Renders nothing for an unknown/malformed id, or a league/idSystem `headshotUrl` rejects. */
 export function Headshot({
@@ -105,6 +116,7 @@ export function Headshot({
 }: HeadshotProps): ReactElement | null {
   const [, setGsisReady] = useState(false); // re-render once loadGsis resolves
   const [failed, setFailed] = useState<string | undefined>(); // the src that failed to load
+  const img = useRef<HTMLImageElement>(null);
   useEffect(() => {
     if (idSystem !== "gsis") return;
     let live = true;
@@ -124,8 +136,13 @@ export function Headshot({
   } catch {
     src = undefined;
   }
-  const label = alt ?? name ?? "Player headshot";
+  const label = alt ?? (name || undefined) ?? "Player headshot";
   const width = Math.round(height * HEADSHOT_ASPECT);
+  // React replays no error that fired before hydration (or before mount): read the settled image instead. A
+  // loading image is not complete yet, and a loaded one has a natural width.
+  useClientLayoutEffect(() => {
+    if (img.current?.complete && img.current.naturalWidth === 0) setFailed(src);
+  }, [src]);
   if (src === undefined || (fallback === "initials" && src === failed)) {
     if (fallback !== "initials" || name === undefined) return null;
     return (
@@ -151,6 +168,7 @@ export function Headshot({
   return (
     // biome-ignore lint/a11y/useAltText: alt always defaults to a string; imgProps cannot carry it
     <img
+      ref={img}
       src={shown}
       alt={label}
       height={height}

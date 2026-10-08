@@ -100,3 +100,18 @@ test("without fallback, a URL that cannot be built still renders nothing, name o
   const { container } = render(<Headshot playerId="not-an-id" league="nfl" name="Patrick Mahomes" />);
   expect(container.innerHTML).toBe("");
 });
+
+test("an astral first character stays whole (main's w[0] would leave a lone surrogate)", () => {
+  render(<Headshot playerId="x" league="nfl" name="𠮷田 太郎" fallback="initials" />);
+  const text = screen.getByRole("img").textContent ?? "";
+  expect(text).toBe("𠮷太");
+  expect(text).not.toMatch(/[\uD800-\uDFFF]/u); // no lone surrogate (a /u regex sees only unpaired halves)
+});
+
+test("name='' is not a request for decorative: the box keeps role img and the default label", () => {
+  render(<Headshot playerId="x" league="nfl" name="" fallback="initials" />);
+  expect(screen.getByRole("img")).toHaveAttribute("aria-label", "Player headshot");
+  cleanup();
+  render(<Headshot playerId="3139477" league="nfl" name="" fallback="initials" />);
+  expect(screen.getByRole("img")).toHaveAttribute("alt", "Player headshot");
+});
