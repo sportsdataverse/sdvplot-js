@@ -5,8 +5,8 @@ sidebar_position: 5
 
 The examples on this site draw real data, never invented rows. The datasets below are shared between them, all
 exported by the examples workspace as `@sportsdataverse/examples/data`. For every one but `SUPER_BOWL_LIX_WP`, a test
-(`examples/test/sample-data.test.ts`) re-derives every value from captures committed in `fixtures/examples`, so a
-hand-typed number fails the examples gate. A second test fails when an example types its own table of rows instead of
+(`examples/test/sample-data.test.ts`) re-derives every value from captures committed in `fixtures/examples` (`fixtures/shots` for the shot-chart data), so
+a hand-typed number fails the examples gate. A second test fails when an example types its own table of rows instead of
 importing one of these.
 
 ## STANDINGS: eight AFC teams, 2024
@@ -86,3 +86,15 @@ The four goals of PWHL Boston at PWHL Montreal on 2 March 2024 (game 42; Montrea
 (`xLocation`/`yLocation`, pixels on the 600 × 300 canvas).
 
 <Live id="sporty/frames/hockeytech" />
+
+## BKN_SHOTS_2026 and NBA_LEAGUE_2026: a team's shots and the league
+
+The shot-chart examples' data, from the sportsdataverse-data `nba_stats_shots` release (`shots_2026.parquet`,
+stats.nba.com's 2025-26 shots). `BKN_SHOTS_2026` is the first 2000 Brooklyn rows of the release (890 made, 968
+threes), as blazing-the-nets keeps them for its own tests. `NBA_LEAGUE_2026` is the league context of the 219,159
+regular-season shots, computed by blazing-the-nets' own code: FG% by foot, by 3 ft and by side, and indexes of 1 ft
+and 1.5 ft hexagons with each zone's rate. `NBA_LEAGUE_SQUARE_2026` bins the same shots into squares of a 1 ft
+hexagon's area with sdvplot's `squarebin`; nothing outside sdvplot computes squares, so it is context, not an oracle.
+`fixtures/shots/README.md` records each file's source, hash and command.
+
+<Live id="sdvplot/shots/hex-chart" />
