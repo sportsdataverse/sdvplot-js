@@ -5,8 +5,8 @@ import { InputError } from "../errors.js";
 const THIRD_PI = Math.PI / 3;
 const ANGLES = [0, THIRD_PI, 2 * THIRD_PI, 3 * THIRD_PI, 4 * THIRD_PI, 5 * THIRD_PI];
 
-/** One hexagonal bin: the points in it, plus its centre in the points' own units. */
-export type HexBinOf<T> = T[] & { x: number; y: number };
+/** One bin of either shape (`hexbin`, `squarebin`): the points in it, plus its centre in the points' own units. */
+export type BinOf<T> = T[] & { x: number; y: number };
 
 /**
  * Bin points into pointy-top hexagons of circumradius `radius`, in the points' OWN units (data space, not
@@ -15,7 +15,7 @@ export type HexBinOf<T> = T[] & { x: number; y: number };
  *
  * @example
  * ```ts
- * import { hexbin } from "@sportsdataverse/sdvplot/shots";
+ * import { hexbin } from "@sportsdataverse/sdvplot/bins";
  *
  * hexbin([{ x: 0, y: 0 }, { x: 3, y: 4 }], { radius: 10, x: (p) => p.x, y: (p) => p.y }).length;
  * ```
@@ -23,12 +23,12 @@ export type HexBinOf<T> = T[] & { x: number; y: number };
 export function hexbin<T>(
   points: readonly T[],
   o: { radius: number; x: (p: T) => number; y: (p: T) => number },
-): HexBinOf<T>[] {
+): BinOf<T>[] {
   if (!(o.radius > 0)) throw new InputError(`hexbin radius must be > 0, got ${String(o.radius)}`);
   const dx = o.radius * 2 * Math.sin(THIRD_PI);
   const dy = o.radius * 1.5;
-  const byId = new Map<string, HexBinOf<T>>();
-  const bins: HexBinOf<T>[] = [];
+  const byId = new Map<string, BinOf<T>>();
+  const bins: BinOf<T>[] = [];
   for (const p of points) {
     let px = +o.x(p);
     let py = +o.y(p);
@@ -72,7 +72,7 @@ export function hexagonPoints(r: number): [number, number][] {
  *
  * @example
  * ```ts
- * import { hexagonPath } from "@sportsdataverse/sdvplot/shots";
+ * import { hexagonPath } from "@sportsdataverse/sdvplot/bins";
  *
  * hexagonPath(10);
  * ```

@@ -3,13 +3,17 @@ import { expect, test } from "vitest";
 import columns from "../../../../fixtures/shots/nba-2026-bkn-2000-columns.json" with { type: "json" };
 import ORACLE from "../../../../fixtures/shots/oracle.json" with { type: "json" };
 import pkg from "../../package.json" with { type: "json" };
-import { hexagonPath, hexbin } from "../../src/shots/index.js";
+import * as bins from "../../src/bins/index.js";
+import { hexagonPath, hexbin } from "../../src/bins/index.js";
+import * as shots from "../../src/shots/index.js";
 
 /** The 2000 real BKN shot locations, legacy tenths. */
 const POINTS = columns.x_legacy.map((x, i) => ({ x, y: columns.y_legacy[i] as number }));
 
-test("the ./shots subpath is exported", () => {
+test("the ./bins and ./shots subpaths are exported, and shots re-exports every binner", () => {
+  expect(pkg.exports["./bins"]).toEqual({ types: "./dist/bins.d.ts", import: "./dist/bins.js" });
   expect(pkg.exports["./shots"]).toEqual({ types: "./dist/shots.d.ts", import: "./dist/shots.js" });
+  for (const [name, fn] of Object.entries(bins)) expect(shots).toHaveProperty(name, fn);
 });
 test("hexbin: d3-hexbin's lattice on the real shots: main's 1 ft hexes, same centres, counts and order", () => {
   const bins = hexbin(POINTS, { radius: 10, x: (p) => p.x, y: (p) => p.y });

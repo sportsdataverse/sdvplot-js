@@ -47,38 +47,6 @@ export function cellPath(shape: BinShape, size: number): string;
 // @public
 export function cellPoints(shape: BinShape, size: number): [number, number][];
 
-// @public (undocumented)
-export type DiffPalette = "rdbu" | "master";
-
-// @public
-export interface DiffScale {
-    // (undocumented)
-    (diff: number | null): string;
-    // (undocumented)
-    readonly plot: {
-        readonly type: "diverging" | "linear";
-        readonly domain: readonly number[];
-        readonly range?: readonly string[];
-        readonly scheme?: "RdBu";
-        readonly reverse?: boolean;
-        readonly pivot?: number;
-        readonly interpolate?: "rgb";
-        readonly clamp: boolean;
-    };
-    readonly stops: readonly number[];
-}
-
-// @public
-export function diffScale(o?: DiffScaleOptions): DiffScale;
-
-// @public (undocumented)
-export interface DiffScaleOptions {
-    domain?: number;
-    nullColor?: string;
-    palette?: DiffPalette;
-    theme?: "light" | "dark";
-}
-
 // @public
 export function hexagonPath(r: number): string;
 
