@@ -27,7 +27,8 @@ export default {
   "normValue(' Montréal ')": normValue(" Montréal "),
   "normSeason(2020)": normSeason(2020),
   "normSeason('2020-21')": splitSeason,
-  "seasonBounds('nfl')": seasonBounds("nfl"),
+  // The first season; the upper bound is next year, so it moves every January.
+  "seasonBounds('nfl')[0]": seasonBounds("nfl")?.[0],
   "latestSeason('nfl')": latestSeason("nfl"),
   "LEAGUES.length": LEAGUES.length,
   "VARIANTS.length": VARIANTS.length,

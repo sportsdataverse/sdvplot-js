@@ -91,6 +91,8 @@ export async function toMarkup(out: unknown, id: string): Promise<{ kind: Output
  * (problems() then flags them like a fetch). data: URIs carry their bytes and are not network. An <img> already in
  * the document is a displayed image (React 19 sets `src` on every <img> it mounts), like Plot's <image href>: the
  * output shows its URL and jsdom loads neither. A detached `new Image()` is a request, and is recorded.
+ * A heuristic, not a proof: `setAttribute("src", …)` (React 19's path for <img>), `srcset` and <source> never reach
+ * the property hook. jsdom loads none of them either, so nothing leaves the process; the hook only catches intent.
  */
 function recordOtherNetworkPaths(fetched: string[]): () => void {
   const img = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, "src");

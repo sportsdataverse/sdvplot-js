@@ -6,11 +6,12 @@ export const meta = {
   tags: ["selectMark", "marks", "variant", "nfl"],
 } satisfies ExampleMeta;
 
-const light = await selectMark("KC", "nfl");
-const dark = selectMarkSync("KC", "nfl", { variant: "dark" }); // the league is loaded now
-const wordmark = selectMarkSync("KC", "nfl", { markType: "wordmark" });
+// Green Bay ships a distinct dark-background logo (many teams reuse one image for both).
+const light = await selectMark("GB", "nfl");
+const dark = selectMarkSync("GB", "nfl", { variant: "dark" }); // the league is loaded now
+const wordmark = selectMarkSync("GB", "nfl", { markType: "wordmark" });
 // marks() returns the bundled rows already ranked; compareMarks is that ranking, for rows you filter or merge.
-const ranked = [...(await marks("KC", "nfl"))].sort(compareMarks);
+const ranked = [...(await marks("GB", "nfl"))].sort(compareMarks);
 
 export default {
   light: light && `${light.variant} ${light.source} ${light.archive_url}`,

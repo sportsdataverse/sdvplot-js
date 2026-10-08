@@ -1,6 +1,7 @@
 import * as Plot from "@observablehq/plot";
 import { MANIFEST_URL, fetchManifest, loadLeague } from "@sportsdataverse/sdvplot";
 import { logos } from "@sportsdataverse/sdvplot/plot";
+import { createElement } from "react";
 import { expect, test } from "vitest";
 import type { ExampleEntry } from "../src/contract.js";
 import { normalizeIds, problems, runExample } from "./run.js";
@@ -102,6 +103,14 @@ test("I1/I3: a swallowed fetch, an Image src, an XHR and a network example that 
     return { default: draws };
   });
   expect(shown.fetched).toEqual([]);
+  // React 19 mounts an <img> through setAttribute("src"), which the property hook never sees: shown, not fetched.
+  const mounted = await runExample(
+    imgEntry,
+    out(createElement("img", { src: "https://example.com/logo.png", alt: "" })),
+  );
+  expect(mounted.markup).toContain('src="https://example.com/logo.png"');
+  expect(mounted.fetched).toEqual([]);
+  expect(problems(imgEntry, mounted)).toEqual([]);
   const xhrEntry = entry("t/xhr");
   const rx = await runExample(xhrEntry, async () => {
     new XMLHttpRequest().open("GET", "https://example.com/y.json");
