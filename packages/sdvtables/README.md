@@ -6,6 +6,14 @@ data (JSON-safe), so the same spec renders in Node, the browser and notebooks. Z
 
 Docs: https://plot.sportsdataverse.org. Siblings: sdvplot (Python, `great_tables` helpers) and sdvplotR (R, `gt_*`). This package ports both; the name map is [below](#gtutils--sdvplotr-names).
 
+## Install
+
+```sh
+npm install @sportsdataverse/sdvtables @sportsdataverse/sdvplot
+```
+
+ESM only, Node >= 20.18.1. `@sportsdataverse/sdvplot` is a required peer (npm 7+ and pnpm install it for you).
+
 ## Quick start
 
 ```ts

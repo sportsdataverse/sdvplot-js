@@ -346,7 +346,10 @@ async function main(): Promise<void> {
   write("sdvplot-js-logo.png", render(full()).asPng());
   write("sdvplot-js-mark.svg", mark());
   const icon = (size: number, svg: string): Buffer => render(svg, { mode: "width", value: size }).asPng();
-  write("favicon.ico", ico([16, 32, 48].map((size) => ({ size, png: icon(size, square(mark)) }))));
+  const favicon = ico([16, 32, 48].map((size) => ({ size, png: icon(size, square(mark)) })));
+  write("favicon.ico", favicon);
+  // The same icon at /favicon.ico, where a browser looks on a page that declares none (a notebook, an iframe example).
+  writeFileSync(new URL("../favicon.ico", OUT), favicon);
   write("favicon-192.png", icon(192, square(full)));
   write("favicon-512.png", icon(512, square(full)));
   write("apple-touch-icon.png", icon(180, square(full, EDGE)));

@@ -52,15 +52,16 @@ is a 404 there. To preview the whole site, notebooks included, build it and serv
 pnpm docs:build && pnpm --filter docs serve
 ```
 
-On Windows set `SKIP_HTML_MINIFICATION=true` for the build: the HTML minifier's native addon fails there (CI on Linux
-is unaffected).
+The site ships unminified HTML: `docs/build.env` sets `SKIP_HTML_MINIFICATION=true` for every build. Docusaurus' swc
+minifier drops optional end tags, reorders CSS declarations and merges `<style>` elements in the inline outputs, so
+`check-build` could not compare them, and it saved only 1.6% of the HTML over brotli. The same setting lets the build
+run on Windows, where the minifier's native addon fails to load. On Windows, keep the checkout path short: under a deep
+path `@napi-rs/canvas` cannot find its ICU data and aborts, which kills the examples gate's worker (the gate then
+fails, counting the examples that never ran).
 
 ## Owner steps
 
-- Create/own the `@sportsdataverse` npm org.
-- Register each package on npmjs.com once and configure OIDC trusted publishing for
-  `sportsdataverse/sdvplot-js` (workflow `release.yml`). Until then `changeset publish` fails at the publish
-  step only.
+- Publishing to npm: follow [RELEASING.md](RELEASING.md) (first publish, then trusted publishing).
 - Upload `docs/static/img/social-card.png` as the repo's Social preview (Settings → General); GitHub has no
   API for it. `pnpm brand` regenerates it and the other brand assets (see `tools/brand/README.md`).
 

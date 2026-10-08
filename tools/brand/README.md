@@ -19,12 +19,12 @@ Russo One from this folder. Team colours and logo URLs come from this repo's `@s
 | `sdvplot-js-logo.svg` | 1036 x 1200 | the hex, starfield and logos embedded as data URIs (~2 MB) |
 | `sdvplot-js-logo.png` | 1036 x 1200 | the README logo |
 | `sdvplot-js-mark.svg` | 1036 x 1200 | hex + wordmark + bars on a flat dark fill, no images (< 20 KB); navbar logo |
-| `favicon.ico` | 16, 32, 48 | the mark, PNG-in-ICO |
+| `favicon.ico` | 16, 32, 48 | the mark, PNG-in-ICO; also written to `docs/static/favicon.ico`, the site-root `/favicon.ico` |
 | `favicon-192.png`, `favicon-512.png` | 192, 512 | the full hex on a transparent square |
 | `apple-touch-icon.png` | 180 | the full hex on an opaque `#071224` square |
 | `social-card.png` | 1280 x 640 | GitHub social preview and the docs' `og:image` |
 
-`brand.test.ts` checks the committed files (PNG dimensions, three ICO images, mark size) without re-rendering.
+`brand.test.ts` checks the committed files (PNG dimensions, three ICO images, the root favicon copy, mark size) without re-rendering.
 GitHub has no API for a repo's social preview: upload `social-card.png` by hand under Settings → General.
 
 ## The design

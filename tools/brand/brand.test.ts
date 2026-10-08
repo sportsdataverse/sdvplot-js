@@ -37,6 +37,11 @@ describe("brand assets", () => {
     expect(sizes).toEqual([16, 32, 48]);
   });
 
+  it("/favicon.ico is the same icon, for pages that declare none (notebooks, iframe examples)", () => {
+    const root = readFileSync(new URL("../../docs/static/favicon.ico", import.meta.url));
+    expect(root.equals(readFileSync(img("favicon.ico")))).toBe(true);
+  });
+
   it("the mark SVG stays small enough for a favicon / navbar logo", () => {
     expect(statSync(img("sdvplot-js-mark.svg")).size).toBeLessThan(20 * 1024);
   });

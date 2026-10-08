@@ -1,8 +1,15 @@
 // @vitest-environment jsdom
 import "@testing-library/jest-dom/vitest";
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
-import { afterEach, expect, test } from "vitest";
+import { cleanup, configure, render, screen, waitFor } from "@testing-library/react";
+import { afterEach, expect, test, vi } from "vitest";
 import { Headshot, TeamLogo, useResolve, useTeamColors } from "../../src/react/index.js";
+
+// The waits below cover a league shard's first dynamic import, which takes well over the
+// default 1 s when the machine is busy (a full `pnpm test` beside a docs build): seen flaking
+// three times on 2026-10-08. Raise the ceiling, not the expectation. Nothing is preloaded,
+// because two tests assert the state *before* a load.
+configure({ asyncUtilTimeout: 15_000 });
+vi.setConfig({ testTimeout: 20_000 });
 
 afterEach(cleanup);
 

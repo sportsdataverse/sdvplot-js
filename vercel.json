@@ -3,5 +3,6 @@
   "framework": "docusaurus-2",
   "installCommand": "pnpm install --frozen-lockfile",
   "buildCommand": "pnpm docs:build",
-  "outputDirectory": "docs/build"
+  "outputDirectory": "docs/build",
+  "redirects": [{ "source": "/notebooks", "destination": "/notebooks/", "permanent": true }]
 }
