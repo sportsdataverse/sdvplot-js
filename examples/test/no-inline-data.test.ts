@@ -8,7 +8,8 @@ import { BKN_SHOTS_2026, NBA_SHOTS, STANDINGS } from "../src/data.js";
 /**
  * Real data, never invented rows. An example takes its rows from `@sportsdataverse/examples/data`, where
  * sample-data.test.ts checks every row against a committed capture. This fails when an example module types its own
- * table, an array literal of two or more objects carrying a data-looking key, without importing that module.
+ * table, an array literal of two or more objects carrying a data-looking key, without importing that module. Importing
+ * it is no pass for typed rows: a row there with a literal number under a data key must be a real row (`isReal`).
  * ponytail: a key-name heuristic. A table under other key names, or as arrays of arrays, gets past it; add the key here.
  */
 const DATA_KEYS = new Set([
@@ -134,7 +135,14 @@ test("no example types its own table of rows: it imports @sportsdataverse/exampl
     const imports = sf.statements.flatMap((s) =>
       ts.isImportDeclaration(s) && ts.isStringLiteral(s.moduleSpecifier) ? [s.moduleSpecifier.text] : [],
     );
-    if (imports.includes(DATA_MODULE)) continue;
+    if (imports.includes(DATA_MODULE)) {
+      // computed rows (s.pf) carry no literal; a literal number under a data key must be a real row
+      for (const t of tables)
+        for (const r of t.rows)
+          if (Object.entries(r).some(([k, v]) => DATA_KEYS.has(k) && typeof v === "number") && !isReal(r))
+            offenders.push(`${rel}:${t.line} not a real row: ${JSON.stringify(r)}`);
+      continue;
+    }
     if (rel.startsWith("generated/api/")) {
       checked++;
       for (const t of tables)
