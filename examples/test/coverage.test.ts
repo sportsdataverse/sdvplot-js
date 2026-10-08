@@ -76,6 +76,31 @@ const EXEMPT: readonly (readonly [spec: string, name: RegExp | "*", reason: stri
     /^labelOf$/,
     "the same function as columnLabel (export { labelOf as columnLabel }), which sdvtables/html examples show",
   ],
+  [
+    "@sportsdataverse/sdvplot",
+    /^OptionalDependencyError$/,
+    "thrown only when an optional peer (@resvg/resvg-js, playwright) is missing, which the gate always has installed",
+  ],
+  [
+    "@sportsdataverse/sdvtables/html",
+    /^createTable$/,
+    "re-export of the root's createTable, which the sdvtables/interactive examples import from @sportsdataverse/sdvtables",
+  ],
+  [
+    "@sportsdataverse/sdvtables",
+    only(["applyFilters", "applySort", "comparatorFor", "findColumn", "paginate"]),
+    "@beta engine plumbing for custom renderers: createTable runs each (filter, sort, comparator, column lookup, page); sdvtables/interactive/pure-helpers shows the public sort rules",
+  ],
+  [
+    "@sportsdataverse/sdvtables/export",
+    only(["slug"]),
+    "@beta export plumbing: the file-name rule batchToPNG applies to each group value",
+  ],
+  [
+    "@sportsdataverse/sdvtables/export",
+    only(["tableToPNG", "htmlToPNG", "socialCrop", "batchToPNG"]),
+    "needs a Chromium binary; the docs build and the gate run without one — exercised by the render-tests CI job (SDV_RENDER_TESTS=1) and shown in guides/export.mdx",
+  ],
 ];
 
 const PACKAGES = ["sdvplot", "sporty", "sdvtables"] as const;

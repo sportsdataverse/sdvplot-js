@@ -27,6 +27,7 @@ export const SOURCES: Readonly<Record<string, string>> = {
   "@sportsdataverse/sdvplot/plotly": "packages/sdvplot/src/plotly.ts",
   "@sportsdataverse/sdvplot/vega": "packages/sdvplot/src/vega.ts",
   "@sportsdataverse/sdvplot/echarts": "packages/sdvplot/src/echarts.ts",
+  "@sportsdataverse/sdvplot/export": "packages/sdvplot/src/export/index.ts",
   "@sportsdataverse/sporty": "packages/sporty/src/index.ts",
   "@sportsdataverse/sporty/svg": "packages/sporty/src/svg.ts",
   "@sportsdataverse/sporty/specs": "packages/sporty/src/specs/index.ts",
@@ -35,6 +36,8 @@ export const SOURCES: Readonly<Record<string, string>> = {
   "@sportsdataverse/sporty/d3": "packages/sporty/src/d3.ts",
   "@sportsdataverse/sdvtables": "packages/sdvtables/src/index.ts",
   "@sportsdataverse/sdvtables/html": "packages/sdvtables/src/html/index.ts",
+  "@sportsdataverse/sdvtables/react": "packages/sdvtables/src/react/index.tsx",
+  "@sportsdataverse/sdvtables/export": "packages/sdvtables/src/export/index.ts",
   "@sportsdataverse/examples/data": "examples/src/data.ts",
 };
 

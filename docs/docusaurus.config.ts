@@ -74,6 +74,7 @@ const config: Config = {
           `${sdvplot}/src/bins/index.ts`,
           `${sdvplot}/src/shots/index.ts`,
           `${sdvplot}/src/testing/index.ts`,
+          `${sdvplot}/src/export/index.ts`,
         ],
         tsconfig: `${sdvplot}/tsconfig.json`,
         out: "docs/api/sdvplot",
@@ -100,7 +101,12 @@ const config: Config = {
       "docusaurus-plugin-typedoc",
       {
         id: "sdvtables",
-        entryPoints: [`${sdvtables}/src/index.ts`, `${sdvtables}/src/html/index.ts`],
+        entryPoints: [
+          `${sdvtables}/src/index.ts`,
+          `${sdvtables}/src/html/index.ts`,
+          `${sdvtables}/src/react/index.tsx`,
+          `${sdvtables}/src/export/index.ts`,
+        ],
         tsconfig: `${sdvtables}/tsconfig.json`,
         out: "docs/api/sdvtables",
         readme: "none",
