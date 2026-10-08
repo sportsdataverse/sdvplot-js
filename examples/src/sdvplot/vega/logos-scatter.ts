@@ -24,6 +24,9 @@ const chart: TopLevelSpec = {
 };
 const spec = withLogos(chart, rows, { league: "nfl", x: "pf", y: "pa", team: "team", height: 0.12 });
 
+// In the browser: vegaEmbed(div, spec, { renderer: "svg" }), as this page does (the SVG names each mark, "KC logo").
+export const browser = { lib: "vega", spec } as const;
+
 // Headless Vega: no DOM and no canvas, so the logos stay <image href> links the browser loads when it shows the SVG.
-const view = new vega.View(vega.parse(compile(spec).spec), { renderer: "none" });
+const view = new vega.View(vega.parse(compile(browser.spec).spec), { renderer: "none" });
 export default await view.toSVG();

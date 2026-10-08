@@ -15,6 +15,13 @@ const figure = {
   layout: { width: 560, height: 400, xaxis: { range: [260, 550] }, yaxis: { range: [280, 460] } },
 };
 
-// plotly.js loads each layout image itself (an <img> drawn to a canvas), so the gallery shows the figure, not a
-// render: pass it to Plotly.newPlot(div, figure.data, figure.layout). Each logo is one entry of layout.images.
-export default withLogos(figure, rows, { league: "nfl", x: "pf", y: "pa", team: "team", height: 0.12 });
+// Each logo is one entry of layout.images, which plotly.js loads itself.
+const logos = withLogos(figure, rows, { league: "nfl", x: "pf", y: "pa", team: "team", height: 0.12 });
+// In the browser: Plotly.newPlot(div, data, layout), as this page does. Without JavaScript the page shows the figure.
+export const browser = {
+  lib: "plotly",
+  figure: logos,
+  label: "2024 AFC points for against points against, each team drawn as its logo",
+} as const;
+
+export default logos;

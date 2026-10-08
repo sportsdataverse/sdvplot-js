@@ -15,6 +15,7 @@ const rows = [...STANDINGS]
   .sort((a, b) => b.wins - a.wins)
   .map((s) => ({ ...s, qb_y: s.wins + 1.7, mark_y: s.wins / 2 }));
 const option: echarts.EChartsOption = {
+  tooltip: {}, // in the browser, hovering a bar shows its team and wins
   xAxis: { type: "category", data: rows.map((r) => r.team), axisLabel: { show: false } },
   yAxis: { type: "value", name: "Wins (2024)", max: 18 },
   series: [{ type: "bar", data: rows.map((r) => r.wins), itemStyle: { color: "#e8e8e8" } }],
@@ -33,8 +34,19 @@ const both = withWordmarks(headshots, rows, {
   team: "team",
   height: 0.05,
 });
+// In the browser: echarts.init(div, null, { width, height }) and setOption(option), as this page does.
+export const browser = {
+  lib: "echarts",
+  option: both,
+  width: 560,
+  height: 360,
+  label:
+    "2024 AFC wins by team, each bar topped by its most frequent starting quarterback's headshot, the team's wordmark inside it",
+} as const;
 
-const chart = echarts.init(null, null, { renderer: "svg", ssr: true, width: 560, height: 360 });
+// SSR: no DOM, no canvas. The images are <image href> links the browser loads when it shows the SVG.
+const { width, height } = browser;
+const chart = echarts.init(null, null, { renderer: "svg", ssr: true, width, height });
 chart.setOption(both);
 const svg = chart.renderToSVGString();
 chart.dispose();

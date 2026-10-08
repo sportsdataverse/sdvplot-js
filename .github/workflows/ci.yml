@@ -62,3 +62,28 @@ jobs:
         uses: actions/upload-artifact@v4
         # overwrite: a "Re-run jobs" uploads under the same name instead of failing with a conflict
         with: { name: sdvtables-theme-pass, path: packages/sdvtables/theme-pass/, if-no-files-found: warn, overwrite: true }
+  # Non-gating: real Chromium on the built docs (examples/test/interactive.test.ts) proves each Plotly, Vega, ECharts
+  # and Chart.js example is drawn by its library in the browser, with an accessible name and no console error. Its
+  # own job, as sdvtables' render tests: Chromium stays out of `check` and out of the Vercel build. It needs the
+  # network (the charts load logos from the CDN), which is one more reason it cannot gate.
+  docs-render:
+    runs-on: ubuntu-latest
+    needs: [check]
+    continue-on-error: true
+    # measured locally: docs build ~5 min, the 17 pages ~35 s, plus install and chromium
+    timeout-minutes: 25
+    env: { NODE_OPTIONS: "--max-old-space-size=8192" }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @sportsdataverse/examples exec playwright install --with-deps chromium
+      - run: pnpm docs:build
+      - run: pnpm --filter @sportsdataverse/examples exec vitest run test/interactive.test.ts
+        env: { SDV_RENDER_TESTS: "1", SDV_RENDER_SHOTS: "${{ github.workspace }}/interactive-shots" }
+      - if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        # overwrite: a "Re-run jobs" uploads under the same name instead of failing with a conflict
+        with: { name: docs-interactive-shots, path: interactive-shots/, if-no-files-found: warn, overwrite: true }
