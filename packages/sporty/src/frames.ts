@@ -103,6 +103,20 @@ export function frameBottomLeft(length: number, width: number): Frame {
  *
  * `x`/`y` name the input columns (default `x`/`y`, or `x_legacy`/`y_legacy` for `"nba-legacy"`). The frame sees
  * a view `{ x: row[xCol], y: row[yCol] }`.
+ *
+ * @example
+ * ```ts
+ * import { toSurfaceFrame } from "@sportsdataverse/sporty";
+ *
+ * // stats.nba.com shots: x_legacy / y_legacy are tenths of a foot from the hoop
+ * toSurfaceFrame(
+ *   [
+ *     { x_legacy: 10, y_legacy: 120, team: "LAL" },
+ *     { x_legacy: -50, y_legacy: 230, team: "BOS" },
+ *   ],
+ *   { from: "nba-legacy" },
+ * );
+ * ```
  */
 export function toSurfaceFrame<R extends Row>(
   rows: readonly R[],

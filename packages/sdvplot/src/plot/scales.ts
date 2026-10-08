@@ -26,6 +26,24 @@ export interface TeamColorOptions {
  * `stroke` (Plot has one colour scale), so `teamFill` is this function. Without `values` the domain is every
  * `team_id` and `abbr`; some abbreviations are reused across eras, so pass `season` to avoid the
  * ambiguity warning. Needs `loadLeague(league)` first.
+ *
+ * @example
+ * ```ts
+ * import * as Plot from "@observablehq/plot";
+ * import { loadLeague } from "@sportsdataverse/sdvplot";
+ * import { teamColor } from "@sportsdataverse/sdvplot/plot";
+ *
+ * await loadLeague("nfl");
+ * const wins = [
+ *   { team: "KC", wins: 15 },
+ *   { team: "BUF", wins: 13 },
+ *   { team: "LAC", wins: 11 },
+ * ];
+ * Plot.plot({
+ *   color: teamColor("nfl", { values: wins.map((w) => w.team) }),
+ *   marks: [Plot.barY(wins, { x: "team", y: "wins", fill: "team" })],
+ * });
+ * ```
  */
 export function teamColor(league: League, o: TeamColorOptions = {}): Plot.ScaleOptions {
   const naValue = o.naValue ?? "grey";

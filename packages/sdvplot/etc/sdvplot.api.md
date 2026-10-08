@@ -100,7 +100,7 @@ export class InputError extends SdvplotError {
 // @public (undocumented)
 export type Kind = "logo" | "wordmark" | "headshot";
 
-// @public (undocumented)
+// @public
 export const latestSeason: (league: League) => number | null;
 
 // @public (undocumented)
@@ -125,7 +125,7 @@ export function loadGsis(): Promise<void>;
 // @public
 export function loadLeague(league: League): Promise<LeagueData>;
 
-// @public (undocumented)
+// @public
 export function logoUrl(team: Value, league: League, o?: LogoUrlOptions): Promise<string | undefined>;
 
 // @public (undocumented)
@@ -343,7 +343,7 @@ export function resetManifestCache(): void;
 // @public (undocumented)
 export function resetWarnings(): void;
 
-// @public (undocumented)
+// @public
 export function resolve<T extends Value | readonly Value[]>(values: T, league: League, opts?: ResolveOptions): Promise<Resolved<T>>;
 
 // @public (undocumented)
@@ -431,7 +431,7 @@ export interface Team {
     team_id: string;
 }
 
-// @public (undocumented)
+// @public
 export function teamColors<T extends Value | readonly Value[]>(league: League, teams: T, opts?: ColorOptions): Promise<ColorResult<T>>;
 
 // @public

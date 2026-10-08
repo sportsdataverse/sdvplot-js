@@ -58,6 +58,23 @@ export function sceneToGeoJSON(scene: Scene): SurfaceFeatureCollection {
  * Plot marks for a Scene, drawn through the plot's x/y scales (no projection): optional background,
  * polygons, then text. Text font size = number height (`fitBox[1] / 1.5`) mapped through the y scale
  * unless `textFontSize` overrides it.
+ *
+ * @example
+ * ```ts
+ * import * as Plot from "@observablehq/plot";
+ * import { surface } from "@sportsdataverse/sporty";
+ * import { surfaceMark } from "@sportsdataverse/sporty/plot";
+ *
+ * const court = surface("tennis", "itf");
+ * const [x0, y0, x1, y1] = court.bbox;
+ * Plot.plot({
+ *   width: 300,
+ *   height: Math.round((300 * (y1 - y0)) / (x1 - x0)),
+ *   x: { domain: [x0, x1], axis: null },
+ *   y: { domain: [y0, y1], axis: null },
+ *   marks: surfaceMark(court),
+ * });
+ * ```
  */
 export function surfaceMark(scene: Scene, o: { textFontSize?: number } = {}): Plot.Markish[] {
   const [x0, y0, x1, y1] = scene.bbox;
