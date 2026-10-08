@@ -1,14 +1,15 @@
 import { existsSync, readdirSync } from "node:fs";
-import { THEME_NAMES } from "@sportsdataverse/sdvtables";
-import type { ColumnSpec, Decoration } from "@sportsdataverse/sdvtables";
+import { GT_ALIASES, THEME_NAMES } from "@sportsdataverse/sdvtables";
+import type { ColumnKind, DecorationType } from "@sportsdataverse/sdvtables";
 import { SPORTS, leagues } from "@sportsdataverse/sporty";
 import { expect, test } from "vitest";
 import { THEMES } from "../scripts/lib.js";
 import { abs } from "../sources.js";
 import { EXAMPLES } from "../src/registry.gen.js";
 
-type Row = Record<string, unknown>;
-// `satisfies Record<…, 1>` is exhaustive both ways: a kind or decoration added to the spec is a compile error here.
+// sdvtables' own ColumnKind / DecorationType unions, spelled out because a type has no runtime value:
+// `satisfies Record<…, 1>` is exhaustive both ways, so a kind or decoration added to or dropped from the spec
+// fails `pnpm typecheck` here (it covers examples/test) before this test ever runs.
 const KINDS = {
   text: 1,
   num: 1,
@@ -31,7 +32,7 @@ const KINDS = {
   teamColorBar: 1,
   teamColorBg: 1,
   image: 1,
-} satisfies Record<ColumnSpec<Row>["kind"], 1>;
+} satisfies Record<ColumnKind, 1>;
 const DECORATIONS = {
   title: 1,
   subtitle: 1,
@@ -58,7 +59,7 @@ const DECORATIONS = {
   snake: 1,
   tiers: 1,
   font: 1,
-} satisfies Record<Decoration<Row>["type"], 1>;
+} satisfies Record<DecorationType, 1>;
 
 const names = (dir: string): string[] =>
   existsSync(abs(`examples/src/${dir}`))
@@ -67,10 +68,20 @@ const names = (dir: string): string[] =>
         .sort()
     : [];
 
-// Expected to fail until Task 8 writes examples/src/sdvtables/{kinds,decorations}; Task 8 turns it into test().
-test.fails("every column kind and every decoration has a hand-written example named after it", () => {
+test("every column kind and every decoration has a hand-written example named after it, tagged with its R names", () => {
   expect(names("sdvtables/kinds")).toEqual(Object.keys(KINDS).sort());
   expect(names("sdvtables/decorations")).toEqual(Object.keys(DECORATIONS).sort());
+  // The gallery is searchable by the sdvplotR / gtUtils names: each example carries every GT_ALIASES name whose
+  // target is its kind (c.<kind>) or decoration (builder.<type>).
+  for (const [area, tag, prefix] of [
+    ["kinds", "kind", "c."],
+    ["decorations", "decoration", "builder."],
+  ] as const)
+    for (const e of EXAMPLES.filter((x) => x.id.startsWith(`sdvtables/${area}/`))) {
+      const name = e.id.slice(`sdvtables/${area}/`.length);
+      const aliases = Object.keys(GT_ALIASES).filter((n) => GT_ALIASES[n]?.target === `${prefix}${name}`);
+      expect(e.tags, e.id).toEqual(expect.arrayContaining([tag, name, ...aliases]));
+    }
 });
 
 test("the theme family is THEME_NAMES", () => {

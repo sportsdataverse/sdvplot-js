@@ -22,6 +22,7 @@ const SECTIONS: Readonly<Record<string, string>> = {
   kinds: "Every cell kind",
   decorations: "Every decoration",
   html: "HTML renderer",
+  layout: "Layout",
   api: "From the API docs",
 };
 const label = (p: string, s: string): string => SECTIONS[`${p}/${s}`] ?? SECTIONS[s] ?? s;
