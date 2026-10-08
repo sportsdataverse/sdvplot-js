@@ -70,8 +70,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [check]
     continue-on-error: true
-    # measured locally: docs build ~5 min, the 17 pages ~35 s, plus install and chromium
-    timeout-minutes: 25
+    # measured in CI: the whole job ~2.5 min (docs build ~1.5 min, the Chromium test ~20 s)
+    timeout-minutes: 15
     env: { NODE_OPTIONS: "--max-old-space-size=8192" }
     steps:
       - uses: actions/checkout@v4
@@ -81,7 +81,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @sportsdataverse/examples exec playwright install --with-deps chromium
       - run: pnpm docs:build
-      - run: pnpm --filter @sportsdataverse/examples exec vitest run test/interactive.test.ts
+      # --retry: a CDN or ESPN hiccup fails an image (a console error); retry the test before calling it red
+      - run: pnpm --filter @sportsdataverse/examples exec vitest run test/interactive.test.ts --retry=2
         env: { SDV_RENDER_TESTS: "1", SDV_RENDER_SHOTS: "${{ github.workspace }}/interactive-shots" }
       - if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4

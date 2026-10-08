@@ -6,10 +6,10 @@ sidebar_position: 7
 Not every project draws with Plot or D3. The Plotly, Vega-Lite and ECharts subpaths patch a plain spec object (a
 figure, a spec, an option) and never import the charting library, so they work with whatever build you already
 load; the Chart.js subpath returns dataset options and plugins. All of them are synchronous, so load the league first
-(`loadLeague`). Each chart below is drawn by its own library in your browser, from the spec the example exports as
-`browser`; hover it, zoom it or save it as that library allows. The code also renders the Vega-Lite, ECharts and
-Chart.js charts in Node, where each library runs without a browser: that render is what the page shows before (or
-without) JavaScript.
+(`loadLeague`). Each chart below, except the three static `embedSources` outputs, is drawn by its own library in
+your browser, from the spec the example exports as `browser`; hover it, zoom it or save it as that library allows.
+The code also renders the Vega-Lite, ECharts and Chart.js charts in Node, where each library runs without a browser:
+that render is what the page shows before (or without) JavaScript.
 
 ## Plotly
 

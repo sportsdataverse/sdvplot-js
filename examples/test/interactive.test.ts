@@ -89,12 +89,37 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
       );
       expect(painted, "the canvas is painted").toBe(true);
     }
+    // ECharts draws the server's SVG, tag for tag: init() alone already leaves an <svg>, and a series that drew nothing
+    // would still leave its axes
+    if (lib === "echarts") {
+      const [server, drawn] = await figure.evaluate(async (f, id) => {
+        const html = new DOMParser().parseFromString(await (await fetch(location.href)).text(), "text/html");
+        const marks = (svg: Element | null | undefined) =>
+          ["path", "image", "text"].map((t) => `${t} ${svg?.querySelectorAll(t).length}`).join(", ");
+        return [
+          marks(html.querySelector(`figure[data-example="${id}"] .sdv-live-static svg`)),
+          marks(f.querySelector(".sdv-live-output svg")),
+        ];
+      }, id);
+      expect(drawn, "the server's marks, tag for tag").toBe(server);
+    }
     // an accessible name: Vega names each mark in its SVG (sdvplot's images too); the others name the chart
     const named =
       lib === "vega"
         ? figure.locator('svg.marks [role="graphics-symbol"][aria-label]')
-        : figure.locator('.sdv-live-output [role="img"][aria-label]');
+        : figure.locator('.sdv-live-output :is([role="img"], [role="figure"])[aria-label]');
     expect(await named.count(), "an accessible name").toBeGreaterThan(0);
+    const nested =
+      '.sdv-live-output [role="img"] :is(button, a[href], summary, input, [tabindex]:not([tabindex="-1"]))';
+    expect(
+      await figure.locator(nested).count(),
+      "no control inside an img (its children are presentational)",
+    ).toBe(0);
+    // a menu's disclosure button (vega-embed's actions) is named: its <summary> holds only an icon
+    const unnamed = await figure
+      .locator(".sdv-live-output summary")
+      .evaluateAll((s) => s.filter((e) => !e.getAttribute("aria-label") && !e.textContent?.trim()).length);
+    expect(unnamed, "every menu button has a name").toBe(0);
     if (SHOTS !== undefined)
       await figure
         .locator(".sdv-live-output")
@@ -118,6 +143,24 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
           .screenshot({ path: join(SHOTS, `${id.replace(/\//g, "_")}_hover.png`) });
     }
     expect(errors).toEqual([]);
+    await page.close();
+  });
+
+  // A drawing that fails (here plotly.js never arrives) shows the alert over the static copy, leaves nothing drawn,
+  // and drops the note that plotly.js draws the figure here.
+  test("a Plotly chart whose library fails keeps its static copy, under the alert", async () => {
+    const id = "sdvplot/plotly/axis-logos";
+    const entry = EXAMPLES.find((e) => e.id === id);
+    if (entry === undefined) throw new Error(`${id} is not in the registry`);
+    const page = await browser.newPage();
+    await page.route("**/lib-plotly.*.js", (r) => r.abort());
+    await page.goto(`${base}/gallery/${pagePath(entry)}/`);
+    const figure = page.locator(`figure[data-example="${id}"]`);
+    await figure.scrollIntoViewIfNeeded();
+    await figure.locator(".sdv-live-error").waitFor({ timeout: 30_000 });
+    expect(await figure.locator(".sdv-live-static").count(), "the static copy is back").toBe(1);
+    expect(await figure.locator(".sdv-live-output > *").count(), "nothing drawn is left").toBe(0);
+    expect(await figure.locator(".sdv-live-note").count(), "no note promising a drawing").toBe(0);
     await page.close();
   });
 });

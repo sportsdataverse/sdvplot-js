@@ -109,10 +109,7 @@ export default function Live(p: LiveProps): ReactElement {
           setMounted(true);
         },
         (e: unknown) => {
-          // A cancelled effect no longer owns the host: a newer draw (p.id changed) may be mounting into it.
-          if (cancelled) return;
-          el.replaceChildren(); // whatever the library drew before it threw
-          fail(e);
+          if (!cancelled) fail(e); // draw() has removed what it drew; a cancelled run leaves el to the newer one
         },
       );
     return () => {
@@ -192,8 +189,8 @@ export default function Live(p: LiveProps): ReactElement {
     );
   return (
     <figure className="sdv-live" data-example={p.id} ref={figure}>
-      {p.browser === true && p.kind === "value" && !mounted && (
-        // a Plotly figure: the static copy is its data, not a picture of it
+      {p.browser === true && p.kind === "value" && !mounted && error === null && (
+        // a Plotly figure: the static copy is its data, not a picture of it (after a failure, the alert says why)
         <p className="sdv-live-note">With JavaScript on, plotly.js draws this figure here.</p>
       )}
       {output}
