@@ -270,7 +270,7 @@ export type Comparator = (a: unknown, b: unknown) => number;
 // @public (undocumented)
 export function comparatorFor<Row>(col: ColumnSpec<Row>, rows: readonly Row[]): Comparator;
 
-// @public (undocumented)
+// @public
 export function createTable<Row>(spec: TableSpec<Row>, rows: readonly Row[], options?: TableOptions): Table<Row>;
 
 // @public (undocumented)
@@ -521,7 +521,7 @@ export interface GoogleFont {
 // @public
 export const GT_ALIASES: Readonly<Record<string, Alias>>;
 
-// @public (undocumented)
+// @public
 export function isMissing(v: unknown): boolean;
 
 // @public (undocumented)
@@ -604,7 +604,7 @@ export type StringKey<Row> = {
     [K in keyof Row]-?: Row[K] extends string | null | undefined ? K : never;
 }[keyof Row] & keyof Row & string;
 
-// @public (undocumented)
+// @public
 export interface Table<Row> {
     // (undocumented)
     readonly allRows: readonly Row[];
@@ -724,7 +724,7 @@ export type TableEvent = {
     readonly ids: ReadonlySet<string>;
 };
 
-// @public (undocumented)
+// @public
 export interface TableOptions {
     // (undocumented)
     readonly pageSize?: number;
@@ -732,7 +732,7 @@ export interface TableOptions {
     readonly sort?: Sort;
 }
 
-// @public (undocumented)
+// @public
 export interface TableSnapshot<Row> {
     // (undocumented)
     readonly filteredCount: number;
@@ -762,7 +762,7 @@ export interface TableSpec<Row> {
 export class TableSpecError extends SdvplotError {
 }
 
-// @public (undocumented)
+// @public
 export interface TableState<Row> {
     readonly externalFilter: RowFilter<Row> | null;
     // (undocumented)

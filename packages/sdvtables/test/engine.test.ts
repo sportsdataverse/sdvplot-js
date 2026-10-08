@@ -1,9 +1,12 @@
 import { describe, expect, test, vi } from "vitest";
 import {
   applySort,
+  compareDate,
   compareNum,
   compareText,
   createTable,
+  isMissing,
+  matches,
   nextSortDir,
   paginate,
   withMissingLast,
@@ -37,6 +40,19 @@ describe("sorting", () => {
     expect(teams(t)).toEqual(["BUF", "DEN", "KC", "LAC", "LV", "MIA", "NE", "NYJ"]);
     expect(compareText("Team 2", "Team 10")).toBeLessThan(0);
     expect(compareText("alabama", "Baylor")).toBeLessThan(0);
+  });
+  test("text order is pinned to the en locale, not the host default", () => {
+    expect(compareText("Édouard", "Eduardo")).toBeLessThan(0); // accent-insensitive: "Edo" before "Edu"
+    expect(compareText("Öberg", "Zimmer")).toBeLessThan(0); // en: Ö ~ O; sv/fi/da would put Ö after Z
+    expect(compareText("Ångström", "Bohr")).toBeLessThan(0); // en: Å ~ A; sv would put Å after Z
+  });
+  test("an invalid Date is missing, so it sorts last and compareDate stays transitive", () => {
+    const bad = new Date("not a date");
+    expect(isMissing(bad)).toBe(true);
+    const cmp = withMissingLast(compareDate, "asc");
+    expect(cmp(bad, new Date(0))).toBe(1);
+    expect(cmp(new Date(0), bad)).toBe(-1);
+    expect(cmp(new Date(0), new Date(1))).toBeLessThan(0);
   });
   test("comparator never returns NaN", () => {
     const cmp = withMissingLast(compareNum, "asc");
@@ -89,6 +105,26 @@ describe("filtering", () => {
     t.toggleColumn("qb", false);
     expect(teams(t)).toEqual([]);
   });
+  test("number and boolean filters are strict equality; false and 0 are kept, not cleared", () => {
+    const t = createTable(spec, rows);
+    t.setFilter("wins", 4);
+    expect(teams(t)).toEqual(["LV", "NE"]);
+    t.setFilter("wins", 0);
+    expect(t.state.filters.wins).toBe(0);
+    expect(t.rows).toEqual([]);
+    t.setFilter("wins", false);
+    expect(t.state.filters.wins).toBe(false);
+    expect(t.rows).toEqual([]);
+    expect(matches(true, true, rows[0])).toBe(true);
+    expect(matches(true, "true", rows[0])).toBe(false);
+    expect(matches(4, "4", rows[0])).toBe(false);
+  });
+  test("unknown column throws TableSpecError from setFilter, toggleColumn and options.sort", () => {
+    const t = createTable(spec, rows);
+    expect(() => t.setFilter("nope", "x")).toThrow(TableSpecError);
+    expect(() => t.toggleColumn("nope")).toThrow(TableSpecError);
+    expect(() => createTable(spec, rows, { sort: { col: "nope", dir: "asc" } })).toThrow(TableSpecError);
+  });
   test("filter resets page (Review Focus 2)", () => {
     const t = createTable(spec, many, { pageSize: 10 });
     t.setPage(2);
@@ -118,6 +154,18 @@ describe("pagination", () => {
     t.setPageSize(Number.POSITIVE_INFINITY);
     expect(t.rows.length).toBe(25);
     expect(createTable({ ...spec, interactive: { pageSize: 5 } }, many).pageCount).toBe(5);
+  });
+  test("setPage ignores non-finite input", () => {
+    const t = createTable(spec, many, { pageSize: 10 });
+    t.setPage(1);
+    const fn = vi.fn();
+    t.subscribe(fn);
+    t.setPage(Number.NaN);
+    t.setPage(Number.POSITIVE_INFINITY);
+    expect(t.state.page).toBe(1);
+    expect(t.rows.length).toBe(10);
+    expect(t.pageCount).toBe(3);
+    expect(fn).not.toHaveBeenCalled();
   });
 });
 
@@ -188,6 +236,31 @@ describe("J31 seam: rowKey, external filter, selection, events", () => {
     t.setExternalFilter(null);
     expect(t.filteredCount).toBe(9);
     expect(events).toEqual(["change", "change", "change", "change"]);
+  });
+  test("an external filter that empties the table leaves pageCount 1 and page 0", () => {
+    const t = createTable(spec, many, { pageSize: 10 });
+    t.setPage(2);
+    t.setExternalFilter(() => false);
+    expect(t.filteredCount).toBe(0);
+    expect(t.rows).toEqual([]);
+    expect(t.pageCount).toBe(1);
+    expect(t.state.page).toBe(0);
+  });
+  test("duplicate rowKey values warn once at construction, naming the key and the count", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    try {
+      const t = createTable(keyed, [...rows, rows[0] as Standing, rows[1] as Standing]);
+      expect(warn).toHaveBeenCalledTimes(1);
+      expect(warn.mock.calls[0]?.[0]).toMatch(/"team"/);
+      expect(warn.mock.calls[0]?.[0]).toMatch(/2 duplicate/);
+      t.setSort("wins", "asc");
+      t.setSelection(new Set(["KC"]));
+      expect(warn).toHaveBeenCalledTimes(1);
+      createTable(keyed, rows);
+      expect(warn).toHaveBeenCalledTimes(1);
+    } finally {
+      warn.mockRestore();
+    }
   });
   test("setSelection emits one select event with a copy; equal sets are silent; unknown ids are kept", () => {
     const t = createTable(keyed, rows);

@@ -17,6 +17,7 @@ export type TableEvent =
   | { readonly type: "hover"; readonly id: string | null }
   | { readonly type: "select"; readonly ids: ReadonlySet<string> };
 
+/** The whole user-controlled state of a table: sort, filters, page, hidden columns, and the J31 link fields. Immutable; every mutation replaces it. */
 export interface TableState<Row> {
   readonly sort: Sort | null;
   readonly filters: Readonly<Record<string, FilterValue<Row>>>;
@@ -32,6 +33,7 @@ export interface TableState<Row> {
   /** J31: row ids (see `rowId`); NOT pruned to the rows present, so a linked store's ids round-trip intact */
   readonly selection: ReadonlySet<string>;
 }
+/** What `Table.getSnapshot()` returns: the state plus the derived visible page. Referentially stable until the next mutation. */
 export interface TableSnapshot<Row> {
   readonly state: TableState<Row>;
   /** the visible page: filtered → sorted → sliced */
@@ -40,10 +42,15 @@ export interface TableSnapshot<Row> {
   /** always at least 1 */
   readonly pageCount: number;
 }
+/** Initial state for `createTable`; `pageSize` beats `spec.interactive.pageSize`, and `sort` must name a spec column. */
 export interface TableOptions {
   readonly pageSize?: number;
   readonly sort?: Sort;
 }
+/**
+ * The headless table engine: holds the rows and a `TableState`, derives the visible page, and notifies subscribers.
+ * Renderers (static HTML, hydrate, React) read `rows`/`columns` and call the setters; nothing here touches the DOM.
+ */
 export interface Table<Row> {
   readonly spec: TableSpec<Row>;
   readonly allRows: readonly Row[];
@@ -86,13 +93,23 @@ export const NUMERIC_KINDS: ReadonlySet<string> = new Set([
   "percentileBar",
 ]);
 
+/** null, undefined, "", NaN, and an invalid `Date` are missing; `withMissingLast` sorts them last. */
 export function isMissing(v: unknown): boolean {
-  return v === null || v === undefined || v === "" || (typeof v === "number" && Number.isNaN(v));
+  return (
+    v === null ||
+    v === undefined ||
+    v === "" ||
+    (typeof v === "number" && Number.isNaN(v)) ||
+    (v instanceof Date && Number.isNaN(v.getTime()))
+  );
 }
 
-const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" });
+// Pinned to "en" so the SSR process and the viewer's browser sort text identically.
+const collator = new Intl.Collator("en", { numeric: true, sensitivity: "base" });
 export const compareNum: Comparator = (a, b) => Number(a) - Number(b);
+/** Text sorts under the `en` locale (numeric-aware, case- and accent-insensitive), never the host default, so server and client agree. */
 export const compareText: Comparator = (a, b) => collator.compare(String(a), String(b));
+/** Date values compare by time; an unparsable one is missing (see `isMissing`), so the comparator stays transitive. */
 export const compareDate: Comparator = (a, b) => {
   const t = (v: unknown): number => (v instanceof Date ? v.getTime() : new Date(String(v)).getTime());
   const x = t(a);
@@ -195,6 +212,10 @@ const sameSet = (a: ReadonlySet<string>, b: ReadonlySet<string>): boolean =>
   a.size === b.size && [...a].every((id) => b.has(id));
 const CHANGE: TableEvent = { type: "change" };
 
+/**
+ * Build a headless `Table` over `rows`: sort, filter, paginate, hide columns, and subscribe to changes.
+ * Throws `TableSpecError` for an unknown column or an invalid page size; never mutates `rows`.
+ */
 export function createTable<Row>(
   spec: TableSpec<Row>,
   rows: readonly Row[],
@@ -225,6 +246,15 @@ export function createTable<Row>(
     const v = fieldOf(row, key);
     return isMissing(v) ? "" : String(v);
   };
+  if (key !== undefined) {
+    // Duplicate ids collapse to one link id (selecting one highlights all); say so once, at construction.
+    const ids = rows.map(rowId).filter((id) => id !== "");
+    const dupes = ids.length - new Set(ids).size;
+    if (dupes > 0)
+      console.warn(
+        `sdvtables: rowKey "${key}" is not unique — ${dupes} duplicate id(s); linked selection will merge them`,
+      );
+  }
   let hovered: string | null = null;
   const compute = (): TableSnapshot<Row> => {
     const filtered = applyFilters(spec, rows, state);
@@ -275,6 +305,7 @@ export function createTable<Row>(
       update({ globalFilter: text, page: 0 });
     },
     setPage(n) {
+      if (!Number.isFinite(n)) return; // NaN/±Infinity: a caller bug, not a page
       update({ page: Math.max(0, Math.min(Math.trunc(n), snapshot.pageCount - 1)) });
     },
     setPageSize(n) {
