@@ -222,6 +222,27 @@ export function marks(team: Value, league: League, o?: {
 export type MarkType = "logo" | "wordmark";
 
 // @public
+export interface MatchupColorOptions extends ResolveOptions {
+    league: League;
+    theme?: {
+        light?: string;
+        dark?: string;
+    };
+}
+
+// @public
+export interface MatchupColors {
+    dark: [string, string];
+    light: [string, string];
+}
+
+// @public
+export function matchupColors(teamA: Value, teamB: Value, opts: MatchupColorOptions): Promise<MatchupColors>;
+
+// @public
+export function matchupColorsSync(teamA: Value, teamB: Value, opts: MatchupColorOptions): MatchupColors;
+
+// @public
 export function mix(a: string, b: string, t: number): string;
 
 // @public (undocumented)

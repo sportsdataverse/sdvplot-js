@@ -8,6 +8,6 @@ beforeAll(async () => {
   await loadLeague("nfl");
 });
 
-test("the d3 adapter passes the adapter contract (rules 0-8)", async () => {
+test("the d3 adapter passes the adapter contract (rules 0-9)", async () => {
   await expect(checkAdapterContract(d3Adapter, { makeTarget })).resolves.toBeUndefined();
 });
