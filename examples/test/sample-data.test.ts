@@ -284,8 +284,8 @@ test("PWHL_GOALS are the captured HockeyTech goals, unchanged, on the 600 x 300 
         y: d.yLocation,
       })),
   );
-  // the range sporty/frames/hockeytech quotes: shots reach both nets of a 600 x 300 canvas (on 850 x 400 the far
-  // goal line is near x = 803), which is why the example uses hockeytech-b
+  // the range sporty/frames/hockeytech quotes: shots reach both nets of the 600 x 300 canvas the hockeytech frame
+  // maps
   const xs = events.map((e) => e.details.xLocation);
   const ys = events.map((e) => e.details.yLocation);
   expect([Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)]).toEqual([31, 573, 11, 292]);
