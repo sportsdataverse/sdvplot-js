@@ -17,3 +17,13 @@ Python `sdvplot` answers for real inputs sampled from its own index; the TS port
 - source: the CDN `marks.csv` as cached 2026-10-05 (`/root/.cache/sdvplot/manifest/marks.csv`, 44,462 rows, the file the committed shards were built from; CRLF line endings kept)
 - selection: header + every `level == team` row whose `source:entity_id` is a `mark` alias of nfl team 13 (LV) or 14 (LA Rams), or of nhl team 37 (VGK), across every source; 66 rows, byte-exact (quoted fields preserved)
 - regenerate: select those rows from the cached manifest (python `csv` to classify, copy the original lines), then re-run `pnpm --filter sdvplot test manifest`
+
+## logos/
+
+- two real archived marks, byte-exact, named by their sha256 (the CDN archive is content-addressed:
+  `https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/<sha[:2]>/<sha>.<ext>`)
+- `62e36185….png`: nfl team 19 (NYG) `logo`/`default` (source espn, 500x500 RGBA), the mark `logos()` resolves for "NYG"
+- `1ecd86fe….svg`: nhl team 10 (MTL) `logo`/`default` (source espn, viewBox-only SVG), the mark `logos()` resolves for "MTL"
+- copied 2026-10-08 from the Python sdvplot image cache (`%LOCALAPPDATA%/sdvplot/sdvplot/Cache/images/`), which stores the
+  archive bytes under the same sha; `sha256sum` of each file equals its name
+- used by `packages/sdvplot/test/export.test.ts` as the body of a stubbed `fetch` (toPNG remote-image inlining)

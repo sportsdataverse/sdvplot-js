@@ -32,6 +32,7 @@ export function socialCard(svg: string, input?: SocialCardOptions): string;
 export interface SocialCardOptions {
     aspect?: Aspect;
     background?: string;
+    color?: string;
     gravity?: Gravity;
     padding?: number;
 }
@@ -54,6 +55,8 @@ export function toPNG(svg: string | {
 // @public
 export interface ToPNGOptions {
     background?: string;
+    color?: string;
+    images?: "fetch" | "skip";
     scale?: number;
     width?: number;
 }
