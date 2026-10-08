@@ -83,8 +83,9 @@ const box = (svg: Element): { x: [number, number]; y: [number, number] } => {
  * (`pointerleave`, `pointercancel`) or the axis' range clears the cursor this figure wrote, while the store still holds
  * it: never one an app `store.set` or another figure wrote since. A cursor never dims marks or
  * filters a table (it is not an id). A store change moves attributes only: no element is added or removed, so a cursor
- * costs O(1) per figure. The pointer listeners capture, so a Plot `tip` that stops a press from reaching other
- * listeners does not stop this one. Styled by `--sdv-cursor-color` and `--sdv-cursor-width`. Returns a teardown
+ * costs O(1) per figure. The move and press listeners capture, so a Plot `tip` that stops a press from reaching other
+ * listeners does not stop this one; the leave listeners do not, so a mark's own `pointerleave` (the pointer crossing
+ * a bar's edge inside one bin) writes nothing. Styled by `--sdv-cursor-color` and `--sdv-cursor-width`. Returns a teardown
  * FUNCTION, not a handle, because teardown is all it has (as `linkSelection`'s; `brushFilter`, `nearestHover` and
  * `tooltip` return a handle with `destroy()`). The scales' pixel ranges are read once, so after a resize, relink. The
  * teardown removes the cursor and its listeners, and clears the store's cursor when it still holds the value this figure last
@@ -329,14 +330,16 @@ export function linkCursor<R>(root: Element, store: SelectionStore<R>, o: LinkCu
         store.set({ cursor: wrote });
       }
     };
-    const on = (type: string, fn: (e: Event) => void): void => {
-      svg.addEventListener(type, fn, { capture: true }); // A34: before Plot's tip, which stops other pointerdowns
-      offs.push(() => svg.removeEventListener(type, fn, { capture: true }));
+    const on = (type: string, fn: (e: Event) => void, capture: boolean): void => {
+      svg.addEventListener(type, fn, { capture });
+      offs.push(() => svg.removeEventListener(type, fn, { capture }));
     };
-    on("pointermove", move);
-    on("pointerdown", move);
-    on("pointerleave", clear);
-    on("pointercancel", clear);
+    on("pointermove", move, true);
+    on("pointerdown", move, true); // A34: capture, before Plot's tip, which stops other pointerdowns
+    // never capture a leave: pointerleave does not bubble, but a capture listener hears every mark's own leave, so
+    // crossing a bar's edge inside one bin would write null and then the value again (nearestHover registers the same)
+    on("pointerleave", clear, false);
+    on("pointercancel", clear, false);
   }
   return () => {
     for (const off of offs) off();

@@ -205,6 +205,24 @@ test("pointerleave, pointercancel and a pointer outside the axis range each clea
   expect(store.getState().cursor).toEqual({ field: "shot_value", value: 3 });
 });
 
+test("a bar's own pointerleave (the pointer leaves the bar for the plot behind it, same 1 ft bin) writes nothing (Review Focus 8)", () => {
+  // pointerleave does not bubble, but a capture listener on the svg hears every mark's own: Chromium fires one on the
+  // bar as the pointer moves straight up out of it into empty plot area, without leaving the bin
+  const svg = share();
+  const store = createSelection();
+  const writes: unknown[] = [];
+  store.subscribe((s) => writes.push(s.cursor?.value ?? null));
+  const snap = (v: number): number => Math.floor(v) + 0.5;
+  linkCursor(svg, store, { field: D, shape: { axis: "x", scale: scale(svg, "x"), width: 1 }, snap });
+  const bar = svg.querySelectorAll('g[aria-label="rect"] rect')[12]; // the 12-13 ft bar
+  if (!bar) throw new Error("no 12 ft bar");
+  const [y0, y1] = span(svg, "y");
+  fire(svg, "pointermove", px(svg, "x", 12.3), Math.max(y0, y1) - 2); // on the bar, near the baseline
+  bar.dispatchEvent(new MouseEvent("pointerleave", { bubbles: false })); // what Chromium fires as it exits the bar
+  fire(svg, "pointermove", px(svg, "x", 12.3), Math.min(y0, y1) + 2); // same x, above the bar, same bin
+  expect(writes).toEqual([12.5]);
+});
+
 test("leaving clears the cursor this figure wrote in one update, never one an app or another figure set since (Review Focus 8)", () => {
   const [s, b] = [share(), fg3()];
   const store = createSelection();
