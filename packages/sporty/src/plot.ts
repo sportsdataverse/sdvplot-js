@@ -57,9 +57,14 @@ export function sceneToGeoJSON(scene: Scene): SurfaceFeatureCollection {
 /**
  * Plot marks for a Scene, drawn through the plot's x/y scales (no projection): optional background,
  * polygons, then text. Text font size = number height (`fitBox[1] / 1.5`) mapped through the y scale
- * unless `textFontSize` overrides it.
+ * unless `textFontSize` overrides it. `ariaDescription` (default: the scene's league and sport, then "surface", such as
+ * "nba basketball surface") describes the polygons for assistive technology.
  */
-export function surfaceMark(scene: Scene, o: { textFontSize?: number } = {}): Plot.Markish[] {
+export function surfaceMark(
+  scene: Scene,
+  o: { textFontSize?: number; ariaDescription?: string } = {},
+): Plot.Markish[] {
+  const ariaDescription = o.ariaDescription ?? `${scene.league} ${scene.sport} surface`;
   const [x0, y0, x1, y1] = scene.bbox;
   const texts = scene.features
     .filter((f): f is TextFeature => f.kind === "text" && isVisibleText(f))
@@ -89,6 +94,7 @@ export function surfaceMark(scene: Scene, o: { textFontSize?: number } = {}): Pl
     Plot.geo(sceneToGeoJSON(scene), {
       fill: (f: GeoFeature) => (hidden(f.properties.fill) ? "none" : f.properties.fill),
       stroke: (f: GeoFeature) => f.properties.stroke ?? "none",
+      ariaDescription,
     }),
   );
   if (texts.length) {
