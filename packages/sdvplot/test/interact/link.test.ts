@@ -210,9 +210,11 @@ test("a join-key mismatch warns once per figure, not once per hovered id", () =>
     linkSelection(store, { plot: scatter() });
     for (const id of ["12", "4", "15"]) store.set({ hover: [id] }); // ESPN team ids against abbreviation stamps
     expect(warnings).toHaveLength(1);
+    expect(warnings[0]).toContain("none of the linked ids (12) is drawn"); // the first miss names its id
     linkSelection(store, { plot: scatter() }); // another figure with the same mismatch gets its own warning
     store.set({ hover: ["26"] });
     expect(warnings).toHaveLength(2);
+    expect(warnings[1]).toContain("(15)"); // the store's hover when that figure linked
   } finally {
     setWarningHandler(null);
   }
