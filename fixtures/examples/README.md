@@ -95,7 +95,12 @@ unchanged, with the header). StatsBomb's terms (<https://github.com/statsbomb/op
 StatsBomb logo. The example that draws it (`sporty/plot/pass-map`) names StatsBomb in its caption, and its `statsbomb`
 tag makes the docs' `<Live>` show the logo, linked to <https://statsbomb.com>, with "Data: StatsBomb open data".
 
-`docs/static/img/statsbomb-logo.png`: StatsBomb's logo, byte for byte, from the open-data repository's
+`docs/static/img/statsbomb-logo.png`: StatsBomb's logo, from the open-data repository's
 `img/SB - Icon Lockup - Colour positive.png` (<https://github.com/statsbomb/open-data/tree/master/img>, last changed in
 3bfc16d, 2022-03-03; fetched 2026-10-08; 5885 x 943 PNG, 120,793 bytes, sha256
-`8ba5480785f0dc4be2342ec47c70509483eb79287f85f92be1dfba36fc2872a7`). Used only as that credit, as the terms ask.
+`8ba5480785f0dc4be2342ec47c70509483eb79287f85f92be1dfba36fc2872a7`). That directory holds only this PNG, no SVG. The
+docs draw it at 100 x 16, so the committed copy is that file resized to twice that, 200 x 32 (the source's aspect,
+rounded to whole pixels), with Pillow 12.3's Lanczos filter (`reducing_gap=3.0`), then saved as an optimised RGBA PNG
+(`optimize=True`, `compress_level=9`; its 1,112 colours rule out a lossless palette): 9,986 bytes, sha256
+`23f55187241a7bf12f7c9711f449973379b2056e94ebbeb5bf79bbda723d81fe`. The artwork is unchanged. Used only as that
+credit, as the terms ask.
