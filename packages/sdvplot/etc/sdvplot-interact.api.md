@@ -4,6 +4,12 @@
 
 ```ts
 
+// @public
+export interface BandScaleLike extends ScaleLike {
+    readonly bandwidth?: number;
+    readonly domain?: Iterable<unknown>;
+}
+
 // Warning: (ae-forgotten-export) The symbol "SelectionStore" needs to be exported by the entry point interact.d.ts
 //
 // @public
@@ -25,6 +31,19 @@ export interface BrushHandle {
         y: readonly [unknown, unknown];
     } | null): void;
 }
+
+// @public
+export type CursorShape = {
+    readonly axis: "x" | "y";
+    readonly scale: BandScaleLike;
+    readonly width?: number;
+    readonly cross?: ScaleLike;
+} | {
+    readonly axis: "ring";
+    readonly x: ScaleLike;
+    readonly y: ScaleLike;
+    readonly center: readonly [number, number];
+};
 
 // @public
 export type Field<R> = (keyof R & string) | ((row: R) => unknown);
@@ -49,6 +68,20 @@ export interface LinkableTable<Row> {
     setHover(id: string | null): void;
     setSelection(ids: ReadonlySet<string>): void;
     subscribe(fn: (event: LinkEvent) => void): () => void;
+}
+
+// @public
+export function linkCursor<R>(root: Element, store: SelectionStore<R>, o: LinkCursorOptions): () => void;
+
+// @public
+export interface LinkCursorOptions {
+    readonly dot?: (value: number) => number | null;
+    readonly emit?: boolean;
+    readonly field: string;
+    readonly flipAt?: number;
+    readonly label?: (value: number) => readonly string[];
+    readonly shape: CursorShape;
+    readonly snap?: (value: number) => number;
 }
 
 // @public
