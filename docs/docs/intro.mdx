@@ -16,7 +16,9 @@ pnpm add @sportsdataverse/sdvplot @sportsdataverse/sporty @sportsdataverse/sdvta
 ```
 
 The charting libraries (`@observablehq/plot`, `d3`, `react`, `chart.js`) are optional peers: install the one you draw
-with. The Plotly, Vega-Lite and ECharts adapters import nothing from their libraries.
+with. The Plotly, Vega-Lite and ECharts adapters import nothing from their libraries. Keep
+`@sportsdataverse/sporty` in the install even if you draw no surface: `sdvplot/plot`, `/d3`, `/shots` and
+`/chartjs/surface` import it when they load.
 
 ## Entry points
 

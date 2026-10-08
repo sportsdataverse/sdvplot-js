@@ -1,7 +1,8 @@
 /**
  * Chart.js 4 court / field / rink background: `surface(league, o)` paints a team-painted sporty scene under the
- * datasets. Split from `sdvplot/chartjs` because it draws through `@sportsdataverse/sporty/canvas` (optional peer), which
- * the logo and colour plugins do not need. `chart.js` is a type-only import (optional peer, 4.4 or later).
+ * datasets. Split from `sdvplot/chartjs` because it draws through `@sportsdataverse/sporty/canvas`, which the logo and
+ * colour plugins do not need. sporty is an optional peer, but this entry imports it when it loads, so install it to use
+ * `sdvplot/chartjs/surface`. `chart.js` is a type-only import (optional peer, 4.4 or later).
  */
 import type { Scene } from "@sportsdataverse/sporty";
 import { drawScene } from "@sportsdataverse/sporty/canvas";
