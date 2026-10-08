@@ -18,17 +18,22 @@ export function brushFilter<R>(figure: PlotFigure, store: SelectionStore<R>, o: 
 // @public
 export interface BrushFilterOptions<R> {
     data: readonly R[];
+    empty?: "dim" | "clear";
     id?: Field<R>;
-    x: Field<R>;
-    y: Field<R>;
+    scales?: {
+        x?: ScaleLike | D3ScaleLike;
+        y?: ScaleLike | D3ScaleLike;
+    };
+    x?: Field<R>;
+    y?: Field<R>;
 }
 
 // @public
 export interface BrushHandle {
     destroy(): void;
     move(region: {
-        x: readonly [unknown, unknown];
-        y: readonly [unknown, unknown];
+        x?: readonly [unknown, unknown];
+        y?: readonly [unknown, unknown];
     } | null): void;
 }
 
@@ -44,6 +49,13 @@ export type CursorShape = {
     readonly y: ScaleLike;
     readonly center: readonly [number, number];
 };
+
+// @public
+export interface D3ScaleLike {
+    (value: never): unknown;
+    invert?(pixel: number): unknown;
+    range(): Iterable<unknown>;
+}
 
 // @public
 export type Field<R> = (keyof R & string) | ((row: R) => unknown);
@@ -104,6 +116,7 @@ export interface LinkTargets<Row, Datum = unknown> {
         readonly id: (datum: Datum) => unknown;
     };
     plot?: Element;
+    select?: "toggle";
     table?: LinkableTable<Row>;
 }
 
@@ -130,7 +143,7 @@ export interface NearestHoverOptions {
 
 // @public
 export type PlotFigure = Element & {
-    scale(name: "x" | "y"): ScaleLike | undefined;
+    scale?(name: "x" | "y"): ScaleLike | undefined;
 };
 
 // @public

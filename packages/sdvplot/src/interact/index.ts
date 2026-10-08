@@ -1,5 +1,5 @@
 export { brushFilter } from "./brush.js";
-export type { BrushFilterOptions, BrushHandle, Field, PlotFigure, ScaleLike } from "./brush.js";
+export type { BrushFilterOptions, BrushHandle, D3ScaleLike, Field, PlotFigure, ScaleLike } from "./brush.js";
 export { linkCursor } from "./cursor.js";
 export type { BandScaleLike, CursorShape, LinkCursorOptions } from "./cursor.js";
 export { hasDom, highlight } from "./highlight.js";
