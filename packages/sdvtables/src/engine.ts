@@ -65,7 +65,7 @@ export interface TableOptions {
  * The headless table engine: holds the rows and a `TableState`, derives the visible page, and notifies subscribers.
  * Renderers (static HTML, hydrate, React) read `rows`/`columns` and call the setters; nothing here touches the DOM.
  *
- * @example A hover set before any view attaches: the view lights it when it does (`getHover`)
+ * @example A hover set before any view attaches: the view lights it when it does (getHover)
  * ```ts
  * import { createTable, defineTable } from "@sportsdataverse/sdvtables";
  * import { hydrate, renderHTML } from "@sportsdataverse/sdvtables/html";
