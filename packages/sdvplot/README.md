@@ -55,6 +55,37 @@ Plot.plot({
 | `@sportsdataverse/sdvplot/plot` | Observable Plot marks and scales: `logos`, `wordmarks`, `headshots`, `axisLogos`, `teamColor`/`teamFill`, `meanLines`/`medianLines`, `titleImage`, `teamTiers`, `surface` (optional peers `@observablehq/plot`, `@sportsdataverse/sporty`) |
 | `@sportsdataverse/sdvplot/d3` | `appendLogos`, `appendWordmarks`, `appendHeadshots`, `teamColorScale`, `appendSurface` (optional peers `d3`, `@sportsdataverse/sporty`) |
 | `@sportsdataverse/sdvplot/testing` | Adapter-contract suite for renderer adapters: `checkAdapterContract`, `drawnMarks`, `drawnAxisMarks`, `visibleAxisLabels` |
+| `@sportsdataverse/sdvplot/plotly` | `withLogos`, `withWordmarks`, `withHeadshots`, `withAxisLogos`, `teamColorway`, `embedSources` (no runtime dependency) |
+| `@sportsdataverse/sdvplot/vega` | `withLogos`, `withWordmarks`, `withHeadshots`, `logoLayer`, `withAxisLogos`, `teamColorScale`, `embedSources` (no runtime dependency) |
+| `@sportsdataverse/sdvplot/echarts` | `withLogos`, `withWordmarks`, `withHeadshots`, `withAxisLogos`, `teamColorPalette`, `embedSources` (no runtime dependency) |
+
+## Spec adapters (Plotly, Vega-Lite, ECharts) — zero runtime deps
+
+These patch a plain spec object and never import the charting library: use whatever plotly.js / vega-embed / echarts
+build you already load. Rows are `Row[]`; `x`, `y`, `team` name columns.
+
+```ts
+import { preloadAll } from "@sportsdataverse/sdvplot";
+import { withLogos, withAxisLogos, teamColorway } from "@sportsdataverse/sdvplot/plotly";
+await preloadAll();
+const fig = withLogos({ data: [{ type: "scatter", x, y }], layout: {} }, rows, { x: "epa", y: "sr", team: "team", league: "nfl", height: 0.12 });
+Plotly.newPlot(el, fig.data, fig.layout);
+```
+
+TypeScript: pass the library's own type (`{ data: Plotly.Data[]; layout: Partial<Plotly.Layout> }`, vega-lite's `TopLevelSpec`,
+echarts' `EChartsOption`) and the same type comes back.
+
+- Plotly: `height` is a fraction of the plot area; sdvplot PINS the axis ranges (with half a logo of room) because a
+  data-placed layout image is sized in axis units. Set `layout.xaxis.range` yourself to keep your own range.
+  `withAxisLogos` sizes in pixels from `layout.width`/`layout.height` (Plotly's 700 × 450 default when unset).
+- Vega-Lite: a native `image` layer sized from the chart height (default 300 px; a discrete y axis needs `height`).
+  A discrete `sort` Vega-Lite would drop raises — use `sort: [...]`. The shorthand `"-y"` works where Vega-Lite keeps
+  it; on a bar or area chart it sums the stacked measure, which Vega-Lite drops, so it raises too.
+  `withAxisLogos` assumes the default axis orient (x at the bottom, y on the left).
+- ECharts: a `custom` series whose `renderItem` draws in data coordinates (follows zoom/resize; no instance needed).
+  `withAxisLogos` sizes from `chartHeight` (default 400 px) because an option has no canvas size. The helper series
+  have no `name`, so a default `legend: {}` lists only your series.
+- `embed`: `await embedSources(urls)` (exported by each of the three subpaths) → pass the map to inline data URIs (offline HTML, static export).
 
 ## Data provenance
 

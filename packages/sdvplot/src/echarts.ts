@@ -196,7 +196,10 @@ export function drawnMarks(option: EChartsOption): DrawnMark[] {
 const DEFAULT_CHART_HEIGHT = 400; // px: ECharts has no default canvas height in a pure option; documented in the README
 const LABEL_MARGIN = 8; // px: ECharts' default axisLabel.margin
 
-type AxisLogoOptions = AxisOptions & { axisIndex?: number; chartHeight?: number };
+export interface EChartsAxisOptions extends AxisOptions {
+  axisIndex?: number;
+  chartHeight?: number;
+}
 
 function axisAt(
   option: EChartsOption,
@@ -216,9 +219,9 @@ const categories = (ax: EChartsAxis): string[] =>
     typeof c === "object" && c !== null && "value" in c ? String((c as { value: unknown }).value) : String(c),
   );
 
-export function withAxisLogos(option: EChartsOption, axis: "x" | "y", o: AxisLogoOptions): EChartsOption;
-export function withAxisLogos<F extends object>(option: F, axis: "x" | "y", o: AxisLogoOptions): F;
-export function withAxisLogos(option: object, axis: "x" | "y", o: AxisLogoOptions): object {
+export function withAxisLogos(option: EChartsOption, axis: "x" | "y", o: EChartsAxisOptions): EChartsOption;
+export function withAxisLogos<F extends object>(option: F, axis: "x" | "y", o: EChartsAxisOptions): F;
+export function withAxisLogos(option: object, axis: "x" | "y", o: EChartsAxisOptions): object {
   const letter = axisLetter(axis);
   const h = checkHeight(o.height ?? 0.1);
   const chartH = o.chartHeight ?? DEFAULT_CHART_HEIGHT;
