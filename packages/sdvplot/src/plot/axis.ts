@@ -2,18 +2,16 @@ import * as Plot from "@observablehq/plot";
 import { checkHeight, placeSync, placedName } from "../placement.js";
 import { stampImage } from "../stamp.js";
 import type { IdSystem, League, MarkType, SeasonInput, Variant } from "../types.js";
+import { compose } from "./marks.js";
 
 export type Axis = "x" | "y" | "fx" | "fy";
 /**
  * Plot's axis options sdvplot does not own pass through: `ticks`, `tickSpacing`, `tickPadding`, `tickRotate`,
- * `fontSize`, `fill`, `ariaLabel`, `ariaDescription`, `facetAnchor`, `className`, the margins, and the rest.
- * sdvplot owns `tickFormat` and `render` (the tick text becomes the image); `anchor`, `tickSize` and `label` are
- * sdvplot's own options below.
+ * `fontSize`, `fill`, `ariaLabel`, `ariaDescription`, `facetAnchor`, `className`, the margins, and the rest. A
+ * `render` you pass wraps sdvplot's (it sees the images). sdvplot owns `tickFormat` (the tick text becomes the
+ * image); `anchor`, `tickSize` and `label` are sdvplot's own options below.
  */
-export type AxisPassThrough = Omit<
-  Plot.AxisXOptions,
-  "tickFormat" | "render" | "anchor" | "tickSize" | "label"
->;
+export type AxisPassThrough = Omit<Plot.AxisXOptions, "tickFormat" | "anchor" | "tickSize" | "label">;
 /**
  * Options for `axisLogos`. Each drawn image is named by the tick it replaces ("KC logo", "KC wordmark"), so assistive
  * technology reads the category the text showed. The images are sized by `height` (a fraction of the frame); a caller
@@ -69,6 +67,7 @@ export function axisLogos(axis: Axis, o: AxisLogosOptions): Plot.Markish {
     anchor: _a,
     tickSize: _t,
     label: _b,
+    render: outer,
     ...pass
   } = o;
   const height = checkHeight(o.height ?? 0.1);
@@ -134,7 +133,11 @@ export function axisLogos(axis: Axis, o: AxisLogosOptions): Plot.Markish {
   };
   // ponytail: margin is sized for the default 400px plot; pass height/margins explicitly for other plot heights
   const margin = Math.round(height * 400) + tickSize + 8;
-  const marginKey = `margin${side[0]?.toUpperCase()}${side.slice(1)}` as keyof AxisPassThrough;
+  const marginKey = `margin${side[0]?.toUpperCase()}${side.slice(1)}` as
+    | "marginTop"
+    | "marginRight"
+    | "marginBottom"
+    | "marginLeft";
   return AXIS[axis]({
     ...pass,
     tickFormat: (d: unknown) => String(d),
@@ -142,6 +145,6 @@ export function axisLogos(axis: Axis, o: AxisLogosOptions): Plot.Markish {
     label: o.label ?? null,
     ...(o.anchor ? { anchor: o.anchor } : {}),
     [marginKey]: pass[marginKey] ?? pass.margin ?? margin, // a caller's own margin on the anchored side wins
-    render,
+    render: compose(outer, render), // a caller's render wraps sdvplot's swap
   } as Plot.AxisXOptions);
 }

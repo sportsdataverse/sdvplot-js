@@ -66,6 +66,22 @@ test("axisLogos: categories keyed by team_id name each image by the team, not th
   expect(names.sort()).toEqual(STANDINGS.map((r) => `${r.team} logo`).sort());
 });
 
+test("axisLogos composes a caller's render (it wraps sdvplot's and sees the images), never replaces it", () => {
+  const seen: number[] = [];
+  const render: Plot.RenderFunction = (index, scales, values, dimensions, context, next) => {
+    const g = next?.(index, scales, values, dimensions, context) ?? null;
+    if (g?.querySelector("text, image")) seen.push(g.querySelectorAll("image").length); // the tick-label sub-mark
+    g?.setAttribute("data-caller", "yes");
+    return g;
+  };
+  const fig = Plot.plot({
+    marks: [Plot.barY(STANDINGS, { x: "team", y: "wins" }), axisLogos("x", { league: "nfl", render })],
+  });
+  expect(fig.querySelectorAll("image")).toHaveLength(8); // sdvplot's swap still ran
+  expect(seen).toEqual([8]);
+  expect(fig.querySelector("[data-caller=yes] image")).not.toBeNull();
+});
+
 test("axisLogos: a caller's margin on the anchored side (or all sides) wins over the computed one", () => {
   const frameBottom = (o: Parameters<typeof axisLogos>[1]): number => {
     const svg = Plot.plot({ marks: [Plot.barY(STANDINGS, { x: "team", y: "wins" }), axisLogos("x", o)] });
