@@ -139,8 +139,8 @@ const facets = Plot.plot({
 
 ### Tips and the figure's value
 
-`tip: true` adds Plot's own tip, opt-in as everywhere in Plot. The default channels are the team (the player id for
-headshots) with `x` and `y` on the image marks; attempts, FG%, league FG% and the shrunk difference on `shotCells`;
+`tip: true` adds Plot's own tip, opt-in as everywhere in Plot. The default channels are the team, named as its image
+is ("KC" for rows keyed by `team_id` too; the player id for headshots), with `x` and `y` on the image marks; attempts, FG%, league FG% and the shrunk difference on `shotCells`;
 the zone, and given `stats` its makes/attempts and FG%, on `shotZones`; distance, FG%, league FG% and shot share on
 `shootingSignature`. A tip object's `format` overrides sdvplot's formats key by key. What is under the pointer is the
 figure's `value`, with an `input` event on each change, as for any Plot mark. A server-rendered figure carries one

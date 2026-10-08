@@ -98,6 +98,26 @@ test("logos / wordmarks keyed by team_id are named by the resolved team, not the
   ).toEqual(["Patrick Mahomes", "Justin Herbert"]);
 });
 
+test("logos keyed by team_id: the default tip names the team as the image does ('KC'), not by its id ('12')", () => {
+  const ids = resolveSync(
+    STANDINGS.map((r) => r.team),
+    "nfl",
+  );
+  const rows = STANDINGS.map((r, i) => ({ team_id: ids[i], wins: r.wins, pf: r.pf }));
+  const fig = Plot.plot({
+    width: 640,
+    height: 400,
+    marks: [logos(rows, { league: "nfl", x: "wins", y: "pf", team: "team_id", idSystem: "team_id", tip: true })],
+  });
+  const kc = fig.querySelector('image[data-sdv-id="12"]') as Element;
+  expect(kc.getAttribute("aria-label")).toBe("KC logo");
+  const [x, y] = centreOf(kc);
+  pointAt(fig, x, y);
+  expect(tipText(fig)).toMatch(/team\s*KC/);
+  expect(tipText(fig)).not.toMatch(/team\s*12/);
+  expect((fig as unknown as { value: { team_id: string } }).value.team_id).toBe("12"); // the row is the caller's
+});
+
 test("teamTiers: tip names the team; the figure is labelled by its title", () => {
   const rows = STANDINGS.map((r) => ({ team: r.team, tier_no: r.wins >= 13 ? 1 : r.wins >= 8 ? 2 : 3 }));
   const fig = Plot.plot(teamTiers(rows, { league: "nfl", title: "2024 AFC tiers", tip: true }));

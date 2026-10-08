@@ -223,7 +223,8 @@ function imageMark<R>(
     ...(o.opacity === undefined ? { opacity: alpha } : {}),
     // an accessible name per image, as the Vega adapter's (PR #28): "KC logo", "3139477 headshot"
     ariaLabel: o.ariaLabel ?? names.map((n) => `${n} ${kind}`),
-    channels: { [name]: { value: keys, label: name }, ...channels },
+    // the tip names the team as the image does ("KC", not team_id "12"); a headshot has only its id
+    channels: { [name]: { value: kind === "headshot" ? keys : names, label: name }, ...channels },
     ...(transform === undefined ? {} : { transform: sameRows(transform) }),
     ...(initializer === undefined ? {} : { initializer: sameRows(initializer) }),
     render: compose(render, sizeRender(height, placed, kind)),
