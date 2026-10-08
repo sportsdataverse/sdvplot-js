@@ -10,3 +10,4 @@ packages/sdvplot/src/data/** -text
 packages/sporty/data/** -text
 # content-addressed logo fixtures: the file name is the sha256 of these exact bytes
 fixtures/sdvplot/logos/** -text
+*.woff2 binary
