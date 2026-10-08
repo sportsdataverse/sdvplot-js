@@ -27,8 +27,8 @@ export type Axis = "x" | "y" | "fx" | "fy";
 // @public
 export function axisLogos(axis: Axis, o: AxisLogosOptions): Plot.Markish;
 
-// @public (undocumented)
-export interface AxisLogosOptions {
+// @public
+export interface AxisLogosOptions extends AxisPassThrough {
     // (undocumented)
     anchor?: "top" | "bottom" | "left" | "right";
     height?: number;
@@ -57,6 +57,9 @@ export interface AxisLogosOptions {
     // (undocumented)
     variant?: Variant;
 }
+
+// @public
+export type AxisPassThrough = Omit<Plot.AxisXOptions, "tickFormat" | "render" | "anchor" | "tickSize" | "label">;
 
 // Warning: (ae-forgotten-export) The symbol "Value" needs to be exported by the entry point plot.d.ts
 //
@@ -132,7 +135,7 @@ export function meanLines<R>(data: Data<R>, o: RefLineOptions<R>): Plot.Markish[
 export function medianLines<R>(data: Data<R>, o: RefLineOptions<R>): Plot.Markish[];
 
 // @public (undocumented)
-export interface RefLineOptions<R> {
+export interface RefLineOptions<R> extends RuleLinePassThrough {
     stroke?: string;
     strokeDasharray?: string;
     // (undocumented)
@@ -143,6 +146,9 @@ export interface RefLineOptions<R> {
     // (undocumented)
     y?: Channel<R>;
 }
+
+// @public
+export type RuleLinePassThrough = Omit<Plot.RuleXOptions, "x" | "y" | "x1" | "x2" | "y1" | "y2">;
 
 // Warning: (ae-forgotten-export) The symbol "SignaturePoint" needs to be exported by the entry point plot.d.ts
 //
@@ -251,6 +257,7 @@ export type TeamTiersOptions = TiersOptions & {
     league: League;
     devel?: boolean;
     width?: number;
+    tip?: boolean;
 };
 
 // @public
