@@ -4,6 +4,814 @@
 
 ```ts
 
+import { EspnHeadshotLeague } from '@sportsdataverse/sdvplot';
+import { HeadshotIdSystem } from '@sportsdataverse/sdvplot';
+import { IdSystem } from '@sportsdataverse/sdvplot';
+import { League } from '@sportsdataverse/sdvplot';
+import { SdvplotError } from '@sportsdataverse/sdvplot';
+import { SeasonInput } from '@sportsdataverse/sdvplot';
+import { Variant } from '@sportsdataverse/sdvplot';
+import { Which } from '@sportsdataverse/sdvplot';
+
+// @public
+export interface Alias {
+    // (undocumented)
+    readonly note?: string;
+    // (undocumented)
+    readonly status: "ported" | "phase-5" | "not-ported";
+    // (undocumented)
+    readonly target: string;
+}
+
+// @public
+export const aliasFor: (name: string) => Alias | undefined;
+
+// @public (undocumented)
+export type Align = "left" | "center" | "right";
+
+// @public (undocumented)
+export interface ColumnBase<Row, K extends keyof Row & string = keyof Row & string> {
+    // (undocumented)
+    readonly align?: Align;
+    compare?(a: Row[K], b: Row[K]): number;
+    // (undocumented)
+    readonly filterable?: boolean;
+    // (undocumented)
+    readonly key: K;
+    // (undocumented)
+    readonly label?: string;
+    readonly sortable?: boolean;
+    // (undocumented)
+    readonly subheader?: string;
+    readonly width?: string;
+}
+
+// @public (undocumented)
+export interface ColumnFactory<Row> {
+    // (undocumented)
+    colorPills<K extends NumericKey<Row>>(key: K, o?: Base<Row, K> & Partial<Opt<Col<Row, "colorPills">, never>>): Col<Row, "colorPills">;
+    // (undocumented)
+    colorRanks<K extends NumericKey<Row>>(key: K, o?: Base<Row, K> & Partial<Opt<Col<Row, "colorRanks">, never>>): Col<Row, "colorRanks">;
+    // (undocumented)
+    colorResults<K extends keyof Row & string>(key: K, o?: Base<Row, K> & Partial<Opt<Col<Row, "colorResults">, never>>): Col<Row, "colorResults">;
+    // (undocumented)
+    delta<K extends NumericKey<Row>>(from: K, to: NumericKey<Row>, o?: Base<Row, K> & Partial<Opt<Col<Row, "delta">, "to">>): Col<Row, "delta">;
+    fmtRank: ColumnFactory<Row>["rank"];
+    // (undocumented)
+    fmtTally: ColumnFactory<Row>["tally"];
+    // (undocumented)
+    headshot<K extends keyof Row & string>(key: K, o: Base<Row, K> & Partialize<Opt<Col<Row, "headshot">, never>, "league">): Col<Row, "headshot">;
+    // (undocumented)
+    highlight<K extends keyof Row & string>(key: K, when: Col<Row, "highlight">["when"], o?: Base<Row, K> & Partial<Opt<Col<Row, "highlight">, "when">>): Col<Row, "highlight">;
+    // (undocumented)
+    highlightNa<K extends keyof Row & string>(key: K, o?: Base<Row, K> & Partial<Opt<Col<Row, "highlightNa">, never>>): Col<Row, "highlightNa">;
+    // (undocumented)
+    image<K extends keyof Row & string>(key: K, o?: Base<Row, K> & Partial<Opt<Col<Row, "image">, never>>): Col<Row, "image">;
+    // (undocumented)
+    indicatorBox<K extends keyof Row & string>(key: K, o?: Base<Row, K> & Partial<Opt<Col<Row, "indicatorBox">, never>>): Col<Row, "indicatorBox">;
+    // (undocumented)
+    int<K extends NumericKey<Row>>(key: K, o?: Base<Row, K>): Col<Row, "int">;
+    // Warning: (ae-forgotten-export) The symbol "Partialize" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    logo<K extends keyof Row & string>(key: K, o: Base<Row, K> & Partialize<Opt<Col<Row, "logo">, never>, "league">): Col<Row, "logo">;
+    // (undocumented)
+    mergeStackTeamColor<K extends keyof Row & string>(key: K, stack: keyof Row & string, team: keyof Row & string, o: Base<Row, K> & Partialize<Opt<Col<Row, "mergeStackTeamColor">, "stack" | "team">, "league">): Col<Row, "mergeStackTeamColor">;
+    // Warning: (ae-forgotten-export) The symbol "Opt" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    num<K extends NumericKey<Row>>(key: K, o?: Base<Row, K> & Partial<Opt<Col<Row, "num">, never>>): Col<Row, "num">;
+    // (undocumented)
+    pct<K extends NumericKey<Row>>(key: K, o?: Base<Row, K> & Partial<Opt<Col<Row, "pct">, never>>): Col<Row, "pct">;
+    // (undocumented)
+    percentileBar<K extends NumericKey<Row>>(key: K, o?: Base<Row, K> & Partial<Opt<Col<Row, "percentileBar">, never>>): Col<Row, "percentileBar">;
+    // (undocumented)
+    rank<K extends NumericKey<Row>>(key: K, o?: Base<Row, K> & Partial<Opt<Col<Row, "rank">, never>>): Col<Row, "rank">;
+    // (undocumented)
+    tally(keys: readonly [NumericKey<Row>, ...NumericKey<Row>[]], o?: Base<Row, NumericKey<Row>> & Partial<Opt<Col<Row, "tally">, "keys">>): Col<Row, "tally">;
+    // (undocumented)
+    teamColorBar<K extends keyof Row & string>(key: K, o: Base<Row, K> & Partialize<Opt<Col<Row, "teamColorBar">, never>, "league">): Col<Row, "teamColorBar">;
+    // (undocumented)
+    teamColorBg<K extends keyof Row & string>(key: K, o: Base<Row, K> & Partialize<Opt<Col<Row, "teamColorBg">, never>, "league">): Col<Row, "teamColorBg">;
+    // Warning: (ae-forgotten-export) The symbol "Base" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "Col" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    text<K extends keyof Row & string>(key: K, o?: Base<Row, K>): Col<Row, "text">;
+    // (undocumented)
+    wordmark<K extends keyof Row & string>(key: K, o: Base<Row, K> & Partialize<Opt<Col<Row, "wordmark">, never>, "league">): Col<Row, "wordmark">;
+}
+
+// @public (undocumented)
+export function columnFactory<Row>(): ColumnFactory<Row>;
+
+// @public (undocumented)
+export type ColumnKind = ColumnSpec<never>["kind"];
+
+// @public (undocumented)
+export type ColumnSpec<Row> = (ColumnBase<Row> & {
+    readonly kind: "text";
+}) | (ColumnBase<Row, NumericKey<Row>> & {
+    readonly kind: "num";
+    readonly digits?: number;
+    readonly big?: boolean;
+    readonly prefix?: string;
+    readonly suffix?: string;
+    readonly forceSign?: boolean;
+}) | (ColumnBase<Row, NumericKey<Row>> & {
+    readonly kind: "int";
+}) | (ColumnBase<Row, NumericKey<Row>> & {
+    readonly kind: "pct";
+    readonly digits: number;
+    readonly scale: boolean;
+}) | (ColumnBase<Row, NumericKey<Row>> & {
+    readonly kind: "rank";
+    readonly superscript: boolean;
+    readonly suffixSize: string;
+}) | (ColumnBase<Row, NumericKey<Row>> & {
+    readonly kind: "delta";
+    readonly to: NumericKey<Row>;
+    readonly percent: boolean;
+    readonly decimals: number;
+    readonly arrows: boolean;
+    readonly color: boolean;
+    readonly colorPositive: string;
+    readonly colorNegative: string;
+    readonly colorNeutral?: string;
+    readonly forceSign: boolean;
+}) | (ColumnBase<Row, NumericKey<Row>> & {
+    readonly kind: "tally";
+    readonly keys: readonly NumericKey<Row>[];
+    readonly separator: string;
+    readonly share: boolean;
+    readonly shareOf: number;
+    readonly shareDecimals: number;
+    readonly shareLabel: string;
+    readonly sharePrefix: string;
+    readonly shareSuffix: string;
+}) | (ColumnBase<Row> & TeamOpts & {
+    readonly kind: "logo";
+    readonly height: number;
+    readonly variant?: Variant;
+    readonly includeName: boolean;
+}) | (ColumnBase<Row> & TeamOpts & {
+    readonly kind: "wordmark";
+    readonly height: number;
+    readonly variant?: Variant;
+}) | (ColumnBase<Row> & {
+    readonly kind: "headshot";
+    readonly league: EspnHeadshotLeague;
+    readonly idSystem: HeadshotIdSystem;
+    readonly height: number;
+}) | (ColumnBase<Row, NumericKey<Row>> & {
+    readonly kind: "colorPills";
+    readonly palette: readonly string[];
+    readonly domain?: readonly [number, number];
+    readonly fillType: "continuous" | "rank";
+    readonly rankOrder: "asc" | "desc";
+    readonly digits?: number;
+    readonly formatType: FormatType;
+    readonly scalePercent: boolean;
+    readonly suffix: string;
+    readonly reverse: boolean;
+    readonly outlineColor?: string;
+    readonly outlineWidth: number;
+    readonly pillHeight: number;
+    readonly textColor?: string;
+    readonly naColor?: string;
+}) | (ColumnBase<Row, NumericKey<Row>> & {
+    readonly kind: "colorRanks";
+    readonly palette: readonly string[];
+    readonly domain?: readonly [number, number];
+    readonly reverse: boolean;
+}) | (ColumnBase<Row> & {
+    readonly kind: "colorResults";
+    readonly winColor: string;
+    readonly lossColor: string;
+    readonly tieColor?: string;
+    readonly winTextColor: string;
+    readonly lossTextColor: string;
+    readonly tieTextColor: string;
+    readonly tieValue: unknown;
+    readonly resultType: "wl" | "binary";
+}) | (ColumnBase<Row, NumericKey<Row>> & {
+    readonly kind: "percentileBar";
+    readonly domain: readonly [number, number];
+    readonly scale: "auto" | "none" | number;
+    readonly palette: readonly string[];
+    readonly reverse: boolean;
+    readonly trackColor: string;
+    readonly trackHeight: number;
+    readonly markerSize: number;
+    readonly textColor: string;
+    readonly fontSize?: number;
+    readonly ringColor?: string;
+    readonly ringWidth: number;
+    readonly fullTrack: boolean;
+    readonly naLabel?: string;
+    readonly naTrackColor?: string;
+    readonly naTextColor: string;
+    readonly decimals: number;
+}) | (ColumnBase<Row> & {
+    readonly kind: "indicatorBox";
+    readonly truthy: readonly unknown[];
+    readonly fill: string;
+    readonly neutral: string;
+    readonly size: number;
+    readonly showOnly?: "filled" | "neutral";
+}) | (ColumnBase<Row> & {
+    readonly kind: "highlight";
+    readonly when: Predicate<Row>;
+    readonly fill: string;
+    readonly textColor?: string;
+    readonly bold: boolean;
+}) | (ColumnBase<Row> & {
+    readonly kind: "highlightNa";
+    readonly fill?: string;
+    readonly textColor?: string;
+    readonly bold: boolean;
+    readonly italic: boolean;
+    readonly missingText?: string;
+    readonly naStrings: readonly string[];
+    readonly ignoreCase: boolean;
+}) | (ColumnBase<Row> & TeamOpts & {
+    readonly kind: "mergeStackTeamColor";
+    readonly stack: keyof Row & string;
+    readonly team: keyof Row & string;
+    readonly fontSizeTop: number;
+    readonly fontSizeBottom: number;
+    readonly color: string;
+    readonly background?: string;
+}) | (ColumnBase<Row> & TeamOpts & {
+    readonly kind: "teamColorBar";
+    readonly which: Which;
+    readonly naColor: string;
+    readonly barWidth: number;
+}) | (ColumnBase<Row> & TeamOpts & {
+    readonly kind: "teamColorBg";
+    readonly which: Which;
+    readonly alpha: number;
+    readonly naColor: string;
+}) | (ColumnBase<Row> & {
+    readonly kind: "image";
+    readonly height: string;
+    readonly alt?: keyof Row & string;
+});
+
+// @public (undocumented)
+export type Decoration<Row> = {
+    readonly type: "title";
+    readonly text: string;
+} | {
+    readonly type: "subtitle";
+    readonly text: string;
+} | {
+    readonly type: "titleHeader";
+    readonly title: string;
+    readonly subtitle?: string;
+    readonly kicker?: string;
+    readonly date?: string;
+    readonly kickerStyle?: TextStyle;
+    readonly titleStyle?: TextStyle;
+    readonly subtitleStyle?: TextStyle;
+    readonly dateStyle?: TextStyle;
+} | {
+    readonly type: "sourceNote";
+    readonly html: string;
+    readonly unsafe?: boolean;
+} | {
+    readonly type: "caption538";
+    readonly top?: string;
+    readonly bottom?: string;
+    readonly ruleColor?: string;
+    readonly ruleWidth: number;
+    readonly size: number;
+    readonly align: Align;
+} | {
+    readonly type: "groupBy";
+    readonly key: keyof Row & string;
+} | {
+    readonly type: "groupStripes";
+    readonly color: string;
+    readonly start: 1 | 2;
+} | {
+    readonly type: "rowAccent";
+    readonly key: keyof Row & string;
+    readonly palette?: Readonly<Record<string, string>> | readonly string[];
+    readonly rows?: RowSelector<Row>;
+    readonly width: number;
+    readonly side: "left" | "right";
+    readonly hide: boolean;
+    readonly naColor: string;
+} | {
+    readonly type: "boldRows";
+    readonly rows: RowSelector<Row>;
+    readonly textColor: string;
+    readonly highlightColor?: string;
+} | {
+    readonly type: "spotlight";
+    readonly rows: RowSelector<Row>;
+    readonly columns?: readonly (keyof Row & string)[];
+    readonly fill?: string;
+    readonly textColor?: string;
+    readonly bold: boolean;
+    readonly accentColor?: string;
+    readonly accentWidth: number;
+    readonly dimColor: string | "auto" | null;
+}
+/** `after` = rows above each line (Python gt_cutline, _cells.py:840-841): 3 draws between the 3rd and 4th rows, 0 above the first. */
+| {
+    readonly type: "cutline";
+    readonly after: readonly number[];
+    readonly label?: readonly (string | null)[];
+    readonly color: string;
+    readonly weight: number;
+    readonly style: "dashed" | "solid" | "dotted";
+    readonly labelColor?: string;
+    readonly labelSize: number;
+    readonly labelPosition: "above" | "below";
+    readonly gap: readonly number[];
+} | {
+    readonly type: "borderGrid";
+    readonly color: string;
+    readonly weight: number;
+    readonly includeLabels: boolean;
+} | {
+    readonly type: "borderBars";
+    readonly side: "top" | "bottom";
+    readonly colors: readonly string[];
+    readonly barHeight: number;
+    readonly barWidth: string;
+    readonly barAlign: Align;
+    readonly img?: string;
+    readonly imgWidth: number;
+    readonly imgHeight: number;
+    readonly imgPadding: number;
+    readonly imgAlign: "left" | "right";
+    readonly text?: string;
+    readonly textWeight: string;
+    readonly textColor: string;
+    readonly textSize: number;
+    readonly textAlign: Align;
+    readonly textPadding: number;
+} | {
+    readonly type: "legendContinuous";
+    readonly columns?: readonly (keyof Row & string)[];
+    readonly palette?: readonly string[];
+    readonly domain?: readonly [number, number];
+    readonly reverse?: boolean;
+    readonly nBins: number;
+    readonly labels?: readonly string[];
+    readonly digits: number;
+    readonly title?: string;
+    readonly titlePosition: "top" | "left";
+    readonly location: "top" | "bottom";
+    readonly swatchWidth: number;
+    readonly swatchHeight: number;
+} | {
+    readonly type: "legendDiscrete";
+    readonly key: Readonly<Record<string, string>> | "recorded";
+    readonly heading?: string;
+    readonly subtitle?: string;
+    readonly location: "top" | "bottom";
+    readonly shape: "square" | "circle";
+    readonly swatchSize: number;
+    readonly border: boolean;
+    readonly borderColor?: string;
+    readonly gap: number;
+    readonly direction: "horizontal" | "vertical";
+    readonly align: Align;
+} | {
+    readonly type: "significance";
+    readonly pairs: readonly {
+        readonly estimate: keyof Row & string;
+        readonly p: keyof Row & string;
+    }[];
+    readonly levels: readonly number[];
+    readonly symbols: readonly string[];
+    readonly superscript: boolean;
+    readonly note: boolean;
+    readonly hideP: boolean;
+} | {
+    readonly type: "outliers";
+    readonly columns: readonly (keyof Row & string)[];
+    readonly method: "iqr" | "sd" | "bounds";
+    readonly threshold?: number;
+    readonly bounds?: readonly [number | null, number | null];
+    readonly side: "both" | "high" | "low";
+    readonly fill?: string;
+    readonly color?: string;
+    readonly bold: boolean;
+    readonly symbol?: string;
+    readonly note?: string | boolean;
+} | {
+    readonly type: "scaleNote";
+    readonly columns: readonly (keyof Row & string)[];
+    readonly divisor: number;
+    readonly note?: string;
+    readonly where: "sourceNote" | "label" | "both";
+    readonly labelSuffix?: string;
+    readonly decimals: number;
+} | {
+    readonly type: "socialTag";
+    readonly accounts: Readonly<Record<string, string>>;
+    readonly caption?: string;
+    readonly stack: boolean;
+    readonly separator: string;
+    readonly align: Align;
+    readonly iconColor?: string;
+    readonly iconHeight: string;
+} | {
+    readonly type: "watermark";
+    readonly text?: string;
+    readonly image?: string;
+    readonly opacity: number;
+    readonly size: string;
+    readonly position: string;
+    readonly color: string;
+    readonly angle: number;
+    readonly font: string;
+} | {
+    readonly type: "wrapLabels";
+    readonly columns?: readonly (keyof Row & string)[];
+    readonly width: number;
+    readonly balance: boolean;
+} | {
+    readonly type: "marginalia";
+    readonly columns: readonly (keyof Row & string)[];
+    readonly width?: number | string;
+    readonly label: string;
+    readonly italic: boolean;
+    readonly color?: string;
+    readonly size: string;
+    readonly rule: boolean;
+    readonly ruleColor?: string;
+    readonly align: Align;
+} | {
+    readonly type: "snake";
+    readonly nCols: number;
+    readonly rowsPerCol?: number;
+    readonly gap: number;
+    readonly fill: string;
+    readonly cleanGaps: boolean;
+} | {
+    readonly type: "tiers";
+    readonly levels: readonly string[];
+    readonly colors?: readonly string[];
+    readonly tierKey: keyof Row & string;
+    readonly imageColumns: readonly (keyof Row & string)[];
+    readonly imgHeight: string;
+    readonly style: "light" | "dark";
+} | {
+    readonly type: "font";
+    readonly family: string;
+    readonly google: boolean;
+    readonly weight?: number | string;
+    readonly style?: "normal" | "italic";
+};
+
+// @public (undocumented)
+export type DecorationType = Decoration<never>["type"];
+
+// @public (undocumented)
+export function defineTable<Row>(): TableBuilder<Row>;
+
+// Warning: (ae-forgotten-export) The symbol "DensitySizes" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export const DENSITY: Readonly<Record<Density, DensitySizes>>;
+
+// @public (undocumented)
+export type Density = "comfortable" | "compact" | "social";
+
+// @public (undocumented)
+export type FormatType = "number" | "comma" | "currency" | "percent";
+
+// @public (undocumented)
+export interface GoogleFont {
+    // (undocumented)
+    readonly family: string;
+    // (undocumented)
+    readonly italic?: boolean;
+    // (undocumented)
+    readonly weights: readonly number[];
+}
+
+// @public
+export const GT_ALIASES: Readonly<Record<string, Alias>>;
+
+// @public (undocumented)
+export function matches<Row>(p: Predicate<Row>, row: Row): boolean;
+
+// @public
+export type NumericKey<Row> = {
+    [K in keyof Row]-?: Row[K] extends number | null | undefined ? K : never;
+}[keyof Row] & keyof Row & string;
+
+// @public
+export const PAL_MIDNIGHT: readonly string[];
+
+// @public (undocumented)
+export interface Predicate<Row> {
+    // (undocumented)
+    readonly key: keyof Row & string;
+    // (undocumented)
+    readonly op: PredicateOp;
+    // (undocumented)
+    readonly value?: unknown;
+}
+
+// @public (undocumented)
+export type PredicateOp = "==" | "!=" | ">" | ">=" | "<" | "<=" | "in" | "notIn" | "isNull" | "notNull" | "matches";
+
+// @public
+export const RANK_PALETTE: readonly string[];
+
+// @public (undocumented)
+export function resolveTheme(ref: ThemeRef): Theme;
+
+// @public (undocumented)
+export type RowSelector<Row> = readonly number[] | Predicate<Row>;
+
+// @public
+export function secondaryOn(bg: string, fg: string, target?: number): string;
+
+// @public (undocumented)
+export function selectRows<Row>(sel: RowSelector<Row>, rows: readonly Row[]): number[];
+
+// @public (undocumented)
+export function snakeAlign<Row>(rows: readonly Row[], o?: {
+    nCols?: number;
+    rowsPerCol?: number;
+    fill?: Row | null;
+}): (Row | null)[][];
+
+// @public (undocumented)
+export type StringKey<Row> = {
+    [K in keyof Row]-?: Row[K] extends string | null | undefined ? K : never;
+}[keyof Row] & keyof Row & string;
+
+// @public (undocumented)
+export class TableBuilder<Row> {
+    constructor(s: TableSpec<Row>);
+    // (undocumented)
+    boldRows(rows: D<Row, "boldRows">["rows"], o?: Partial<Omit<D<Row, "boldRows">, "type" | "rows">>): TableBuilder<Row>;
+    // (undocumented)
+    borderBars(side: "top" | "bottom", colors: readonly string[], o?: Partial<Omit<D<Row, "borderBars">, "type" | "side" | "colors">>): TableBuilder<Row>;
+    // (undocumented)
+    borderGrid(o?: Partial<Omit<D<Row, "borderGrid">, "type">>): TableBuilder<Row>;
+    // (undocumented)
+    build(): TableSpec<Row>;
+    // (undocumented)
+    caption538(o?: Partial<Omit<D<Row, "caption538">, "type">>): TableBuilder<Row>;
+    // (undocumented)
+    columns(fn: (c: ColumnFactory<Row>) => readonly ColumnSpec<Row>[]): TableBuilder<Row>;
+    // (undocumented)
+    cutline(after: number | readonly number[], o?: Partial<Omit<D<Row, "cutline">, "type" | "after">>): TableBuilder<Row>;
+    // (undocumented)
+    font(family: string, o?: Partial<Omit<D<Row, "font">, "type" | "family">>): TableBuilder<Row>;
+    // (undocumented)
+    groupBy(key: keyof Row & string): TableBuilder<Row>;
+    // (undocumented)
+    groupStripes(o?: Partial<Omit<D<Row, "groupStripes">, "type">>): TableBuilder<Row>;
+    // (undocumented)
+    id(id: string): TableBuilder<Row>;
+    // (undocumented)
+    legendContinuous(o?: Partial<Omit<D<Row, "legendContinuous">, "type">>): TableBuilder<Row>;
+    // (undocumented)
+    legendDiscrete(key: D<Row, "legendDiscrete">["key"], o?: Partial<Omit<D<Row, "legendDiscrete">, "type" | "key">>): TableBuilder<Row>;
+    // (undocumented)
+    marginalia(columns: readonly (keyof Row & string)[], o?: Partial<Omit<D<Row, "marginalia">, "type" | "columns">>): TableBuilder<Row>;
+    // (undocumented)
+    outliers(columns: readonly (keyof Row & string)[], o?: Partial<Omit<D<Row, "outliers">, "type" | "columns">>): TableBuilder<Row>;
+    // (undocumented)
+    rowAccent(key: keyof Row & string, o?: Partial<Omit<D<Row, "rowAccent">, "type" | "key">>): TableBuilder<Row>;
+    // (undocumented)
+    scaleNote(columns: readonly (keyof Row & string)[], o?: Partial<Omit<D<Row, "scaleNote">, "type" | "columns">>): TableBuilder<Row>;
+    // (undocumented)
+    significance(pairs: D<Row, "significance">["pairs"], o?: Partial<Omit<D<Row, "significance">, "type" | "pairs">>): TableBuilder<Row>;
+    // (undocumented)
+    snake(o?: Partial<Omit<D<Row, "snake">, "type">>): TableBuilder<Row>;
+    // (undocumented)
+    socialTag(accounts: Readonly<Record<string, string>>, o?: Partial<Omit<D<Row, "socialTag">, "type" | "accounts">>): TableBuilder<Row>;
+    // (undocumented)
+    sourceNote(html: string, o?: {
+        unsafe?: boolean;
+    }): TableBuilder<Row>;
+    // (undocumented)
+    spotlight(rows: D<Row, "spotlight">["rows"], o?: Partial<Omit<D<Row, "spotlight">, "type" | "rows">>): TableBuilder<Row>;
+    // (undocumented)
+    subtitle(text: string): TableBuilder<Row>;
+    // (undocumented)
+    theme(name: string, o?: {
+        density?: Density;
+        options?: Readonly<Record<string, string>>;
+    }): TableBuilder<Row>;
+    // (undocumented)
+    tiers(levels: readonly string[], tierKey: keyof Row & string, imageColumns: readonly (keyof Row & string)[], o?: Partial<Omit<D<Row, "tiers">, "type" | "levels" | "tierKey" | "imageColumns">>): TableBuilder<Row>;
+    // (undocumented)
+    title(text: string): TableBuilder<Row>;
+    // Warning: (ae-forgotten-export) The symbol "D" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    titleHeader(title: string, o?: Omit<D<Row, "titleHeader">, "type" | "title">): TableBuilder<Row>;
+    // (undocumented)
+    watermark(o?: Partial<Omit<D<Row, "watermark">, "type">>): TableBuilder<Row>;
+    // (undocumented)
+    wrapLabels(o?: Partial<Omit<D<Row, "wrapLabels">, "type">>): TableBuilder<Row>;
+}
+
+// @public (undocumented)
+export interface TableSpec<Row> {
+    // (undocumented)
+    readonly columns: readonly ColumnSpec<Row>[];
+    // (undocumented)
+    readonly decorations: readonly Decoration<Row>[];
+    // (undocumented)
+    readonly id?: string;
+    readonly interactive?: {
+        readonly pageSize?: number;
+    };
+    // (undocumented)
+    readonly theme: ThemeRef;
+}
+
+// @public (undocumented)
+export class TableSpecError extends SdvplotError {
+}
+
+// @public (undocumented)
+export interface TeamOpts {
+    // (undocumented)
+    readonly idSystem?: IdSystem;
+    // (undocumented)
+    readonly league: League;
+    // (undocumented)
+    readonly season?: SeasonInput;
+    // (undocumented)
+    readonly strict?: boolean;
+}
+
+// @public (undocumented)
+export interface TextStyle {
+    // (undocumented)
+    readonly color?: string;
+    // (undocumented)
+    readonly font?: string;
+    // (undocumented)
+    readonly size?: string;
+    // (undocumented)
+    readonly style?: "normal" | "italic";
+    // (undocumented)
+    readonly transform?: "none" | "uppercase";
+    // (undocumented)
+    readonly weight?: number | string;
+}
+
+// @public (undocumented)
+export interface Theme {
+    // (undocumented)
+    readonly fonts: readonly GoogleFont[] /** extra scoped rules; `sel` is `#<tableId>` */;
+    // (undocumented)
+    readonly name: string;
+    // (undocumented)
+    readonly rules: (sel: string) => string;
+    // (undocumented)
+    readonly tokens: ThemeTokens;
+}
+
+// @public (undocumented)
+export const THEME_NAMES: readonly string[];
+
+// @public (undocumented)
+export type ThemeDef = (ref: ThemeRef) => Theme;
+
+// @public (undocumented)
+export interface ThemeRef {
+    // (undocumented)
+    readonly density: Density;
+    // (undocumented)
+    readonly name: string;
+    // (undocumented)
+    readonly options?: Readonly<Record<string, string>>;
+}
+
+// @public (undocumented)
+export const THEMES: Readonly<Record<string, ThemeDef>>;
+
+// @public (undocumented)
+export interface ThemeTokens {
+    // (undocumented)
+    accent: string;
+    // (undocumented)
+    bg: string;
+    // (undocumented)
+    bodyBorderBottom: string;
+    // (undocumented)
+    bodySize: string;
+    // (undocumented)
+    bodyWeight: string;
+    // (undocumented)
+    fontBody: string;
+    // (undocumented)
+    fontLabel: string;
+    // (undocumented)
+    fontTitle: string;
+    // (undocumented)
+    groupBg: string;
+    // (undocumented)
+    groupBorderBottom: string;
+    // (undocumented)
+    groupBorderTop: string;
+    // (undocumented)
+    groupColor: string;
+    // (undocumented)
+    groupPad: string;
+    // (undocumented)
+    groupSize: string;
+    // (undocumented)
+    groupTransform: string;
+    // (undocumented)
+    groupWeight: string;
+    // (undocumented)
+    headingAlign: "left" | "center";
+    // (undocumented)
+    headingBg: string;
+    // (undocumented)
+    headingPad: string;
+    // (undocumented)
+    hline: string;
+    // (undocumented)
+    horizon: string;
+    // (undocumented)
+    labelBg: string;
+    // (undocumented)
+    labelBorderBottom: string;
+    // (undocumented)
+    labelBorderTop: string;
+    // (undocumented)
+    labelColor: string;
+    // (undocumented)
+    labelPad: string;
+    // (undocumented)
+    labelSize: string;
+    // (undocumented)
+    labelStyle: string;
+    // (undocumented)
+    labelTracking: string;
+    // (undocumented)
+    labelTransform: string;
+    // (undocumented)
+    labelWeight: string;
+    // (undocumented)
+    lineHeight: string;
+    // (undocumented)
+    muted: string;
+    // (undocumented)
+    pad: string;
+    // (undocumented)
+    rule: string;
+    // (undocumented)
+    sourceColor: string;
+    // (undocumented)
+    sourcePad: string;
+    // (undocumented)
+    sourceSize: string;
+    // (undocumented)
+    sourceStyle: string;
+    // (undocumented)
+    stripe: string;
+    // (undocumented)
+    subtitleColor: string;
+    // (undocumented)
+    subtitleSize: string;
+    // (undocumented)
+    subtitleStyle: string;
+    // (undocumented)
+    subtitleWeight: string;
+    // (undocumented)
+    tableBorderBottom: string;
+    // (undocumented)
+    tableBorderTop: string;
+    // (undocumented)
+    tableBorderX: string;
+    // (undocumented)
+    text: string;
+    // (undocumented)
+    titleColor: string;
+    // (undocumented)
+    titleSize: string;
+    // (undocumented)
+    titleTracking: string;
+    // (undocumented)
+    titleTransform: string;
+    // (undocumented)
+    titleWeight: string;
+}
+
+// @public (undocumented)
+export const TOKEN_KEYS: readonly (keyof ThemeTokens)[];
+
 // @public
 export const VERSION: string;
 

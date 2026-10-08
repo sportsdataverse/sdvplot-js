@@ -5,3 +5,6 @@
   (recorded 2026-10-05, spec decision J3) the ported material is distributed here under MIT.
 - `@sportsdataverse/sdvplot` re-shards the team index curated in **sdvplot** (Python, MIT) and reads the
   SportsDataverse logo archive manifest. It ports WCAG contrast helpers from **sdvplotR** (MIT).
+- `@sportsdataverse/sdvtables` ports the `great_tables` helpers of **sdvplot** (Python, MIT) and the `gt_*` table
+  functions of **sdvplotR** (MIT). Its social icons are Font Awesome Free 6 paths (https://fontawesome.com),
+  licensed CC BY 4.0.

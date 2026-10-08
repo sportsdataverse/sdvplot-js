@@ -27,6 +27,7 @@ export {
   UnsupportedTargetError,
   resetWarnings,
   setWarningHandler,
+  warn,
 } from "./errors.js";
 export { normSeason, normValue } from "./normalize.js";
 export { latestSeason, loadLeague, preloadAll, seasonBounds } from "./index-data.js";
