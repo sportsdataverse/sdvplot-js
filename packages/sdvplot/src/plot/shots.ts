@@ -254,7 +254,10 @@ export function shotCells(cells: readonly CellVsLeague[], o: ShotCellsOptions): 
 export interface ShotZonesOptions extends GeoPassThrough {
   /** Fill per zone (e.g. `diffScale()` of the zone's shrunk diff). */
   fill: (zone: BasketballZone) => string;
-  /** A label per zone at its anchor, haloed so it reads over any fill (`hexShotChart.ts:83-95`); omit for none. */
+  /**
+   * A label per zone at its anchor, haloed so it reads over any fill (`hexShotChart.ts:83-95`); omit for none. Labels
+   * take no pointer events, so a click or hover on one reaches the zone under it.
+   */
   text?: (zone: BasketballZone) => string;
   /** The SAME frame as the shots (zones built with `scale: 10` are in legacy tenths); default `"nba-legacy"`. */
   frame?: FrameName | Frame;
@@ -343,6 +346,7 @@ export function shotZones(areas: readonly BasketballZoneArea[], o: ShotZonesOpti
         strokeLinejoin: "round",
         paintOrder: "stroke",
         ariaHidden: "true", // the zone paths carry the names; the labels repeat them
+        pointerEvents: "none", // a label sits inside its zone: a click or hover on it is the zone's
       }),
     );
   }

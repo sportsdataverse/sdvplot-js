@@ -96,6 +96,7 @@ test("shotZones: six zone areas with zone ids and six haloed labels", () => {
   const g = fig.querySelector("g[aria-label=text]");
   expect(g?.getAttribute("paint-order")).toBe("stroke");
   expect(g?.getAttribute("stroke-width")).toBe("3");
+  expect(g?.getAttribute("pointer-events")).toBe("none"); // a label never takes the click or hover meant for its zone
   // the corner strips' labels run vertically
   expect(labels.filter((t) => /rotate\(-90\)/.test(t.getAttribute("transform") ?? ""))).toHaveLength(2);
 });
