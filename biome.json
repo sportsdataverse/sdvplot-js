@@ -11,7 +11,8 @@
       "**/*.api.md",
       "docs/build/**",
       "docs/.docusaurus/**",
-      "docs/docs/api/**"
+      "docs/docs/api/**",
+      "spikes/**"
     ]
   },
   "formatter": { "indentStyle": "space", "indentWidth": 2, "lineWidth": 110 },
