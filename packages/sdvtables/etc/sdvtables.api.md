@@ -8,6 +8,7 @@ import { EspnHeadshotLeague } from '@sportsdataverse/sdvplot';
 import { HeadshotIdSystem } from '@sportsdataverse/sdvplot';
 import { IdSystem } from '@sportsdataverse/sdvplot';
 import { League } from '@sportsdataverse/sdvplot';
+import { RowFilter } from '@sportsdataverse/sdvplot';
 import { SdvplotError } from '@sportsdataverse/sdvplot';
 import { SeasonInput } from '@sportsdataverse/sdvplot';
 import { Variant } from '@sportsdataverse/sdvplot';
@@ -566,8 +567,7 @@ export const RANK_PALETTE: readonly string[];
 // @public (undocumented)
 export function resolveTheme(ref: ThemeRef): Theme;
 
-// @public
-export type RowFilter<Row> = (row: Row) => boolean;
+export { RowFilter }
 
 // @public (undocumented)
 export type RowSelector<Row> = readonly number[] | Predicate<Row>;
@@ -607,6 +607,7 @@ export interface Table<Row> {
     readonly columns: readonly ColumnSpec<Row>[];
     // (undocumented)
     readonly filteredCount: number;
+    getHover(): string | null;
     // (undocumented)
     getSelection(): ReadonlySet<string>;
     getSnapshot(): TableSnapshot<Row>;

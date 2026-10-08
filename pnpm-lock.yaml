@@ -224,6 +224,9 @@ importers:
 
   packages/sdvtables:
     devDependencies:
+      '@observablehq/plot':
+        specifier: ^0.6.17
+        version: 0.6.17
       '@sportsdataverse/sdvplot':
         specifier: workspace:^
         version: link:../sdvplot
@@ -239,6 +242,9 @@ importers:
       happy-dom:
         specifier: ^15.11.0
         version: 15.11.7
+      jsdom:
+        specifier: ^26.1.0
+        version: 26.1.0
       playwright:
         specifier: ^1.64.0
         version: 1.64.0

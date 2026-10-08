@@ -166,6 +166,7 @@ test("BKN_SHOTS_2026 and the 2026 league context are the committed fixtures/shot
   expect(cols.source.sha256).toBe("5322edd790cd828cb5b6593bdcb1dd3ba50d0cc10680ee1ba4dc5dbaaa9f11cb");
   expect(BKN_SHOTS_2026).toEqual(
     (cols.x_legacy as number[]).map((x, i) => ({
+      game_id: cols.game_id[i],
       x_legacy: x,
       y_legacy: cols.y_legacy[i],
       shot_distance: cols.shot_distance[i],
@@ -180,7 +181,8 @@ test("BKN_SHOTS_2026 and the 2026 league context are the committed fixtures/shot
     n((s) => s.shot_result === "Made"),
     n((s) => s.shot_value === 3),
     n((s) => s.x_legacy === 0),
-  ]).toEqual([2000, 890, 968, 76]);
+    new Set(BKN_SHOTS_2026.map((s) => s.game_id)).size,
+  ]).toEqual([2000, 890, 968, 76, 24]);
   const league = read("nba-2026-league.json");
   expect(NBA_LEAGUE_2026.byFoot).toEqual(league.byFoot);
   expect(NBA_LEAGUE_2026.hex15.cells).toEqual(league.hex15.hexes);

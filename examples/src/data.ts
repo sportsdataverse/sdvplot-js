@@ -8,7 +8,7 @@ export type { Standing } from "../../packages/sdvtables/test/fixtures/standings.
 /**
  * Brooklyn's 2025-26 shots and that season's league context, as `sdvplot/shots` reads them. BKN_SHOTS_2026: the first
  * 2000 Brooklyn rows of the sportsdataverse-data `nba_stats_shots` release (`shots_2026.parquet`), as release rows
- * (`x_legacy`/`y_legacy` in tenths of a foot from the hoop, `shot_distance`, `shot_value`, `shot_result`).
+ * (`game_id`, `x_legacy`/`y_legacy` in tenths of a foot from the hoop, `shot_distance`, `shot_value`, `shot_result`).
  * NBA_LEAGUE_2026: the 219,159 regular-season shots of the same release by foot, by 3 ft, by side and in radius-10 and
  * radius-15 hexagons, computed by blazing-the-nets' own code. NBA_LEAGUE_SQUARE_2026: the same shots in squares of a
  * radius-10 hexagon's area, binned by sdvplot's `squarebin` (context data, not an oracle). Provenance, hashes and the

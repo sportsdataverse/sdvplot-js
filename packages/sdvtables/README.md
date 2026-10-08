@@ -252,8 +252,14 @@ table.setFilter("division", "east"); // BUF, MIA, NYJ, NE; back to the first pag
 
 `renderHTML(table)` draws sort buttons in the headers (`aria-sort` on the sorted one), a search box and the filter
 boxes above the table, and a pager below it. `hydrate(el, table)` attaches delegated listeners and re-renders only the
-table block and the pager, at most once per animation frame; it returns a teardown. Render the markup from the same
-table state you hydrate: attaching does not reconcile the two.
+table block and the pager, once, on the next animation frame, however many changes land in it; it returns a teardown.
+A click, pointer move or key that arrives while a change to the rows (a sort, filter, page turn or `setRows`) waits for
+that frame draws it first, so the event never acts on an old row at a new row's index; Enter or Space on a row that
+draw replaced is consumed, so the page does not scroll. A change that keeps the rows (a selection, or a live feed
+re-sending a keyed row as a new object) waits for its frame. Render the markup from the same table state you hydrate:
+attaching does not reconcile the two. Hydrating an element again draws any change its previous binding still owed. A
+teardown drops a render still owed; hydrating that element again redraws it first, so React StrictMode's mount,
+cleanup, mount leaves no stale rows.
 
 Inside an interactive table: j/k (↓/↑) move between the rows of the page and never turn it (the pager does), h/l
 (←/→) pick a column, s sorts it, / jumps to the search box, Enter or Space toggles the row's selection;
@@ -271,6 +277,16 @@ Linking a table to a figure: with `.rowKey("team")`, a row's id is `String(row.t
 input rows). `setSelection(ids)` / `getSelection()`, `setExternalFilter((row) => …)` (ANDed with the table's own
 filters) and `setHover(id)` drive the table from outside, and `subscribe` reports `select`, `hover` and `change`
 events. Setting the same selection or filter again notifies nobody, so a two-way link does not loop.
+`@sportsdataverse/sdvplot/interact`'s `linkSelection` does this wiring against a selection store.
+
+Every interactive table, linked or not, underlines the row under the pointer, or the row a linked figure hovers
+(`setHover`): the row gets the `sdvt-hover` class, which re-renders nothing and survives the next re-render. A table
+holds one hover id, so a linked table lights the first id the figure hovers. `getHover()` returns it, so a view
+attached later (a remount, a second hydrate) shows it. Unmounting while the pointer is on a row leaves that hover in
+place, because a removed row fires no `mouseleave`. reactable's `highlight` defaults to `FALSE`; to drop the underline,
+add `tr.sdvt-hover>td.sdvt-cell{background-image:none}` to the page. The built-in rule is wrapped in `:where()`, so
+this one plain rule wins wherever the page puts it. A selection or brush from a linked figure
+rebuilds the table body, so a scroll position inside a cell resets.
 
 Engine non-goals: virtualization, column resize/reorder/pin, a grouping UI and server-side paging (slice the rows
 before `createTable`).

@@ -92,6 +92,7 @@ export type GeoPassThrough = Omit<Plot.GeoOptions, "geometry" | "fill" | "r" | "
 
 // @public (undocumented)
 export interface HeadshotOptions<R> extends ImageMarkOptions {
+    id?: Channel<R>;
     // Warning: (ae-forgotten-export) The symbol "HeadshotIdSystem" needs to be exported by the entry point plot.d.ts
     idSystem?: HeadshotIdSystem;
     // Warning: (ae-forgotten-export) The symbol "EspnHeadshotLeague" needs to be exported by the entry point plot.d.ts
@@ -116,10 +117,14 @@ export interface ImageMarkOptions extends ImagePassThrough {
 export type ImagePassThrough = Omit<Plot.ImageOptions, "src" | "width" | "height" | "r" | "preserveAspectRatio">;
 
 // @public
+export function linkIds<R>(data: Data<R>, id?: Channel<R>): Plot.RenderFunction;
+
+// @public
 export function logos<R>(data: Data<R>, o: MarkOptions<R>): Plot.Markish;
 
 // @public (undocumented)
 export interface MarkOptions<R> extends ImageMarkOptions {
+    id?: Channel<R>;
     // (undocumented)
     idSystem?: IdSystem;
     // (undocumented)
@@ -203,7 +208,7 @@ export interface ShotZonesOptions extends GeoPassThrough {
 // Warning: (ae-forgotten-export) The symbol "Kind" needs to be exported by the entry point plot.d.ts
 //
 // @public
-export function sizeRender(height: number, placed: readonly Placement[], kind: Kind): Plot.RenderFunction;
+export function sizeRender(height: number, placed: readonly Placement[], kind: Kind, ids?: readonly string[]): Plot.RenderFunction;
 
 // @public
 export function surface(league: League, o?: SurfaceOpts): {

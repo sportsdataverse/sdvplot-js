@@ -5,7 +5,11 @@
     "baseUrl": ".",
     "paths": {
       "@sportsdataverse/sdvplot": ["../sdvplot/src/index.ts"],
-      "@sportsdataverse/sdvplot/export": ["../sdvplot/src/export/index.ts"]
+      "@sportsdataverse/sdvplot/export": ["../sdvplot/src/export/index.ts"],
+      "@sportsdataverse/sdvplot/plot": ["../sdvplot/src/plot/index.ts"],
+      "@sportsdataverse/sdvplot/interact": ["../sdvplot/src/interact/index.ts"],
+      "@sportsdataverse/sporty": ["../sporty/src/index.ts"],
+      "@sportsdataverse/sporty/plot": ["../sporty/src/plot.ts"]
     }
   },
   "include": ["src", "test"]

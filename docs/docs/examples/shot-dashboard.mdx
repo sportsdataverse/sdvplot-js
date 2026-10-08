@@ -1,0 +1,23 @@
+---
+title: A linked shot dashboard (NBA)
+sidebar_label: Linked shot dashboard
+---
+
+Five charts of Brooklyn's first 2000 shots of 2025-26 (see
+[Sample data](/sample-data#bkn_shots_2026-and-nba_league_2026-a-teams-shots-and-the-league)) share one selection
+store, and the store holds one number: the shot distance under the pointer. The design is blazing-the-nets' `master`
+dashboard (`src/containers/Charts/index.js`), where six charts follow one `hover.distance`, rebuilt here with
+`@sportsdataverse/sdvplot`'s shot kit and its `interact` functions.
+
+Hover the share bars, the FG% bars or the side chart. `linkCursor` draws the distance through each chart's own scale:
+a 1 ft band on the share bars, the 3 ft band that holds it on the FG% bars, a band up the side chart, a rule on the
+shooting signature, and a ring around the hoop on the court. A move inside one foot writes nothing to the store, and
+leaving a chart clears every cursor at once. On the court, Plot's tip finds the nearest cell within 18 px;
+`linkSelection` lights that cell and dims the rest, and the cursor stays where it was. The menu above the court
+switches between hexagons and squares of the same area.
+
+<Live id="sdvplot/shots/dashboard" />
+
+Each part on its own: [shot charts](../guides/shot-charts.mdx) draws the cells, zones and the signature, and
+[blazing-the-nets](../guides/blazing-the-nets.mdx) maps the site's charts onto sdvplot. Linking in general, a table
+included: [Linked figures and tables](./linked.mdx).

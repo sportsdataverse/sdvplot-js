@@ -143,6 +143,53 @@ test("I2: hydrating an element again replaces the first binding, so one click ac
   expect(t.state.sort).toEqual({ col: "wins", dir: "desc" }); // torn down: the click reached no listener
   hydrate(el, t)(); // a fresh binding after teardown works, and tears down
 });
+test("M3: hydrating again while a render is pending draws it first, so the body is never left stale", async () => {
+  const t = createTable({ ...spec, rowKey: "team" }, rows);
+  const el = mount(renderHTML(t));
+  const writes = countWrites(el.querySelector("[data-sdv-body]") as Element);
+  hydrate(el, t);
+  t.setExternalFilter((r) => r.wins >= 10); // KC LAC DEN BUF, owed on the next frame
+  hydrate(el, t); // HMR or a client navigation re-attaches first
+  const teams = (): (string | null | undefined)[] =>
+    Array.from(el.querySelectorAll("[data-sdv-body] tbody tr"), (tr) => tr.querySelector("td")?.textContent);
+  expect(teams()).toEqual(["KC", "LAC", "DEN", "BUF"]);
+  await frame();
+  expect(writes.n).toBe(1); // drawn once, by the replaced binding: its frame was cancelled
+  el.querySelector<HTMLElement>('[data-sdv-body] tr[data-row="3"] td')?.click(); // the row shown at 3: BUF
+  expect(t.getSelection()).toEqual(new Set(["BUF"]));
+});
+test("a render that throws leaves the rows the body shows on record: a row event while another render is owed redraws first", () => {
+  let fail = false;
+  // LV's row, whose wins read throws while `fail` is set: a render that dies after the engine moved
+  const lv = Object.defineProperty({ ...(STANDINGS[3] as Standing) }, "wins", {
+    enumerable: true,
+    get: () => {
+      if (fail) throw new Error("wins unreadable");
+      return 4;
+    },
+  });
+  const t = createTable(
+    { ...spec, rowKey: "team" },
+    rows.map((r) => (r.team === "LV" ? lv : r)),
+  );
+  const el = mount(renderHTML(t));
+  let owed: FrameRequestCallback | undefined;
+  vi.stubGlobal("requestAnimationFrame", (cb: FrameRequestCallback) => {
+    owed = cb;
+    return 1;
+  });
+  vi.stubGlobal("cancelAnimationFrame", () => {
+    owed = undefined;
+  });
+  hydrate(el, t);
+  t.setSort("team", "asc"); // BUF DEN KC LAC LV MIA NE NYJ: the old row 3 (LV) is LAC's index now
+  fail = true;
+  expect(() => owed?.(0)).toThrow("wins unreadable"); // the body still shows KC LAC DEN LV ...
+  fail = false;
+  t.setSelection(new Set(["KC"])); // a render that keeps the rows is owed
+  el.querySelector<HTMLElement>('[data-sdv-body] tr[data-row="3"] td')?.click(); // the LV row shown
+  expect(t.getSelection()).toEqual(new Set(["KC"])); // redrawn first: LV's row is gone, never read as LAC
+});
 test("hydrate throws on markup without a body block", () => {
   document.body.innerHTML = "<div class='sdvt'></div>";
   const el = document.body.firstElementChild as HTMLElement;
@@ -160,7 +207,11 @@ test("J31: row hover emits once per row and never re-renders the body; a row cli
   kc?.dispatchEvent(new MouseEvent("mouseover", { bubbles: true })); // same row: silent
   await frame();
   expect(seen).toEqual([{ type: "hover", id: "KC" }]);
-  expect(body(el)).toBe(before);
+  // A29: the hovered row only gains the sdvt-hover class; the body is not re-rendered
+  expect(body(el)).toBe(
+    before.replace('<tr class="sdvt-row" data-row="0"', '<tr class="sdvt-row sdvt-hover" data-row="0"'),
+  );
+  expect(kc?.isConnected).toBe(true);
   kc?.click();
   await frame();
   expect(t.getSelection()).toEqual(new Set(["KC"]));

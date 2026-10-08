@@ -92,6 +92,25 @@ function selectedCue(th: Theme): number {
   return Math.max(...scores);
 }
 
+/**
+ * The hovered row's cue (J31, A29: a linked figure's hover lights the row): a solid bar drawn as a background image,
+ * judged against every cell background it can sit on, a selected cell's overlay included (a row can be both).
+ */
+function hoverCue(th: Theme): number {
+  const bar = decls(":where(tr.sdvt-hover)>td.sdvt-cell", "background-image")[0]?.match(
+    /^linear-gradient\((.*)\)$/,
+  )?.[1];
+  if (bar === undefined) throw new Error("the hovered-row bar is gone");
+  const ink = color(layers(bar)[0] as string, th.tokens);
+  const overlay = decls("tr.sdvt-selected>td", "box-shadow")
+    .flatMap(layers)
+    .find((l) => /9999px/.test(l))
+    ?.match(/rgba\([^)]*\)/)?.[0];
+  const cells = cellBackgrounds(th);
+  const under = overlay === undefined ? cells : [...cells, ...cells.map((c) => over(overlay, c))];
+  return Math.min(...under.map((c) => contrast(ink, c)));
+}
+
 const themes = (): [string, Theme][] => [
   ...THEME_NAMES.map((name): [string, Theme] => [
     name,
@@ -113,5 +132,10 @@ test("I4: the filter boxes' border reaches 3:1 against the table background in e
 
 test("I4: the selected row has a cue at 3:1 against what it touches in every theme", () => {
   const ratios = themes().map(([name, th]) => [name, Math.round(selectedCue(th) * 100) / 100] as const);
+  expect(ratios.filter(([, r]) => r < 3)).toEqual([]);
+});
+
+test("A29: the hovered row has a cue at 3:1 against what it touches in every theme, selected or not", () => {
+  const ratios = themes().map(([name, th]) => [name, Math.round(hoverCue(th) * 100) / 100] as const);
   expect(ratios.filter(([, r]) => r < 3)).toEqual([]);
 });

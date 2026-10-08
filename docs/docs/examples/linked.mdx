@@ -1,0 +1,65 @@
+---
+title: Linked figures and tables
+sidebar_label: Linked figure and table
+---
+
+One selection store links any number of figures and tables (`@sportsdataverse/sdvplot/interact`). The store holds the
+ids under the pointer, the picked ids, a brush region and one shared hover value. Every linked figure follows it with a
+class toggle, never a redraw. A linked table underlines a hovered row the same way, but a selection or a brush
+re-renders its body: a selection marks rows, and a brush filters them. A figure's marks carry their ids as
+`data-sdv-id` (`linkIds`, the `id` option on the image marks, or one `.attr` in d3); a table carries the same ids
+through its `rowKey`. The figures on this page run live: brush, hover, click. In Node the interact calls are no-ops, so
+the server-rendered markup is unchanged. The [sdvplot
+README](https://github.com/sportsdataverse/sdvplot-js/tree/main/packages/sdvplot#linked-interactivity) lists
+the rules: matching ids, tips, tearing a link down, the CSS custom properties.
+
+## A brushable scatter and a hydrated table
+
+The 2024 AFC (see [Sample data](/sample-data#standings-eight-afc-teams-2024)). Brush the chart: the table keeps the
+brushed teams, selected. Hover a dot: its row is underlined. Hover or click a row: its dot lights. The ids match
+because the dots' `linkIds` channel and the table's `rowKey` both read `team`.
+
+<Live id="sdvplot/plot/linked-standings" />
+
+## Ids on any Plot mark
+
+`linkIds(rows, "team")` stamps each mark with its row's id, so one id lights a dot and its label together.
+
+<Live id="sdvplot/plot/link-ids" />
+
+## A brush writes the store
+
+`brushFilter` writes the ids it encloses as the selection, and the region as a row test that a linked table applies to
+its own rows.
+
+<Live id="sdvplot/plot/brush-filter" />
+
+## Marks as checkboxes
+
+With `select: "toggle"`, each stamped mark is a checkbox: click it, or Tab to it and press Enter or Space, to toggle its
+id in the selection. The example clicks the win at Indiana, so it starts checked and lit; the chart below is live, so
+click a game, or Tab to one and press Enter or Space.
+
+<Live id="api/sdvplot/linkSelection-2" />
+
+## One hover value across charts
+
+`linkCursor` follows the store's `cursor`, one number such as a shot distance, through each chart's own scale: a band
+on the share bars, the 3 ft band that holds it on the FG% bars, a band up the side chart, and a ring around the hoop.
+The [linked shot dashboard](./shot-dashboard.mdx) builds blazing-the-nets' five-chart dashboard the same way.
+
+<Live id="sdvplot/plot/link-cursor" />
+
+## A d3 chart: the nearest mark and a tooltip
+
+A d3 figure links through the same store. `nearestHover` hovers the nearest shot within 18 px (or the nearest bar along
+x), and its `label` shows `tooltip`'s in-SVG box at the mark.
+
+<Live id="sdvplot/d3/nearest-hover" />
+
+## React
+
+`useSelection(store)` re-renders a component on every change of the store; what to redraw from it is the component's
+choice.
+
+<Live id="sdvplot/react/use-selection" />

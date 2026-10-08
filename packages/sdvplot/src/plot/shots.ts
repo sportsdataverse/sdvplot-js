@@ -14,22 +14,14 @@ import { InputError } from "../errors.js";
 import { type CellVsLeague, LEAGUE_PRIOR_ATTEMPTS, type Split, shrunkDiff } from "../shots/aggregate.js";
 import { type DiffScale, diffScale } from "../shots/diff.js";
 import { SIGNATURE_NAME, type SignaturePoint, signatureGradient } from "../shots/signature.js";
+import { stampRender } from "./link.js";
 import { compose, sameRows } from "./marks.js";
 
 type Point = [number, number];
 type Polygon = { type: "Polygon"; coordinates: [Point[]] };
 
-/** Stamp `data-sdv-id` on each drawn path (one path per index entry), so `sdvplot/interact` can link them. */
-const stampIds =
-  (id: (i: number) => string): Plot.RenderFunction =>
-  (index, scales, values, dimensions, context, next) => {
-    const g = next?.(index, scales, values, dimensions, context) ?? null;
-    if (g === null) return null;
-    const paths = g.querySelectorAll("path");
-    if (paths.length !== index.length) return g; // never mislabel
-    index.forEach((i, k) => paths[k]?.setAttribute("data-sdv-id", id(i)));
-    return g;
-  };
+/** Stamp `data-sdv-id` on each drawn path, so `sdvplot/interact` can link them; silent on a mismatch. */
+const stampIds = (id: (i: number) => string): Plot.RenderFunction => stampRender(id);
 
 type TipObject = Exclude<NonNullable<Plot.MarkOptions["tip"]>, boolean | Plot.TipPointer>;
 /** A caller's `tip` as options, sdvplot's default formats merged under its own key by key (the caller's keys win). */

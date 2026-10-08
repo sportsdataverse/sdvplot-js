@@ -130,7 +130,7 @@ test("row striping (I-1): almanac/ncaa/savant mark every second DISPLAYED data r
       "sdvt-row",
     ]);
     expect(styleSheet(base.theme(name).build())).toContain(
-      "tr.sdvt-stripe td.sdvt-cell{background:var(--sdvt-stripe)}",
+      "tr.sdvt-stripe td.sdvt-cell{background-color:var(--sdvt-stripe)}",
     );
   }
   const marked = /class="[^"]*sdvt-stripe/; // the class on a row, not the base sheet's rule

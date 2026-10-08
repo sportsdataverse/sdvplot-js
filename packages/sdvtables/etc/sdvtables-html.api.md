@@ -8,6 +8,7 @@ import { EspnHeadshotLeague } from '@sportsdataverse/sdvplot';
 import { HeadshotIdSystem } from '@sportsdataverse/sdvplot';
 import { IdSystem } from '@sportsdataverse/sdvplot';
 import { League } from '@sportsdataverse/sdvplot';
+import { RowFilter } from '@sportsdataverse/sdvplot';
 import { SeasonInput } from '@sportsdataverse/sdvplot';
 import { Variant } from '@sportsdataverse/sdvplot';
 import { Which } from '@sportsdataverse/sdvplot';
@@ -232,7 +233,7 @@ export function toElement<Row>(spec: TableSpec<Row>, rows: readonly Row[], opts?
 
 // Warnings were encountered during analysis:
 //
-// dist/html.d.ts:318:5 - (ae-forgotten-export) The symbol "Density" needs to be exported by the entry point html.d.ts
+// dist/html.d.ts:327:5 - (ae-forgotten-export) The symbol "Density" needs to be exported by the entry point html.d.ts
 
 // (No @packageDocumentation comment for this package)
 

@@ -7,6 +7,7 @@ export type {
   ImagePassThrough,
   MarkOptions,
 } from "./marks.js";
+export { linkIds } from "./link.js";
 export { axisLogos } from "./axis.js";
 export type { Axis, AxisLogosOptions, AxisPassThrough } from "./axis.js";
 export { teamColor, teamFill } from "./scales.js";

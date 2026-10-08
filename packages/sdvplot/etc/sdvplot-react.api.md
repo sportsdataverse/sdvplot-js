@@ -65,6 +65,12 @@ export interface TeamLogoProps extends ImgProps {
 // @public
 export function useResolve(league: League): ((value: Value, opts?: ResolveOptions) => TeamId | undefined) | undefined;
 
+// Warning: (ae-forgotten-export) The symbol "SelectionStore" needs to be exported by the entry point react.d.ts
+// Warning: (ae-forgotten-export) The symbol "SelectionState" needs to be exported by the entry point react.d.ts
+//
+// @public
+export function useSelection<Row>(store: SelectionStore<Row>): SelectionState<Row>;
+
 // @public
 export function useTeamColors(league: League, input?: {
     which?: ColorOptions["which"];
@@ -75,7 +81,7 @@ export function Wordmark(props: Omit<TeamLogoProps, "markType">): ReactElement |
 
 // Warnings were encountered during analysis:
 //
-// dist/react.d.ts:64:5 - (ae-forgotten-export) The symbol "ColorOptions" needs to be exported by the entry point react.d.ts
+// dist/react.d.ts:65:5 - (ae-forgotten-export) The symbol "ColorOptions" needs to be exported by the entry point react.d.ts
 
 // (No @packageDocumentation comment for this package)
 
