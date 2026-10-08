@@ -129,7 +129,9 @@ export function nearestHover<R>(
   let wrote: ReadonlySet<string> | null = null; // the store's hover set this handle wrote; destroy clears it
   const to = (p: HoverPoint | undefined): void => {
     const id = p === undefined ? null : p.id;
-    if (id === cur) return;
+    // the same mark as last time: silent while the store still holds this handle's hover (another view may have hovered
+    // something since, and the latest pointer event wins); off every mark, never re-clear another writer's hover
+    if (id === cur && (id === null || store.getState().hover === wrote)) return;
     cur = id;
     const had = store.getState().hover;
     store.set({ hover: id === null ? [] : [id] });

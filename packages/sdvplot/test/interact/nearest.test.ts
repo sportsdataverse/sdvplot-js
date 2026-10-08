@@ -280,6 +280,23 @@ test("an equal hover the app set first stays the app's: hovering that shot claim
   again.destroy();
   expect(hovered(store)).toEqual([]);
 });
+test("the pointer still over a shot re-writes it once another view hovered something else; off every shot, it writes nothing", () => {
+  const svg = shotChart();
+  const store = createSelection<BknShot>();
+  nearestHover(svg, store, { points: points(), radius: 18 });
+  at(svg, "pointermove", PX + 10, PY);
+  store.set({ hover: ["0"] }); // another writer (a linked table row) hovers shot 0 while the pointer rests here
+  const fn = vi.fn();
+  store.subscribe(fn);
+  at(svg, "pointermove", PX + 9, PY); // the pointer moves on, still nearest shot 825: the latest event wins
+  expect([hovered(store), fn.mock.calls.length]).toEqual([["825"], 1]);
+  at(svg, "pointermove", PX + 8, PY); // and stays: no churn
+  expect(fn).toHaveBeenCalledTimes(1);
+  at(svg, "pointermove", PX + 40, PY + 40); // past 18 px: clears its own hover
+  store.set({ hover: ["0"] });
+  at(svg, "pointermove", PX + 41, PY + 41); // still near nothing: another writer's hover is not cleared again
+  expect([hovered(store), fn.mock.calls.length]).toEqual([["0"], 3]);
+});
 test("argument errors throw InputError: a negative radius or padding, an unknown dimension, a root that is not an <svg>", () => {
   const store = createSelection();
   const svg = shotChart();
