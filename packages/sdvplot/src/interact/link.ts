@@ -135,7 +135,7 @@ const TOGGLE_ATTRS = ["role", "tabindex", "aria-checked", "aria-label"] as const
  * const store = createSelection<(typeof games)[number]>();
  * linkSelection(store, { figure: svg, select: "toggle" }); // each cell: role="checkbox", tabindex="0", aria-checked
  * svg.querySelector('[data-sdv-id="0022500173"]')?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
- * [...store.getState().selected]; // ["0022500173"]: the win at Indiana
+ * svg; // the win at Indiana checked and lit, the rest dimmed: click a game, or Tab to it and press Enter or Space
  * ```
  */
 export function linkSelection<Row, Datum = unknown>(
