@@ -4,12 +4,26 @@ import { tmpdir } from "node:os";
 import { basename, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { inflateSync } from "node:zlib";
-import { InputError, OptionalDependencyError, SdvplotError } from "@sportsdataverse/sdvplot";
+import { InputError, OptionalDependencyError, SdvplotError, preloadAll } from "@sportsdataverse/sdvplot";
 import { afterEach, describe, expect, test, vi } from "vitest";
 import { defineTable } from "../src/define.js";
 import { batchToPNG, gridTables, htmlToPNG, socialCrop, tableToPNG } from "../src/export/index.js";
+import { themePreview } from "../src/html/index.js";
+import { THEME_NAMES } from "../src/index.js";
 import { many, rows, spec } from "./fixtures/engine.js";
-import type { Standing } from "./fixtures/standings.js";
+import { STANDINGS, type Standing } from "./fixtures/standings.js";
+
+/** The theme pass's table (theme-pass.test.ts): every theme draws it, striped where the theme stripes. */
+const PASS_SPEC = defineTable<Standing>()
+  .columns((c) => [
+    c.text("team"),
+    c.text("qb", { label: "Quarterback" }),
+    c.int("wins"),
+    c.num("net_epa", { digits: 3 }),
+  ])
+  .title("AFC")
+  .subtitle("2024 regular season")
+  .build();
 
 const dims = (b: Uint8Array): { width: number; height: number } => {
   const dv = new DataView(b.buffer, b.byteOffset, b.byteLength);
@@ -443,5 +457,38 @@ describe.skipIf(!process.env.SDV_RENDER_TESTS)("playwright rendering (SDV_RENDER
     );
     expect(new Set(own).size).toBeGreaterThan(1);
     expect(widths[0]).toBe(Math.max(...own)); // Python: extended to the widest trimmed table, then padded
+  }, 120_000);
+  test("I3: the hovered row's underline is on in every theme, and the documented one-rule opt-out removes it", async () => {
+    // the README's and the changeset's opt-out, placed BEFORE the table's own sheet: it must win on specificity alone
+    const OPT_OUT = "tr.sdvt-hover>td.sdvt-cell{background-image:none}";
+    await preloadAll(); // themePreview's sdvTeam resolves KC
+    const pages = themePreview(PASS_SPEC, STANDINGS, THEME_NAMES, { n: STANDINGS.length });
+    const { chromium } = await import("playwright");
+    const browser = await chromium.launch();
+    const seen: Record<string, [string, string]> = {};
+    try {
+      const page = await browser.newPage();
+      for (const [name, html] of Object.entries(pages)) {
+        const bg: string[] = [];
+        for (const head of ["", `<style>${OPT_OUT}</style>`]) {
+          await page.setContent(`<!doctype html><html><head>${head}</head><body>${html}</body></html>`);
+          // the second data row: striped in almanac, ncaa and savant, whose stripe rule must not drop the underline
+          bg.push(
+            await page.evaluate(() => {
+              const tr = document.querySelectorAll("tbody tr.sdvt-row")[1] as Element;
+              tr.classList.add("sdvt-hover");
+              return getComputedStyle(tr.querySelector("td.sdvt-cell") as Element).backgroundImage;
+            }),
+          );
+        }
+        seen[name] = [bg[0] as string, bg[1] as string];
+      }
+    } finally {
+      await browser.close();
+    }
+    for (const [name, [byDefault, optedOut]] of Object.entries(seen)) {
+      expect(byDefault, `${name}: the underline by default`).toMatch(/^linear-gradient\(/);
+      expect(optedOut, `${name}: after the documented opt-out`).toBe("none");
+    }
   }, 120_000);
 });

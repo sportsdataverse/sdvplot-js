@@ -205,6 +205,133 @@ test("pointerleave, pointercancel and a pointer outside the axis range each clea
   expect(store.getState().cursor).toEqual({ field: "shot_value", value: 3 });
 });
 
+test("a bar's own pointerleave (the pointer leaves the bar for the plot behind it, same 1 ft bin) writes nothing (Review Focus 8)", () => {
+  // pointerleave does not bubble, but a capture listener on the svg hears every mark's own: Chromium fires one on the
+  // bar as the pointer moves straight up out of it into empty plot area, without leaving the bin
+  const svg = share();
+  const store = createSelection();
+  const writes: unknown[] = [];
+  store.subscribe((s) => writes.push(s.cursor?.value ?? null));
+  const snap = (v: number): number => Math.floor(v) + 0.5;
+  linkCursor(svg, store, { field: D, shape: { axis: "x", scale: scale(svg, "x"), width: 1 }, snap });
+  const bar = svg.querySelectorAll('g[aria-label="rect"] rect')[12]; // the 12-13 ft bar
+  if (!bar) throw new Error("no 12 ft bar");
+  const [y0, y1] = span(svg, "y");
+  fire(svg, "pointermove", px(svg, "x", 12.3), Math.max(y0, y1) - 2); // on the bar, near the baseline
+  bar.dispatchEvent(new MouseEvent("pointerleave", { bubbles: false })); // what Chromium fires as it exits the bar
+  fire(svg, "pointermove", px(svg, "x", 12.3), Math.min(y0, y1) + 2); // same x, above the bar, same bin
+  expect(writes).toEqual([12.5]);
+});
+
+test("leaving clears the cursor this figure wrote in one update, never one an app or another figure set since (Review Focus 8)", () => {
+  const [s, b] = [share(), fg3()];
+  const store = createSelection();
+  const fn = vi.fn();
+  store.subscribe(fn);
+  const snap = (v: number): number => Math.floor(v) + 0.5;
+  linkCursor(s, store, { field: D, shape: { axis: "x", scale: scale(s, "x"), width: 1 }, snap });
+  linkCursor(b, store, { field: D, shape: { axis: "x", scale: scale(b, "x") } });
+  const [x0] = span(s, "x");
+  const [y0, y1] = span(s, "y");
+  // its own: 12.3 ft writes 12.5, and leaving clears it in one update
+  overX(s, "pointermove", 12.3);
+  let before = fn.mock.calls.length;
+  fire(s, "pointerleave", 0, 0);
+  expect([cursorOf(store), fn.mock.calls.length - before]).toEqual([null, 1]);
+  // the app sets 20.5 while the pointer is still over the share chart: leaving, cancelling or the margin keeps it
+  for (const end of ["pointerleave", "pointercancel", "outside"] as const) {
+    overX(s, "pointermove", 12.3);
+    store.set({ cursor: { field: D, value: 20.5 } });
+    before = fn.mock.calls.length;
+    if (end === "outside") fire(s, "pointermove", x0 - 3, (y0 + y1) / 2);
+    else fire(s, end, 0, 0);
+    expect([cursorOf(store), fn.mock.calls.length - before]).toEqual([{ field: D, value: 20.5 }, 0]);
+  }
+  // another figure (a second pointer on the FG% bars) wrote the 9-11 ft band's 10.5: the share chart's leave keeps it
+  overX(s, "pointermove", 12.3);
+  fire(b, "pointermove", px(b, "x", 9) + (scale(b, "x").bandwidth ?? 0) / 2, (y0 + y1) / 2);
+  expect(cursorOf(store)).toEqual({ field: D, value: 10.5 });
+  fire(s, "pointerleave", 0, 0);
+  expect(cursorOf(store)).toEqual({ field: D, value: 10.5 });
+  fire(b, "pointerleave", 0, 0); // and the bars' own leave clears it, once
+  expect(cursorOf(store)).toBeNull();
+});
+
+test("an equal cursor set first by the app stays the app's: entering its bin writes nothing, and leaving keeps it", () => {
+  // the store keeps an equal cursor's identity (a no-op patch), so this figure wrote nothing it could clear
+  const svg = share();
+  const store = createSelection();
+  store.set({ cursor: { field: D, value: 12.5 } }); // the app preloads 12.5 ft
+  const fn = vi.fn();
+  store.subscribe(fn);
+  const snap = (v: number): number => Math.floor(v) + 0.5;
+  const off = linkCursor(svg, store, {
+    field: D,
+    shape: { axis: "x", scale: scale(svg, "x"), width: 1 },
+    snap,
+  });
+  overX(svg, "pointermove", 12.3); // the same snapped 12-13 ft bin
+  fire(svg, "pointerleave", 0, 0);
+  expect([cursorOf(store), fn.mock.calls.length]).toEqual([{ field: D, value: 12.5 }, 0]);
+  overX(svg, "pointermove", 12.6); // back in, then torn down: still the app's
+  off();
+  expect([cursorOf(store), fn.mock.calls.length]).toEqual([{ field: D, value: 12.5 }, 0]);
+  // a value it does write is its own: 13.1 ft writes 13.5, and leaving clears it
+  linkCursor(svg, store, { field: D, shape: { axis: "x", scale: scale(svg, "x"), width: 1 }, snap });
+  overX(svg, "pointermove", 13.1);
+  fire(svg, "pointerleave", 0, 0);
+  expect([cursorOf(store), fn.mock.calls.length]).toEqual([null, 2]);
+});
+test("a shape missing a required scale throws InputError, in Node too, never a TypeError (a JavaScript caller)", () => {
+  const svg = share();
+  const store = createSelection();
+  const bad = [
+    { axis: "x" }, // no scale
+    { axis: "x", scale: { range: [0, 640] } }, // no apply
+    { axis: "y", scale: scale(svg, "y"), cross: {} }, // a cross with no apply
+    { axis: "ring", x: scale(court(), "x"), center: HOOP }, // no y
+  ] as unknown as LinkCursorOptions["shape"][];
+  for (const node of [false, true]) {
+    if (node) vi.stubGlobal("window", undefined);
+    try {
+      for (const shape of bad)
+        expect(() => linkCursor(svg, store, { field: D, shape, emit: false }), JSON.stringify(shape)).toThrow(
+          InputError,
+        );
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  }
+});
+
+test("a missing shape, or a ring centre that is not exactly two finite numbers, throws InputError in Node too", () => {
+  const svg = share();
+  const store = createSelection();
+  const c = court();
+  const ring = { axis: "ring", x: scale(c, "x"), y: scale(c, "y") };
+  const bad = [
+    { field: D }, // no shape
+    { field: D, shape: null },
+    { field: D, shape: ring }, // no centre
+    { field: D, shape: { ...ring, center: [] } }, // every() is vacuously true on []
+    { field: D, shape: { ...ring, center: [0] } },
+    { field: D, shape: { ...ring, center: [0, -41.75, 3] } },
+    { field: D, shape: { ...ring, center: [0, Number.NaN] } },
+  ] as unknown as LinkCursorOptions[];
+  for (const node of [false, true]) {
+    if (node) vi.stubGlobal("window", undefined);
+    try {
+      for (const o of bad)
+        expect(() => linkCursor(svg, store, o), JSON.stringify(o.shape)).toThrow(InputError);
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  }
+  expect(() =>
+    linkCursor(c, store, { field: D, shape: { ...ring, center: HOOP } } as LinkCursorOptions),
+  ).not.toThrow();
+});
+
 test("a cursor naming another field hides this figure's cursor", () => {
   const svg = share();
   const store = createSelection();
@@ -362,6 +489,45 @@ test("a d3 figure (A6): its own band scale, no cross; the band spans the svg's v
   expect([at(rect, "y"), at(rect, "height")]).toEqual([0, 300]);
   fire(node, "pointermove", (x(27) ?? 0) + 2, 150);
   expect(store.getState().cursor).toEqual({ field: D, value: 28.5 });
+});
+
+test("a raw d3 scale goes in as it is (A6, as brushFilter's scales): a band, a linear rule with its cross, a ring", () => {
+  // blazing-the-nets' charts are d3: its scales are functions whose range(), bandwidth() and domain() are methods
+  const svg = d3.create("svg").attr("viewBox", "0 0 640 300").attr("width", 640).attr("height", 300);
+  const node = svg.node() as SVGSVGElement;
+  const store = createSelection();
+  // FG% bars on a d3 band scale (3 ft bands)
+  const band = d3
+    .scaleBand<number>()
+    .domain(by3.map((b) => b.distance))
+    .range([40, 620])
+    .padding(0.1);
+  linkCursor(node, store, { field: D, shape: { axis: "x", scale: band } });
+  // share bars on a d3 linear scale, the band spanning its d3 y range
+  const lin = d3.scaleLinear([0, 36], [40, 620]);
+  const ly = d3.scaleLinear([0, 0.3], [270, 20]);
+  const snap = (v: number): number => Math.floor(v) + 0.5;
+  const shareSvg = d3.create("svg").attr("viewBox", "0 0 640 300").node() as SVGSVGElement;
+  linkCursor(shareSvg, store, { field: D, shape: { axis: "x", scale: lin, width: 1, cross: ly }, snap });
+  // a ring around the hoop on a d3 court
+  const cx = d3.scaleLinear([-25, 25], [0, 500]);
+  const cy = d3.scaleLinear([-47, 0], [470, 0]);
+  const courtSvg = d3.create("svg").attr("viewBox", "0 0 500 470").node() as SVGSVGElement;
+  linkCursor(courtSvg, store, { field: D, shape: { axis: "ring", x: cx, y: cy, center: HOOP } });
+  store.set({ cursor: { field: D, value: 12.5 } });
+  const rect = part(node, "rect");
+  expect([shown(node), at(rect, "x")]).toEqual([true, band(12)]);
+  expect(at(rect, "width")).toBeCloseTo(band.bandwidth());
+  const bar = part(shareSvg, "rect");
+  expect([shown(shareSvg), at(bar, "x"), at(bar, "y"), at(bar, "height")]).toEqual([true, lin(12), 20, 250]);
+  expect(at(bar, "width")).toBeCloseTo(lin(13) - lin(12));
+  const ring = part(courtSvg, "ellipse");
+  expect([shown(courtSvg), at(ring, "rx"), at(ring, "ry")]).toEqual([true, 125, 125]); // 12.5 ft: 10 px per foot
+  // both emitters write through their d3 scale: the band's midpoint, and the snapped inverted pixel
+  fire(node, "pointermove", (band(27) ?? 0) + 2, 150);
+  expect(store.getState().cursor).toEqual({ field: D, value: 28.5 });
+  fire(shareSvg, "pointermove", lin(20.3), 150);
+  expect(store.getState().cursor).toEqual({ field: D, value: 20.5 });
 });
 
 test("teardown removes the cursor and its listeners; a figure that wrote no cursor writes nothing", () => {

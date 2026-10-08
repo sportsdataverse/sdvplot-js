@@ -326,7 +326,7 @@ test("nearestHover on a d3 rendering of the same shots: within 18 px hovers and 
     .attr("cx", (s) => at(s)[0])
     .attr("cy", (s) => at(s)[1])
     .attr("r", 2);
-  linkSelection(store, { plot: svg, hover: false });
+  linkSelection(store, { figure: svg, hover: false });
   nearestHover(svg, store, {
     points: BKN.map((s, i) => ({ x: at(s)[0], y: at(s)[1], id: toId(i) })),
     radius: 18,

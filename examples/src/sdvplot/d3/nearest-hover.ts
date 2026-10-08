@@ -57,7 +57,7 @@ court
   .attr("stroke", "currentColor")
   .attr("stroke-width", 0.6);
 const courtNode = court.node() as SVGSVGElement;
-linkSelection(store, { plot: courtNode, hover: false }); // the store lights the marks; nearestHover writes hover
+linkSelection(store, { figure: courtNode, hover: false }); // the store lights the marks; nearestHover writes hover
 nearestHover(courtNode, store, {
   points: BKN_SHOTS_2026.map((s) => ({ x: at(s)[0], y: at(s)[1], id: toId(s.shot_distance) })),
   radius: 18,
@@ -79,7 +79,7 @@ bars
   .attr("height", (b) => h - y(b.share))
   .attr("fill", "currentColor");
 const barsNode = bars.node() as SVGSVGElement;
-linkSelection(store, { plot: barsNode, hover: false });
+linkSelection(store, { figure: barsNode, hover: false });
 nearestHover(barsNode, store, {
   points: bins.map((b) => ({ x: x(b.distance + 0.5), y: y(b.share), id: toId(b.distance) })),
   dimension: "x", // the bar under the pointer's x, however far below its top the pointer is

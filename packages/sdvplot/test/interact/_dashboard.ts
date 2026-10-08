@@ -171,7 +171,7 @@ export function link(d: Dashboard, store: SelectionStore<BknShot>): () => void {
       field: D,
       shape: { axis: "ring", x: scaleOf(d.court, "x"), y: scaleOf(d.court, "y"), center: [0, HOOP] },
     }),
-    linkSelection(store, { plot: d.court, hover: { id: (h: CellVsLeague) => `${h.x},${h.y}` } }),
+    linkSelection(store, { figure: d.court, hover: { id: (h: CellVsLeague) => `${h.x},${h.y}` } }),
     linkCursor(d.signature, store, {
       field: D,
       shape: { axis: "x", scale: scaleOf(d.signature, "x") },
@@ -254,7 +254,7 @@ export function kit(o: { index?: LeagueIndex; shape?: Shape; document?: Document
 export function linkKit(k: Kit, store: SelectionStore<BknShot>, zones: SelectionStore<BknShot>): () => void {
   const offs = [
     linkSelection(store, {
-      plot: k.court,
+      figure: k.court,
       select: "toggle",
       hover: { id: (h: CellVsLeague) => `${h.x},${h.y}` },
     }),
@@ -267,7 +267,7 @@ export function linkKit(k: Kit, store: SelectionStore<BknShot>, zones: Selection
       shape: { axis: "x", scale: scaleOf(k.signature, "x") },
       snap,
     }),
-    linkSelection(zones, { plot: k.zones, select: "toggle" }),
+    linkSelection(zones, { figure: k.zones, select: "toggle" }),
   ];
   return () => {
     for (const off of offs) off();

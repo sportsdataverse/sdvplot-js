@@ -27,6 +27,9 @@ const chart: TopLevelSpec = {
 // The axis keeps its categories: their labels are blanked and an image layer draws a logo under each tick.
 const spec = withAxisLogos(chart, "x", { league: "nfl", height: 0.1 });
 
+// In the browser: vegaEmbed(div, spec, { renderer: "svg" }), as this page does (the SVG names each mark, "KC logo").
+export const browser = { lib: "vega", spec } as const;
+
 // Headless Vega: no DOM and no canvas, so the logos stay <image href> links the browser loads when it shows the SVG.
-const view = new vega.View(vega.parse(compile(spec).spec), { renderer: "none" });
+const view = new vega.View(vega.parse(compile(browser.spec).spec), { renderer: "none" });
 export default await view.toSVG();

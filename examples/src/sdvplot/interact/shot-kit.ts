@@ -71,7 +71,11 @@ const hexes = Plot.plot({
     }),
   ],
 });
-linkSelection(store, { plot: hexes, select: "toggle", hover: { id: (h: CellVsLeague) => `${h.x},${h.y}` } });
+linkSelection(store, {
+  figure: hexes,
+  select: "toggle",
+  hover: { id: (h: CellVsLeague) => `${h.x},${h.y}` },
+});
 linkCursor(hexes, store, {
   field: D,
   shape: { axis: "ring", x: hexes.scale("x")!, y: hexes.scale("y")!, center: [0, -41.75] }, // the vertical frame's hoop
@@ -95,7 +99,7 @@ const zones = Plot.plot({
     }),
   ],
 });
-linkSelection(zoneStore, { plot: zones, select: "toggle" });
+linkSelection(zoneStore, { figure: zones, select: "toggle" });
 
 // The shooting signature writes the distance under the pointer, one value per foot
 const signature = Plot.plot({

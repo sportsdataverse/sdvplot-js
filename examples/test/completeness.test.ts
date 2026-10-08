@@ -5,6 +5,7 @@ import { SPORTS, leagues } from "@sportsdataverse/sporty";
 import { expect, test } from "vitest";
 import { THEMES } from "../scripts/lib.js";
 import { abs } from "../sources.js";
+import { BROWSER } from "../src/browser.gen.js";
 import { EXAMPLES } from "../src/registry.gen.js";
 
 // sdvtables' own ColumnKind / DecorationType unions, spelled out because a type has no runtime value:
@@ -99,4 +100,24 @@ test("the surface family is every league of every sport surface() draws, custom 
   const family = EXAMPLES.filter((e) => e.id.startsWith("sporty/surfaces/"));
   expect(family.map((e) => `${e.tags[1]}: ${e.tags[2]}`).sort()).toEqual(expected);
   expect(family.map((e) => e.title).sort()).toEqual(expected);
+});
+
+/** Adapter examples whose output is the point, so the page keeps the static copy, with the reason. */
+const STATIC_ONLY: Readonly<Record<string, string>> = {
+  "sdvplot/plotly/embed-sources": "its output is the data URIs, a table; there is no chart to draw",
+  "sdvplot/vega/embed-sources":
+    "the self-contained SVG file is the point; in a browser the logos would be refetched",
+  "sdvplot/echarts/embed-sources":
+    "the self-contained SVG file is the point; in a browser the logos would be refetched",
+};
+
+test("every Plotly, Vega, ECharts and Chart.js example is drawn by its library in the browser", () => {
+  const adapters = EXAMPLES.filter((e) => /^sdvplot\/(plotly|vega|echarts|chartjs)\//.test(e.id)).map(
+    (e) => e.id,
+  );
+  const upgraded = Object.keys(BROWSER);
+  expect(adapters.filter((id) => !upgraded.includes(id) && !(id in STATIC_ONLY))).toEqual([]);
+  expect(Object.keys(STATIC_ONLY).filter((id) => !adapters.includes(id) || upgraded.includes(id))).toEqual(
+    [],
+  );
 });

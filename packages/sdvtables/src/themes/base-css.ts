@@ -19,7 +19,8 @@ export function BASE_CSS(sel: string): string {
     `${s} th.sdvt-group{font-family:var(--sdvt-font-label);font-weight:var(--sdvt-group-weight);font-size:var(--sdvt-group-size);color:var(--sdvt-group-color);background:var(--sdvt-group-bg);text-transform:var(--sdvt-group-transform);border-top:var(--sdvt-group-border-top);border-bottom:var(--sdvt-group-border-bottom);text-align:left;padding:var(--sdvt-group-pad) 5px}`,
     `${s} td.sdvt-cell{padding:var(--sdvt-pad) 5px;border-top:var(--sdvt-hline);font-variant-numeric:tabular-nums;vertical-align:middle}`,
     `${s} tbody tr:first-child td.sdvt-cell{border-top:none}${s} tbody{border-bottom:var(--sdvt-body-border-bottom)}`,
-    `${s} tr.sdvt-stripe td.sdvt-cell{background:var(--sdvt-stripe)}`,
+    // background-color, not the `background` shorthand: the shorthand would reset the hovered row's underline image
+    `${s} tr.sdvt-stripe td.sdvt-cell{background-color:var(--sdvt-stripe)}`,
     `${s} .sdvt-left{text-align:left}${s} .sdvt-center{text-align:center}${s} .sdvt-right{text-align:right}`,
     `${s} tfoot td{font-size:var(--sdvt-source-size);font-style:var(--sdvt-source-style);color:var(--sdvt-source-color);padding:var(--sdvt-source-pad) 5px;text-align:left}`,
     `${s} img.sdvt-mark{vertical-align:middle}`,
@@ -41,9 +42,10 @@ export function BASE_CSS(sel: string): string {
     `${s} tr.sdvt-selected>td{box-shadow:inset 0 0 0 9999px rgba(127,127,127,.18)}`,
     `${s} tr.sdvt-selected>td:first-child{box-shadow:inset 3px 0 0 var(--sdvt-text),inset 0 0 0 9999px rgba(127,127,127,.18)}`, // I4: the tint is 1.2:1; a text-coloured bar gives the state 3:1
     // J31 (A29): a hovered row (its own pointer, or a linked figure's) gets a text-coloured underline, 3:1 like I4's bar.
-    // A background image: it sits beside the selected overlay (box-shadow) and moves no layout; after the stripe rule,
-    // whose `background` shorthand would otherwise reset it
-    `${s} tr.sdvt-hover>td.sdvt-cell{background-image:linear-gradient(var(--sdvt-text),var(--sdvt-text));background-size:100% 2px;background-position:0 100%;background-repeat:no-repeat}`,
+    // A background image: it sits beside the selected overlay (box-shadow) and moves no layout. The scope and the row
+    // sit in :where(), so the rule weighs (0,1,1), td.sdvt-cell alone: the documented one-rule opt-out
+    // tr.sdvt-hover>td.sdvt-cell{background-image:none}, at (0,2,2), wins wherever a page puts it
+    `:where(${s} tr.sdvt-hover)>td.sdvt-cell{background-image:linear-gradient(var(--sdvt-text),var(--sdvt-text));background-size:100% 2px;background-position:0 100%;background-repeat:no-repeat}`,
     `${s} tr.sdvt-row:focus-visible{outline:2px solid currentColor;outline-offset:-2px}`, // Task 10: the grid's tab stop (WCAG 2.4.7)
     `${s} th.sdvt-col-current .sdvt-sort{text-decoration:underline;text-underline-offset:4px}`, // Task 10: the column `s` sorts
   ].join("\n");

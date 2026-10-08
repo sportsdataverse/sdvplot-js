@@ -51,9 +51,9 @@ export function hydrate<Row>(el: Element, table: Table<Row>): () => void {
   live.get(el)?.();
 
   let hidden = table.state.hidden; // the engine replaces this array only when a column is hidden or shown
-  // the rows the body shows: the SSR markup's until the first render; unknown ([]) on a body a teardown left behind,
-  // so an event before its redraw frame redraws first
-  let drawn: readonly Row[] = behind.has(body) ? [] : table.rows;
+  // the rows the body shows: the SSR markup's until the first render; unknown (null) on a body a teardown left behind,
+  // so an event before its redraw frame redraws first, even when the engine now holds no row
+  let drawn: readonly Row[] | null = behind.has(body) ? null : table.rows;
   const render = (): void => {
     cancel = undefined;
     const root = el.getRootNode() as Document | ShadowRoot;
@@ -103,12 +103,12 @@ export function hydrate<Row>(el: Element, table: Table<Row>): () => void {
   // only when its object AND its id differ. Never ids saved at render: without a rowKey those are positions, so the
   // old row 3 would read as whatever is at index 3 now; the engine's id of an old object is "" (gone) or its new index
   const same = (r: Row, i: number): boolean => {
-    const was = drawn[i] as Row; // the lengths match
+    const was = drawn?.[i] as Row; // the lengths match
     return r === was || table.rowId(r) === table.rowId(was);
   };
   const flush = (): boolean => {
     const rows = table.rows;
-    if (!cancel || (rows.length === drawn.length && rows.every(same))) return false;
+    if (!cancel || (rows.length === drawn?.length && rows.every(same))) return false;
     cancel();
     render();
     return true;

@@ -69,3 +69,11 @@ test("StrictMode: hydrate + linkSelection effects against a store holding a sele
     aria: document.querySelector('[data-sdv-body] tr[data-row="4"]')?.getAttribute("aria-selected"), // BUF
   }).toEqual({ shown: ["BUF"], aria: "true" });
 });
+test("StrictMode, brush holding no team: a click before the redraw frame still redraws, so no SSR row stays (Copilot)", () => {
+  const table = mountStrict({ predicate: (r) => r.wins >= 16 }); // no 2024 AFC team won 16: the engine holds 0 rows
+  expect(table.rows).toHaveLength(0);
+  expect(teams("[data-sdv-body] tbody tr[data-row]")).toHaveLength(8); // the SSR markup's rows, until the frame
+  clickRow3();
+  const shown = teams("[data-sdv-body] tbody tr[data-row]");
+  expect({ shown, selected: [...table.getSelection()] }).toEqual({ shown: [], selected: [] });
+});

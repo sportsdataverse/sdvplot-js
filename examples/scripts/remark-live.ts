@@ -101,6 +101,8 @@ export default function remarkLive(o: {
             if (v !== undefined) output.push(attr(name, v));
           }
         } else output.push(attr("markup", row.markup));
+        // a boolean JSX attribute: the page says, before any script runs, that a library will draw this one
+        if (row.browser === true) output.push({ type: "mdxJsxAttribute", name: "browser", value: null });
         n.attributes = [
           ...(n.attributes ?? []),
           ...output,

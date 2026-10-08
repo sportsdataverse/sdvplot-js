@@ -28,8 +28,8 @@ test("SSR: the server string is byte-identical with or without a store (Review F
   const svg = chart();
   const store = createSelection<Standing>();
   store.set({ hover: ["BUF"], selected: ["KC"], predicate: (r) => r.wins > 10 }); // an ACTIVE store
-  const off = linkSelection(store, { plot: svg });
-  const offTip = linkSelection(store, { plot: svg, hover: { id: (d: Standing) => d.team } }); // A20's input path
+  const off = linkSelection(store, { figure: svg });
+  const offTip = linkSelection(store, { figure: svg, hover: { id: (d: Standing) => d.team } }); // A20's input path
   expect(highlight(svg, new Set(["KC"]))).toEqual([]);
   const brush = brushFilter(svg, store, { data: STANDINGS, x: "wins", y: "net_epa", id: "team" });
   brush.move({ x: [9.5, 16], y: [0, 0.2] });

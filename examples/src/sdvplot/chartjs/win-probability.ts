@@ -3,8 +3,8 @@ import { fileURLToPath } from "node:url";
 import { GlobalFonts, type Image, createCanvas, loadImage } from "@napi-rs/canvas";
 import { SUPER_BOWL_LIX_WP } from "@sportsdataverse/examples/data";
 import { matchupColors } from "@sportsdataverse/sdvplot";
-import { logoWatermarks } from "@sportsdataverse/sdvplot/chartjs";
-import { Chart, registerables } from "chart.js";
+import { type WatermarkOptions, logoWatermarks } from "@sportsdataverse/sdvplot/chartjs";
+import { Chart, type ChartConfiguration, registerables } from "chart.js";
 import type { ExampleMeta } from "../../contract.js";
 
 export const meta = {
@@ -25,27 +25,9 @@ const line = (label: string, color: string, wp: (p: number) => number) => ({
   pointRadius: 0,
 });
 
-Chart.register(...registerables);
-// A build server may have no system fonts (Vercel's has none): register a bundled one before drawing, or every
-// label is blank. Source Sans 3, SIL Open Font License (examples/fonts/OFL.txt).
-const font = join(dirname(fileURLToPath(import.meta.url)), "../../../fonts/SourceSans3-Regular.ttf");
-if (!GlobalFonts.registerFromPath(font, "Source Sans 3")) throw new Error(`no font at ${font}`);
-Chart.defaults.font.family = "Source Sans 3";
-// In Node the image plugins load marks through `loadImage`: fetch each URL and decode it on @napi-rs/canvas (whose
-// own loadImage(url) also fetches by itself). Keep the promises: once they settle, the plugins have redrawn.
-const loads: Promise<Image>[] = [];
-const load = (url: string): Promise<Image> => {
-  const p = fetch(url)
-    .then((r) => r.arrayBuffer())
-    .then((b) => loadImage(Buffer.from(b)));
-  loads.push(p);
-  return p;
-};
-const canvas = createCanvas(640, 320);
-// Chart.js types want a DOM canvas; @napi-rs/canvas has the same 2D context. Outside a DOM, Chart.js draws
-// synchronously on its BasicPlatform (no resize, no events).
-const ctx = canvas.getContext("2d") as unknown as CanvasRenderingContext2D;
-const chart = new Chart(ctx, {
+// One config for the browser and for Node, built fresh per chart (Chart.js keeps state on what it is given). A
+// browser loads each logo itself; Node passes `loadImage` (below).
+const config = (o: Pick<WatermarkOptions, "loadImage"> = {}): ChartConfiguration<"line"> => ({
   type: "line",
   data: {
     datasets: [line("Philadelphia", phi, (wp) => wp), line("Kansas City", kc, (wp) => 1 - wp)],
@@ -65,10 +47,41 @@ const chart = new Chart(ctx, {
     },
   },
   // Game on Paper's watermarks: the home team top-left, the away team bottom-left, 40% opaque behind the lines
-  plugins: [logoWatermarks(["PHI", "KC"], { league: "nfl", size: 60, loadImage: load })],
+  plugins: [logoWatermarks(["PHI", "KC"], { league: "nfl", size: 60, ...o })],
 });
+// In the browser: new Chart(canvas, config()) on a 640 x 320 canvas, as this page does.
+export const browser = {
+  lib: "chartjs",
+  config,
+  width: 640,
+  height: 320,
+  label:
+    "Super Bowl LIX win probability, Philadelphia and Kansas City, by minute, with faint Eagles and Chiefs logos behind the lines",
+} as const;
+
+Chart.register(...registerables);
+// A build server may have no system fonts (Vercel's has none): register a bundled one before drawing, or every
+// label is blank. Source Sans 3, SIL Open Font License (examples/fonts/OFL.txt).
+const font = join(dirname(fileURLToPath(import.meta.url)), "../../../fonts/SourceSans3-Regular.ttf");
+if (!GlobalFonts.registerFromPath(font, "Source Sans 3")) throw new Error(`no font at ${font}`);
+Chart.defaults.font.family = "Source Sans 3";
+// In Node the image plugins load marks through `loadImage`: fetch each URL and decode it on @napi-rs/canvas (whose
+// own loadImage(url) also fetches by itself). Keep the promises: once they settle, the plugins have redrawn.
+const loads: Promise<Image>[] = [];
+const load = (url: string): Promise<Image> => {
+  const p = fetch(url)
+    .then((r) => r.arrayBuffer())
+    .then((b) => loadImage(Buffer.from(b)));
+  loads.push(p);
+  return p;
+};
+const canvas = createCanvas(browser.width, browser.height);
+// Chart.js types want a DOM canvas; @napi-rs/canvas has the same 2D context. Outside a DOM, Chart.js draws
+// synchronously on its BasicPlatform (no resize, no events).
+const ctx = canvas.getContext("2d") as unknown as CanvasRenderingContext2D;
+const chart = new Chart(ctx, config({ loadImage: load }));
 await Promise.all(loads);
 
 const png = canvas.toBuffer("image/png").toString("base64");
 chart.destroy();
-export default `<img src="data:image/png;base64,${png}" width="640" height="320" alt="Super Bowl LIX win probability, Philadelphia and Kansas City, by minute, with faint Eagles and Chiefs logos behind the lines">`;
+export default `<img src="data:image/png;base64,${png}" width="640" height="320" alt="${browser.label}">`;

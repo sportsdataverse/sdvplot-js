@@ -10,7 +10,7 @@ npm install @sportsdataverse/sdvplot
 
 ESM only, Node >= 20.18.1. The core and the `bins`, `testing`, `plotly`, `vega` and `echarts` subpaths need no
 peer. The others use optional peers, installed only for the subpath you import: `react` >= 18 for `/react`,
-`@observablehq/plot` >= 0.6.16 for `/plot`, `d3` >= 7 for `/d3`, `chart.js` >= 4.4 for `/chartjs`, and
+`@observablehq/plot` >= 0.6.16 for `/plot`, `d3` >= 7 for `/d3` and `/interact`, `chart.js` >= 4.4 for `/chartjs`, and
 `@sportsdataverse/sporty` for surfaces and shot zones (see the table under [Subpaths](#subpaths)).
 
 ## Quick start
@@ -77,16 +77,16 @@ The backgrounds default to `#ffffff` (light) and `#181a1b` (dark); pass `theme: 
 
 | Import | Contents |
 | --- | --- |
-| `@sportsdataverse/sdvplot` | `resolve`, `suggest`, `teams`, `rowsFrom`, `palette`, `teamColors`, `matchupColors`, `logoUrl`, `marks` (`full: true` fetches the whole manifest lazily), `selectMark`, `selectMarkSync`, `place`, `placeSync`, `prepareTiers`, `headshotUrl`, `loadGsis`, contrast helpers (`hex6`, `luminance`, `contrast`, `onColor`, `mix`, `solid`), `versions`, errors, types |
-| `@sportsdataverse/sdvplot/react` | `TeamLogo`, `Wordmark`, `Headshot`, `useTeamColors`, `useResolve` (React >= 18, optional peer) |
-| `@sportsdataverse/sdvplot/plot` | Observable Plot marks and scales: `logos`, `wordmarks`, `headshots`, `axisLogos`, `teamColor`/`teamFill`, `meanLines`/`medianLines`, `titleImage`, `teamTiers`, `surface`, shot-chart marks `shotCells`, `shotZones`, `shootingSignature` (optional peers `@observablehq/plot`, `@sportsdataverse/sporty`) |
+| `@sportsdataverse/sdvplot` | `resolve`, `suggest`, `teams`, `rowsFrom`, `palette`, `teamColors`, `matchupColors`, `logoUrl`, `marks` (`full: true` fetches the whole manifest lazily), `selectMark`, `selectMarkSync`, `place`, `placeSync`, `prepareTiers`, `headshotUrl`, `loadGsis`, contrast helpers (`hex6`, `luminance`, `contrast`, `onColor`, `mix`, `solid`), the selection store `createSelection` with `focusIds`, `toId`, `sameIds`, `sameCursor` (see [Linked interactivity](#linked-interactivity)), `versions`, errors, types |
+| `@sportsdataverse/sdvplot/react` | `TeamLogo`, `Wordmark`, `Headshot`, `useTeamColors`, `useResolve`, `useSelection` (re-renders on every change of a selection store) (React >= 18, optional peer) |
+| `@sportsdataverse/sdvplot/plot` | Observable Plot marks and scales: `logos`, `wordmarks`, `headshots`, `axisLogos`, `teamColor`/`teamFill`, `meanLines`/`medianLines`, `titleImage`, `teamTiers`, `surface`, shot-chart marks `shotCells`, `shotZones`, `shootingSignature`, `linkIds` (stamps any mark's link ids; the image marks take an `id` option) (optional peers `@observablehq/plot`, `@sportsdataverse/sporty`) |
 | `@sportsdataverse/sdvplot/d3` | `appendLogos`, `appendWordmarks`, `appendHeadshots` (circular faces: `clip`, `ring`, `placeholder`), `teamColorScale`, `appendSurface`, shot-chart `appendLegend` and `appendSignature` (optional peers `d3`, `@sportsdataverse/sporty`) |
 | `@sportsdataverse/sdvplot/bins` | Dependency-free x/y binning for any data: `hexbin` and `hexagonPath` (a d3-hexbin port), `squarebin` and `squarePath`, `binner` (hexagons, squares, or equal-area squares from one options object), `cellPath`, `cellPoints` |
 | `@sportsdataverse/sdvplot/shots` | Shot-chart data and colour, no Plot or d3: the `./bins` binners, `diffScale`, `binShots`, `leagueIndex`, `cellsVsLeague`, `cellsVsDistance`, `shrunkDiff`, `LEAGUE_PRIOR_ATTEMPTS`, `sizeCells`, `statsByZone`, `fgPctByDistance`, `vsLeague`, `statsBySide`, `signaturePoints` (optional peer `@sportsdataverse/sporty`, for the zones) |
 | `@sportsdataverse/sdvplot/chartjs` | Chart.js 4: `logoPoints`, `wordmarkPoints`, `headshotPoints`, `pointImages`, `axisLogos`, `logoWatermarks`, `teamColor`/`teamFill` (optional peer `chart.js` >= 4.4; no sporty needed) |
 | `@sportsdataverse/sdvplot/chartjs/surface` | Chart.js 4 court, field or rink background: `surface` (optional peers `chart.js` >= 4.4, `@sportsdataverse/sporty`) |
 | `@sportsdataverse/sdvplot/export` | Node only: `toPNG` (SVG to PNG; optional peer `@resvg/resvg-js`), `socialCard` (fixed-ratio framing, `gt_social_crop`), `svgSize`, `parseAspect`, `parseGravity`, `checkColor`, `canvasFor`, `offsetFor`, `peerMissing` |
-| `@sportsdataverse/sdvplot/interact` | Linked figures over a selection store: `brushFilter` (a d3-brush overlay behind the marks writes the brushed ids and region; on a figure with a Plot `tip`, the press that starts a brush also pins the tip showing at that moment), `highlight`, `linkSelection` (one figure or one sdvtables table per call: hover and selection both ways, and a brush filters a linked table; a Plot `tip` hovers through `hover: { id }`), `linkCursor` (the store's `cursor`, one shared hover value such as a shot distance, drawn and emitted through each figure's own scale as a rule, a band or a ring around the hoop; unrelated to sdvtables' keyboard `TableCursor`), `hasDom` (optional peer `d3`) |
+| `@sportsdataverse/sdvplot/interact` | Linked figures over a selection store: `brushFilter` (a d3-brush overlay behind the marks writes the brushed ids and region; on a figure with a Plot `tip`, the press that starts a brush also pins the tip showing at that moment), `highlight`, `linkSelection` (one figure or one sdvtables table per call: hover and selection both ways, and a brush filters a linked table; a Plot `tip` hovers through `hover: { id }`), `linkCursor` (the store's `cursor`, one shared hover value such as a shot distance, drawn and emitted through each figure's own scale as a rule, a band or a ring around the hoop; unrelated to sdvtables' keyboard `TableCursor`), `nearestHover` (the nearest mark of a d3 or other non-Plot figure within a radius writes `hover`), `tooltip` (an in-SVG tooltip box for non-Plot figures), `hasDom` (optional peer `d3`; inert without a DOM) |
 | `@sportsdataverse/sdvplot/testing` | Adapter-contract suite for renderer adapters: `checkAdapterContract`, `drawnMarks`, `drawnAxisMarks`, `visibleAxisLabels` |
 | `@sportsdataverse/sdvplot/plotly` | `withLogos`, `withWordmarks`, `withHeadshots`, `withAxisLogos`, `teamColorway`, `embedSources` (no runtime dependency) |
 | `@sportsdataverse/sdvplot/vega` | `withLogos`, `withWordmarks`, `withHeadshots`, `logoLayer`, `withAxisLogos`, `teamColorScale`, `embedSources` (no runtime dependency) |
@@ -583,7 +583,7 @@ The d3 twins are `appendLegend` (colour bar plus a cell size key) and `appendSig
   `channels` and the tip read your fields; every other Plot geo option passes through. As on the image marks, a
   `transform` or `initializer` that makes new rows (`Plot.group`, `Plot.hexbin`) throws `InputError`.
 - Linking: each cell's path carries `data-sdv-id` `"x,y"` (its legacy centre) and each zone's its name, so
-  `linkSelection(store, { plot, select: "toggle" })` from `sdvplot/interact` toggles them by click, Enter or Space.
+  `linkSelection(store, { figure, select: "toggle" })` from `sdvplot/interact` toggles them by click, Enter or Space.
   Hexagon ids and zone names are two id spaces, so give the cells and the zones a store each. A zone's label passes
   the pointer through to its zone. A click also pins Plot's tip, so give `shotCells` `tip: { pointerEvents: "none" }`
   (with your `maxRadius`): the pinned tip then never takes a click meant for a cell under it
@@ -659,6 +659,111 @@ await writeFile("afc.png", png);
 - `toPNG` draws SVG only. A Plot figure with a `title`, `subtitle`, `caption` or legend is an HTML `<figure>`: pass the
   `<svg>` inside it (`figure.querySelector("svg")`), which leaves out the HTML parts.
 - Tables go to PNG through `@sportsdataverse/sdvtables/export` (playwright).
+
+## Linked interactivity
+
+One selection store links any number of figures and tables. `createSelection()` holds the ids under the pointer
+(`hover`), the picked ids (`selected`), a brush region as a row test (`predicate`) and one shared hover value
+(`cursor`, such as a shot distance). A change notifies each subscriber once, and a change that changes nothing notifies
+nobody, so linked views cannot ping-pong. A figure's marks carry their link id as `data-sdv-id`: the `id` option on
+`logos`/`wordmarks`/`headshots`, `render: linkIds(rows, "team")` on any other Plot mark, or
+`.attr("data-sdv-id", (d) => d.team)` in d3. A table carries the same ids through its spec's `rowKey`.
+
+```js
+import * as Plot from "@observablehq/plot";
+import { createSelection } from "@sportsdataverse/sdvplot";
+import { brushFilter, linkSelection } from "@sportsdataverse/sdvplot/interact";
+import { linkIds } from "@sportsdataverse/sdvplot/plot";
+import { createTable, defineTable } from "@sportsdataverse/sdvtables";
+import { hydrate, renderHTML } from "@sportsdataverse/sdvtables/html";
+
+// 2024 AFC: wins and net EPA per play (nflverse). NE has none, so it has no dot and a brush never holds it.
+const rows = [
+  { team: "KC", wins: 15, net_epa: 0.063 },
+  { team: "LAC", wins: 11, net_epa: 0.101 },
+  { team: "DEN", wins: 10, net_epa: 0.108 },
+  { team: "LV", wins: 4, net_epa: -0.146 },
+  { team: "BUF", wins: 13, net_epa: 0.19 },
+  { team: "MIA", wins: 8, net_epa: -0.019 },
+  { team: "NYJ", wins: 5, net_epa: -0.045 },
+  { team: "NE", wins: 4, net_epa: null },
+];
+const fig = Plot.plot({ marks: [Plot.dot(rows, { x: "wins", y: "net_epa", r: 6, render: linkIds(rows, "team") })] });
+const spec = defineTable()
+  .columns((c) => [c.text("team"), c.int("wins"), c.num("net_epa", { digits: 3 })])
+  .rowKey("team")
+  .build();
+const table = createTable(spec, rows);
+const host = document.createElement("div");
+host.innerHTML = renderHTML(table); // or <SdvTable table={table} /> from @sportsdataverse/sdvtables/react
+hydrate(host.querySelector(".sdvt"), table);
+
+const store = createSelection();
+linkSelection(store, { figure: fig }); // hover a dot: its row is underlined; a brush or a selection lights the dots
+linkSelection(store, { table }); // hover or click a row: its dot lights; a brush filters the table
+brushFilter(fig, store, { data: rows, x: "wins", y: "net_epa", id: "team" });
+```
+
+- **Highlighting** is a class toggle (`.sdv-focus` on the figure, `.sdv-hl` on the emphasised marks), never a redraw.
+  Each store change touches only the marks whose state changed, and marks Plot draws later (a `Plot.pointer` layer)
+  are lit as they appear. Axis logos (`axisLogos`) never dim and never hover.
+- **Ids are strings and must match on both sides.** `toId` normalises them: `12` and `"12"` are one id, and null,
+  NaN and `""` are none. An image mark without `id` is stamped with the resolved ESPN team id ("12" for KC; the player
+  id on headshots), which never matches a table keyed by abbreviation: pass `id: "team"`. `linkSelection` warns once
+  per figure when none of the focused ids is drawn.
+- **Image marks link through `id`.** `render: linkIds(...)` also works on them, with or without `href`; when both are
+  set, the outer `render` wins. With `href`, the stamp sits on the `<image>` inside the `<a>` (on any other mark, on
+  the `<a>`), and `select: "toggle"` throws `InputError`, because a checkbox cannot sit inside a link.
+- **A Plot figure with a `tip`** hovers through Plot's own pointer:
+  `linkSelection(store, { figure: fig, hover: { id: (d) => d.team } })` writes the row Plot's tip picks. The `id`
+  function must return the same key as the marks' `id`; otherwise the tip writes one id and the marks carry another.
+  Pass `figure` as `Plot.plot` returned it (a `<figure>` when there is a caption or legend). On a figure with a `tip`,
+  the press that starts a brush also pins the tip showing at that moment, as a press on any Plot tip does.
+- **Linked tables.** A table holds one hover id, so it lights the first id the store hovers. Every interactive
+  sdvtables table, linked or not, underlines the row under the pointer; drop it with
+  `tr.sdvt-hover>td.sdvt-cell{background-image:none}` (sdvtables' README has the details).
+- **`brushFilter(fig, store, { data, x, y, id, empty, scales })`** brushes x and y, or one alone along that axis. A
+  brush holding no row dims every mark (`empty: "dim"`, the default) or, with `empty: "clear"`, is no filter and is
+  removed when the gesture ends. A d3-drawn chart has no `figure.scale`, so it passes its own d3 scales as `scales`.
+  The drawn rectangle follows the store: cleared from elsewhere (`store.clear()`), it goes without a second write. A
+  click on empty chart area clears only this brush's region. The handle's `move(region)` brushes in data coordinates.
+- **`linkSelection(store, { figure, select: "toggle" })`** turns each stamped mark into a checkbox (`role`,
+  `tabindex="0"`, `aria-checked`): a click, Enter or Space toggles its id in `selected`. Each checkbox is named by the
+  mark's own name, from Plot's `ariaLabel` or `title` channel, else by its link id. A mark stamped with an empty id (a
+  missing key) stays a plain mark.
+- **`linkCursor(fig, store, { field, shape })`** draws the store's `cursor` through this figure's own scale and writes
+  the value under the pointer back: a rule, or a band `width` data units wide, on an x or y scale; the band holding the
+  value on a band scale; or a ring around a centre (`axis: "ring"`, such as a shot distance around the hoop). A
+  d3-drawn chart passes its d3 scales as they are (`d3.scaleLinear()`, `d3.scaleBand()`), as `brushFilter`'s `scales` do.
+  Options: `snap`, `label` and `dot`. Moving inside one snapped bin writes nothing, and leaving the figure clears the
+  cursor it wrote, never one another figure or `store.set` wrote since. A cursor is not an id: it never dims marks or
+  filters a table. The store's `Cursor` is unrelated to
+  sdvtables' `TableCursor`, the keyboard grid's current row.
+- **`nearestHover(svg, store, { points, radius, dimension })`** hovers the nearest mark of a d3-drawn (or any
+  non-Plot) figure within `radius` px, in the plane or along one axis, and its `label` option shows `tooltip`'s
+  in-SVG box beside it. Link that figure with `hover: false`, so it has one hover writer.
+  `tooltip(svg).show(x, y, lines, swatch)` draws the same box on its own.
+- **Teardown.** `linkSelection` and `linkCursor` return a teardown function, since teardown is all they have
+  (`useEffect(() => linkSelection(store, o), deps)` is one line); `brushFilter`, `nearestHover` and `tooltip` return a
+  handle with `destroy()`, since they have more (`move`, `update`, `show`). `linkSelection` takes the store first because
+  it links a figure, a table or both; the other calls take the element first.
+  `linkSelection`'s teardown clears the hover its own link wrote, and `linkCursor`'s the cursor its own figure wrote,
+  only while the store still holds exactly that value: another writer's survives. `linkSelection`'s teardown then
+  restores the view it changed, so a figure or table unlinked and kept on the page shows no store state, even
+  mid-brush: the figure un-dims (once the last link on it goes), toggled marks get their own attributes back, and the
+  table drops the brush filter and the hover it showed. The store keeps the brush's region and any selection for the
+  views still linked. **To replace a linked figure, tear its link down before linking the new one**; otherwise the
+  new figure's first sync reads the old figure's hover and warns that none of the linked ids is drawn.
+- **Styling.** Five CSS custom properties restyle the visuals with no JS, so a page's light and dark tokens reach
+  them: `--sdv-dim-opacity` (default `0.2`, the dimmed marks), `--sdv-cursor-color` (default `rgba(0,0,0,.2)`),
+  `--sdv-cursor-width` (default `10px`, the stroke of a rule or a ring; a band is filled), `--sdv-tip-bg` (default
+  `rgba(34,34,34,.85)`) and `--sdv-tip-fg` (default `#ddd`, the text and the swatch outline).
+- **Server rendering.** Without a DOM every interact call is a no-op (`hasDom()`), so server-rendered markup is
+  unchanged; a bad option still throws `InputError` in Node. **React:** `useSelection(store)` (`sdvplot/react`)
+  returns the store's state and re-renders on each change.
+
+The docs run these live: [Linked figure and table](https://plot.sportsdataverse.org/examples/linked), and a five-chart
+[linked shot dashboard](https://plot.sportsdataverse.org/examples/shot-dashboard) on one store.
 
 ## Data provenance
 

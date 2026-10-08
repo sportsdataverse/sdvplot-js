@@ -36,6 +36,11 @@ beforeAll(async () => {
   for (const r of [
     row("sdvtables/html/t", "sdvtables", table),
     row("sporty/svg/rink", "sporty", toSVG(hockeyRink("nhl"))),
+    {
+      ...row("sdvplot/plotly/f", "sdvplot", '<pre class="sdv-value">{}</pre>'),
+      kind: "value",
+      browser: true,
+    },
   ]) {
     mkdirSync(dirname(join(out, `${r.id}.json`)), { recursive: true });
     writeFileSync(join(out, `${r.id}.json`), JSON.stringify(r));
@@ -68,6 +73,15 @@ test("Review Focus 2: <Live> receives the table markup byte for byte; a 450 KB r
   expect(props(r)).toMatchObject({ src: "/examples/sporty/svg/rink.svg", kind: "markup", lang: "ts" });
   expect(props(r).markup).toBeUndefined();
   expect(table.length).toBeLessThan(INLINE_LIMIT);
+});
+
+test("a browser upgrade reaches <Live> as a boolean attribute, so the server-rendered page knows of it", () => {
+  const t = live("sdvplot/plotly/f");
+  remarkLive({ outDir: out })(t, { path: "a.mdx" });
+  expect(t.children[0]?.attributes).toContainEqual({ type: "mdxJsxAttribute", name: "browser", value: null });
+  const plain = live("sdvtables/html/t");
+  remarkLive({ outDir: out })(plain, { path: "a.mdx" });
+  expect(props(plain)).not.toHaveProperty("browser");
 });
 
 test("an unknown or repeated <Live id> fails the docs build", () => {

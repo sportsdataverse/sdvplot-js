@@ -185,10 +185,10 @@ test("update(points) after a rescale re-targets", () => {
   at(svg, "pointermove", hx, hy);
   expect(hovered(store)).toEqual([]);
 });
-test("with linkSelection(store, { plot, hover: false }), a mouseover on a mark writes nothing and nearestHover alone sets hover; highlight still follows", () => {
+test("with linkSelection(store, { figure, hover: false }), a mouseover on a mark writes nothing and nearestHover alone sets hover; highlight still follows", () => {
   const svg = shotChart();
   const store = createSelection<BknShot>();
-  linkSelection(store, { plot: svg, hover: false });
+  linkSelection(store, { figure: svg, hover: false });
   nearestHover(svg, store, { points: points(), radius: 18 });
   const fn = vi.fn();
   store.subscribe(fn);
@@ -245,6 +245,57 @@ test("destroy removes the listeners and the tooltip, and clears the hover it set
   store.set({ hover: ["0"] });
   again.destroy();
   expect(hovered(store)).toEqual(["0"]);
+});
+test("destroy right after update(points) still clears the hover this handle wrote: a rescale keeps its ownership", () => {
+  const svg = shotChart();
+  const store = createSelection<BknShot>();
+  const hover = nearestHover(svg, store, { points: points(), radius: 18, label });
+  at(svg, "pointermove", PX + 10, PY);
+  expect(hovered(store)).toEqual(["825"]);
+  svg.setAttribute("viewBox", "0 0 250 235"); // the chart is rescaled, then torn down before the pointer moves again
+  hover.update(points(0.5));
+  hover.destroy();
+  expect(hovered(store)).toEqual([]);
+  // and an update still leaves another writer's hover alone
+  const again = nearestHover(svg, store, { points: points(), radius: 18 });
+  at(svg, "pointermove", PX + 10, PY);
+  store.set({ hover: ["0"] });
+  again.update(points());
+  again.destroy();
+  expect(hovered(store)).toEqual(["0"]);
+});
+test("an equal hover the app set first stays the app's: hovering that shot claims nothing, so destroy keeps it", () => {
+  const svg = shotChart();
+  const store = createSelection<BknShot>();
+  store.set({ hover: ["825"] }); // the app preloads shot 825
+  const hover = nearestHover(svg, store, { points: points(), radius: 18 });
+  const fn = vi.fn();
+  store.subscribe(fn);
+  at(svg, "pointermove", PX + 10, PY); // nearest is 825: a no-op patch
+  hover.destroy();
+  expect([hovered(store), fn.mock.calls.length]).toEqual([["825"], 0]);
+  const again = nearestHover(svg, store, { points: points(), radius: 18 }); // a shot it does write is its own
+  at(svg, "pointermove", PX + 60, PY + 60);
+  at(svg, "pointermove", PX + 10, PY);
+  again.destroy();
+  expect(hovered(store)).toEqual([]);
+});
+test("the pointer still over a shot re-writes it once another view hovered something else; off every shot, it writes nothing", () => {
+  const svg = shotChart();
+  const store = createSelection<BknShot>();
+  nearestHover(svg, store, { points: points(), radius: 18 });
+  at(svg, "pointermove", PX + 10, PY);
+  store.set({ hover: ["0"] }); // another writer (a linked table row) hovers shot 0 while the pointer rests here
+  const fn = vi.fn();
+  store.subscribe(fn);
+  at(svg, "pointermove", PX + 9, PY); // the pointer moves on, still nearest shot 825: the latest event wins
+  expect([hovered(store), fn.mock.calls.length]).toEqual([["825"], 1]);
+  at(svg, "pointermove", PX + 8, PY); // and stays: no churn
+  expect(fn).toHaveBeenCalledTimes(1);
+  at(svg, "pointermove", PX + 40, PY + 40); // past 18 px: clears its own hover
+  store.set({ hover: ["0"] });
+  at(svg, "pointermove", PX + 41, PY + 41); // still near nothing: another writer's hover is not cleared again
+  expect([hovered(store), fn.mock.calls.length]).toEqual([["0"], 3]);
 });
 test("argument errors throw InputError: a negative radius or padding, an unknown dimension, a root that is not an <svg>", () => {
   const store = createSelection();

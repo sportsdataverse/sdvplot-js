@@ -89,7 +89,7 @@ at a cell that is not drawn; Plot's own `clip` passes through and cuts paths at 
 
 Each cell's path carries `data-sdv-id`, the cell's legacy centre as `"x,y"`, and each zone's carries the zone's name,
 so `@sportsdataverse/sdvplot/interact` links the charts with no glue code.
-`linkSelection(store, { plot, select: "toggle" })` makes every hexagon (or zone) a checkbox: a click, Enter or Space
+`linkSelection(store, { figure, select: "toggle" })` makes every hexagon (or zone) a checkbox: a click, Enter or Space
 toggles its id in the store's `selected`, and the other cells dim. Its ``hover: { id: (h) => `${h.x},${h.y}` }``
 writes the cell Plot's tip points at, the nearest within `tip: { maxRadius: 18 }`, as `main` does. `linkCursor`
 follows one shot distance: on the court a ring around the hoop (`shape: { axis: "ring", center: [0, -41.75] }` in the

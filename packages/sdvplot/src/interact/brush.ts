@@ -33,8 +33,11 @@ export interface BrushFilterOptions<R> {
   scales?: { x?: ScaleLike | D3ScaleLike; y?: ScaleLike | D3ScaleLike };
 }
 /** A live brush: drive it programmatically, or remove it. */
-export interface BrushHandle {
-  /** Brush a region in DATA coordinates, one range per brushed axis (`null` clears), as if the user had dragged it. */
+export interface BrushFilterHandle {
+  /**
+   * Brush a region in DATA coordinates, one range per brushed axis (`null` clears), as if the user had dragged it. Rows
+   * are tested against these exact bounds, never their pixel round trip: a row on a bound is inside.
+   */
   move(region: { x?: readonly [unknown, unknown]; y?: readonly [unknown, unknown] } | null): void;
   /** Remove the overlay and stop following the store; clears its selection and predicate if this brush set them. */
   destroy(): void;
@@ -45,20 +48,25 @@ export interface ScaleLike {
   apply(value: unknown): unknown;
   /** Pixel to data value; absent on band and point scales, which a brush cannot invert. */
   invert?(pixel: unknown): unknown;
-  /** The pixel range; the brush's extent spans it. */
+  /** The pixel range; the brush's extent spans it. Absent (or with no finite value), the svg's box on that axis. */
   range?: Iterable<unknown>;
 }
 /**
- * A d3-scale continuous scale as `d3.scaleLinear()` or `d3.scaleUtc()` makes it: callable, with `invert`, and with
- * `range()` a METHOD (a {@link ScaleLike}'s `range` is the pixels themselves). `brushFilter` adapts it.
+ * A d3-scale scale as `d3.scaleLinear()`, `d3.scaleUtc()` or `d3.scaleBand()` makes it: callable, with `range()` a
+ * METHOD (a {@link ScaleLike}'s `range` is the pixels themselves), and on a band scale `bandwidth()` and `domain()`
+ * methods too. `brushFilter` and `linkCursor` adapt it, so a d3-drawn chart passes its own scales as they are.
  */
 export interface D3ScaleLike {
   /** Data value to pixel. */
   (value: never): unknown;
   /** Pixel to data value; absent on band and point scales, which a brush cannot invert. */
   invert?(pixel: number): unknown;
-  /** The pixel range, read once when the brush is made. */
+  /** The pixel range, read once when the brush or cursor is made. */
   range(): Iterable<unknown>;
+  /** A band scale's band width in pixels (a `linkCursor` band). */
+  bandwidth?(): number;
+  /** The domain; a band scale's values are each band's first value (a `linkCursor` band). */
+  domain?(): Iterable<unknown>;
 }
 /**
  * What `Plot.plot` returns: the `<svg>`, or a `<figure>` wrapping it, exposing its scales. Any `<svg>` fits: a d3-drawn
@@ -74,18 +82,28 @@ const span = (a: unknown, b: unknown): [number, number] => {
   const q = num(b);
   return p <= q ? [p, q] : [q, p];
 };
-const NOOP: BrushHandle = { move: () => {}, destroy: () => {} };
-/** A d3 scale is a function: its `range` is a method and its `apply` is Function.prototype's. Never read it as is. */
-const scaleOf = (s: ScaleLike | D3ScaleLike | undefined): ScaleLike | undefined => {
+const NOOP: BrushFilterHandle = { move: () => {}, destroy: () => {} };
+/** A scale as the interact functions read it: a {@link ScaleLike}, plus a band scale's width and domain. */
+type Adapted = ScaleLike & { readonly bandwidth?: number; readonly domain?: Iterable<unknown> };
+/**
+ * A d3 scale is a function: its `range`, `bandwidth` and `domain` are methods and its `apply` is
+ * Function.prototype's, so `scale.apply(10)` would call it with no argument. Never read it as is: adapt it.
+ * @internal
+ */
+export function scaleOf(s: Adapted | D3ScaleLike): Adapted;
+export function scaleOf(s: Adapted | D3ScaleLike | undefined): Adapted | undefined;
+export function scaleOf(s: Adapted | D3ScaleLike | undefined): Adapted | undefined {
   if (typeof s !== "function") return s;
   const f = s as unknown as (value: unknown) => unknown;
-  const inv = s.invert;
+  const { invert: inv, bandwidth: bw, domain: dom } = s;
   return {
     apply: (v) => f(v),
     ...(inv && { invert: (p: unknown) => inv.call(s, Number(p)) }),
     range: s.range(),
+    ...(bw && { bandwidth: bw.call(s) }),
+    ...(dom && { domain: dom.call(s) }),
   };
-};
+}
 /** The svg's user-space box: its viewBox, else its width and height. A 1-D brush spans the other axis entirely. */
 const boxOf = (svg: Element): [number, number, number, number] => {
   const v = (svg.getAttribute("viewBox") ?? "")
@@ -101,13 +119,16 @@ const boxOf = (svg: Element): [number, number, number, number] => {
  * the store's `predicate` (the region as a row test, for linked tables) and `selected` (the ids of `data` inside it,
  * for highlighting) in ONE notification. Pass `x` and `y` for a rectangle, or one of them for a 1-D brush across the
  * whole svg (a date window on a timeline). Clearing the brush, or a click on the empty chart, clears both, but only
- * while the store still holds this brush's region: a selection made elsewhere (a table row, a toggled mark) survives.
- * The drawn brush follows the store: when its region is cleared or replaced elsewhere, the rectangle is removed with no
- * second write. `empty` says what a brush holding no row means. The overlay is inserted BEHIND the marks, so hovering
- * a mark still reaches it. On a figure with a Plot `tip`, the press that starts a brush also pins the tip showing at
- * that moment (Plot's pointer toggles a sticky tip on `pointerdown`); the brush still works. Throws `InputError`
- * without `x` or `y`, or unless each brushed axis has a continuous (invertible) scale, in Node too. A no-op handle
- * without a DOM.
+ * while the store still holds this brush's region. A selection made elsewhere since (a table row, a toggled mark)
+ * survives, and so does one made before that holds exactly the brushed ids: the store kept that set, so the brush
+ * wrote none of its own. The drawn brush follows the store: when its region is cleared or replaced elsewhere, the
+ * rectangle is removed with no second write. `empty` says what a brush holding no row means. The overlay is inserted
+ * BEHIND the marks, so hovering a mark still reaches it. On a figure with a Plot `tip`, the press that starts a brush
+ * also pins the tip showing at that moment (Plot's pointer toggles a sticky tip on `pointerdown`); the brush still
+ * works. Throws `InputError` without `x` or `y`, or unless each brushed axis has a continuous (invertible) scale, in
+ * Node too. Returns a HANDLE, not a teardown function, because a brush has more to do than tear down: `move` drives it
+ * and `destroy` removes it (`linkSelection` and `linkCursor`, whose teardown is all they have, return a function). A
+ * no-op handle without a DOM.
  *
  * @example
  * ```ts
@@ -195,14 +216,18 @@ export function brushFilter<R>(
   figure: PlotFigure,
   store: SelectionStore<R>,
   o: BrushFilterOptions<R>,
-): BrushHandle {
+): BrushFilterHandle {
   if (o.x === undefined && o.y === undefined)
     throw new InputError("brushFilter needs x, y or both: the fields its brushed axes encode");
   if (o.empty !== undefined && o.empty !== "dim" && o.empty !== "clear")
     throw new InputError(`brushFilter: empty is "dim" or "clear", not ${JSON.stringify(o.empty)}`);
   const xs = o.x === undefined ? undefined : scaleOf(o.scales?.x ?? figure.scale?.("x"));
   const ys = o.y === undefined ? undefined : scaleOf(o.scales?.y ?? figure.scale?.("y"));
-  if ((o.x !== undefined && !xs?.invert) || (o.y !== undefined && !ys?.invert))
+  // both directions: move() maps data to pixels (apply), a drag maps pixels back (invert); a JavaScript caller can
+  // pass an object with one alone
+  const usable = (s: ScaleLike | undefined): boolean =>
+    typeof s?.apply === "function" && typeof s?.invert === "function";
+  if ((o.x !== undefined && !usable(xs)) || (o.y !== undefined && !usable(ys)))
     throw new InputError(
       "brushFilter needs continuous x and y scales on the axes it brushes; band and point scales cannot be inverted, and a chart without figure.scale passes `scales`",
     );
@@ -213,9 +238,10 @@ export function brushFilter<R>(
       : Array.from(figure.querySelectorAll(":scope > svg")).at(-1);
   if (!svg) throw new InputError("brushFilter: no <svg> in the figure");
   const [bx, by, bw, bh] = boxOf(svg);
+  /** The axis' pixel extent: the scale's range, else (no scale, or no finite range) the svg's box, as linkCursor's. */
   const pixels = (s: ScaleLike | undefined, from: number, to: number): [number, number] => {
-    const r = s === undefined ? [from, to] : Array.from(s.range ?? [], Number);
-    return [Math.min(...r), Math.max(...r)];
+    const r = Array.from(s?.range ?? [], Number).filter(Number.isFinite);
+    return r.length > 0 ? [Math.min(...r), Math.max(...r)] : [from, to];
   };
   const [x0px, x1px] = pixels(xs, bx, bx + bw);
   const [y0px, y1px] = pixels(ys, by, by + bh);
@@ -224,18 +250,27 @@ export function brushFilter<R>(
   svg.insertBefore(node, svg.firstChild);
   const g = select<SVGGElement, unknown>(node);
   let mine: RowFilter<R> | null = null;
+  let picked: ReadonlySet<string> | null = null; // the `selected` this brush wrote with `mine`
   let last = ""; // d3 emits "brush" then "end" for one gesture: one store update per distinct region
+  // move()'s own data region while d3 emits it (synchronously): the pixel round trip is inexact, and
+  // invert(apply(10)) = 10.000000000000002 would leave a row at 10 outside a brush starting at 10
+  let asked: { x?: [number, number]; y?: [number, number] } | null = null;
   const idOf = (row: R, i: number): string => (o.id === undefined ? String(i) : toId(get(row, o.id)));
   const b = (xs && ys ? brush<unknown>() : xs ? brushX<unknown>() : brushY<unknown>()).extent([
     [x0px, y0px],
     [x1px, y1px],
   ]);
-  /** The brush's region is gone: clear the store only while it still holds that region (main: the window alone). */
+  /**
+   * The brush's region is gone: clear the store only while it still holds that region (main: the window alone), and
+   * `selected` only while it is still the set this brush wrote: a pick another control made since survives.
+   */
   const release = (): void => {
     last = "";
     if (mine === null) return;
+    const own = store.getState().selected === picked;
     mine = null;
-    store.set({ selected: [], predicate: null });
+    picked = null;
+    store.set(own ? { selected: [], predicate: null } : { predicate: null });
   };
   // Remove the drawn rectangle. Always called with `mine` already null, so the null selection d3 then emits releases
   // nothing: the erasure writes nothing (main ignores its programmatic moves the same way, timeline.ts:57).
@@ -256,8 +291,10 @@ export function brushFilter<R>(
             [sel[0][1], (sel[1] as [number, number])[1]],
           ];
     const tests: [Field<R>, number, number][] = [];
-    if (o.x !== undefined && px) tests.push([o.x, ...span(xs?.invert?.(px[0]), xs?.invert?.(px[1]))]);
-    if (o.y !== undefined && py) tests.push([o.y, ...span(ys?.invert?.(py[0]), ys?.invert?.(py[1]))]);
+    if (o.x !== undefined && px)
+      tests.push([o.x, ...(asked?.x ?? span(xs?.invert?.(px[0]), xs?.invert?.(px[1])))]);
+    if (o.y !== undefined && py)
+      tests.push([o.y, ...(asked?.y ?? span(ys?.invert?.(py[0]), ys?.invert?.(py[1])))]);
     const key = tests.map(([, lo, hi]) => `${lo}|${hi}`).join("|");
     if (key === last) return;
     const inside: RowFilter<R> = (row) =>
@@ -274,7 +311,12 @@ export function brushFilter<R>(
     }
     last = key;
     mine = inside;
+    const had = store.getState().selected;
     store.set({ selected: ids, predicate: inside });
+    const now = store.getState().selected;
+    // the brush owns `selected` by identity: the set its write made, or one it already owned. An equal set another
+    // control selected first keeps its identity (the store drops a no-op), so it stays that control's
+    picked = now !== had || had === picked ? now : null;
   });
   g.call(b);
   // The drawn brush follows the store: a region cleared or replaced elsewhere (a "Clear dates" button, another brush)
@@ -298,20 +340,28 @@ export function brushFilter<R>(
       }
       const px = at(xs, region.x, "x");
       const py = at(ys, region.y, "y");
-      g.call(
-        b.move,
-        px && py
-          ? [
-              [px[0], py[0]],
-              [px[1], py[1]],
-            ]
-          : (px ?? py),
-      );
+      asked = {
+        ...(px && region.x && { x: span(region.x[0], region.x[1]) }),
+        ...(py && region.y && { y: span(region.y[0], region.y[1]) }),
+      };
+      try {
+        g.call(
+          b.move,
+          px && py
+            ? [
+                [px[0], py[0]],
+                [px[1], py[1]],
+              ]
+            : (px ?? py),
+        );
+      } finally {
+        asked = null;
+      }
     },
     destroy() {
       off();
       node.remove();
-      if (mine !== null && store.getState().predicate === mine) store.set({ selected: [], predicate: null });
+      if (mine !== null && store.getState().predicate === mine) release();
     },
   };
 }

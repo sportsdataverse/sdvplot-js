@@ -65,6 +65,17 @@ test("a brushed region selects the ids inside and sets the same region as a row 
   expect([...store.getState().selected]).toEqual(["LAC", "DEN", "BUF"]);
   expect(passing(store)).toEqual(["LAC", "DEN", "BUF"]);
 });
+test("move() brushes the caller's own data range: a row ON a bound is inside (2024 AFC: DEN at 10+ wins, NYJ at 5+)", () => {
+  // the pixel round trip is inexact: on this 640 px chart invert(apply(10)) is 10.000000000000002, past DEN's 10
+  const { store, brush } = setup();
+  brush.move({ x: [10, 16], y: [0, 0.2] }); // "10+ wins"
+  expect([...store.getState().selected]).toEqual(["KC", "LAC", "DEN", "BUF"]);
+  expect(passing(store)).toEqual(["KC", "LAC", "DEN", "BUF"]);
+  brush.move({ x: [5, 16], y: [-0.2, 0.2] }); // "5+ wins"
+  expect([...store.getState().selected]).toEqual(["KC", "LAC", "DEN", "BUF", "MIA", "NYJ"]);
+  brush.move({ x: [4, 11], y: [-0.2, 0.101] }); // both bounds ON rows: LV at 4 wins, LAC at 11 and 0.101
+  expect([...store.getState().selected]).toEqual(["LAC", "LV", "MIA", "NYJ"]);
+});
 test("a brush over no point: predicate set, selected EMPTY, focus dims everything; clearing resets both (Review Focus 2)", () => {
   const { store, brush } = setup();
   brush.move({ x: [0.5, 2], y: [0.15, 0.19] }); // no 2024 AFC team won fewer than 4
@@ -100,6 +111,81 @@ test("the overlay sits behind the marks; destroy removes it and clears only what
   again.store.set({ predicate: other });
   again.brush.destroy();
   expect(again.store.getState().predicate).toBe(other);
+});
+test("clearing or destroying the brush clears its region, never a selection another control made since", () => {
+  const { store, brush } = setup();
+  brush.move({ x: [9.5, 16], y: [0, 0.2] }); // KC LAC DEN BUF
+  const region = store.getState().predicate;
+  store.set({ selected: ["BUF"] }); // a linked table row or a toggled cell picks Buffalo; the region stays
+  expect(store.getState().predicate).toBe(region);
+  const fn = vi.fn();
+  store.subscribe(fn);
+  brush.move(null);
+  expect([[...store.getState().selected], store.getState().predicate, fn.mock.calls.length]).toEqual([
+    ["BUF"],
+    null,
+    1,
+  ]);
+  const again = setup();
+  again.brush.move({ x: [9.5, 16], y: [0, 0.2] });
+  again.store.set({ selected: ["DEN"] });
+  again.brush.destroy();
+  expect([[...again.store.getState().selected], again.store.getState().predicate]).toEqual([["DEN"], null]);
+});
+test("a brush over exactly the ids another control selected first adopts nothing: clearing it keeps that selection", () => {
+  // the store keeps an equal set's identity (one notification per change), so the brush's write leaves the table's
+  // selection object in place: it is not the brush's to clear
+  const { store, brush } = setup();
+  store.set({ selected: ["LAC", "DEN", "BUF"] }); // three rows picked in a linked table
+  const table = store.getState().selected;
+  brush.move({ x: [9.5, 16], y: [0.07, 0.2] }); // exactly LAC, DEN, BUF (KC's 0.063 is below the floor)
+  expect(store.getState().selected).toBe(table);
+  const fn = vi.fn();
+  store.subscribe(fn);
+  brush.move(null);
+  expect([[...store.getState().selected], store.getState().predicate, fn.mock.calls.length]).toEqual([
+    ["LAC", "DEN", "BUF"],
+    null,
+    1,
+  ]);
+  // a set the brush did make stays its own across a move to the same ids, and clearing then clears it
+  brush.move({ x: [9.5, 16], y: [0, 0.2] }); // KC LAC DEN BUF: a new set, the brush's
+  brush.move({ x: [9.4, 16], y: [0, 0.2] }); // the same four rows: the store keeps the brush's set
+  brush.move(null);
+  expect([store.getState().selected.size, store.getState().predicate]).toEqual([0, null]);
+});
+test("a ScaleLike with no range (it is optional) brushes across the svg's box on that axis, never [Infinity, -Infinity]", () => {
+  const svg = chart();
+  const x = svg.scale("x") as Plot.Scale;
+  const store = createSelection<Standing>();
+  // an adapter that maps and inverts but carries no pixel range: the x extent falls back to the svg's width
+  const scales = { x: { apply: (v: unknown) => x.apply(v), invert: (p: unknown) => x.invert?.(p) } };
+  const brush = brushFilter(svg, store, { data: STANDINGS, x: "wins", y: "net_epa", id: "team", scales });
+  const overlay = svg.querySelector(".sdv-brush .overlay");
+  const [y0, y1] = Array.from(svg.scale("y")?.range ?? [], Number).sort((a, b) => a - b);
+  expect(["x", "width", "y", "height"].map((a) => Number(overlay?.getAttribute(a)))).toEqual([
+    0,
+    640,
+    y0,
+    (y1 ?? 0) - (y0 ?? 0),
+  ]);
+  brush.move({ x: [9.5, 16], y: [0, 0.2] });
+  expect([...store.getState().selected]).toEqual(["KC", "LAC", "DEN", "BUF"]);
+});
+test("a scale without apply throws InputError at construction, in Node too, not a TypeError at move() (JS caller)", () => {
+  const svg = chart();
+  const store = createSelection<Standing>();
+  const noApply = { invert: (p: unknown) => Number(p) / 37.6 } as unknown as Plot.Scale; // invert alone
+  for (const node of [false, true]) {
+    if (node) vi.stubGlobal("window", undefined);
+    try {
+      expect(() =>
+        brushFilter(svg, store, { data: STANDINGS, x: "wins", id: "team", scales: { x: noApply } }),
+      ).toThrow(InputError);
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  }
 });
 test("a band x scale throws InputError at construction", () => {
   const bars = Plot.plot({ marks: [Plot.barY(STANDINGS, { x: "team", y: "wins" })] });

@@ -97,7 +97,7 @@ function selectedCue(th: Theme): number {
  * judged against every cell background it can sit on, a selected cell's overlay included (a row can be both).
  */
 function hoverCue(th: Theme): number {
-  const bar = decls("tr.sdvt-hover>td.sdvt-cell", "background-image")[0]?.match(
+  const bar = decls(":where(tr.sdvt-hover)>td.sdvt-cell", "background-image")[0]?.match(
     /^linear-gradient\((.*)\)$/,
   )?.[1];
   if (bar === undefined) throw new Error("the hovered-row bar is gone");

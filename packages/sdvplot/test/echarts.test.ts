@@ -1,5 +1,6 @@
 import * as echarts from "echarts";
 import { beforeEach, describe, expect, test, vi } from "vitest";
+import { STANDINGS } from "../../sdvtables/test/fixtures/standings.js";
 import {
   type EChartsAxis,
   type EChartsOption,
@@ -433,6 +434,43 @@ describe("helper series", () => {
     chart.dispose();
     expect(svg).toContain(">Wins<"); // the legend renders
     expect(svg).not.toContain("sdvplot");
+  });
+
+  test("never reach an axis-trigger tooltip; the caller's series and tooltip are untouched", () => {
+    // echarts 6.1.0 lib/component/axisPointer/modelHelper.js collectSeriesInfo: a series joins the axis tooltip unless
+    // its OWN tooltip.show is false, tooltip.trigger is "none"/"item"/false, or axisPointer.show is false. `silent` is
+    // not read there, so the helpers each showed a stray row ("-" for the axis bookkeeping, the value for a mark).
+    const joinsAxisTooltip = (s: Record<string, unknown>): boolean => {
+      const t = (s.tooltip ?? {}) as { show?: unknown; trigger?: unknown };
+      const pointer = (s.axisPointer ?? {}) as { show?: unknown };
+      return (
+        t.show !== false && !["none", "item", false].includes(t.trigger as never) && pointer.show !== false
+      );
+    };
+    const afc = [...STANDINGS].sort((a, b) => b.wins - a.wins);
+    const base: EChartsOption & { tooltip: { trigger: "axis" } } = {
+      tooltip: { trigger: "axis" },
+      xAxis: { type: "category", data: afc.map((s) => s.team) },
+      yAxis: { type: "value" },
+      series: [{ type: "bar", name: "wins", data: afc.map((s) => s.wins) }],
+    };
+    const rows = afc.map((s) => ({ x: s.team, y: s.wins, team: s.team, player: s.qb_espn_id }));
+    const o = { x: "x", y: "y", team: "team", league: "nfl" } as const;
+    let out = withAxisLogos(base, "x", { league: "nfl" });
+    out = withLogos(out, rows, o);
+    out = withWordmarks(out, rows, { ...o, z: 101 });
+    out = withHeadshots(out, rows, { x: "x", y: "y", player: "player", league: "nfl", z: 102 });
+    const [user, ...helpers] = out.series! as Record<string, unknown>[];
+    expect(helpers.map((s) => s.id)).toEqual([
+      "sdvplot:axis:x",
+      "sdvplot:logo",
+      "sdvplot:wordmark:0:0:101",
+      "sdvplot:headshot:0:0:102",
+    ]);
+    for (const s of helpers) expect(s.tooltip).toEqual({ show: false });
+    expect(out.series!.filter((s) => joinsAxisTooltip(s as Record<string, unknown>))).toEqual([user]);
+    expect(user).toEqual(base.series![0]);
+    expect((out as typeof base).tooltip).toEqual({ trigger: "axis" });
   });
 
   test("visibleAxisLabels reads the axis withAxisLogos drew on (axisIndex)", () => {

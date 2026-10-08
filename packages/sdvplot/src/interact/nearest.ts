@@ -47,8 +47,10 @@ const DIMENSIONS: readonly unknown[] = ["x", "y", "xy"];
  * this is its only hover writer while `highlight` still follows the store. The pointer listeners capture,
  * so a handler registered earlier on the svg that stops the event (Plot's `tip` on `pointerdown`) cannot hide it.
  * A Plot figure hovers through its own `tip` instead (`linkSelection`'s `hover: { id }`). Throws `InputError` on a
- * negative `radius` or `padding` or an unknown `dimension`, in Node too, and when `root` is not an `<svg>`. A no-op
- * handle without a DOM.
+ * negative `radius` or `padding` or an unknown `dimension`, in Node too, and when `root` is not an `<svg>`. Returns a
+ * HANDLE, not a teardown function, because it has more to do than tear down: `update` re-targets it and `destroy`
+ * removes it (`linkSelection` and `linkCursor`, whose teardown is all they have, return a function). A no-op handle
+ * without a DOM.
  *
  * @example
  * ```ts
@@ -76,7 +78,7 @@ const DIMENSIONS: readonly unknown[] = ["x", "y", "xy"];
  *   .attr("fill", "currentColor");
  * const node = svg.node() as SVGSVGElement;
  * const store = createSelection();
- * linkSelection(store, { plot: node, hover: false }); // highlight follows the store; nearestHover writes hover
+ * linkSelection(store, { figure: node, hover: false }); // highlight follows the store; nearestHover writes hover
  * nearestHover(node, store, {
  *   points: rows.map((d) => ({ x: x(d.wins), y: y(d.net_epa), id: d.team })),
  *   radius: 18,
@@ -123,12 +125,19 @@ export function nearestHover<R>(
     }
   };
   index(o.points);
-  let cur: string | null | undefined; // the id this handle last wrote; undefined: unknown, so the next event writes
+  let cur: string | null | undefined; // the id last shown; undefined: unknown, so the next event writes and re-places
+  let wrote: ReadonlySet<string> | null = null; // the store's hover set this handle wrote; destroy clears it
   const to = (p: HoverPoint | undefined): void => {
     const id = p === undefined ? null : p.id;
-    if (id === cur) return;
+    // the same mark as last time: silent while the store still holds this handle's hover (another view may have hovered
+    // something since, and the latest pointer event wins); off every mark, never re-clear another writer's hover
+    if (id === cur && (id === null || store.getState().hover === wrote)) return;
     cur = id;
+    const had = store.getState().hover;
     store.set({ hover: id === null ? [] : [id] });
+    const now = store.getState().hover;
+    // owned by identity: an equal hover set first elsewhere keeps its identity (a no-op patch), so it stays theirs
+    wrote = now !== had || had === wrote ? now : null;
     const shown = p !== undefined && label ? label(p.id) : null;
     if (shown && p) tip?.show(p.x, p.y, shown.lines, shown.swatch);
     else tip?.hide();
@@ -161,9 +170,9 @@ export function nearestHover<R>(
     destroy() {
       for (const [type, fn, capture] of listeners) svg.removeEventListener(type, fn, { capture });
       tip?.destroy();
-      const h = store.getState().hover;
-      if (typeof cur === "string" && h.size === 1 && h.has(cur)) store.set({ hover: [] });
+      if (wrote !== null && wrote.size > 0 && store.getState().hover === wrote) store.set({ hover: [] });
       cur = undefined;
+      wrote = null;
     },
   };
 }

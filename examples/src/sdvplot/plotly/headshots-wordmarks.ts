@@ -27,11 +27,20 @@ const headshots = withHeadshots(figure, rows, {
   height: 0.14,
 });
 
-// plotly.js loads each layout image itself, so the gallery shows the figure for Plotly.newPlot(div, data, layout).
-export default withWordmarks(headshots, rows, {
+const both = withWordmarks(headshots, rows, {
   league: "nfl",
   x: "team",
   y: "mark_y",
   team: "team",
   height: 0.05,
 });
+// In the browser: Plotly.newPlot(div, data, layout), as this page does; plotly.js loads each layout image itself.
+// Without JavaScript the page shows the figure.
+export const browser = {
+  lib: "plotly",
+  figure: both,
+  label:
+    "2024 AFC wins by team, each bar topped by its most frequent starting quarterback's headshot, the team's wordmark inside it",
+} as const;
+
+export default both;

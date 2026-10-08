@@ -5,6 +5,7 @@ import { SOURCES, abs } from "../sources.js";
 import type { ExampleEntry, ExamplePackage } from "../src/contract.js";
 import {
   type GenFile,
+  browserModule,
   codeOf,
   discoverSporty,
   docModule,
@@ -98,14 +99,24 @@ export function generate(): readonly ExampleEntry[] {
     mkdirSync(dirname(join(EX, f.path)), { recursive: true });
     writeFileSync(join(EX, f.path), f.text);
   }
+  // draw/ is the docs' browser renderer for BrowserSpec, not an example
   const skip = (rel: string): boolean =>
-    rel === "contract.ts" || rel === "data.ts" || rel.endsWith(".gen.ts");
+    rel === "contract.ts" || rel === "data.ts" || rel === "draw" || rel.endsWith(".gen.ts");
   const entries = walk(join(EX, "src"), skip).map(entryOf);
   const dup = entries.find((e, i) => entries.findIndex((o) => o.id === e.id) !== i);
   if (dup) throw new Error(`two examples share the id ${dup.id}`);
-  const { registry, loaders } = registryModules(entries);
-  writeFileSync(join(EX, "src/registry.gen.ts"), registry);
-  writeFileSync(join(EX, "src/loaders.gen.ts"), loaders);
+  // Written after the walk, so they are never read as examples.
+  const browser = entries.flatMap((e) => {
+    const text = browserModule(readFileSync(join(EX, e.file), "utf8"), e.file);
+    if (text === null) return [];
+    mkdirSync(dirname(join(EX, `src/generated/browser/${e.id}.ts`)), { recursive: true });
+    writeFileSync(join(EX, `src/generated/browser/${e.id}.ts`), text);
+    return [e.id];
+  });
+  const generated = registryModules(entries, browser);
+  writeFileSync(join(EX, "src/registry.gen.ts"), generated.registry);
+  writeFileSync(join(EX, "src/loaders.gen.ts"), generated.loaders);
+  writeFileSync(join(EX, "src/browser.gen.ts"), generated.browser);
   return entries;
 }
 

@@ -19,7 +19,11 @@ export interface Cursor {
   readonly value: number;
 }
 
-/** What a {@link SelectionStore} holds. Immutable: every change replaces it. */
+/**
+ * What a {@link SelectionStore} holds. Immutable: every change replaces it, and a snapshot is read-only at runtime too
+ * (its sets' `add`, `delete` and `clear`, and a write to it or its cursor, throw a `TypeError`): pass changes to
+ * `store.set`, or copy a set with `new Set(ids)`.
+ */
 export interface SelectionState<Row = unknown> {
   /** Ids under the pointer right now (transient). */
   readonly hover: ReadonlySet<string>;
@@ -62,7 +66,20 @@ export interface SelectionStore<Row = unknown> {
   subscribe(fn: (state: SelectionState<Row>) => void): () => void;
 }
 
-const EMPTY: ReadonlySet<string> = new Set<string>();
+/**
+ * Seal one of the store's id sets: read-only at runtime as well as in its type, since a JavaScript caller's `add`
+ * would change the state behind the listeners' backs (and EMPTY is shared by every store). The mutators become own,
+ * non-enumerable throwing methods, so it stays a plain `Set` to `instanceof` and to deep equality; a copy,
+ * `new Set(ids)`, is the caller's own.
+ */
+const sealed = (set: Set<string>): ReadonlySet<string> => {
+  const deny = (): never => {
+    throw new TypeError("a selection state is read-only: pass the new ids to store.set");
+  };
+  for (const m of ["add", "delete", "clear"]) Object.defineProperty(set, m, { value: deny });
+  return set;
+};
+const EMPTY: ReadonlySet<string> = sealed(new Set<string>());
 
 /**
  * The link id of a value: `String(v)`, or `""` (never matched) for null, undefined, NaN and `""`. A figure and a table
@@ -159,7 +176,12 @@ export function focusIds<Row>(s: SelectionState<Row>): ReadonlySet<string> | nul
  * ```
  */
 export function createSelection<Row = unknown>(): SelectionStore<Row> {
-  let state: SelectionState<Row> = { hover: EMPTY, selected: EMPTY, predicate: null, cursor: null };
+  let state: SelectionState<Row> = Object.freeze({
+    hover: EMPTY,
+    selected: EMPTY,
+    predicate: null,
+    cursor: null,
+  });
   const listeners = new Set<(s: SelectionState<Row>) => void>();
   const ids = (next: Iterable<string> | undefined, prev: ReadonlySet<string>): ReadonlySet<string> => {
     if (next === undefined) return prev;
@@ -172,7 +194,7 @@ export function createSelection<Row = unknown>(): SelectionStore<Row> {
       const id = toId(v);
       if (id !== "") set.add(id);
     }
-    return sameIds(set, prev) ? prev : set;
+    return sameIds(set, prev) ? prev : sealed(set);
   };
   const store: SelectionStore<Row> = {
     getState: () => state,
@@ -191,7 +213,7 @@ export function createSelection<Row = unknown>(): SelectionStore<Row> {
           ? state.cursor
           : c === null
             ? null
-            : { field: c.field, value: c.value };
+            : Object.freeze({ field: c.field, value: c.value });
       if (
         hover === state.hover &&
         selected === state.selected &&
@@ -199,7 +221,7 @@ export function createSelection<Row = unknown>(): SelectionStore<Row> {
         cursor === state.cursor
       )
         return;
-      state = { hover, selected, predicate, cursor };
+      state = Object.freeze({ hover, selected, predicate, cursor });
       for (const fn of [...listeners]) {
         if (!listeners.has(fn)) continue; // removed by an earlier listener during this notification
         try {

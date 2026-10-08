@@ -51,7 +51,7 @@ const setup = () => {
   const el = mount(renderHTML(table));
   hydrate(el, table);
   const store = createSelection<Standing>();
-  linkSelection(store, { plot: svg, table });
+  linkSelection(store, { figure: svg, table });
   return { svg, table, el, store };
 };
 /** A brush over the top four (KC, LAC, DEN, BUF): the engine moves now, the DOM a frame later (old row 3: LV). */
@@ -140,7 +140,7 @@ test("a table hydrated after the store already holds a hover lights it at once",
   const el = mount(renderHTML(table));
   const store = createSelection<Standing>();
   store.set({ hover: ["BUF"] });
-  linkSelection(store, { plot: svg, table }); // the engine holds BUF before any view listens
+  linkSelection(store, { figure: svg, table }); // the engine holds BUF before any view listens
   hydrate(el, table);
   expect(hovered(el)).toEqual(["BUF"]);
 });
@@ -294,7 +294,7 @@ test("BKN shots through hydrate: a shot hover lights its row at 2 attribute chan
   const el = mount(renderHTML(table));
   hydrate(el, table);
   const store = createSelection<BknShot>();
-  linkSelection(store, { plot: svg, table });
+  linkSelection(store, { figure: svg, table });
   // chart → table, hover: shots 0-9 are page 0's rows; moving between two costs 2 attribute writes in the table
   over(svg.querySelector('[data-sdv-id="3"]'));
   expect(shotRows(el)).toEqual(["3"]);

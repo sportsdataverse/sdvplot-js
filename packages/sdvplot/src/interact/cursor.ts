@@ -1,7 +1,7 @@
 import { pointer } from "d3";
 import { InputError } from "../errors.js";
 import { type Cursor, type SelectionStore, sameCursor } from "../selection.js";
-import type { PlotFigure, ScaleLike } from "./brush.js";
+import { type D3ScaleLike, type PlotFigure, type ScaleLike, scaleOf } from "./brush.js";
 import { hasDom } from "./highlight.js";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
@@ -24,19 +24,20 @@ export interface BandScaleLike extends ScaleLike {
  * `width` data units wide centred on it, or on a band scale (`bandwidth`) the band holding it. `cross` is the other
  * axis' scale: the rule spans its range (default: the figure's own other scale on a Plot figure, else the svg's
  * viewBox). `axis: "ring"`: an ellipse around `center` (data coordinates) whose radii are the value mapped through the
- * x and y scales, such as a shot distance around the hoop.
+ * x and y scales, such as a shot distance around the hoop. Every scale is a Plot figure's (`svg.scale("x")`) or a d3
+ * scale as it is ({@link D3ScaleLike}: `d3.scaleLinear()`, `d3.scaleBand()`), as `brushFilter`'s `scales` are.
  */
 export type CursorShape =
   | {
       readonly axis: "x" | "y";
-      readonly scale: BandScaleLike;
+      readonly scale: BandScaleLike | D3ScaleLike;
       readonly width?: number;
-      readonly cross?: ScaleLike;
+      readonly cross?: ScaleLike | D3ScaleLike;
     }
   | {
       readonly axis: "ring";
-      readonly x: ScaleLike;
-      readonly y: ScaleLike;
+      readonly x: ScaleLike | D3ScaleLike;
+      readonly y: ScaleLike | D3ScaleLike;
       readonly center: readonly [number, number];
     };
 /** How {@link linkCursor} follows and emits the store's cursor. */
@@ -80,13 +81,18 @@ const box = (svg: Element): { x: [number, number]; y: [number, number] } => {
  * write the value under the pointer back. Every linked chart follows the same number its own way: a band on share bars
  * (linear x), the band holding it on FG% bars (a band scale), a band on a side chart (y), a rule on a curve, a ring
  * around the hoop. Moving inside one snapped bin writes nothing; crossing a bin edge is one update; leaving the figure
- * (`pointerleave`, `pointercancel`) or the axis' range clears this field's cursor. A cursor never dims marks or
- * filters a table (it is not an id). A store change moves attributes only: no element is added or removed, so a cursor
- * costs O(1) per figure. The pointer listeners capture, so a Plot `tip` that stops a press from reaching other
- * listeners does not stop this one. Styled by `--sdv-cursor-color` and `--sdv-cursor-width`. Returns a teardown that
- * removes the cursor and its listeners, and clears the store's cursor when it still holds the value this figure last
- * wrote (as `linkSelection`'s teardown does with its hover): a chart redrawn under the pointer leaves no cursor that no
- * pointer drives. Throws `InputError` on a bad option, in Node too; a no-op without a DOM.
+ * (`pointerleave`, `pointercancel`) or the axis' range clears the cursor this figure wrote, while the store still holds
+ * it: never one an app `store.set` or another figure wrote since, nor an equal one set before (the store kept that one,
+ * so this figure wrote none). A cursor never dims marks or filters a table (it is not an id). A store change moves
+ * attributes only: no element is added or removed, so a cursor costs O(1) per figure. The move and press listeners
+ * capture, so a Plot `tip` that stops a press from reaching other listeners does not stop this one; the leave listeners
+ * do not, so a mark's own `pointerleave` (the pointer crossing a bar's edge inside one bin) writes nothing. Styled by
+ * `--sdv-cursor-color` and `--sdv-cursor-width`. Returns a teardown FUNCTION, not a handle, because teardown is all it
+ * has (as `linkSelection`'s; `brushFilter`, `nearestHover` and `tooltip` return a handle with `destroy()`). The scales'
+ * pixel ranges are read once, so after a resize, relink. The teardown removes the cursor and its listeners, and clears
+ * the store's cursor when it still holds the one this figure last wrote (as `linkSelection`'s teardown does with its
+ * hover): a chart redrawn under the pointer leaves no cursor that no pointer drives. Throws `InputError` on a bad
+ * option, in Node too; a no-op without a DOM.
  *
  * @example
  * ```ts
@@ -121,17 +127,32 @@ export function linkCursor<R>(root: Element, store: SelectionStore<R>, o: LinkCu
   const { shape } = o;
   if (typeof o.field !== "string" || o.field === "")
     throw new InputError("linkCursor needs a non-empty cursor field");
+  if (typeof shape !== "object" || shape === null)
+    throw new InputError("linkCursor needs a shape: what to draw");
   if (shape.axis !== "x" && shape.axis !== "y" && shape.axis !== "ring")
     throw new InputError(`linkCursor shape.axis must be "x", "y" or "ring", got ${String(shape.axis)}`);
   if (o.flipAt !== undefined && !(o.flipAt > 0 && o.flipAt <= 1))
     throw new InputError(`linkCursor flipAt must be in (0, 1], got ${String(o.flipAt)}`);
-  const ring = shape.axis === "ring" ? shape : null;
-  const line = shape.axis === "ring" ? null : shape;
+  // a d3 scale is adapted once (A6): its range, bandwidth and domain are methods, its apply Function.prototype's
+  const ring = shape.axis === "ring" ? { ...shape, x: scaleOf(shape.x), y: scaleOf(shape.y) } : null;
+  const line =
+    shape.axis === "ring" ? null : { ...shape, scale: scaleOf(shape.scale), cross: scaleOf(shape.cross) };
+  // a JavaScript caller can leave one out: name it here, in Node too, never a TypeError (or a throw in the browser later)
+  const isScale = (s: unknown): boolean =>
+    typeof (s as { apply?: unknown } | undefined)?.apply === "function";
+  if (
+    ring
+      ? !isScale(ring.x) || !isScale(ring.y)
+      : !isScale(line?.scale) || (line?.cross !== undefined && !isScale(line.cross))
+  )
+    throw new InputError(
+      `linkCursor: shape.${ring ? "x and shape.y" : line?.cross === undefined ? "scale" : "scale and shape.cross"} must be scales, a Plot figure's or d3's`,
+    );
   if (ring) {
-    if (!ring.center.every(Number.isFinite))
-      throw new InputError(
-        `linkCursor ring center must be two finite numbers, got [${ring.center.join(", ")}]`,
-      );
+    // exactly two: every() is vacuously true on [], which would leave the ring hidden for good
+    const c: unknown = ring.center;
+    if (!Array.isArray(c) || c.length !== 2 || !c.every(Number.isFinite))
+      throw new InputError(`linkCursor ring center must be two finite numbers, got ${JSON.stringify(c)}`);
     if (o.emit === true) throw new InputError("linkCursor: a ring follows the cursor but never emits it");
     if (o.label || o.dot)
       throw new InputError("linkCursor: label and dot are for an x or y cursor, not a ring");
@@ -292,12 +313,13 @@ export function linkCursor<R>(root: Element, store: SelectionStore<R>, o: LinkCu
   offs.push(() => g.remove());
   sync(store.getState().cursor);
 
-  let wrote: Cursor | null = null; // the cursor this figure last wrote, which its teardown clears if still current
+  let wrote: Cursor | null = null; // the store's cursor object this figure wrote
+  /** Clear the store's cursor only while it holds the one this figure wrote: never an app's or another figure's. */
+  const clear = (): void => {
+    if (wrote !== null && store.getState().cursor === wrote) store.set({ cursor: null });
+    wrote = null;
+  };
   if (line && emit) {
-    const clear = (): void => {
-      wrote = null;
-      if (store.getState().cursor?.field === o.field) store.set({ cursor: null }); // only this field's
-    };
     /** The value under the pointer along this axis, or null outside the axis' pixel range. */
     const valueAt = (p: number): number | null => {
       const [p0, p1] = along;
@@ -321,22 +343,27 @@ export function linkCursor<R>(root: Element, store: SelectionStore<R>, o: LinkCu
       const v = valueAt(line.axis === "x" ? mx : my);
       if (v === null || !Number.isFinite(v)) clear();
       else {
-        wrote = { field: o.field, value: v };
-        store.set({ cursor: wrote });
+        const had = store.getState().cursor;
+        store.set({ cursor: { field: o.field, value: v } });
+        const now = store.getState().cursor;
+        // owned by identity, as a brush owns `selected`: the cursor this write made, or one this figure already
+        // owned. An equal cursor set first elsewhere keeps its identity (the store drops a no-op), so it stays theirs
+        wrote = now !== had || had === wrote ? now : null;
       }
     };
-    const on = (type: string, fn: (e: Event) => void): void => {
-      svg.addEventListener(type, fn, { capture: true }); // A34: before Plot's tip, which stops other pointerdowns
-      offs.push(() => svg.removeEventListener(type, fn, { capture: true }));
+    const on = (type: string, fn: (e: Event) => void, capture: boolean): void => {
+      svg.addEventListener(type, fn, { capture });
+      offs.push(() => svg.removeEventListener(type, fn, { capture }));
     };
-    on("pointermove", move);
-    on("pointerdown", move);
-    on("pointerleave", clear);
-    on("pointercancel", clear);
+    on("pointermove", move, true);
+    on("pointerdown", move, true); // A34: capture, before Plot's tip, which stops other pointerdowns
+    // never capture a leave: pointerleave does not bubble, but a capture listener hears every mark's own leave, so
+    // crossing a bar's edge inside one bin would write null and then the value again (nearestHover registers the same)
+    on("pointerleave", clear, false);
+    on("pointercancel", clear, false);
   }
   return () => {
     for (const off of offs) off();
-    if (wrote !== null && sameCursor(store.getState().cursor, wrote)) store.set({ cursor: null });
-    wrote = null;
+    clear();
   };
 }
