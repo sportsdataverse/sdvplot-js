@@ -740,9 +740,12 @@ brushFilter(fig, store, { data: rows, x: "wins", y: "net_epa", id: "team" });
   handle with `destroy()`, since they have more (`move`, `update`, `show`). `linkSelection` takes the store first because
   it links a figure, a table or both; the other calls take the element first.
   `linkSelection`'s teardown clears the hover its own link wrote, and `linkCursor`'s the cursor its own figure wrote,
-  only while the store still holds exactly that value: another writer's survives. **To replace a linked
-  figure, tear its link down before linking the new one**; otherwise the new figure's first sync reads the old
-  figure's hover and warns that none of the linked ids is drawn.
+  only while the store still holds exactly that value: another writer's survives. `linkSelection`'s teardown then
+  restores the view it changed, so a figure or table unlinked and kept on the page shows no store state, even
+  mid-brush: the figure un-dims (once the last link on it goes), toggled marks get their own attributes back, and the
+  table drops the brush filter and the hover it showed. The store keeps the brush's region and any selection for the
+  views still linked. **To replace a linked figure, tear its link down before linking the new one**; otherwise the
+  new figure's first sync reads the old figure's hover and warns that none of the linked ids is drawn.
 - **Styling.** Five CSS custom properties restyle the visuals with no JS, so a page's light and dark tokens reach
   them: `--sdv-dim-opacity` (default `0.2`, the dimmed marks), `--sdv-cursor-color` (default `rgba(0,0,0,.2)`),
   `--sdv-cursor-width` (default `10px`, the stroke of a rule or a ring; a band is filled), `--sdv-tip-bg` (default

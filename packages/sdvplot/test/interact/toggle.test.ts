@@ -142,6 +142,28 @@ test("teardown removes the roles, the listeners and the store subscription", () 
   store.set({ selected: [IND] });
   expect(svg.querySelectorAll("[aria-checked]")).toHaveLength(0);
 });
+test("teardown restores each mark's own role, tabindex and aria-checked, and un-dims the strip", () => {
+  const svg = strip();
+  const phi = cell(svg, PHI);
+  // a d3 strip whose cells began as buttons outside the tab order (a d3 chart's own a11y): unlinking gives them back
+  phi?.setAttribute("role", "button");
+  phi?.setAttribute("tabindex", "-1");
+  phi?.setAttribute("aria-checked", "mixed");
+  const store = createSelection<BknGame>();
+  const off = linkSelection(store, { figure: svg, select: "toggle" });
+  click(cell(svg, IND));
+  expect([phi?.getAttribute("role"), phi?.getAttribute("tabindex"), svg.classList.contains("sdv-focus")]).toEqual([
+    "checkbox",
+    "0",
+    true,
+  ]);
+  off();
+  const attrs = (el: Element | null): (string | null)[] =>
+    ["role", "tabindex", "aria-checked"].map((a) => el?.getAttribute(a) ?? null);
+  expect(attrs(phi)).toEqual(["button", "-1", "mixed"]);
+  expect(attrs(cell(svg, IND))).toEqual([null, null, null]);
+  expect([svg.classList.contains("sdv-focus"), selected(store)]).toEqual([false, [IND]]); // the pick is the store's
+});
 test("a mark stamped with an empty id (a missing key) is no checkbox and no hover target: it could never toggle", () => {
   // 2024 AFC, one cell per team, keyed by team only where the team has a net EPA: NE's is blanked, so its id is missing
   const svg = Plot.plot({

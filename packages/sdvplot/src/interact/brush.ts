@@ -108,11 +108,12 @@ const boxOf = (svg: Element): [number, number, number, number] => {
  * survives, and so does one made before that holds exactly the brushed ids: the store kept that set, so the brush
  * wrote none of its own. The drawn brush follows the store: when its region is cleared or replaced elsewhere, the
  * rectangle is removed with no second write. `empty` says what a brush holding no row means. The overlay is inserted
- * BEHIND the marks, so hovering a mark still reaches it. On a figure with a Plot `tip`, the press that starts a brush also pins the tip showing at
- * that moment (Plot's pointer toggles a sticky tip on `pointerdown`); the brush still works. Throws `InputError`
- * without `x` or `y`, or unless each brushed axis has a continuous (invertible) scale, in Node too. Returns a HANDLE,
- * not a teardown function, because a brush has more to do than tear down: `move` drives it and `destroy` removes it
- * (`linkSelection` and `linkCursor`, whose teardown is all they have, return a function). A no-op handle without a DOM.
+ * BEHIND the marks, so hovering a mark still reaches it. On a figure with a Plot `tip`, the press that starts a brush
+ * also pins the tip showing at that moment (Plot's pointer toggles a sticky tip on `pointerdown`); the brush still
+ * works. Throws `InputError` without `x` or `y`, or unless each brushed axis has a continuous (invertible) scale, in
+ * Node too. Returns a HANDLE, not a teardown function, because a brush has more to do than tear down: `move` drives it
+ * and `destroy` removes it (`linkSelection` and `linkCursor`, whose teardown is all they have, return a function). A
+ * no-op handle without a DOM.
  *
  * @example
  * ```ts

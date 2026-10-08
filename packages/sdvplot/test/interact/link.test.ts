@@ -108,6 +108,27 @@ test("a figure unlinked under the pointer and kept is left undimmed; a second te
   off();
   expect(hover(store)).toEqual(["LV"]);
 });
+test("a figure unlinked while a selection is active is left undimmed; the store keeps the selection (unlink and keep)", () => {
+  const svg = scatter();
+  const store = createSelection<Standing>();
+  const off = linkSelection(store, { figure: svg });
+  store.set({ selected: ["KC", "BUF"], predicate: (r) => r.wins >= 13 }); // a brush's write, or rows picked elsewhere
+  expect([svg.classList.contains("sdv-focus"), lit(svg)]).toEqual([true, ["KC", "BUF"]]);
+  const fn = vi.fn();
+  store.subscribe(fn);
+  off();
+  expect([svg.classList.contains("sdv-focus"), lit(svg)]).toEqual([false, []]);
+  expect([[...store.getState().selected], fn.mock.calls.length]).toEqual([["KC", "BUF"], 0]); // not this link's
+  // two links on one figure: it follows the store until the last of them goes
+  const a = linkSelection(store, { figure: svg });
+  const b = linkSelection(store, { figure: svg, hover: false });
+  a();
+  expect([svg.classList.contains("sdv-focus"), lit(svg)]).toEqual([true, ["KC", "BUF"]]);
+  a(); // a second teardown is a no-op: it never counts twice
+  expect(svg.classList.contains("sdv-focus")).toBe(true);
+  b();
+  expect([svg.classList.contains("sdv-focus"), lit(svg)]).toEqual([false, []]);
+});
 test("an axis logo is never a hover target: it carries an ESPN id, but it is a decoration (A39)", () => {
   const svg = Plot.plot({
     marks: [

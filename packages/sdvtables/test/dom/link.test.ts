@@ -62,6 +62,34 @@ test("brush on the figure → the table filters to the brushed rows and selects 
   expect(table.filteredCount).toBe(8); // NE, never brushable, is back too
   expect(svg.classList.contains("sdv-focus")).toBe(false);
 });
+test("a table unlinked mid-brush shows all its rows again and drops the hover it showed; the store keeps both", () => {
+  const svg = figure();
+  const table = createTable(keyed, STANDINGS);
+  const store = createSelection<Standing>();
+  const offFigure = linkSelection(store, { figure: svg });
+  const offTable = linkSelection(store, { table });
+  brushFilter(svg, store, { data: STANDINGS, x: "wins", y: "net_epa", id: "team" }).move({
+    x: [9.5, 16],
+    y: [0, 0.2],
+  });
+  store.set({ hover: ["LAC"] }); // another writer's hover
+  expect([table.filteredCount, table.getHover(), svg.classList.contains("sdv-focus")]).toEqual([4, "LAC", true]);
+  const region = store.getState().predicate;
+  offFigure(); // the figure is unlinked first: it un-dims while the table still follows the brush
+  expect([svg.classList.contains("sdv-focus"), lit(svg), table.filteredCount]).toEqual([false, [], 4]);
+  offTable();
+  expect([table.filteredCount, table.getHover()]).toEqual([8, null]);
+  const s = store.getState();
+  expect([s.predicate, [...s.hover], [...s.selected]]).toEqual([region, ["LAC"], ["KC", "LAC", "DEN", "BUF"]]);
+  // one call linking both restores both
+  const both = linked();
+  brushFilter(both.svg, both.store, { data: STANDINGS, x: "wins", y: "net_epa", id: "team" }).move({
+    x: [9.5, 16],
+    y: [0, 0.2],
+  });
+  both.off();
+  expect([both.table.filteredCount, both.svg.classList.contains("sdv-focus")]).toEqual([8, false]);
+});
 test("a brush resets the table to page 0 of the filtered rows (Review Focus 5)", () => {
   const { svg, table, store } = linked(3);
   table.setPage(2);
