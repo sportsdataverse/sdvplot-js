@@ -14,6 +14,12 @@ export type BinOf<T> = T[] & { x: number; y: number };
  * `main` `lib/data/aggregate.ts:101`), so equal hexes share one key. Throws `InputError` unless `radius` is a finite
  * number greater than 0.
  *
+ * Each point goes to the centre upstream d3-hexbin picks, which is close to but not exactly the nearest one: it
+ * compares two candidates' squared distances in lattice units (x over √3·radius, y over 1.5·radius; `:43`), so
+ * about 1-2% of points sit just outside the hexagon drawn for their bin (on the real BKN fixture, 22 of 2000 shots
+ * at radius 10 and 37 of 2000 at radius 15). That is faithful to d3-hexbin and to blazing-the-nets, which draw the
+ * same; do not "fix" it. Squares (`squarebin`) contain every point they bin.
+ *
  * @example
  * ```ts
  * import { hexbin } from "@sportsdataverse/sdvplot/bins";
