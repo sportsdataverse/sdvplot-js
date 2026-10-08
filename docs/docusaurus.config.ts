@@ -59,6 +59,7 @@ const config: Config = {
           `${sdvplot}/src/react/index.tsx`,
           `${sdvplot}/src/plot/index.ts`,
           `${sdvplot}/src/d3/index.ts`,
+          `${sdvplot}/src/shots/index.ts`,
           `${sdvplot}/src/testing/index.ts`,
         ],
         tsconfig: `${sdvplot}/tsconfig.json`,

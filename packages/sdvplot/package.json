@@ -26,6 +26,10 @@
       "types": "./dist/d3.d.ts",
       "import": "./dist/d3.js"
     },
+    "./shots": {
+      "types": "./dist/shots.d.ts",
+      "import": "./dist/shots.js"
+    },
     "./testing": {
       "types": "./dist/testing.d.ts",
       "import": "./dist/testing.js"
