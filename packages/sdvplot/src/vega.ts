@@ -37,6 +37,7 @@ export interface ImageLayer {
   data: { values: Record<string, unknown>[] };
   mark: {
     type: "image";
+    aria: true;
     width: number;
     height: number;
     aspect: true;
@@ -52,6 +53,7 @@ const AXIS_GAP = 6; // px between the axis line and the axis images (past Vega-L
 const LABEL_PADDING = 2; // px: Vega-Lite's default axis labelPadding
 const URL = "sdvplot_url";
 const TEAM = "sdvplot_team";
+const LABEL = "sdvplot_label"; // the accessible description, e.g. "KC logo"; Vega's automatic aria-label would read out the image URL
 const DISCRETE = new Set(["nominal", "ordinal"]);
 const UNIT_KEYS = ["mark", "encoding", "transform", "params", "projection", "view", "name"] as const; // what moves into the first layer when a unit spec is wrapped
 const COMPOSITE: Record<string, string> = {
@@ -220,6 +222,15 @@ function encodings(spec: VegaLiteSpec): { x: Enc; y: Enc } {
   }
   return out;
 }
+/** The user's own team / player value per placement: what the image's accessible description names. */
+function labelsOf(
+  rows: readonly Row[],
+  ps: readonly Placement[],
+  o: MarkOptions | HeadshotOptions,
+): string[] {
+  const key = "player" in o ? o.player : o.team;
+  return ps.map((p) => String(rows[p.index]?.[key]));
+}
 function layerOf(
   ps: readonly Placement[],
   kind: string,
@@ -228,6 +239,7 @@ function layerOf(
   alpha: number,
   x: Enc,
   y: Enc,
+  labels: readonly string[],
   embed?: ReadonlyMap<string, string>,
 ): ImageLayer {
   const hPx = h * chartH;
@@ -237,13 +249,14 @@ function layerOf(
     [unescapeField(String(y.field))]: jsonable(p.y),
     [URL]: sources[i]!,
     [TEAM]: p.id,
+    [LABEL]: `${labels[i]} ${kind}`,
   }));
   const widest = ps.length ? Math.max(...ps.map(aspect)) : 1;
   return {
     name: `sdvplot_${kind}`,
     data: { values },
-    mark: { type: "image", width: hPx * widest, height: hPx, aspect: true, opacity: alpha },
-    encoding: { x, y, url: { field: URL, type: "nominal" } },
+    mark: { type: "image", aria: true, width: hPx * widest, height: hPx, aspect: true, opacity: alpha },
+    encoding: { x, y, url: { field: URL, type: "nominal" }, description: { field: LABEL, type: "nominal" } },
   };
 }
 /** `spec` plus `layer` as a layered spec: a unit spec is wrapped, its unit keys moving into layer[0]; a layered spec
@@ -288,6 +301,7 @@ export function logoLayer(
     a,
     { field: "x", type: o.xType ?? "quantitative" },
     { field: "y", type: o.yType ?? "quantitative" },
+    labelsOf(rows, ps, o),
     o.embed,
   );
 }
@@ -305,7 +319,10 @@ function add(
   const base = structuredClone(spec);
   for (const ch of ["x", "y"] as const)
     if (Array.isArray(enc[ch].sort)) targetChannel(base, ch).sort = enc[ch].sort; // a count sort's list (sortOf)
-  return layered(base, layerOf(ps, kind, h, chartHeight(spec), a, enc.x, enc.y, o.embed));
+  return layered(
+    base,
+    layerOf(ps, kind, h, chartHeight(spec), a, enc.x, enc.y, labelsOf(rows, ps, o), o.embed),
+  );
 }
 export function withLogos(spec: VegaLiteSpec, rows: readonly Row[], o: MarkOptions): VegaLiteSpec;
 export function withLogos<F extends object>(spec: F, rows: readonly Row[], o: MarkOptions): F;
@@ -409,26 +426,39 @@ export function withAxisLogos(spec: object, axis: "x" | "y", o: AxisOptions): ob
   if (Array.isArray(sort)) target.sort = sort; // a count sort's list (sortOf)
   const key = unescapeField(String(enc.field));
   const sources = imageSources(ps, o.embed);
-  const values = ps.map((p, i) => ({ [key]: cats[pos[i]!], [URL]: sources[i]!, [TEAM]: p.id }));
+  const values = ps.map((p, i) => ({
+    [key]: cats[pos[i]!],
+    [URL]: sources[i]!,
+    [TEAM]: p.id,
+    [LABEL]: `${cats[pos[i]!]} ${o.markType ?? "logo"}`,
+  }));
   const channel: Enc = {
     field: enc.field ?? letter,
     type: String(enc.type),
     ...("sort" in enc ? { sort } : {}),
   };
   const url = { field: URL, type: "nominal" as const };
+  const description = { field: LABEL, type: "nominal" as const };
   const layer: ImageLayer =
     letter === "x"
       ? {
           name: "sdvplot_axis_x",
           data: { values },
-          mark: { type: "image", width: hPx * widest, height: hPx, aspect: true, baseline: "top" },
-          encoding: { x: channel, y: { value: chartH + AXIS_GAP }, url },
+          mark: {
+            type: "image",
+            aria: true,
+            width: hPx * widest,
+            height: hPx,
+            aspect: true,
+            baseline: "top",
+          },
+          encoding: { x: channel, y: { value: chartH + AXIS_GAP }, url, description },
         }
       : {
           name: "sdvplot_axis_y",
           data: { values },
-          mark: { type: "image", width: hPx * widest, height: hPx, aspect: true, align: "right" },
-          encoding: { y: channel, x: { value: -AXIS_GAP }, url },
+          mark: { type: "image", aria: true, width: hPx * widest, height: hPx, aspect: true, align: "right" },
+          encoding: { y: channel, x: { value: -AXIS_GAP }, url, description },
         };
   return layered(base, layer);
 }
