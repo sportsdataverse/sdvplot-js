@@ -1,8 +1,8 @@
 // Golden outputs of blazing-the-nets' OWN shot-chart code on real 2026 NBA shots (spec §7: real data only).
 // Usage (repo root): SHOTS_PARQUET=<path to shots_2026.parquet> [BTN_REPO=../blazing-the-nets] pnpm oracle:shots
 // Writes fixtures/shots/{nba-2026-bkn-2000-columns.json, nba-2026-league.json, oracle.json} (blazing-the-nets' own
-// output) and nba-2026-league-square.json (context DATA binned by sdvplot's own squarebin, not an oracle; J38 S16).
-// Never hand-edit them.
+// output), nba-2026-league-square.json (context DATA binned by sdvplot's own squarebin, not an oracle; J38 S16) and
+// nba-2026-bkn-games.json (the BKN rows of blazing-the-nets' game-log fixture). Never hand-edit them.
 import { execFileSync, execSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
@@ -19,6 +19,7 @@ const MAIN = "31427b8"; // blazing-the-nets main: lib/data/aggregate.ts, lib/cha
 const MASTER = "35dfda6"; // blazing-the-nets master: src/utils/visuals/*.ts
 const SHOTS_SHA = "edb7a9fe8ecef1095fa6b520543dfa6ea285cecae33d0563a1e76b6fa17ab002"; // nba_stats_shots/shots_2026.parquet
 const BKN_SHA = "5322edd790cd828cb5b6593bdcb1dd3ba50d0cc10680ee1ba4dc5dbaaa9f11cb"; // btn test/fixtures/shots_2026_bkn_2000.parquet
+const GAMES_SHA = "e67be4feaa2082fdf2834837e36c273939c5e98e1e00d8e0aaf7471c0769b47f"; // btn test/fixtures/game_logs_2026_bkn.parquet
 // The versions blazing-the-nets main resolves (its package-lock.json); d3-hexbin is the one sdvplot-js never installs.
 const D3 = [
   "d3-hexbin@0.2.2",
@@ -41,12 +42,19 @@ interface ShotLite {
   shot_result: string;
 }
 const sha256 = (b: Buffer): string => createHash("sha256").update(b).digest("hex");
-async function readShots(path: string, want: string): Promise<ShotLite[]> {
+async function readParquet(
+  path: string,
+  want: string,
+  columns: string[],
+): Promise<Record<string, unknown>[]> {
   const buf = readFileSync(path);
   if (sha256(buf) !== want) throw new Error(`${path}: sha256 ${sha256(buf)} is not the pinned ${want}`);
   const file = buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer;
+  return (await parquetReadObjects({ file, compressors, columns })) as Record<string, unknown>[];
+}
+async function readShots(path: string, want: string): Promise<ShotLite[]> {
   const columns = ["game_id", "x_legacy", "y_legacy", "shot_distance", "shot_value", "shot_result"];
-  const rows = (await parquetReadObjects({ file, compressors, columns })) as Record<string, unknown>[];
+  const rows = await readParquet(path, want, columns);
   // hyparquet returns INT64 as bigint: one dtype per id at the boundary.
   return rows.map((r) => ({
     game_id: String(r.game_id),
@@ -66,6 +74,29 @@ if (!shotsPath)
 // Regular season only, as blazing-the-nets builds its league context (lib/pageData.ts:43, lib/data/shots.ts:46-53).
 const league = (await readShots(shotsPath, SHOTS_SHA)).filter((s) => s.game_id.startsWith("002"));
 const bkn = await readShots(join(BTN, "test/fixtures/shots_2026_bkn_2000.parquet"), BKN_SHA);
+// The game log holds both teams' row of each game; keep Brooklyn's, in file order. Every column is a string (UTF8).
+const gamesFile = "test/fixtures/game_logs_2026_bkn.parquet";
+const games = (
+  await readParquet(join(BTN, gamesFile), GAMES_SHA, [
+    "game_id",
+    "team_abbreviation",
+    "game_date",
+    "matchup",
+    "wl",
+  ])
+)
+  .filter((g) => g.team_abbreviation === "BKN")
+  .map((g) => ({
+    game_id: String(g.game_id),
+    game_date: String(g.game_date),
+    matchup: String(g.matchup),
+    wl: String(g.wl),
+  }));
+const shotGames = new Set(bkn.map((s) => s.game_id));
+if (games.length !== shotGames.size || games.some((g) => !shotGames.has(g.game_id)))
+  throw new Error(
+    `${gamesFile}: its ${games.length} BKN games are not the ${shotGames.size} games of the shots`,
+  );
 
 const tmp = mkdtempSync(join(tmpdir(), "sdv-shots-oracle-"));
 try {
@@ -142,6 +173,7 @@ try {
   };
   write("nba-2026-bkn-2000-columns.json", {
     source: source.bkn,
+    game_id: bkn.map((s) => s.game_id),
     x_legacy: bkn.map((s) => s.x_legacy),
     y_legacy: bkn.map((s) => s.y_legacy),
     shot_distance: bkn.map((s) => s.shot_distance),
@@ -193,6 +225,10 @@ try {
       binLeftRight: B.binLeftRight(master, 35),
       ribbon: R.ribbonShots(master, 35),
     },
+  });
+  write("nba-2026-bkn-games.json", {
+    source: { file: `blazing-the-nets ${gamesFile}`, sha256: GAMES_SHA, rows: games.length },
+    games,
   });
   write("nba-2026-league-square.json", {
     source: {

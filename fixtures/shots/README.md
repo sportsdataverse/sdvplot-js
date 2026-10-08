@@ -18,8 +18,8 @@ blazing-the-nets' key `hexes` for the cells; the test loader (`packages/sdvplot/
   and master @ `35dfda6` (`src/utils/visuals/{bin,ribbonShots}.ts`), run unmodified with d3-hexbin 0.2.2, d3-array 3.2.4,
   d3-delaunay 6.0.4, d3-scale 4.0.2, d3-scale-chromatic 3.1.0, d3-selection 3.0.0, d3-shape 3.2.0, d3-transition 3.0.1
   (main's package-lock.json).
-- Files: `nba-2026-bkn-2000-columns.json` (27,406 B), `nba-2026-league.json` (91,259 B), `oracle.json` (138,822 B),
-  `nba-2026-league-square.json` (66,234 B).
+- Files: `nba-2026-bkn-2000-columns.json` (53,418 B; 27,406 B before `game_id`), `nba-2026-league.json` (91,259 B), `oracle.json` (138,822 B),
+  `nba-2026-league-square.json` (66,234 B), `nba-2026-bkn-games.json` (2,146 B).
 - `nba-2026-league-square.json` is DATA, not an oracle (spec J38, ruling S16). blazing-the-nets has no square bins, so
   nothing external checks it: the same 219,159 regular-season shots (main's `onCourt` filter) binned by sdvplot's OWN
   `squarebin` into squares of a radius-10 hexagon's area (`binner({ shape: "square", radius: 10, equalArea: true })`,
@@ -27,3 +27,13 @@ blazing-the-nets' key `hexes` for the cells; the test loader (`packages/sdvplot/
   context square charts compare a player against; the tests check it by invariants (every shot and make counted once,
   the same totals as `hex10`), never as an oracle.
 - Command: `SHOTS_PARQUET=<path> [BTN_REPO=../blazing-the-nets] pnpm oracle:shots`; run date: 2026-10-07, Windows 10 (Git Bash, Node 24.15.0, tsx 4.23.15).
+- `game_id` (2026-10-08, sdvplot-js Phase 8 amendment A32): `nba-2026-bkn-2000-columns.json` gains a `game_id` column, the
+  release's 10-character string id read from the same parquet (one dtype at the boundary: a string, never a number). Every
+  other column is byte-for-byte what it was, and the other three files did not change. Measured: 24 games, 1998 shots
+  within 35 ft, 890 made, max distance 39 ft, 76 at `x_legacy == 0`.
+- `nba-2026-bkn-games.json`: the 24 BKN rows (`team_abbreviation == "BKN"`, file order, which is by date) of
+  blazing-the-nets `test/fixtures/game_logs_2026_bkn.parquet` (main @ 31427b8, git blob `9bd1135`, sha256
+  `e67be4feaa2082fdf2834837e36c273939c5e98e1e00d8e0aaf7471c0769b47f`; 48 rows, both teams of each game), as
+  `{game_id, game_date, matchup, wl}` strings. They are exactly the 24 games of the 2000 shots (the script throws
+  otherwise); 2025-10-22 to 2025-12-18, 6 W and 18 L. Same command; regenerating twice gives byte-identical files
+  (Windows 10, Git Bash, Node 24.15.0, tsx 4.23.15).
