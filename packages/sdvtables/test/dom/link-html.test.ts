@@ -232,6 +232,39 @@ test("after one rows change has rendered, a click then a hover in one frame both
   expect(table.getHover()).toBe("DEN");
   expect([...table.getSelection()]).toEqual(["KC"]);
 });
+test("a keyed live feed that re-sends the same rows as new objects keeps the next event: LV's row reads LV", () => {
+  const { table, el } = bare();
+  table.setRows(STANDINGS.map((r) => ({ ...r }))); // a poll: equal rows, new objects, the same keys in the same order
+  const lv = rowAt(el, 3);
+  over(lv.querySelector("td"));
+  expect(table.getHover()).toBe("LV");
+  click(lv.querySelector("td"));
+  expect([...table.getSelection()]).toEqual(["LV"]);
+  expect(lv.isConnected).toBe(true); // each row keeps its id, so the body was not flushed under the pointer
+});
+// without a rowKey a row's id is its index: an id compared alone would read the old LV row as whatever is at index 3
+const keyless = defineTable<Standing>()
+  .columns((c) => [c.text("team"), c.int("wins"), c.colorPills("net_epa", { digits: 3 })])
+  .build();
+test.each([
+  ["re-sent as new objects", () => STANDINGS.map((r) => ({ ...r }))],
+  ["reversed", () => [...STANDINGS].reverse()], // index 3 becomes BUF
+])(
+  "without a rowKey, rows %s in the pending frame: the old LV row never reads as another team",
+  (_, next) => {
+    const table = createTable(keyless, STANDINGS);
+    const el = mount(renderHTML(table));
+    hydrate(el, table);
+    const lv = rowAt(el, 3).querySelector("td");
+    table.setRows(next());
+    over(lv);
+    click(lv);
+    const teams = [table.getHover(), ...table.getSelection()]
+      .filter((id) => id !== null)
+      .map((id) => table.allRows[Number(id)]?.team);
+    expect(teams.filter((t) => t !== "LV")).toEqual([]);
+  },
+);
 
 // Brooklyn's 2025-26 shots (fixtures/shots): no rowKey, so a row's id is its index into BKN, as linkIds stamps
 const shotSpec = defineTable<BknShot>()

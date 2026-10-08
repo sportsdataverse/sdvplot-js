@@ -87,9 +87,16 @@ export function hydrate<Row>(el: Element, table: Table<Row>): () => void {
   // a row event while a render that changes the rows is pending would read the old body's data-row against the new
   // rows (LV's row as BUF): render first, so the target is a current row, or a replaced one that names no row. A
   // pending render that keeps the rows (a selection, the cursor) leaves data-row right, and the target in place.
+  // A keyed row re-sent as a new object (a live feed) keeps its id, so the old body's data-row still names it: it moved
+  // only when its object AND its id differ. Never ids saved at render: without a rowKey those are positions, so the
+  // old row 3 would read as whatever is at index 3 now; the engine's id of an old object is "" (gone) or its new index
+  const same = (r: Row, i: number): boolean => {
+    const was = drawn[i] as Row; // the lengths match
+    return r === was || table.rowId(r) === table.rowId(was);
+  };
   const flush = (): boolean => {
     const rows = table.rows;
-    if (!cancel || (rows.length === drawn.length && rows.every((r, i) => r === drawn[i]))) return false;
+    if (!cancel || (rows.length === drawn.length && rows.every(same))) return false;
     cancel();
     render();
     return true;
