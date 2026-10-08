@@ -70,6 +70,7 @@ type Enc = Record<string, unknown> & {
   timeUnit?: unknown;
   aggregate?: unknown;
   bin?: unknown;
+  stack?: unknown;
   axis?: unknown;
   scale?: { domain?: unknown };
 };
@@ -119,21 +120,50 @@ function chartHeight(spec: VegaLiteSpec): number {
     (spec.config?.view as { continuousHeight?: unknown } | undefined)?.continuousHeight ?? DEFAULT_HEIGHT;
   return pixels(h, "config.view.continuousHeight");
 }
-/** The discrete axis' sort, when Vega-Lite keeps it once another layer shares the scale (it drops the rest). */
-function sortOf(enc: Enc, channel: string): unknown {
-  const sort = "sort" in enc ? enc.sort : "ascending";
+const STACKED_BY_DEFAULT = new Set(["bar", "area", "arc"]); // Vega-Lite stacks a quantitative measure on these marks
+/** Vega-Lite's sort-by-channel shorthand ("y", "-y") as the field sort it compiles to: the channel's aggregate, else
+ *  "sum" for a stacked measure (a bar, area or arc mark unless the channel sets `stack: null`), else "min". */
+function byChannel(sort: string, u: VegaLiteSpec): Record<string, unknown> {
+  const desc = sort.startsWith("-");
+  const def = (u.encoding as Record<string, unknown> | undefined)?.[desc ? sort.slice(1) : sort] as
+    | Enc
+    | undefined;
+  if (def?.field === undefined && def?.aggregate === undefined)
+    throw new InputError(
+      `the sort ${JSON.stringify(sort)} names a channel without a field; sort with an explicit list (sort: [...])`,
+    );
+  // a shared encoding on a layered spec is stacked when any layer under it stacks
+  const marks = units(u).map((v) =>
+    String(typeof v.mark === "object" && v.mark !== null ? (v.mark as { type?: unknown }).type : v.mark),
+  );
+  const stacked =
+    def.type === "quantitative" &&
+    !def.bin &&
+    ("stack" in def ? Boolean(def.stack) : marks.some((m) => STACKED_BY_DEFAULT.has(m)));
+  return {
+    ...(def.field !== undefined ? { field: def.field } : {}),
+    op: def.aggregate ?? (stacked ? "sum" : "min"),
+    ...(desc ? { order: "descending" } : {}),
+  };
+}
+/** The discrete axis' sort, when Vega-Lite keeps it once another layer shares the scale (it drops the rest).
+ *  `u` is the unit encoding the channel: the shorthand ("-y") reads its sibling channel and comes back as a field sort. */
+function sortOf(enc: Enc, channel: string, u: VegaLiteSpec): unknown {
+  const given = "sort" in enc ? enc.sort : "ascending";
+  const sort =
+    typeof given === "string" && given !== "ascending" && given !== "descending"
+      ? byChannel(given, u)
+      : given;
+  const op = String((sort as { op?: unknown } | null)?.op);
   const kept =
     sort === null ||
     sort === "ascending" ||
     sort === "descending" ||
     Array.isArray(sort) ||
-    (typeof sort === "object" &&
-      sort !== null &&
-      "field" in sort &&
-      ["count", "min", "max"].includes(String((sort as { op?: unknown }).op)));
+    (typeof sort === "object" && ("field" in sort || op === "count") && ["count", "min", "max"].includes(op));
   if (!kept)
     throw new InputError(
-      `Vega-Lite drops the ${channel} sort ${JSON.stringify(sort)} once a layer is added; sort with an explicit list (sort: [...]) or by a field with op "count", "min" or "max", then add the marks`,
+      `Vega-Lite drops the ${channel} sort ${JSON.stringify(given)}${given === sort ? "" : ` (${JSON.stringify(sort)})`} once a layer is added; sort with an explicit list (sort: [...]) or by a field with op "count", "min" or "max", then add the marks`,
     );
   return sort;
 }
@@ -141,7 +171,7 @@ function sortOf(enc: Enc, channel: string): unknown {
 function encodings(spec: VegaLiteSpec): { x: Enc; y: Enc } {
   const out = {} as { x: Enc; y: Enc };
   for (const ch of ["x", "y"] as const) {
-    const enc = unit(spec, ch)[1];
+    const [u, enc] = unit(spec, ch);
     for (const key of ["aggregate", "bin"] as const) {
       const v = enc[key];
       if (v !== undefined && v !== null && v !== false && v !== "binned")
@@ -151,7 +181,7 @@ function encodings(spec: VegaLiteSpec): { x: Enc; y: Enc } {
     }
     const e: Enc = { field: enc.field ?? ch, type: enc.type ?? "quantitative" };
     if (enc.timeUnit !== undefined) e.timeUnit = enc.timeUnit;
-    if (DISCRETE.has(String(e.type)) && "sort" in enc) e.sort = sortOf(enc, ch);
+    if (DISCRETE.has(String(e.type)) && "sort" in enc) e.sort = sortOf(enc, ch, u);
     out[ch] = e;
   }
   return out;
@@ -182,9 +212,19 @@ function layerOf(
     encoding: { x, y, url: { field: URL, type: "nominal" } },
   };
 }
-/** `spec` plus `layer` as a layered spec: an already-layered spec gains one layer; a unit spec is wrapped, its unit keys moving into layer[0]. */
+/** `spec` plus `layer` as a layered spec: a unit spec is wrapped, its unit keys moving into layer[0]; a layered spec
+ *  gains one layer. A layered spec's top-level encoding and transform move into a group around its own layers, so the
+ *  image layer inherits neither (a shared colour field would add an empty legend entry for the images). */
 function layered(spec: VegaLiteSpec, layer: ImageLayer): VegaLiteSpec {
-  if (Array.isArray(spec.layer)) return { ...spec, layer: [...spec.layer, layer] };
+  if (Array.isArray(spec.layer)) {
+    const { encoding, transform, ...top } = spec;
+    if (encoding === undefined && transform === undefined) return { ...spec, layer: [...spec.layer, layer] };
+    const group = {
+      ...(transform !== undefined ? { transform } : {}),
+      ...(encoding !== undefined ? { encoding } : {}),
+    };
+    return { ...top, layer: [{ ...group, layer: spec.layer }, layer] };
+  }
   const top: VegaLiteSpec = {};
   const first: VegaLiteSpec = {};
   for (const [k, v] of Object.entries(spec))
@@ -292,6 +332,9 @@ function targetChannel(spec: VegaLiteSpec, channel: "x" | "y"): Enc {
   throw new InputError(`the spec has no ${channel} encoding with a field`);
 }
 
+/** Team logos (or wordmarks, `markType`) in place of the labels of a nominal or ordinal axis: a `labelExpr` blanks the
+ *  resolved labels and an image layer draws them. Assumes the default axis orient (x at the bottom, y on the left) and
+ *  that `height` is the plot height: an axis with `orient: "top"` or `"right"` gets its logos on the opposite side. */
 export function withAxisLogos(spec: VegaLiteSpec, axis: "x" | "y", o: AxisOptions): VegaLiteSpec;
 export function withAxisLogos<F extends object>(spec: F, axis: "x" | "y", o: AxisOptions): F;
 export function withAxisLogos(spec: object, axis: "x" | "y", o: AxisOptions): object {
@@ -302,7 +345,7 @@ export function withAxisLogos(spec: object, axis: "x" | "y", o: AxisOptions): ob
   if (!DISCRETE.has(String(enc.type)))
     throw new InputError(`withAxisLogos needs a nominal or ordinal ${letter} axis (team names on the axis)`);
   if (enc.axis === null) throw new InputError(`the chart's ${letter} axis is hidden (axis: null)`);
-  const sort = sortOf(enc, letter);
+  const sort = sortOf(enc, letter, u);
   const cats = categoriesOf(s, u, enc);
   const ps = axisPlacements(cats.map(String), letter, o);
   const chartH = chartHeight(s);

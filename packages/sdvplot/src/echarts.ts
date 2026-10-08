@@ -35,9 +35,10 @@ export interface EChartsOption {
   color?: readonly string[];
   grid?: Record<string, unknown>;
 }
+/** No `name`: ECharts leaves an unnamed series out of the default legend (measured, echarts 6.1.0), so `legend: {}`
+ *  lists only the caller's series; the `id` carries the bookkeeping. */
 export interface LogoSeries {
   id: string;
-  name: string;
   type: "custom";
   coordinateSystem: "cartesian2d";
   xAxisIndex?: number;
@@ -124,7 +125,6 @@ function add(
   const sources = imageSources(ps, o.embed);
   const series: LogoSeries = {
     id: `sdvplot:${kind}`,
-    name: `sdvplot:${kind}`,
     type: "custom",
     coordinateSystem: "cartesian2d",
     ...(o.xAxisIndex !== undefined ? { xAxisIndex: o.xAxisIndex } : {}),
@@ -227,7 +227,8 @@ export function withAxisLogos(option: object, axis: "x" | "y", o: AxisLogoOption
       `chartHeight must be a positive number of pixels, got ${JSON.stringify(o.chartHeight)}`,
     );
   const opt = optionOf(option);
-  const ax = axisAt(opt, letter, o.axisIndex ?? 0);
+  const index = o.axisIndex ?? 0;
+  const ax = axisAt(opt, letter, index);
   const cats = categories(ax);
   const ps = axisPlacements(cats, letter, o);
   if (ps.length === 0) return opt;
@@ -266,9 +267,9 @@ export function withAxisLogos(option: object, axis: "x" | "y", o: AxisLogoOption
   // axis; dim 1 is "-" (ECharts' empty value) on the value axis, so the series never stretches that axis' extent (A22).
   const book: LogoSeries = {
     id: `sdvplot:axis:${letter}`,
-    name: `sdvplot:axis:${letter}`,
     type: "custom",
     coordinateSystem: "cartesian2d",
+    ...(index === 0 ? {} : letter === "x" ? { xAxisIndex: index } : { yAxisIndex: index }), // visibleAxisLabels reads it
     data: ps.map((p, i) => [Number(letter === "x" ? p.x : p.y), "-", sources[i]!, p.id, aspect(p), h, 1]),
     encode: letter === "x" ? { x: 0, y: 1 } : { x: 1, y: 0 },
     z: 0,
@@ -290,20 +291,21 @@ export function teamColorPalette(
 ): string[] {
   return colorList(league, teams, o).map((c) => c ?? o.fallback ?? "#808080");
 }
+const bookOf = (option: EChartsOption, letter: "x" | "y"): LogoSeries | undefined =>
+  (option.series ?? []).find((s) => s.id === `sdvplot:axis:${letter}`) as LogoSeries | undefined;
 /** Test hook: [teamId, category index, height] per axis image, in tick order. */
 export function drawnAxisMarks(option: EChartsOption, axis: "x" | "y"): DrawnAxisMark[] {
   const letter = axisLetter(axis);
-  const book = (optionOf(option).series ?? []).find((s) => s.id === `sdvplot:axis:${letter}`) as
-    | LogoSeries
-    | undefined;
-  return (book?.data ?? [])
+  return (bookOf(optionOf(option), letter)?.data ?? [])
     .map((d): DrawnAxisMark => [String(d[Dim.Team]), Number(d[Dim.X]), Number(d[Dim.Height])])
     .sort((a, b) => a[1] - b[1]);
 }
-/** Test hook: the category labels the formatter still shows as text. */
+/** Test hook: the category labels the formatter still shows as text, on the axis `withAxisLogos` drew on (`axisIndex`). */
 export function visibleAxisLabels(option: EChartsOption, axis: "x" | "y"): string[] {
   const letter = axisLetter(axis);
   const opt = optionOf(option);
+  const book = bookOf(opt, letter);
   const drawn = new Set(drawnAxisMarks(opt, letter).map((m) => m[1]));
-  return categories(axisAt(opt, letter, 0)).filter((_, i) => !drawn.has(i));
+  const index = (letter === "x" ? book?.xAxisIndex : book?.yAxisIndex) ?? 0;
+  return categories(axisAt(opt, letter, index)).filter((_, i) => !drawn.has(i));
 }

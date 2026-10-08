@@ -106,7 +106,7 @@ describe("withLogos", () => {
       data: { values: [{ team: "KC", w: 12 }] },
       mark: "bar",
       encoding: {
-        x: { field: "team", type: "nominal", sort: "-y" },
+        x: { field: "team", type: "nominal", sort: { field: "w", op: "mean" } },
         y: { field: "w", type: "quantitative" },
       },
     };
@@ -118,16 +118,135 @@ describe("withLogos", () => {
         league: "nfl",
         height: 0.1,
       }),
-    ).toThrow(/drops the x sort "-y" once a layer is added; sort with an explicit list/);
-    expect(() =>
-      withLogos(bars, [{ x: "KC", y: 12, team: KC }], { x: "x", y: "y", team: "team", league: "nfl" }),
-    ).toThrow(InputError);
+    ).toThrow(
+      /drops the x sort \{"field":"w","op":"mean"\} once a layer is added; sort with an explicit list/,
+    );
+    // the shorthand "-y" on a summed y compiles to op "sum", which Vega-Lite drops as well
+    const summed = {
+      ...bars,
+      encoding: {
+        x: { field: "team", type: "nominal", sort: "-y" },
+        y: { field: "w", aggregate: "sum", type: "quantitative" },
+      },
+    };
+    expect(() => withAxisLogos({ ...summed, height: 100 }, "x", { league: "nfl" })).toThrow(
+      /drops the x sort "-y"/,
+    );
     const kept = withLogos(
       { ...bars, encoding: { ...bars.encoding, x: { field: "team", type: "nominal", sort: ["KC"] } } },
       [{ x: "KC", y: 12, team: KC }],
       { x: "x", y: "y", team: "team", league: "nfl" },
     );
     expect((kept.layer![1] as { encoding: { x: { sort: unknown } } }).encoding.x.sort).toEqual(["KC"]);
+  });
+
+  test('the channel sort shorthand ("-y", "x") is read as the field sort Vega-Lite compiles it to', () => {
+    const sortOfLayer = (s: VegaLiteSpec, ch: "x" | "y") =>
+      (s.layer!.at(-1) as { encoding: Record<string, { sort?: unknown }> }).encoding[ch]!.sort;
+    const warningsOf = (s: VegaLiteSpec): unknown[] => {
+      const warnings: unknown[] = [];
+      const logger = {
+        level: () => 0,
+        error(...a: unknown[]) {
+          warnings.push(a);
+          return this;
+        },
+        warn(...a: unknown[]) {
+          warnings.push(a);
+          return this;
+        },
+        info() {
+          return this;
+        },
+        debug() {
+          return this;
+        },
+      };
+      compile(s as Parameters<typeof compile>[0], { logger });
+      return warnings;
+    };
+    const dots: VegaLiteSpec = {
+      height: 100,
+      data: { values: [{ team: "KC", w: 12 }] },
+      mark: "point",
+      encoding: {
+        x: { field: "team", type: "nominal", sort: "-y" },
+        y: { field: "w", type: "quantitative" },
+      },
+    };
+    const out = withLogos(dots, [{ x: "KC", y: 12, team: KC }], {
+      x: "x",
+      y: "y",
+      team: "team",
+      league: "nfl",
+    });
+    expect(sortOfLayer(out, "x")).toEqual({ field: "w", op: "min", order: "descending" });
+    expect(warningsOf(out)).toEqual([]); // both layers sort the shared x scale the same way: nothing dropped
+    const counted = {
+      ...dots,
+      mark: "bar",
+      encoding: { ...dots.encoding, y: { aggregate: "count", type: "quantitative" } },
+    };
+    const axis = withAxisLogos(counted, "x", { league: "nfl" });
+    expect(sortOfLayer(axis, "x")).toEqual({ op: "count", order: "descending" });
+    expect(warningsOf(axis)).toEqual([]);
+    const ticks: VegaLiteSpec = {
+      ...dots,
+      mark: "tick",
+      encoding: { y: { field: "team", type: "nominal", sort: "x" }, x: { field: "w", type: "quantitative" } },
+    };
+    expect(sortOfLayer(withAxisLogos(ticks, "y", { league: "nfl" }), "y")).toEqual({ field: "w", op: "min" });
+    // a bar stacks its measure, so "-y" sums it: Vega-Lite drops that sort too (measured: "Dropping sort property")
+    expect(() => withAxisLogos({ ...dots, mark: "bar" }, "x", { league: "nfl" })).toThrow(
+      'drops the x sort "-y" ({"field":"w","op":"sum","order":"descending"}) once a layer is added',
+    );
+    const unstacked = {
+      ...dots,
+      mark: "bar",
+      encoding: { ...dots.encoding, y: { field: "w", type: "quantitative", stack: null } },
+    };
+    expect(sortOfLayer(withAxisLogos(unstacked, "x", { league: "nfl" }), "x")).toMatchObject({ op: "min" });
+    const noColor = {
+      ...dots,
+      encoding: { ...dots.encoding, x: { field: "team", type: "nominal", sort: "-color" } },
+    };
+    expect(() => withAxisLogos(noColor, "x", { league: "nfl" })).toThrow(
+      /sort "-color" names a channel without a field/,
+    );
+  });
+
+  test("a layered input's top-level encoding and transform stay with its own layers, not the image layer", () => {
+    const spec: VegaLiteSpec = {
+      data: { values: [{ epa: 10, sr: -3, k: "a" }] },
+      transform: [{ filter: "datum.k === 'a'" }],
+      encoding: {
+        x: { field: "epa", type: "quantitative" },
+        y: { field: "sr", type: "quantitative" },
+        color: { field: "k", type: "nominal" },
+      },
+      layer: [{ mark: "point" }, { mark: "line" }],
+    };
+    const before = structuredClone(spec);
+    const out = withLogos(spec, ROWS, { x: "x", y: "y", team: "team", league: "nfl" });
+    expect(spec).toEqual(before);
+    expect(out).not.toHaveProperty("encoding");
+    expect(out).not.toHaveProperty("transform");
+    expect(out.data).toEqual(spec.data);
+    expect(out.layer).toEqual([
+      { transform: spec.transform, encoding: spec.encoding, layer: spec.layer },
+      expect.objectContaining({ name: "sdvplot_logo" }),
+    ]);
+    expect(drawnMarks(out)).toHaveLength(2);
+    const vg = compile(out as Parameters<typeof compile>[0]).spec;
+    const color = vg.scales!.find((s) => s.name === "color")!;
+    // the images' dataset (and what derives from it) feeds no colour category: no empty legend entry
+    const images = vg.data!.find((d) => JSON.stringify(d).includes("sdvplot_url"))!.name;
+    const fromImages = [
+      images,
+      ...vg.data!.filter((d) => "source" in d && d.source === images).map((d) => d.name),
+    ];
+    for (const name of fromImages) expect(JSON.stringify(color.domain)).not.toContain(`"data":"${name}"`);
+    expect(JSON.stringify(color.domain)).toContain('"field":"k"');
   });
 
   test("a discrete y axis needs an explicit height; aggregate/bin encodings cannot be copied; facet/concat/repeat refused", () => {

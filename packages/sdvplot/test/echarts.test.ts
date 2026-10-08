@@ -316,3 +316,42 @@ describe("withAxisLogos", () => {
     expect(c[1]).toBe("#999999");
   });
 });
+
+describe("helper series", () => {
+  test("never reach a default legend: the rendered legend lists the caller's series only", () => {
+    const base: EChartsOption & { legend: Record<string, never> } = {
+      legend: {},
+      xAxis: { type: "category", data: ["KC", "BUF"] },
+      yAxis: { type: "value" },
+      series: [{ type: "bar", name: "Wins", data: [12, 11] }],
+    };
+    const o = { x: "x", y: "y", team: "team", league: "nfl" } as const;
+    const rows = [
+      { x: "KC", y: 12, team: KC },
+      { x: "BUF", y: 11, team: BUF },
+    ];
+    const out = withAxisLogos(withLogos(base, rows, o), "x", { league: "nfl" });
+    expect(out.series).toHaveLength(3);
+    const chart = echarts.init(null, null, { renderer: "svg", ssr: true, width: 600, height: 400 });
+    chart.setOption({ ...out, animation: false } as echarts.EChartsOption);
+    const svg = chart.renderToSVGString();
+    chart.dispose();
+    expect(svg).toContain(">Wins<"); // the legend renders
+    expect(svg).not.toContain("sdvplot");
+  });
+
+  test("visibleAxisLabels reads the axis withAxisLogos drew on (axisIndex)", () => {
+    const option: EChartsOption = {
+      xAxis: [
+        { type: "category", data: ["Q1", "Q2", "Q3"] },
+        { type: "category", data: ["KC", "XXX", "BUF"] },
+      ],
+      yAxis: { type: "value" },
+      series: [{ type: "bar", data: [1, 2, 3] }],
+    };
+    const out = withAxisLogos(option, "x", { league: "nfl", axisIndex: 1 });
+    expect(out.series!.at(-1)).toMatchObject({ id: "sdvplot:axis:x", xAxisIndex: 1 });
+    expect(visibleAxisLabels(out, "x")).toEqual(["XXX"]);
+    expect(visibleAxisLabels(withAxisLogos(option, "x", { league: "nfl" }), "x")).toEqual(["Q1", "Q2", "Q3"]);
+  });
+});
