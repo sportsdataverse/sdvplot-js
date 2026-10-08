@@ -124,6 +124,25 @@ test("teardown removes listeners and drops a pending render", async () => {
   el.querySelector<HTMLButtonElement>('[data-sdv-sort="wins"]')?.click();
   expect(t.state.sort).toEqual({ col: "wins", dir: "asc" }); // the click reached no listener
 });
+test("I2: hydrating an element again replaces the first binding, so one click acts once; the stale teardown is harmless", async () => {
+  const t = createTable({ ...spec, rowKey: "team" }, rows);
+  const el = mount(renderHTML(t));
+  const first = hydrate(el, t);
+  const second = hydrate(el, t); // HMR, client navigation, or an effect with no cleanup
+  el.querySelector<HTMLButtonElement>('[data-sdv-sort="wins"]')?.click();
+  await frame();
+  expect(t.state.sort).toEqual({ col: "wins", dir: "asc" }); // one step of asc → desc → none, not two
+  el.querySelector<HTMLElement>('[data-sdv-body] tr[data-row="0"] td')?.click(); // LV, fewest wins
+  await frame();
+  expect(t.getSelection()).toEqual(new Set(["LV"])); // toggled once, not on and off again
+  first(); // the replaced binding's teardown must not unbind its successor
+  el.querySelector<HTMLButtonElement>('[data-sdv-sort="wins"]')?.click();
+  expect(t.state.sort).toEqual({ col: "wins", dir: "desc" });
+  second();
+  el.querySelector<HTMLButtonElement>('[data-sdv-sort="wins"]')?.click();
+  expect(t.state.sort).toEqual({ col: "wins", dir: "desc" }); // torn down: the click reached no listener
+  hydrate(el, t)(); // a fresh binding after teardown works, and tears down
+});
 test("hydrate throws on markup without a body block", () => {
   document.body.innerHTML = "<div class='sdvt'></div>";
   const el = document.body.firstElementChild as HTMLElement;

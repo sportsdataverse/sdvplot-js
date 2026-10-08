@@ -4,6 +4,9 @@ import { captureFocus, handleClick, handleHover, handleInput, handleKeydown } fr
 import { pagerLabel, renderToolbar, tableRenderOptions } from "./interactive.js";
 import { renderParts, tableHTML } from "./parts.js";
 
+/** I2: each element's live binding, so hydrating it again tears the old one down first. */
+const live = new WeakMap<Element, () => void>();
+
 const edge = (button: Element | null, atEdge: boolean): void => {
   if (atEdge) button?.setAttribute("aria-disabled", "true");
   else button?.removeAttribute("aria-disabled");
@@ -16,7 +19,9 @@ const edge = (button: Element | null, atEdge: boolean): void => {
  * shown; otherwise their values are synced from the engine state, so an external filter change shows in the box.
  * A focused control, or a focusable element inside a rendered cell, that the re-render replaced gets focus back
  * (shadow-root mounts included). Attaching does NOT reconcile the SSR markup against the engine state: render the
- * markup from the same table state you hydrate. The returned teardown is idempotent.
+ * markup from the same table state you hydrate. Hydrating an element again replaces its previous binding (HMR,
+ * client-side navigation, an effect without cleanup), so every control still acts once. The returned teardown is
+ * idempotent. Until it runs, the table's subscriber keeps `el` alive as long as the table lives.
  */
 export function hydrate<Row>(el: Element, table: Table<Row>): () => void {
   const body = el.querySelector("[data-sdv-body]");
@@ -24,6 +29,7 @@ export function hydrate<Row>(el: Element, table: Table<Row>): () => void {
     throw new TableSpecError(
       "hydrate: no [data-sdv-body] in element; render it with renderHTML(table) first",
     );
+  live.get(el)?.();
 
   let hidden = table.state.hidden; // the engine replaces this array only when a column is hidden or shown
   const render = (): void => {
@@ -79,7 +85,8 @@ export function hydrate<Row>(el: Element, table: Table<Row>): () => void {
   const unsubscribe = table.subscribe((e) => {
     if (e.type !== "hover") schedule();
   });
-  return () => {
+  const teardown = (): void => {
+    if (live.get(el) === teardown) live.delete(el);
     unsubscribe();
     cancel?.();
     cancel = undefined;
@@ -89,4 +96,6 @@ export function hydrate<Row>(el: Element, table: Table<Row>): () => void {
     el.removeEventListener("mouseleave", onHover);
     el.removeEventListener("keydown", onKeydown);
   };
+  live.set(el, teardown);
+  return teardown;
 }
