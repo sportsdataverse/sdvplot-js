@@ -2,9 +2,10 @@
 import * as Plot from "@observablehq/plot";
 import { beforeAll, expect, test, vi } from "vitest";
 import { STANDINGS, type Standing } from "../../../sdvtables/test/fixtures/standings.js";
+import { InputError } from "../../src/errors.js";
 import { loadLeague, resetWarnings, setWarningHandler } from "../../src/index.js";
 import { linkSelection } from "../../src/interact/index.js";
-import { axisLogos, linkIds } from "../../src/plot/index.js";
+import { axisLogos, linkIds, logos } from "../../src/plot/index.js";
 import { createSelection } from "../../src/selection.js";
 import { BKN } from "../shots/fixture.js";
 
@@ -216,4 +217,51 @@ test("a join-key mismatch warns once per figure, not once per hovered id", () =>
   } finally {
     setWarningHandler(null);
   }
+});
+
+// the logos of 2024 AFC teams at wins x points for; `id` picks the link key each image is stamped with
+const teamLogos = (o: { id?: keyof Standing; href?: boolean } = {}): ReturnType<typeof Plot.plot> =>
+  Plot.plot({
+    marks: [
+      logos(STANDINGS, {
+        league: "nfl",
+        x: "wins",
+        y: "pf",
+        team: "team",
+        ...(o.id !== undefined && { id: o.id }),
+        ...(o.href === true && { href: (d: Standing) => `#${d.team}` }),
+      }),
+    ],
+  });
+const litNames = (root: Element): (string | null)[] =>
+  Array.from(root.querySelectorAll(".sdv-hl")).map((e) => e.getAttribute("aria-label"));
+test("image marks dim the right images when the store holds ESPN ids: the default team ids, or `id` of the QBs' ids", () => {
+  const plain = teamLogos();
+  const teams = createSelection<Standing>();
+  linkSelection(teams, { plot: plain });
+  teams.set({ selected: ["12", "2"] }); // KC's and BUF's ESPN team ids
+  expect(litNames(plain)).toEqual(["KC logo", "BUF logo"]);
+  expect(plain.classList.contains("sdv-focus")).toBe(true); // the other six dim
+  // a table of quarterbacks keyed by ESPN player id: each TEAM logo is stamped with its QB's id
+  const byQb = teamLogos({ id: "qb_espn_id" });
+  const qbs = createSelection<Standing>();
+  linkSelection(qbs, { plot: byQb });
+  qbs.set({ selected: ["3139477", "3918298"] }); // Patrick Mahomes, Josh Allen
+  expect(litNames(byQb)).toEqual(["KC logo", "BUF logo"]);
+  qbs.clear();
+  over(byQb.querySelector('image[aria-label="DEN logo"]'));
+  expect([...qbs.getState().hover]).toEqual(["4426338"]); // Bo Nix: the hover writes the link id, not "7"
+});
+test("an image mark with href: the stamp sits on the <image> inside the <a>; hover and highlight find it (A27)", () => {
+  const svg = teamLogos({ id: "team", href: true });
+  const store = createSelection<Standing>();
+  linkSelection(store, { plot: svg });
+  over(svg.querySelector('a[href="#DEN"] > image'));
+  expect(hover(store)).toEqual(["DEN"]);
+  const lit = Array.from(svg.querySelectorAll(".sdv-hl"));
+  expect(lit.map((e) => `${e.tagName}:${e.getAttribute("data-sdv-id")}`)).toEqual(["image:DEN"]);
+  // A36's guard climbs from the <image> to its <a>: a toggle cannot nest a checkbox in a link
+  expect(() => linkSelection(createSelection<Standing>(), { plot: svg, select: "toggle" })).toThrow(
+    InputError,
+  );
 });

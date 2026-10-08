@@ -3,6 +3,7 @@ import { InputError } from "../errors.js";
 import type { EspnHeadshotLeague } from "../headshots.js";
 import { type Kind, type Placement, checkAlpha, checkHeight, placeSync, placedName } from "../placement.js";
 import type { Value } from "../resolve.js";
+import { toId } from "../selection.js";
 import { stampImage } from "../stamp.js";
 import type { HeadshotIdSystem, IdSystem, League, SeasonInput, Variant } from "../types.js";
 
@@ -48,12 +49,21 @@ export interface MarkOptions<R> extends ImageMarkOptions {
   season?: SeasonInput | Channel<R>;
   variant?: Variant;
   idSystem?: IdSystem;
+  /**
+   * The link id stamped as each image's `data-sdv-id`, which `sdvplot/interact` matches against a store or a linked
+   * table's `rowKey` (`id: "team"` for a table keyed by abbreviation). One value per row, like every channel; it
+   * follows its row through `sort`, `filter` and `Plot.dodgeY`. It changes only the stamp: each image keeps its
+   * team's accessible name and tip. Default: the resolved ESPN team id ("12" for KC), which never matches "KC".
+   */
+  id?: Channel<R>;
 }
 export interface HeadshotOptions<R> extends ImageMarkOptions {
   league: EspnHeadshotLeague;
   player: Channel<R>;
   /** "espn" (default) or "gsis". "gsis" is sync and needs `loadGsis()` to have run first, else this throws InputError. */
   idSystem?: HeadshotIdSystem;
+  /** The link id stamped as each image's `data-sdv-id`, as `logos`' `id`. Default: the player id. */
+  id?: Channel<R>;
 }
 
 /** Materialise a one-shot iterable once (it is read several times); arrays and Arrow-like tables pass through. */
@@ -86,9 +96,15 @@ function dataValue(values: Plot.ChannelValues, key: "x" | "y", i: number): strin
 /**
  * Plot `render` transform: size each `<image>` to `height` x the (facet) frame height, keep the mark's
  * aspect, re-centre on the point and stamp the `data-sdv-*` attributes `drawnMarks` reads.
- * `placed` is looked up by original row index (`Placement.index`), which is what Plot hands `render`.
+ * `placed` is looked up by original row index (`Placement.index`), which is what Plot hands `render`; so are `ids`,
+ * the link ids by row (the `id` option), stamped in place of each placement's resolved id.
  */
-export function sizeRender(height: number, placed: readonly Placement[], kind: Kind): Plot.RenderFunction {
+export function sizeRender(
+  height: number,
+  placed: readonly Placement[],
+  kind: Kind,
+  ids?: readonly string[],
+): Plot.RenderFunction {
   const byRow = new Map(placed.map((p) => [p.index, p]));
   return (index, scales, vals, dimensions, context, next) => {
     const g = next?.(index, scales, vals, dimensions, context) as SVGElement | null | undefined;
@@ -106,6 +122,7 @@ export function sizeRender(height: number, placed: readonly Placement[], kind: K
       const cx = X ? (X[i] as number) : (marginLeft + width - marginRight) / 2; // Plot's middle frame anchor
       const cy = Y ? (Y[i] as number) : (marginTop + H - marginBottom) / 2;
       stampImage(img, p, kind, px, frame, cx, cy);
+      img.setAttribute("data-sdv-id", ids?.[i] ?? p.id); // by row index i, never draw order k: Plot sorts and filters
       const dx = dataValue(vals, "x", i);
       const dy = dataValue(vals, "y", i);
       if (dx !== null) img.setAttribute("data-sdv-x", dx);
@@ -171,6 +188,7 @@ function imageMark<R>(
     season?: unknown;
     variant?: Variant;
     idSystem?: IdSystem | HeadshotIdSystem;
+    id?: Channel<R>;
   },
   kind: Kind,
   key: Channel<R>,
@@ -181,6 +199,9 @@ function imageMark<R>(
     throw new InputError("pass alpha (a constant) or opacity (Plot's channel), not both");
   const alpha = checkAlpha(o.alpha ?? 1);
   const keys = values(data, key);
+  const ids = o.id === undefined ? undefined : values(data, o.id).map(toId);
+  if (ids !== undefined && ids.length !== keys.length)
+    throw new InputError(`id needs one value per row, got ${ids.length} for ${keys.length} rows`);
   // x / y feed only the skip-and-warn check (a missing x or y); Plot draws from its own channels
   const zeros = keys.map(() => 0);
   const xs = given(data, o.x) ?? zeros;
@@ -215,6 +236,7 @@ function imageMark<R>(
     season: _s,
     variant: _v,
     idSystem: _i,
+    id: _id, // sdvplot's link id, stamped by sizeRender: never Plot's
     render,
     transform,
     initializer,
@@ -233,7 +255,7 @@ function imageMark<R>(
     channels: { [name]: { value: kind === "headshot" ? keys : names, label: name }, ...channels },
     ...(transform === undefined ? {} : { transform: sameRows(transform) }),
     ...(initializer === undefined ? {} : { initializer: sameRows(initializer) }),
-    render: compose(render, sizeRender(height, placed, kind)),
+    render: compose(render, sizeRender(height, placed, kind, ids)),
   });
 }
 
