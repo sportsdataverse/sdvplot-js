@@ -98,6 +98,24 @@ test("a table unlinked mid-brush shows all its rows again and drops the hover it
   both.off();
   expect([both.table.filteredCount, both.svg.classList.contains("sdv-focus")]).toEqual([8, false]);
 });
+test("a brush over no team leaves a linked table at 0 rows and every mark dimmed; clearing restores 8 (Review Focus 2)", () => {
+  const { svg, table, store } = linked();
+  const brush = brushFilter(svg, store, { data: STANDINGS, x: "wins", y: "net_epa", id: "team" });
+  brush.move({ x: [0.5, 2], y: [0.15, 0.19] }); // no 2024 AFC team won fewer than 4
+  expect([table.filteredCount, table.rows.length, table.getSelection().size]).toEqual([0, 0, 0]);
+  expect([svg.classList.contains("sdv-focus"), lit(svg)]).toEqual([true, []]);
+  brush.move(null);
+  expect([table.filteredCount, svg.classList.contains("sdv-focus")]).toEqual([8, false]);
+});
+test("a cursor alone leaves a linked table unfiltered, unselected and unhovered, with no table event (Review Focus 7)", () => {
+  const { svg, table, store } = linked();
+  const events = vi.fn();
+  table.subscribe(events);
+  store.set({ cursor: { field: "wins", value: 10.5 } }); // DEN's 10 wins under a shared hover value, not an id
+  expect([table.filteredCount, table.getSelection().size, table.getHover()]).toEqual([8, 0, null]);
+  expect(events).not.toHaveBeenCalled();
+  expect(svg.classList.contains("sdv-focus")).toBe(false);
+});
 test("a brush resets the table to page 0 of the filtered rows (Review Focus 5)", () => {
   const { svg, table, store } = linked(3);
   table.setPage(2);
