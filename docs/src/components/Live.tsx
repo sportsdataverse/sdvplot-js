@@ -25,17 +25,41 @@ export interface LiveProps {
 /**
  * An example: the prerendered output (static HTML, so the page is complete without JavaScript), the code that
  * produced it, and, for DOM and React outputs that have a browser loader, a live re-run that replaces the static
- * copy. A re-run that throws shows the error over the static output; it never leaves a blank.
+ * copy once the example comes within a screen of the viewport. A re-run that throws shows the error over the static
+ * output; it never leaves a blank.
  */
 export default function Live(p: LiveProps): ReactElement {
+  const figure = useRef<HTMLElement>(null);
   const host = useRef<HTMLDivElement>(null);
+  const [near, setNear] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [element, setElement] = useState<ReactElement | null>(null);
   const [error, setError] = useState<string | null>(null);
   const src = useBaseUrl(p.src ?? "");
+  const live = !p.thumb && LOADERS[p.id] !== undefined && (p.kind === "node" || p.kind === "react");
+  // Re-run only near the viewport: the prerendered copy already shows, so a guide does not load every example's
+  // chunk at once (the shot-charts guide's gsis map alone is 0.5 MB compressed).
+  useEffect(() => {
+    const el = figure.current;
+    if (!live || el === null) return;
+    if (typeof IntersectionObserver === "undefined") {
+      setNear(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((e) => e.isIntersecting)) return;
+        setNear(true);
+        io.disconnect();
+      },
+      { rootMargin: "100% 0px" }, // one screen above and below
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [live]);
   useEffect(() => {
     const load = LOADERS[p.id];
-    if (p.thumb || load === undefined || (p.kind !== "node" && p.kind !== "react")) return;
+    if (!near || load === undefined) return;
     let cancelled = false;
     load().then(
       (m) => {
@@ -53,7 +77,7 @@ export default function Live(p: LiveProps): ReactElement {
     return () => {
       cancelled = true;
     };
-  }, [p.id, p.kind, p.thumb]);
+  }, [near, p.id]);
   // A static file is embedded as a document (never <img>: that would not load the external logo <image>s); the
   // wrapper is the scrolling container that keeps the fixed-size frame inside the column. A card shows a static
   // SVG as an <img> instead: it scales to the card (a fixed-size frame would be a crop), and losing the logos in a
@@ -86,7 +110,7 @@ export default function Live(p: LiveProps): ReactElement {
       </Link>
     );
   return (
-    <figure className="sdv-live" data-example={p.id}>
+    <figure className="sdv-live" data-example={p.id} ref={figure}>
       {output}
       <div className="sdv-live-output" ref={host}>
         {element}
