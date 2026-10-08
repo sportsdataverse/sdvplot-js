@@ -1,50 +1,60 @@
 ---
 slug: /
 title: sdvplot-js
+sidebar_label: Introduction
 sidebar_position: 1
 ---
 
-sdvplot-js draws team logos, headshots, team colours and playing surfaces (courts, rinks, fields) for
-[Observable Plot](https://observablehq.com/plot/) and D3. It is made of two packages.
+sdvplot-js draws team logos, headshots, team colours, playing surfaces (courts, rinks, fields) and styled tables for
+[Observable Plot](https://observablehq.com/plot/), D3, React, Plotly, Vega-Lite, ECharts and Chart.js. It is made of
+three packages.
 
 ## Install
 
 ```sh
-pnpm add @sportsdataverse/sdvplot @sportsdataverse/sporty @observablehq/plot
+pnpm add @sportsdataverse/sdvplot @sportsdataverse/sporty @sportsdataverse/sdvtables @observablehq/plot
 ```
 
-`@observablehq/plot` and `d3` are optional peers: install the one you draw with.
+The charting libraries (`@observablehq/plot`, `d3`, `react`, `chart.js`) are optional peers: install the one you draw
+with. The Plotly, Vega-Lite and ECharts adapters import nothing from their libraries.
 
 ## Entry points
 
 `@sportsdataverse/sdvplot` (logo, headshot and colour data per league)
 
-- `@sportsdataverse/sdvplot` — core: `loadLeague`, team lookup, colours, tiers.
-- `@sportsdataverse/sdvplot/plot` — Observable Plot marks: `logos`, `surface`, `teamColor`, `axisLogos`, `teamTiers`.
-- `@sportsdataverse/sdvplot/react` — React components.
-- `@sportsdataverse/sdvplot/d3` — D3 helpers.
-- `@sportsdataverse/sdvplot/testing` — test utilities.
+- `@sportsdataverse/sdvplot`: `loadLeague`, team lookup, colours, marks, tiers.
+- `@sportsdataverse/sdvplot/plot`: Observable Plot marks: `logos`, `surface`, `teamColor`, `axisLogos`, `teamTiers`.
+- `@sportsdataverse/sdvplot/d3`: D3 helpers.
+- `@sportsdataverse/sdvplot/react`: React components and hooks.
+- `@sportsdataverse/sdvplot/plotly`, `/vega`, `/echarts`: spec adapters for Plotly, Vega-Lite and ECharts.
+- `@sportsdataverse/sdvplot/chartjs` and `/chartjs/surface`: Chart.js colours, image plugins and surfaces.
+- `@sportsdataverse/sdvplot/testing`: the adapter contract suite.
 
 `@sportsdataverse/sporty` (playing-surface geometry and data frames)
 
-- `@sportsdataverse/sporty` — core: `surface`, `toSurfaceFrame`, court/rink/field specs.
-- `@sportsdataverse/sporty/svg` — SVG output.
-- `@sportsdataverse/sporty/specs` — raw surface specifications.
-- `@sportsdataverse/sporty/plot` — Plot marks and scales for a surface.
-- `@sportsdataverse/sporty/d3` — D3 drawing helpers.
+- `@sportsdataverse/sporty`: `surface`, `toSurfaceFrame`, court/rink/field specs.
+- `@sportsdataverse/sporty/svg`: SVG output.
+- `@sportsdataverse/sporty/specs`: raw surface specifications.
+- `@sportsdataverse/sporty/plot`: Plot marks and scales for a surface.
+- `@sportsdataverse/sporty/d3`: D3 drawing helpers.
+- `@sportsdataverse/sporty/canvas`: drawing on a 2D canvas context.
+
+`@sportsdataverse/sdvtables` (tables from a plain-data spec)
+
+- `@sportsdataverse/sdvtables`: `defineTable`, the column kinds, decorations and themes.
+- `@sportsdataverse/sdvtables/html`: `renderHTML`, `renderHTMLAsync`, `prepare`, `toElement`.
 
 ## Node and SSR
 
-Everything also runs in Node. Pass a DOM `document` (for example from jsdom or linkedom) and read the SVG string:
+Everything also runs in Node. Plot needs a DOM `document` (from jsdom or linkedom); read the figure's SVG string:
 
-```js
-import * as Plot from "@observablehq/plot";
-import { JSDOM } from "jsdom";
-
-const svg = Plot.plot({ document: new JSDOM("").window.document, /* …marks… */ }).outerHTML;
-```
+<Live id="sdvplot/node/plot-in-node" />
 
 ## Where next
 
-- Examples: [basketball](examples/basketball.mdx), [hockey](examples/hockey.mdx), [football](examples/football.mdx).
-- API reference: [sdvplot](api/sdvplot/index.md) and [sporty](api/sporty/index.md).
+- [Guides](guides/identity.mdx), in learning order, from team lookups to tables.
+- [Surfaces by sport](examples/basketball.mdx): basketball, [hockey](examples/hockey.mdx) and
+  [football](examples/football.mdx).
+- The [gallery](/gallery/): every example on the site, by package. Each one runs in CI before it is published.
+- [Notebooks](pathname:///notebooks/): the packages in Observable Framework.
+- API reference: [sdvplot](api/sdvplot/index.md), [sporty](api/sporty/index.md) and [sdvtables](api/sdvtables/index.md).

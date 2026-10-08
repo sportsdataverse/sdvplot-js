@@ -40,7 +40,24 @@ const AXIS: Record<Axis, (options: Plot.AxisXOptions) => Plot.Markish> = {
   fy: Plot.axisFy,
 } as const;
 
-/** Axis mark whose tick text is swapped for the team image; categories that do not resolve keep their text. */
+/**
+ * Axis mark whose tick text is swapped for the team image; categories that do not resolve keep their text.
+ *
+ * @example
+ * ```ts
+ * import * as Plot from "@observablehq/plot";
+ * import { loadLeague } from "@sportsdataverse/sdvplot";
+ * import { axisLogos } from "@sportsdataverse/sdvplot/plot";
+ *
+ * await loadLeague("nfl");
+ * const wins = [
+ *   { team: "KC", wins: 15 },
+ *   { team: "BUF", wins: 13 },
+ *   { team: "LAC", wins: 11 },
+ * ];
+ * Plot.plot({ marks: [Plot.barY(wins, { x: "team", y: "wins" }), axisLogos("x", { league: "nfl" })] });
+ * ```
+ */
 export function axisLogos(axis: Axis, o: AxisLogosOptions): Plot.Markish {
   const {
     league: _l,

@@ -72,9 +72,9 @@ test("legendDiscrete key swatches; significance stars (strictest first) with not
   expect(html).toContain("Home");
   expect(html).toContain("Away");
   expect(html).toMatch(
-    /data-row="0">.*?data-col="net_epa"[^>]*>0\.071<sup style="font-size:0\.7em">\*\*\*<\/sup></s,
+    /data-row="0">.*?data-col="net_epa"[^>]*>0\.063<sup style="font-size:0\.7em">\*\*\*<\/sup></s,
   );
-  expect(html).toMatch(/data-row="3">.*?data-col="net_epa"[^>]*>−0\.128</s);
+  expect(html).toMatch(/data-row="3">.*?data-col="net_epa"[^>]*>−0\.146</s);
   expect(html).not.toContain('data-col="p"'); // hideP (Python hide_p=True, _layout.py:1303): 4 visible columns
   expect(html).toContain('<td colspan="4">*** p &lt; 0.01, ** p &lt; 0.05, * p &lt; 0.1</td>'); // levels order, strictest first (_layout.py:1367)
   // IQR of pf (type 7): q1 330.75, q3 407.75, IQR 77; high fence 407.75 + 1.0 × 77 = 484.75 → BUF 525

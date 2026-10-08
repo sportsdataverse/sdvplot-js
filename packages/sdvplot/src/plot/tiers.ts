@@ -12,7 +12,26 @@ export type TeamTiersOptions = TiersOptions & {
   tip?: boolean;
 };
 
-/** A tier plot as `Plot.plot` options (SSR-composable; the caller runs `Plot.plot`): tier 1 on top, logos ranked within each tier, separator rules, wrapped tier labels on the y axis. */
+/**
+ * A tier plot as `Plot.plot` options (SSR-composable; the caller runs `Plot.plot`): tier 1 on top, logos ranked
+ * within each tier, separator rules, wrapped tier labels on the y axis.
+ *
+ * @example
+ * ```ts
+ * import * as Plot from "@observablehq/plot";
+ * import { loadLeague } from "@sportsdataverse/sdvplot";
+ * import { teamTiers } from "@sportsdataverse/sdvplot/plot";
+ *
+ * await loadLeague("nfl");
+ * const rows = [
+ *   { team: "BUF", tier_no: 1 },
+ *   { team: "KC", tier_no: 1 },
+ *   { team: "MIA", tier_no: 2 },
+ *   { team: "NE", tier_no: 3 },
+ * ];
+ * Plot.plot(teamTiers(rows, { league: "nfl" }));
+ * ```
+ */
 export function teamTiers(rows: readonly TierRow[], o: TeamTiersOptions): Plot.PlotOptions {
   const t = prepareTiers(rows, o.league, o);
   const pts = t.x.map((x, i) => ({

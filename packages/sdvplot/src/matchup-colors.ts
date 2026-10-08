@@ -171,8 +171,10 @@ export interface MatchupColors {
  *
  * @example
  * ```ts
+ * import { loadLeague, matchupColorsSync } from "@sportsdataverse/sdvplot";
+ *
  * await loadLeague("cfb");
- * const { light, dark } = matchupColorsSync("Alabama", "Georgia", { league: "cfb" });
+ * matchupColorsSync("Alabama", "Georgia", { league: "cfb" });
  * ```
  */
 export function matchupColorsSync(teamA: Value, teamB: Value, opts: MatchupColorOptions): MatchupColors {
@@ -211,8 +213,9 @@ export function matchupColorsSync(teamA: Value, teamB: Value, opts: MatchupColor
  * import { matchupColors } from "@sportsdataverse/sdvplot";
  *
  * // two crimson teams; light: ["#9e1b32", "#2c2a29"] (Georgia's secondary), dark: ["#ffffff", "#ba0c2f"]
- * const { light, dark } = await matchupColors("Alabama", "Georgia", { league: "cfb" });
- * const [alabama, georgia] = window.matchMedia("(prefers-color-scheme: dark)").matches ? dark : light;
+ * // in a page, pick the pair for the theme:
+ * // const [alabama, georgia] = window.matchMedia("(prefers-color-scheme: dark)").matches ? dark : light;
+ * await matchupColors("Alabama", "Georgia", { league: "cfb" });
  * ```
  */
 export async function matchupColors(

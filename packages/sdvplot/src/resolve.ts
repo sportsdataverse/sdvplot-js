@@ -156,6 +156,17 @@ export function resolveSync<T extends Value | readonly Value[]>(
   if (unresolved.size) report(unresolved, league, opts.strict ?? false);
   return (arr ? out : out[0]) as Resolved<T>;
 }
+/**
+ * Resolve team values (abbreviations, ids, names) to ESPN team ids, loading the league first. Unknown values give
+ * `undefined` and one warning per call; `strict: true` throws `UnresolvedTeamError`.
+ *
+ * @example
+ * ```ts
+ * import { resolve } from "@sportsdataverse/sdvplot";
+ *
+ * await resolve(["KC", "Kansas City Chiefs", "OAK"], "nfl", { season: 2019 });
+ * ```
+ */
 export async function resolve<T extends Value | readonly Value[]>(
   values: T,
   league: League,

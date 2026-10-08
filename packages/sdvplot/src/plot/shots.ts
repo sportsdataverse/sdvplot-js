@@ -156,10 +156,18 @@ export interface ShotCellsOptions extends GeoPassThrough {
  * ```ts
  * import * as Plot from "@observablehq/plot";
  * import { shotCells, surface } from "@sportsdataverse/sdvplot/plot";
+ * import { cellsVsLeague, leagueIndex } from "@sportsdataverse/sdvplot/shots";
  *
+ * // Brooklyn shots from the sportsdataverse-data nba_stats_shots release, 2025-26
+ * const shots = [
+ *   { x_legacy: -1, y_legacy: 7, shot_distance: 1, shot_value: 2, shot_result: "Made" },
+ *   { x_legacy: 0, y_legacy: 0, shot_distance: 0, shot_value: 2, shot_result: "Missed" },
+ *   { x_legacy: -44, y_legacy: 252, shot_distance: 26, shot_value: 3, shot_result: "Made" },
+ * ];
+ * // the three shots stand in for the league; the gallery's hex chart uses the 2025-26 league's index
+ * const cells = cellsVsLeague(shots, leagueIndex(shots, 15));
  * const court = surface("nba", { displayRange: "defense" });
- * const rim = { x: 0, y: 0, attempts: 9, makes: 6, fgPct: 6 / 9, meanDistance: 1, zone: "restricted_area" as const, leagueFgPct: 0.62 };
- * Plot.plot({ ...court.scales, marks: [...court.marks, shotCells([rim], { r: 15 })] });
+ * Plot.plot({ ...court.scales, marks: [...court.marks, shotCells(cells, { r: 15 })] });
  * ```
  */
 export function shotCells(cells: readonly CellVsLeague[], o: ShotCellsOptions): Plot.Markish {
@@ -398,8 +406,17 @@ const SVG_NS = "http://www.w3.org/2000/svg";
  * ```ts
  * import * as Plot from "@observablehq/plot";
  * import { shootingSignature } from "@sportsdataverse/sdvplot/plot";
+ * import { fgPctByDistance, signaturePoints, vsLeague } from "@sportsdataverse/sdvplot/shots";
  *
- * const points = [0, 0.25, 0.5].map((distance) => ({ distance, fgPct: 0.6, leagueFgPct: 0.55, share: 0.1, colourDiff: 0.02 }));
+ * // Brooklyn shots from the sportsdataverse-data nba_stats_shots release, 2025-26
+ * const shots = [
+ *   { x_legacy: -1, y_legacy: 7, shot_distance: 1, shot_value: 2, shot_result: "Made" },
+ *   { x_legacy: 0, y_legacy: 0, shot_distance: 0, shot_value: 2, shot_result: "Missed" },
+ *   { x_legacy: -44, y_legacy: 252, shot_distance: 26, shot_value: 3, shot_result: "Made" },
+ * ];
+ * // the makes against all three attempts, which stand in for the league (the gallery's uses the 2025-26 league)
+ * const made = fgPctByDistance(shots.filter((s) => s.shot_result === "Made"));
+ * const points = signaturePoints(vsLeague(made, fgPctByDistance(shots)), { minAttempts: 1 });
  * Plot.plot({ y: { domain: [0, 1] }, marks: shootingSignature(points) });
  * ```
  */

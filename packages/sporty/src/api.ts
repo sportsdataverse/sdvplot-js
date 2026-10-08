@@ -152,6 +152,15 @@ export type OptionsOf<S extends Sport> = S extends "baseball"
  * Build a surface scene for any of the nine sports. Options are typed per sport, so a misspelled option, colour key
  * or display range compiles to an error. A runtime `Sport` (or a union) goes through the generic overload; an unknown
  * sport (untyped callers) or league throws `UnknownLeagueError`.
+ *
+ * @example
+ * ```ts
+ * import { surface } from "@sportsdataverse/sporty";
+ * import { toSVG } from "@sportsdataverse/sporty/svg";
+ *
+ * const rink = surface("hockey", "nhl", { displayRange: "offense" });
+ * toSVG(rink, { width: 480, precision: 2, arcs: "svg" });
+ * ```
  */
 export function surface(
   sport: "baseball",

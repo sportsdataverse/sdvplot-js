@@ -59,6 +59,23 @@ export function sceneToGeoJSON(scene: Scene): SurfaceFeatureCollection {
  * polygons, then text. Text font size = number height (`fitBox[1] / 1.5`) mapped through the y scale
  * unless `textFontSize` overrides it. `ariaDescription` (default: the scene's league and sport, then "surface", such as
  * "nba basketball surface") describes the polygons for assistive technology.
+ *
+ * @example
+ * ```ts
+ * import * as Plot from "@observablehq/plot";
+ * import { surface } from "@sportsdataverse/sporty";
+ * import { surfaceMark } from "@sportsdataverse/sporty/plot";
+ *
+ * const court = surface("tennis", "itf");
+ * const [x0, y0, x1, y1] = court.bbox;
+ * Plot.plot({
+ *   width: 300,
+ *   height: Math.round((300 * (y1 - y0)) / (x1 - x0)),
+ *   x: { domain: [x0, x1], axis: null },
+ *   y: { domain: [y0, y1], axis: null },
+ *   marks: surfaceMark(court),
+ * });
+ * ```
  */
 export function surfaceMark(
   scene: Scene,

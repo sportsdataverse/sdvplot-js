@@ -2,56 +2,44 @@
 title: Hockey (NHL / PWHL)
 ---
 
-These snippets run as written in an Observable notebook, where `Plot` is preloaded (drop the `import * as Plot` line there). In Node, pass a DOM `document` to `Plot.plot({ document, … })`; see [Node and SSR](../intro.mdx#node-and-ssr).
+Hockey event data arrives on many canvases (HockeyTech's pixel grids, the NHL's feet from centre ice), and the rink
+differs by league. Each figure on this page is drawn by the code under it, and the same code runs in CI on every pull
+request; in Node, see [Node and SSR](../guides/node-ssr.mdx).
 
-## Shot map — rink in team colours, dots, team colour scale
+## Shot map: a rink in team colours, dots, logos
 
-```js
-import * as Plot from "@observablehq/plot";
-import { loadLeague } from "@sportsdataverse/sdvplot";
-import { logos, surface, teamColor } from "@sportsdataverse/sdvplot/plot";
-import { toSurfaceFrame } from "@sportsdataverse/sporty";
+Every shot of the first period of game 7 of the 2024 Stanley Cup Final (Edmonton at Florida), from NHL api-web (see
+[Sample data](/sample-data#nhl_shots-one-period-of-shots)). The NHL reports shots in feet from centre ice, the frame
+sporty's rink is drawn in, so they plot as captured on a rink painted in Florida's colours.
 
-await loadLeague("nhl");
+<Live id="sdvplot/plot/nhl-shot-map" />
 
-// HockeyTech events: default input columns x/y on the 600x300 canvas; the frame maps onto the whole rink.
-const events = [
-  { x: 452, y: 90, team: "BOS" },
-  { x: 155, y: 195, team: "TOR" },
-];
-const shots = toSurfaceFrame(events, { from: "hockeytech" });
-const rink = surface("nhl", { team: "BOS" });
-Plot.plot({
-  ...rink.scales,
-  width: 940,
-  color: teamColor("nhl", { values: shots.map((s) => s.team) }),
-  marks: [
-    ...rink.marks,
-    Plot.dot(shots, { x: "surface_x", y: "surface_y", fill: "team", r: 5 }),
-    logos(shots, { league: "nhl", x: "surface_x", y: "surface_y", team: "team", height: 0.08 }),
-  ],
-});
-```
+## HockeyTech canvases
 
-## Standings — bars with logos on the axis
+HockeyTech leagues report events on a 600 × 300 pixel canvas (origin top-left, y down), and the `hockeytech` frame
+maps it onto the rink. The canvas is stylised rather than drawn to scale, so the converted feet are approximate. A
+PWHL game's goals go through it here (see
+[Sample data](/sample-data#pwhl_goals-one-games-goals)).
 
-```js
-import * as Plot from "@observablehq/plot";
-import { loadLeague } from "@sportsdataverse/sdvplot";
-import { axisLogos, teamColor } from "@sportsdataverse/sdvplot/plot";
+<Live id="sporty/frames/hockeytech" />
 
-await loadLeague("nhl");
-const standings = [
-  { team: "BOS", wins: 14 },
-  { team: "TOR", wins: 11 },
-  { team: "NYR", wins: 7 },
-];
-Plot.plot({
-  height: 300,
-  marks: [
-    Plot.barY(standings, { x: "team", y: "wins", fill: "team" }),
-    axisLogos("x", { league: "nhl", height: 0.12 }),
-  ],
-  color: teamColor("nhl", { values: standings.map((s) => s.team) }),
-});
-```
+## Display ranges
+
+A display range crops the rink to the part a figure shows; several names are aliases of one box.
+
+<Live id="sporty/core/display-ranges" />
+
+<Live id="sporty/core/arc-resolution" />
+
+## Standings: bars with logos on the axis
+
+<Live id="sdvplot/plot/nhl-standings" />
+
+## Every hockey rink
+
+[NHL](/gallery/sporty/surfaces/hockey-nhl), [PWHL](/gallery/sporty/surfaces/hockey-pwhl),
+[AHL](/gallery/sporty/surfaces/hockey-ahl), [ECHL](/gallery/sporty/surfaces/hockey-echl),
+[IIHF](/gallery/sporty/surfaces/hockey-iihf), [NCAA](/gallery/sporty/surfaces/hockey-ncaa),
+[OHL](/gallery/sporty/surfaces/hockey-ohl), [QMJHL](/gallery/sporty/surfaces/hockey-qmjhl),
+[USHL](/gallery/sporty/surfaces/hockey-ushl), [PHF](/gallery/sporty/surfaces/hockey-phf) and
+[NWHL](/gallery/sporty/surfaces/hockey-nwhl).

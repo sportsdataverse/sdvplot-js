@@ -23,14 +23,15 @@ import { toSurfaceFrame } from "@sportsdataverse/sporty";
 
 await loadLeague("nba");
 
-// stats.nba.com shots: columns x_legacy/y_legacy (the frame's defaults), tenths of a foot from the hoop.
+// stats.nba.com shots (shotchartdetail LOC_X/LOC_Y as x_legacy/y_legacy, the frame's defaults): tenths of a foot
+// from the hoop. Two real ones, Lakers at Nuggets on 2023-10-24 (game 0022300061, events 510 and 530).
 // Every shot lands on the -x half, so draw the defensive half only: displayRange "defense".
 const rawShots = [
-  { x_legacy: 10, y_legacy: 120, team: "LAL", made: true },
-  { x_legacy: -50, y_legacy: 230, team: "BOS", made: false },
+  { x_legacy: -53, y_legacy: 285, team: "LAL", made: true },
+  { x_legacy: -136, y_legacy: 214, team: "DEN", made: true },
 ];
 const shots = toSurfaceFrame(rawShots, { from: "nba-legacy" });
-const court = surface("nba", { team: "LAL", displayRange: "defense" });
+const court = surface("nba", { team: "DEN", displayRange: "defense" });
 Plot.plot({
   ...court.scales,
   width: 940,
@@ -90,16 +91,18 @@ import { preloadAll } from "@sportsdataverse/sdvplot";
 import { withLogos } from "@sportsdataverse/sdvplot/plotly";
 
 await preloadAll();
+// 2024 regular-season points scored and allowed: two rows of the repo's real STANDINGS sample
+// (packages/sdvtables/test/fixtures/standings.ts, from nflverse games.csv)
 const rows = [
-  { epa: 0.21, sr: 0.48, team: "KC" },
-  { epa: 0.12, sr: 0.45, team: "BUF" },
+  { team: "KC", pf: 385, pa: 326 },
+  { team: "BUF", pf: 525, pa: 368 },
 ];
 // TypeScript: type the figure as plotly.js's own and the same type comes back for Plotly.newPlot (JS needs no type)
 const base: { data: Plotly.Data[]; layout: Partial<Plotly.Layout> } = {
-  data: [{ type: "scatter", mode: "markers", x: rows.map((r) => r.epa), y: rows.map((r) => r.sr) }],
+  data: [{ type: "scatter", mode: "markers", x: rows.map((r) => r.pf), y: rows.map((r) => r.pa) }],
   layout: {},
 };
-const fig = withLogos(base, rows, { x: "epa", y: "sr", team: "team", league: "nfl", height: 0.12 });
+const fig = withLogos(base, rows, { x: "pf", y: "pa", team: "team", league: "nfl", height: 0.12 });
 await Plotly.newPlot(document.getElementById("chart")!, fig.data, fig.layout);
 ```
 
@@ -182,7 +185,9 @@ An Astro page with a Svelte 5 island (Game on Paper's stack):
 ---
 // src/pages/teams.astro
 import TeamScatter from "../components/TeamScatter.svelte";
-const rows = await getTeamRows(); // [{ team: "UGA", epa: 0.21, sr: 0.48 }, …]
+// 2024 points scored and allowed, e.g. [{ team: "KC", pf: 385, pa: 326 }, { team: "BUF", pf: 525, pa: 368 }, …]
+// (real rows: the repo's STANDINGS sample, packages/sdvtables/test/fixtures/standings.ts)
+const rows = await getTeamRows();
 ---
 <TeamScatter client:only="svelte" rows={rows} />
 ```
@@ -194,20 +199,20 @@ const rows = await getTeamRows(); // [{ team: "UGA", epa: 0.21, sr: 0.48 }, …]
   import { loadLeague } from "@sportsdataverse/sdvplot";
   import { logoPoints, pointImages } from "@sportsdataverse/sdvplot/chartjs";
 
-  let { rows }: { rows: { team: string; epa: number; sr: number }[] } = $props();
+  let { rows }: { rows: { team: string; pf: number; pa: number }[] } = $props();
   let canvas: HTMLCanvasElement;
 
   $effect(() => { // runs in the browser only, never during SSR
     // read `rows` here, synchronously: Svelte 5 tracks only what an effect reads before it awaits, so this re-runs on a new `rows`
-    const data = rows.map((r) => ({ x: r.epa, y: r.sr }));
+    const data = rows.map((r) => ({ x: r.pf, y: r.pa }));
     const teams = rows.map((r) => r.team);
     let chart: Chart | undefined;
     let live = true;
-    loadLeague("cfb").then(() => {
+    loadLeague("nfl").then(() => {
       if (!live) return;
       chart = new Chart(canvas, {
         type: "scatter",
-        data: { datasets: [{ data, ...logoPoints(teams, { league: "cfb", radius: 14 }) }] },
+        data: { datasets: [{ data, ...logoPoints(teams, { league: "nfl", radius: 14 }) }] },
         plugins: [pointImages],
       });
     });
@@ -218,14 +223,23 @@ const rows = await getTeamRows(); // [{ team: "UGA", epa: 0.21, sr: 0.48 }, …]
 <canvas bind:this={canvas}></canvas>
 ```
 
+The line charts below draw Super Bowl LIX (Kansas City at Philadelphia, 2025-02-09). `wp` is ESPN's win probability
+for Philadelphia, the home team, after each of the game's 186 plays, against minutes played:
+`[{ minute: 0, home_wp: 0.5846 }, …, { minute: 60, home_wp: 1 }]`. These are the repo's real `SUPER_BOWL_LIX_WP` rows
+(`examples/src/data.ts`, from ESPN Site v2 `summary?event=401671889`).
+
 A line per team with its logo at the line's end (the per-point logos of Game on Paper's trends chart, team colours from
 sdvplot):
 
 ```ts
+const series = {
+  PHI: wp.map((p) => ({ x: p.minute, y: p.home_wp })),
+  KC: wp.map((p) => ({ x: p.minute, y: 1 - p.home_wp })),
+};
 new Chart(canvas, {
   type: "scatter",
   data: {
-    datasets: Object.entries(series).map(([team, pts]) => ({ // series: { KC: [{ x, y }, …], BUF: […] }
+    datasets: Object.entries(series).map(([team, pts]) => ({
       label: team,
       data: pts,
       showLine: true,
@@ -245,19 +259,24 @@ A radar in team colours (the datasets Game on Paper's `utils/radar.ts` builds fo
 
 ```ts
 import { teamColor, teamFill } from "@sportsdataverse/sdvplot/chartjs";
-const pct = { UGA: [91, 80, 67], ALA: [85, 88, 54] };
+// 2024 regular season (17 games): two rows of the repo's real STANDINGS sample
+// (packages/sdvtables/test/fixtures/standings.ts, from nflverse games.csv)
+const rows = [
+  { team: "KC", wins: 15, pf: 385, pa: 326 },
+  { team: "BUF", wins: 13, pf: 525, pa: 368 },
+];
 const data = {
-  labels: ["EPA/Play", "Success %", "Explosive %"],
-  datasets: Object.entries(pct).map(([team, values]) => ({
+  labels: ["Wins", "Points per game", "Allowed per game"],
+  datasets: rows.map(({ team, wins, pf, pa }) => ({
     label: team,
-    data: values,
+    data: [wins, pf / 17, pa / 17],
     fill: true,
-    backgroundColor: teamFill(team, "cfb"), // rgba(r, g, b, 0.2)
-    borderColor: teamColor(team, "cfb"),
-    pointBackgroundColor: teamColor(team, "cfb"),
+    backgroundColor: teamFill(team, "nfl"), // rgba(r, g, b, 0.2)
+    borderColor: teamColor(team, "nfl"),
+    pointBackgroundColor: teamColor(team, "nfl"),
     pointBorderColor: "#fff", // radar.ts:70-80 rings each point in white
     pointHoverBackgroundColor: "#fff",
-    pointHoverBorderColor: teamColor(team, "cfb"),
+    pointHoverBorderColor: teamColor(team, "nfl"),
   })),
 };
 ```
@@ -271,37 +290,42 @@ import { logoWatermarks, teamColor } from "@sportsdataverse/sdvplot/chartjs";
 const dark = matchMedia("(prefers-color-scheme: dark)").matches;
 new Chart(canvas, {
   type: "line",
-  data: { labels: seconds, datasets: [{ data: homeWp, borderColor: teamColor("UGA", "cfb"), pointRadius: 0 }] },
-  plugins: [logoWatermarks(["UGA", "ALA"], { league: "cfb", variant: dark ? "dark" : "default" })],
+  data: {
+    datasets: [{ data: series.PHI, borderColor: teamColor("PHI", "nfl"), pointRadius: 0 }], // series: above
+  },
+  options: { scales: { x: { type: "linear" } } }, // minutes played
+  plugins: [logoWatermarks(["PHI", "KC"], { league: "nfl", variant: dark ? "dark" : "default" })],
 });
 ```
 
 Two teams' win-probability (or EP) lines in colours that tell them apart, per theme:
 
 ```ts
-const { light, dark: darkPair } = await matchupColors("UGA", "ALA", { league: "cfb" });
+const { light, dark: darkPair } = await matchupColors("PHI", "KC", { league: "nfl" });
 const [home, away] = (dark ? darkPair : light);
-// datasets: [{ label: "UGA", data: homeWp, borderColor: home }, { label: "ALA", data: awayWp, borderColor: away }]
+// datasets: [{ label: "PHI", data: series.PHI, borderColor: home }, { label: "KC", data: series.KC, borderColor: away }]
 ```
 
-Logos on a category axis:
+Logos on a category axis (2024 wins, from the repo's real STANDINGS sample):
 
 ```ts
 new Chart(canvas, {
   type: "bar",
-  data: { labels: ["KC", "BUF", "BAL"], datasets: [{ data: [0.21, 0.18, 0.15], backgroundColor: teamColor(["KC", "BUF", "BAL"], "nfl") }] },
+  data: { labels: ["KC", "BUF", "LAC"], datasets: [{ data: [15, 13, 11], backgroundColor: teamColor(["KC", "BUF", "LAC"], "nfl") }] },
   plugins: [axisLogos("x", { league: "nfl", size: 28 })],
 });
 ```
 
-A shot chart over a court (and a hexbin as bubbles at the hex centres):
+A shot chart over a court (and a hexbin as bubbles at the hex centres). `shots` is stats.nba.com `shotchartdetail`
+rows with `LOC_X`/`LOC_Y` as `x_legacy`/`y_legacy` (the frame's defaults), e.g. the repo's real `NBA_SHOTS`
+(`examples/src/data.ts`): the 38 fourth-quarter shots of the Lakers at the Nuggets, 2023-10-24.
 
 ```ts
 import { toSurfaceFrame } from "@sportsdataverse/sporty";
 import { surface } from "@sportsdataverse/sdvplot/chartjs/surface";
 import { hexbin } from "d3-hexbin";
-const court = surface("nba", { team: "BOS", displayRange: "defense" });
-const pts = toSurfaceFrame(shots, { from: "nba-legacy", x: "loc_x", y: "loc_y" })
+const court = surface("nba", { team: "DEN", displayRange: "defense" });
+const pts = toSurfaceFrame(shots, { from: "nba-legacy" })
   .map((s) => ({ x: s.surface_x ?? Number.NaN, y: s.surface_y ?? Number.NaN }));
 const bins = hexbin<{ x: number; y: number }>().x((d) => d.x).y((d) => d.y).radius(1.5)(pts); // radius in feet
 const [x0, y0, x1, y1] = court.scene.bbox;
@@ -348,7 +372,7 @@ import { loadLeague } from "@sportsdataverse/sdvplot";
 import { logoWatermarks, teamColor } from "@sportsdataverse/sdvplot/chartjs";
 
 Chart.register(...registerables);
-await loadLeague("cfb");
+await loadLeague("nfl");
 const loads: Promise<unknown>[] = [];
 const load = (url: string) => {
   const p = loadImage(url); // fetches the CDN URL
@@ -358,9 +382,12 @@ const load = (url: string) => {
 const canvas = createCanvas(800, 450);
 const chart = new Chart(canvas as unknown as HTMLCanvasElement, {
   type: "line",
-  data: { labels: seconds, datasets: [{ data: homeWp, borderColor: teamColor("UGA", "cfb"), pointRadius: 0 }] },
-  options: { responsive: false, animation: false },
-  plugins: [logoWatermarks(["UGA", "ALA"], { league: "cfb", loadImage: load })],
+  data: {
+    // wp: Super Bowl LIX's win probability for Philadelphia (above)
+    datasets: [{ data: wp.map((p) => ({ x: p.minute, y: p.home_wp })), borderColor: teamColor("PHI", "nfl"), pointRadius: 0 }],
+  },
+  options: { responsive: false, animation: false, scales: { x: { type: "linear" } } },
+  plugins: [logoWatermarks(["PHI", "KC"], { league: "nfl", loadImage: load })],
 });
 await Promise.all(loads); // each image redraws the chart as it lands, before this resumes
 await writeFile("wp.png", canvas.toBuffer("image/png"));

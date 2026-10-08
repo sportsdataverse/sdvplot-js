@@ -1,0 +1,87 @@
+---
+title: "Using sdvplot with Game on Paper (Chart.js + Astro/Svelte)"
+sidebar_label: With Game on Paper
+sidebar_position: 15
+---
+
+[Game on Paper](https://gameonpaper.com) renders its pages in Astro and draws its charts with Chart.js inside Svelte 5
+islands. sdvplot fits that stack without a wrapper: its Chart.js subpath returns plain dataset options and plugins, and
+`matchupColors` is Game on Paper's own "game colours" picker, so a page can choose a matchup's colours on the server
+and hand them to the island that draws. This guide follows one game page from the Astro frontmatter to the browser.
+
+## Colours for a game, chosen on the server
+
+In the page's frontmatter, `await loadLeague("cfb")` and call `matchupColorsSync(home, away, { league })`; pass the
+result to the island as a prop. It holds a `light` and a `dark` pair, home first, and the island picks one with
+`window.matchMedia("(prefers-color-scheme: dark)")` when it draws.
+
+<Live id="api/sdvplot/matchupColorsSync" />
+
+## The page, the island and the chart
+
+The Astro component picks the colours in its frontmatter and renders the chart as a `client:only="svelte"` island, so
+none of the chart code runs during server rendering.
+
+<Snippet file="game-on-paper/GameWinProbability.astro" />
+
+The island builds the chart in an `$effect` and destroys it in the effect's cleanup. It calls `loadLeague` again
+first: the frontmatter's call loaded the league on the server, and the browser bundle has its own copy to fill. It
+reads every prop before that call, because Svelte tracks only what an effect reads synchronously: a prop read inside
+the `.then` would not re-run the effect when it changes.
+
+<Snippet file="game-on-paper/WinProbabilityChart.svelte" />
+
+Chart.js cannot draw under the jsdom these docs run examples in, so these two files are typechecked rather than run;
+the PNGs on this page are the same Chart.js calls drawn in Node.
+
+## A chart in those colours
+
+The pair goes on each dataset's `borderColor`, and `logoWatermarks([home, away])` puts faint team logos behind the
+lines, home top-left and away bottom-left, as on Game on Paper's win-probability chart.
+
+<Live id="sdvplot/chartjs/win-probability" />
+
+## Datasets in team colours
+
+`teamColor(teams, league)` gives one colour per team for `backgroundColor` or `borderColor`, and `teamFill` the
+translucent fill under a radar or area dataset. Both look teams up synchronously, so in the island call them after
+`loadLeague` resolves, as the chart above does.
+
+<Live id="sdvplot/chartjs/team-colors" />
+
+## Logos on points
+
+`logoPoints(teams, { league })` turns each point into the team's logo, and the `pointImages` plugin draws each one once
+its image loads. Like the watermarks, build them inside the island after `loadLeague` resolves: in the browser they
+create `<img>` elements, and without a `loadImage` option (below) they throw `UnsupportedTargetError` during server
+rendering.
+
+<Live id="sdvplot/chartjs/logo-points" />
+
+## A court or field behind the data
+
+`surface(league, { team })` from `@sportsdataverse/sdvplot/chartjs/surface` is a Chart.js plugin that paints the
+playing surface under the datasets, with scales that keep its proportions. With watermarks on the same chart, list
+`court.plugin` before `logoWatermarks` in `plugins`: Chart.js runs plugins in array order, so a court listed second
+paints over the logos (sdvplot warns `chartjs:surface:order` when it sees that order).
+
+<Live id="sdvplot/chartjs/court-shots" />
+
+## Images rendered on the server
+
+The PNGs on this page come from Chart.js on `@napi-rs/canvas`, with each image helper given `loadImage` so it loads
+marks without a DOM. That route needs a Node runtime: `@napi-rs/canvas` is a native module, so it runs under Astro's
+Node adapter but not under the Cloudflare adapter Game on Paper deploys with. On Cloudflare, draw charts in the
+browser as above; keep `loadImage` for code that runs where a Node canvas exists, such as a build step or a separate
+Node service for social cards. Register a font with `GlobalFonts` before drawing, because a server image may have no
+fonts and every label would come out blank.
+
+## Tables
+
+sdvtables renders a table to an HTML string in the frontmatter (`await renderHTMLAsync(spec, rows)`), which the page
+inserts with Astro's `set:html`. No JavaScript reaches the browser for it.
+
+<Live id="sdvtables/html/standings" />
+
+In the gallery: [Chart.js](/gallery/sdvplot/#chartjs) and sdvtables' [HTML
+renderer](/gallery/sdvtables/#html-renderer).

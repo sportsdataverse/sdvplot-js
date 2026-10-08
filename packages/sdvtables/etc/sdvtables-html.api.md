@@ -84,7 +84,7 @@ export interface RenderContext<Row> {
     readonly warn: (key: string, message: string) => void;
 }
 
-// @public (undocumented)
+// @public
 export function renderHTML<Row>(input: TableSpec<Row>, rows: readonly Row[], opts?: RenderOptions): string;
 
 // @public (undocumented)
@@ -117,7 +117,7 @@ export function toElement<Row>(spec: TableSpec<Row>, rows: readonly Row[], opts?
 
 // Warnings were encountered during analysis:
 //
-// dist/html.d.ts:60:5 - (ae-forgotten-export) The symbol "Density" needs to be exported by the entry point html.d.ts
+// dist/html.d.ts:101:5 - (ae-forgotten-export) The symbol "Density" needs to be exported by the entry point html.d.ts
 
 // (No @packageDocumentation comment for this package)
 

@@ -52,7 +52,7 @@ export interface ColumnBase<Row, K extends keyof Row & string = keyof Row & stri
   /** Phase 5 (headless engine) — accepted and ignored by renderHTML. */
   readonly sortable?: boolean;
   readonly filterable?: boolean;
-  /** Phase 5 — the one non-serializable field (JSON.stringify drops it). A method signature, so a numeric kind's comparator still fits ColumnBase<Row>. */
+  /** Phase 5 — the one non-serializable field (JSON.stringify drops it). A method signature, so a numeric kind's comparator still fits `ColumnBase<Row>`. */
   compare?(a: Row[K], b: Row[K]): number;
 }
 export type FormatType = "number" | "comma" | "currency" | "percent";

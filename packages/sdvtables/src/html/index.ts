@@ -91,6 +91,29 @@ export function styleSheet<Row>(spec: TableSpec<Row>, theme: Theme = resolveThem
   return `${tokensCSS(sel, theme.tokens)}\n${BASE_CSS(sel)}\n${theme.rules(sel)}`;
 }
 
+/**
+ * A table as one HTML string, synchronously: the theme as a scoped `<style>` (with `css: "none"` the host page emits
+ * `styleSheet(spec)` once instead), then the table. Cells that read league data (logos, team names) need
+ * `await prepare(spec)` first, or use `renderHTMLAsync`. Throws `TableSpecError` for a column the rows lack or an
+ * unknown theme.
+ *
+ * @example
+ * ```ts
+ * import { defineTable } from "@sportsdataverse/sdvtables";
+ * import { renderHTML } from "@sportsdataverse/sdvtables/html";
+ *
+ * const rows = [
+ *   { team: "BUF", pf: 525, pa: 368 },
+ *   { team: "DEN", pf: 425, pa: 311 },
+ *   { team: "LAC", pf: 402, pa: 301 },
+ * ];
+ * const spec = defineTable<(typeof rows)[number]>()
+ *   .columns((c) => [c.text("team"), c.int("pf", { label: "Points for" }), c.int("pa", { label: "Points against" })])
+ *   .theme("athletic")
+ *   .build();
+ * renderHTML(spec, rows);
+ * ```
+ */
 export function renderHTML<Row>(
   input: TableSpec<Row>,
   rows: readonly Row[],
@@ -237,7 +260,25 @@ export function toElement<Row>(
     document.head.append(link);
   return el;
 }
-/** gt_theme_preview (_themes.py:2058-2064): one HTML string per theme, first n rows, compact; sdvTeam shown with league nfl and no team. */
+/**
+ * gt_theme_preview (_themes.py:2058-2064): one HTML string per theme, first n rows, compact; sdvTeam shown with
+ * league nfl and no team.
+ *
+ * @example
+ * ```ts
+ * import { defineTable } from "@sportsdataverse/sdvtables";
+ * import { themePreview } from "@sportsdataverse/sdvtables/html";
+ *
+ * const rows = [
+ *   { team: "KC", wins: 15, losses: 2 },
+ *   { team: "BUF", wins: 13, losses: 4 },
+ * ];
+ * const spec = defineTable<(typeof rows)[number]>()
+ *   .columns((c) => [c.text("team"), c.int("wins"), c.int("losses")])
+ *   .build();
+ * Object.values(themePreview(spec, rows, ["sdv", "athletic", "midnight"])).join("\n");
+ * ```
+ */
 export function themePreview<Row>(
   spec: TableSpec<Row>,
   rows: readonly Row[],

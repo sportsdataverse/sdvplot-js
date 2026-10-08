@@ -1,0 +1,15 @@
+{
+  "name": "sdvplot-js-notebooks",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/install.mjs && tsx scripts/build.ts",
+    "dev": "node scripts/install.mjs && tsx scripts/build.ts && observable preview"
+  },
+  "devDependencies": {
+    "@observablehq/framework": "1.13.4",
+    "@observablehq/plot": "0.6.17",
+    "esbuild": "^0.27.3",
+    "tsx": "^4.7.1"
+  }
+}

@@ -1,0 +1,98 @@
+---
+title: Shot charts
+sidebar_position: 8.5
+---
+
+[blazing-the-nets](https://blazingthenets.com) draws a team's or a player's shots three ways: hexagons on the court
+coloured by FG% against the league and sized by attempts, the court's zones filled the same way, and a shooting
+signature of FG% by distance. Its current app (`main`, Next.js) and its 2021 one (`master`, React and d3) compute
+these differently. `@sportsdataverse/sdvplot/shots` computes both, `main`'s by default and `master`'s through
+options. It imports neither Plot nor d3, so it runs on a server or in a worker. `@sportsdataverse/sdvplot/plot` and
+`@sportsdataverse/sdvplot/d3` draw what it computes.
+
+## The data
+
+The input is rows of the sportsdataverse-data `nba_stats_shots` release: `x_legacy` and `y_legacy` in tenths of a
+foot from the hoop, `shot_distance` in feet, `shot_value` (2 or 3) and `shot_result` (`"Made"` or `"Missed"`). Rows
+from stats.nba.com's `shotchartdetail`, which `master` read, take one `.map`: `LOC_X` and `LOC_Y` become `x_legacy`
+and `y_legacy`, `SHOT_DISTANCE` becomes `shot_distance`, a `SHOT_MADE_FLAG` of 1 becomes `"Made"` (anything else
+`"Missed"`), and a `SHOT_TYPE` of `"3PT Field Goal"` becomes a `shot_value` of 3 (anything else 2). Only the zones read
+`shot_value`. The examples on this page draw Brooklyn's first 2000 shots of 2025-26 against that season's league (see
+[Sample data](/sample-data#bkn_shots_2026-and-nba_league_2026-a-teams-shots-and-the-league)).
+
+<Live id="api/sdvplot/binShots" />
+
+## A hex chart against the league
+
+Each cell carries two numbers: its colour is the FG% there minus the league's, and its size is the attempts.
+`cellsVsLeague` compares each cell with the league in the same cell, from a `leagueIndex` of the whole season; a cell
+the league shot fewer than 25 times from takes its zone's league rate. `master` compared each cell with the league's
+FG% at the cell's distance instead (`cellsVsDistance`), drew 1 ft cells, sized them linearly up to a cap and coloured
+the raw difference. `main` shrinks the difference toward the league by 25 attempts, so a 2-for-2 cell does not read as
+the hottest spot on the floor.
+
+<Live id="sdvplot/shots/hex-chart" />
+
+<Live id="api/sdvplot/shrunkDiff" />
+
+`shotCells` draws the cells as `Plot.geo` through the plot's own scales, so a cell is exact in court feet. The
+`nba-legacy-vertical` frame puts the hoop at the bottom of a court drawn with `rotation: 90`.
+
+### Hexagons or squares
+
+Both shapes bin the same shots into cells with the same counts, colours and sizes; only the outline differs. A
+hexagon's six neighbours all sit at the same distance from its centre, and its corners stay close to that centre, so a
+hot spot spreads evenly and the lattice adds little direction of its own to the picture. That is why both
+blazing-the-nets apps use hexagons. Squares line up with the court's straight lines (the lane, the baseline, the
+corner-three strips) and read as a grid, so a cell is easy to name and to compare along a row or column. Their corners
+reach farther from the centre (s/√2 against r), so a square groups slightly less local shots than a hexagon of the
+same area. For a like-for-like comparison, give the squares the hexagon's area:
+`{ shape: "square", radius: 10, equalArea: true }` makes squares of side 16.12 tenths of a foot, 378 of them for these
+2000 shots against 374 hexagons of radius 10. The league context for those squares is
+`NBA_LEAGUE_SQUARE_2026`, the same season's shots binned by sdvplot's own `squarebin`.
+
+<Live id="sdvplot/shots/square-chart" />
+
+`sdvplot/bins` holds the binners alone, without sporty: `binner`, `hexbin` and `squarebin` take any points and x/y
+accessors, and `binner(...).cell(px)`, `hexagonPath` and `squarePath` give the outline to draw at each centre.
+
+<Live id="sdvplot/d3/square-bins" />
+
+## Zones
+
+`statsByZone` counts makes and attempts in the six zones (restricted area, paint, mid-range, both corner threes,
+above the break). `shotZones` fills sporty's `basketballZones` with a colour per zone and labels each one, here
+makes/attempts. Build the zones with `scale: 10` so they are in the shots' tenths, and pass the shots' frame.
+
+<Live id="sdvplot/shots/zones" />
+
+## Shooting signature
+
+`signaturePoints` turns FG% by distance against the league into a ribbon: its height is the FG%, its width the share of
+shots taken from there, and its colour the shrunk difference from the league, whose FG% is the dashed line.
+`shootingSignature` draws it in Plot; `appendSignature` in d3.
+
+<Live id="sdvplot/shots/signature" />
+
+## Legends
+
+The colours come from `diffScale()`, a function from a difference to a colour. Its `.plot` is the same scale in
+Observable Plot's terms, so `Plot.legend({ color: diffScale().plot })` draws the matching colour bar, as the charts
+above do. In d3, `appendLegend` draws the bar, a caption and, given `sizeCells`' sizes, a key of cell sizes.
+
+<Live id="sdvplot/d3/shot-legend" />
+
+## Faces and initials
+
+`appendHeadshots` with `clip: "circle"` crops each headshot to a circle, with an optional ring and a placeholder disc
+that stays behind the face if the image does not load.
+
+<Live id="sdvplot/d3/faces" />
+
+In React, `<Headshot fallback="initials" name="…">` shows the player's initials when there is no headshot URL or
+the image fails to load, server-rendered pages included.
+
+<Live id="sdvplot/react/headshot-initials" />
+
+In the gallery: [Shot charts](/gallery/sdvplot/#shot-charts), [D3](/gallery/sdvplot/#d3) and
+[React](/gallery/sdvplot/#react).

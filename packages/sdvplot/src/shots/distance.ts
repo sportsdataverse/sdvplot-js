@@ -29,7 +29,13 @@ function binCount(binFt: number, maxFt: number): number {
  * ```ts
  * import { fgPctByDistance } from "@sportsdataverse/sdvplot/shots";
  *
- * fgPctByDistance([{ x_legacy: 0, y_legacy: 5, shot_distance: 0, shot_value: 2, shot_result: "Made" }], 3)[0];
+ * // Brooklyn shots from the sportsdataverse-data nba_stats_shots release, 2025-26
+ * const shots = [
+ *   { x_legacy: -1, y_legacy: 7, shot_distance: 1, shot_value: 2, shot_result: "Made" },
+ *   { x_legacy: 0, y_legacy: 0, shot_distance: 0, shot_value: 2, shot_result: "Missed" },
+ *   { x_legacy: -44, y_legacy: 252, shot_distance: 26, shot_value: 3, shot_result: "Made" },
+ * ];
+ * fgPctByDistance(shots, 3)[0];
  * ```
  */
 export function fgPctByDistance(shots: readonly ShotRow[], binFt = 1, maxFt = 35): DistanceBin[] {
@@ -65,8 +71,10 @@ export interface DistanceVsLeague extends DistanceBin {
  * ```ts
  * import { fgPctByDistance, vsLeague } from "@sportsdataverse/sdvplot/shots";
  *
- * const shot = { x_legacy: 0, y_legacy: 5, shot_distance: 0, shot_value: 2, shot_result: "Made" };
- * vsLeague(fgPctByDistance([shot]), fgPctByDistance([shot, { ...shot, shot_result: "Missed" }]))[0];
+ * // Brooklyn shots from the sportsdataverse-data nba_stats_shots release, 2025-26
+ * const made = { x_legacy: 0, y_legacy: 0, shot_distance: 0, shot_value: 2, shot_result: "Made" };
+ * const missed = { ...made, shot_result: "Missed" };
+ * vsLeague(fgPctByDistance([made]), fgPctByDistance([made, missed]))[0];
  * ```
  */
 export function vsLeague(player: readonly DistanceBin[], league: readonly DistanceBin[]): DistanceVsLeague[] {
@@ -101,7 +109,13 @@ export interface SideBin {
  * ```ts
  * import { statsBySide } from "@sportsdataverse/sdvplot/shots";
  *
- * statsBySide([{ x_legacy: 0, y_legacy: 5, shot_distance: 0, shot_value: 2, shot_result: "Made" }], 3, 35, 7.5)[0];
+ * // Brooklyn shots from the sportsdataverse-data nba_stats_shots release, 2025-26
+ * const shots = [
+ *   { x_legacy: -1, y_legacy: 7, shot_distance: 1, shot_value: 2, shot_result: "Made" },
+ *   { x_legacy: 0, y_legacy: 0, shot_distance: 0, shot_value: 2, shot_result: "Missed" },
+ *   { x_legacy: -44, y_legacy: 252, shot_distance: 26, shot_value: 3, shot_result: "Made" },
+ * ];
+ * statsBySide(shots, 3, 35, 7.5)[0];
  * ```
  */
 export function statsBySide(
@@ -155,8 +169,10 @@ export function statsBySide(
  * ```ts
  * import { cellsVsDistance, fgPctByDistance } from "@sportsdataverse/sdvplot/shots";
  *
- * const shot = { x_legacy: 0, y_legacy: 5, shot_distance: 0, shot_value: 2, shot_result: "Made" };
- * cellsVsDistance([shot], fgPctByDistance([shot, shot]), { shape: "square", side: 10 });
+ * // Brooklyn shots from the sportsdataverse-data nba_stats_shots release, 2025-26
+ * const made = { x_legacy: 0, y_legacy: 0, shot_distance: 0, shot_value: 2, shot_result: "Made" };
+ * const missed = { ...made, shot_result: "Missed" };
+ * cellsVsDistance([made], fgPctByDistance([made, missed]), { shape: "square", side: 10 });
  * ```
  */
 export function cellsVsDistance(
