@@ -491,7 +491,7 @@ describe.skipIf(!process.env.SDV_RENDER_TESTS)("playwright rendering (SDV_RENDER
       expect(optedOut, `${name}: after the documented opt-out`).toBe("none");
     }
   }, 120_000);
-  test("a host page's global table CSS (Observable Framework, Docusaurus) changes no cell's ink, ground or font, nor a row's rules", async () => {
+  test("a host page's global table CSS (Observable Framework, Docusaurus) changes no cell's ink, ground, font or rules", async () => {
     // Framework's td{color} and table{font} beat what a cell inherits from the table root, and Docusaurus paints its
     // stripe on every second <tr>: the notebooks' dark mode put the page's light ink on a light table
     await preloadAll(); // themePreview's sdvTeam resolves KC
@@ -544,7 +544,12 @@ describe.skipIf(!process.env.SDV_RENDER_TESTS)("playwright rendering (SDV_RENDER
           hex(over(rgba(cs.color), ground)),
           hex(ground),
           `${cs.fontFamily} ${cs.fontSize}/${cs.lineHeight}`,
-          `${tr.borderTopWidth} ${tr.borderBottomWidth}`,
+          // the row's rules and the cell's own (Infima borders every cell: table th, table td { border })
+          [tr, cs]
+            .map(
+              (x) => `${x.borderTopWidth} ${x.borderRightWidth} ${x.borderBottomWidth} ${x.borderLeftWidth}`,
+            )
+            .join(" / "),
         ];
       });
     };
@@ -573,7 +578,7 @@ describe.skipIf(!process.env.SDV_RENDER_TESTS)("playwright rendering (SDV_RENDER
             if (ink !== ink0) what.add("ink");
             if (ground !== ground0) what.add("ground");
             if (font !== font0) what.add("font");
-            if (rule !== rule0) what.add("row rule");
+            if (rule !== rule0) what.add("rules");
             const c = contrast(ink as string, ground as string);
             if (c < worst) [worst, before] = [c, contrast(ink0 as string, ground0 as string)];
           });

@@ -14,6 +14,7 @@ exports[`theme almanac: HTML snapshot (spec §7) 1`] = `
 .sdvt-t-358947eb th.sdvt-group{font-family:var(--sdvt-font-label);font-weight:var(--sdvt-group-weight);font-size:var(--sdvt-group-size);color:var(--sdvt-group-color);background:var(--sdvt-group-bg);text-transform:var(--sdvt-group-transform);border-top:var(--sdvt-group-border-top);border-bottom:var(--sdvt-group-border-bottom);text-align:left;padding:var(--sdvt-group-pad) 5px}
 :where(.sdvt-t-358947eb) .sdvt-cell{color:inherit}
 .sdvt-t-358947eb tr:nth-child(n){background-color:transparent;border:0}
+.sdvt-t-358947eb td,.sdvt-t-358947eb th{border:0}
 .sdvt-t-358947eb td.sdvt-cell{padding:var(--sdvt-pad) 5px;border-top:var(--sdvt-hline);font-variant-numeric:tabular-nums;vertical-align:middle}
 .sdvt-t-358947eb tbody tr:first-child td.sdvt-cell{border-top:none}.sdvt-t-358947eb tbody{border-bottom:var(--sdvt-body-border-bottom)}
 .sdvt-t-358947eb tr.sdvt-stripe td.sdvt-cell{background-color:var(--sdvt-stripe)}
@@ -56,6 +57,7 @@ exports[`theme athletic: HTML snapshot (spec §7) 1`] = `
 .sdvt-t-445aaff9 th.sdvt-group{font-family:var(--sdvt-font-label);font-weight:var(--sdvt-group-weight);font-size:var(--sdvt-group-size);color:var(--sdvt-group-color);background:var(--sdvt-group-bg);text-transform:var(--sdvt-group-transform);border-top:var(--sdvt-group-border-top);border-bottom:var(--sdvt-group-border-bottom);text-align:left;padding:var(--sdvt-group-pad) 5px}
 :where(.sdvt-t-445aaff9) .sdvt-cell{color:inherit}
 .sdvt-t-445aaff9 tr:nth-child(n){background-color:transparent;border:0}
+.sdvt-t-445aaff9 td,.sdvt-t-445aaff9 th{border:0}
 .sdvt-t-445aaff9 td.sdvt-cell{padding:var(--sdvt-pad) 5px;border-top:var(--sdvt-hline);font-variant-numeric:tabular-nums;vertical-align:middle}
 .sdvt-t-445aaff9 tbody tr:first-child td.sdvt-cell{border-top:none}.sdvt-t-445aaff9 tbody{border-bottom:var(--sdvt-body-border-bottom)}
 .sdvt-t-445aaff9 tr.sdvt-stripe td.sdvt-cell{background-color:var(--sdvt-stripe)}
@@ -100,6 +102,7 @@ exports[`theme booktabs: HTML snapshot (spec §7) 1`] = `
 .sdvt-t-3c56db02 th.sdvt-group{font-family:var(--sdvt-font-label);font-weight:var(--sdvt-group-weight);font-size:var(--sdvt-group-size);color:var(--sdvt-group-color);background:var(--sdvt-group-bg);text-transform:var(--sdvt-group-transform);border-top:var(--sdvt-group-border-top);border-bottom:var(--sdvt-group-border-bottom);text-align:left;padding:var(--sdvt-group-pad) 5px}
 :where(.sdvt-t-3c56db02) .sdvt-cell{color:inherit}
 .sdvt-t-3c56db02 tr:nth-child(n){background-color:transparent;border:0}
+.sdvt-t-3c56db02 td,.sdvt-t-3c56db02 th{border:0}
 .sdvt-t-3c56db02 td.sdvt-cell{padding:var(--sdvt-pad) 5px;border-top:var(--sdvt-hline);font-variant-numeric:tabular-nums;vertical-align:middle}
 .sdvt-t-3c56db02 tbody tr:first-child td.sdvt-cell{border-top:none}.sdvt-t-3c56db02 tbody{border-bottom:var(--sdvt-body-border-bottom)}
 .sdvt-t-3c56db02 tr.sdvt-stripe td.sdvt-cell{background-color:var(--sdvt-stripe)}
@@ -141,6 +144,7 @@ exports[`theme broadsheet: HTML snapshot (spec §7) 1`] = `
 .sdvt-t-cb24a230 th.sdvt-group{font-family:var(--sdvt-font-label);font-weight:var(--sdvt-group-weight);font-size:var(--sdvt-group-size);color:var(--sdvt-group-color);background:var(--sdvt-group-bg);text-transform:var(--sdvt-group-transform);border-top:var(--sdvt-group-border-top);border-bottom:var(--sdvt-group-border-bottom);text-align:left;padding:var(--sdvt-group-pad) 5px}
 :where(.sdvt-t-cb24a230) .sdvt-cell{color:inherit}
 .sdvt-t-cb24a230 tr:nth-child(n){background-color:transparent;border:0}
+.sdvt-t-cb24a230 td,.sdvt-t-cb24a230 th{border:0}
 .sdvt-t-cb24a230 td.sdvt-cell{padding:var(--sdvt-pad) 5px;border-top:var(--sdvt-hline);font-variant-numeric:tabular-nums;vertical-align:middle}
 .sdvt-t-cb24a230 tbody tr:first-child td.sdvt-cell{border-top:none}.sdvt-t-cb24a230 tbody{border-bottom:var(--sdvt-body-border-bottom)}
 .sdvt-t-cb24a230 tr.sdvt-stripe td.sdvt-cell{background-color:var(--sdvt-stripe)}
@@ -184,6 +188,7 @@ exports[`theme brutalist: HTML snapshot (spec §7) 1`] = `
 .sdvt-t-d104bf55 th.sdvt-group{font-family:var(--sdvt-font-label);font-weight:var(--sdvt-group-weight);font-size:var(--sdvt-group-size);color:var(--sdvt-group-color);background:var(--sdvt-group-bg);text-transform:var(--sdvt-group-transform);border-top:var(--sdvt-group-border-top);border-bottom:var(--sdvt-group-border-bottom);text-align:left;padding:var(--sdvt-group-pad) 5px}
 :where(.sdvt-t-d104bf55) .sdvt-cell{color:inherit}
 .sdvt-t-d104bf55 tr:nth-child(n){background-color:transparent;border:0}
+.sdvt-t-d104bf55 td,.sdvt-t-d104bf55 th{border:0}
 .sdvt-t-d104bf55 td.sdvt-cell{padding:var(--sdvt-pad) 5px;border-top:var(--sdvt-hline);font-variant-numeric:tabular-nums;vertical-align:middle}
 .sdvt-t-d104bf55 tbody tr:first-child td.sdvt-cell{border-top:none}.sdvt-t-d104bf55 tbody{border-bottom:var(--sdvt-body-border-bottom)}
 .sdvt-t-d104bf55 tr.sdvt-stripe td.sdvt-cell{background-color:var(--sdvt-stripe)}
@@ -227,6 +232,7 @@ exports[`theme drench: HTML snapshot (spec §7) 1`] = `
 .sdvt-t-1392d76f th.sdvt-group{font-family:var(--sdvt-font-label);font-weight:var(--sdvt-group-weight);font-size:var(--sdvt-group-size);color:var(--sdvt-group-color);background:var(--sdvt-group-bg);text-transform:var(--sdvt-group-transform);border-top:var(--sdvt-group-border-top);border-bottom:var(--sdvt-group-border-bottom);text-align:left;padding:var(--sdvt-group-pad) 5px}
 :where(.sdvt-t-1392d76f) .sdvt-cell{color:inherit}
 .sdvt-t-1392d76f tr:nth-child(n){background-color:transparent;border:0}
+.sdvt-t-1392d76f td,.sdvt-t-1392d76f th{border:0}
 .sdvt-t-1392d76f td.sdvt-cell{padding:var(--sdvt-pad) 5px;border-top:var(--sdvt-hline);font-variant-numeric:tabular-nums;vertical-align:middle}
 .sdvt-t-1392d76f tbody tr:first-child td.sdvt-cell{border-top:none}.sdvt-t-1392d76f tbody{border-bottom:var(--sdvt-body-border-bottom)}
 .sdvt-t-1392d76f tr.sdvt-stripe td.sdvt-cell{background-color:var(--sdvt-stripe)}
@@ -268,6 +274,7 @@ exports[`theme gtutils: HTML snapshot (spec §7) 1`] = `
 .sdvt-t-216aa3c5 th.sdvt-group{font-family:var(--sdvt-font-label);font-weight:var(--sdvt-group-weight);font-size:var(--sdvt-group-size);color:var(--sdvt-group-color);background:var(--sdvt-group-bg);text-transform:var(--sdvt-group-transform);border-top:var(--sdvt-group-border-top);border-bottom:var(--sdvt-group-border-bottom);text-align:left;padding:var(--sdvt-group-pad) 5px}
 :where(.sdvt-t-216aa3c5) .sdvt-cell{color:inherit}
 .sdvt-t-216aa3c5 tr:nth-child(n){background-color:transparent;border:0}
+.sdvt-t-216aa3c5 td,.sdvt-t-216aa3c5 th{border:0}
 .sdvt-t-216aa3c5 td.sdvt-cell{padding:var(--sdvt-pad) 5px;border-top:var(--sdvt-hline);font-variant-numeric:tabular-nums;vertical-align:middle}
 .sdvt-t-216aa3c5 tbody tr:first-child td.sdvt-cell{border-top:none}.sdvt-t-216aa3c5 tbody{border-bottom:var(--sdvt-body-border-bottom)}
 .sdvt-t-216aa3c5 tr.sdvt-stripe td.sdvt-cell{background-color:var(--sdvt-stripe)}
@@ -309,6 +316,7 @@ exports[`theme kenpom: HTML snapshot (spec §7) 1`] = `
 .sdvt-t-c99c5aab th.sdvt-group{font-family:var(--sdvt-font-label);font-weight:var(--sdvt-group-weight);font-size:var(--sdvt-group-size);color:var(--sdvt-group-color);background:var(--sdvt-group-bg);text-transform:var(--sdvt-group-transform);border-top:var(--sdvt-group-border-top);border-bottom:var(--sdvt-group-border-bottom);text-align:left;padding:var(--sdvt-group-pad) 5px}
 :where(.sdvt-t-c99c5aab) .sdvt-cell{color:inherit}
 .sdvt-t-c99c5aab tr:nth-child(n){background-color:transparent;border:0}
+.sdvt-t-c99c5aab td,.sdvt-t-c99c5aab th{border:0}
 .sdvt-t-c99c5aab td.sdvt-cell{padding:var(--sdvt-pad) 5px;border-top:var(--sdvt-hline);font-variant-numeric:tabular-nums;vertical-align:middle}
 .sdvt-t-c99c5aab tbody tr:first-child td.sdvt-cell{border-top:none}.sdvt-t-c99c5aab tbody{border-bottom:var(--sdvt-body-border-bottom)}
 .sdvt-t-c99c5aab tr.sdvt-stripe td.sdvt-cell{background-color:var(--sdvt-stripe)}
@@ -353,6 +361,7 @@ exports[`theme midnight: HTML snapshot (spec §7) 1`] = `
 .sdvt-t-4514b6b5 th.sdvt-group{font-family:var(--sdvt-font-label);font-weight:var(--sdvt-group-weight);font-size:var(--sdvt-group-size);color:var(--sdvt-group-color);background:var(--sdvt-group-bg);text-transform:var(--sdvt-group-transform);border-top:var(--sdvt-group-border-top);border-bottom:var(--sdvt-group-border-bottom);text-align:left;padding:var(--sdvt-group-pad) 5px}
 :where(.sdvt-t-4514b6b5) .sdvt-cell{color:inherit}
 .sdvt-t-4514b6b5 tr:nth-child(n){background-color:transparent;border:0}
+.sdvt-t-4514b6b5 td,.sdvt-t-4514b6b5 th{border:0}
 .sdvt-t-4514b6b5 td.sdvt-cell{padding:var(--sdvt-pad) 5px;border-top:var(--sdvt-hline);font-variant-numeric:tabular-nums;vertical-align:middle}
 .sdvt-t-4514b6b5 tbody tr:first-child td.sdvt-cell{border-top:none}.sdvt-t-4514b6b5 tbody{border-bottom:var(--sdvt-body-border-bottom)}
 .sdvt-t-4514b6b5 tr.sdvt-stripe td.sdvt-cell{background-color:var(--sdvt-stripe)}
@@ -393,6 +402,7 @@ exports[`theme ncaa: HTML snapshot (spec §7) 1`] = `
 .sdvt-t-6a3a2042 th.sdvt-group{font-family:var(--sdvt-font-label);font-weight:var(--sdvt-group-weight);font-size:var(--sdvt-group-size);color:var(--sdvt-group-color);background:var(--sdvt-group-bg);text-transform:var(--sdvt-group-transform);border-top:var(--sdvt-group-border-top);border-bottom:var(--sdvt-group-border-bottom);text-align:left;padding:var(--sdvt-group-pad) 5px}
 :where(.sdvt-t-6a3a2042) .sdvt-cell{color:inherit}
 .sdvt-t-6a3a2042 tr:nth-child(n){background-color:transparent;border:0}
+.sdvt-t-6a3a2042 td,.sdvt-t-6a3a2042 th{border:0}
 .sdvt-t-6a3a2042 td.sdvt-cell{padding:var(--sdvt-pad) 5px;border-top:var(--sdvt-hline);font-variant-numeric:tabular-nums;vertical-align:middle}
 .sdvt-t-6a3a2042 tbody tr:first-child td.sdvt-cell{border-top:none}.sdvt-t-6a3a2042 tbody{border-bottom:var(--sdvt-body-border-bottom)}
 .sdvt-t-6a3a2042 tr.sdvt-stripe td.sdvt-cell{background-color:var(--sdvt-stripe)}
@@ -436,6 +446,7 @@ exports[`theme pl: HTML snapshot (spec §7) 1`] = `
 .sdvt-t-b43076fd th.sdvt-group{font-family:var(--sdvt-font-label);font-weight:var(--sdvt-group-weight);font-size:var(--sdvt-group-size);color:var(--sdvt-group-color);background:var(--sdvt-group-bg);text-transform:var(--sdvt-group-transform);border-top:var(--sdvt-group-border-top);border-bottom:var(--sdvt-group-border-bottom);text-align:left;padding:var(--sdvt-group-pad) 5px}
 :where(.sdvt-t-b43076fd) .sdvt-cell{color:inherit}
 .sdvt-t-b43076fd tr:nth-child(n){background-color:transparent;border:0}
+.sdvt-t-b43076fd td,.sdvt-t-b43076fd th{border:0}
 .sdvt-t-b43076fd td.sdvt-cell{padding:var(--sdvt-pad) 5px;border-top:var(--sdvt-hline);font-variant-numeric:tabular-nums;vertical-align:middle}
 .sdvt-t-b43076fd tbody tr:first-child td.sdvt-cell{border-top:none}.sdvt-t-b43076fd tbody{border-bottom:var(--sdvt-body-border-bottom)}
 .sdvt-t-b43076fd tr.sdvt-stripe td.sdvt-cell{background-color:var(--sdvt-stripe)}
@@ -480,6 +491,7 @@ exports[`theme savant: HTML snapshot (spec §7) 1`] = `
 .sdvt-t-d30446a4 th.sdvt-group{font-family:var(--sdvt-font-label);font-weight:var(--sdvt-group-weight);font-size:var(--sdvt-group-size);color:var(--sdvt-group-color);background:var(--sdvt-group-bg);text-transform:var(--sdvt-group-transform);border-top:var(--sdvt-group-border-top);border-bottom:var(--sdvt-group-border-bottom);text-align:left;padding:var(--sdvt-group-pad) 5px}
 :where(.sdvt-t-d30446a4) .sdvt-cell{color:inherit}
 .sdvt-t-d30446a4 tr:nth-child(n){background-color:transparent;border:0}
+.sdvt-t-d30446a4 td,.sdvt-t-d30446a4 th{border:0}
 .sdvt-t-d30446a4 td.sdvt-cell{padding:var(--sdvt-pad) 5px;border-top:var(--sdvt-hline);font-variant-numeric:tabular-nums;vertical-align:middle}
 .sdvt-t-d30446a4 tbody tr:first-child td.sdvt-cell{border-top:none}.sdvt-t-d30446a4 tbody{border-bottom:var(--sdvt-body-border-bottom)}
 .sdvt-t-d30446a4 tr.sdvt-stripe td.sdvt-cell{background-color:var(--sdvt-stripe)}
@@ -521,6 +533,7 @@ exports[`theme scoreboard: HTML snapshot (spec §7) 1`] = `
 .sdvt-t-de91a74c th.sdvt-group{font-family:var(--sdvt-font-label);font-weight:var(--sdvt-group-weight);font-size:var(--sdvt-group-size);color:var(--sdvt-group-color);background:var(--sdvt-group-bg);text-transform:var(--sdvt-group-transform);border-top:var(--sdvt-group-border-top);border-bottom:var(--sdvt-group-border-bottom);text-align:left;padding:var(--sdvt-group-pad) 5px}
 :where(.sdvt-t-de91a74c) .sdvt-cell{color:inherit}
 .sdvt-t-de91a74c tr:nth-child(n){background-color:transparent;border:0}
+.sdvt-t-de91a74c td,.sdvt-t-de91a74c th{border:0}
 .sdvt-t-de91a74c td.sdvt-cell{padding:var(--sdvt-pad) 5px;border-top:var(--sdvt-hline);font-variant-numeric:tabular-nums;vertical-align:middle}
 .sdvt-t-de91a74c tbody tr:first-child td.sdvt-cell{border-top:none}.sdvt-t-de91a74c tbody{border-bottom:var(--sdvt-body-border-bottom)}
 .sdvt-t-de91a74c tr.sdvt-stripe td.sdvt-cell{background-color:var(--sdvt-stripe)}
@@ -563,6 +576,7 @@ exports[`theme sdv: HTML snapshot (spec §7) 1`] = `
 .sdvt-t-42b21cbc th.sdvt-group{font-family:var(--sdvt-font-label);font-weight:var(--sdvt-group-weight);font-size:var(--sdvt-group-size);color:var(--sdvt-group-color);background:var(--sdvt-group-bg);text-transform:var(--sdvt-group-transform);border-top:var(--sdvt-group-border-top);border-bottom:var(--sdvt-group-border-bottom);text-align:left;padding:var(--sdvt-group-pad) 5px}
 :where(.sdvt-t-42b21cbc) .sdvt-cell{color:inherit}
 .sdvt-t-42b21cbc tr:nth-child(n){background-color:transparent;border:0}
+.sdvt-t-42b21cbc td,.sdvt-t-42b21cbc th{border:0}
 .sdvt-t-42b21cbc td.sdvt-cell{padding:var(--sdvt-pad) 5px;border-top:var(--sdvt-hline);font-variant-numeric:tabular-nums;vertical-align:middle}
 .sdvt-t-42b21cbc tbody tr:first-child td.sdvt-cell{border-top:none}.sdvt-t-42b21cbc tbody{border-bottom:var(--sdvt-body-border-bottom)}
 .sdvt-t-42b21cbc tr.sdvt-stripe td.sdvt-cell{background-color:var(--sdvt-stripe)}
@@ -606,6 +620,7 @@ exports[`theme sdvTeam: HTML snapshot (spec §7) 1`] = `
 .sdvt-t-27311aa5 th.sdvt-group{font-family:var(--sdvt-font-label);font-weight:var(--sdvt-group-weight);font-size:var(--sdvt-group-size);color:var(--sdvt-group-color);background:var(--sdvt-group-bg);text-transform:var(--sdvt-group-transform);border-top:var(--sdvt-group-border-top);border-bottom:var(--sdvt-group-border-bottom);text-align:left;padding:var(--sdvt-group-pad) 5px}
 :where(.sdvt-t-27311aa5) .sdvt-cell{color:inherit}
 .sdvt-t-27311aa5 tr:nth-child(n){background-color:transparent;border:0}
+.sdvt-t-27311aa5 td,.sdvt-t-27311aa5 th{border:0}
 .sdvt-t-27311aa5 td.sdvt-cell{padding:var(--sdvt-pad) 5px;border-top:var(--sdvt-hline);font-variant-numeric:tabular-nums;vertical-align:middle}
 .sdvt-t-27311aa5 tbody tr:first-child td.sdvt-cell{border-top:none}.sdvt-t-27311aa5 tbody{border-bottom:var(--sdvt-body-border-bottom)}
 .sdvt-t-27311aa5 tr.sdvt-stripe td.sdvt-cell{background-color:var(--sdvt-stripe)}
@@ -649,6 +664,7 @@ exports[`theme sofa: HTML snapshot (spec §7) 1`] = `
 .sdvt-t-988ae400 th.sdvt-group{font-family:var(--sdvt-font-label);font-weight:var(--sdvt-group-weight);font-size:var(--sdvt-group-size);color:var(--sdvt-group-color);background:var(--sdvt-group-bg);text-transform:var(--sdvt-group-transform);border-top:var(--sdvt-group-border-top);border-bottom:var(--sdvt-group-border-bottom);text-align:left;padding:var(--sdvt-group-pad) 5px}
 :where(.sdvt-t-988ae400) .sdvt-cell{color:inherit}
 .sdvt-t-988ae400 tr:nth-child(n){background-color:transparent;border:0}
+.sdvt-t-988ae400 td,.sdvt-t-988ae400 th{border:0}
 .sdvt-t-988ae400 td.sdvt-cell{padding:var(--sdvt-pad) 5px;border-top:var(--sdvt-hline);font-variant-numeric:tabular-nums;vertical-align:middle}
 .sdvt-t-988ae400 tbody tr:first-child td.sdvt-cell{border-top:none}.sdvt-t-988ae400 tbody{border-bottom:var(--sdvt-body-border-bottom)}
 .sdvt-t-988ae400 tr.sdvt-stripe td.sdvt-cell{background-color:var(--sdvt-stripe)}
@@ -690,6 +706,7 @@ exports[`theme swiss: HTML snapshot (spec §7) 1`] = `
 .sdvt-t-531d32b0 th.sdvt-group{font-family:var(--sdvt-font-label);font-weight:var(--sdvt-group-weight);font-size:var(--sdvt-group-size);color:var(--sdvt-group-color);background:var(--sdvt-group-bg);text-transform:var(--sdvt-group-transform);border-top:var(--sdvt-group-border-top);border-bottom:var(--sdvt-group-border-bottom);text-align:left;padding:var(--sdvt-group-pad) 5px}
 :where(.sdvt-t-531d32b0) .sdvt-cell{color:inherit}
 .sdvt-t-531d32b0 tr:nth-child(n){background-color:transparent;border:0}
+.sdvt-t-531d32b0 td,.sdvt-t-531d32b0 th{border:0}
 .sdvt-t-531d32b0 td.sdvt-cell{padding:var(--sdvt-pad) 5px;border-top:var(--sdvt-hline);font-variant-numeric:tabular-nums;vertical-align:middle}
 .sdvt-t-531d32b0 tbody tr:first-child td.sdvt-cell{border-top:none}.sdvt-t-531d32b0 tbody{border-bottom:var(--sdvt-body-border-bottom)}
 .sdvt-t-531d32b0 tr.sdvt-stripe td.sdvt-cell{background-color:var(--sdvt-stripe)}
@@ -731,6 +748,7 @@ exports[`theme terminal: HTML snapshot (spec §7) 1`] = `
 .sdvt-t-82ef4392 th.sdvt-group{font-family:var(--sdvt-font-label);font-weight:var(--sdvt-group-weight);font-size:var(--sdvt-group-size);color:var(--sdvt-group-color);background:var(--sdvt-group-bg);text-transform:var(--sdvt-group-transform);border-top:var(--sdvt-group-border-top);border-bottom:var(--sdvt-group-border-bottom);text-align:left;padding:var(--sdvt-group-pad) 5px}
 :where(.sdvt-t-82ef4392) .sdvt-cell{color:inherit}
 .sdvt-t-82ef4392 tr:nth-child(n){background-color:transparent;border:0}
+.sdvt-t-82ef4392 td,.sdvt-t-82ef4392 th{border:0}
 .sdvt-t-82ef4392 td.sdvt-cell{padding:var(--sdvt-pad) 5px;border-top:var(--sdvt-hline);font-variant-numeric:tabular-nums;vertical-align:middle}
 .sdvt-t-82ef4392 tbody tr:first-child td.sdvt-cell{border-top:none}.sdvt-t-82ef4392 tbody{border-bottom:var(--sdvt-body-border-bottom)}
 .sdvt-t-82ef4392 tr.sdvt-stripe td.sdvt-cell{background-color:var(--sdvt-stripe)}
@@ -771,6 +789,7 @@ exports[`theme tier: HTML snapshot (spec §7) 1`] = `
 .sdvt-t-7a4f442d th.sdvt-group{font-family:var(--sdvt-font-label);font-weight:var(--sdvt-group-weight);font-size:var(--sdvt-group-size);color:var(--sdvt-group-color);background:var(--sdvt-group-bg);text-transform:var(--sdvt-group-transform);border-top:var(--sdvt-group-border-top);border-bottom:var(--sdvt-group-border-bottom);text-align:left;padding:var(--sdvt-group-pad) 5px}
 :where(.sdvt-t-7a4f442d) .sdvt-cell{color:inherit}
 .sdvt-t-7a4f442d tr:nth-child(n){background-color:transparent;border:0}
+.sdvt-t-7a4f442d td,.sdvt-t-7a4f442d th{border:0}
 .sdvt-t-7a4f442d td.sdvt-cell{padding:var(--sdvt-pad) 5px;border-top:var(--sdvt-hline);font-variant-numeric:tabular-nums;vertical-align:middle}
 .sdvt-t-7a4f442d tbody tr:first-child td.sdvt-cell{border-top:none}.sdvt-t-7a4f442d tbody{border-bottom:var(--sdvt-body-border-bottom)}
 .sdvt-t-7a4f442d tr.sdvt-stripe td.sdvt-cell{background-color:var(--sdvt-stripe)}
@@ -813,6 +832,7 @@ exports[`theme tufte: HTML snapshot (spec §7) 1`] = `
 .sdvt-t-fa50835d th.sdvt-group{font-family:var(--sdvt-font-label);font-weight:var(--sdvt-group-weight);font-size:var(--sdvt-group-size);color:var(--sdvt-group-color);background:var(--sdvt-group-bg);text-transform:var(--sdvt-group-transform);border-top:var(--sdvt-group-border-top);border-bottom:var(--sdvt-group-border-bottom);text-align:left;padding:var(--sdvt-group-pad) 5px}
 :where(.sdvt-t-fa50835d) .sdvt-cell{color:inherit}
 .sdvt-t-fa50835d tr:nth-child(n){background-color:transparent;border:0}
+.sdvt-t-fa50835d td,.sdvt-t-fa50835d th{border:0}
 .sdvt-t-fa50835d td.sdvt-cell{padding:var(--sdvt-pad) 5px;border-top:var(--sdvt-hline);font-variant-numeric:tabular-nums;vertical-align:middle}
 .sdvt-t-fa50835d tbody tr:first-child td.sdvt-cell{border-top:none}.sdvt-t-fa50835d tbody{border-bottom:var(--sdvt-body-border-bottom)}
 .sdvt-t-fa50835d tr.sdvt-stripe td.sdvt-cell{background-color:var(--sdvt-stripe)}

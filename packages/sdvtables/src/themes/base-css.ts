@@ -28,6 +28,9 @@ export function BASE_CSS(sel: string): string {
     // (themes and decorations style cells; cutlines and watermarks are images; row decorations are inline), so rows
     // stay clear. ponytail: :nth-child(n) lifts this to (0,2,1), past that stripe whatever the stylesheet order.
     `${s} tr:nth-child(n){background-color:transparent;border:0}`,
+    // Infima borders every cell (table th, table td { border }, (0,0,2)). ponytail: (0,1,1) clears that, and every
+    // border sdvtables draws comes from a more specific rule or a later one (themes and decorations follow BASE_CSS)
+    `${s} td,${s} th{border:0}`,
     `${s} td.sdvt-cell{padding:var(--sdvt-pad) 5px;border-top:var(--sdvt-hline);font-variant-numeric:tabular-nums;vertical-align:middle}`,
     `${s} tbody tr:first-child td.sdvt-cell{border-top:none}${s} tbody{border-bottom:var(--sdvt-body-border-bottom)}`,
     // background-color, not the `background` shorthand: the shorthand would reset the hovered row's underline image
