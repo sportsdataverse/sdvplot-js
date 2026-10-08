@@ -101,6 +101,24 @@ test("the overlay sits behind the marks; destroy removes it and clears only what
   again.brush.destroy();
   expect(again.store.getState().predicate).toBe(other);
 });
+test("a ScaleLike with no range (it is optional) brushes across the svg's box on that axis, never [Infinity, -Infinity]", () => {
+  const svg = chart();
+  const x = svg.scale("x") as Plot.Scale;
+  const store = createSelection<Standing>();
+  // an adapter that maps and inverts but carries no pixel range: the x extent falls back to the svg's width
+  const scales = { x: { apply: (v: unknown) => x.apply(v), invert: (p: unknown) => x.invert?.(p) } };
+  const brush = brushFilter(svg, store, { data: STANDINGS, x: "wins", y: "net_epa", id: "team", scales });
+  const overlay = svg.querySelector(".sdv-brush .overlay");
+  const [y0, y1] = Array.from(svg.scale("y")?.range ?? [], Number).sort((a, b) => a - b);
+  expect(["x", "width", "y", "height"].map((a) => Number(overlay?.getAttribute(a)))).toEqual([
+    0,
+    640,
+    y0,
+    (y1 ?? 0) - (y0 ?? 0),
+  ]);
+  brush.move({ x: [9.5, 16], y: [0, 0.2] });
+  expect([...store.getState().selected]).toEqual(["KC", "LAC", "DEN", "BUF"]);
+});
 test("a band x scale throws InputError at construction", () => {
   const bars = Plot.plot({ marks: [Plot.barY(STANDINGS, { x: "team", y: "wins" })] });
   expect(() =>

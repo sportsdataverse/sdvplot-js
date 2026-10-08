@@ -45,7 +45,7 @@ export interface ScaleLike {
   apply(value: unknown): unknown;
   /** Pixel to data value; absent on band and point scales, which a brush cannot invert. */
   invert?(pixel: unknown): unknown;
-  /** The pixel range; the brush's extent spans it. */
+  /** The pixel range; the brush's extent spans it. Absent (or with no finite value), the svg's box on that axis. */
   range?: Iterable<unknown>;
 }
 /**
@@ -213,9 +213,10 @@ export function brushFilter<R>(
       : Array.from(figure.querySelectorAll(":scope > svg")).at(-1);
   if (!svg) throw new InputError("brushFilter: no <svg> in the figure");
   const [bx, by, bw, bh] = boxOf(svg);
+  /** The axis' pixel extent: the scale's range, else (no scale, or no finite range) the svg's box, as linkCursor's. */
   const pixels = (s: ScaleLike | undefined, from: number, to: number): [number, number] => {
-    const r = s === undefined ? [from, to] : Array.from(s.range ?? [], Number);
-    return [Math.min(...r), Math.max(...r)];
+    const r = Array.from(s?.range ?? [], Number).filter(Number.isFinite);
+    return r.length > 0 ? [Math.min(...r), Math.max(...r)] : [from, to];
   };
   const [x0px, x1px] = pixels(xs, bx, bx + bw);
   const [y0px, y1px] = pixels(ys, by, by + bh);
