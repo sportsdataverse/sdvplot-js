@@ -1,6 +1,7 @@
 // @vitest-environment node
 import { describe, expect, test, vi } from "vitest";
 import { STANDINGS, type Standing } from "../../sdvtables/test/fixtures/standings.js";
+import { InputError } from "../src/errors.js";
 import { createSelection, focusIds, sameIds, toId } from "../src/selection.js";
 
 describe("createSelection", () => {
@@ -46,6 +47,21 @@ describe("createSelection", () => {
       "",
     ]);
   });
+  test('ids go through toId: null, undefined, NaN and "" are dropped, never stored as "null"', () => {
+    const s = createSelection();
+    s.set({ hover: [null, "KC", undefined, Number.NaN, "", 12] as unknown as string[] });
+    expect([...s.getState().hover]).toEqual(["KC", "12"]);
+  });
+  test("a bare string is an InputError, not split into letters, and the patch is not applied", () => {
+    const s = createSelection();
+    s.set({ selected: ["BUF"] });
+    const fn = vi.fn();
+    s.subscribe(fn);
+    expect(() => s.set({ hover: ["MIA"], selected: "KC" })).toThrow(InputError);
+    expect(() => s.set({ hover: "KC" })).toThrow(/\["KC"\]/);
+    expect(fn).not.toHaveBeenCalled();
+    expect([...s.getState().selected, ...s.getState().hover]).toEqual(["BUF"]);
+  });
   test("clear resets all three; a second clear is silent", () => {
     const s = createSelection<Standing>();
     s.set({ hover: ["NE"], selected: ["KC"], predicate: () => true });
@@ -67,6 +83,41 @@ describe("createSelection", () => {
     s.set({ selected: ["KC"] });
     s.set({ selected: ["BUF"] });
     expect(seen).toEqual(["a", "b", "b"]);
+  });
+  test("a listener removed during a notification is not called for it (as with EventTarget)", () => {
+    const s = createSelection();
+    const seen: string[] = [];
+    let offB = (): void => {};
+    s.subscribe(() => {
+      seen.push("a");
+      offB();
+    });
+    offB = s.subscribe(() => seen.push("b"));
+    s.set({ selected: ["KC"] });
+    expect(seen).toEqual(["a"]);
+  });
+  test("a listener that throws stops no other listener and not set; its error is reported, never swallowed", () => {
+    const reported: (() => void)[] = [];
+    const queue = vi.spyOn(globalThis, "queueMicrotask").mockImplementation((cb) => {
+      reported.push(cb);
+    });
+    const s = createSelection();
+    const seen: string[] = [];
+    const broken = new Error("a linked chart's listener broke");
+    s.subscribe(() => {
+      seen.push("chart");
+      throw broken;
+    });
+    s.subscribe(() => seen.push("table"));
+    try {
+      expect(() => s.set({ selected: ["KC"] })).not.toThrow();
+    } finally {
+      queue.mockRestore();
+    }
+    expect(seen).toEqual(["chart", "table"]);
+    expect([...s.getState().selected]).toEqual(["KC"]);
+    expect(reported).toHaveLength(1);
+    expect(() => reported[0]?.()).toThrow(broken);
   });
 });
 

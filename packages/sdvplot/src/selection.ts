@@ -29,7 +29,11 @@ export interface SelectionState<Row = unknown> {
   /** The shared hover value; null when the pointer is on no linked chart. */
   readonly cursor: Cursor | null;
 }
-/** A partial update for {@link SelectionStore.set}: an absent field keeps its value. */
+/**
+ * A partial update for {@link SelectionStore.set}: an absent field keeps its value. Each id goes through
+ * {@link toId}: a number is stringified (`12` and `"12"` are the same id) and null, undefined, NaN and `""` are
+ * dropped. A bare string throws `InputError` rather than being split into letters: pass `["KC"]`, not `"KC"`.
+ */
 export interface SelectionPatch<Row = unknown> {
   /** The new hover ids (replaces the set; `[]` clears it). */
   readonly hover?: Iterable<string>;
@@ -48,7 +52,12 @@ export interface SelectionStore<Row = unknown> {
   set(patch: SelectionPatch<Row>): void;
   /** Clear hover, selected, predicate and cursor. */
   clear(): void;
-  /** Call `fn` after every change; returns the unsubscribe function. */
+  /**
+   * Call `fn` after every change; returns the unsubscribe function. A listener that throws stops neither the others
+   * nor `set`: its error is rethrown in a microtask, as an `EventTarget` listener's is, so it still reaches
+   * `window.onerror` (or Node's `uncaughtException`) but one broken view cannot freeze the rest. A listener removed
+   * during a notification is not called for it.
+   */
   subscribe(fn: (state: SelectionState<Row>) => void): () => void;
 }
 
@@ -89,7 +98,8 @@ export function sameIds(a: ReadonlySet<string>, b: ReadonlySet<string>): boolean
 }
 
 /**
- * Whether two cursors are the same: the same field and an `Object.is`-equal value. `null` equals only `null`.
+ * Whether two cursors are the same: the same field and an `===`-equal value, so `0` and `-0` are one hover value
+ * (NaN never gets into the store). `null` equals only `null`.
  *
  * @example
  * ```ts
@@ -105,7 +115,7 @@ export function sameIds(a: ReadonlySet<string>, b: ReadonlySet<string>): boolean
  * ```
  */
 export function sameCursor(a: Cursor | null, b: Cursor | null): boolean {
-  return a === b || (a !== null && b !== null && a.field === b.field && Object.is(a.value, b.value));
+  return a === b || (a !== null && b !== null && a.field === b.field && a.value === b.value);
 }
 
 /**
@@ -132,8 +142,8 @@ export function focusIds<Row>(s: SelectionState<Row>): ReadonlySet<string> | nul
 
 /**
  * The linked-interactivity hub (J31): hover and selected id sets plus a row predicate. Pure data, zero deps, no DOM:
- * creating or updating one in Node changes nothing a server renders. Ids are strings; a number from an untyped
- * caller is stringified (`12` and `"12"` are the same id).
+ * creating or updating one in Node changes nothing a server renders. Ids are strings, normalised by {@link toId}
+ * (see {@link SelectionPatch}).
  *
  * @example
  * ```ts
@@ -152,7 +162,15 @@ export function createSelection<Row = unknown>(): SelectionStore<Row> {
   const listeners = new Set<(s: SelectionState<Row>) => void>();
   const ids = (next: Iterable<string> | undefined, prev: ReadonlySet<string>): ReadonlySet<string> => {
     if (next === undefined) return prev;
-    const set = new Set(Array.from(next, (id) => String(id)));
+    if (typeof next === "string")
+      throw new InputError(
+        `selection ids are a collection; pass [${JSON.stringify(next)}], not a bare string`,
+      );
+    const set = new Set<string>();
+    for (const v of next) {
+      const id = toId(v);
+      if (id !== "") set.add(id);
+    }
     return sameIds(set, prev) ? prev : set;
   };
   const store: SelectionStore<Row> = {
@@ -181,7 +199,17 @@ export function createSelection<Row = unknown>(): SelectionStore<Row> {
       )
         return;
       state = { hover, selected, predicate, cursor };
-      for (const fn of [...listeners]) fn(state);
+      for (const fn of [...listeners]) {
+        if (!listeners.has(fn)) continue; // removed by an earlier listener during this notification
+        try {
+          fn(state);
+        } catch (e) {
+          // reported, not swallowed, and not thrown at the caller (a pointer handler that cannot fix another view)
+          queueMicrotask(() => {
+            throw e;
+          });
+        }
+      }
     },
     clear() {
       store.set({ hover: EMPTY, selected: EMPTY, predicate: null, cursor: null });

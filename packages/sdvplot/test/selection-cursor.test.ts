@@ -15,6 +15,15 @@ test("starts null; one notification per distinct cursor; an equal cursor (new ob
   expect(fn).toHaveBeenCalledTimes(2);
   expect(sameCursor({ field: "a", value: 1 }, { field: "b", value: 1 })).toBe(false);
 });
+test("0 and -0 are the same hover value: equal cursors, no second notification", () => {
+  expect(sameCursor({ field: "shot_distance", value: 0 }, { field: "shot_distance", value: -0 })).toBe(true);
+  const s = createSelection();
+  const fn = vi.fn();
+  s.subscribe(fn);
+  s.set({ cursor: { field: "shot_distance", value: 0 } });
+  s.set({ cursor: { field: "shot_distance", value: -0 } });
+  expect(fn).toHaveBeenCalledTimes(1);
+});
 test("a cursor never dims (Review Focus 7): with only a cursor set, focusIds is null", () => {
   const s = createSelection();
   s.set({ cursor: { field: "distance", value: 3.5 } });
