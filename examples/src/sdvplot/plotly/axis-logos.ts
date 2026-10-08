@@ -23,7 +23,7 @@ const figure = {
   layout: { width: 560, height: 360 },
 };
 
-// The axis keeps its categories; their labels are blanked and a layout image sits under each tick.
+// The axis keeps its categories; their labels are hidden, not blanked, so hovering a bar names its team.
 const logos = withAxisLogos(figure, "x", { league: "nfl", height: 0.1 });
 // In the browser: Plotly.newPlot(div, data, layout), as this page does. Without JavaScript the page shows the figure.
 export const browser = {
