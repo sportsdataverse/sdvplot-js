@@ -104,3 +104,35 @@ test("shot dashboard: the menu swaps the court under a hovered cell, both ways, 
     setWarningHandler(null);
   }
 });
+
+test("shot dashboard: every bar of every figure sits inside its plot (FG% is a percent scale on [0, 100])", async () => {
+  const root = await figure("sdvplot/shots/dashboard");
+  type Fig = SVGSVGElement & { scale: (n: string) => { range?: readonly number[] } | undefined };
+  const figs = Array.from(root.querySelectorAll("svg")).filter(
+    (s): s is Fig => typeof (s as Partial<Fig>).scale === "function",
+  );
+  expect(figs).toHaveLength(5);
+  const span = (f: Fig, n: string): [number, number] => {
+    const r = Array.from(f.scale(n)?.range ?? [], Number);
+    return [Math.min(...r), Math.max(...r)];
+  };
+  const at = (r: Element, a: string): number => Number(r.getAttribute(a));
+  const outside: string[] = [];
+  const bars = figs.map((f) => {
+    const [[x0, x1], [y0, y1]] = [span(f, "x"), span(f, "y")];
+    const rects = f.querySelectorAll('g[aria-label="bar"] rect, g[aria-label="rect"] rect');
+    for (const r of rects)
+      if (
+        !(
+          at(r, "x") >= x0 - 1 &&
+          at(r, "x") + at(r, "width") <= x1 + 1 &&
+          at(r, "y") >= y0 - 1 &&
+          at(r, "y") + at(r, "height") <= y1 + 1
+        )
+      )
+        outside.push(r.outerHTML);
+    return rects.length;
+  });
+  expect(outside).toEqual([]);
+  expect(bars.slice(2).every((n) => n > 0)).toBe(true); // court and signature first, then the share, FG% and side bars
+});

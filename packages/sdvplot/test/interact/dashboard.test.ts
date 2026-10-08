@@ -153,6 +153,24 @@ describe.each<Shape>(["hex", "square"])("%s cells", (shape) => {
     expect([at(ring, "cx"), at(ring, "cy")]).toEqual(p);
   });
 
+  test("every bar of every figure sits inside its plot: no scale reads its domain in other units", () => {
+    const { d } = setup(shape);
+    const outside: string[] = [];
+    const bars = d.figures.map((f) => {
+      const [x0, x1] = span(f, "x");
+      const [y0, y1] = span(f, "y");
+      const rects = f.querySelectorAll('g[aria-label="bar"] rect, g[aria-label="rect"] rect');
+      for (const r of rects) {
+        const [x, y] = [at(r, "x"), at(r, "y")];
+        if (!(x >= x0 - 1 && x + at(r, "width") <= x1 + 1 && y >= y0 - 1 && y + at(r, "height") <= y1 + 1))
+          outside.push(`${f.getAttribute("aria-label") ?? ""} ${r.outerHTML}`);
+      }
+      return rects.length;
+    });
+    expect(outside).toEqual([]);
+    expect(bars.slice(2).every((n) => n > 0)).toBe(true); // share, FG% and side draw bars
+  });
+
   test("hovering 12.3 ft on the share bars puts ONE {distance, 12.5} in the store and every cursor at 12.5 (RF 6)", () => {
     const { d, store, updates } = setup(shape);
     overX(d.share, 12.3);

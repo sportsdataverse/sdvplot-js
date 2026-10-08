@@ -98,7 +98,7 @@ export function dashboard(shape: Shape, document?: Document): Dashboard {
     width: 640,
     height: 220,
     x: { label: "Shot distance (ft, 3 ft bins)" },
-    y: { label: "FG%", percent: true, domain: [0, 1] },
+    y: { label: "FG%", percent: true, domain: [0, 100] }, // percent scales by 100 before the domain applies
     marks: [Plot.barY(by3, { x: "distance", y: "fgPct" })],
   });
   // main's side chart: left grows leftward and right rightward from a centre column (lib/charts/sideChart.ts:55-71)
