@@ -94,6 +94,8 @@ and `fy`, `sort`, `filter` and `reverse`, `dx` and `dy`, `className`, `clip`, `o
   `Plot.group`, `Plot.hexbin`) throws `InputError`, because one image per input row cannot survive it: aggregate the
   rows first, then draw the result.
 - `height` stays a fraction of the frame, or of each facet's frame under `fx` or `fy`.
+- Column-name `x` and `y` label the axes, as on any Plot mark (`x: "wins"` gives `wins →`); pass
+  `x: { label: null }` to `Plot.plot` to hide one.
 - Under a dodge, `r` is the collision radius in pixels. Half the drawn height makes neighbours just touch; a smaller
   `r` lets them overlap. It never clips or sizes an image. Plot's own image mark uses `r` to clip the image to a
   circle, while sdvplot uses `r` only for dodge spacing and never clips.
