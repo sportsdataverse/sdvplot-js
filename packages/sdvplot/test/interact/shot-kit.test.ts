@@ -152,7 +152,7 @@ test("zones select by name: a click on the paint selects 'paint'; every zone id 
 // main lib/charts/hexShotChart.ts:164-194: the nearest hex centre within 18 px, and its four lines (:183-189, with
 // lib/format.ts:4-8). Measured: the court is 8.317 px a foot, the rim hex's five drawn neighbours sit 21.6 px away,
 // so 10 px from its centre the rim hex is the nearest in every direction.
-test("nearest hex within 18 px (S22: shotCells tip maxRadius 18 + linkSelection hover): the rim hex hovers at 10 px with main's four lines and clears at 19 px", () => {
+test("nearest hex within 18 px (S22: shotCells tip maxRadius 18 + linkSelection hover): the rim hex hovers at 10 px with main's four lines, at 17.5 px, and clears at 18.5 px", () => {
   const { k, store } = setup();
   const cs = drawnCentres(k);
   const rim = cs.find((c) => c.id === "0,0");
@@ -168,22 +168,60 @@ test("nearest hex within 18 px (S22: shotCells tip maxRadius 18 + linkSelection 
     ]);
     expect(k.court.querySelector(".sdv-hl")?.getAttribute("data-sdv-id")).toBe("0,0");
   }
-  // 19 px out where the rim hex is still the nearest: behind it, where no shot made a hex
+  // 17.5 and 18.5 px out where the rim hex is still the nearest: behind it, where no shot made a hex. Probe the middle
+  // of that arc of directions, away from its Voronoi edges (a Voronoi cell is convex and holds its site, so where
+  // 18.5 px is inside the rim's cell, 17.5 px is too). Chromium: 17.5 px hovers, 18.5 px clears.
   const [x0, x1] = span(k.court, "x");
   const [y0, y1] = span(k.court, "y");
-  const deg = Array.from({ length: 360 }, (_, d) => d).find((d) =>
-    [17, 19].every((r) => {
+  const arc = Array.from({ length: 360 }, (_, d) => d).filter((d) =>
+    [17.5, 18.5].every((r) => {
       const [x, y] = off(rim, r, d);
       return x >= x0 && x <= x1 && y >= y0 && y <= y1 && nearest(cs, [x, y]) === rim;
     }),
   );
-  if (deg === undefined) throw new Error("no direction leaves the rim hex the nearest at 19 px");
-  fire(k.court, "pointermove", ...off(rim, 17, deg));
+  const deg = arc[Math.floor(arc.length / 2)];
+  if (deg === undefined) throw new Error("no direction leaves the rim hex the nearest at 18.5 px");
+  expect((arc.at(-1) ?? 0) - (arc[0] ?? 0)).toBe(arc.length - 1); // one unbroken arc, so its middle is inside it
+  fire(k.court, "pointermove", ...off(rim, 17.5, deg));
   expect([...store.getState().hover]).toEqual(["0,0"]);
-  fire(k.court, "pointermove", ...off(rim, 19, deg));
+  fire(k.court, "pointermove", ...off(rim, 18.5, deg));
   expect([...store.getState().hover]).toEqual([]);
   expect(tipLines(k.court)).toEqual([]);
   expect(k.court.classList.contains("sdv-focus")).toBe(false);
+  expect(warnings).toEqual([]);
+});
+
+// The 18 px rule everywhere, not at one hand-found point: Plot's nearest-within-maxRadius against the model.
+test("nearest hex within 18 px everywhere (S22): 17.5 and 18.5 px out from every drawn hex in 8 directions, hover is the nearest drawn hex within 18 px, else none", () => {
+  const { k, store } = setup();
+  const cs = drawnCentres(k);
+  const [x0, x1] = span(k.court, "x");
+  const [y0, y1] = span(k.court, "y");
+  const misses: string[] = [];
+  const near = { hover: 0, clear: 0 }; // probes 16.5-18 px and 18-19.5 px from their nearest hex
+  for (const c of cs)
+    for (let deg = 0; deg < 360; deg += 45)
+      for (const r of [17.5, 18.5]) {
+        const [x, y] = off(c, r, deg);
+        if (x < x0 || x > x1 || y < y0 || y > y1) continue; // Plot's frame
+        let [a, da, db] = [cs[0], Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY]; // the two nearest
+        for (const t of cs) {
+          const d = Math.hypot(t.p[0] - x, t.p[1] - y);
+          if (d < da) [a, da, db] = [t, d, da];
+          else if (d < db) db = d;
+        }
+        if (db - da < 1e-6 || Math.abs(da - 18) < 1e-6) continue; // a tie, or on the radius: either answer is Plot's
+        if (da > 16.5 && da <= 18) near.hover++;
+        if (da > 18 && da < 19.5) near.clear++;
+        fire(k.court, "pointermove", x, y);
+        const want = da <= 18 && a !== undefined ? [a.id] : [];
+        const got = [...store.getState().hover];
+        if (got.join() !== want.join()) misses.push(`${c.id} ${deg}° ${r}px: ${got} not ${want}`);
+      }
+  expect(misses).toEqual([]);
+  // the sweep pins the radius both ways: some probes hover only if it is at least 16.5 px, some clear only below 19.5
+  expect(near.hover).toBeGreaterThan(0);
+  expect(near.clear).toBeGreaterThan(0);
   expect(warnings).toEqual([]);
 });
 
