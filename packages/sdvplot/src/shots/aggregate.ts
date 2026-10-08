@@ -21,6 +21,7 @@ export interface ShotRow {
   readonly shot_result: string;
 }
 
+/** Attempts, makes and FG% (`makes / attempts`, null with no attempts): the counts every shot aggregate carries. */
 export interface Split {
   readonly attempts: number;
   readonly makes: number;
@@ -47,6 +48,7 @@ export const shotZone = (s: ShotRow): BasketballZone =>
 const onCourt = (s: ShotRow): boolean =>
   Math.abs(s.x_legacy) <= 250 && s.y_legacy >= -52.5 && Number.isFinite(s.y_legacy);
 
+/** One cell of `binShots`: its centre, counts, mean shot distance and majority zone. */
 export interface CellBin extends Split {
   /** Cell centre, legacy tenths. */
   readonly x: number;
@@ -126,6 +128,7 @@ export function shrunkDiff(
   return (makes + k * league) / (attempts + k) - league;
 }
 
+/** One league cell in a `LeagueIndex`: centre (legacy tenths), attempts and FG%. */
 export interface LeagueCell {
   readonly x: number;
   readonly y: number;
@@ -141,6 +144,7 @@ export type LeagueIndex = Lattice & {
   readonly cells: readonly LeagueCell[];
   readonly zones: Readonly<Record<BasketballZone, Split>>;
 };
+/** A player cell with the league FG% it is compared to (`cellsVsLeague`, `cellsVsDistance`); null with no league figure. */
 export interface CellVsLeague extends CellBin {
   readonly leagueFgPct: number | null;
 }
@@ -198,6 +202,7 @@ export function cellsVsLeague(
 
 /** How a cell's attempts set its size: `main` (sqrt to the 95th percentile) or `master` (linear, capped). */
 export type SizeRule = "sqrt-p95" | "linear-cap";
+/** `sizeCells`' result: each cell's size, the cap, the size of any count, and the counts for a size key. */
 export interface CellSizes {
   /** Size per cell in legacy tenths: a hexagon's circumradius, or a square's side. 0 hides a cell. */
   readonly r: readonly number[];

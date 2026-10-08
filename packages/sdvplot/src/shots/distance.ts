@@ -4,6 +4,7 @@ import type { BinnerOptions } from "../bins/index.js";
 import { InputError } from "../errors.js";
 import { type CellVsLeague, type ShotRow, type Split, binShots, made, split } from "./aggregate.js";
 
+/** One `fgPctByDistance` bin: the counts of the shots `distance` to `distance + binFt` ft out, and their share. */
 export interface DistanceBin extends Split {
   /** First foot of the bin; `shot_distance` is rounded, so a 1-ft bin is centred on it. */
   readonly distance: number;
@@ -49,6 +50,7 @@ export function fgPctByDistance(shots: readonly ShotRow[], binFt = 1, maxFt = 35
   }));
 }
 
+/** A player distance bin with the league's FG% at the same distance and the difference (`vsLeague`). */
 export interface DistanceVsLeague extends DistanceBin {
   readonly leagueFgPct: number | null;
   /** Player minus league FG% (a fraction), null when either side has no attempts. */
@@ -81,6 +83,7 @@ export function vsLeague(player: readonly DistanceBin[], league: readonly Distan
   });
 }
 
+/** One `statsBySide` bin: left, centre and right of the hoop for the shots in the bin that starts `distance` ft out. */
 export interface SideBin {
   readonly distance: number;
   readonly left: Split;

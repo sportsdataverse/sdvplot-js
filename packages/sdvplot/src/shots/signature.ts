@@ -37,6 +37,7 @@ export function kernelSum(values: readonly number[], sigma: number): number[] {
   });
 }
 
+/** One shooting-signature sample (`signaturePoints`): the input of the Plot `shootingSignature` and d3 `appendSignature`. */
 export interface SignaturePoint {
   readonly distance: number;
   /** Effective makes / attempts near this distance; null (a gap in the ribbon) under `minAttempts`. */
@@ -47,6 +48,7 @@ export interface SignaturePoint {
   readonly colourDiff: number | null;
 }
 
+/** Options for `signaturePoints`; `master` mode is `{ step: 1, smooth: false, minAttempts: 1, prior: 0 }`. */
 export interface SignatureOptions {
   /** Feet between samples; default 0.25 (`:16`). `master` sampled each 1-ft bin. */
   step?: number;

@@ -15,6 +15,7 @@ export const BASKETBALL_ZONES = [
   "corner_3_right",
   "above_break_3",
 ] as const;
+/** One of the six shot zones in `BASKETBALL_ZONES`, as `basketballZoneOf` returns it. */
 export type BasketballZone = (typeof BASKETBALL_ZONES)[number];
 /** Display names (blazing-the-nets `main` `lib/charts/hexShotChart.ts:35-42`). */
 export const BASKETBALL_ZONE_LABELS: Readonly<Record<BasketballZone, string>> = {
@@ -99,6 +100,7 @@ export function basketballZoneOf(
   return "mid_range";
 }
 
+/** One zone as a fillable ring with a label anchor (`basketballZones`). */
 export interface BasketballZoneArea {
   readonly zone: BasketballZone;
   /** One closed ring in the zone frame. `paint` is a keyhole around the restricted area (fill it nonzero or evenodd). */

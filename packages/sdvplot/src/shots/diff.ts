@@ -70,7 +70,9 @@ function piecewise(domain: readonly number[], range: readonly Rgb[], x: number):
   return lerp(range[i - 1] as Rgb, range[i] as Rgb, (x - a) / (b - a));
 }
 
+/** The diff colours: `"rdbu"` (blazing-the-nets `main`, the default) or `"master"` (its 2021 five stops). */
 export type DiffPalette = "rdbu" | "master";
+/** Options for `diffScale`. */
 export interface DiffScaleOptions {
   /**
    * `"rdbu"` (default): RdBu reversed, above league red (blazing-the-nets `main`), clamped at `±domain`.
