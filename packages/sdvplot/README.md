@@ -136,6 +136,8 @@ An unknown team or player is skipped with one warning per call. The colour helpe
 data-placed image is sized in axis units; set `layout.xaxis.range` yourself to keep your own. `withAxisLogos` sizes
 margins in pixels from `layout.width`/`layout.height` (Plotly's 700 × 450 when unset). x-axis images hang under their
 subplot and `margin.b` grows by what reaches below the figure; under an upper subplot they hang into the one below.
+Accessible name: plotly.js has no accessibility option and layout images carry no name, so name the chart on the
+element you pass to `Plotly.newPlot` (`role="img"` and an `aria-label`).
 
 **Vega-Lite** (a native `image` layer):
 
@@ -163,7 +165,10 @@ bottom, y on the left): with `orient: "top"` or `"right"` the images land on the
 Mark images are `height` × the grid's height at render time (they follow zoom and resize; no instance needed).
 Axis images are `height` of the axis' grid on a `chartHeight` px canvas: `grid.height`, else `chartHeight` less
 `grid.top` and `grid.bottom` (ECharts' 65 and 80 px when unset); `containLabel` can shrink the drawn grid a little
-below that. The helper series have no `name`, so a default `legend: {}` lists only your series.
+below that. The helper series have no `name`, so a default `legend: {}` lists only your series. Accessible name:
+`aria: { enabled: true, label: { description: "…" } }` gives the chart's container `role="img"` and that `aria-label`
+(in the browser; server-side rendering writes none); without a `description` ECharts writes one from every series,
+the logo series too.
 
 ## Chart.js (Astro, Svelte, React, plain scripts)
 
@@ -326,6 +331,8 @@ new Chart(canvas, {
   follow-up in sporty so `drawScene` keeps text upright). It needs
   `@sportsdataverse/sporty`, as `sdvplot/d3` does.
 - Destroying a chart drops its pending image listeners, so unmounting before the logos arrive is safe.
+- Accessible name: Chart.js adds none (it draws pixels), so name the chart on the canvas: `role="img"` and an
+  `aria-label`, or fallback content between `<canvas>` and `</canvas>`.
 
 ### Server-side rendering (Node)
 
