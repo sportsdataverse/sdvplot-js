@@ -255,6 +255,7 @@ const config: Config = {
             sdv("mlbplotR", "https://camdenk.github.io/mlbplotR/"),
             sdv("cfbplotR", "https://cfbplotR.sportsdataverse.org/"),
             sdv("cfb4th", "https://cfb4th.sportsdataverse.org/"),
+            sdv("cfbseedR", "https://cfbseedR.sportsdataverse.org/"),
             sdv("softballR", "https://github.com/sportsdataverse/softballR/"),
             sdv("nwslR", "https://github.com/nwslR/nwslR/"),
             sdv("usfootballR", "https://usfootballR.sportsdataverse.org/"),
