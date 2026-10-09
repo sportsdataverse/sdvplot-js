@@ -681,11 +681,15 @@ const png = await toPNG(socialCard(svg.outerHTML, { aspect: "16:9", padding: 60 
 await writeFile("afc.png", png);
 ```
 
-- `toPNG(svg, { width, scale, background, color, images })` takes an SVG string or an element with `outerHTML`, and
+- `toPNG(svg, { width, scale, background, color, images, fonts })` takes an SVG string or an element with `outerHTML`, and
   adds the `xmlns` declarations an HTML-serialized figure lacks. Remote `<image>`s (logos, headshots) are downloaded
   once each, at most 8 at a time; a failed download throws `DownloadError`, and `images: "skip"` leaves them out with
   one warning. `color` is what `currentColor` (Plot's axes and text) resolves to; by default the SVG's own
   root `color`, else black or white, whichever contrasts more with `background`.
+- Text is drawn in the system fonts. On a host without any (slim Docker images, minimal CI runners) resvg draws every
+  label as nothing, with no error: pass font files, `toPNG(svg, { fonts: { files: ["./SourceSans3-Regular.ttf"] } })`
+  (`defaultFamily` names the family to fall back to; `system: false` skips the system-font scan), or install
+  fontconfig and a font. On GitHub Actions: `sudo apt-get install -y fontconfig fonts-dejavu-core`.
 - `socialCard(svg, { aspect, padding, background, gravity, color })`: `aspect` is `"1:1"` (the default), `"16:9"`,
   `"4:5"`, `"9:16"`, `"1.91:1"`, `"4x5"` or a number, and `gravity` is one of the nine ImageMagick names. Python's and
   R's final `width=` rescale is `toPNG(…, { width })`.

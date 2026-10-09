@@ -291,6 +291,36 @@ describe("toPNG", () => {
   });
 });
 
+describe("toPNG fonts", () => {
+  // a real OFL font the repo ships (examples/fonts); resvg loads font files only from disk
+  const FONT = join(__dirname, "../../../examples/fonts/SourceSans3-Regular.ttf");
+  const TEXT = `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="80"><rect width="200" height="80" fill="white"/><text x="10" y="64" font-size="64" font-family="system-ui, sans-serif">HH</text></svg>`;
+  const BOX = { x: 10, y: 18, width: 80, height: 46 }; // the two H glyphs: cap height ~0.66em above the baseline
+  test("with no system fonts and no font files, text draws nothing and nothing throws (the silent failure)", async () => {
+    expect(inked(await toPNG(TEXT, { fonts: { system: false } }), BOX)).toBe(0);
+  });
+  test("fonts.files draws the text with no system fonts", async () => {
+    expect(inked(await toPNG(TEXT, { fonts: { system: false, files: [FONT] } }), BOX)).toBeGreaterThan(0.2);
+    const named = { system: false, files: [FONT], defaultFamily: "Source Sans 3" };
+    expect(inked(await toPNG(TEXT, { fonts: named }), BOX)).toBeGreaterThan(0.2);
+  });
+  test("a socialCard renders its text with the fonts given to toPNG", async () => {
+    const card = socialCard(TEXT, { aspect: "5:2", padding: 0 }); // the canvas is the figure: same box
+    expect(inked(await toPNG(card, { fonts: { system: false } }), BOX)).toBe(0);
+    expect(inked(await toPNG(card, { fonts: { system: false, files: [FONT] } }), BOX)).toBeGreaterThan(0.2);
+  });
+  test("a font file that is not on disk, or files that are not strings, throw InputError", async () => {
+    await expect(toPNG(TEXT, { fonts: { files: [join(__dirname, "no-such-font.ttf")] } })).rejects.toThrow(
+      /no-such-font\.ttf/,
+    );
+    await expect(toPNG(TEXT, { fonts: { files: "a.ttf" as never } })).rejects.toThrow(InputError);
+    await expect(toPNG(TEXT, { fonts: { defaultFamily: 1 as never } })).rejects.toThrow(InputError);
+    await expect(toPNG(TEXT, { fonts: { system: "no" as never } })).rejects.toThrow(InputError);
+    for (const bad of [null, [], "a.ttf"])
+      await expect(toPNG(TEXT, { fonts: bad as never })).rejects.toThrow(InputError);
+  });
+});
+
 describe("toPNG remote images", () => {
   test("a logos scatter's remote PNG is fetched and drawn inside the logo's box", async () => {
     const { fig, href, box } = logoScatter("nfl", "NYG");

@@ -22,6 +22,12 @@ The framing is plain arithmetic, shared with sdvtables' `socialCrop`: the figure
 
 <Live id="sdvplot/export/framing-math" />
 
+`toPNG` draws text in the system fonts. A host without any (a slim Docker image, a minimal CI runner) gets every label
+drawn as nothing, with no error: give it font files with `fonts`, or install fontconfig and a font (on GitHub Actions,
+`sudo apt-get install -y fontconfig fonts-dejavu-core`).
+
+<Live id="api/sdvplot/toPNG" />
+
 `peerMissing` is how both subpaths tell a missing optional peer from one that is installed but broken.
 
 <Live id="api/sdvplot/peerMissing" />
