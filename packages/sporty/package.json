@@ -1,6 +1,6 @@
 {
   "name": "@sportsdataverse/sporty",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Sport surfaces (geometry and dimensions) for SportsDataverse plots — TypeScript port of sportyR/sportypy",
   "license": "MIT",
   "keywords": [
@@ -19,15 +19,35 @@
   "bugs": "https://github.com/sportsdataverse/sdvplot-js/issues",
   "type": "module",
   "sideEffects": false,
-  "engines": { "node": ">=20.18.1" },
+  "engines": {
+    "node": ">=20.18.1"
+  },
   "files": ["dist", "NOTICE.md"],
   "exports": {
-    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" },
-    "./svg": { "types": "./dist/svg.d.ts", "import": "./dist/svg.js" },
-    "./specs": { "types": "./dist/specs/index.d.ts", "import": "./dist/specs/index.js" },
-    "./plot": { "types": "./dist/plot.d.ts", "import": "./dist/plot.js" },
-    "./canvas": { "types": "./dist/canvas.d.ts", "import": "./dist/canvas.js" },
-    "./d3": { "types": "./dist/d3.d.ts", "import": "./dist/d3.js" },
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./svg": {
+      "types": "./dist/svg.d.ts",
+      "import": "./dist/svg.js"
+    },
+    "./specs": {
+      "types": "./dist/specs/index.d.ts",
+      "import": "./dist/specs/index.js"
+    },
+    "./plot": {
+      "types": "./dist/plot.d.ts",
+      "import": "./dist/plot.js"
+    },
+    "./canvas": {
+      "types": "./dist/canvas.d.ts",
+      "import": "./dist/canvas.js"
+    },
+    "./d3": {
+      "types": "./dist/d3.d.ts",
+      "import": "./dist/d3.js"
+    },
     "./package.json": "./package.json"
   },
   "scripts": {
@@ -43,12 +63,25 @@
     "url": "git+https://github.com/sportsdataverse/sdvplot-js.git",
     "directory": "packages/sporty"
   },
-  "publishConfig": { "access": "public", "provenance": true },
-  "peerDependencies": { "@observablehq/plot": ">=0.6.16", "d3": ">=7", "@napi-rs/canvas": ">=0.1.50" },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "peerDependencies": {
+    "@observablehq/plot": ">=0.6.16",
+    "d3": ">=7",
+    "@napi-rs/canvas": ">=0.1.50"
+  },
   "peerDependenciesMeta": {
-    "@observablehq/plot": { "optional": true },
-    "d3": { "optional": true },
-    "@napi-rs/canvas": { "optional": true }
+    "@observablehq/plot": {
+      "optional": true
+    },
+    "d3": {
+      "optional": true
+    },
+    "@napi-rs/canvas": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@napi-rs/canvas": "^1.0.10",
