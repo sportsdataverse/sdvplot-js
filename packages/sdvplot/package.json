@@ -1,6 +1,6 @@
 {
   "name": "@sportsdataverse/sdvplot",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Team identity, colors, logos and headshots for SportsDataverse plots — TypeScript port of sdvplot/sdvplotR",
   "license": "MIT",
   "keywords": [

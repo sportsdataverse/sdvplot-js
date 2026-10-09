@@ -1,6 +1,6 @@
 {
   "name": "@sportsdataverse/sdvtables",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Publication tables for SportsDataverse data — TableSpec, 18+3 themes, team logos/headshots/colors, static HTML renderer. TypeScript port of sdvplotR gt_* / gtUtils",
   "license": "MIT",
   "keywords": [
