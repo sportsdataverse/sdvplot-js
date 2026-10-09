@@ -43,7 +43,11 @@ const got = await espnJSON(`${SITE}/${path}/summary?event=${encodeURIComponent(e
 });
 const lg = got.live ? sdvLeague : "nfl";
 const section = (name) => parseEndpoint("espn", "summary", got.raw, name);
-const { comp, home, away, rows: wp } = winProbability(section);
+// the drive in progress, parsed as sdv-js parses the finished ones (live games only)
+const current = got.raw.drives?.current
+  ? parseEndpoint("espn", "summary", { drives: { previous: [got.raw.drives.current] } }, "drive_plays")
+  : [];
+const { comp, home, away, rows: wp } = winProbability(section, current);
 await loadLeague(lg);
 const [awayColor, homeColor] = matchupColorsSync(away.team.id, home.team.id, { league: lg })[dark ? "dark" : "light"];
 display(source(got, snap));

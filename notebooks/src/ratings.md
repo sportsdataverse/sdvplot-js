@@ -92,7 +92,7 @@ The dashed diagonal is break-even: a team above it outscored its opponents. The 
 `teamTiers` ranks the same teams within bands of point differential per game: +6 or better, +2 to +6, within 2 of even, −2 to −6, and worse than −6.
 
 ```js
-const band = (d) => (d >= 6 ? 1 : d >= 2 ? 2 : d > -2 ? 3 : d > -6 ? 4 : 5);
+const band = (d) => (d >= 6 ? 1 : d >= 2 ? 2 : d > -2 ? 3 : d >= -6 ? 4 : 5);
 const tierRows = shown
   .map((t) => ({ team: t.team, tier_no: band(t.diff), diff: t.diff }))
   // row order is rank order within a tier: best differential first

@@ -113,6 +113,8 @@ describe("the pages' data steps on the snapshots", () => {
     // the check fires on the int-vs-string mismatch it exists for
     const numeric = box.map((b) => ({ ...b, athlete_id: Number(b.athlete_id) }));
     expect(() => W.checkJoinKey(shots, "shooter_id", numeric, "athlete_id")).toThrow(/differs in type/);
+    // a live game with no located shot yet has nothing to join, so nothing to check
+    expect(() => W.checkJoinKey([], "shooter_id", box, "athlete_id")).not.toThrow();
     const players = W.boxScore(box, shots);
     expect(shots).toHaveLength(169);
     expect(players.every((p) => p.charted === p.fga)).toBe(true);

@@ -2,13 +2,15 @@
 // draws. Plain functions of parsed rows, so examples/test/sdvjs-snapshots.test.ts runs them on the committed snapshots.
 
 // Win probability, one row per entry, joined to its play on the play id (the first entry is the pregame line, with
-// no play). `section` is `(name) => parseEndpoint("espn", "summary", raw, name)`.
-export function winProbability(section) {
+// no play). `section` is `(name) => parseEndpoint("espn", "summary", raw, name)`. sdv-js's `drive_plays` holds the
+// finished drives only (`drives.previous`); during a live game, pass the drive in progress (`drives.current`) parsed
+// the same way as `current`, or its plays' entries have no play to join.
+export function winProbability(section, current = []) {
   const comp = JSON.parse(section("header")[0].competitions)[0];
   const side = (s) => comp.competitors.find((c) => c.homeAway === s);
   const home = side("home");
   const away = side("away");
-  const playById = new Map(section("drive_plays").map((p) => [p.id, p]));
+  const playById = new Map([...section("drive_plays"), ...current].map((p) => [p.id, p]));
   let prev = null;
   const rows = section("winprobability").map((w, i) => {
     const p = playById.get(w.play_id);
@@ -18,9 +20,13 @@ export function winProbability(section) {
       swing: prev === null ? 0 : w.home_win_percentage - prev,
       matched: p !== undefined,
       period: p?.period_number ?? 1,
-      when: p ? `${p.period_number > 4 ? "OT" : `Q${p.period_number}`} ${p.clock_display_value}` : "Pregame",
+      when: p
+        ? `${p.period_number > 4 ? "OT" : `Q${p.period_number}`} ${p.clock_display_value}`
+        : i === 0
+          ? "Pregame"
+          : "",
       score: p ? `${away.team.abbreviation} ${p.away_score}, ${home.team.abbreviation} ${p.home_score}` : "",
-      play: p?.text ?? "Before kickoff",
+      play: p?.text ?? (i === 0 ? "Before kickoff" : "A play not in ESPN's play-by-play yet"),
       type: p?.type_text ?? "",
     };
     prev = w.home_win_percentage;
@@ -56,6 +62,8 @@ export const idTypes = (rows, key) =>
 export function checkJoinKey(left, leftKey, right, rightKey) {
   const a = idTypes(left, leftKey);
   const b = idTypes(right, rightKey);
+  // nothing to join yet (a game with no located shot so far): no types to compare
+  if (a === "" || b === "") return;
   if (a !== b || a.includes("/"))
     throw new Error(
       `the join key differs in type: ${leftKey} is ${a || "missing"}, ${rightKey} is ${b || "missing"}`,

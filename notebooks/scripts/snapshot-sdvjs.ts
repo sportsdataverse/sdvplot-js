@@ -75,12 +75,14 @@ const flag = (name: string): string | undefined => {
 };
 const from = flag("--from");
 const capturedAt = flag("--captured-at");
-if (from && (!capturedAt || args.length !== 1))
-  throw new Error("--from needs --captured-at <ISO> and exactly one snapshot name");
+if (Boolean(from) !== Boolean(capturedAt) || (from && args.length !== 1))
+  throw new Error("--from and --captured-at <ISO> go together, with exactly one snapshot name");
 
 const file = join(FIXTURES, "provenance.json");
 const prov = JSON.parse(readFileSync(file, "utf8")) as Provenance;
 const parse = await parser();
+// written only once every selected snapshot is fetched and checked, so a failed refresh leaves the fixtures alone
+const staged: [string, Buffer][] = [];
 for (const spec of SPECS.filter((s) => args.length === 0 || args.includes(s.name))) {
   let body: Buffer;
   let at: string;
@@ -107,7 +109,7 @@ for (const spec of SPECS.filter((s) => args.length === 0 || args.includes(s.name
     return { ...p, rows: r.length, rows_sha256: sha256(JSON.stringify(r)) };
   });
   const gz = `${spec.name}.json.gz`;
-  writeFileSync(join(FIXTURES, gz), gzipSync(body, { level: 9 }));
+  staged.push([join(FIXTURES, gz), gzipSync(body, { level: 9 })]);
   const snap: Snapshot = {
     ...spec,
     captured_at: at,
@@ -123,4 +125,5 @@ for (const spec of SPECS.filter((s) => args.length === 0 || args.includes(s.name
     `${spec.name}: ${body.length} bytes, ${parsed.map((p) => `${p.section ?? p.endpoint} ${p.rows}`).join(", ")}`,
   );
 }
+for (const [path, bytes] of staged) writeFileSync(path, bytes);
 writeFileSync(file, `${JSON.stringify(prov, null, 2)}\n`);

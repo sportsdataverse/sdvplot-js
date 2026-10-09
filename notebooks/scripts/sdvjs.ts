@@ -78,6 +78,14 @@ export const vendoredBody = (): string => {
   const text = readFileSync(VENDORED, "utf8");
   const at = text.indexOf(MARKER);
   if (at < 0) throw new Error(`${VENDORED}: no "${MARKER.trim()}" line`);
+  // the pin covers the bytes below the marker; the header above it must not run anything, so: comment lines only
+  if (
+    text
+      .slice(0, at)
+      .split("\n")
+      .some((line) => line !== "" && !line.startsWith("// "))
+  )
+    throw new Error(`${VENDORED}: a header line above the marker is not a comment`);
   return text.slice(at + MARKER.length);
 };
 
