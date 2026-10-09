@@ -82,3 +82,18 @@ export function note(text) {
   p.append(Object.assign(document.createElement("em"), { textContent: text }));
   return p;
 }
+
+// A text box (an ESPN event or athlete id): its value updates on Enter or when the box loses focus, not per keystroke,
+// so a page that fetches on it fetches once.
+export function text(label, { value = "", placeholder = "", size = 12 } = {}) {
+  const wrap = document.createElement("label");
+  wrap.style.cssText = UNIT;
+  const control = Object.assign(document.createElement("input"), { type: "text", value, placeholder, size });
+  control.name = label;
+  control.style.cssText = "min-width: 0; max-width: 100%";
+  control.addEventListener("input", (e) => e.stopPropagation());
+  control.addEventListener("change", () => wrap.dispatchEvent(new Event("input", { bubbles: true })));
+  wrap.append(label, control);
+  Object.defineProperty(wrap, "value", { get: () => control.value.trim() });
+  return wrap;
+}

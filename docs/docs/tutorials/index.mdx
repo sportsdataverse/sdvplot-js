@@ -1,0 +1,73 @@
+---
+title: Tutorials
+sidebar_label: Tutorials
+description: Workflows from ESPN data to published charts and tables, as live notebooks here and as Node scripts in sportsdataverse-js.
+---
+
+These tutorials start from real data and end at something you would publish: a scoreboard, a win-probability chart,
+a game dashboard, a ratings chart, a player's form. They come in two halves that link to each other.
+
+- **Live notebooks, here.** Observable Framework pages that run sdvplot-js in your browser. Each draws a committed
+  snapshot of ESPN data and has a **Fetch live from ESPN** toggle: your browser then fetches today's data and parses
+  it with sportsdataverse-js's own parser.
+- **Node scripts, in [sportsdataverse-js](https://js.sportsdataverse.org/docs/tutorials/).** Runnable scripts that
+  fetch with `sportsdataverse` and draw with sdvplot-js in Node: static figures, PNGs and scheduled GitHub Actions.
+
+:::note[Versions]
+
+The sportsdataverse-js side needs `sportsdataverse` 4.0.0 or later and the `@sportsdataverse/*` packages at 0.1.0 or
+later. Until both are on npm, the scripts run from source checkouts; the notebooks need nothing installed.
+
+:::
+
+## Workflows with sdv-js (live notebooks)
+
+- **[Live scoreboard](pathname:///notebooks/scoreboard.html):** what is on today and who is winning, in each matchup's
+  colours, for six leagues. Script it in Node:
+  [nightly scores card, posted by a GitHub Action](https://js.sportsdataverse.org/docs/tutorials/sdvplot-scores-card).
+- **[Win-probability scrubber](pathname:///notebooks/win-probability.html):** which plays decided an NFL or college
+  football game? Script it in Node: the `winprobability` section of `espnNflSummary`
+  ([the cross-league surface](https://js.sportsdataverse.org/docs/tutorials/cross-league)).
+- **[Build your own game dashboard](pathname:///notebooks/game-dashboard.html):** who shot from where, and how did it
+  show in the box score? Script it in Node:
+  [shot chart with sdvplot + sporty](https://js.sportsdataverse.org/docs/tutorials/sdvplot-shot-chart) and
+  [a game's shot chart against the league](https://js.sportsdataverse.org/docs/tutorials/sdvplot-shots-vs-league).
+- **[Season ratings scatter](pathname:///notebooks/ratings.html):** which teams were good at both ends, and which were
+  lucky? Script it in Node:
+  [NFL standings as a publication table](https://js.sportsdataverse.org/docs/tutorials/sdvplot-standings-table).
+- **[Player trend explorer](pathname:///notebooks/player-trend.html):** is a player trending up, and what did they do
+  over a stretch you pick? Script it in Node:
+  [a player's form from his game log](https://js.sportsdataverse.org/docs/tutorials/sdvplot-player-form).
+
+## Charts, tables and automations with sdvplot-js (Node scripts)
+
+The sportsdataverse-js tutorials that draw with sdvplot-js. Each page shows the full script and the output it
+produced; the notebook beside it works through the same idea live.
+
+- [Shot chart with sdvplot + sporty](https://js.sportsdataverse.org/docs/tutorials/sdvplot-shot-chart): one NBA
+  game's shots on a sporty court, as SVG. Live: [game dashboard](pathname:///notebooks/game-dashboard.html).
+- [Standings bars in team colours](https://js.sportsdataverse.org/docs/tutorials/sdvplot-standings-colors): WNBA
+  standings as team-coloured bars, as SVG. Live: [team colours](pathname:///notebooks/colors.html).
+- [Roster table with headshots](https://js.sportsdataverse.org/docs/tutorials/sdvplot-roster-table): a roster as an
+  sdvtables HTML table. Live: [tables](pathname:///notebooks/tables.html).
+- [A game's shot chart against the league](https://js.sportsdataverse.org/docs/tutorials/sdvplot-shots-vs-league): a
+  game's shots in hexagons, coloured against the 2023-24 league, as PNG. Live:
+  [shot charts](pathname:///notebooks/shots.html).
+- [NFL standings as a publication table](https://js.sportsdataverse.org/docs/tutorials/sdvplot-standings-table): the
+  final 2024 NFL standings as two sdvtables tables, as PNG. Live:
+  [season ratings scatter](pathname:///notebooks/ratings.html).
+- [A player's form from his game log](https://js.sportsdataverse.org/docs/tutorials/sdvplot-player-form): LeBron
+  James's 2023-24 season with a rolling mean, as PNG. Live: [player trend explorer](pathname:///notebooks/player-trend.html).
+- [Nightly scores card, posted by a GitHub Action](https://js.sportsdataverse.org/docs/tutorials/sdvplot-scores-card):
+  last night's scores as a social card, every morning. Live: [live scoreboard](pathname:///notebooks/scoreboard.html).
+- [Weekly power-rankings ladder, posted by a GitHub Action](https://js.sportsdataverse.org/docs/tutorials/sdvplot-rankings-ladder):
+  the AP Top 25 as a team-coloured ladder, every week. Live: [logos by league](pathname:///notebooks/logos.html).
+
+The rest of the [sportsdataverse-js tutorials](https://js.sportsdataverse.org/docs/tutorials/) cover the data side:
+scoreboards, play-by-play, standings, odds and release datasets across the leagues it covers.
+
+## See also
+
+- [All notebooks](pathname:///notebooks/), including the package tours: logos, colours, surfaces, shot charts,
+  tables, linking and chart libraries.
+- The [guides](../guides/identity.mdx) and the [examples by sport](../examples/basketball.mdx), each running in CI.

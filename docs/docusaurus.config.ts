@@ -279,6 +279,7 @@ const config: Config = {
           items: [
             { label: "Getting started", to: "/intro" },
             { label: "Gallery", to: "/gallery/" },
+            { label: "Tutorials", to: "/tutorials/" },
             {
               label: "Notebooks",
               href: "pathname:///notebooks/",

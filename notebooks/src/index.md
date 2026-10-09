@@ -5,7 +5,7 @@ toc: false
 
 # sdvplot-js notebooks
 
-Seven live notebooks that run the sdvplot-js packages in your browser: `@sportsdataverse/sdvplot` for team identity, shot charts, linking and chart-library adapters, `@sportsdataverse/sporty` for playing surfaces, and `@sportsdataverse/sdvtables` for tables. Each control re-runs only the cells that read it, and every chart draws real data: the bundled team index (one league at a time, loaded on demand), the 2024 NFL season from nflverse, Brooklyn's 2025-26 shots against the whole league, and single games from stats.nba.com, the NHL, the PWHL and ESPN.
+Twelve live notebooks that run the sdvplot-js packages in your browser: `@sportsdataverse/sdvplot` for team identity, shot charts, linking and chart-library adapters, `@sportsdataverse/sporty` for playing surfaces, and `@sportsdataverse/sdvtables` for tables. Each control re-runs only the cells that read it, and every chart draws real data: the bundled team index (one league at a time, loaded on demand), the 2024 NFL season from nflverse, Brooklyn's 2025-26 shots against the whole league, and single games from stats.nba.com, the NHL, the PWHL and ESPN. The last five start from ESPN through sportsdataverse-js and can fetch today's data.
 
 ## Identity
 
@@ -31,5 +31,15 @@ Seven live notebooks that run the sdvplot-js packages in your browser: `@sportsd
 ## Chart libraries
 
 - [Chart libraries](./libraries.html): the same data through the Plotly, Vega-Lite, ECharts and Chart.js adapters, with logos as points, logos on an axis, and each library's own tooltips.
+
+## Workflows with sdv-js
+
+Five pages that start from ESPN data fetched with [sportsdataverse-js](https://js.sportsdataverse.org) and end at a chart or a table someone would publish. Each draws a committed snapshot (its URL, capture time and sha256 are on the page) and has a **Fetch live from ESPN** toggle: tick it and your browser fetches today's data from ESPN and parses it with sdv-js's own parser.
+
+- [Live scoreboard](./scoreboard.html): today's games for six leagues as cards in each matchup's colours, from `matchupColors` and `onColor`.
+- [Win-probability scrubber](./win-probability.html): an NFL or college football game's win probability, play by play, with a scrubber, the nearest play on hover, and the plays that swung it most.
+- [Build your own game dashboard](./game-dashboard.html): one NBA or WNBA game's shots on a court, linked to its box score; the athlete-id join is checked before it is made.
+- [Season ratings scatter](./ratings.html): every NBA team's points scored and allowed per game as logos with mean lines, and tiers by point differential.
+- [Player trend explorer](./player-trend.html): a player's game log with a rolling average, a brushed date window and that window's averages.
 
 Each page links to its source. The pages import the packages from `./_sdv/`, a bundle of their source made at build time; your own code imports `@sportsdataverse/sdvplot`, `@sportsdataverse/sporty` and `@sportsdataverse/sdvtables` by name. The <a href="/" rel="external">documentation</a> has the guides, the gallery and the API reference.
