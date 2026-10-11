@@ -97,6 +97,18 @@ const config: Config = {
       tagName: "link",
       attributes: { rel: "icon", type: "image/png", sizes: "512x512", href: "/img/favicon-512.png" },
     },
+    // Privacy-friendly analytics by Plausible (same site id in notebooks/observablehq.config.js). The script follows
+    // the SPA's pushState navigations itself.
+    {
+      tagName: "script",
+      attributes: { async: true, src: "https://plausible.io/js/pa-mFo3IxleU_2Ext3pO-ZIR.js" },
+    },
+    {
+      tagName: "script",
+      attributes: {},
+      innerHTML:
+        "window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};plausible.init()",
+    },
   ],
 
   i18n: { defaultLocale: "en", locales: ["en"] },
