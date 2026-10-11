@@ -7,6 +7,9 @@ export default {
   // Links name the .html file (Framework defaults to extensionless links): the docs deploy (Vercel, no vercel.json)
   // serves /notebooks/logos.html, not /notebooks/logos.
   preserveExtension: true,
+  // Privacy-friendly analytics by Plausible (same site id in docs/docusaurus.config.ts).
+  head: `<script async src="https://plausible.io/js/pa-mFo3IxleU_2Ext3pO-ZIR.js"></script>
+<script>window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};plausible.init()</script>`,
   // The index groups the pages the same way (src/index.md).
   pages: [
     {
