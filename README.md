@@ -168,7 +168,7 @@ shot charts, linked interactivity and sdvtables, in four colour themes, light an
 
 📄 **[Download the sdvplot-js cheat sheet (PDF)](https://sportsdataverse.org/cheatsheets/sdvplot-js.pdf)**
 
-Every SportsDataverse package has one — browse them all at
+Browse the other SportsDataverse cheat sheets at
 **[sportsdataverse.org/cheatsheets](https://sportsdataverse.org/cheatsheets)**.
 
 ## **Development**
