@@ -247,6 +247,7 @@ const config: Config = {
           items: [
             sdv("SportsDataverse", "https://sportsdataverse.org", true),
             sdv("Cheat Sheet (PDF)", "https://sportsdataverse.org/cheatsheets/sdvplot-js.pdf"),
+            sdv("All Cheat Sheets", "https://sportsdataverse.org/cheatsheets"),
             sdv("Python Packages", "https://py.sportsdataverse.org/", true),
             sdv("sportsdataverse-py", "https://py.sportsdataverse.org/"),
             sdv("sdvplot", "https://sdvplot.sportsdataverse.org/"),
