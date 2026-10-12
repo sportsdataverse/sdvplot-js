@@ -160,6 +160,17 @@ The [**sdvplot-js** documentation website](https://plot.sportsdataverse.org) has
 [Game on Paper (Chart.js + Astro/Svelte)](https://plot.sportsdataverse.org/guides/game-on-paper) ·
 [blazing-the-nets (Next/React + d3)](https://plot.sportsdataverse.org/guides/blazing-the-nets)
 
+<!-- cheatsheet-section -->
+## **Cheat sheet**
+
+A printable four-page reference for **sdvplot-js**: team marks on seven chart libraries and React, sporty surfaces,
+shot charts, linked interactivity and sdvtables, in four colour themes, light and dark.
+
+📄 **[Download the sdvplot-js cheat sheet (PDF)](https://sportsdataverse.org/cheatsheets/sdvplot-js.pdf)**
+
+Every SportsDataverse package has one — browse them all at
+**[sportsdataverse.org/cheatsheets](https://sportsdataverse.org/cheatsheets)**.
+
 ## **Development**
 
 ### Repository layout
