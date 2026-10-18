@@ -14,6 +14,7 @@ await loadLeague("nfl");
 // uPlot's data is columns: x first, then one array per series. Philadelphia (home) and Kansas City, by minute.
 const minutes = SUPER_BOWL_LIX_WP.map((p) => p.minute);
 const phi = SUPER_BOWL_LIX_WP.map((p) => p.home_wp);
+// a two-team game: Kansas City's win probability is 1 - home_wp, derived from the home series, not a column of its own
 const kc = phi.map((wp) => 1 - wp);
 const data: uPlot.AlignedData = [minutes, phi, kc];
 

@@ -236,6 +236,22 @@ describe("withTeamSeries", () => {
     );
   });
 
+  test("fill with a background is a valid rgba of the adjusted stroke (strokes are #rrggbb)", async () => {
+    await loadLeague("nba");
+    const got = withTeamSeries({ series: [{}, {}, {}] }, [{ team: "LAL" }, { team: "GS" }], {
+      team: "team",
+      league: "nba",
+      background: "#181a1b",
+      fill: 0.25,
+    }).series.slice(1) as { stroke: string; fill: string }[];
+    for (const s of got) {
+      expect(s.stroke).toMatch(/^#[0-9a-f]{6}$/);
+      const n = Number.parseInt(s.stroke.slice(1), 16);
+      expect(s.fill).toBe(`rgba(${n >> 16}, ${(n >> 8) & 255}, ${n & 255}, 0.25)`);
+      expect(s.fill).toMatch(/^rgba\((\d{1,3}), (\d{1,3}), (\d{1,3}), 0\.25\)$/);
+    }
+  });
+
   test("an unresolved team takes the fallback colour; more rows than series, or no options object, throw", () => {
     const got = withTeamSeries(opts(), [{ team: "XXX" }], {
       team: "team",

@@ -94,6 +94,7 @@ export function logoPlugin(
     if (placed?.rows !== rs) placed = { rows: rs, ps: markPlacements(rs, "logo", o) };
     return placed.ps;
   };
+  const token = {}; // this plugin's key in `drawn`
   const charts = new Set<UPlotLike>();
   const images = new Map<string, HTMLImageElement | null>(); // null: it failed to load
   const load = (url: string): HTMLImageElement | null | undefined => {
@@ -144,7 +145,7 @@ export function logoPlugin(
         }
         ctx.restore();
         const byPlugin = drawn.get(u) ?? new Map<object, DrawnMark[]>();
-        byPlugin.set(load, out);
+        byPlugin.set(token, out);
         drawn.set(u, byPlugin);
       },
     },
