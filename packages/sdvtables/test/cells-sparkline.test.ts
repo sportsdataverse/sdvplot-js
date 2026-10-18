@@ -261,8 +261,12 @@ test("statlineColor and labelSize are CSS values: url( and quotes are rejected, 
 
 test("a chart too small for its margins is an error, not a mirrored or missing chart", () => {
   // statline margins are l13 + r28: at 40 px wide the x axis would run backwards
-  expect(() => draw([1, 2, 3], { statline: "mean", chartWidth: 40 })).toThrow(/leaves no room inside its margins/);
+  expect(() => draw([1, 2, 3], { statline: "mean", chartWidth: 40 })).toThrow(
+    /leaves no room inside its margins/,
+  );
   // a "max" label grows the margins to t14 + b10: at 20 px tall the y scale would flip
-  expect(() => draw([1, 2, 3], { labels: ["max"], chartHeight: 20 })).toThrow(/sparkline chartWidth x chartHeight/);
+  expect(() => draw([1, 2, 3], { labels: ["max"], chartHeight: 20 })).toThrow(
+    /sparkline chartWidth x chartHeight/,
+  );
   expect(draw([1, 2, 3], { statline: "mean", chartWidth: 60 })).toContain("<svg");
 });
