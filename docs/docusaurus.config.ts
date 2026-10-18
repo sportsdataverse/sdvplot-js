@@ -162,6 +162,7 @@ const config: Config = {
           `${sdvplot}/src/plotly.ts`,
           `${sdvplot}/src/vega.ts`,
           `${sdvplot}/src/echarts.ts`,
+          `${sdvplot}/src/recharts.ts`,
           `${sdvplot}/src/testing/index.ts`,
           `${sdvplot}/src/export/index.ts`,
           `${sdvplot}/src/interact/index.ts`,
