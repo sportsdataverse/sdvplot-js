@@ -41,12 +41,7 @@ Each theme function's arguments are options: `fontSize`, `fontColor`, `headerFon
 in reactable. The highlight fills the row under the pointer (the engine's hovered row), and is on by default in
 `fmtr-hoverdark` and `fmtr-hoverlight`.
 
-```ts
-defineTable<Row>()
-  .columns((c) => [c.text("team"), c.int("wins")])
-  .theme("fmtr-nytimes", { options: { striped: "true", fontSize: "14" } })
-  .build();
-```
+<Live id="sdvtables/themes-api/fmtr-options" />
 
 `fmtr-team` is reactablefmtr's `default` look with the header filled in a team's primary colour (`{ league, team }`),
 the header ink picked by contrast, a rule in the secondary colour, and stripe and hover tints that keep the body type
