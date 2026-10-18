@@ -177,7 +177,8 @@ function bumpPoints(points: readonly NivoBumpPoint[], at: (typeof AT)[number]): 
  * - SwarmPlot: a logo at every node, the team read from the node's `id` (or its datum's `team` field).
  * - Chord: a logo outside the ring at the middle of each arc, the team read from the arc's id (the chart's `keys`).
  *
- * Logos are `height` × the plot height tall. A team with no logo draws nothing and warns once, as `sdvplot/echarts`
+ * Logos are `height` × the plot height tall. Given your own `layers`, put the logo layer before `"mesh"`; appended after
+ * it, it is harmless (its group has `pointer-events: none`, so the mesh still gets the mouse). A team with no logo draws nothing and warns once, as `sdvplot/echarts`
  * does. The logos sit at nivo's final positions: they do not tween with `animate`.
  *
  * @example
@@ -264,6 +265,10 @@ export function logoLayer(o: NivoLayerOptions): NivoLayer {
  * it does not tween with `animate`.
  */
 export function logoNode(o: NivoNodeOptions): NivoNodeComponent {
+  if ("height" in o)
+    throw new InputError(
+      "logoNode takes no height: each logo is as tall as nivo sized the node (the chart's size or pointSize, in px)",
+    );
   const alpha = checkAlpha(o.alpha ?? 1);
   return function SdvLogoNode({ node, point }) {
     const n = node ?? point;

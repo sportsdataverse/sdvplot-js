@@ -291,7 +291,7 @@ describe("logoNode", () => {
     ]);
   });
 
-  test("a node with no logo draws nothing and warns once; bad alpha throws", () => {
+  test("a node with no logo draws nothing and warns once; bad alpha or a height throws", () => {
     const spy = vi.fn();
     setWarningHandler(spy);
     const node = logoNode({ league: "nfl", team: "team" });
@@ -305,6 +305,12 @@ describe("logoNode", () => {
     expect(images(a.container)).toHaveLength(0);
     expect(spy).toHaveBeenCalledTimes(1);
     expect(() => logoNode({ league: "nfl", alpha: -1 })).toThrow(InputError);
+    // the layer's habit: a node logo is the node's own size, so a height (fraction or px) is refused, naming why
+    // (cast: an option logoNode does not take, as JS would pass it)
+    for (const height of [0.1, 24])
+      expect(() => logoNode({ league: "nfl", height } as never)).toThrow(
+        /logoNode takes no height.*node.*px/,
+      );
   });
 });
 

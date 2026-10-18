@@ -33,7 +33,10 @@ export interface LogoBumpProps {
   width?: number;
   /** Chart height in px (see `width`). */
   height?: number;
-  /** nivo's layers, the logos added on top. Default nivo's own (grid, axes, labels, lines, points, then the logos, then mesh). */
+  /**
+   * nivo's layers. Default nivo's own: grid, axes, labels, lines, points, then the logos, then mesh. Given, the logos
+   * are appended after them all, after any "mesh" too, which is harmless: the logo layer has `pointer-events: none`.
+   */
   layers?: readonly unknown[];
   /** Any other nivo `Bump` prop (margin, axes, pointSize, animate, theme, ...). */
   [prop: string]: unknown;
@@ -63,7 +66,8 @@ const Chart = lazy(async (): Promise<{ default: ComponentType<Record<string, unk
  * A nivo bump chart of teams: each line in its team's colour (`teamColors`), a logo at the end of each line
  * (`logoLayer`). `@nivo/bump` (0.99 or later) loads when it first renders, never with `sdvplot/react`; missing, it
  * throws `OptionalDependencyError` then. A server render draws nothing (it loads on the client). For anything this
- * does not cover, use `teamColors` and `logoLayer` from `sdvplot/nivo` on nivo's own `Bump`.
+ * does not cover, use `teamColors` and `logoLayer` from `sdvplot/nivo` on nivo's own `Bump`. A `colors` prop replaces
+ * the team colours (it is passed to nivo after them).
  */
 export function LogoBump({
   league,

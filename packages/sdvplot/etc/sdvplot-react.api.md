@@ -136,6 +136,7 @@ export function Wordmark(props: Omit<TeamLogoProps, "markType">): ReactElement |
 //
 // dist/react.d.ts:121:5 - (ae-forgotten-export) The symbol "ColorOptions" needs to be exported by the entry point react.d.ts
 // dist/react.d.ts:113:5 - (ae-forgotten-export) The symbol "ColorOptions" needs to be exported by the entry point react.d.ts
+// dist/react.d.ts:117:5 - (ae-forgotten-export) The symbol "ColorOptions" needs to be exported by the entry point react.d.ts
 
 // (No @packageDocumentation comment for this package)
 

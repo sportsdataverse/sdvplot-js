@@ -44,7 +44,8 @@ renders on the server, logos included.)
 
 For the same palette on nivo's own chart, pass every team the chart draws: `teamColors({ league, teams, background
 })`. The colours depend on the whole set, so `background` without `teams` throws, and a team outside `teams` is drawn
-in the `fallback` colour, with one warning.
+in the `fallback` colour, with one warning. `teamColors` is the nivo counterpart of `teamColorPalette` in the ECharts,
+Recharts and Svelte adapters: an accessor nivo calls per datum, rather than a list of colours.
 
 ## Logos as the nodes
 

@@ -11,19 +11,23 @@ export const meta = {
 await loadLeague("nfl");
 // The AFC West, picked by team from the week-by-week results (a margin per game; null is the bye). The rank after
 // each week: most wins so far (a tie counts half), then the best point differential, then the name.
-const west = ["KC", "LAC", "DEN", "LV"].map((team) => AFC_WEEKS_2024.find((s) => s.team === team));
+const west = ["KC", "LAC", "DEN", "LV"].map((team) => {
+  const season = AFC_WEEKS_2024.find((s) => s.team === team);
+  if (season === undefined) throw new Error(`no 2024 weeks for ${team}`);
+  return season;
+});
 const ranks = Array.from({ length: 18 }, (_, week) => {
   const records = west.map((s) => {
-    const played = (s?.margins ?? []).slice(0, week + 1).filter((m): m is number => m !== null);
+    const played = s.margins.slice(0, week + 1).filter((m): m is number => m !== null);
     const wins = played.reduce((n, m) => n + (m > 0 ? 1 : m === 0 ? 0.5 : 0), 0);
-    return { team: s?.team ?? "", wins, diff: played.reduce((n, m) => n + m, 0) };
+    return { team: s.team, wins, diff: played.reduce((n, m) => n + m, 0) };
   });
   records.sort((a, b) => b.wins - a.wins || b.diff - a.diff || a.team.localeCompare(b.team));
   return records.map((r) => r.team);
 });
 const data = west.map((s) => ({
-  id: s?.team ?? "",
-  data: ranks.map((order, week) => ({ x: week + 1, y: order.indexOf(s?.team ?? "") + 1 })),
+  id: s.team,
+  data: ranks.map((order, week) => ({ x: week + 1, y: order.indexOf(s.team) + 1 })),
 }));
 
 const background = "#181a1b";
