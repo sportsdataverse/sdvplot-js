@@ -65,6 +65,9 @@ for (const [sport, leagues, build] of SURFACES)
     test("every R polygon layer matches point-for-point", () => {
       const polys = build(league, { arcResolution: 1000 }).features.filter((f) => f.kind === "polygon");
       const layers = files("layer_");
+      expect(layers.length, "a league with 0 R layers would pass the comparison vacuously").toBeGreaterThan(
+        0,
+      );
       expect(polys.length).toBe(layers.length);
       layers.forEach((file, k) => {
         const rows = csv(new URL(file, dir));
