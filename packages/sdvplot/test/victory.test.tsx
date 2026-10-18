@@ -12,7 +12,9 @@ import {
 } from "victory";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { InputError, UnsupportedTargetError } from "../src/errors.js";
+import { getLeagueSync } from "../src/index-data.js";
 import {
+  type League,
   contrast,
   hex6,
   loadLeague,
@@ -23,7 +25,7 @@ import {
   teamColorsSync,
 } from "../src/index.js";
 import { LogoPoint, LogoTick } from "../src/react/index.js";
-import { deltaE } from "../src/team-palette.js";
+import { MIN_CONTRAST, MIN_DELTA_E, deltaE } from "../src/team-palette.js";
 import { drawnMarks } from "../src/testing/index.js";
 import { teamColorPalette, teamTheme } from "../src/victory.js";
 import { BUF, KC } from "./_fixtures.js";
@@ -360,37 +362,45 @@ describe("teamColorPalette and teamTheme", () => {
     }
   });
 
-  // biome-ignore format: the 30 teams, one line
-  const NBA = [
-    "ATL", "BOS", "BKN", "CHA", "CHI", "CLE", "DAL", "DEN", "DET", "GS", "HOU", "IND", "LAC", "LAL", "MEM",
-    "MIA", "MIL", "MIN", "NO", "NY", "OKC", "ORL", "PHI", "PHX", "POR", "SAC", "SA", "TOR", "UTAH", "WSH",
-  ];
+  const LEAGUES = ["nba", "nfl", "mlb", "nhl"] as const;
+  /** A league's team ids in its standard (shard) order. */
+  const ids = async (lg: League) => {
+    await loadLeague(lg);
+    return getLeagueSync(lg).teams.map((t) => t.team_id);
+  };
 
-  test("dark mode: every team colour reads (3:1) and stays distinct from every other (CIE76 dE 10)", async () => {
-    await loadLeague("nba");
-    const spy = vi.fn();
-    setWarningHandler(spy);
-    for (const background of ["#181a1b", "#000000", "#ffffff"]) {
-      const c = teamColorPalette("nba", NBA, { background });
-      for (const x of c) expect(contrast(x, background)).toBeGreaterThanOrEqual(3);
+  test.each(LEAGUES.flatMap((lg) => ["#181a1b", "#000000", "#ffffff"].map((bg) => [lg, bg] as const)))(
+    "dark mode, %s in league order on %s: every colour reads (MIN_CONTRAST) and every pair is MIN_DELTA_E apart, no warning",
+    async (lg, background) => {
+      const teams = await ids(lg);
+      const spy = vi.fn();
+      setWarningHandler(spy);
+      const c = teamColorPalette(lg, teams, { background, idSystem: "team_id" });
+      setWarningHandler(null);
+      expect(spy).not.toHaveBeenCalled();
+      expect(c).toHaveLength(teams.length);
+      for (const x of c) expect(contrast(x, background)).toBeGreaterThanOrEqual(MIN_CONTRAST);
       for (let i = 0; i < c.length; i++)
         for (let j = i + 1; j < c.length; j++)
           expect(
             deltaE(c[i] as string, c[j] as string),
-            `${NBA[i]} vs ${NBA[j]} on ${background}`,
-          ).toBeGreaterThanOrEqual(10);
-    }
-    setWarningHandler(null);
-    expect(spy).not.toHaveBeenCalled();
+            `${teams[i]} vs ${teams[j]} on ${background}`,
+          ).toBeGreaterThanOrEqual(MIN_DELTA_E);
+    },
+  );
+
+  test("the Lakers and the Warriors on a dark chart no longer share one gold", async () => {
+    await loadLeague("nba");
     const [lal, gs] = teamColorPalette("nba", ["LAL", "GS"], { background: "#181a1b" });
-    expect(deltaE(lal as string, gs as string)).toBeGreaterThanOrEqual(10); // one gold before the palette
+    expect(deltaE(lal as string, gs as string)).toBeGreaterThanOrEqual(MIN_DELTA_E);
   });
 
-  test("no background (light default): the teams' own colours, unchanged", async () => {
-    await loadLeague("nba");
-    expect(teamColorPalette("nba", NBA)).toEqual(teamColorsSync("nba", NBA));
-    expect(teamColorPalette("nba", NBA, { which: "secondary" })).toEqual(
-      teamColorsSync("nba", NBA, { which: "secondary" }),
+  test.each(LEAGUES)("no background (light default), %s: the teams' own colours, unchanged", async (lg) => {
+    const teams = await ids(lg);
+    const o = { idSystem: "team_id" } as const;
+    expect(teamColorPalette(lg, teams, o)).toEqual(teamColorsSync(lg, teams, o));
+    expect(teamColorPalette(lg, teams, { ...o, which: "secondary" })).toEqual(
+      teamColorsSync(lg, teams, { ...o, which: "secondary" }),
     );
   });
 });
