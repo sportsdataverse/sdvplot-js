@@ -164,6 +164,7 @@ const config: Config = {
           `${sdvplot}/src/echarts.ts`,
           `${sdvplot}/src/recharts.ts`,
           `${sdvplot}/src/uplot.ts`,
+          `${sdvplot}/src/nivo.ts`,
           `${sdvplot}/src/testing/index.ts`,
           `${sdvplot}/src/export/index.ts`,
           `${sdvplot}/src/interact/index.ts`,
