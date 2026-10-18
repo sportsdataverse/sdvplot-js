@@ -113,12 +113,45 @@ test("every key of the shared surface table maps onto sporty and resolves to a r
     expect(scene.bbox[2] > scene.bbox[0] && scene.bbox[3] > scene.bbox[1], key).toBe(true);
   }
 });
-test("ncaa_softball is both a team league and a surface: the field draws with the team's colours resolved", async () => {
+test("a team on ncaa_softball resolves and leaves the surface plain", async () => {
   await loadLeague("ncaa_softball");
   expect(teamColorPairSync("ncaa_softball", "CBU").primary).toBe("#000080");
   const scene = surfaceScene("ncaa_softball", { team: "CBU" });
   expect(scene.sport).toBe("softball");
-  expect(scene.features.length).toBeGreaterThan(0);
+  expect(scene).toEqual(surfaceScene("ncaa_softball"));
+});
+// The 22 keys on origin/main before the resync: existing keys keep their mapping (global constraint).
+const PRE_EXISTING: Record<string, readonly [string, string]> = {
+  nfl: ["football", "nfl"],
+  aaf: ["football", "nfl"],
+  ufl: ["football", "nfl"],
+  usfl: ["football", "nfl"],
+  xfl: ["football", "nfl"],
+  cfb: ["football", "ncaa"],
+  nba: ["basketball", "nba"],
+  nbagl: ["basketball", "nba g league"],
+  wnba: ["basketball", "wnba"],
+  mbb: ["basketball", "ncaa"],
+  wbb: ["basketball", "ncaa"],
+  nhl: ["hockey", "nhl"],
+  whl: ["hockey", "nhl"],
+  pwhl: ["hockey", "pwhl"],
+  ahl: ["hockey", "ahl"],
+  echl: ["hockey", "echl"],
+  ohl: ["hockey", "ohl"],
+  qmjhl: ["hockey", "qmjhl"],
+  ushl: ["hockey", "ushl"],
+  phf: ["hockey", "phf"],
+  ncaa_mhockey: ["hockey", "ncaa"],
+  ncaa_whockey: ["hockey", "ncaa"],
+};
+test("SURFACES is the 22 pre-existing keys, unchanged, plus the 37 keys of the shared table: 59", () => {
+  expect(Object.keys(SURFACES)).toHaveLength(59);
+  expect(Object.keys(PRE_EXISTING)).toHaveLength(22);
+  for (const [key, entry] of Object.entries(PRE_EXISTING)) expect(SURFACES[key], key).toEqual(entry);
+  expect(new Set(Object.keys(SURFACES))).toEqual(
+    new Set([...Object.keys(PRE_EXISTING), ...Object.keys(SHARED)]),
+  );
 });
 test("a team on a surface without team identities is an InputError naming the league", () => {
   for (const key of ["atp", "wcf", "fiba", "nll"]) {
