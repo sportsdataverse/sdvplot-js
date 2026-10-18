@@ -89,6 +89,19 @@ function fontsOf(spec: RegistrySpec): GoogleFont[] {
   }));
 }
 
+/** Spec font weights as token strings; a weight the spec omits keeps the baseTokens default. */
+function weights(spec: RegistrySpec): Partial<ThemeTokens> {
+  const w = (k: string) => (typeof spec.fonts[k] === "number" ? String(spec.fonts[k]) : undefined);
+  const out: Partial<ThemeTokens> = {};
+  const t = w("titleWeight");
+  const l = w("labelWeight");
+  const b = w("bodyWeight");
+  if (t) out.titleWeight = t;
+  if (l) out.labelWeight = l;
+  if (b) out.bodyWeight = b;
+  return out;
+}
+
 /** The 3 sorted ids of dark-capable registry themes sharing `category`, for the light-only error. */
 const darkAlternatives = (category: string): string[] =>
   Object.keys(SPECS)
@@ -137,7 +150,8 @@ export function registryTheme(ref: ThemeRef): Theme {
     labelBorderBottom: sub(st.labelBorderBottom, p),
     tableBorderTop: sub(st.tableBorderTop, p),
     tableBorderBottom: sub(st.tableBorderBottom, p),
-    tableBorderX: sub(st.frame, p),
+    tableBorderX: sub(st.frame, p), // colRule has no token (engine gap G2); the left/right frame is the closest
+    ...weights(spec),
     headingAlign: st.headingAlign === "center" ? "center" : "left",
     titleTransform: String(st.titleTransform ?? "none"),
     labelTransform: String(st.labelTransform ?? "none"),

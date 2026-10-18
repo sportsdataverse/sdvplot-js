@@ -1026,8 +1026,9 @@ export interface ThemeRef {
     readonly density: Density;
     // (undocumented)
     readonly name: string;
-    // (undocumented)
-    readonly options?: Readonly<Record<string, string>>;
+    readonly options?: Readonly<Record<string, string>> & {
+        readonly mode?: "light" | "dark";
+    };
 }
 
 // @public (undocumented)

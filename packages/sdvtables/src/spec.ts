@@ -695,7 +695,8 @@ export type DecorationType = Decoration<never>["type"];
 export interface ThemeRef {
   readonly name: string;
   readonly density: Density;
-  readonly options?: Readonly<Record<string, string>>;
+  /** Theme options; `mode` picks `"light"` (default) or `"dark"` for registry themes. Other keys are theme-specific. */
+  readonly options?: Readonly<Record<string, string>> & { readonly mode?: "light" | "dark" };
 }
 export interface TableSpec<Row> {
   readonly id?: string;

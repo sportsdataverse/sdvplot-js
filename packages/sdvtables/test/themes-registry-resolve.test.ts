@@ -22,10 +22,17 @@ describe("registry themes resolve", () => {
   it("datagolf dark uses the JSON dark bg", () => {
     expect(resolveTheme(ref("datagolf", "dark")).tokens.bg).toBe(themes.datagolf?.dark?.bg);
   });
-  it("wikipedia: tableBorderX carries the colRule colour", () => {
+  it("wikipedia: tableBorderX is the frame border with palette keys resolved", () => {
     const s = themes.wikipedia as Spec;
-    expect(resolveTheme(ref("wikipedia")).tokens.tableBorderX).toContain(s.light.hline);
-    expect(s.structure.colRule).toContain("{hline}");
+    expect(s.structure.frame).toBe("1px solid {rule}");
+    expect(resolveTheme(ref("wikipedia")).tokens.tableBorderX).toBe(`1px solid ${s.light.rule}`);
+  });
+  it("applies font weights from the spec", () => {
+    const f = (id: string) => (themes[id] as unknown as { fonts: Record<string, number> }).fonts;
+    const t = resolveTheme(ref("formula1")).tokens;
+    expect(t.titleWeight).toBe(String(f("formula1").titleWeight));
+    expect(t.bodyWeight).toBe("600");
+    expect(f("formula1").bodyWeight).toBe(600);
   });
   it("never emits a literal {key}", () => {
     for (const id of Object.keys(themes)) {
