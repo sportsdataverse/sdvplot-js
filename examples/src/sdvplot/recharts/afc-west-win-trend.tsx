@@ -11,7 +11,7 @@ export const meta = {
 
 await loadLeague("nfl");
 // Wins so far after each week's game (a positive margin is a win), from the 2024 results; the bye week has no point.
-const west = AFC_WEEKS_2024.slice(0, 4);
+const west = AFC_WEEKS_2024.filter((t) => ["KC", "LAC", "DEN", "LV"].includes(t.team));
 const colors = teamColorPalette(
   "nfl",
   west.map((t) => t.team),
