@@ -95,7 +95,8 @@ export function loadLayerChart(component: string): Promise<LayerChart> {
     throw missing(component, "layerchart", e);
   });
 }
-/** Throws `e`: lets a template's `{:catch}` branch fail the render with the import's error. */
+/** Throws `e`: a component rethrows a failed import from its template (an effect), so a `<svelte:boundary>` catches
+ *  it (an error thrown from a promise callback would bypass the boundary). */
 export function raise(e: unknown): never {
   throw e;
 }

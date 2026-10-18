@@ -119,12 +119,16 @@ const EXEMPT: readonly (readonly [spec: string, name: RegExp | "*", reason: stri
 ];
 
 test("each sdvplot/svelte component is used by a snippet that an example draws", () => {
+  // a Svelte browser spec: `lib: "svelte"`, then the snippet it mounts by name
   const drawn = new Set(
-    EXAMPLES.flatMap((e) => [...e.code.matchAll(/component: "(\w+)"/g)].map((m) => m[1])),
+    EXAMPLES.flatMap((e) => [...e.code.matchAll(/lib: "svelte",\s*component: "(\w+)"/g)].map((m) => m[1])),
   );
+  // the markup outside HTML comments: a component named only in a comment is not used
+  const markup = (f: string): string =>
+    readFileSync(abs(`examples/snippets/svelte/${f}`), "utf8").replace(/<!--[\s\S]*?-->/g, "");
   for (const name of ["LogoMark", "HeadshotMark", "SurfaceBackdrop"]) {
     const users = readdirSync(abs("examples/snippets/svelte")).filter((f) =>
-      new RegExp(`<${name}\\b`).test(readFileSync(abs(`examples/snippets/svelte/${f}`), "utf8")),
+      new RegExp(`<${name}\\b`).test(markup(f)),
     );
     expect(
       users.some((f) => drawn.has(f.replace(/\.svelte$/, ""))),

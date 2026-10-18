@@ -80,7 +80,7 @@ test("the ./svelte subpath is exported with the svelte condition, svelte and lay
     svelte: "./dist/svelte/index.js",
   });
   expect(pkg.peerDependencies.svelte).toBe(">=5");
-  expect(pkg.peerDependencies.layerchart).toBe(">=2.0");
+  expect(pkg.peerDependencies.layerchart).toBe(">=2.5.1"); // the release every test ran against
   expect(pkg.peerDependenciesMeta.svelte).toEqual({ optional: true });
   expect(pkg.peerDependenciesMeta.layerchart).toEqual({ optional: true });
 });

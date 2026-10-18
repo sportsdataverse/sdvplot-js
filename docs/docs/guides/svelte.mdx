@@ -6,7 +6,7 @@ sidebar_position: 7.7
 [LayerChart](https://layerchart.com) builds charts out of Svelte components: a `<Chart>` holds the scales, and marks
 such as `<Spline>` or `<Points>` sit in its `<Svg>` layer. `@sportsdataverse/sdvplot/svelte` adds Svelte 5
 components that sit there too: team logos and player headshots as marks, a team-painted court, field or rink as a
-backdrop, and a palette for team-coloured series. Install `svelte` (5 or later) and `layerchart` (2.0 or later)
+backdrop, and a palette for team-coloured series. Install `svelte` (5 or later) and `layerchart` (2.5.1 or later)
 beside it; both are optional peers. The components read sdvplot's team data synchronously, so load the league first
 (`loadLeague`). The charts below are drawn by Svelte in your browser.
 
@@ -68,7 +68,8 @@ when it first renders, and reads LayerChart's chart context once that has loaded
   touches no `window` or `document`, so importing it on the server is safe.
 - Without layerchart installed, the import still works and `teamColorPalette` still works; a component that renders
   throws `OptionalDependencyError` ("LogoMark needs the optional peer layerchart, which could not be loaded: pnpm add
-  layerchart"), which a `<svelte:boundary>` catches.
+  layerchart"), which a `<svelte:boundary>` catches. Catching it that way needs Svelte 5.3 or later, the release
+  that added `<svelte:boundary>`; on an earlier Svelte 5 the same error is thrown, but nothing on the page catches it.
 
 The components ship as Svelte source under the `svelte` export condition, as Svelte libraries do, so your app's Svelte
 compiler builds them (Vite and SvelteKit pick the condition up themselves).
