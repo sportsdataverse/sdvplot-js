@@ -8,6 +8,7 @@ export { matches, selectRows } from "./predicate.js";
 export { snakeAlign } from "./snake.js";
 export { FMTR_THEME_NAMES, THEMES, THEME_NAMES, resolveTheme } from "./themes/index.js";
 export type { GoogleFont, Theme, ThemeDef, ThemeTokens } from "./themes/index.js";
+export { listTableThemes, registryTheme } from "./themes/registry.js";
 export { DENSITY, TOKEN_KEYS } from "./themes/tokens.js";
 export { secondaryOn } from "./themes/sdv.js";
 export { type Alias, GT_ALIASES, PAL_MIDNIGHT, aliasFor } from "./aliases.js";

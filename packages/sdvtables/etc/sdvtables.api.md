@@ -677,6 +677,15 @@ export interface LegendIconDecoration {
 export type LegendIconShape = "circle" | "square" | "diamond" | "double-diamond" | "triangle-up" | "triangle-down" | "medal" | "battery-quarter" | "battery-half" | "battery-three-quarters" | "battery-full";
 
 // @public
+export function listTableThemes(filter?: {
+    mode?: "light" | "dark";
+    category?: string;
+}): {
+    id: string;
+    source: string;
+    category: string;
+    darkPolicy: string;
+}[];
 export interface MarkOpts<Row> {
     // (undocumented)
     readonly mark?: "logo" | "wordmark" | "headshot";
@@ -738,6 +747,9 @@ export type PredicateOp = "==" | "!=" | ">" | ">=" | "<" | "<=" | "in" | "notIn"
 
 // @public
 export const RANK_PALETTE: readonly string[];
+
+// @public
+export function registryTheme(ref: ThemeRef): Theme;
 
 // @public (undocumented)
 export function resolveTheme(ref: ThemeRef): Theme;

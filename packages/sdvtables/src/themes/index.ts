@@ -12,6 +12,7 @@ import { kenpom } from "./kenpom.js";
 import { midnight } from "./midnight.js";
 import { ncaa } from "./ncaa.js";
 import { pl } from "./pl.js";
+import { isRegistryTheme, registryTheme } from "./registry.js";
 import { savant } from "./savant.js";
 import { scoreboard } from "./scoreboard.js";
 import { sdv, sdvTeam } from "./sdv.js";
@@ -48,6 +49,7 @@ export const THEMES: Readonly<Record<string, ThemeDef>> = {
 export const THEME_NAMES: readonly string[] = Object.keys(THEMES);
 export function resolveTheme(ref: ThemeRef): Theme {
   const def = THEMES[ref.name];
+  if (!def && isRegistryTheme(ref.name)) return registryTheme(ref);
   if (!def) throw new TableSpecError(`unknown theme "${ref.name}"; one of ${THEME_NAMES.join(", ")}`);
   return def(ref);
 }
