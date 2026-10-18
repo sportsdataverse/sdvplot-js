@@ -22,12 +22,14 @@ export default defineConfig({
     uplot: "src/uplot.ts",
     // internal: what the ./svelte components (built by svelte-package into dist/svelte) import as ../svelte-core.js
     "svelte-core": "src/svelte-core.ts",
+    nivo: "src/nivo.ts",
   },
   external: [
     "react",
     "react/jsx-runtime",
     "recharts",
     "layerchart",
+    "@nivo/bump",
     "@observablehq/plot",
     "d3",
     "chart.js",
