@@ -42,7 +42,8 @@ tds.forEach((t, i) => {
   const from = Number(t.surface_x);
   const to = t.team === "PHI" ? 50 : -50;
   const lane = py(20 - (40 * i) / (tds.length - 1));
-  const head = Math.sign(to - from) * 10;
+  // the arrowhead is 10px, or the whole arrow when a short touchdown (a 1-yard plunge is ~7px here) is shorter
+  const head = Math.sign(to - from) * Math.min(10, Math.abs(px(to) - px(from)));
   ctx.strokeStyle = ctx.fillStyle = teamColorsSync("nfl", t.team, { which: "secondary" }) ?? "#ffffff";
   ctx.lineWidth = 5;
   ctx.beginPath();

@@ -42,8 +42,9 @@ the wordmarks are downloaded once and drawn like the logos.
 
 ## A PNG on a dark background
 
-`background` fills under the figure, and with no `color` the root text colour turns to whichever of black or white reads
-on it. `matchupColorsSync(...).dark` gives the two team colours chosen to read apart on a dark page.
+`background` fills under the figure, and with no `color` the text drawn in `currentColor` (Plot's axes and labels) turns
+to whichever of black or white reads on it; an SVG that sets its own root `color` keeps it, so pass `color` when the text
+colour must be guaranteed. `matchupColorsSync(...).dark` gives the two team colours chosen to read apart on a dark page.
 
 <Live id="sdvplot/export/win-probability-dark-png" />
 

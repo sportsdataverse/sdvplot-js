@@ -34,10 +34,11 @@ const option: echarts.EChartsOption = {
     symbolSize: 5,
   })),
 };
-// One row per logo: each team just past its last game, at its final differential.
+// One row per logo: each team one week past its last game (so the logo doesn't cover the last point), at its final
+// differential.
 const ends = teams.map((team, i) => {
-  const [, total] = running[i]?.at(-1) ?? [0, 0];
-  return { team, week: 19, total };
+  const [week, total] = running[i]?.at(-1) ?? [0, 0];
+  return { team, week: week + 1, total };
 });
 const both = withLogos(option, ends, { league: "nfl", x: "week", y: "total", team: "team", height: 0.12 });
 
