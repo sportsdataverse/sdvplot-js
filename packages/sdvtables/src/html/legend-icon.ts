@@ -55,7 +55,7 @@ const SHAPES: Readonly<Record<LegendIconShape, readonly [number, string]>> = {
 
 /** One icon as an inline SVG `size` px high, coloured through `color` (validated CSS). */
 export function legendIconSvg(shape: LegendIconShape, color: string, size: number): string {
-  const s = SHAPES[shape];
+  const s = Object.hasOwn(SHAPES, shape) ? SHAPES[shape] : undefined;
   if (!s)
     throw new TableSpecError(
       `legendIcon icon must be one of ${Object.keys(SHAPES).join(", ")}, not "${shape}"`,
@@ -73,8 +73,10 @@ export function legendIconBlock(d: LegendIconDecoration): string {
   const size = checkPx(d.iconSize, "legendIcon iconSize");
   if (size <= 0) throw new TableSpecError(`legendIcon iconSize must be positive, got ${size}`);
   let items: (readonly [LegendIconShape, string, string])[];
+  if (d.iconSet !== undefined && d.icons !== undefined)
+    throw new TableSpecError("legendIcon takes an iconSet or icons, not both");
   if (d.iconSet !== undefined) {
-    const set = LEGEND_ICON_SETS[d.iconSet];
+    const set = Object.hasOwn(LEGEND_ICON_SETS, d.iconSet) ? LEGEND_ICON_SETS[d.iconSet] : undefined;
     if (!set)
       throw new TableSpecError(
         `legendIcon iconSet must be "ski rating", "medals" or "batteries", not "${d.iconSet}"`,
@@ -91,9 +93,14 @@ export function legendIconBlock(d: LegendIconDecoration): string {
       throw new TableSpecError(
         `legendIcon needs one label per icon: ${d.icons.length} icons, ${d.labels.length} labels`,
       );
-    // without visible labels the label is still the icon's accessible name, so every icon needs one
-    if (!d.labels) throw new TableSpecError("legendIcon icons need labels");
-    items = d.icons.map((shape, i) => [shape, colors[i % colors.length] as string, d.labels?.[i] as string]);
+    if (!d.labels && d.showLabels)
+      throw new TableSpecError("legendIcon icons need labels when showLabels is true");
+    // without labels the icon's accessible name is its shape ("double diamond")
+    items = d.icons.map((shape, i) => [
+      shape,
+      colors[i % colors.length] as string,
+      d.labels?.[i] ?? shape.replace(/-/g, " "),
+    ]);
   }
   const icons = items
     .map(([shape, color, label]) =>

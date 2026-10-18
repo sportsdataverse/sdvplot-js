@@ -472,7 +472,8 @@ export type LegendIconShape =
 /**
  * reactablefmtr `add_icon_legend`: a row of icons with labels above or below the table. Either a preset `iconSet`
  * (reactablefmtr's "ski rating", "medals" or "batteries", with its colours and labels) or your own `icons`, one
- * colour and one label each.
+ * colour and one label each. Pass `iconSet` or `icons`, not both. reactablefmtr's `centered` argument is not ported
+ * (`align` places the row left or right).
  */
 export interface LegendIconDecoration {
   readonly type: "legendIcon";
@@ -482,7 +483,7 @@ export interface LegendIconDecoration {
   readonly icons?: readonly LegendIconShape[];
   /** One CSS colour per custom icon (recycled when shorter). */
   readonly colors?: readonly string[];
-  /** One label per icon; required with `icons` when `showLabels` is true. */
+  /** One label per icon; required with `icons` when `showLabels` is true (otherwise each shape's name is its accessible name). */
   readonly labels?: readonly string[];
   /** Write each label beside its icon; false keeps the label as the icon's accessible name only. */
   readonly showLabels: boolean;

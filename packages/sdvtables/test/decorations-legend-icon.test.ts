@@ -54,12 +54,21 @@ test("legendIcon: renamed preset labels, custom icons with recycled colours, top
   expect(html).toContain('width="20" height="20" aria-hidden="true"');
 });
 
+test("legendIcon without visible labels needs none: each shape names itself", () => {
+  const html = render({ icons: ["double-diamond"], showLabels: false });
+  expect(html).toContain('role="img" aria-label="double diamond"');
+});
+
 test("legendIcon validates its arguments", () => {
   expect(() => render({})).toThrow(/iconSet or icons/);
   expect(() => render({ iconSet: "flags" as never })).toThrow(/ski rating/);
   expect(() => render({ iconSet: "medals", labels: ["a"] })).toThrow(/needs 3 labels/);
   expect(() => render({ icons: ["circle"], labels: ["a", "b"] })).toThrow(/one label per icon/);
-  expect(() => render({ icons: ["circle"] })).toThrow(/need labels/);
+  expect(() => render({ icons: ["circle"] })).toThrow(/need labels when showLabels/);
+  expect(() => render({ iconSet: "medals", icons: ["circle"], labels: ["a"] })).toThrow(/not both/);
+  // inherited Object members are not presets or shapes
+  expect(() => render({ iconSet: "toString" as never })).toThrow(/ski rating/);
+  expect(() => render({ icons: ["constructor" as never], labels: ["a"] })).toThrow(/icon must be one of/);
   expect(() => render({ icons: ["star" as never], labels: ["a"] })).toThrow(/icon must be one of/);
   expect(() => render({ iconSet: "medals", align: "center" as never })).toThrow(/left or right/);
   expect(() => render({ iconSet: "medals", iconSize: -1 })).toThrow(/positive/);

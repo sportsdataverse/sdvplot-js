@@ -30,9 +30,38 @@ The 27 themes of [reactablefmtr](https://kcuilla.github.io/reactablefmtr/) are r
 (`fmtr-espn`, `fmtr-nytimes`, `fmtr-fivethirtyeight`, ...), so they never collide with the house themes: the house
 `midnight` and reactablefmtr's `fmtr-midnight` are different tables. `no_lines` is `fmtr-no-lines`, and `GT_ALIASES`
 maps each reactablefmtr name to its theme. Colours, sizes, rules and padding are reactablefmtr's own, read from its
-source. A few were moved just far enough to pass sdvtables' 3:1 contrast checks on the row cues and the filter
-boxes: the body type of espn, lux, minty, pff, spacelab and sunrise, and the stripe and hover fills of darkly,
-hoverlight and midnight.
+source. Where a reactablefmtr colour is not readable, readable wins: sdvtables gates the reactablefmtr themes at
+4.5:1 for text (header labels, group headings, and body type on the ground, every gradient stop, and the stripe and
+hover fills) and at 3:1 for the row cues and the filter boxes, and moves a failing colour only as far as it must,
+keeping its hue. The body type of espn, lux, minty, pff and spacelab and the stripe and hover fill of midnight were
+moved for the 3:1 cues; the text moves are:
+
+| Theme | Colour | reactablefmtr | sdvtables | Ratio before → after |
+|---|---|---|---|---|
+| cerulean | header label | `#cfe9f7` | `#0e3b53` | 2.07 → 4.54 |
+| cyborg | body (on the stripe) | `#888888` | `#8e8e8e` | 4.16 → 4.50 |
+| darkly | header label | `#afbdcc` | `#c5cfda` | 3.74 → 4.54 |
+| darkly | stripe / hover fill (white type) | `#adb5bd` | `#70777e` | 2.07 → 4.54 |
+| hoverlight | stripe / hover fill (white type) | `#d3d3d3` | `#767676` | 1.50 → 4.54 |
+| journal | header label | `#fad9d8` | `#76120f` | 1.90 → 4.51 |
+| lux | header label | `#7f7f7f` | `#828282` | 4.35 → 4.53 |
+| midnight | body and group heading | `#727272` | `#818181` | 3.65 → 4.51 |
+| midnight | header label | `#666666` | `#757575` | 3.66 → 4.56 |
+| minty | header label | `#c9e7de` | `#234e41` | 1.58 → 4.52 |
+| nytimes | header label | `#999999` | `#767676` | 2.85 → 4.54 |
+| pff | group heading | `#878e94` | `#63696f` | 2.70 → 4.51 |
+| sandstone | header label | `#7c7a78` | `#72706e` | 3.93 → 4.53 |
+| slate | header label | `#97999b` | `#a7a9ab` | 3.72 → 4.51 |
+| slate | body (on the stripe) | `#aaaaaa` | `#b8b8b8` | 3.85 → 4.51 |
+| spacelab | header label | `#8e8e8e` | `#6b6b6b` | 2.80 → 4.55 |
+| sunrise | header label | `#8069ff` | `#6b51ff` | 3.58 → 4.54 |
+| sunrise | body (on the #f98d77 gradient stop) | `#8069ff` | `#403480` | 1.69 → 4.51 |
+
+On cerulean, journal and minty no lighter tint of the header ink reaches 4.5:1 on the header fill, so the label is
+the same hue, dark. Ratios before are reactablefmtr's own colours on the same ground. reactablefmtr's column-group header styles (espn's rules, pff's band, fivethirtyeight's
+uppercase) dress sdvtables' row-group headings, its only group header. Not ported: the hover and sort colours of the
+header labels, reactable's 8px inset of the group heading's rule, and `&:not(:empty)` (sdvtables never renders an
+empty group heading).
 
 <Live id="sdvtables/themes/fmtr-espn" />
 

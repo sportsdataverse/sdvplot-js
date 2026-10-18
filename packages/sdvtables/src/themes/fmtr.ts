@@ -8,6 +8,7 @@
 // on by default in hoverdark/hoverlight; `striped = TRUE` is options.striped. Sizes are px at "comfortable", scaled by
 // density like the hard-coded gtUtils themes.
 import {
+  LEAGUES,
   UnresolvedTeamError,
   contrast,
   mix,
@@ -51,7 +52,11 @@ interface Fmtr {
   readonly stripe?: string;
   readonly highlight?: string;
   readonly headerBg?: string;
-  /** the header's bottom rule: headerStyle borderWidth / borderBottomColor (or borderColor); "none" = no rule */
+  /**
+   * the header's bottom rule: headerStyle borderWidth / borderBottomColor (or borderColor); "none" = no rule. reactable
+   * takes an unset width from the theme's borderWidth, else its stylesheet's 2px; every theme that sets a borderWidth
+   * also sets headerStyle's, so unset here means 2px.
+   */
   readonly headerRuleWidth?: number;
   readonly headerRule?: string;
   readonly headerBorderTop?: string;
@@ -62,6 +67,16 @@ interface Fmtr {
   readonly groupColor?: string;
   readonly groupSize?: number;
   readonly groupUpper?: boolean;
+  readonly groupWeight?: string;
+  readonly groupBorderTop?: string;
+  /**
+   * the group heading's bottom rule, when it differs from the row rule: reactable draws it (the group header's ::after)
+   * at the theme's borderWidth, else 1px, in the theme's borderColor, else #e6e6e6, so a cellStyle-only border (sanfran,
+   * no_lines, void) or an unset one (default) does not reach it.
+   */
+  readonly groupRule?: string;
+  /** declarations the token set cannot carry, scoped by `s`, lengths through `p` (density-scaled px) */
+  readonly css?: (s: string, p: (n: number) => string) => readonly string[];
   /** tableBodyStyle backgroundImage */
   readonly bodyImage?: string;
   /** tableStyle borderBottom */
@@ -78,7 +93,7 @@ export const FMTR: Readonly<Record<string, Fmtr>> = {
     font: 14,
     color: "#141415",
     headerSize: 15,
-    headerColor: "#cfe9f7",
+    headerColor: "#0e3b53", // a11y: reactablefmtr #cfe9f7 (2.07:1 on #3ba9e8; no lighter tint reaches 4.5:1)
     pad: 6,
     rule: "#e9ecef",
     ruleWidth: 1,
@@ -116,7 +131,7 @@ export const FMTR: Readonly<Record<string, Fmtr>> = {
   },
   cyborg: {
     font: 14,
-    color: "#888888",
+    color: "#8e8e8e", // a11y: reactablefmtr #888888 (4.16:1 on the #282828 stripe)
     headerSize: 15,
     headerColor: "#7b7b7b",
     bg: "#060606",
@@ -150,13 +165,13 @@ export const FMTR: Readonly<Record<string, Fmtr>> = {
     font: 14,
     color: "#ffffff",
     headerSize: 15,
-    headerColor: "#afbdcc",
+    headerColor: "#c5cfda", // a11y: reactablefmtr #afbdcc (3.74:1 on #375a7f)
     bg: "#222222",
     pad: 6,
     rule: "#222222",
     ruleWidth: 1,
-    stripe: "#8e959b", // a11y: reactablefmtr #adb5bd (hover/selected bar 2.07:1)
-    highlight: "#8e959b", // a11y: reactablefmtr #adb5bd (2.07:1)
+    stripe: "#70777e", // a11y: reactablefmtr #adb5bd (hover/selected bar 2.07:1, white type 2.07:1)
+    highlight: "#70777e", // a11y: reactablefmtr #adb5bd (white type 2.07:1)
     headerBg: "#375a7f",
     headerRuleWidth: 2,
   },
@@ -168,6 +183,7 @@ export const FMTR: Readonly<Record<string, Fmtr>> = {
     pad: 6,
     groupColor: "#333333",
     groupSize: 15,
+    groupRule: "1px solid #e6e6e6",
   },
   espn: {
     font: 12,
@@ -189,6 +205,8 @@ export const FMTR: Readonly<Record<string, Fmtr>> = {
     groupColor: "#6C6D6F",
     groupSize: 11,
     groupUpper: true,
+    groupBorderTop: "1px solid #e1e2e4",
+    css: (s) => [`${s} th.sdvt-group{border-left:1px solid #e1e2e4;border-right:1px solid #e1e2e4}`],
   },
   fivethirtyeight: {
     font: 14,
@@ -204,7 +222,13 @@ export const FMTR: Readonly<Record<string, Fmtr>> = {
     headerRuleWidth: 3,
     headerRule: "#333333", // headerStyle names borderColor twice ("#222222", then "#333"): the later one wins
     upper: true,
+    groupUpper: true,
     tableBottom: "3px solid #222222",
+    // headerStyle paddingTop 12px + verticalAlign bottom; groupHeaderStyle paddingBottom 3px
+    css: (s, p) => [
+      `${s} th.sdvt-label{padding-top:${p(12)};vertical-align:bottom}`,
+      `${s} th.sdvt-group{padding-bottom:${p(3)}}`,
+    ],
   },
   flatly: {
     font: 14,
@@ -239,8 +263,8 @@ export const FMTR: Readonly<Record<string, Fmtr>> = {
     pad: 4,
     rule: "#808080",
     ruleWidth: 1,
-    stripe: "#949494", // a11y: reactablefmtr #d3d3d3 (white type and bar 1.5:1)
-    highlight: "#949494", // a11y: reactablefmtr #d3d3d3 (1.5:1)
+    stripe: "#767676", // a11y: reactablefmtr #d3d3d3 (white type and bar 1.5:1)
+    highlight: "#767676", // a11y: reactablefmtr #d3d3d3 (1.5:1)
     headerRuleWidth: 2,
     hover: true,
   },
@@ -248,7 +272,7 @@ export const FMTR: Readonly<Record<string, Fmtr>> = {
     font: 14,
     color: "#222222",
     headerSize: 15,
-    headerColor: "#fad9d8",
+    headerColor: "#76120f", // a11y: reactablefmtr #fad9d8 (1.90:1 on #ef8683; no lighter tint reaches 4.5:1)
     pad: 6,
     rule: "#aaaaaa",
     ruleWidth: 1,
@@ -261,7 +285,7 @@ export const FMTR: Readonly<Record<string, Fmtr>> = {
     font: 14,
     color: "#515151", // a11y: reactablefmtr #8c8c8c (filter-box border 2.0:1, selected bar 2.74:1)
     headerSize: 15,
-    headerColor: "#7f7f7f",
+    headerColor: "#828282", // a11y: reactablefmtr #7f7f7f (4.35:1 on #1a1a1a)
     pad: 6,
     rule: "#f7f7f9",
     ruleWidth: 1,
@@ -270,12 +294,13 @@ export const FMTR: Readonly<Record<string, Fmtr>> = {
     headerBg: "#1a1a1a",
     headerRuleWidth: 2,
     upper: true,
+    groupUpper: true,
   },
   midnight: {
     font: 15,
-    color: "#727272",
+    color: "#818181", // a11y: reactablefmtr #727272 (3.65:1 on the #191919 gradient stop, 4.37:1 on black)
     headerSize: 15,
-    headerColor: "#666666",
+    headerColor: "#757575", // a11y: reactablefmtr #666666 (3.66:1 on black)
     bg: "#000000",
     pad: 6,
     rule: NONE,
@@ -284,7 +309,7 @@ export const FMTR: Readonly<Record<string, Fmtr>> = {
     headerBg: "#000000",
     headerRule: NONE,
     groupBg: "#000000",
-    groupColor: "#727272",
+    groupColor: "#818181", // a11y: reactablefmtr #727272 (4.37:1 on black), kept equal to the body type as in R
     groupSize: 15,
     bodyImage: "linear-gradient(#000000, #0d0d0d, #191919)",
   },
@@ -310,7 +335,7 @@ export const FMTR: Readonly<Record<string, Fmtr>> = {
     font: 15,
     color: "#525252", // a11y: reactablefmtr #9a9a9a (filter-box border 1.84:1, selected bar 2.3:1)
     headerSize: 16,
-    headerColor: "#c9e7de",
+    headerColor: "#234e41", // a11y: reactablefmtr #c9e7de (1.58:1 on #78c2ad; no lighter tint reaches 4.5:1)
     pad: 6,
     rule: "#f7f7f9",
     ruleWidth: 1,
@@ -329,12 +354,13 @@ export const FMTR: Readonly<Record<string, Fmtr>> = {
     stripe: "#d3d3d3",
     highlight: "#d3d3d3",
     headerRule: NONE,
+    groupRule: "1px solid #e6e6e6",
   },
   nytimes: {
     font: 13,
     color: "#333333",
     headerSize: 11,
-    headerColor: "#999999",
+    headerColor: "#767676", // a11y: reactablefmtr #999999 (2.85:1 on white)
     pad: 5,
     rule: "#e7e7e7",
     ruleWidth: 1,
@@ -345,6 +371,8 @@ export const FMTR: Readonly<Record<string, Fmtr>> = {
     headerPad: 5,
     headerWeight: "500",
     upper: true,
+    groupUpper: true,
+    groupSize: 11,
   },
   pff: {
     font: 16,
@@ -362,12 +390,17 @@ export const FMTR: Readonly<Record<string, Fmtr>> = {
     headerPad: 7,
     headerWeight: "bold",
     upper: true,
+    groupBg: "#e4e8ed",
+    groupColor: "#63696f", // a11y: reactablefmtr #878e94 (2.70:1 on #e4e8ed)
+    groupWeight: "bold",
+    groupUpper: true,
+    css: (s) => [`${s} th.sdvt-group{box-shadow:inset 3px 0 0 0 #ffffff}`],
   },
   sandstone: {
     font: 15,
     color: "#3e3f3a",
     headerSize: 16,
-    headerColor: "#7c7a78",
+    headerColor: "#72706e", // a11y: reactablefmtr #7c7a78 (3.93:1 on #f8f5f0)
     pad: 6,
     rule: "#f8f5f0",
     ruleWidth: 1,
@@ -387,13 +420,14 @@ export const FMTR: Readonly<Record<string, Fmtr>> = {
     stripe: "#d3d3d3",
     highlight: "#d3d3d3",
     headerRule: "#f5f5f5",
+    groupRule: "1px solid #f5f5f5",
     cellBg: "#f5f5f5",
   },
   slate: {
     font: 15,
-    color: "#aaaaaa",
+    color: "#b8b8b8", // a11y: reactablefmtr #aaaaaa (3.85:1 on the #464a4d stripe)
     headerSize: 16,
-    headerColor: "#97999b",
+    headerColor: "#a7a9ab", // a11y: reactablefmtr #97999b (3.72:1 on #3a3f44)
     bg: "#272b30",
     pad: 6,
     rule: "#272b30",
@@ -407,7 +441,7 @@ export const FMTR: Readonly<Record<string, Fmtr>> = {
     font: 14,
     color: "#585858", // a11y: reactablefmtr #8e8e8e (filter-box border 2.07:1, selected bar 2.67:1)
     headerSize: 15,
-    headerColor: "#8e8e8e",
+    headerColor: "#6b6b6b", // a11y: reactablefmtr #8e8e8e (2.80:1 on #ededed)
     pad: 6,
     rule: "#eeeeee",
     ruleWidth: 1,
@@ -418,9 +452,9 @@ export const FMTR: Readonly<Record<string, Fmtr>> = {
   },
   sunrise: {
     font: 15,
-    color: "#5646ab", // a11y: reactablefmtr #8069ff (filter-box border 2.22:1, selected bar 2.95:1)
+    color: "#403480", // a11y: reactablefmtr #8069ff (filter-box border 2.22:1, selected bar 2.95:1, 1.69:1 on the #f98d77 gradient stop)
     headerSize: 15,
-    headerColor: "#8069ff",
+    headerColor: "#6b51ff", // a11y: reactablefmtr #8069ff (3.58:1 on #fffa85)
     bg: "#fffa85",
     pad: 6,
     rule: NONE,
@@ -456,6 +490,7 @@ export const FMTR: Readonly<Record<string, Fmtr>> = {
     stripe: "#d3d3d3",
     highlight: "#d3d3d3",
     headerRule: NONE,
+    groupRule: "1px solid #e6e6e6",
   },
 };
 
@@ -500,8 +535,7 @@ function build(name: string, f: Fmtr, ref: ThemeRef): Theme {
   const rule = f.rule ?? "#f2f2f2";
   const hline = rule === NONE ? NONE : `${px(f.ruleWidth ?? 1)} solid ${rule}`;
   const headerRule = f.headerRule ?? (f.rule === NONE ? NONE : (f.rule ?? "#e6e6e6"));
-  const labelBorderBottom =
-    headerRule === NONE ? NONE : `${px(f.headerRuleWidth ?? f.ruleWidth ?? 2)} solid ${headerRule}`;
+  const labelBorderBottom = headerRule === NONE ? NONE : `${px(f.headerRuleWidth ?? 2)} solid ${headerRule}`;
   const labelBg = f.headerBg ?? bg;
   return {
     name,
@@ -524,10 +558,11 @@ function build(name: string, f: Fmtr, ref: ThemeRef): Theme {
       labelPad: p(f.headerPad ?? pad),
       groupBg: f.groupBg ?? bg,
       groupColor: f.groupColor ?? color,
-      groupWeight: "600",
+      groupWeight: f.groupWeight ?? "600",
       groupSize: body(f.groupSize ?? headerSize),
       groupTransform: f.groupUpper ? "uppercase" : "none",
-      groupBorderBottom: hline,
+      groupBorderTop: f.groupBorderTop ?? NONE,
+      groupBorderBottom: f.groupRule ?? hline,
       groupPad: p(pad),
       bodySize: body(font),
       pad: p(pad),
@@ -547,6 +582,7 @@ function build(name: string, f: Fmtr, ref: ThemeRef): Theme {
         f.bodyImage ? `${s} tbody{background-image:${f.bodyImage}}` : "",
         f.cellBg ? `${s} td.sdvt-cell{background-color:${f.cellBg}}` : "",
         highlight && f.highlight ? `${s} tr.sdvt-hover>td.sdvt-cell{background-color:${f.highlight}}` : "",
+        ...(f.css?.(s, p) ?? []),
       ]
         .filter(Boolean)
         .join("\n"),
@@ -564,15 +600,26 @@ export const FMTR_THEMES: Readonly<Record<string, ThemeDef>> = Object.fromEntrie
 /**
  * `fmtr-team`: reactablefmtr's `default` look with the header filled in a team's primary colour (options `league`,
  * `team`). The header ink is `onColor(primary)`; the header's bottom rule is the secondary colour unless it is too
- * pale on white (under 1.5:1, as sdvTeam), then the primary; the stripe and hover fills are light tints of the
- * primary that keep the body type above 4.5:1. No team: the SportsDataverse navy and cyan.
+ * pale on the table background (under 1.5:1, as sdvTeam), then the primary; the stripe and hover fills are tints of
+ * the primary over the background that keep the body type above 4.5:1. Both checks use the `fontColor` and
+ * `backgroundColor` overrides when given. No team: the SportsDataverse navy and cyan. A `league` without a `team`,
+ * or a league sdvplot does not know, is a TableSpecError.
  */
 export const fmtrTeam: ThemeDef = (ref) => {
   let primary = SDV_NAVY;
   let secondary = SDV_CYAN;
   const team = ref.options?.team;
+  const leagueOpt = ref.options?.league;
+  if (leagueOpt !== undefined && !(LEAGUES as readonly string[]).includes(leagueOpt))
+    throw new TableSpecError(
+      `fmtr-team options.league must be one of ${LEAGUES.join(", ")}, not "${leagueOpt}"`,
+    );
+  if (leagueOpt !== undefined && !team)
+    throw new TableSpecError(
+      `fmtr-team options.league "${leagueOpt}" needs options.team (e.g. { league: "nfl", team: "KC" })`,
+    );
   if (team) {
-    const league = ref.options?.league as League | undefined;
+    const league = leagueOpt as League | undefined;
     if (!league)
       throw new TableSpecError(
         'fmtr-team needs options.league with a team (e.g. { league: "nfl", team: "KC" })',
@@ -590,13 +637,18 @@ export const fmtrTeam: ThemeDef = (ref) => {
       );
   }
   const base = FMTR.default as Fmtr;
+  const o = ref.options ?? {};
+  // the colours the table really paints, so the checks below follow the fontColor / backgroundColor overrides
+  const text = o.fontColor === undefined ? base.color : hexOption(o.fontColor, "fontColor");
+  const ground =
+    o.backgroundColor === undefined ? "#ffffff" : hexOption(o.backgroundColor, "backgroundColor");
   const tint = (t: number): string => {
-    // the lightest tint of the primary at weight t that still carries the body type at 4.5:1
+    // the strongest tint of the primary at or below weight t that keeps the body type at 4.5:1, else the ground
     for (let w = t; w > 0; w -= 0.01) {
-      const c = mix("#ffffff", primary, w);
-      if (contrast(base.color, c) >= 4.5) return c;
+      const c = mix(ground, primary, w);
+      if (contrast(text, c) >= 4.5) return c;
     }
-    return "#ffffff";
+    return ground;
   };
   return build(
     "fmtr-team",
@@ -605,7 +657,7 @@ export const fmtrTeam: ThemeDef = (ref) => {
       headerBg: primary,
       headerColor: onColor(primary),
       headerRuleWidth: 3,
-      headerRule: contrast(secondary, "#ffffff") >= 1.5 ? secondary : primary,
+      headerRule: contrast(secondary, ground) >= 1.5 ? secondary : primary,
       stripe: tint(0.08),
       highlight: tint(0.16),
       groupBg: tint(0.12),

@@ -3,6 +3,7 @@ import { contrast, onColor, preloadAll } from "@sportsdataverse/sdvplot";
 import { beforeAll, expect, test } from "vitest";
 import { GT_ALIASES } from "../src/aliases.js";
 import { defineTable } from "../src/define.js";
+import { TableSpecError } from "../src/errors.js";
 import { renderHTML } from "../src/html/index.js";
 import { FMTR_NAMES, fmtrThemeName } from "../src/themes/fmtr.js";
 import { FMTR_THEME_NAMES, THEME_NAMES, resolveTheme } from "../src/themes/index.js";
@@ -43,8 +44,9 @@ test("espn, nytimes, fivethirtyeight, pff spot values", () => {
   });
   expect(th("fmtr-nytimes").tokens).toMatchObject({
     text: "#333333",
-    labelColor: "#999999",
+    labelColor: "#767676", // a11y: reactablefmtr #999999
     labelWeight: "500",
+    groupTransform: "uppercase",
     labelBorderBottom: "none",
     bodySize: "13px",
     hline: "1px solid #e7e7e7",
@@ -54,7 +56,15 @@ test("espn, nytimes, fivethirtyeight, pff spot values", () => {
     tableBorderBottom: "3px solid #222222",
     labelColor: "#000000",
     labelSize: "12px",
+    groupTransform: "uppercase",
   });
+  expect(th("fmtr-fivethirtyeight").rules("#t")).toContain(
+    "#t th.sdvt-label{padding-top:12px;vertical-align:bottom}",
+  );
+  expect(th("fmtr-espn").tokens.groupBorderTop).toBe("1px solid #e1e2e4");
+  expect(th("fmtr-espn").rules("#t")).toContain(
+    "#t th.sdvt-group{border-left:1px solid #e1e2e4;border-right:1px solid #e1e2e4}",
+  );
   expect(th("fmtr-pff").tokens).toMatchObject({
     labelBg: "#595d63",
     labelColor: "#ffffff",
@@ -63,7 +73,14 @@ test("espn, nytimes, fivethirtyeight, pff spot values", () => {
     hline: "none",
     bodySize: "16px",
     pad: "4px",
+    // groupHeaderStyle: #e4e8ed band, bold uppercase (ink a11y-darkened from #878e94)
+    groupBg: "#e4e8ed",
+    groupColor: "#63696f",
+    groupWeight: "bold",
+    groupTransform: "uppercase",
+    groupSize: "12px",
   });
+  expect(th("fmtr-pff").rules("#t")).toContain("#t th.sdvt-group{box-shadow:inset 3px 0 0 0 #ffffff}");
 });
 
 test("dark grounds, gradients, tiles and hidden lines", () => {
@@ -75,7 +92,7 @@ test("dark grounds, gradients, tiles and hidden lines", () => {
   const mid = th("fmtr-midnight");
   expect(mid.tokens).toMatchObject({
     bg: "#000000",
-    text: "#727272",
+    text: "#818181", // a11y: reactablefmtr #727272
     hline: "none",
     labelBorderBottom: "none",
   });
@@ -83,6 +100,9 @@ test("dark grounds, gradients, tiles and hidden lines", () => {
   expect(th("fmtr-sunrise").rules("#t")).toContain("linear-gradient(#fffa85, #ffe269, #ffcb69, #f98d77)");
   const sf = th("fmtr-sanfran");
   expect(sf.tokens.hline).toBe("6px solid #ffffff");
+  // the cell border width is cellStyle-only: the header keeps reactable's 2px, the group rule its 1px
+  expect(sf.tokens.labelBorderBottom).toBe("2px solid #f5f5f5");
+  expect(sf.tokens.groupBorderBottom).toBe("1px solid #f5f5f5");
   expect(sf.rules("#t")).toContain("#t td.sdvt-cell{background-color:#f5f5f5}");
   expect(th("fmtr-no-lines").tokens).toMatchObject({ hline: "none", labelBorderBottom: "none" });
   expect(th("fmtr-void").tokens).toMatchObject({ labelColor: "transparent", hline: "none" });
@@ -139,8 +159,8 @@ test("the theme function's arguments are options, validated; sizes follow densit
 
 test("a11y adjustments move only the values that failed the contrast gate (see the a11y: comments)", () => {
   expect(th("fmtr-minty").tokens.text).toBe("#525252"); // reactablefmtr #9a9a9a
-  expect(th("fmtr-minty").tokens.labelColor).toBe("#c9e7de"); // reactablefmtr header colour kept
-  expect(th("fmtr-hoverlight").rules("#t")).toContain("background-color:#949494"); // reactablefmtr lightgrey
+  expect(th("fmtr-minty").tokens.labelColor).toBe("#234e41"); // reactablefmtr #c9e7de, 1.58:1 on #78c2ad
+  expect(th("fmtr-hoverlight").rules("#t")).toContain("background-color:#767676"); // reactablefmtr lightgrey
   expect(th("fmtr-cerulean").tokens.text).toBe("#141415"); // untouched
 });
 
@@ -156,4 +176,21 @@ test("fmtr-team: KC primary header with readable ink, secondary rule, tints that
   expect(th("fmtr-team").tokens.labelBg).toBe("#0B1A33"); // no team: SportsDataverse navy
   expect(() => th("fmtr-team", { team: "KC" })).toThrow(/league/);
   expect(() => th("fmtr-team", { league: "nfl", team: "ZZZ" })).toThrow(/ZZZ/);
+  expect(() => th("fmtr-team", { league: "nfx", team: "KC" })).toThrow(TableSpecError);
+  expect(() => th("fmtr-team", { league: "nfl" })).toThrow(TableSpecError);
+});
+
+test("fmtr-team checks the colours it paints: a fontColor / backgroundColor override moves the tints and the rule", () => {
+  const dark = th("fmtr-team", {
+    league: "nfl",
+    team: "KC",
+    striped: "true",
+    fontColor: "#ffffff",
+    backgroundColor: "#111111",
+  });
+  expect(contrast("#ffffff", dark.tokens.stripe)).toBeGreaterThanOrEqual(4.5);
+  expect(dark.tokens.stripe).not.toBe("#ffffff");
+  // LAR's pale secondary is too pale on white, not on a dark ground
+  const lar = th("fmtr-team", { league: "nfl", team: "LAR", backgroundColor: "#111111" });
+  expect(lar.tokens.labelBorderBottom).not.toBe("3px solid #003594");
 });
