@@ -159,7 +159,7 @@ test("the theme function's arguments are options, validated; sizes follow densit
 
 test("a11y adjustments move only the values that failed the contrast gate (see the a11y: comments)", () => {
   expect(th("fmtr-minty").tokens.text).toBe("#525252"); // reactablefmtr #9a9a9a
-  expect(th("fmtr-minty").tokens.labelColor).toBe("#234e41"); // reactablefmtr #c9e7de, 1.58:1 on #78c2ad
+  expect(th("fmtr-minty").tokens).toMatchObject({ labelColor: "#c9e7de", labelBg: "#326e5d" }); // light labels kept, fill darkened from #78c2ad
   expect(th("fmtr-hoverlight").rules("#t")).toContain("background-color:#767676"); // reactablefmtr lightgrey
   expect(th("fmtr-cerulean").tokens.text).toBe("#141415"); // untouched
 });

@@ -93,13 +93,13 @@ export const FMTR: Readonly<Record<string, Fmtr>> = {
     font: 14,
     color: "#141415",
     headerSize: 15,
-    headerColor: "#0e3b53", // a11y: reactablefmtr #cfe9f7 (2.07:1 on #3ba9e8; no lighter tint reaches 4.5:1)
+    headerColor: "#cfe9f7",
     pad: 6,
     rule: "#e9ecef",
     ruleWidth: 1,
     stripe: "#e9ecef",
     highlight: "#e9ecef",
-    headerBg: "#3ba9e8",
+    headerBg: "#136c9f", // a11y: reactablefmtr #3ba9e8 (its #cfe9f7 labels 2.07:1)
     headerRuleWidth: 2,
     headerRule: "#eaedf0",
   },
@@ -272,13 +272,13 @@ export const FMTR: Readonly<Record<string, Fmtr>> = {
     font: 14,
     color: "#222222",
     headerSize: 15,
-    headerColor: "#76120f", // a11y: reactablefmtr #fad9d8 (1.90:1 on #ef8683; no lighter tint reaches 4.5:1)
+    headerColor: "#fad9d8",
     pad: 6,
     rule: "#aaaaaa",
     ruleWidth: 1,
     stripe: "#eeeeee",
     highlight: "#eeeeee",
-    headerBg: "#ef8683",
+    headerBg: "#c41e19", // a11y: reactablefmtr #ef8683 (its #fad9d8 labels 1.90:1)
     headerRuleWidth: 2,
   },
   lux: {
@@ -335,13 +335,13 @@ export const FMTR: Readonly<Record<string, Fmtr>> = {
     font: 15,
     color: "#525252", // a11y: reactablefmtr #9a9a9a (filter-box border 1.84:1, selected bar 2.3:1)
     headerSize: 16,
-    headerColor: "#234e41", // a11y: reactablefmtr #c9e7de (1.58:1 on #78c2ad; no lighter tint reaches 4.5:1)
+    headerColor: "#c9e7de",
     pad: 6,
     rule: "#f7f7f9",
     ruleWidth: 1,
     stripe: "#ededed",
     highlight: "#f7f7f9",
-    headerBg: "#78c2ad",
+    headerBg: "#326e5d", // a11y: reactablefmtr #78c2ad (its #c9e7de labels 1.58:1)
     headerRuleWidth: 2,
   },
   no_lines: {

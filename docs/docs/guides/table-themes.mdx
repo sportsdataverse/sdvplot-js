@@ -38,16 +38,16 @@ moved for the 3:1 cues; the text moves are:
 
 | Theme | Colour | reactablefmtr | sdvtables | Ratio before → after |
 |---|---|---|---|---|
-| cerulean | header label | `#cfe9f7` | `#0e3b53` | 2.07 → 4.54 |
+| cerulean | header fill (under `#cfe9f7` labels) | `#3ba9e8` | `#136c9f` | 2.07 → 4.53 |
 | cyborg | body (on the stripe) | `#888888` | `#8e8e8e` | 4.16 → 4.50 |
 | darkly | header label | `#afbdcc` | `#c5cfda` | 3.74 → 4.54 |
 | darkly | stripe / hover fill (white type) | `#adb5bd` | `#70777e` | 2.07 → 4.54 |
 | hoverlight | stripe / hover fill (white type) | `#d3d3d3` | `#767676` | 1.50 → 4.54 |
-| journal | header label | `#fad9d8` | `#76120f` | 1.90 → 4.51 |
+| journal | header fill (under `#fad9d8` labels) | `#ef8683` | `#c41e19` | 1.90 → 4.51 |
 | lux | header label | `#7f7f7f` | `#828282` | 4.35 → 4.53 |
 | midnight | body and group heading | `#727272` | `#818181` | 3.65 → 4.51 |
 | midnight | header label | `#666666` | `#757575` | 3.66 → 4.56 |
-| minty | header label | `#c9e7de` | `#234e41` | 1.58 → 4.52 |
+| minty | header fill (under `#c9e7de` labels) | `#78c2ad` | `#326e5d` | 1.58 → 4.53 |
 | nytimes | header label | `#999999` | `#767676` | 2.85 → 4.54 |
 | pff | group heading | `#878e94` | `#63696f` | 2.70 → 4.51 |
 | sandstone | header label | `#7c7a78` | `#72706e` | 3.93 → 4.53 |
@@ -57,8 +57,8 @@ moved for the 3:1 cues; the text moves are:
 | sunrise | header label | `#8069ff` | `#6b51ff` | 3.58 → 4.54 |
 | sunrise | body (on the #f98d77 gradient stop) | `#8069ff` | `#403480` | 1.69 → 4.51 |
 
-On cerulean, journal and minty no lighter tint of the header ink reaches 4.5:1 on the header fill, so the label is
-the same hue, dark. Ratios before are reactablefmtr's own colours on the same ground. reactablefmtr's column-group header styles (espn's rules, pff's band, fivethirtyeight's
+On cerulean, journal and minty no lighter tint of the light header labels reaches 4.5:1, so the labels keep
+reactablefmtr's colour and the header fill darkens in its own hue instead. Ratios before are reactablefmtr's own colours on the same ground. reactablefmtr's column-group header styles (espn's rules, pff's band, fivethirtyeight's
 uppercase) dress sdvtables' row-group headings, its only group header. Not ported: the hover and sort colours of the
 header labels, reactable's 8px inset of the group heading's rule, and `&:not(:empty)` (sdvtables never renders an
 empty group heading).
