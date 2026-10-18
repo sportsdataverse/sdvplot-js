@@ -5,7 +5,9 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { STANDINGS } from "../../../sdvtables/test/fixtures/standings.js";
 import { InputError } from "../../src/errors.js";
 import { HEADSHOT_ASPECT, headshotUrl } from "../../src/headshots.js";
+import { getLeagueSync } from "../../src/index-data.js";
 import {
+  type League,
   contrast,
   loadLeague,
   logoUrlSync,
@@ -15,7 +17,7 @@ import {
   teamColorsSync,
 } from "../../src/index.js";
 import { HeadshotMark, LogoMark, SurfaceBackdrop, teamColorPalette } from "../../src/svelte/index.js";
-import { deltaE } from "../../src/team-palette.js";
+import { MIN_CONTRAST, MIN_DELTA_E, deltaE } from "../../src/team-palette.js";
 import { drawnMarks } from "../../src/testing/index.js";
 import Bump from "./fixtures/Bump.svelte";
 import Host from "./fixtures/Host.svelte";
@@ -251,25 +253,39 @@ describe("teamColorPalette and the chart", () => {
     }
   });
 
-  // biome-ignore format: the 30 teams, one line
-  const NBA = [
-    "ATL", "BOS", "BKN", "CHA", "CHI", "CLE", "DAL", "DEN", "DET", "GS", "HOU", "IND", "LAC", "LAL", "MEM",
-    "MIA", "MIL", "MIN", "NO", "NY", "OKC", "ORL", "PHI", "PHX", "POR", "SAC", "SA", "TOR", "UTAH", "WSH",
-  ];
+  /** A league's teams in its standard (shard) order, by abbreviation. */
+  const teamsOf = async (lg: League): Promise<string[]> => {
+    await loadLeague(lg);
+    return getLeagueSync(lg).teams.map((t) => t.abbr ?? t.team_id);
+  };
+  const BACKGROUNDS = ["#181a1b", "#000000", "#ffffff"] as const;
 
-  test("dark mode: every NBA team keeps 3:1 against the background and stays distinct; the light default is the team colours", () => {
-    const teams = NBA;
-    const spy = vi.fn();
-    setWarningHandler(spy);
-    for (const bg of ["#181a1b", "#000000", "#ffffff"]) {
-      const cs = teamColorPalette("nba", teams, { background: bg });
-      for (const c of cs) expect(contrast(c, bg)).toBeGreaterThanOrEqual(3);
-      for (let i = 0; i < cs.length; i++)
-        for (let j = i + 1; j < cs.length; j++)
-          expect(deltaE(cs[i] as string, cs[j] as string)).toBeGreaterThanOrEqual(10);
+  test.each(["nba", "nfl", "mlb", "nhl"] as const)(
+    "dark mode, %s in league order: every colour at 3:1 on each background, every pair at least MIN_DELTA_E apart, no warning",
+    async (lg) => {
+      const teams = await teamsOf(lg);
+      const spy = vi.fn();
+      setWarningHandler(spy);
+      for (const bg of BACKGROUNDS) {
+        const cs = teamColorPalette(lg, teams, { background: bg });
+        expect(cs).toHaveLength(teams.length);
+        for (const c of cs) expect(contrast(c, bg), `${c} on ${bg}`).toBeGreaterThanOrEqual(MIN_CONTRAST);
+        const close = cs.flatMap((c, i) =>
+          cs
+            .slice(0, i)
+            .flatMap((p, j) => (deltaE(c, p) < MIN_DELTA_E ? [`${teams[j]}/${teams[i]} on ${bg}`] : [])),
+        );
+        expect(close).toEqual([]);
+      }
+      expect(spy).not.toHaveBeenCalled();
+    },
+  );
+
+  test("no background (the light default): the teams' own colours, unchanged; an unresolved team takes the fallback", async () => {
+    for (const lg of ["nba", "nfl", "mlb", "nhl"] as const) {
+      const teams = await teamsOf(lg);
+      expect(teamColorPalette(lg, teams)).toEqual(teamColorsSync(lg, teams).map((c) => c ?? "#808080"));
     }
-    expect(spy).not.toHaveBeenCalled();
-    expect(teamColorPalette("nba", teams)).toEqual(teamColorsSync("nba", teams).map((c) => c ?? "#808080"));
     expect(teamColorPalette("nba", ["XXX"], { fallback: "#123456" })).toEqual(["#123456"]);
   });
 });

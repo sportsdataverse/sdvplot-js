@@ -21,7 +21,8 @@ other adapters.
 
 `teamColorPalette(league, teams, { background })` gives one colour per team for the lines (a `<Spline stroke>`, a
 series' `color` or the chart's `cRange`). With `background`, each colour keeps at least 3:1 contrast against it and
-stays apart from every earlier team's (a CIE76 ΔE of 10 or more), as in the uPlot and Recharts adapters.
+stays apart from every earlier team's (a CIE76 ΔE of 20 or more), as in the uPlot and Recharts adapters: a team whose
+colours both clash takes the nearest colour to its own (lightness, hue or chroma stepped) that is distinct and reads.
 
 Here each AFC West team's division rank after every week of 2024 is a line in its colour, and the rows of the last
 week, picked by week, put each team's logo at its line's end:
