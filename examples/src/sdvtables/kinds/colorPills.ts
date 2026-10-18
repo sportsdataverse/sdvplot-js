@@ -5,7 +5,7 @@ import type { ExampleMeta } from "../../contract.js";
 
 export const meta = {
   title: "colorPills: values in pills coloured on a scale",
-  tags: ["kind", "colorPills", "gt_color_pills"],
+  tags: ["kind", "colorPills", "gt_color_pills", "pill_buttons"],
 } satisfies ExampleMeta;
 
 // A domain fixes the scale so tables can be compared; without one the pills span the observed range and warn.

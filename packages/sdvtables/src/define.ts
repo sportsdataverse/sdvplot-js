@@ -1,6 +1,14 @@
 // src/define.ts — the fluent builder. Every method returns a NEW builder (immutable), build() validates once.
 import { TableSpecError } from "./errors.js";
-import type { ColumnBase, ColumnSpec, Decoration, Density, NumericKey, TableSpec } from "./spec.js";
+import type {
+  ColumnBase,
+  ColumnSpec,
+  Decoration,
+  Density,
+  NumericKey,
+  Predicate,
+  TableSpec,
+} from "./spec.js";
 
 type Opt<T, K extends PropertyKey> = Omit<T, "kind" | "key" | K>;
 type Base<Row, K extends keyof Row & string> = Omit<ColumnBase<Row, K>, "key">;
@@ -63,10 +71,14 @@ export interface ColumnFactory<Row> {
     key: K,
     o?: Base<Row, K> & Partial<Opt<Col<Row, "indicatorBox">, never>>,
   ): Col<Row, "indicatorBox">;
+  /**
+   * Mark the cells that match `when` (a predicate), or pass `"min"` / `"max"` / `"both"` to mark the column's extremes
+   * (reactablefmtr `highlight_min` / `highlight_max` / `highlight_min_max`: bold, red min and green max, no fill).
+   */
   highlight<K extends keyof Row & string>(
     key: K,
-    when: Col<Row, "highlight">["when"],
-    o?: Base<Row, K> & Partial<Opt<Col<Row, "highlight">, "when">>,
+    when: Predicate<Row> | "min" | "max" | "both",
+    o?: Base<Row, K> & Partial<Opt<Col<Row, "highlight">, "when" | "extreme">>,
   ): Col<Row, "highlight">;
   highlightNa<K extends keyof Row & string>(
     key: K,
@@ -90,6 +102,32 @@ export interface ColumnFactory<Row> {
     key: K,
     o?: Base<Row, K> & Partial<Opt<Col<Row, "image">, never>>,
   ): Col<Row, "image">;
+  /** reactablefmtr `data_bars` (defaults: fill `#15607A`, track `#EEEEEE`, text inside the bar's end, 18px bars). */
+  dataBar<K extends NumericKey<Row>>(
+    key: K,
+    o?: Base<Row, K> & Partial<Opt<Col<Row, "dataBar">, never>>,
+  ): Col<Row, "dataBar">;
+  /** reactablefmtr `icon_sets` (defaults: one circle, colours `#15607A` / `#B0B0B0` / `#FA8C00`, icon right, 16px). */
+  iconSet<K extends NumericKey<Row>>(
+    key: K,
+    o?: Base<Row, K> & Partial<Opt<Col<Row, "iconSet">, never>>,
+  ): Col<Row, "iconSet">;
+  /** reactablefmtr `icon_assign` (defaults: circles, fill `#15607A`, empty `#EEEEEE`, 16px, no value shown). */
+  iconAssign<K extends NumericKey<Row>>(
+    key: K,
+    o?: Base<Row, K> & Partial<Opt<Col<Row, "iconAssign">, never>>,
+  ): Col<Row, "iconAssign">;
+  /** reactablefmtr `merge_column`: `key` (14px bold) with `stack` (12px `#777`) to its right by default. */
+  mergeStack<K extends keyof Row & string>(
+    key: K,
+    stack: keyof Row & string,
+    o?: Base<Row, K> & Partial<Opt<Col<Row, "mergeStack">, "stack">>,
+  ): Col<Row, "mergeStack">;
+  /** reactablefmtr `bubble_grid` (defaults: circles, colours `#15607A` / `#FFFFFF` / `#FA8C00`, 100px at the max). */
+  bubble<K extends NumericKey<Row>>(
+    key: K,
+    o?: Base<Row, K> & Partial<Opt<Col<Row, "bubble">, never>>,
+  ): Col<Row, "bubble">;
   /** gtUtils aliases — same objects, old names (see src/aliases.ts). */
   fmtRank: ColumnFactory<Row>["rank"];
   fmtTally: ColumnFactory<Row>["tally"];
@@ -195,7 +233,11 @@ export function columnFactory<Row>(): ColumnFactory<Row> {
       size: 20,
       ...o,
     }),
-    highlight: (key, when, o = {}) => ({ kind: "highlight", key, when, fill: "#FFF3B0", bold: false, ...o }),
+    // extremes: reactablefmtr highlight_min/max (font_color red/green, bold, highlighter NULL); predicate: the gt default
+    highlight: (key, when, o = {}) =>
+      typeof when === "string"
+        ? { kind: "highlight", key, extreme: when, bold: true, ...o }
+        : { kind: "highlight", key, when, fill: "#FFF3B0", bold: false, ...o },
     highlightNa: (key, o = {}) => ({
       kind: "highlightNa",
       key,
@@ -233,6 +275,68 @@ export function columnFactory<Row>(): ColumnFactory<Row> {
       ...o,
     }),
     image: (key, o = {}) => ({ kind: "image", key, height: "55px", ...o }),
+    // reactablefmtr 2.1.0 defaults, read from the installed package's source (data_bars, icon_sets, icon_assign,
+    // merge_column, bubble_grid formals)
+    dataBar: (key, o = {}) => ({
+      kind: "dataBar",
+      key,
+      fill: ["#15607A"],
+      background: "#EEEEEE",
+      bias: 1,
+      textPosition: "inside-end",
+      roundEdges: false,
+      gradient: false,
+      ...o,
+    }),
+    iconSet: (key, o = {}) => ({
+      kind: "iconSet",
+      key,
+      icons: ["circle"],
+      colors: ["#15607A", "#B0B0B0", "#FA8C00"],
+      opacity: 1,
+      iconPosition: "right",
+      iconSize: 16,
+      ...o,
+    }),
+    iconAssign: (key, o = {}) => ({
+      kind: "iconAssign",
+      key,
+      icon: "circle",
+      fill: "#15607A",
+      empty: "#EEEEEE",
+      fillOpacity: 1,
+      emptyOpacity: 1,
+      iconSize: 16,
+      seqBy: 1,
+      showValues: "none",
+      ...o,
+    }),
+    mergeStack: (key, stack, o = {}) => ({
+      kind: "mergeStack",
+      key,
+      stack,
+      position: "right",
+      size: 14,
+      weight: "bold",
+      style: "normal",
+      stackSize: 12,
+      stackColor: "#777",
+      stackWeight: "normal",
+      stackStyle: "normal",
+      spacing: 0,
+      ...o,
+    }),
+    bubble: (key, o = {}) => ({
+      kind: "bubble",
+      key,
+      shape: "circles",
+      colors: ["#15607A", "#FFFFFF", "#FA8C00"],
+      bias: 1,
+      opacity: 1,
+      maxSize: 100,
+      showText: true,
+      ...o,
+    }),
   };
   return { ...f, fmtRank: f.rank, fmtTally: f.tally };
 }
@@ -487,6 +591,10 @@ export class TableBuilder<Row> {
     for (const col of this.s.columns) {
       if (seen.has(col.key)) throw new TableSpecError(`column key "${col.key}" appears twice`);
       seen.add(col.key);
+      if (col.kind === "highlight" && col.when === undefined && col.extreme === undefined)
+        throw new TableSpecError(
+          `column "${col.key}": highlight needs a predicate or "min", "max" or "both"`,
+        );
     }
     if (this.s.decorations.filter((d) => d.type === "title").length > 1)
       throw new TableSpecError("only one .title()");

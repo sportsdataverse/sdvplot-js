@@ -33,6 +33,11 @@ const KINDS = {
   teamColorBar: 1,
   teamColorBg: 1,
   image: 1,
+  dataBar: 1,
+  iconSet: 1,
+  iconAssign: 1,
+  mergeStack: 1,
+  bubble: 1,
 } satisfies Record<ColumnKind, 1>;
 const DECORATIONS = {
   title: 1,

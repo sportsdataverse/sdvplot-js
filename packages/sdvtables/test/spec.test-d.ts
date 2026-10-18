@@ -38,6 +38,11 @@ test("accessors are keyof Row and numeric kinds accept only numeric keys", () =>
     | "teamColorBar"
     | "teamColorBg"
     | "image"
+    | "dataBar"
+    | "iconSet"
+    | "iconAssign"
+    | "mergeStack"
+    | "bubble"
   >();
   // headshots take only the eight ESPN headshot leagues (sdvplot EspnHeadshotLeague)
   // @ts-expect-error — no ESPN headshots for the PWHL

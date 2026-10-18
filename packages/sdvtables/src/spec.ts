@@ -54,6 +54,8 @@ export interface ColumnBase<Row, K extends keyof Row & string = keyof Row & stri
   readonly filterable?: boolean;
   /** Phase 5 — the one non-serializable field (JSON.stringify drops it). A method signature, so a numeric kind's comparator still fits `ColumnBase<Row>`. */
   compare?(a: Row[K], b: Row[K]): number;
+  /** reactablefmtr `tooltip = TRUE`: the cell's formatted value as its `title` attribute (no tooltip library). */
+  readonly tooltip?: boolean;
 }
 export type FormatType = "number" | "comma" | "currency" | "percent";
 export interface TeamOpts {
@@ -62,6 +64,66 @@ export interface TeamOpts {
   readonly idSystem?: IdSystem;
   readonly strict?: boolean;
 }
+/**
+ * How a reactablefmtr-style kind prints its number (reactablefmtr `number_fmt`): `value * scale`, then `digits`
+ * decimals (default: as many as the value needs, up to 7 significant figures), then the `type` (`comma` groups
+ * thousands, `currency` adds `$`, `percent` adds `%`), wrapped in `prefix` and `suffix`.
+ */
+export interface NumberFormat {
+  readonly digits?: number;
+  readonly type?: FormatType;
+  readonly scale?: number;
+  readonly prefix?: string;
+  readonly suffix?: string;
+}
+/**
+ * Per-row colour for a reactablefmtr-style kind (reactablefmtr `fill_color_ref` / `color_ref`): `colorRef` names a
+ * column holding a hex colour per row; or `team` names a column of team names/ids, resolved in `league` to the team's
+ * `which` colour. `colorRef` wins over `team`; a row with neither falls back to the kind's own scale.
+ */
+export interface ColorRefOpts<Row> {
+  readonly colorRef?: keyof Row & string;
+  readonly team?: keyof Row & string;
+  readonly league?: League;
+  readonly which?: Which;
+  readonly season?: SeasonInput;
+  readonly idSystem?: IdSystem;
+  readonly strict?: boolean;
+}
+/**
+ * A logo, wordmark or headshot beside a value (reactablefmtr `img_ref`): `logo` and `wordmark` read the column's
+ * `team` (resolved in `league`); `headshot` reads the ESPN athlete id in `markKey`. `markHeight` is in pixels.
+ */
+export interface MarkOpts<Row> {
+  readonly mark?: "logo" | "wordmark" | "headshot";
+  readonly markKey?: keyof Row & string;
+  readonly markHeight?: number;
+}
+/** The inline-SVG icons iconSet and iconAssign draw (no icon font). */
+export type IconName =
+  | "circle"
+  | "square"
+  | "diamond"
+  | "star"
+  | "triangle-up"
+  | "triangle-down"
+  | "arrow-up"
+  | "arrow-down"
+  | "arrow-right"
+  | "check"
+  | "xmark"
+  | "minus"
+  | "plus"
+  | "heart";
+/** Where text sits on a data bar (reactablefmtr `text_position`). */
+export type BarTextPosition =
+  | "inside-end"
+  | "outside-end"
+  | "inside-base"
+  | "outside-base"
+  | "center"
+  | "above"
+  | "none";
 
 export type ColumnSpec<Row> =
   | (ColumnBase<Row> & { readonly kind: "text" })
@@ -122,29 +184,41 @@ export type ColumnSpec<Row> =
       readonly idSystem: HeadshotIdSystem;
       readonly height: number;
     })
-  | (ColumnBase<Row, NumericKey<Row>> & {
-      readonly kind: "colorPills";
-      readonly palette: readonly string[];
-      readonly domain?: readonly [number, number];
-      readonly fillType: "continuous" | "rank";
-      readonly rankOrder: "asc" | "desc";
-      readonly digits?: number;
-      readonly formatType: FormatType;
-      readonly scalePercent: boolean;
-      readonly suffix: string;
-      readonly reverse: boolean;
-      readonly outlineColor?: string;
-      readonly outlineWidth: number;
-      readonly pillHeight: number;
-      readonly textColor?: string;
-      readonly naColor?: string;
-    })
-  | (ColumnBase<Row, NumericKey<Row>> & {
-      readonly kind: "colorRanks";
-      readonly palette: readonly string[];
-      readonly domain?: readonly [number, number];
-      readonly reverse: boolean;
-    })
+  | (ColumnBase<Row, NumericKey<Row>> &
+      ColorRefOpts<Row> & {
+        /** `colorRef` / `team` (reactablefmtr `pill_buttons(color_ref)`): the pill takes the row's colour, not the scale's. */
+        readonly kind: "colorPills";
+        readonly palette: readonly string[];
+        readonly domain?: readonly [number, number];
+        readonly fillType: "continuous" | "rank";
+        readonly rankOrder: "asc" | "desc";
+        readonly digits?: number;
+        readonly formatType: FormatType;
+        readonly scalePercent: boolean;
+        readonly suffix: string;
+        readonly reverse: boolean;
+        readonly outlineColor?: string;
+        readonly outlineWidth: number;
+        readonly pillHeight: number;
+        readonly textColor?: string;
+        readonly naColor?: string;
+      })
+  | (ColumnBase<Row, NumericKey<Row>> &
+      ColorRefOpts<Row> & {
+        /** reactablefmtr `color_tiles` / `color_scales`: fills the cell on a scale (`colorRef` / `team`: the row's colour). */
+        readonly kind: "colorRanks";
+        readonly palette: readonly string[];
+        readonly domain?: readonly [number, number];
+        readonly reverse: boolean;
+        /** grDevices::colorRamp `bias` (default 1): the palette stops sit at `(i / (n - 1)) ^ bias`; above 1 spreads the high end. */
+        readonly bias?: number;
+        /** reactablefmtr `span`: `true` takes the domain from every numeric column of the rows, a list from those columns. */
+        readonly span?: boolean | readonly (keyof Row & string)[];
+        /** reactablefmtr `show_text` (default true): false keeps the colour and hides the value. */
+        readonly showText?: boolean;
+        /** reactablefmtr `even_breaks`: the palette's colours as equal-count buckets (dplyr::ntile), not a ramp. */
+        readonly evenBreaks?: boolean;
+      })
   | (ColumnBase<Row> & {
       readonly kind: "colorResults";
       readonly winColor: string;
@@ -185,8 +259,14 @@ export type ColumnSpec<Row> =
     })
   | (ColumnBase<Row> & {
       readonly kind: "highlight";
-      readonly when: Predicate<Row>;
-      readonly fill: string;
+      /** The cells to mark; ignored when `extreme` is set. */
+      readonly when?: Predicate<Row>;
+      /**
+       * reactablefmtr `highlight_min` / `highlight_max` / `highlight_min_max`: mark the column's minimum, maximum or
+       * both (every tie), in bold red (min) or green (max) unless `textColor` is given.
+       */
+      readonly extreme?: "min" | "max" | "both";
+      readonly fill?: string;
       readonly textColor?: string;
       readonly bold: boolean;
     })
@@ -228,7 +308,116 @@ export type ColumnSpec<Row> =
       readonly kind: "image";
       readonly height: string;
       readonly alt?: keyof Row & string;
-    });
+    })
+  /**
+   * reactablefmtr `data_bars`: a horizontal bar per cell, its length `|value| / max|value|` (or scaled between
+   * `minValue` and `maxValue`). `align` ("left" | "right") is the side the bar grows from. One `fill` colour paints
+   * every bar; several are a ramp over the column's range (or, with `gradient`, a left-to-right gradient). A column
+   * with negatives (or `posNeg: true`) draws diverging bars around a centre line, `fill[0]` left and `fill[1]` right
+   * when two colours are given.
+   */
+  | (ColumnBase<Row, NumericKey<Row>> &
+      ColorRefOpts<Row> &
+      MarkOpts<Row> & {
+        readonly kind: "dataBar";
+        readonly fill: readonly string[];
+        /** The track behind each bar (reactablefmtr `background`). */
+        readonly background: string;
+        readonly bias: number;
+        readonly minValue?: number;
+        readonly maxValue?: number;
+        readonly textPosition: BarTextPosition;
+        /** Text colour; default: black or white by contrast for text on the bar, the table's ink otherwise. */
+        readonly textColor?: string;
+        readonly numberFormat?: NumberFormat;
+        /** Bar thickness in px (default 18, or 5 for `textPosition: "above"`). */
+        readonly barHeight?: number;
+        readonly roundEdges: boolean;
+        readonly gradient: boolean;
+        /** Diverging bars; default: when the column has a negative value. */
+        readonly posNeg?: boolean;
+      })
+  /**
+   * reactablefmtr `icon_sets`: the value with an icon, icons and colours each assigned by equal-count buckets of the
+   * column (dplyr::ntile): with three colours the bottom third gets `colors[0]`.
+   */
+  | (ColumnBase<Row, NumericKey<Row>> & {
+      readonly kind: "iconSet";
+      readonly icons: readonly IconName[];
+      readonly colors: readonly string[];
+      readonly opacity: number;
+      readonly iconPosition: "left" | "right" | "above" | "below" | "over";
+      /** Icon size in px. */
+      readonly iconSize: number;
+      /** A column naming each row's icon (an `IconName`), instead of the buckets. */
+      readonly iconRef?: keyof Row & string;
+      /** A column holding each row's hex icon colour, instead of the buckets. */
+      readonly iconColorRef?: keyof Row & string;
+      readonly numberFormat?: NumberFormat;
+    })
+  /**
+   * reactablefmtr `icon_assign`: the value as a row of icons, one per unit up to the column's maximum, filled up to
+   * the (rounded) value; `buckets` shows the value's bucket out of `buckets` instead.
+   */
+  | (ColumnBase<Row, NumericKey<Row>> & {
+      readonly kind: "iconAssign";
+      readonly icon: IconName;
+      readonly fill: string;
+      readonly empty: string;
+      readonly fillOpacity: number;
+      readonly emptyOpacity: number;
+      readonly iconSize: number;
+      readonly buckets?: number;
+      /** One icon per `seqBy` units (reactablefmtr `seq_by`). */
+      readonly seqBy: number;
+      readonly showValues: "none" | "left" | "right" | "above" | "below";
+      readonly numberFormat?: NumberFormat;
+    })
+  /**
+   * reactablefmtr `merge_column`: the cell's value with a second column's value beside it (`position`), each with its
+   * own size, colour, weight and style; optionally a logo, wordmark or headshot first.
+   */
+  | (ColumnBase<Row> &
+      MarkOpts<Row> & {
+        readonly kind: "mergeStack";
+        readonly stack: keyof Row & string;
+        readonly position: "right" | "left" | "above" | "below";
+        readonly size: number;
+        readonly color?: string;
+        readonly weight: "normal" | "bold";
+        readonly style: "normal" | "italic";
+        readonly stackSize: number;
+        readonly stackColor: string;
+        readonly stackWeight: "normal" | "bold";
+        readonly stackStyle: "normal" | "italic";
+        /** Extra space between the two values in px (reactablefmtr `spacing`; 3px always). */
+        readonly spacing: number;
+        /** The team column a logo or wordmark mark reads, resolved in `league`. */
+        readonly team?: keyof Row & string;
+        readonly league?: League;
+        readonly season?: SeasonInput;
+        readonly idSystem?: IdSystem;
+        readonly strict?: boolean;
+      })
+  /**
+   * reactablefmtr `bubble_grid`: a circle (or square) per cell, `maxSize * |value| / max|value|` px across, coloured on
+   * a ramp of the column's range (or the row's `colorRef` / `team` colour), with the value inside.
+   */
+  | (ColumnBase<Row, NumericKey<Row>> &
+      ColorRefOpts<Row> & {
+        readonly kind: "bubble";
+        readonly shape: "circles" | "squares";
+        readonly colors: readonly string[];
+        readonly bias: number;
+        readonly opacity: number;
+        readonly minValue?: number;
+        readonly maxValue?: number;
+        /** The largest bubble's size in px (reactablefmtr: 100). */
+        readonly maxSize: number;
+        readonly showText: boolean;
+        readonly textColor?: string;
+        readonly numberFormat?: NumberFormat;
+      });
 
 export type ColumnKind = ColumnSpec<never>["kind"];
 export interface TextStyle {

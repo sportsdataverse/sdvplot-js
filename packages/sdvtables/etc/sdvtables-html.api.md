@@ -73,6 +73,12 @@ export function handleKeydown<Row>(table: Table<Row>, root: Element, e: Keyboard
 export function hydrate<Row>(el: Element, table: Table<Row>): () => void;
 
 // @public
+export const ICON_NAMES: readonly IconName[];
+
+// @public
+export type IconName = "circle" | "square" | "diamond" | "star" | "triangle-up" | "triangle-down" | "arrow-up" | "arrow-down" | "arrow-right" | "check" | "xmark" | "minus" | "plus" | "heart";
+
+// @public
 export type KeyAction = {
     readonly type: "cursor";
     readonly row: number;
@@ -233,7 +239,7 @@ export function toElement<Row>(spec: TableSpec<Row>, rows: readonly Row[], opts?
 
 // Warnings were encountered during analysis:
 //
-// dist/html.d.ts:327:5 - (ae-forgotten-export) The symbol "Density" needs to be exported by the entry point html.d.ts
+// dist/html.d.ts:330:5 - (ae-forgotten-export) The symbol "Density" needs to be exported by the entry point html.d.ts
 
 // (No @packageDocumentation comment for this package)
 

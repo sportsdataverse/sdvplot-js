@@ -5,7 +5,7 @@ import type { ExampleMeta } from "../../contract.js";
 
 export const meta = {
   title: "colorRanks: cells filled green to red",
-  tags: ["kind", "colorRanks", "gt_color_ranks"],
+  tags: ["kind", "colorRanks", "gt_color_ranks", "color_tiles", "color_scales"],
 } satisfies ExampleMeta;
 
 // The default palette is RANK_PALETTE (green to red); reverse it when lower is better.
