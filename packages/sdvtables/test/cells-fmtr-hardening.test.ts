@@ -1,4 +1,4 @@
-// test/cells-fmtr-hardening.test.ts — PR #64 self-review: tooltip whitespace, row colours that are not hex colours,
+// test/cells-fmtr-hardening.test.ts — PR #64 self-review: tooltip whitespace, row colours that are not colours,
 // blank / unknown iconRef / iconColorRef, highlight with nothing to mark, iconAssign on an all-negative column.
 import { expect, test } from "vitest";
 import { defineTable } from "../src/define.js";
@@ -26,11 +26,11 @@ test("tooltip keeps every letter s: text cell, numeric cell with a suffix, mark-
   expect(tdOf(out, "mark")).toContain('title="https://example.com/bos.png"');
 });
 
-test("colorRef: url(...), named and blank row values are treated as blank, never reach CSS, never throw", () => {
+test("colorRef: url(...), unknown-name and blank row values are treated as blank, never reach CSS, never throw", () => {
   type R = { x: number; col: string | null };
   const rows: R[] = [
     { x: 3, col: "url(https://evil.example/p)" },
-    { x: 5, col: "red" },
+    { x: 5, col: "redd" },
     { x: 4, col: null },
     { x: 2, col: "#ff0000" },
   ];
@@ -44,7 +44,7 @@ test("colorRef: url(...), named and blank row values are treated as blank, never
     { css: "none" },
   );
   expect(out).not.toMatch(/url\(/);
-  expect(out).not.toContain("red;");
+  expect(out).not.toContain("redd");
   expect(tdOf(out, "x", 3)).toContain("background:#ff0000");
   for (const kind of ["bubble", "colorRanks", "colorPills"] as const) {
     const html = renderHTML(
@@ -61,7 +61,7 @@ test("colorRef: url(...), named and blank row values are treated as blank, never
       { css: "none" },
     );
     expect(html, kind).not.toMatch(/url\(/);
-    expect(html, kind).not.toMatch(/background(-color)?:red/);
+    expect(html, kind).not.toContain("redd");
   }
 });
 

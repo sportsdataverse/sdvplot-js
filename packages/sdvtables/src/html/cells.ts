@@ -21,6 +21,7 @@ import { teamNameSync } from "../team-name.js";
 import type { Theme } from "../themes/tokens.js";
 import { checkPx, cssValue, escapeAttr, escapeHtml, styleAttr } from "./escape.js";
 import { ICON_NAMES, iconSvg } from "./icons.js";
+import { namedColor } from "./named-colors.js";
 import { gaugeSvg, sparkbarSvg, sparklineSvg } from "./svg.js";
 /** One scaled column (pills, ranks, percentile), computed once per column by Task 8's columnScales. */
 export interface ColumnScale {
@@ -216,13 +217,16 @@ function sizeOf(v: number, st: Stats, minValue: number | undefined, maxValue: nu
 const normalized = (v: number, lo: number, hi: number): number =>
   hi === lo ? 1 : clamp01((v - lo) / (hi - lo));
 /**
- * A row's colour value (`colorRef`, `iconColorRef`): the trimmed string when it is a hex colour `solid()` can read
- * (`#rgb`, `#rgba`, `#rrggbb`, `#rrggbbaa`), else undefined. Data never reaches CSS unchecked and never throws: a
- * blank, named (`"red"`) or hostile (`url(...)`) value is treated as blank.
+ * A row's colour value (`colorRef`, `iconColorRef`): a CSS colour name (case-insensitive, `"steelblue"`) resolved to
+ * its `#rrggbb`, or the trimmed string when it is a hex colour `solid()` can read (`#rgb`, `#rgba`, `#rrggbb`,
+ * `#rrggbbaa`), else undefined. Only hex ever reaches CSS and this never throws: a blank, `transparent`, unknown name,
+ * `rgb()` / `hsl()` or hostile (`url(...)`) value is treated as blank.
  */
 function dataColor(v: unknown): string | undefined {
   if (isBlank(v)) return undefined;
   const s = String(v).trim();
+  const named = namedColor(s);
+  if (named !== undefined) return named;
   try {
     hex6(s, { dropAlpha: true });
     return s;
