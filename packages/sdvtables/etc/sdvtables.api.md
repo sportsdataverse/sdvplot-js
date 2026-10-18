@@ -686,6 +686,8 @@ export function listTableThemes(filter?: {
     category: string;
     darkPolicy: string;
 }[];
+
+// @public
 export interface MarkOpts<Row> {
     // (undocumented)
     readonly mark?: "logo" | "wordmark" | "headshot";
