@@ -1,5 +1,5 @@
 import { fileURLToPath } from "node:url";
-import { defineConfig } from "vitest/config";
+import { configDefaults, defineConfig } from "vitest/config";
 import sportyPkg from "../sporty/package.json" with { type: "json" };
 import pkg from "./package.json" with { type: "json" };
 export default defineConfig({
@@ -20,6 +20,7 @@ export default defineConfig({
     testTimeout: 60_000,
     hookTimeout: 60_000,
     include: ["test/**/*.test.ts", "test/**/*.test.tsx"],
+    exclude: [...configDefaults.exclude, "test/svelte/**"], // vitest.svelte.config.ts runs those
     typecheck: { enabled: true, include: ["test/**/*.test-d.ts"] },
   },
 });

@@ -36,6 +36,9 @@ ESM only, Node >= 20.18.1. The core and the `bins`, `testing`, `plotly`, `vega`,
 peer. The others use optional peers, which npm and pnpm do not install for you, so add the ones for the subpaths you
 import: `react` >= 18 for `/react` and `/recharts` (with `recharts` >= 3.8 to draw), `@observablehq/plot` >= 0.6.16 for `/plot`, `d3` >= 7 for `/d3` and `/interact`,
 `chart.js` >= 4.4 for `/chartjs` and `/chartjs/surface`, and `@resvg/resvg-js` for `/export`'s `toPNG`.
+import: `react` >= 18 for `/react`, `@observablehq/plot` >= 0.6.16 for `/plot`, `d3` >= 7 for `/d3` and `/interact`,
+`chart.js` >= 4.4 for `/chartjs` and `/chartjs/surface`, `svelte` >= 5 and `layerchart` >= 2.0 for `/svelte`, and
+`@resvg/resvg-js` for `/export`'s `toPNG`.
 
 `/plot`, `/d3`, `/shots` and `/chartjs/surface` also need `@sportsdataverse/sporty`, whether or not you draw a
 surface: they import it when they load, and fail to load without it. No other subpath imports sporty when it loads
@@ -127,6 +130,7 @@ The backgrounds default to `#ffffff` (light) and `#181a1b` (dark); pass `theme: 
 | `@sportsdataverse/sdvplot/echarts` | `withLogos`, `withWordmarks`, `withHeadshots`, `withAxisLogos`, `teamColorPalette`, `embedSources` (no runtime dependency) |
 | `@sportsdataverse/sdvplot/recharts` | Recharts render props: `logoDot`, `headshotDot` (a series' `dot` / `shape`), `logoTick` (an axis' `tick`), `teamColorPalette` (with `background`: 3:1 contrast for dark mode), `embedSources` (React >= 18; never imports recharts, an optional peer >= 3.8) |
 | `@sportsdataverse/sdvplot/uplot` | `withTeamSeries` (series strokes and fills in team colours; with `background`, 3:1 contrast for dark mode), `logoPlugin` (a uPlot plugin painting team logos on the canvas at data points; rows can follow live data) (no runtime dependency; draw with `uplot` >= 1.6.31, an optional peer) |
+| `@sportsdataverse/sdvplot/svelte` | Svelte 5 components for LayerChart charts: `LogoMark` (team logos or wordmarks at data points), `HeadshotMark`, `SurfaceBackdrop` (a team-painted court, field or rink in the chart's units), plus `teamColorPalette` (with `background`, 3:1 contrast for dark mode and distinct teams) and `embedSources` (optional peers `svelte` >= 5 and `layerchart` >= 2.0, loaded when a component renders; `SurfaceBackdrop` also needs `@sportsdataverse/sporty`) |
 
 ## **Observable Plot: Plot's own options, transforms and tips**
 

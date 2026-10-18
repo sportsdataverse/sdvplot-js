@@ -91,6 +91,10 @@
       "types": "./dist/uplot.d.ts",
       "import": "./dist/uplot.js"
     },
+    "./svelte": {
+      "types": "./dist/svelte/index.d.ts",
+      "svelte": "./dist/svelte/index.js"
+    },
     "./package.json": "./package.json"
   },
   "peerDependencies": {
@@ -99,8 +103,10 @@
     "@sportsdataverse/sporty": "workspace:^0",
     "chart.js": ">=4.4",
     "d3": ">=7",
+    "layerchart": ">=2.0",
     "react": ">=18",
     "recharts": ">=3.8",
+    "svelte": ">=5",
     "uplot": ">=1.6.31"
   },
   "peerDependenciesMeta": {
@@ -119,10 +125,16 @@
     "d3": {
       "optional": true
     },
+    "layerchart": {
+      "optional": true
+    },
     "react": {
       "optional": true
     },
     "recharts": {
+      "optional": true
+    },
+    "svelte": {
       "optional": true
     },
     "uplot": {
@@ -130,8 +142,8 @@
     }
   },
   "scripts": {
-    "build": "tsup",
-    "typecheck": "tsc -p tsconfig.json",
+    "build": "tsup && svelte-package -i src/svelte -o dist/svelte --tsconfig ./tsconfig.svelte.json && node ../../tools/svelte-dts.mjs dist/svelte",
+    "typecheck": "tsc -p tsconfig.json && svelte-check --tsconfig ./tsconfig.svelte.json --fail-on-warnings",
     "test": "vitest run",
     "api:report": "node ../../tools/api-extractor-all.mjs --local",
     "api:check": "node ../../tools/api-extractor-all.mjs",
@@ -151,9 +163,12 @@
     "@observablehq/plot": "^0.6.17",
     "@resvg/resvg-js": "^2.6.2",
     "@sportsdataverse/sporty": "workspace:^",
+    "@sveltejs/package": "2.5.8",
+    "@sveltejs/vite-plugin-svelte": "4.0.4",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
+    "@testing-library/svelte": "5.4.2",
     "@types/d3": "^7.4.3",
     "@types/jsdom": "^21.1.7",
     "@types/plotly.js": "^3.0.15",
@@ -163,11 +178,14 @@
     "d3": "^7.9.0",
     "echarts": "^6.1.0",
     "jsdom": "^26.1.0",
+    "layerchart": "2.5.1",
     "linkedom": "^0.18",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "react-is": "^19.3.0",
     "recharts": "3.10.1",
+    "svelte": "5.57.1",
+    "svelte-check": "4.7.6",
     "uplot": "1.6.32",
     "vega": "^6.4.0",
     "vega-lite": "^6.4.3"
