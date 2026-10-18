@@ -20,7 +20,7 @@ the others; a week with no rank has no point), reading the team from the series'
 the series object. The ranks here come from the AFC East's and West's 2024 results, week by week: most wins so far (a
 tie counts half), then the best point differential, then the name. Denver and New England share one navy, and
 Buffalo's is close, so the chart passes its `background` and every team (`teams`): each colour then reads and stays
-apart from the others (New England takes its red), as in the dark-mode section below.
+apart from the others (New England moves off Denver's navy to a blue of its own), as in the dark-mode section below.
 
 <Live id="sdvplot/nivo/afc-power-ranks" />
 
@@ -35,7 +35,8 @@ than travel with it. The layer's group has `pointer-events: none`, so the lines 
 line (`logoHeight`, `at`). Every other prop goes to nivo as is. With `width` and `height` it draws at that size, without
 them it fills its parent (`ResponsiveBump`). `background` turns on the dark-mode palette: a team colour under 3:1
 contrast against it gives way to the team's other colour, or is lightened until it reads, and a colour that would then
-sit too close to an earlier team's (CIE76 ΔE under 10) is moved until the two tell apart. `@nivo/bump` loads when the
+sit too close to an earlier team's (CIE76 ΔE under 20) takes the team's other colour, or else the colour nearest its
+own (its lightness, hue or chroma stepped) that is distinct and still reads. `@nivo/bump` loads when the
 component first renders, never with `sdvplot/react`, and a missing package throws `OptionalDependencyError` then. A
 server render draws nothing; the chart appears once the page's scripts run. (nivo's own `Bump` with `logoLayer`
 renders on the server, logos included.)

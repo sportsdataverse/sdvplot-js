@@ -5,6 +5,7 @@ import { SwarmPlot, type SwarmPlotCustomLayerProps } from "@nivo/swarmplot";
 import { cleanup, render } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { InputError, UnsupportedTargetError } from "../src/errors.js";
+import { getLeagueSync } from "../src/index-data.js";
 import {
   contrast,
   hex6,
@@ -16,7 +17,7 @@ import {
   teamColorsSync,
 } from "../src/index.js";
 import { logoLayer, logoNode, teamColors } from "../src/nivo.js";
-import { deltaE } from "../src/team-palette.js";
+import { MIN_CONTRAST, MIN_DELTA_E, deltaE } from "../src/team-palette.js";
 import { drawnMarks } from "../src/testing/index.js";
 import { BUF, KC } from "./_fixtures.js";
 
@@ -379,40 +380,45 @@ describe("teamColors", () => {
     }
   });
 
-  // biome-ignore format: the 30 teams, one line
-  const NBA = [
-    "ATL", "BOS", "BKN", "CHA", "CHI", "CLE", "DAL", "DEN", "DET", "GS", "HOU", "IND", "LAC", "LAL", "MEM",
-    "MIA", "MIL", "MIN", "NO", "NY", "OKC", "ORL", "PHI", "PHX", "POR", "SAC", "SA", "TOR", "UTAH", "WSH",
-  ];
+  const LEAGUES = ["nba", "nfl", "mlb", "nhl"] as const;
+  /** A league's team ids in its standard (shard) order. */
+  const ids = (lg: (typeof LEAGUES)[number]) => getLeagueSync(lg).teams.map((t) => t.team_id);
 
-  test("dark mode: every team colour reads (3:1) and stays distinct from every other (CIE76 dE 10)", async () => {
+  test.each(LEAGUES.flatMap((lg) => ["#181a1b", "#000000", "#ffffff"].map((bg) => [lg, bg] as const)))(
+    "dark mode: %s in league order on %s, every colour reads (3:1) and every pair is MIN_DELTA_E apart, no warning",
+    async (lg, background) => {
+      await loadLeague(lg);
+      const teams = ids(lg);
+      const spy = vi.fn();
+      setWarningHandler(spy);
+      const get = teamColors({ league: lg, teams, background, idSystem: "team_id" });
+      const c = teams.map((id) => get({ id }));
+      setWarningHandler(null);
+      expect(spy).not.toHaveBeenCalled();
+      for (const x of c) expect(contrast(x, background)).toBeGreaterThanOrEqual(MIN_CONTRAST);
+      const close = c.flatMap((x, i) =>
+        c.slice(0, i).flatMap((p, j) => (deltaE(x, p) < MIN_DELTA_E ? [`${teams[j]}/${teams[i]}`] : [])),
+      );
+      expect(close).toEqual([]);
+    },
+  );
+
+  test("dark mode: the Lakers and the Warriors no longer share one gold on #181a1b", async () => {
     await loadLeague("nba");
-    const spy = vi.fn();
-    setWarningHandler(spy);
-    for (const background of ["#181a1b", "#000000", "#ffffff"]) {
-      const get = teamColors({ league: "nba", teams: NBA, background });
-      const c = NBA.map((id) => get({ id }));
-      for (const x of c) expect(contrast(x, background)).toBeGreaterThanOrEqual(3);
-      for (let i = 0; i < c.length; i++)
-        for (let j = i + 1; j < c.length; j++)
-          expect(
-            deltaE(c[i] as string, c[j] as string),
-            `${NBA[i]} vs ${NBA[j]} on ${background}`,
-          ).toBeGreaterThanOrEqual(10);
-    }
-    setWarningHandler(null);
-    expect(spy).not.toHaveBeenCalled();
-    const [lal, gs] = ["LAL", "GS"].map((id) =>
-      teamColors({ league: "nba", teams: ["LAL", "GS"], background: "#181a1b" })({ id }),
-    );
-    expect(deltaE(lal as string, gs as string)).toBeGreaterThanOrEqual(10); // one gold before the palette
+    const get = teamColors({ league: "nba", teams: ["LAL", "GS"], background: "#181a1b" });
+    expect(deltaE(get({ id: "LAL" }), get({ id: "GS" }))).toBeGreaterThanOrEqual(MIN_DELTA_E);
   });
 
   test("no background (light default): the teams' own colours, unchanged", async () => {
-    await loadLeague("nba");
-    const get = teamColors({ league: "nba" });
-    expect(NBA.map((id) => get({ id }))).toEqual(teamColorsSync("nba", NBA));
-    const sec = teamColors({ league: "nba", which: "secondary" });
-    expect(NBA.map((id) => sec({ id }))).toEqual(teamColorsSync("nba", NBA, { which: "secondary" }));
+    for (const lg of LEAGUES) {
+      await loadLeague(lg);
+      const teams = ids(lg);
+      const get = teamColors({ league: lg, idSystem: "team_id" });
+      expect(teams.map((id) => get({ id }))).toEqual(teamColorsSync(lg, teams, { idSystem: "team_id" }));
+      const sec = teamColors({ league: lg, which: "secondary", idSystem: "team_id" });
+      expect(teams.map((id) => sec({ id }))).toEqual(
+        teamColorsSync(lg, teams, { which: "secondary", idSystem: "team_id" }),
+      );
+    }
   });
 });
