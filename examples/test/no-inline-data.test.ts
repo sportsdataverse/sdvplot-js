@@ -54,10 +54,6 @@ const ALLOW: Readonly<Record<string, string>> = {
   "sporty/frames/bottom-left.ts":
     "pitch landmarks computed from SOCCER_SPECS (corner flag, centre spot, penalty mark)",
   "sporty/plot/surface-mark.ts": "rule-book landmarks: the rubber 60.5 ft from home plate, bases 90 ft apart",
-  "sdvplot/plot/softball-spray-chart.ts":
-    "ILLUSTRATIVE batted balls, labelled so in the title, the comment and every tip: SDV has no softball hit locations",
-  "sdvplot/plot/lacrosse-shot-map.ts":
-    "ILLUSTRATIVE shots, labelled so in the title and the comment: SDV has no lacrosse shot locations",
 };
 
 /**
