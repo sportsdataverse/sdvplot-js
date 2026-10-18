@@ -32,6 +32,21 @@ drawn as nothing, with no error: give it font files with `fonts`, or install fon
 
 <Live id="api/sdvplot/peerMissing" />
 
+## A PNG with labels, in a bundled font
+
+With `fonts: { files, defaultFamily, system: false }` resvg draws the axis in the font you ship and nothing else, so the
+PNG comes out the same on a laptop and on a runner without fonts. `scale: 2` doubles the pixels for a HiDPI screen, and
+the wordmarks are downloaded once and drawn like the logos.
+
+<Live id="sdvplot/export/wordmarks-png" />
+
+## A PNG on a dark background
+
+`background` fills under the figure, and with no `color` the root text colour turns to whichever of black or white reads
+on it. `matchupColorsSync(...).dark` gives the two team colours chosen to read apart on a dark page.
+
+<Live id="sdvplot/export/win-probability-dark-png" />
+
 ## Tables as PNGs, in Chromium
 
 Install the peer and its browser once:
@@ -73,6 +88,34 @@ twice gets distinct ids, so each copy keeps its decorations.
 `composePage` is that frame on its own, around any HTML.
 
 <Live id="sdvtables/export/compose-page" />
+
+## Tables from different leagues on one page
+
+`gridTables` and `stackTables` also take HTML strings in place of a spec and rows. Tables whose rows differ, here NBA,
+NHL and NFL standings, are rendered first and laid out three across.
+
+<Live id="sdvtables/export/grid-three-leagues" />
+
+## One table per group, side by side
+
+`batchToPNG` writes one image per value of a group column. To put the groups on one page instead, split the rows and
+hand `gridTables` one table per group: here each Super Bowl LIX team's regular season.
+
+<Live id="sdvtables/export/grid-by-team" />
+
+## A dark page
+
+The page frame's title is dark text meant for a white page, so a page of `midnight` tables keeps its titles inside
+the tables. For the image, `htmlToPNG(page, { background: "#0C0D10" })` fills the margin with the theme's ground.
+
+<Live id="sdvtables/export/stack-dark" />
+
+## A table for a social post
+
+The social density, account handles and a faint watermark, framed by `composePage`. `socialCrop` puts the table alone
+on a fixed-ratio canvas such as `"1:1"`; `htmlToPNG` turns the framed page into an image.
+
+<Live id="sdvtables/export/social-post" />
 
 In the gallery: [Export (Node)](/gallery/sdvtables/#export-node) for tables and [Export
 (Node)](/gallery/sdvplot/#export-node) for figures.

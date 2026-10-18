@@ -30,6 +30,7 @@ const SECTIONS: Readonly<Record<string, string>> = {
   decorations: "Every decoration",
   html: "HTML renderer",
   interactive: "Interactive tables",
+  recipes: "Table recipes",
   export: "Export (Node)",
   layout: "Layout",
   api: "From the API docs",

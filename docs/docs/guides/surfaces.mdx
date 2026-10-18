@@ -88,6 +88,42 @@ features.
 
 <Live id="sporty/canvas/draw-scene" />
 
+## Canvas: thousands of shots
+
+`drawScene` maps a scene point (x, y) to ((x - x0) × scale, (y1 - y) × scale) and returns that scale, so the same sum
+puts your data on the surface. A canvas is one bitmap however many points it holds, which suits 2,000 shots on a court
+painted by sdvplot's `surface`.
+
+<Live id="sporty/canvas/nba-season-shots" />
+
+## Canvas: shots on a team-painted rink
+
+NHL api-web coordinates are already rink feet from centre ice, so drawScene's own mapping places them; the rink is
+painted in the home team's colours and each shot in the shooting team's.
+
+<Live id="sporty/canvas/nhl-shots" />
+
+## Canvas: a sharp canvas on a HiDPI screen
+
+Scale the context by the device pixel ratio before calling `drawScene`: its transform composes with yours, so the rink
+and the goals drawn after it share the 2x bitmap.
+
+<Live id="sporty/canvas/pwhl-goals-hidpi" />
+
+## Canvas: football plays on a field
+
+ESPN's 0-100 yardlines become yards from midfield through `toSurfaceFrame`; each touchdown is then an arrow from its line
+of scrimmage to the goal line.
+
+<Live id="sporty/canvas/super-bowl-touchdowns" />
+
+## Canvas: a pass map
+
+`background` replaces the scene's turf for one call, and the passes, moved onto the pitch with `frameBottomLeft`, are
+drawn as arrows over it.
+
+<Live id="sporty/canvas/pass-map" />
+
 ## Moving data onto the surface
 
 Feeds report positions in their own frames: tenths of a foot from the hoop, a 0-100 yardline, a pixel canvas.
