@@ -23,7 +23,8 @@ const opt = (flag, dflt) => {
 const files = ["table_themes.json", "table_themes.json.sha256"];
 for (const f of files) if (!existsSync(join(src, f))) die(`missing source file: ${join(src, f)}`);
 const roots = [resolve(root, opt("--py", "../sdvplot")), resolve(root, opt("--r", "../sdvplotR"))];
-for (const r of roots) if (!existsSync(r) || !statSync(r).isDirectory()) die(`destination repo root does not exist: ${r}`);
+for (const r of roots)
+  if (!existsSync(r) || !statSync(r).isDirectory()) die(`destination repo root does not exist: ${r}`);
 const dests = [join(roots[0], "src", "sdvplot", "data"), join(roots[1], "inst", "extdata")];
 for (const dir of dests) {
   mkdirSync(dir, { recursive: true });
