@@ -7,7 +7,7 @@ export const meta = {
   tags: ["surface", "toSVG", "displayRange", "basketball", "nba"],
 } satisfies ExampleMeta;
 
-// One entry point for the nine sports; options are typed per sport, so "offense" is checked against basketball.
+// One entry point for the ten sports; options are typed per sport, so "offense" is checked against basketball.
 const court = surface("basketball", "nba", { displayRange: "offense" });
 
 // `arcs: "svg"` writes each circle as an arc command instead of 200 sampled points: same drawing, smaller file.

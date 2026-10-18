@@ -8,7 +8,7 @@ import {
   leagues,
   surface,
 } from "../src/index.js";
-test("surface() dispatches all 9 sports (every league, custom included) and matches the typed entry points", () => {
+test("surface() dispatches all 10 sports (every league, custom included) and matches the typed entry points", () => {
   for (const sport of SPORTS)
     for (const league of leagues(sport)) {
       const s = surface(sport, league);
@@ -36,5 +36,6 @@ test("discovery tables are complete: leagues keep custom, features are Feature.n
   expect(colorKeys("curling")).toContain("house_rings");
   expect(displayRanges("tennis")).toContain("receive half");
   expect(displayRanges("tennis")).toContain("receivicehalf");
-  expect(SPORTS).toHaveLength(9);
+  expect(SPORTS).toHaveLength(10);
+  expect(leagues("softball")).toEqual(["custom", "ncaa"]);
 });

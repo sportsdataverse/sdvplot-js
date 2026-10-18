@@ -8,6 +8,7 @@ import { hockeyRink } from "../src/hockey/rink.js";
 import { lacrosseField } from "../src/lacrosse/field.js";
 import type { Scene } from "../src/scene.js";
 import { soccerPitch } from "../src/soccer/pitch.js";
+import { softballField } from "../src/softball/field.js";
 import { BASEBALL_LEAGUES } from "../src/specs/baseball.js";
 import { BASKETBALL_LEAGUES } from "../src/specs/basketball.js";
 import { CURLING_LEAGUES } from "../src/specs/curling.js";
@@ -15,6 +16,7 @@ import { FOOTBALL_LEAGUES } from "../src/specs/football.js";
 import { HOCKEY_LEAGUES } from "../src/specs/hockey.js";
 import { LACROSSE_LEAGUES } from "../src/specs/lacrosse.js";
 import { SOCCER_LEAGUES } from "../src/specs/soccer.js";
+import { SOFTBALL_LEAGUES } from "../src/specs/softball.js";
 import { TENNIS_LEAGUES } from "../src/specs/tennis.js";
 import { VOLLEYBALL_LEAGUES } from "../src/specs/volleyball.js";
 import { tennisCourt } from "../src/tennis/court.js";
@@ -39,6 +41,7 @@ const SURFACES: [sport: string, leagues: readonly string[], build: Build][] = [
   ["curling", CURLING_LEAGUES, curlingSheet as Build],
   ["lacrosse", LACROSSE_LEAGUES, lacrosseField as Build],
   ["volleyball", VOLLEYBALL_LEAGUES, volleyballCourt as Build],
+  ["softball", SOFTBALL_LEAGUES, softballField as Build],
 ];
 /** toBeCloseTo(v, 9) ⇔ |Δ| < 5e-10; asserted once per layer (max over its points) to keep the suite fast. */
 const TOL = 5e-10;

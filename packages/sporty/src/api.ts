@@ -56,6 +56,14 @@ import {
   type SoccerColorKey,
   type SoccerDisplayRange,
 } from "./soccer/types.js";
+import { softballField } from "./softball/field.js";
+import {
+  SOFTBALL_COLOR_KEYS,
+  SOFTBALL_DISPLAY_RANGES,
+  SOFTBALL_FEATURES,
+  type SoftballColorKey,
+  type SoftballDisplayRange,
+} from "./softball/types.js";
 import { BASEBALL_LEAGUES, type BaseballLeague, type BaseballParamUpdates } from "./specs/baseball.js";
 import {
   BASKETBALL_LEAGUES,
@@ -67,6 +75,7 @@ import { FOOTBALL_LEAGUES, type FootballLeague, type FootballParamUpdates } from
 import { HOCKEY_LEAGUES, type HockeyLeague, type HockeyParamUpdates } from "./specs/hockey.js";
 import { LACROSSE_LEAGUES, type LacrosseLeague, type LacrosseParamUpdates } from "./specs/lacrosse.js";
 import { SOCCER_LEAGUES, type SoccerLeague, type SoccerParamUpdates } from "./specs/soccer.js";
+import { SOFTBALL_LEAGUES, type SoftballLeague, type SoftballParamUpdates } from "./specs/softball.js";
 import { TENNIS_LEAGUES, type TennisLeague, type TennisParamUpdates } from "./specs/tennis.js";
 import {
   VOLLEYBALL_LEAGUES,
@@ -99,6 +108,7 @@ export const SPORTS = [
   "hockey",
   "lacrosse",
   "soccer",
+  "softball",
   "tennis",
   "volleyball",
 ] as const;
@@ -121,11 +131,13 @@ export type LeagueOf<S extends Sport> = S extends "baseball"
             ? LacrosseLeague | (string & {})
             : S extends "soccer"
               ? SoccerLeague | (string & {})
-              : S extends "tennis"
-                ? TennisLeague | (string & {})
-                : S extends "volleyball"
-                  ? VolleyballLeague | (string & {})
-                  : never;
+              : S extends "softball"
+                ? SoftballLeague | (string & {})
+                : S extends "tennis"
+                  ? TennisLeague | (string & {})
+                  : S extends "volleyball"
+                    ? VolleyballLeague | (string & {})
+                    : never;
 
 /** `surface()` options for sport `S`. */
 export type OptionsOf<S extends Sport> = S extends "baseball"
@@ -142,14 +154,16 @@ export type OptionsOf<S extends Sport> = S extends "baseball"
             ? SurfaceOptions<LacrosseParamUpdates, LacrosseColorKey, LacrosseDisplayRange>
             : S extends "soccer"
               ? SurfaceOptions<SoccerParamUpdates, SoccerColorKey, SoccerDisplayRange>
-              : S extends "tennis"
-                ? SurfaceOptions<TennisParamUpdates, TennisColorKey, TennisDisplayRange>
-                : S extends "volleyball"
-                  ? SurfaceOptions<VolleyballParamUpdates, VolleyballColorKey, VolleyballDisplayRange>
-                  : never;
+              : S extends "softball"
+                ? SurfaceOptions<SoftballParamUpdates, SoftballColorKey, SoftballDisplayRange>
+                : S extends "tennis"
+                  ? SurfaceOptions<TennisParamUpdates, TennisColorKey, TennisDisplayRange>
+                  : S extends "volleyball"
+                    ? SurfaceOptions<VolleyballParamUpdates, VolleyballColorKey, VolleyballDisplayRange>
+                    : never;
 
 /**
- * Build a surface scene for any of the nine sports. Options are typed per sport, so a misspelled option, colour key
+ * Build a surface scene for any of the ten sports. Options are typed per sport, so a misspelled option, colour key
  * or display range compiles to an error. A runtime `Sport` (or a union) goes through the generic overload; an unknown
  * sport (untyped callers) or league throws `UnknownLeagueError`.
  *
@@ -198,6 +212,11 @@ export function surface(
   opts?: SurfaceOptions<SoccerParamUpdates, SoccerColorKey, SoccerDisplayRange>,
 ): Scene;
 export function surface(
+  sport: "softball",
+  league: SoftballLeague | (string & {}),
+  opts?: SurfaceOptions<SoftballParamUpdates, SoftballColorKey, SoftballDisplayRange>,
+): Scene;
+export function surface(
   sport: "tennis",
   league: TennisLeague | (string & {}),
   opts?: SurfaceOptions<TennisParamUpdates, TennisColorKey, TennisDisplayRange>,
@@ -224,6 +243,8 @@ export function surface(sport: Sport, league: string, opts: object = {}): Scene 
       return lacrosseField(league, opts);
     case "soccer":
       return soccerPitch(league, opts);
+    case "softball":
+      return softballField(league, opts);
     case "tennis":
       return tennisCourt(league, opts);
     case "volleyball":
@@ -284,6 +305,12 @@ const DISCOVERY: Readonly<Record<Sport, Discovery>> = {
     displayRanges: SOCCER_DISPLAY_RANGES,
     colorKeys: SOCCER_COLOR_KEYS,
   },
+  softball: {
+    leagues: SOFTBALL_LEAGUES,
+    features: SOFTBALL_FEATURES,
+    displayRanges: SOFTBALL_DISPLAY_RANGES,
+    colorKeys: SOFTBALL_COLOR_KEYS,
+  },
   tennis: {
     leagues: TENNIS_LEAGUES,
     features: TENNIS_FEATURES,
@@ -312,6 +339,7 @@ export function leagues(sport: "football"): typeof FOOTBALL_LEAGUES;
 export function leagues(sport: "hockey"): typeof HOCKEY_LEAGUES;
 export function leagues(sport: "lacrosse"): typeof LACROSSE_LEAGUES;
 export function leagues(sport: "soccer"): typeof SOCCER_LEAGUES;
+export function leagues(sport: "softball"): typeof SOFTBALL_LEAGUES;
 export function leagues(sport: "tennis"): typeof TENNIS_LEAGUES;
 export function leagues(sport: "volleyball"): typeof VOLLEYBALL_LEAGUES;
 export function leagues(sport: Sport): readonly string[];
@@ -327,6 +355,7 @@ export function features(sport: "football"): typeof FOOTBALL_FEATURES;
 export function features(sport: "hockey"): typeof HOCKEY_FEATURES;
 export function features(sport: "lacrosse"): typeof LACROSSE_FEATURES;
 export function features(sport: "soccer"): typeof SOCCER_FEATURES;
+export function features(sport: "softball"): typeof SOFTBALL_FEATURES;
 export function features(sport: "tennis"): typeof TENNIS_FEATURES;
 export function features(sport: "volleyball"): typeof VOLLEYBALL_FEATURES;
 export function features(sport: Sport): readonly string[];
@@ -342,6 +371,7 @@ export function displayRanges(sport: "football"): typeof FOOTBALL_DISPLAY_RANGES
 export function displayRanges(sport: "hockey"): typeof HOCKEY_DISPLAY_RANGES;
 export function displayRanges(sport: "lacrosse"): typeof LACROSSE_DISPLAY_RANGES;
 export function displayRanges(sport: "soccer"): typeof SOCCER_DISPLAY_RANGES;
+export function displayRanges(sport: "softball"): typeof SOFTBALL_DISPLAY_RANGES;
 export function displayRanges(sport: "tennis"): typeof TENNIS_DISPLAY_RANGES;
 export function displayRanges(sport: "volleyball"): typeof VOLLEYBALL_DISPLAY_RANGES;
 export function displayRanges(sport: Sport): readonly string[];
@@ -357,6 +387,7 @@ export function colorKeys(sport: "football"): typeof FOOTBALL_COLOR_KEYS;
 export function colorKeys(sport: "hockey"): typeof HOCKEY_COLOR_KEYS;
 export function colorKeys(sport: "lacrosse"): typeof LACROSSE_COLOR_KEYS;
 export function colorKeys(sport: "soccer"): typeof SOCCER_COLOR_KEYS;
+export function colorKeys(sport: "softball"): typeof SOFTBALL_COLOR_KEYS;
 export function colorKeys(sport: "tennis"): typeof TENNIS_COLOR_KEYS;
 export function colorKeys(sport: "volleyball"): typeof VOLLEYBALL_COLOR_KEYS;
 export function colorKeys(sport: Sport): readonly string[];
