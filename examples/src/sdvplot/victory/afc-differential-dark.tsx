@@ -16,6 +16,7 @@ const teams = ["BUF", "KC", "LAC", "DEN", "MIA", "NYJ", "NE", "LV"];
 const background = "#181a1b";
 // every bar's colour keeps 3:1 against the background and stays apart from the others (DEN and NE share a navy)
 const colors = teamColorPalette("nfl", teams, { background });
+if (colors.length !== teams.length) throw new Error(`${colors.length} colours for ${teams.length} teams`);
 const rows = teams.map((team, i) => {
   const season = AFC_WEEKS_2024.find((s) => s.team === team);
   if (season === undefined) throw new Error(`no 2024 weeks for ${team}`);

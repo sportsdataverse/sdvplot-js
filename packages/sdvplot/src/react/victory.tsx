@@ -118,6 +118,11 @@ function image(
   });
 }
 
+/** A stray `height` or `width` (the spec adapters' fraction of the plot, or a box) is refused: these size in px. */
+function noBox(props: object, name: string, how: string): void {
+  for (const k of ["height", "width"]) if (k in props) throw new InputError(`${name} takes no ${k}: ${how}`);
+}
+
 /**
  * Team logos as a Victory scatter's points: `<VictoryScatter dataComponent={<LogoPoint league team />}>`. Each point
  * draws the logo of its datum's `team` field, centred on the point and as tall as the point it replaces (twice the
@@ -143,10 +148,11 @@ function image(
  * ```
  */
 export function LogoPoint(props: LogoPointProps): ReactElement | null {
-  if ("height" in props)
-    throw new InputError(
-      "LogoPoint takes no height: each logo is as tall as Victory drew the point (twice the scatter's size, in px)",
-    );
+  noBox(
+    props,
+    "LogoPoint",
+    "each logo is as tall as Victory drew the point (twice the scatter's size, in px)",
+  );
   const alpha = checkAlpha(props.alpha ?? 1);
   const { x, y, size } = props;
   if (!(isNum(x) && isNum(y) && isNum(size)))
@@ -162,7 +168,14 @@ export function LogoPoint(props: LogoPointProps): ReactElement | null {
     );
     return null;
   }
-  const p = size > 0 ? placed(x, y, raw, [row], props) : undefined;
+  if (!(size > 0)) {
+    warn(
+      `victory:LogoPoint:size:${size}`,
+      `LogoPoint: Victory drew a point of size ${size} (px): nothing drawn`,
+    );
+    return null;
+  }
+  const p = placed(x, y, raw, [row], props);
   if (p === undefined) return null; // no mark: nothing drawn, one warning (placeSync), as sdvplot/echarts
   const h = 2 * size;
   const w = h * aspect(p);
@@ -192,7 +205,8 @@ const Label = lazy(async (): Promise<{ default: ComponentType<Record<string, unk
  * labels are teams. The logo sits where the label would, on the side of Victory's anchor the label would run (under
  * a bottom axis, left of a left one), `size` px tall. A label that resolves to no logo keeps its text, drawn by
  * Victory's own `VictoryLabel` (loaded from victory when it first draws one; it then also warns once), as
- * `sdvplot/echarts`' `withAxisLogos` does. Synchronous: call it after `loadLeague(league)`.
+ * `sdvplot/echarts`' `withAxisLogos` does. Logos do not
+ * rotate with a tick's `angle`. Synchronous: call it after `loadLeague(league)`.
  *
  * @example
  * ```tsx
@@ -214,10 +228,7 @@ const Label = lazy(async (): Promise<{ default: ComponentType<Record<string, unk
  * ```
  */
 export function LogoTick(props: LogoTickProps): ReactElement {
-  if ("height" in props)
-    throw new InputError(
-      "LogoTick takes no height: size is the logo's height in px (Victory hands a tick label no plot height)",
-    );
+  noBox(props, "LogoTick", "size is the logo's height in px (Victory hands a tick label no plot height)");
   const h = checkSize(props.size ?? 24);
   const { league, season, variant, idSystem, markType, embed, size, ...label } = props;
   const x = isNum(props.x) ? props.x : 0;

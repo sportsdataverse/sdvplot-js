@@ -30,7 +30,8 @@ plot) throws. A team with no logo draws nothing and warns once, as the ECharts a
 
 `<LogoTick league size />` is a `VictoryAxis`' `tickLabelComponent`: each tick label that names a team is drawn as the
 team's logo, `size` px tall (default 24), on the side of Victory's label anchor the text would have run (under a bottom
-axis, left of a left one). A label with no logo keeps its text, drawn by Victory's own `VictoryLabel`. `<LogoTick>`
+axis, left of a left one). The logos stay upright: they do not rotate with a tick label's `angle`. A label with no
+logo keeps its text, drawn by Victory's own `VictoryLabel`. `<LogoTick>`
 loads that from `victory` when it first draws one, and warns once. A missing `victory` throws `OptionalDependencyError`
 then. On a server render such a label is left out until the page's scripts run; the logos themselves render on the
 server.

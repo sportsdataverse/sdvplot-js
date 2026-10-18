@@ -117,6 +117,35 @@ describe("LogoPoint (a VictoryScatter dataComponent)", () => {
     expect(() => LogoPoint({ league: "nfl", team: "team", x: 1, y: 1, size: 5, datum: ROW })).not.toThrow();
   });
 
+  test("takes no width either: both components size in px", () => {
+    const tick = { league: "nfl" as const, text: KC, x: 0, y: 0 };
+    expect(() => LogoTick({ ...tick, ...({ width: 30 } as object) })).toThrow(
+      /LogoTick takes no width: .*px/,
+    );
+    expect(() =>
+      LogoPoint({
+        league: "nfl",
+        team: "team",
+        ...({ width: 30 } as object),
+        x: 1,
+        y: 1,
+        size: 5,
+        datum: ROW,
+      }),
+    ).toThrow(/LogoPoint takes no width: .*px/);
+    expect(() => LogoTick({ ...tick, ...({ width: 1 } as object) })).toThrow(InputError);
+  });
+
+  test("a point Victory sized 0 or less draws nothing and warns once", () => {
+    const spy = vi.fn();
+    setWarningHandler(spy);
+    for (const size of [0, -2, 0])
+      expect(LogoPoint({ league: "nfl", team: "team", x: 1, y: 1, size, datum: ROW })).toBeNull();
+    setWarningHandler(null);
+    expect(spy).toHaveBeenCalledTimes(2); // once per size: 0 and -2
+    expect(String(spy.mock.calls[0]?.[0])).toMatch(/size 0/);
+  });
+
   test("outside a scatter (no point position or size) it throws UnsupportedTargetError", () => {
     expect(() => LogoPoint({ league: "nfl", team: "team", datum: ROW })).toThrow(UnsupportedTargetError);
   });
