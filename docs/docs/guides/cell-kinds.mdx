@@ -4,10 +4,11 @@ sidebar_position: 11
 ---
 
 A column's kind decides what its cells show: the value as written, a formatted number, a colour, a logo. sdvtables
-has 26 kinds, one `c.<kind>(key, options)` call each, with sdvplotR's defaults; all of them render on the same eight
+has 29 kinds, one `c.<kind>(key, options)` call each, with sdvplotR's defaults; all of them render on the same eight
 AFC teams, so you can compare them directly. Kinds that look a team up (`logo`, `wordmark`, the team colours) need
-the league loaded, which `prepare` and `renderHTMLAsync` do. The five reactablefmtr kinds (`dataBar`, `iconSet`,
-`iconAssign`, `mergeStack`, `bubble`) and their options are on [Table formatters](./table-formatters.mdx).
+the league loaded, which `prepare` and `renderHTMLAsync` do. The eight reactablefmtr kinds (`dataBar`, `iconSet`,
+`iconAssign`, `mergeStack`, `bubble`, and the in-cell charts `sparkline`, `sparkbar` and `gauge`) and their options are
+on [Table formatters](./table-formatters.mdx).
 
 ## Text and numbers
 

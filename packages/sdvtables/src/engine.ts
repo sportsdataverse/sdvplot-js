@@ -148,6 +148,7 @@ export const NUMERIC_KINDS: ReadonlySet<string> = new Set([
   "iconSet",
   "iconAssign",
   "bubble",
+  "gauge",
 ]);
 
 /** null, undefined, "", NaN, and an invalid `Date` are missing; `withMissingLast` sorts them last. */

@@ -17,6 +17,15 @@ export type NumericKey<Row> = {
 }[keyof Row] &
   keyof Row &
   string;
+/**
+ * The keys of `Row` whose values are arrays of numbers: the series an in-cell chart (`sparkline`, `sparkbar`) draws.
+ * A `null` entry (or any non-finite number: `NaN`, `Infinity`) is a gap; a missing or empty array leaves the cell blank.
+ */
+export type SeriesKey<Row> = {
+  [K in keyof Row]-?: Row[K] extends readonly (number | null)[] | null | undefined ? K : never;
+}[keyof Row] &
+  keyof Row &
+  string;
 export type StringKey<Row> = {
   [K in keyof Row]-?: Row[K] extends string | null | undefined ? K : never;
 }[keyof Row] &
@@ -127,6 +136,51 @@ export type BarTextPosition =
   | "center"
   | "above"
   | "none";
+
+/** A point of a series: its first, last, minimum or maximum present value (the first of ties), or every point ("all"). */
+export type SeriesPoint = "first" | "last" | "min" | "max" | "all";
+/**
+ * Points (or bars) to mark: a list of names, each drawn in red, or a colour per name, as reactablefmtr's
+ * `highlight_points(min = "red", max = "blue")`. Where two names fall on one point, the later of first, last, min,
+ * max wins; "all" colours every point the others do not.
+ */
+export type SeriesHighlight = readonly SeriesPoint[] | Readonly<Partial<Record<SeriesPoint, string>>>;
+/** A sparkline / sparkbar reference line (reactablefmtr `statline`): at the series' mean, median, minimum or maximum. */
+export type SeriesStat = "mean" | "median" | "min" | "max";
+/** A sparkline / sparkbar shaded band (reactablefmtr `bandline`): the inner quartiles (R type 7) or the whole range. */
+export type SeriesBand = "innerquartiles" | "range";
+/** The options `sparkline` and `sparkbar` share (reactablefmtr `react_sparkline` / `react_sparkbar`). */
+export interface SeriesChartOpts {
+  /** A dashed reference line across the chart, labelled at its right end. */
+  readonly statline?: SeriesStat;
+  /** The reference line's and its label's colour (reactablefmtr: red). */
+  readonly statlineColor: string;
+  /** The reference line label's CSS font size. */
+  readonly statlineLabelSize: string;
+  /** A shaded band across the chart (reactablefmtr `bandline`). */
+  readonly bandline?: SeriesBand;
+  /** The band's colour (reactablefmtr: red). */
+  readonly bandlineColor: string;
+  /** The band's opacity, 0 to 1. */
+  readonly bandlineOpacity: number;
+  /** Values to print by their point or bar ("all" prints every one); empty prints none. */
+  readonly labels: readonly SeriesPoint[];
+  /** The value labels' CSS font size. */
+  readonly labelSize: string;
+  /** Decimal places of the value labels and the reference line label. */
+  readonly decimals: number;
+  /** The value at the bottom of every cell's chart; default: each series' own minimum (sparkbar: the lower of 0 and it). */
+  readonly minValue?: number;
+  /** The value at the top of every cell's chart; default: each series' own maximum (sparkbar: the higher of 0 and it). */
+  readonly maxValue?: number;
+  /**
+   * The chart's height in px (reactablefmtr `height`). Default (undefined): 22, grown to 28 or 30 when labels sit
+   * above the points, as in reactablefmtr; any number given is used as is, 22 included.
+   */
+  readonly chartHeight?: number;
+  /** The chart's width in px (`width` is the column's CSS width, as on every kind). */
+  readonly chartWidth: number;
+}
 
 export type ColumnSpec<Row> =
   | (ColumnBase<Row> & { readonly kind: "text" })
@@ -421,6 +475,79 @@ export type ColumnSpec<Row> =
         readonly showText: boolean;
         readonly textColor?: string;
         readonly numberFormat?: NumberFormat;
+      })
+  /**
+   * reactablefmtr `react_sparkline`: each cell's array of numbers as a line, an inline `<svg role="img">` whose
+   * `aria-label` (and `<title>`) gives the count, minimum, maximum and last value. A gap breaks the line; a point with
+   * gaps on both sides draws as a dot. `colorRef` / `team` colours the line (and area) per row, a team colour checked
+   * for 3:1 contrast against the table background. Drawn without dataui: straight segments, no per-point tooltips.
+   */
+  | (ColumnBase<Row, SeriesKey<Row>> &
+      ColorRefOpts<Row> &
+      SeriesChartOpts & {
+        readonly kind: "sparkline";
+        /** The line's colour when the row has no `colorRef` / team colour (reactablefmtr: slategray). */
+        readonly lineColor: string;
+        /** The line's stroke width in px. */
+        readonly lineWidth: number;
+        /** Fill the area under the line. */
+        readonly showArea: boolean;
+        /** The area's colour; default: the line's. */
+        readonly areaColor?: string;
+        /** The area's opacity, 0 to 1. */
+        readonly areaOpacity: number;
+        /** Points to mark with a dot (reactablefmtr `highlight_points`). */
+        readonly highlightPoints?: SeriesHighlight;
+        /** The radius of a highlighted point in px. */
+        readonly pointSize: number;
+      })
+  /**
+   * reactablefmtr `react_sparkbar`: each cell's array of numbers as a small bar chart (inline SVG, labelled as
+   * `sparkline` is). Bars stand on zero, so positive values rise from it and negative ones hang below it.
+   */
+  | (ColumnBase<Row, SeriesKey<Row>> &
+      ColorRefOpts<Row> &
+      SeriesChartOpts & {
+        readonly kind: "sparkbar";
+        /** The bars' colour when the row has no `colorRef` / team colour (reactablefmtr: slategray). */
+        readonly fillColor: string;
+        /** The bars' opacity, 0 to 1. */
+        readonly fillOpacity: number;
+        /** Bars to recolour, as `sparkline`'s `highlightPoints`. */
+        readonly highlightBars?: SeriesHighlight;
+      })
+  /**
+   * reactablefmtr `gauge_chart`: each cell's number as a half-circle gauge (inline SVG) with the value inside. As in
+   * reactablefmtr the absolute value fills the gauge (-5 fills as 5); the printed value and the `aria-label` keep the
+   * sign, and the label says so. A missing or non-finite value is blank; text passes through.
+   */
+  | (ColumnBase<Row, NumericKey<Row>> &
+      ColorRefOpts<Row> & {
+        readonly kind: "gauge";
+        /** One colour, or several to ramp through from the column's smallest value to its largest. */
+        readonly fill: readonly string[];
+        /** The unfilled track. */
+        readonly background: string;
+        /** The value of an empty gauge, at least 0 (the gauge measures the absolute value); default 0. */
+        readonly minValue?: number;
+        /** The value of a full gauge; default: the column's largest absolute value. */
+        readonly maxValue?: number;
+        /** Print the scale's two ends under the gauge. */
+        readonly showMinMax: boolean;
+        /** How the value and the ends print (reactablefmtr `number_fmt`). */
+        readonly numberFormat?: NumberFormat;
+        /** The gauge's scale: 1 is 50px wide (reactablefmtr `size = 1`), 2 is 100px. */
+        readonly size: number;
+        /** The value's colour; default: the cell's text colour. */
+        readonly textColor?: string;
+        /** Print the value in bold. */
+        readonly boldText: boolean;
+        /** The value's CSS font size; default: the cell's. */
+        readonly textSize?: string;
+        /** grDevices::colorRamp `bias` for a several-colour `fill`. */
+        readonly bias: number;
+        /** The fill's opacity, 0 to 1. */
+        readonly opacity: number;
       });
 
 export type ColumnKind = ColumnSpec<never>["kind"];

@@ -43,7 +43,23 @@ test("accessors are keyof Row and numeric kinds accept only numeric keys", () =>
     | "iconAssign"
     | "mergeStack"
     | "bubble"
+    | "sparkline"
+    | "sparkbar"
+    | "gauge"
   >();
+  // the in-cell charts take only array-of-number keys (null entries allowed); gauge only numeric ones
+  type Weekly = { team: string; wins: number; margins: (number | null)[]; points: readonly number[] | null };
+  defineTable<Weekly>().columns((c) => [
+    c.sparkline("margins"),
+    c.sparkbar("points"),
+    c.gauge("wins"),
+    // @ts-expect-error — "team" is not a series
+    c.sparkline("team"),
+    // @ts-expect-error — "wins" is a number, not a series
+    c.sparkbar("wins"),
+    // @ts-expect-error — a gauge reads a number, not a series
+    c.gauge("margins"),
+  ]);
   // headshots take only the eight ESPN headshot leagues (sdvplot EspnHeadshotLeague)
   // @ts-expect-error — no ESPN headshots for the PWHL
   defineTable<Standing>().columns((c) => [c.headshot("qb_espn_id", { league: "pwhl" })]);

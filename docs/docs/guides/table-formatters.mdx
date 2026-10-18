@@ -4,7 +4,7 @@ sidebar_position: 13.75
 ---
 
 [reactablefmtr](https://kcuilla.github.io/reactablefmtr/) gives R's reactable tables data bars, icon sets, bubbles and
-colour tiles. sdvtables has the same formatters as column kinds and options, with reactablefmtr's defaults, and adds
+colour tiles, and draws sparklines, sparkbars and gauges in cells. sdvtables has the same formatters as column kinds and options, with reactablefmtr's defaults, and adds
 team awareness: where reactablefmtr reads a colour column (`fill_color_ref`, `color_ref`), sdvtables also takes a team
 column and a league and paints each row in its team's colour, with the text kept readable. Everything is inline HTML
 and SVG, so a table needs no icon font, tooltip library or script. Every example uses the eight 2024 AFC teams of the
@@ -98,3 +98,52 @@ green. `textColor` and `fill` change the colours.
 needs no tooltip library; a cell that shows only an image takes the raw value.
 
 <Live id="sdvtables/formatters/tooltip" />
+
+## In-cell charts
+
+reactablefmtr draws sparklines and sparkbars with the dataui htmlwidget and gauges with nested `div`s. sdvtables draws
+all three as an inline `<svg role="img">` per cell, with no script: each has an `aria-label` and a `<title>` (the
+browser's tooltip) summarising its values, the minimum, maximum and last for a series, plus the reference line and band
+when drawn. `sparkline` and `sparkbar` read an array column, one array of numbers per row; a `null`, `NaN` or infinite
+entry is a gap and a missing or empty array leaves the cell blank. Like the other formatters, `team` and `league` (or
+`colorRef`) colour each row; a team colour is checked for 3:1 contrast against the table's background and gives way to
+the team's other colour, or a blend of it, when it would not show. The weekly series come from
+[`AFC_WEEKS_2024`](/sample-data).
+
+### Sparklines
+
+`sparkline` (reactablefmtr `react_sparkline`) joins the points with straight segments; a gap breaks the line and a
+point with gaps on both sides draws as a dot. `highlightPoints` marks the `first`, `last`, `min` or `max` point (or
+`all`): a list of names draws them red, or give a colour per name, as reactablefmtr's `highlight_points(min = "red")`.
+`statline` draws a dashed line at the series' `mean`, `median`, `min` or `max`, labelled at its right end. The chart is
+`chartWidth` by `chartHeight` pixels (100 by 22); columns are not sortable by default.
+
+<Live id="sdvtables/kinds/sparkline" />
+
+### Areas, bands and labels
+
+`showArea` fills under each unbroken run of points, `bandline` shades the `innerquartiles` (R's type 7 quantiles, as
+dataui) or the whole `range`, and `labels` prints the values of the named points in the cell's text colour: `first` and
+`last` alone sit beside their points, any other set above them, and the default 22-pixel height grows to make room as
+in reactablefmtr. `minValue` and `maxValue` put every row on one scale; `build()` rejects a `minValue` that is not
+below `maxValue`.
+
+<Live id="sdvtables/formatters/sparkline-bands" />
+
+### Sparkbars
+
+`sparkbar` (reactablefmtr `react_sparkbar`) draws a bar per value standing on zero, so a negative value hangs below
+it and the smallest positive bar still shows (dataui's did not). It takes the sparkline's `statline`, `bandline`,
+`labels` and bounds, and `highlightBars` recolours bars the way `highlightPoints` marks points.
+
+<Live id="sdvtables/kinds/sparkbar" />
+
+### Gauges
+
+`gauge` (reactablefmtr `gauge_chart`) fills a half circle from `minValue` (0) to `maxValue` (by default the column's
+largest absolute value). As in reactablefmtr the gauge fills by the absolute value, so -5 fills as far as 5; the printed
+number keeps its sign and the `aria-label` says the absolute value was gauged. Several `fill` colours ramp over the
+column's range (`bias` as in grDevices::colorRamp), `showMinMax` prints the scale's ends, `size: 2` doubles the
+50-pixel gauge, and `numberFormat` prints the value. A missing or infinite value is blank and text passes through.
+
+<Live id="sdvtables/kinds/gauge" />

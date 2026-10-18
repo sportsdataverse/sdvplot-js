@@ -125,6 +125,13 @@ export const GT_ALIASES: Readonly<Record<string, Alias>> = {
   icon_assign: T("c.iconAssign", "inline-SVG icons (ICON_NAMES), not Font Awesome"),
   merge_column: T("c.mergeStack", "merged_name -> stack; mark adds a logo, wordmark or headshot"),
   bubble_grid: T("c.bubble"),
+  // reactablefmtr 2.1.0 in-cell charts (Tier 2): inline SVG, not the dataui htmlwidget
+  react_sparkline: T(
+    "c.sparkline",
+    "line_color_ref -> colorRef or team + league; straight segments, no per-point tooltips",
+  ),
+  react_sparkbar: T("c.sparkbar", "fill_color_ref -> colorRef or team + league; bars rooted at zero"),
+  gauge_chart: T("c.gauge", "fill_color_ref -> colorRef or team + league; an SVG arc"),
   color_tiles: T("c.colorRanks", "colorRef, bias, span, showText, evenBreaks"),
   color_scales: T("c.colorRanks", "colorRanks fills the whole cell, as color_scales does"),
   pill_buttons: T("c.colorPills", "colorRef or team for a per-row colour"),

@@ -90,6 +90,7 @@ export interface ColumnFactory<Row> {
     fmtRank: ColumnFactory<Row>["rank"];
     // (undocumented)
     fmtTally: ColumnFactory<Row>["tally"];
+    gauge<K extends NumericKey<Row>>(key: K, o?: Base<Row, K> & Partial<Opt<Col<Row, "gauge">, never>>): Col<Row, "gauge">;
     // (undocumented)
     headshot<K extends keyof Row & string>(key: K, o: Base<Row, K> & Partialize<Opt<Col<Row, "headshot">, never>, "league">): Col<Row, "headshot">;
     highlight<K extends keyof Row & string>(key: K, when: Predicate<Row> | "min" | "max" | "both", o?: Base<Row, K> & Partial<Opt<Col<Row, "highlight">, "when" | "extreme">>): Col<Row, "highlight">;
@@ -120,6 +121,8 @@ export interface ColumnFactory<Row> {
     percentileBar<K extends NumericKey<Row>>(key: K, o?: Base<Row, K> & Partial<Opt<Col<Row, "percentileBar">, never>>): Col<Row, "percentileBar">;
     // (undocumented)
     rank<K extends NumericKey<Row>>(key: K, o?: Base<Row, K> & Partial<Opt<Col<Row, "rank">, never>>): Col<Row, "rank">;
+    sparkbar<K extends SeriesKey<Row>>(key: K, o?: Base<Row, K> & Partial<Opt<Col<Row, "sparkbar">, never>>): Col<Row, "sparkbar">;
+    sparkline<K extends SeriesKey<Row>>(key: K, o?: Base<Row, K> & Partial<Opt<Col<Row, "sparkline">, never>>): Col<Row, "sparkline">;
     // (undocumented)
     tally(keys: readonly [NumericKey<Row>, ...NumericKey<Row>[]], o?: Base<Row, NumericKey<Row>> & Partial<Opt<Col<Row, "tally">, "keys">>): Col<Row, "tally">;
     // (undocumented)
@@ -388,6 +391,52 @@ export type ColumnSpec<Row> = (ColumnBase<Row> & {
     readonly showText: boolean;
     readonly textColor?: string;
     readonly numberFormat?: NumberFormat;
+})
+/**
+* reactablefmtr `react_sparkline`: each cell's array of numbers as a line, an inline `<svg role="img">` whose
+* `aria-label` (and `<title>`) gives the count, minimum, maximum and last value. A gap breaks the line; a point with
+* gaps on both sides draws as a dot. `colorRef` / `team` colours the line (and area) per row, a team colour checked
+* for 3:1 contrast against the table background. Drawn without dataui: straight segments, no per-point tooltips.
+*/
+| (ColumnBase<Row, SeriesKey<Row>> & ColorRefOpts<Row> & SeriesChartOpts & {
+    readonly kind: "sparkline";
+    readonly lineColor: string;
+    readonly lineWidth: number;
+    readonly showArea: boolean;
+    readonly areaColor?: string;
+    readonly areaOpacity: number;
+    readonly highlightPoints?: SeriesHighlight;
+    readonly pointSize: number;
+})
+/**
+* reactablefmtr `react_sparkbar`: each cell's array of numbers as a small bar chart (inline SVG, labelled as
+* `sparkline` is). Bars stand on zero, so positive values rise from it and negative ones hang below it.
+*/
+| (ColumnBase<Row, SeriesKey<Row>> & ColorRefOpts<Row> & SeriesChartOpts & {
+    readonly kind: "sparkbar";
+    readonly fillColor: string;
+    readonly fillOpacity: number;
+    readonly highlightBars?: SeriesHighlight;
+})
+/**
+* reactablefmtr `gauge_chart`: each cell's number as a half-circle gauge (inline SVG) with the value inside. As in
+* reactablefmtr the absolute value fills the gauge (-5 fills as 5); the printed value and the `aria-label` keep the
+* sign, and the label says so. A missing or non-finite value is blank; text passes through.
+*/
+| (ColumnBase<Row, NumericKey<Row>> & ColorRefOpts<Row> & {
+    readonly kind: "gauge";
+    readonly fill: readonly string[];
+    readonly background: string;
+    readonly minValue?: number;
+    readonly maxValue?: number;
+    readonly showMinMax: boolean;
+    readonly numberFormat?: NumberFormat;
+    readonly size: number;
+    readonly textColor?: string;
+    readonly boldText: boolean;
+    readonly textSize?: string;
+    readonly bias: number;
+    readonly opacity: number;
 });
 
 // @public (undocumented)
@@ -752,6 +801,40 @@ export function secondaryOn(bg: string, fg: string, target?: number): string;
 
 // @public
 export function selectRows<Row>(sel: RowSelector<Row>, rows: readonly Row[], source?: readonly Row[]): number[];
+
+// @public
+export type SeriesBand = "innerquartiles" | "range";
+
+// @public
+export interface SeriesChartOpts {
+    readonly bandline?: SeriesBand;
+    readonly bandlineColor: string;
+    readonly bandlineOpacity: number;
+    readonly chartHeight?: number;
+    readonly chartWidth: number;
+    readonly decimals: number;
+    readonly labels: readonly SeriesPoint[];
+    readonly labelSize: string;
+    readonly maxValue?: number;
+    readonly minValue?: number;
+    readonly statline?: SeriesStat;
+    readonly statlineColor: string;
+    readonly statlineLabelSize: string;
+}
+
+// @public
+export type SeriesHighlight = readonly SeriesPoint[] | Readonly<Partial<Record<SeriesPoint, string>>>;
+
+// @public
+export type SeriesKey<Row> = {
+    [K in keyof Row]-?: Row[K] extends readonly (number | null)[] | null | undefined ? K : never;
+}[keyof Row] & keyof Row & string;
+
+// @public
+export type SeriesPoint = "first" | "last" | "min" | "max" | "all";
+
+// @public
+export type SeriesStat = "mean" | "median" | "min" | "max";
 
 // @public (undocumented)
 export function snakeAlign<Row>(rows: readonly Row[], o?: {

@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { expect, test } from "vitest";
 import { abs } from "../sources.js";
 import {
+  AFC_WEEKS_2024,
   BKN_SHOTS_2026,
   KC_PHI_GAMES_2024,
   NBA_LEAGUE_2026,
@@ -381,6 +382,25 @@ test("KC_PHI_GAMES_2024 is every 2024 regular-season game with KC or PHI, unchan
       })),
   );
   expect(KC_PHI_GAMES_2024).toHaveLength(34);
+});
+
+test("AFC_WEEKS_2024 is each STANDINGS team's weekly margin and points from the games, the bye a gap", () => {
+  const games = csv("fixtures/examples/nfl_games_2024_reg.csv");
+  const weeks = (team: string, of: (us: number, them: number) => number): (number | null)[] =>
+    Array.from({ length: 18 }, (_, w) => {
+      const g = games.find((x) => Number(x.week) === w + 1 && (x.home_team === team || x.away_team === team));
+      if (!g) return null;
+      const home = g.home_team === team;
+      return of(Number(home ? g.home_score : g.away_score), Number(home ? g.away_score : g.home_score));
+    });
+  expect(AFC_WEEKS_2024).toEqual(
+    STANDINGS.map((s) => ({
+      team: s.team,
+      margins: weeks(s.team, (us, them) => us - them),
+      points: weeks(s.team, (us) => us),
+    })),
+  );
+  for (const t of AFC_WEEKS_2024) expect(t.margins.filter((m) => m === null)).toHaveLength(1); // one bye each
 });
 
 test("WC2018_FINAL_FRANCE_PASSES are the captured SPADL rows, unchanged", () => {
