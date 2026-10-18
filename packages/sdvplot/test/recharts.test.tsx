@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { teamColorPalette as echartsPalette } from "../src/echarts.js";
 import { InputError } from "../src/errors.js";
 import { HEADSHOT_ASPECT, headshotUrl } from "../src/headshots.js";
+import { getLeagueSync } from "../src/index-data.js";
 import {
   contrast,
   loadLeague,
@@ -16,7 +17,7 @@ import {
   teamColorsSync,
 } from "../src/index.js";
 import { headshotDot, logoDot, logoTick, teamColorPalette } from "../src/recharts.js";
-import { deltaE } from "../src/team-palette.js";
+import { MIN_CONTRAST, MIN_DELTA_E, deltaE } from "../src/team-palette.js";
 import { drawnMarks } from "../src/testing/index.js";
 import { BUF, KC } from "./_fixtures.js";
 
@@ -273,26 +274,27 @@ describe("teamColorPalette", () => {
     expect(c[1]).toBe("#999999");
   });
 
-  // biome-ignore format: the 30 teams, one line
-  const NBA = [
-    "ATL", "BOS", "BKN", "CHA", "CHI", "CLE", "DAL", "DEN", "DET", "GS", "HOU", "IND", "LAC", "LAL", "MEM",
-    "MIA", "MIL", "MIN", "NO", "NY", "OKC", "ORL", "PHI", "PHX", "POR", "SAC", "SA", "TOR", "UTAH", "WSH",
-  ];
-
-  test("dark mode: every team colour reads (3:1) and stays distinct from every other (CIE76 dE 10)", async () => {
+  /** The NBA's teams in the league's standard (shard) order: the order a chart of the whole league passes them in. */
+  const nba = async (): Promise<string[]> => {
     await loadLeague("nba");
+    return getLeagueSync("nba").teams.map((t) => t.abbr ?? t.team_id);
+  };
+
+  test("dark mode: every team colour reads (3:1) and stays MIN_DELTA_E (CIE76) from every other", async () => {
+    const NBA = await nba();
+    expect(NBA).toHaveLength(30);
     const spy = vi.fn();
     setWarningHandler(spy);
     for (const background of ["#181a1b", "#000000", "#ffffff"]) {
       const c = teamColorPalette("nba", NBA, { background });
       expect(c).toHaveLength(NBA.length);
-      for (const x of c) expect(contrast(x, background)).toBeGreaterThanOrEqual(3);
+      for (const x of c) expect(contrast(x, background)).toBeGreaterThanOrEqual(MIN_CONTRAST);
       for (let i = 0; i < c.length; i++)
         for (let j = i + 1; j < c.length; j++)
           expect(
             deltaE(c[i] as string, c[j] as string),
             `${NBA[i]} vs ${NBA[j]} on ${background}`,
-          ).toBeGreaterThanOrEqual(10);
+          ).toBeGreaterThanOrEqual(MIN_DELTA_E);
     }
     setWarningHandler(null);
     expect(spy).not.toHaveBeenCalled();
@@ -302,11 +304,11 @@ describe("teamColorPalette", () => {
     await loadLeague("nba");
     const [lal, gs] = teamColorPalette("nba", ["LAL", "GS"], { background: "#181a1b" });
     expect(lal).not.toBe(gs);
-    expect(deltaE(lal as string, gs as string)).toBeGreaterThanOrEqual(10);
+    expect(deltaE(lal as string, gs as string)).toBeGreaterThanOrEqual(MIN_DELTA_E);
   });
 
   test("no background (light default): the teams' own colours, unchanged", async () => {
-    await loadLeague("nba");
+    const NBA = await nba();
     expect(teamColorPalette("nba", NBA)).toEqual(teamColorsSync("nba", NBA));
     expect(teamColorPalette("nba", NBA, { which: "secondary" })).toEqual(
       teamColorsSync("nba", NBA, { which: "secondary" }),
