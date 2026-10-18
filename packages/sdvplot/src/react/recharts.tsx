@@ -1,5 +1,5 @@
 import { type ComponentType, type ReactElement, Suspense, lazy, useId, useMemo } from "react";
-import { OptionalDependencyError } from "../errors.js";
+import { OptionalDependencyError, warn } from "../errors.js";
 import type { Value } from "../resolve.js";
 import type { SurfaceSceneOptions } from "../surfaces.js";
 import type { League, SeasonInput } from "../types.js";
@@ -48,6 +48,18 @@ const numeric = (d: Domain): d is readonly [number, number] =>
   d.every((v) => typeof v === "number" && Number.isFinite(v)) &&
   d[1] !== d[0];
 
+/** A scale (when recharts has the hooks) that grows with the value in direction `dir` (+1 left to right, -1 bottom
+ *  to top in pixels) and is linear: its midpoint lands half way. */
+function linear(scale: ((v: number) => unknown) | undefined, d0: number, d1: number, dir: 1 | -1): boolean {
+  if (scale === undefined) return true;
+  const [a, m, b] = [d0, (d0 + d1) / 2, d1].map((v) => Number(scale(v)));
+  if (![a, m, b].every((v) => Number.isFinite(v))) return true; // not laid out yet: the domain check covers the rest
+  return (
+    dir * ((b as number) - (a as number)) > 0 &&
+    Math.abs((m as number) - ((a as number) + (b as number)) / 2) < 0.5
+  );
+}
+
 // recharts and sporty load on first render, never with sdvplot/react: a page that draws no backdrop needs neither.
 const Backdrop = lazy(async (): Promise<{ default: ComponentType<SurfaceBackdropProps> }> => {
   const [rc, surfaces, svg] = await Promise.all([
@@ -61,25 +73,54 @@ const Backdrop = lazy(async (): Promise<{ default: ComponentType<SurfaceBackdrop
       throw missing("@sportsdataverse/sporty", e);
     }),
   ]);
+  // recharts 3.8 added the scale hooks; before it a reversed or log axis cannot be told apart (documented)
+  const noScale = (): undefined => undefined;
+  const useXScale: (id?: string | number) => ((v: number) => unknown) | undefined =
+    rc.useXAxisScale ?? noScale;
+  const useYScale: (id?: string | number) => ((v: number) => unknown) | undefined =
+    rc.useYAxisScale ?? noScale;
   function Drawn({ league, xAxisId, yAxisId, ...o }: SurfaceBackdropProps): ReactElement | null {
     const area = rc.usePlotArea();
     const xd: Domain = rc.useXAxisDomain(xAxisId);
     const yd: Domain = rc.useYAxisDomain(yAxisId);
+    const sx = useXScale(xAxisId);
+    const sy = useYScale(yAxisId);
     const clip = `sdv-surface-${useId().replace(/[^\w-]/g, "")}`;
     const key = JSON.stringify(o);
     // biome-ignore lint/correctness/useExhaustiveDependencies: `key` is `o` by value (a fresh object every render)
     const scene = useMemo(() => surfaces.surfaceScene(league, o as SurfaceSceneOptions), [league, key]);
-    if (area === undefined || !numeric(xd) || !numeric(yd)) return null;
-    // ponytail: a linear map from the axes' domains (recharts 3.2 hooks); a reversed or log axis would need the
-    // scale hooks of recharts 3.8
+    // undefined: the chart has not laid out yet (the first render), which is not worth a warning
+    if (area === undefined || xd === undefined || yd === undefined) return null;
+    if (!numeric(xd) || !numeric(yd)) {
+      warn(
+        "react:SurfaceBackdrop:domain",
+        `SurfaceBackdrop draws nothing: both axes must be type="number" with a numeric domain in the surface's units (got x ${JSON.stringify(xd)}, y ${JSON.stringify(yd)})`,
+      );
+      return null;
+    }
+    // ponytail: a linear map from the axes' domains (recharts 3.2 hooks): a reversed or log axis is refused, where
+    // recharts 3.8's scale hooks can tell (on 3.2 to 3.7 it would draw mirrored or stretched)
     const [dx0, dx1] = xd;
     const [dy0, dy1] = yd;
+    if (!linear(sx, dx0, dx1, 1) || !linear(sy, dy0, dy1, -1)) {
+      warn(
+        "react:SurfaceBackdrop:scale",
+        "SurfaceBackdrop draws nothing on a reversed or log axis: use linear, unreversed number axes",
+      );
+      return null;
+    }
     const fx = (v: number): number => area.x + ((v - dx0) / (dx1 - dx0)) * area.width;
     const fy = (v: number): number => area.y + ((dy1 - v) / (dy1 - dy0)) * area.height;
     const [x0, y0, x1, y1] = scene.bbox;
     const width = fx(x1) - fx(x0);
     const height = fy(y0) - fy(y1);
-    if (!(width > 0 && height > 0)) return null;
+    if (!(width > 0 && height > 0)) {
+      warn(
+        "react:SurfaceBackdrop:empty",
+        `SurfaceBackdrop draws nothing: the surface spans ${width} x ${height} px`,
+      );
+      return null;
+    }
     // toSVG maps the scene's bbox onto its own viewport; placed and stretched over the bbox's pixel rectangle, the
     // surface's units land on the axes' (strokes stay 1 px: non-scaling)
     const drawn = svg

@@ -8,7 +8,7 @@
 import { type ReactElement, createElement } from "react";
 import { type Row, aspect, checkAlpha, colorList, imageSource, place, seasons } from "./_web.js";
 import { contrast, hex6, mix, onColor } from "./contrast.js";
-import { InputError } from "./errors.js";
+import { InputError, warn } from "./errors.js";
 import type { EspnHeadshotLeague } from "./headshots.js";
 import { type Placement, placedName } from "./placement.js";
 import type { Value } from "./resolve.js";
@@ -48,11 +48,15 @@ export type DotRenderer = (props: RechartsDotProps) => ReactElement | null;
 export type TickRenderer = (props: RechartsTickProps) => ReactElement;
 
 interface Shared {
-  /** Image height in px (Recharts hands a render prop no plot height to take a fraction of). Default 24. */
+  /** Image height in px, 1 or more (Recharts hands a render prop no plot height to take a fraction of). Default 24. */
   size?: number;
   /** Opacity in [0, 1]. Default 1. */
   alpha?: number;
-  /** Draw only at the series' last point: an end-dot on a trend line. Default false. */
+  /**
+   * Draw only at the series' last point: an end-dot on a trend line. Default false. It needs the series' `points`,
+   * which Recharts hands a Line's or Area's `dot` but not a Scatter's `shape`: there every point is drawn, with one
+   * warning.
+   */
   last?: boolean;
   /** url → data URI map from `embedSources`, to inline the images. */
   embed?: ReadonlyMap<string, string>;
@@ -85,7 +89,7 @@ export interface RechartsTickOptions {
   league: League;
   /** The season the axis' teams are resolved for. */
   season?: SeasonInput;
-  /** Image height in px. Default 24. */
+  /** Image height in px, 1 or more. Default 24. */
   size?: number;
   /** Logo variant, e.g. "dark". Default "default". */
   variant?: Variant;
@@ -100,6 +104,10 @@ export interface RechartsTickOptions {
 function checkSize(size: unknown): number {
   if (!(typeof size === "number" && Number.isFinite(size) && size > 0))
     throw new InputError(`size is an image height in px > 0, got ${String(size)}`);
+  if (size < 1)
+    throw new InputError(
+      `size is a height in px, not a fraction of the plot (echarts' \`height\`): got ${size}, which draws a sub-pixel image`,
+    );
   return size;
 }
 const px = (v: unknown): number | undefined => {
@@ -146,7 +154,12 @@ function dot(
     const cx = px(props.cx);
     const cy = px(props.cy);
     if (cx === undefined || cy === undefined) return null;
-    if (o.last && props.points !== undefined && props.index !== props.points.length - 1) return null;
+    if (o.last && props.points === undefined)
+      warn(
+        "recharts:last:no-points",
+        "last: true needs the series' points, which a Scatter shape is not given: every point is drawn (use it on a Line or Area dot)",
+      );
+    else if (o.last && props.points !== undefined && props.index !== props.points.length - 1) return null;
     const row: Row = props.payload ?? {};
     const raw = row[column] as Value;
     if (raw === undefined || raw === null) return null;

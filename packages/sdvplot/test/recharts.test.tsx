@@ -53,6 +53,8 @@ describe("logoDot", () => {
     expect(drawnMarks(svg(el)).map((m) => [m.id, m.x, m.y, m.url, m.kind])).toEqual([
       [ID(KC), 100, 50, URL_OF(KC), "logo"],
     ]);
+    // the px contract: Recharts gives no plot height, so drawnMarks' height is the size in px, not a fraction
+    expect(drawnMarks(svg(el)).map((m) => m.height)).toEqual([30]);
   });
 
   test("a team with no logo draws nothing (no broken image) and warns once, as sdvplot/echarts does", () => {
@@ -75,6 +77,19 @@ describe("logoDot", () => {
     expect(dot({ cx: 1, cy: 1, index: 2, points, payload: { team: KC } })).not.toBeNull();
   });
 
+  test("last: true on a Scatter shape (no points) draws every point and warns once", () => {
+    const spy = vi.fn();
+    setWarningHandler(spy);
+    const dot = logoDot({ team: "team", league: "nfl", last: true });
+    const a = dot({ cx: 1, cy: 1, index: 0, payload: { team: KC } });
+    const b = dot({ cx: 2, cy: 2, index: 1, payload: { team: BUF } });
+    setWarningHandler(null);
+    expect(a).not.toBeNull();
+    expect(b).not.toBeNull();
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy.mock.calls[0]?.[0]).toMatch(/last.*Scatter/);
+  });
+
   test("options: variant, season column, alpha, embed; bad size or alpha throws when the render prop is made", () => {
     const embed = new Map([[URL_OF(KC), "data:image/png;base64,AAAA"]]);
     const img = svg(
@@ -87,6 +102,14 @@ describe("logoDot", () => {
     expect(img.getAttribute("href")).toBe("data:image/png;base64,AAAA");
     expect(img.getAttribute("opacity")).toBe("0.5");
     expect(() => logoDot({ team: "team", league: "nfl", size: 0 })).toThrow(InputError);
+    // the echarts habit, a fraction of the plot, would draw a 0.08 px image: it throws instead, naming the mistake
+    for (const make of [
+      () => logoDot({ team: "team", league: "nfl", size: 0.08 }),
+      () => headshotDot({ player: "p", league: "nfl", size: 0.5 }),
+      () => logoTick({ league: "nfl", size: 0.1 }),
+    ])
+      expect(make).toThrow(/size is a height in px, not a fraction of the plot/);
+    expect(() => logoDot({ team: "team", league: "nfl", size: 1 })).not.toThrow();
     expect(() => logoDot({ team: "team", league: "nfl", alpha: 2 })).toThrow(InputError);
   });
 
@@ -221,6 +244,27 @@ describe("logoTick", () => {
 });
 
 describe("teamColorPalette", () => {
+  test("resolves teams as the drawn marks do: the palette of each mark's team id is the palette of its row value", async () => {
+    await loadLeague("nba");
+    const rows = [{ team: "Clippers" }, { team: "PHX" }, { team: "Los Angeles Lakers" }];
+    const dot = logoDot({ team: "team", league: "nba" });
+    const ids = rows.map((r, i) => drawnMarks(svg(dot({ cx: i, cy: i, payload: r })))[0]?.id);
+    expect(ids.every((id) => id !== undefined)).toBe(true);
+    const byValue = teamColorPalette(
+      "nba",
+      rows.map((r) => r.team),
+    );
+    expect(teamColorPalette("nba", ids)).toEqual(byValue);
+    expect(teamColorPalette("nba", ids, { background: "#181a1b" })).toEqual(
+      teamColorPalette(
+        "nba",
+        rows.map((r) => r.team),
+        { background: "#181a1b" },
+      ),
+    );
+    expect(new Set(byValue).size).toBe(3); // three teams, three colours: not three fallbacks
+  });
+
   test("one colour per team, as sdvplot/echarts' palette, the fallback for an unresolved team", () => {
     const c = teamColorPalette("nfl", [KC, "XXX", BUF], { fallback: "#999999" });
     expect(c).toEqual(echartsPalette("nfl", [KC, "XXX", BUF], { fallback: "#999999" }));

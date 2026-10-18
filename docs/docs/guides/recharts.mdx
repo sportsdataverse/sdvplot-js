@@ -24,7 +24,9 @@ dark background) or darkened until it reads.
 
 `logoDot({ team, league, size })` is a series' `dot`: each point draws the logo of the team in its data row's `team`
 column, centred on the point. `last: true` draws only the series' final point, which turns a trend line's last value
-into an end-dot. A team with no logo draws nothing and warns once.
+into an end-dot. It needs the series' points, which Recharts hands a `<Line>` or `<Area>` `dot` but not a `<Scatter>`
+`shape`: there every point is drawn, with one warning. A team with no logo draws nothing and warns once. `size` is a
+height in px (1 or more), not a fraction of the plot as the spec adapters' `height` is: a fraction throws.
 
 <Live id="sdvplot/recharts/afc-west-win-trend" />
 
@@ -38,9 +40,11 @@ its `shape`. `logoDot` works there too. An id with no headshot draws nothing and
 ## A court under the shots
 
 `<SurfaceBackdrop league team displayRange />` is a child of the chart, placed before the series so it is drawn under
-them (Recharts 3 renders any element there; `<Customized>` is deprecated). It draws the surface in the numeric axes'
-units: give both axes the surface's bbox as their `domain` (sporty's `surface(...).bbox`) and it fills the plot area,
-or any range in those units to show part of it. recharts and `@sportsdataverse/sporty` load when it first renders,
+them (Recharts 3 renders any element there; `<Customized>` is deprecated). It draws the surface in the axes' units, so
+both axes must be `type="number"` with a numeric `domain` in the surface's units: the surface's bbox (sporty's
+`surface(...).bbox`) fills the plot area, any other range in those units shows part of it. Reversed and log axes are not
+supported: on them, and on a category axis, it draws nothing and warns once (recharts 3.8 or later is needed to tell a
+reversed or log axis apart; on 3.2 to 3.7 it would draw the surface mirrored or stretched). recharts and `@sportsdataverse/sporty` load when it first renders,
 never with `sdvplot/react`, and a missing one throws `OptionalDependencyError` then. On the server it draws nothing; it
 appears once the page's scripts run.
 

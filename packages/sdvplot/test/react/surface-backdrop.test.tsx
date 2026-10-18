@@ -3,13 +3,17 @@ import { surface } from "@sportsdataverse/sporty";
 import { cleanup, render, waitFor } from "@testing-library/react";
 import type { ReactElement } from "react";
 import { Scatter, ScatterChart, XAxis, YAxis } from "recharts";
-import { afterEach, expect, test, vi } from "vitest";
-import { loadLeague, teamColorsSync } from "../../src/index.js";
+import { afterEach, beforeEach, expect, test, vi } from "vitest";
+import { loadLeague, resetWarnings, setWarningHandler, teamColorsSync } from "../../src/index.js";
 import { SurfaceBackdrop } from "../../src/react/index.js";
 
 await loadLeague("nba");
 
-afterEach(cleanup);
+beforeEach(() => resetWarnings());
+afterEach(() => {
+  cleanup();
+  setWarningHandler(null);
+});
 vi.setConfig({ testTimeout: 20_000 });
 
 const court = surface("basketball", "nba", { displayRange: "defense" });
@@ -65,4 +69,55 @@ test("a domain wider than the surface maps the scene's bbox into data coordinate
   expect(Number(scene.getAttribute("width"))).toBeCloseTo(plotW / 2);
   expect(Number(scene.getAttribute("x"))).toBeCloseTo(MARGIN.left + plotW / 4);
   expect(container.querySelector("g[data-sdv-surface] clipPath rect")).not.toBeNull();
+});
+
+/** Render `axes` around a backdrop, wait for its first warning, and say whether any surface was drawn. */
+async function warned(axes: ReactElement): Promise<{ message: string; drawn: boolean }> {
+  const spy = vi.fn();
+  setWarningHandler(spy);
+  const { container } = render(
+    <ScatterChart width={500} height={480} margin={MARGIN}>
+      {axes}
+      <SurfaceBackdrop league="nba" displayRange="defense" />
+      <Scatter data={[{ x: 1, y: 1 }]} isAnimationActive={false} />
+    </ScatterChart>,
+  );
+  await waitFor(() => expect(spy).toHaveBeenCalled());
+  return {
+    message: String(spy.mock.calls[0]?.[0]),
+    drawn: container.querySelector("g[data-sdv-surface]") !== null,
+  };
+}
+
+test("a reversed axis draws no surface and warns, rather than a mirrored court", async () => {
+  const r = await warned(
+    <>
+      <XAxis type="number" dataKey="x" domain={[x0, x1]} reversed />
+      <YAxis type="number" dataKey="y" domain={[y0, y1]} />
+    </>,
+  );
+  expect(r.drawn).toBe(false);
+  expect(r.message).toMatch(/reversed or log/);
+});
+
+test("a log axis draws no surface and warns", async () => {
+  const r = await warned(
+    <>
+      <XAxis type="number" dataKey="x" domain={[x0, x1]} />
+      <YAxis type="number" dataKey="y" domain={[1, 100]} scale="log" allowDataOverflow />
+    </>,
+  );
+  expect(r.drawn).toBe(false);
+  expect(r.message).toMatch(/reversed or log/);
+});
+
+test("a category axis (a non-numeric domain) draws no surface and warns", async () => {
+  const r = await warned(
+    <>
+      <XAxis type="category" dataKey="x" />
+      <YAxis type="number" dataKey="y" domain={[y0, y1]} />
+    </>,
+  );
+  expect(r.drawn).toBe(false);
+  expect(r.message).toMatch(/type="number"/);
 });
