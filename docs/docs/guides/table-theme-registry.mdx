@@ -1,0 +1,17 @@
+---
+title: Table theme registry
+sidebar_position: 11
+---
+
+import TableThemeGallery from "@site/src/components/TableThemeGallery";
+
+The registry is one JSON file of 122 table themes, one per surveyed source: journals, libraries, finance and news
+sites, sports reference sites, government and periodical tables. sdvtables, sdvplot (Python: gt, reactable, plottable,
+itables) and sdvplotR (gt, reactable) all read the same file, so a name means the same table in every library. Each
+theme is looked up by its source's real name, after the house themes and the reactablefmtr ports.
+
+A theme with a dark palette takes `mode: "dark"` (`native` was measured, `derived` was derived from the light
+palette). `mode: "dark"` on a light-only theme raises, naming the theme and three dark-capable ones in its category.
+The previews below show the same rows in every theme.
+
+<TableThemeGallery />
