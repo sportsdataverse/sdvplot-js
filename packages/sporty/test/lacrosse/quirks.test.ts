@@ -28,15 +28,17 @@ test("#61: penalty box fills are offset by boards_thickness (0.25 ft), not the a
   expect(centre(b!.points)[0]).toBeCloseTo(4 + 0.25 + 4, 9);
 });
 
-test("#62/#69: a goal-fan hash mark sits on the 10.6 m arc about the goal-line centre, at the angle it is rotated by", () => {
-  const s = lacrosseField("ncaaw");
-  const marks = polys(s, "goal_fan_hash_mark"); // 4 separations x 4 copies; copy 0 is unreflected
-  const gx = 55 - 8.899; // goal x anchor = centre of the goal line
-  [0, 4, 8, 12].forEach((sep, i) => {
-    const [x, y] = centre(marks[4 * i]!.points);
-    expect(Math.atan2(y, x - gx), `sep ${sep}`).toBeCloseTo(Math.PI - sep / 10.6, 9);
-    expect(Math.hypot(x - gx, y), `sep ${sep}`).toBeCloseTo(10.6, 9);
-  });
+test("#62/#69/#75: a goal-fan hash mark is centred on the middle of the arc's line (10.6 - 0.101 / 2 m), at the angle it is rotated by", () => {
+  for (const league of ["ncaaw", "usaw"]) {
+    const marks = polys(lacrosseField(league), "goal_fan_hash_mark"); // 4 separations x 4 copies; copy 0 is unreflected
+    const gx = 55 - 8.899; // goal x anchor = centre of the goal line
+    const r = 10.6 - 0.101 / 2; // 10.5495
+    [0, 4, 8, 12].forEach((sep, i) => {
+      const [x, y] = centre(marks[4 * i]!.points);
+      expect(Math.atan2(y, x - gx), `${league} sep ${sep}`).toBeCloseTo(Math.PI - sep / r, 9);
+      expect(Math.hypot(x - gx, y), `${league} sep ${sep}`).toBeCloseTo(r, 9);
+    });
+  }
 });
 
 test("#69: the women's 8 m arc is 10.6 m from the goal-line centre, from 45-degree lines that start on the goal circle", () => {

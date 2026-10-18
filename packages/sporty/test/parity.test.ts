@@ -118,3 +118,68 @@ for (const [sport, leagues, build] of SURFACES)
       );
     });
   });
+
+// sportyR 2.3.0 #74 / #76: other units scale the whole plot once (anchors and limits included) and a translation moves
+// every feature once (football's yard-number boxes too). The oracle writes units_<u>/ and trans_10_-5/ for one league
+// per sport; each must match point for point, like the native fixtures.
+const UNIT_LEAGUE: Readonly<Record<string, string>> = {
+  basketball: "nba",
+  hockey: "nhl",
+  football: "ncaa",
+  soccer: "epl",
+  baseball: "mlb",
+  tennis: "atp",
+  volleyball: "fivb",
+  curling: "wcf",
+  lacrosse: "ncaaw",
+  softball: "ncaa",
+};
+for (const [sport, , build] of SURFACES) {
+  const league = UNIT_LEAGUE[sport]!;
+  const base = new URL(`../../../fixtures/sporty/${sport}/${league.replace(/ /g, "_")}/`, import.meta.url);
+  const cases = readdirSync(base, { withFileTypes: true })
+    .filter((d) => d.isDirectory())
+    .map((d) => d.name);
+  test(`${sport} ${league}: the oracle wrote unit and translation cases`, () => {
+    expect(cases).toContain("trans_10_-5");
+    expect(cases.filter((c) => c.startsWith("units_")).length).toBeGreaterThan(0);
+  });
+  describe.each(cases)(`${sport} ${league} %s`, (c) => {
+    const dir = new URL(`${c}/`, base);
+    const opts = c.startsWith("units_")
+      ? { units: c.slice("units_".length) as never }
+      : { xTrans: 10, yTrans: -5 };
+    const scene = build(league, { arcResolution: 1000, ...opts } as never);
+    const files = (prefix: string) =>
+      readdirSync(dir)
+        .filter((f) => f.startsWith(prefix))
+        .sort();
+    test("polygons, labels and the full bbox match R", () => {
+      const polys = scene.features.filter((f) => f.kind === "polygon");
+      const layers = files("layer_");
+      expect(layers.length).toBeGreaterThan(0);
+      expect(polys.length).toBe(layers.length);
+      layers.forEach((file, k) => {
+        const rows = csv(new URL(file, dir));
+        const p = polys[k]!;
+        expect(p.points.length, `${file} point count`).toBe(rows.length);
+        let delta = 0;
+        rows.forEach(([x, y], i) => {
+          const [px, py] = p.points[i]!;
+          delta = Math.max(delta, Math.abs(px - Number(x)), Math.abs(py - Number(y)));
+        });
+        expect(delta, `${file} max |Δ|`).toBeLessThan(TOL);
+      });
+      const texts = scene.features.filter((f) => f.kind === "text");
+      const rows = files("text_").flatMap((file) => csv(new URL(file, dir)));
+      expect(texts.length).toBe(rows.length);
+      let delta = 0;
+      rows.forEach(([x, y], k) => {
+        delta = Math.max(delta, Math.abs(texts[k]!.x - Number(x)), Math.abs(texts[k]!.y - Number(y)));
+      });
+      expect(delta, "label max |Δ|").toBeLessThan(TOL);
+      const [x0, y0, x1, y1] = csv(new URL("bbox_full.csv", dir))[0]!.map(Number);
+      expect(scene.bbox).toEqual([x0, y0, x1, y1].map((v) => expect.closeTo(v!, 9)));
+    });
+  });
+}

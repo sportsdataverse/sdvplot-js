@@ -59,7 +59,7 @@ const RANGE_SYNONYMS: Readonly<Record<string, RangeGroup>> = {
 /**
  * Port of sportyR `geom_football()`: one PolygonFeature per ggplot polygon layer and one TextFeature per
  * `ggfittext::geom_fit_text` layer, in R's layer order. Divergences: an unknown `displayRange` throws (R falls
- * back to "full"); `units` also converts the anchors and display limits (R converts only the feature points);
+ * back to "full"); `units` scales the points, anchors and display limits, as sportyR 2.3.0 does (#74);
  * custom's all-zero defaults give empty yard-line sets (R errors in `seq()`).
  */
 export function footballField(
@@ -383,7 +383,7 @@ export function footballField(
     false,
   );
   // Yard numbers (R 1007-1057): R places them directly — shift, rotate, take the bounding box — then draws that
-  // box as a transparent polygon (shifted a second time: R quirk kept) and fits the label into the same box.
+  // box as a transparent polygon (shifted once, sportyR #76) and fits the label into the same box.
   for (const b of boxes) {
     const placed = rotateCoords(
       b.rect.map(([x, y]): Point => [x + xTrans, y + yTrans]),
@@ -395,8 +395,6 @@ export function footballField(
     addFeature(features, "yardage_marker_box", createRectangle(bx0, bx1, by0, by1), "#ffffff00", {
       xAnchor: 0,
       yAnchor: 0,
-      xTrans,
-      yTrans,
     });
     const [[ux0, uy0], , [ux1, uy1]] = b.rect as [Point, Point, Point];
     addText(features, "yardage_marker", {

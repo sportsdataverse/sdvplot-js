@@ -32,8 +32,8 @@ const isOneOf = <T extends string>(list: readonly T[], v: string): v is T =>
 /**
  * Port of sportyR `geom_curling()`: one PolygonFeature per ggplot layer R adds, in R's layer order. The sheet is vertical
  * (`sheet_width` spans x, `sheet_length` spans y).
- * Documented divergences: an unknown `displayRange` throws (R falls back to "full"); `units` also converts the anchors and
- * display limits; a house-ring colour vector shorter than the ring count recycles (R yields NA).
+ * Documented divergences: an unknown `displayRange` throws (R falls back to "full"); `units` scales the points, anchors
+ * and display limits, as sportyR 2.3.0 does (#74); a house-ring colour vector shorter than the ring count recycles (R yields NA).
  */
 export function curlingSheet(
   league: CurlingLeague | (string & {}),

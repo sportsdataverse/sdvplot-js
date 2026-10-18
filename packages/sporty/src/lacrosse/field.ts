@@ -35,9 +35,9 @@ const CORNER_FACE_OFF_MARKER_BAR_WIDTH = 0; // R 541
 const CORNER_FACE_OFF_MARKER_BAR_LENGTH = 0; // R 542
 
 /**
- * Port of sportyR `geom_lacrosse()` (2.3.0, with the sportyR #60-#65 fixes): one PolygonFeature per ggplot layer R adds,
- * in R's layer order. Documented divergences: an unknown `displayRange` throws (R falls back to "full"); `units` also
- * converts the anchors and display limits.
+ * Port of sportyR `geom_lacrosse()` (2.3.0, with the sportyR #60-#75 fixes): one PolygonFeature per ggplot layer R adds,
+ * in R's layer order. Documented divergences: an unknown `displayRange` throws (R falls back to "full"). `units`
+ * scales the points, anchors and display limits, as sportyR 2.3.0 does (#74).
  */
 export function lacrosseField(
   league: LacrosseLeague | (string & {}),
@@ -350,11 +350,12 @@ export function lacrosseField(
   // fan-less leagues: R adds an empty (invisible) layer; sporty adds no feature
   if (fan.length > 0) add("goal_fan", fan, col("goal_fan"), gx, 0, true, false);
   for (const sep of p.goal_fan_hash_mark_separation_from_center ?? []) {
-    // The fan's arc has radius goal_fan_radius about the goal-line centre (sportyR #69), so a mark at arc distance sep
-    // sits theta = sep / R radians along it and is rotated by -theta to stay perpendicular (#62: one angle for both).
-    const thetaBuild = sep / (p.goal_fan_radius ?? 1); // radians
+    // The fan's line runs from goal_fan_radius - t to goal_fan_radius about the goal-line centre (sportyR #69); the marks
+    // bisect it, so they are centred at R = goal_fan_radius - t / 2 (#75). A mark at arc distance sep sits theta = sep / R
+    // radians along that circle and is rotated by -theta to stay perpendicular (#62: one angle for both).
+    const R = (p.goal_fan_radius ?? 1) - (p.goal_fan_line_thickness ?? 0) / 2;
+    const thetaBuild = sep / R; // radians
     const thetaPlace = thetaBuild / Math.PI; // units of π, as R's placement site writes it
-    const R = p.goal_fan_radius ?? 0;
     const mark = F.goalFanHashMark({
       goalFanHashMarkLength: p.goal_fan_hash_mark_length ?? 0,
       lineThickness: p.goal_fan_hash_mark_line_thickness ?? 0,
