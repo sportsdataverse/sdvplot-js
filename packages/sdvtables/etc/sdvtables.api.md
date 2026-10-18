@@ -609,7 +609,7 @@ export type Decoration<Row> = {
     readonly google: boolean;
     readonly weight?: number | string;
     readonly style?: "normal" | "italic";
-};
+} | LegendIconDecoration;
 
 // @public (undocumented)
 export type DecorationType = Decoration<never>["type"];
@@ -630,6 +630,9 @@ export type FilterValue<Row> = ValuePredicate<Row> | string | number | boolean;
 
 // @beta
 export function findColumn<Row>(spec: TableSpec<Row>, key: string): ColumnSpec<Row>;
+
+// @public
+export const FMTR_THEME_NAMES: readonly string[];
 
 // @public (undocumented)
 export type FormatType = "number" | "comma" | "currency" | "percent";
@@ -652,6 +655,26 @@ export type IconName = "circle" | "square" | "diamond" | "star" | "triangle-up" 
 
 // @public
 export function isMissing(v: unknown): boolean;
+
+// @public
+export interface LegendIconDecoration {
+    // (undocumented)
+    readonly align: "left" | "right";
+    readonly colors?: readonly string[];
+    readonly footer?: string;
+    readonly icons?: readonly LegendIconShape[];
+    readonly iconSet?: "ski rating" | "medals" | "batteries";
+    readonly iconSize: number;
+    readonly labels?: readonly string[];
+    readonly location: "top" | "bottom";
+    readonly showLabels: boolean;
+    readonly title?: string;
+    // (undocumented)
+    readonly type: "legendIcon";
+}
+
+// @public
+export type LegendIconShape = "circle" | "square" | "diamond" | "double-diamond" | "triangle-up" | "triangle-down" | "medal" | "battery-quarter" | "battery-half" | "battery-three-quarters" | "battery-full";
 
 // @public
 export interface MarkOpts<Row> {
@@ -822,6 +845,7 @@ export class TableBuilder<Row> {
     legendContinuous(o?: Partial<Omit<D<Row, "legendContinuous">, "type">>): TableBuilder<Row>;
     // (undocumented)
     legendDiscrete(key: D<Row, "legendDiscrete">["key"], o?: Partial<Omit<D<Row, "legendDiscrete">, "type" | "key">>): TableBuilder<Row>;
+    legendIcon(o?: Partial<Omit<D<Row, "legendIcon">, "type">>): TableBuilder<Row>;
     // (undocumented)
     marginalia(columns: readonly (keyof Row & string)[], o?: Partial<Omit<D<Row, "marginalia">, "type" | "columns">>): TableBuilder<Row>;
     // (undocumented)

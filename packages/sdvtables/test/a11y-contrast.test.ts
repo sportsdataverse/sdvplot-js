@@ -1,7 +1,7 @@
 import { contrast, loadLeague, mix } from "@sportsdataverse/sdvplot";
 import { beforeAll, expect, test } from "vitest";
 import { BASE_CSS } from "../src/themes/base-css.js";
-import { THEME_NAMES, resolveTheme } from "../src/themes/index.js";
+import { FMTR_THEME_NAMES, THEME_NAMES, resolveTheme } from "../src/themes/index.js";
 import type { Theme, ThemeTokens } from "../src/themes/tokens.js";
 
 // WCAG 2.2 1.4.11 (non-text contrast): the visual cue of a control or a state needs 3:1 against what it touches.
@@ -121,6 +121,19 @@ const themes = (): [string, Theme][] => [
     }),
   ]),
   ["sdv (dark)", resolveTheme({ name: "sdv", density: "comfortable", options: { style: "dark" } })],
+  // reactablefmtr's opt-in striped rows and hover fill sit under the same cues
+  ...FMTR_THEME_NAMES.map((name): [string, Theme] => [
+    `${name} (striped, highlight)`,
+    resolveTheme({ name, density: "comfortable", options: { striped: "true", highlight: "true" } }),
+  ]),
+  [
+    "fmtr-team KC (striped, highlight)",
+    resolveTheme({
+      name: "fmtr-team",
+      density: "comfortable",
+      options: { league: "nfl", team: "KC", striped: "true", highlight: "true" },
+    }),
+  ],
 ];
 
 test("I4: the filter boxes' border reaches 3:1 against the table background in every theme", () => {
@@ -138,4 +151,48 @@ test("I4: the selected row has a cue at 3:1 against what it touches in every the
 test("A29: the hovered row has a cue at 3:1 against what it touches in every theme, selected or not", () => {
   const ratios = themes().map(([name, th]) => [name, Math.round(hoverCue(th) * 100) / 100] as const);
   expect(ratios.filter(([, r]) => r < 3)).toEqual([]);
+});
+
+// WCAG 2.2 1.4.3 (text contrast): the reactablefmtr themes' type reaches 4.5:1 on every ground it sits on. Owner
+// policy: readable text wins over pixel fidelity, so a failing reactablefmtr colour is moved (marked `a11y:`).
+const fmtrThemes = (): [string, Theme][] => themes().filter(([name]) => name.startsWith("fmtr-"));
+/** "transparent"/"inherit" fall through to the ground under them. */
+const solid = (v: string, under: string): string => (v === "transparent" || v === "inherit" ? under : v);
+/** The stops of a tbody background-image gradient the theme paints (the body type sits on each). */
+const gradientStops = (th: Theme): string[] =>
+  rules(th.rules(S))
+    .filter((r) => /\btbody\b/.test(r.sel))
+    .flatMap((r) => Array.from(r.body.matchAll(/#[0-9a-f]{6}\b/gi), (m) => m[0]));
+const below = (pairs: [string, string, string][]): string[] =>
+  pairs
+    .filter(([, ink, ground]) => contrast(ink, ground) < 4.5)
+    .map(([name, ink, ground]) => `${name}: ${ink} on ${ground} ${contrast(ink, ground).toFixed(2)}`);
+
+test("1.4.3: the reactablefmtr header labels reach 4.5:1 on the header fill", () => {
+  const pairs = fmtrThemes()
+    .filter(([, th]) => th.tokens.labelColor !== "transparent") // fmtr-void hides its labels on purpose
+    .map(([name, th]): [string, string, string] => {
+      const t = th.tokens;
+      return [name, solid(t.labelColor, t.text), solid(t.labelBg, t.bg)];
+    });
+  expect(below(pairs)).toEqual([]);
+});
+
+test("1.4.3: the reactablefmtr group headers reach 4.5:1 on the group fill", () => {
+  const pairs = fmtrThemes().map(([name, th]): [string, string, string] => {
+    const t = th.tokens;
+    return [name, solid(t.groupColor, t.text), solid(t.groupBg, t.bg)];
+  });
+  expect(below(pairs)).toEqual([]);
+});
+
+test("1.4.3: the reactablefmtr body type reaches 4.5:1 on the ground, gradient stops, stripe and hover fills", () => {
+  const pairs = fmtrThemes().flatMap(([name, th]) =>
+    [...cellBackgrounds(th), ...gradientStops(th)].map((g): [string, string, string] => [
+      name,
+      th.tokens.text,
+      g,
+    ]),
+  );
+  expect(below(pairs)).toEqual([]);
 });

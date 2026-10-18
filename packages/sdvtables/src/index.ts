@@ -6,7 +6,7 @@ export { TableSpecError } from "./errors.js";
 export { type ColumnFactory, RANK_PALETTE, TableBuilder, columnFactory, defineTable } from "./define.js";
 export { matches, selectRows } from "./predicate.js";
 export { snakeAlign } from "./snake.js";
-export { THEMES, THEME_NAMES, resolveTheme } from "./themes/index.js";
+export { FMTR_THEME_NAMES, THEMES, THEME_NAMES, resolveTheme } from "./themes/index.js";
 export type { GoogleFont, Theme, ThemeDef, ThemeTokens } from "./themes/index.js";
 export { DENSITY, TOKEN_KEYS } from "./themes/tokens.js";
 export { secondaryOn } from "./themes/sdv.js";

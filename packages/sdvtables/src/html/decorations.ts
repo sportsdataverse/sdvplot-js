@@ -11,6 +11,7 @@ import { secondaryOn } from "../themes/sdv.js";
 import { type GoogleFont, fontStack } from "../themes/tokens.js";
 import { type RenderContext, cellValue, isScaled } from "./cells.js";
 import { checkPx, cssValue, escapeAttr, escapeHtml, isCssValue, styleAttr } from "./escape.js";
+import { legendIconBlock } from "./legend-icon.js";
 import { SOCIAL_ICONS } from "./social-icons.js";
 import { cssStr, cutlineSvg, watermarkSvg } from "./svg.js";
 export interface DecorationOutput<Row> {
@@ -552,6 +553,13 @@ export function applyDecorations<Row>(
         const align = checkAlign(d.align, "legendDiscrete align") as "left" | "center" | "right";
         const block = `<div class="sdvt-legend sdvt-legend-${loc}" style="display:flex;flex-direction:column;align-items:${{ left: "flex-start", center: "center", right: "flex-end" }[align]};gap:4px">${d.heading ? `<div class="sdvt-legend-title">${escapeHtml(d.heading)}</div>` : ""}${d.subtitle ? `<div class="sdvt-legend-sub">${escapeHtml(d.subtitle)}</div>` : ""}<div style="display:flex;flex-direction:${d.direction === "vertical" ? "column" : "row"};flex-wrap:wrap;gap:${gap}px">${items.join("")}</div></div>`;
         if (loc === "top") out.before += block;
+        else out.after += block;
+        break;
+      }
+      case "legendIcon": {
+        // reactablefmtr add_icon_legend: appended after the table by default
+        const block = legendIconBlock(d);
+        if (d.location === "top") out.before += block;
         else out.after += block;
         break;
       }
