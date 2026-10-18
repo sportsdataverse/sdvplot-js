@@ -661,6 +661,7 @@ export const fmtrTeam: ThemeDef = (ref) => {
       stripe: tint(0.08),
       highlight: tint(0.16),
       groupBg: tint(0.12),
+      groupColor: text, // the ink the groupBg tint was checked against, not default's fixed #333333
     },
     ref,
   );

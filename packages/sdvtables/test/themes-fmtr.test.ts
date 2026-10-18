@@ -190,6 +190,7 @@ test("fmtr-team checks the colours it paints: a fontColor / backgroundColor over
   });
   expect(contrast("#ffffff", dark.tokens.stripe)).toBeGreaterThanOrEqual(4.5);
   expect(dark.tokens.stripe).not.toBe("#ffffff");
+  expect(contrast(dark.tokens.groupColor, dark.tokens.groupBg)).toBeGreaterThanOrEqual(4.5);
   // LAR's pale secondary is too pale on white, not on a dark ground
   const lar = th("fmtr-team", { league: "nfl", team: "LAR", backgroundColor: "#111111" });
   expect(lar.tokens.labelBorderBottom).not.toBe("3px solid #003594");
