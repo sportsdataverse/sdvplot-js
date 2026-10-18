@@ -7,6 +7,7 @@
       "**/src/data/**",
       "**/src/specs/**",
       "packages/sporty/data/**",
+      "packages/sdvtables/data/**",
       "fixtures/**",
       "notebooks/vendor/**",
       "**/*.api.md",

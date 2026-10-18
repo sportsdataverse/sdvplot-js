@@ -13,3 +13,4 @@ fixtures/sdvplot/logos/** -text
 *.woff2 binary
 # the sdv-js snapshots: gzipped ESPN responses, hashed after gunzip
 fixtures/sdvjs/*.gz binary
+*.webp binary
