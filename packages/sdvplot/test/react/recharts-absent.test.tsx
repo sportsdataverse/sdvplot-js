@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, render, waitFor } from "@testing-library/react";
+import { cleanup, configure, render, waitFor } from "@testing-library/react";
 import { Component, type ReactNode } from "react";
 import { afterEach, expect, test, vi } from "vitest";
 import { OptionalDependencyError } from "../../src/errors.js";
@@ -11,6 +11,10 @@ vi.mock("recharts", () => {
   });
 });
 afterEach(cleanup);
+// The backdrop's first render waits on a dynamic import (recharts, sporty), which takes well over waitFor's default
+// 1 s on a busy machine: seen timing out once in a full `pnpm test`. Raise the ceiling, not the expectation.
+configure({ asyncUtilTimeout: 15_000 });
+vi.setConfig({ testTimeout: 20_000 });
 
 class Catch extends Component<{ onError: (e: unknown) => void; children: ReactNode }, { failed: boolean }> {
   override state = { failed: false };

@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { surface } from "@sportsdataverse/sporty";
-import { cleanup, render, waitFor } from "@testing-library/react";
+import { cleanup, configure, render, waitFor } from "@testing-library/react";
 import type { ReactElement } from "react";
 import { Scatter, ScatterChart, XAxis, YAxis } from "recharts";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
@@ -15,6 +15,9 @@ afterEach(() => {
   setWarningHandler(null);
 });
 vi.setConfig({ testTimeout: 20_000 });
+// The backdrop's first render waits on a dynamic import (recharts, sporty), which takes well over waitFor's default
+// 1 s on a busy machine: seen timing out once in a full `pnpm test`. Raise the ceiling, not the expectation.
+configure({ asyncUtilTimeout: 15_000 });
 
 const court = surface("basketball", "nba", { displayRange: "defense" });
 const [x0, y0, x1, y1] = court.bbox;
