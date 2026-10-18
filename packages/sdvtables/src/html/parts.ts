@@ -82,7 +82,10 @@ function checkKeys<Row>(spec: TableSpec<Row>, rows: readonly Row[]): void {
       col.key,
       ...("to" in col ? [col.to] : []),
       ...("keys" in col ? col.keys : []),
-      ...("stack" in col ? [col.stack, col.team] : []),
+      ...(["stack", "team", "colorRef", "markKey", "iconRef", "iconColorRef"] as const).flatMap((f) => {
+        const k = (col as unknown as Readonly<Record<string, unknown>>)[f];
+        return typeof k === "string" ? [k] : [];
+      }),
     ];
     for (const k of need)
       if (!keys.has(k))
@@ -102,7 +105,10 @@ function alignOf<Row>(col: ColumnSpec<Row>): "left" | "center" | "right" {
     case "tally":
     case "colorPills":
     case "colorRanks":
+    case "iconSet":
       return "right";
+    case "bubble":
+      return "center";
     case "logo":
     case "wordmark":
     case "headshot":
@@ -220,11 +226,23 @@ export function renderParts<Row>(
       return `<th scope="col" class="sdvt-label sdvt-${escapeAttr(alignOf(c))}${current}" data-col="${escapeAttr(c.key)}" data-kind="${escapeAttr(c.kind)}"${currentAria}${aria}${styleOf([c.width ? `width:${escapeAttr(cssValue(c.width, `column ${c.key} width`))}` : "", deco.labelStyle(c.key)])}>${inner}</th>`;
     })
     .join("");
+  // `>` + the cell; with `tooltip` (reactablefmtr tooltip = TRUE) a `title` first: the cell text, else the raw value
+  const cellOf = (c: ColumnSpec<Row>, row: Row, i: number): string => {
+    const html = renderCell(c, row, i, ctx);
+    if (c.tooltip !== true) return `>${html}`;
+    const text = html
+      .replace(/<[^>]*>/g, " ")
+      .replace(/s+/g, " ")
+      .trim();
+    const raw = (row as Readonly<Record<string, unknown>>)[c.key];
+    const title = text || (raw === null || raw === undefined ? "" : escapeAttr(raw));
+    return title ? ` title="${title}">${html}` : `>${html}`;
+  };
   const cellsOf = (row: Row, i: number): string =>
     visible
       .map(
         (c) =>
-          `<td class="sdvt-cell sdvt-kind-${escapeAttr(c.kind)} sdvt-${escapeAttr(alignOf(c))}" data-col="${escapeAttr(c.key)}"${styleOf([kindCellStyle(c, row, i, ctx), deco.cellStyle(i, c.key)])}>${renderCell(c, row, i, ctx)}${deco.cellSuffix(i, c.key)}</td>`,
+          `<td class="sdvt-cell sdvt-kind-${escapeAttr(c.kind)} sdvt-${escapeAttr(alignOf(c))}" data-col="${escapeAttr(c.key)}"${styleOf([kindCellStyle(c, row, i, ctx), deco.cellStyle(i, c.key)])}${cellOf(c, row, i)}${deco.cellSuffix(i, c.key)}</td>`,
       )
       .join("");
   // opt_row_striping: great_tables marks every second DISPLAYED data row (j % 2 == 1 over the body in display order, group headers not counted)

@@ -11,6 +11,8 @@ import { type RenderOptions, assemble, labelOf, renderParts } from "./parts.js";
 
 export type { ColumnScale, RenderContext } from "./cells.js";
 export { fontsLink } from "./fonts.js";
+export { ICON_NAMES } from "./icons.js";
+export type { IconName } from "../spec.js";
 export type { GoogleFont } from "../themes/tokens.js";
 export type { RenderOptions, RenderedParts } from "./parts.js";
 export {
@@ -28,7 +30,8 @@ export {
 /** Leagues whose shards the spec needs (team-aware columns + the sdvTeam theme). Headshot columns need no shard: ESPN ids are pure URLs. */
 export function leaguesOf<Row>(spec: TableSpec<Row>): League[] {
   const out = new Set<League>();
-  for (const c of spec.columns) if ("league" in c && c.kind !== "headshot") out.add(c.league);
+  for (const c of spec.columns)
+    if ("league" in c && c.kind !== "headshot" && c.league !== undefined) out.add(c.league);
   if (spec.theme.name === "sdvTeam" && spec.theme.options?.league)
     out.add(spec.theme.options.league as League);
   return [...out];

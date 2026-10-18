@@ -1,4 +1,5 @@
-// src/aliases.ts — every sdvplotR gt_* / pal_* / reactable_sdv_* export (74, sdvplotR NAMESPACE) → its sdvtables target.
+// src/aliases.ts — every sdvplotR gt_* / pal_* / reactable_sdv_* export (74, sdvplotR NAMESPACE) and the reactablefmtr
+// cell formatters → their sdvtables targets.
 // Target forms: "c.<kind>" (column factory), "builder.<method>" (TableBuilder), "theme.<name>" (THEME_NAMES),
 // "html.<export>" (the ./html subpath), a bare root export ("snakeAlign", "PAL_MIDNIGHT"), or a Phase 5 name.
 /** One sdvplotR/gtUtils name and where it lives in sdvtables. */
@@ -9,7 +10,7 @@ export interface Alias {
 }
 const T = (target: string, note?: string): Alias =>
   note ? { target, status: "ported", note } : { target, status: "ported" };
-/** sdvplotR/gtUtils function name → sdvtables equivalent. */
+/** sdvplotR/gtUtils (and reactablefmtr) function name → sdvtables equivalent. */
 export const GT_ALIASES: Readonly<Record<string, Alias>> = {
   gt_sdv_logos: T("c.logo"),
   gt_sdv_wordmarks: T("c.wordmark"),
@@ -89,6 +90,18 @@ export const GT_ALIASES: Readonly<Record<string, Alias>> = {
   reactable_sdv_cols_label: { target: "labelHtml", status: "not-ported", note: "as gt_sdv_cols_label" },
   reactable_sdv_team_color_bar: T("c.teamColorBar"),
   reactable_sdv_team_color_bg: T("c.teamColorBg"),
+  // reactablefmtr 2.1.0 cell formatters (Tier 1 of the reactablefmtr parity spec)
+  data_bars: T("c.dataBar", "fill_color_ref -> colorRef or team + league; img -> mark"),
+  icon_sets: T("c.iconSet", "inline-SVG icons (ICON_NAMES), not Font Awesome"),
+  icon_assign: T("c.iconAssign", "inline-SVG icons (ICON_NAMES), not Font Awesome"),
+  merge_column: T("c.mergeStack", "merged_name -> stack; mark adds a logo, wordmark or headshot"),
+  bubble_grid: T("c.bubble"),
+  color_tiles: T("c.colorRanks", "colorRef, bias, span, showText, evenBreaks"),
+  color_scales: T("c.colorRanks", "colorRanks fills the whole cell, as color_scales does"),
+  pill_buttons: T("c.colorPills", "colorRef or team for a per-row colour"),
+  highlight_min: T("c.highlight", 'when "min"'),
+  highlight_max: T("c.highlight", 'when "max"'),
+  highlight_min_max: T("c.highlight", 'when "both"'),
 };
 /** Look up the sdvtables equivalent of an sdvplotR/gtUtils function name. */
 export const aliasFor = (name: string): Alias | undefined => GT_ALIASES[name];

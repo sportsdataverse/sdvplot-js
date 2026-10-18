@@ -1,0 +1,100 @@
+---
+title: Table formatters
+sidebar_position: 13.75
+---
+
+[reactablefmtr](https://kcuilla.github.io/reactablefmtr/) gives R's reactable tables data bars, icon sets, bubbles and
+colour tiles. sdvtables has the same formatters as column kinds and options, with reactablefmtr's defaults, and adds
+team awareness: where reactablefmtr reads a colour column (`fill_color_ref`, `color_ref`), sdvtables also takes a team
+column and a league and paints each row in its team's colour, with the text kept readable. Everything is inline HTML
+and SVG, so a table needs no icon font, tooltip library or script. Every example uses the eight 2024 AFC teams of the
+[sample data](/sample-data); the gallery is searchable by the reactablefmtr name (`data_bars`, `icon_sets`, ...).
+
+## Data bars
+
+`dataBar` (reactablefmtr `data_bars`) draws a bar whose length is the value over the column's largest absolute value,
+or the value scaled between `minValue` and `maxValue`. One `fill` colour paints every bar and several ramp over the
+column's range (`bias` as in grDevices::colorRamp); `gradient` paints each bar left to right instead. `colorRef` reads a
+colour column, or `team` and `league` use each team's colour, and `mark: "logo"` (or `"wordmark"`, or `"headshot"`
+with `markKey`) puts the team's mark at the end of the bar. `textPosition` is one of `inside-end` (the default),
+`inside-base`, `center`, `outside-end`, `outside-base`, `above` and `none`; `align: "right"` grows the bars from the
+right, and `roundEdges`, `barHeight` and `numberFormat` finish them.
+
+<Live id="sdvtables/kinds/dataBar" />
+
+## Diverging data bars
+
+A column with a negative value (or `posNeg: true`) draws its bars either side of a centre line. Given two fill colours,
+the first paints the negatives and the second the positives. A missing value stays blank.
+
+<Live id="sdvtables/formatters/dataBar-diverging" />
+
+## Icon sets
+
+`iconSet` (reactablefmtr `icon_sets`) puts an icon beside each value. The icons and the colours are each dealt out in
+equal-count buckets of the column (dplyr::ntile), so with three colours the bottom third takes the first. The icon goes
+to the `right` (the default), `left`, `above`, `below` or `over` the value.
+
+<Live id="sdvtables/kinds/iconSet" />
+
+## Icons per row
+
+`iconRef` and `iconColorRef` read each row's icon and colour from columns instead of the buckets. `ICON_NAMES` (from
+`@sportsdataverse/sdvtables/html`) lists every icon; they are plain SVG paths drawn for sdvtables, not Font Awesome.
+
+<Live id="sdvtables/formatters/icon-names" />
+
+## Icon assign
+
+`iconAssign` (reactablefmtr `icon_assign`) writes a value as a row of icons: one per unit up to the column's maximum,
+filled up to the value, or with `buckets` the value's bucket out of that many. `showValues` adds the number to the
+`left`, `right`, `above` or `below`.
+
+<Live id="sdvtables/kinds/iconAssign" />
+
+## Merged columns
+
+`mergeStack` (reactablefmtr `merge_column`) shows a second column's value beside the cell's own (`position`: `right`,
+`left`, `above` or `below`), each with its own size, colour, weight and style. Like a data bar, it can lead with a
+logo, wordmark or headshot. `mergeStackTeamColor` remains for a lower line in the team's colour.
+
+<Live id="sdvtables/kinds/mergeStack" />
+
+## Bubbles
+
+`bubble` (reactablefmtr `bubble_grid`) draws a circle, or with `shape: "squares"` a square, whose width is the value
+over the column's largest, coloured on a ramp of the column's range or by `colorRef` / `team`. reactablefmtr's largest
+bubble is 100 pixels; `maxSize` changes it.
+
+<Live id="sdvtables/kinds/bubble" />
+
+## Colour tiles and scales
+
+`colorRanks` fills the cell, as reactablefmtr's `color_scales` and `color_tiles` do, and takes their options. `span`
+puts several columns on one scale (`true`: every numeric column), `bias` moves the palette's stops, `evenBreaks` deals
+the palette out in equal-count buckets instead of a ramp, `showText: false` keeps only the colour, and `colorRef` or
+`team` gives a row its own fill.
+
+<Live id="sdvtables/formatters/colorRanks-tiles" />
+
+## Pill buttons in team colours
+
+`colorPills` with `colorRef`, or `team` and `league`, colours each pill by its row (reactablefmtr `pill_buttons` with
+`color_ref`); the text turns black or white to stay readable.
+
+<Live id="sdvtables/formatters/colorPills-team" />
+
+## Highlighting the minimum and maximum
+
+`highlight` takes `"min"`, `"max"` or `"both"` in place of a predicate (reactablefmtr `highlight_min`,
+`highlight_max` and `highlight_min_max`): the extremes, every tie included, turn bold, the minimum red and the maximum
+green. `textColor` and `fill` change the colours.
+
+<Live id="sdvtables/formatters/highlight-extremes" />
+
+## Tooltips
+
+`tooltip: true` on any column writes the cell's value as its `title` attribute, which the browser shows on hover. It
+needs no tooltip library; a cell that shows only an image takes the raw value.
+
+<Live id="sdvtables/formatters/tooltip" />

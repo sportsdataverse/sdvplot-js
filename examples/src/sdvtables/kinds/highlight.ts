@@ -5,7 +5,15 @@ import type { ExampleMeta } from "../../contract.js";
 
 export const meta = {
   title: "highlight: cells that match a predicate",
-  tags: ["kind", "highlight", "gt_highlight_cells", "predicate"],
+  tags: [
+    "kind",
+    "highlight",
+    "gt_highlight_cells",
+    "highlight_min",
+    "highlight_max",
+    "highlight_min_max",
+    "predicate",
+  ],
 } satisfies ExampleMeta;
 
 // The rule is data (a predicate), not a function, so the spec stays serializable.

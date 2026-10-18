@@ -10,14 +10,16 @@ import {
   solid,
   teamColorsSync,
 } from "@sportsdataverse/sdvplot";
+import type { EspnHeadshotLeague, League, SeasonInput, Which } from "@sportsdataverse/sdvplot";
 import { TableSpecError } from "../errors.js";
 import { formatNumber, formatValue, isBlank, naturalDigits, ordinal, toNumber } from "../format.js";
 import { matches } from "../predicate.js";
-import { averageRanks, domainOf, ramp } from "../scale.js";
-import type { ColumnSpec, TableSpec } from "../spec.js";
+import { averageRanks, domainOf, ntile, ramp } from "../scale.js";
+import type { ColumnSpec, IconName, MarkOpts, NumberFormat, TableSpec } from "../spec.js";
 import { teamNameSync } from "../team-name.js";
 import type { Theme } from "../themes/tokens.js";
 import { checkPx, cssValue, escapeAttr, escapeHtml, styleAttr } from "./escape.js";
+import { iconSvg } from "./icons.js";
 /** One scaled column (pills, ranks, percentile), computed once per column by Task 8's columnScales. */
 export interface ColumnScale {
   readonly domain: readonly [number, number];
@@ -86,7 +88,11 @@ export function teamIdsOf<Row>(
 ): Map<string, (string | undefined)[]> {
   const out = new Map<string, (string | undefined)[]>();
   for (const c of spec.columns) {
+    checkRefs(c);
+    // the reactablefmtr-style kinds join in when they name a team column (team colours, or a logo/wordmark mark)
+    const optIn = "team" in c && c.kind !== "mergeStackTeamColor" && c.team !== undefined;
     if (
+      !optIn &&
       c.kind !== "logo" &&
       c.kind !== "wordmark" &&
       c.kind !== "mergeStackTeamColor" &&
@@ -94,7 +100,9 @@ export function teamIdsOf<Row>(
       c.kind !== "teamColorBg"
     )
       continue;
-    const from = c.kind === "mergeStackTeamColor" ? c.team : c.key;
+    if (c.league === undefined)
+      throw new TableSpecError(`column "${c.key}" names a team column, so it needs a league`);
+    const from = "team" in c && c.team !== undefined ? c.team : c.key;
     const values = rows.map((r) => {
       const v = cellValue(r, from);
       return isBlank(v) ? null : String(v).trim(); // the raw value, never the escaped one (Review Focus 1)
@@ -127,6 +135,370 @@ const isNa = (col: HighlightNaCol, v: unknown): boolean =>
   isBlank(v) ||
   col.naStrings.some((n) => (col.ignoreCase ? n.toLowerCase() === String(v).toLowerCase() : n === String(v)));
 
+// ---- reactablefmtr-style kinds (dataBar, iconSet, iconAssign, mergeStack, bubble) and the colorRef / extreme options
+
+/** reactablefmtr `number_fmt`, as data: scale, digits, type, prefix and suffix (formatValue prints the plain "-"). */
+const fmtNum = (n: number, f: NumberFormat | undefined): string =>
+  `${f?.prefix ?? ""}${formatValue(n * (f?.scale ?? 1), f?.digits, f?.type ?? "number", f?.suffix ?? "")}`;
+const clamp01 = (x: number): number => (x < 0 ? 0 : x > 1 ? 1 : x);
+/** grDevices::adjustcolor(alpha.f): a hex colour with its alpha replaced; opacity 1 leaves the colour as given. */
+function withAlpha(color: string, opacity: number, field: string): string {
+  if (!(opacity >= 0 && opacity <= 1))
+    throw new TableSpecError(`${field} must be between 0 and 1, got ${opacity}`);
+  if (opacity === 1) return cssValue(color, field);
+  const a = Math.round(opacity * 255)
+    .toString(16)
+    .padStart(2, "0");
+  return `${hex6(color, { dropAlpha: true })}${a}`;
+}
+
+/** One numeric column over `domainRows`, computed once per render (keyed by the domainRows array). */
+interface Stats {
+  readonly nums: readonly (number | null)[];
+  readonly min: number;
+  readonly max: number;
+  readonly maxAbs: number;
+  readonly index: ReadonlyMap<unknown, number>;
+  readonly tiles: Map<number, readonly (number | null)[]>;
+}
+const STATS = new WeakMap<readonly unknown[], Map<string, Stats>>();
+function statsOf<Row>(ctx: RenderContext<Row>, key: string): Stats {
+  let byKey = STATS.get(ctx.domainRows);
+  if (!byKey) {
+    byKey = new Map();
+    STATS.set(ctx.domainRows, byKey);
+  }
+  const hit = byKey.get(key);
+  if (hit) return hit;
+  const nums = ctx.domainRows.map((r) => toNumber(cellValue(r, key)));
+  const present = nums.filter((n): n is number => n !== null);
+  const st: Stats = {
+    nums,
+    min: present.length ? Math.min(...present) : Number.NaN,
+    max: present.length ? Math.max(...present) : Number.NaN,
+    maxAbs: present.length ? Math.max(...present.map(Math.abs)) : Number.NaN,
+    index: new Map(ctx.domainRows.map((r, j) => [r, j] as const)),
+    tiles: new Map(),
+  };
+  byKey.set(key, st);
+  return st;
+}
+/** Row `i`'s dplyr::ntile bucket (1..n) among the column's domain rows; a row outside them is ranked as if appended. */
+function tileOf<Row>(ctx: RenderContext<Row>, key: string, row: Row, i: number, n: number): number | null {
+  const st = statsOf(ctx, key);
+  const j = ctx.domainRows === ctx.rows ? i : st.index.get(row);
+  if (j === undefined) return ntile([...st.nums, toNumber(cellValue(row, key))], n).at(-1) ?? null;
+  let t = st.tiles.get(n);
+  if (!t) {
+    t = ntile(st.nums, n);
+    st.tiles.set(n, t);
+  }
+  return t[j] ?? null;
+}
+/** reactablefmtr data_bars / bubble_grid size: `|v| / max|v|`, or scaled between minValue and maxValue; clamped to [0, 1]. */
+function sizeOf(v: number, st: Stats, minValue: number | undefined, maxValue: number | undefined): number {
+  const top = maxValue ?? st.maxAbs;
+  const r = minValue === undefined ? Math.abs(v) / top : (Math.abs(v) - minValue) / (top - minValue);
+  return Number.isFinite(r) ? clamp01(r) : 0;
+}
+/** reactablefmtr's colour position: (v - min) / (max - min) over the column, 1 when every value is the same. */
+const normalized = (v: number, lo: number, hi: number): number =>
+  hi === lo ? 1 : clamp01((v - lo) / (hi - lo));
+/** The row's own colour: `colorRef`'s value, else `team`'s `which` colour; undefined when neither gives one. */
+function refColor<Row>(
+  col: {
+    readonly key: string;
+    readonly colorRef?: string;
+    readonly team?: string;
+    readonly league?: League;
+    readonly which?: Which;
+  },
+  row: Row,
+  i: number,
+  ctx: RenderContext<Row>,
+): string | undefined {
+  if (col.colorRef !== undefined) {
+    const v = cellValue(row, col.colorRef);
+    if (!isBlank(v)) return cssValue(String(v).trim(), `colorRef ${col.colorRef}`);
+  }
+  if (col.team === undefined || col.league === undefined) return undefined;
+  const id = ctx.teamIds.get(col.key)?.[i];
+  return id === undefined
+    ? undefined
+    : teamColorsSync(col.league, id, { which: col.which ?? "primary", idSystem: "team_id" });
+}
+/** Spec errors a reactablefmtr-style column can only show once rendered: a mark without what it reads. */
+function checkRefs<Row>(c: ColumnSpec<Row>): void {
+  if (!("mark" in c) || c.mark === undefined) return;
+  if ((c.mark === "logo" || c.mark === "wordmark") && (c.team === undefined || c.league === undefined))
+    throw new TableSpecError(
+      `column "${c.key}": mark "${c.mark}" reads the team column, so set team and league`,
+    );
+  if (c.mark === "headshot" && (c.markKey === undefined || c.league === undefined))
+    throw new TableSpecError(
+      `column "${c.key}": mark "headshot" reads an ESPN athlete id, so set markKey and league`,
+    );
+}
+/** The column's logo, wordmark or headshot for row `i`, or "" (blank or unknown: the column's resolveSync warned once). */
+function markOf<Row>(
+  col: MarkOpts<Row> & {
+    readonly key: string;
+    readonly kind: string;
+    readonly league?: League;
+    readonly season?: SeasonInput;
+  },
+  row: Row,
+  i: number,
+  ctx: RenderContext<Row>,
+): string {
+  if (col.mark === undefined || col.league === undefined) return "";
+  const h = checkHeight(col.markHeight ?? 20, `${col.kind} mark`);
+  if (col.mark === "headshot") {
+    const raw = col.markKey === undefined ? null : cellValue(row, col.markKey);
+    if (isBlank(raw)) return "";
+    const url = headshotUrl(String(raw).trim(), col.league as EspnHeadshotLeague, { idSystem: "espn" });
+    return url ? markImg(url, String(raw).trim(), h) : "";
+  }
+  const id = ctx.teamIds.get(col.key)?.[i];
+  if (id === undefined) return "";
+  const url = logoUrlSync(id, col.league, {
+    ...(col.season !== undefined ? { season: col.season } : {}),
+    markType: col.mark,
+    idSystem: "team_id",
+  });
+  return url ? markImg(url, teamNameSync(col.league, id) ?? id, h, id) : "";
+}
+
+type DataBarCol<Row> = Extract<ColumnSpec<Row>, { kind: "dataBar" }>;
+/** reactablefmtr data_bars (2.1.0 source): track, fill, text position, diverging bars around a #666666 centre line. */
+function dataBar<Row>(col: DataBarCol<Row>, row: Row, i: number, ctx: RenderContext<Row>): string {
+  const raw = cellValue(row, col.key);
+  const v = toNumber(raw);
+  if (v === null) return blankOr(raw);
+  if (col.fill.length === 0) throw new TableSpecError("dataBar fill needs at least one colour");
+  if (col.gradient && col.fill.length < 2)
+    throw new TableSpecError("dataBar gradient needs at least two colours in fill");
+  const st = statsOf(ctx, col.key);
+  const pos = col.textPosition;
+  const h =
+    col.barHeight !== undefined ? checkPx(col.barHeight, "dataBar barHeight") : pos === "above" ? 5 : 18;
+  const radius = col.roundEdges ? h / 2 : 0;
+  const posNeg = col.posNeg ?? st.min < 0;
+  const ref = refColor(col, row, i, ctx);
+  const fill =
+    ref ??
+    (posNeg && col.fill.length === 2
+      ? (col.fill[v < 0 ? 0 : 1] as string)
+      : col.fill.length === 1
+        ? (col.fill[0] as string)
+        : (ramp(
+            col.fill.map((c) => hex6(c)),
+            [0, 1],
+            col.bias,
+          )(normalized(v, st.min, st.max)) as string));
+  const gradient = col.gradient ? `linear-gradient(to right, ${col.fill.join(", ")})` : undefined;
+  const inside = pos === "inside-end" || pos === "inside-base" || pos === "center";
+  const inkOn = col.gradient ? (col.fill.at(v < 0 ? 0 : -1) as string) : fill;
+  const ink =
+    pos === "none" ? "transparent" : (col.textColor ?? (inside ? onColor(solid(inkOn)) : undefined));
+  const label = escapeHtml(fmtNum(v, col.numberFormat));
+  const m = markOf(col, row, i, ctx);
+  const mark = m ? `<span style="display:inline-flex;margin:0 4px">${m}</span>` : "";
+  const right = col.align === "right";
+  const width = Number((sizeOf(v, st, col.minValue, col.maxValue) * 100).toFixed(4));
+  // one bar: its text inside (inside-*/center/none) or empty; `dir` sets which way it grows
+  const bar = (dir: "row" | "row-reverse", text: boolean, gap: boolean): string =>
+    `<div style="${styleAttr({
+      display: "flex",
+      "align-items": "center",
+      "flex-direction": dir,
+      "justify-content": pos === "center" ? "center" : pos === "inside-base" ? "flex-start" : "flex-end",
+      background: gradient ? undefined : fill,
+      "background-image": gradient,
+      "border-radius": `${radius}px`,
+      color: text ? ink : undefined,
+      width: `${width}%`,
+      height: `${h}px`,
+      "white-space": "nowrap",
+      [dir === "row" ? "margin-right" : "margin-left"]: gap ? "6px" : undefined,
+    })}">${text ? `<span>${label}</span>` : ""}</div>`;
+  const textSpan = `<span${ink ? ` style="color:${escapeAttr(cssValue(ink, "dataBar textColor"))}"` : ""}>${label}</span>`;
+  const group = (dir: "row" | "row-reverse"): string =>
+    inside || pos === "none"
+      ? `<div style="display:flex;align-items:center;flex-direction:${dir};width:100%">${bar(dir, true, false)}${mark}</div>`
+      : `<div style="display:flex;align-items:center;flex-direction:${dir};width:100%">${bar(dir, false, true)}${mark}${textSpan}</div>`;
+  if (posNeg) {
+    const half = (side: "neg" | "pos"): string =>
+      `<div style="flex:1 1 0;display:flex;align-items:center${side === "neg" ? ";justify-content:flex-end" : ""}">${(v < 0) === (side === "neg") ? group(side === "neg" ? "row-reverse" : "row") : ""}</div>`;
+    return `<div class="sdvt-databar" style="display:flex;align-items:stretch;min-height:${h}px">${half("neg")}<div style="width:1px;background:#666666"></div>${half("pos")}</div>`;
+  }
+  const dir = right ? "row-reverse" : "row";
+  const track = (inner: string, gap = false): string =>
+    `<div style="${styleAttr({ "flex-grow": 1, "border-radius": `${radius}px`, background: col.background, [right ? "margin-right" : "margin-left"]: gap ? "6px" : undefined })}">${inner}</div>`;
+  if (pos === "above")
+    return `<div class="sdvt-databar"><div style="text-align:${right ? "right" : "left"}${ink ? `;color:${escapeAttr(cssValue(ink, "dataBar textColor"))}` : ""}">${label}</div>${track(`<div style="display:flex;align-items:center;flex-direction:${dir}">${bar(dir, false, false)}${mark}</div>`)}</div>`;
+  if (pos === "outside-base") {
+    const chars = Math.max(
+      1,
+      ...st.nums.filter((n): n is number => n !== null).map((n) => fmtNum(n, col.numberFormat).length),
+    );
+    return `<div class="sdvt-databar" style="display:flex;align-items:center;flex-direction:${dir}"><span style="${styleAttr({ "min-width": `${chars}ch`, "text-align": right ? "left" : "right", "font-variant-numeric": "tabular-nums", color: ink })}">${label}</span>${track(`<div style="display:flex;align-items:center;flex-direction:${dir}">${bar(dir, false, false)}${mark}</div>`, true)}</div>`;
+  }
+  return `<div class="sdvt-databar" style="display:flex">${track(group(dir))}</div>`;
+}
+
+type IconSetCol<Row> = Extract<ColumnSpec<Row>, { kind: "iconSet" }>;
+/** reactablefmtr icon_sets: icon and colour by equal-count bucket (or per row), beside the value. */
+function iconSet<Row>(col: IconSetCol<Row>, row: Row, i: number, ctx: RenderContext<Row>): string {
+  const raw = cellValue(row, col.key);
+  const v = toNumber(raw);
+  if (v === null) return blankOr(raw);
+  const icon: IconName =
+    col.iconRef !== undefined
+      ? (String(cellValue(row, col.iconRef)).trim() as IconName)
+      : (col.icons[(tileOf(ctx, col.key, row, i, col.icons.length) ?? 1) - 1] as IconName);
+  const color =
+    col.iconColorRef !== undefined
+      ? String(cellValue(row, col.iconColorRef)).trim()
+      : (col.colors[(tileOf(ctx, col.key, row, i, col.colors.length) ?? 1) - 1] as string);
+  const svg = iconSvg(
+    icon,
+    withAlpha(color, col.opacity, "iconSet colors"),
+    checkPx(col.iconSize, "iconSet iconSize"),
+  );
+  const label = escapeHtml(fmtNum(v, col.numberFormat));
+  switch (col.iconPosition) {
+    case "left":
+      return `<span style="display:inline-block;margin-right:8px">${svg}</span>${label}`;
+    case "above":
+      return `<div>${svg}</div><div>${label}</div>`;
+    case "below":
+      return `<div>${label}</div><div>${svg}</div>`;
+    case "over":
+      return `${svg}<span style="font-size:0;color:transparent">${label}</span>`;
+    default:
+      return `${label}<span style="display:inline-block;margin-left:8px">${svg}</span>`;
+  }
+}
+
+type IconAssignCol<Row> = Extract<ColumnSpec<Row>, { kind: "iconAssign" }>;
+/** reactablefmtr icon_assign: one icon per unit up to the column maximum, filled up to the rounded value (or by bucket). */
+function iconAssign<Row>(col: IconAssignCol<Row>, row: Row, i: number, ctx: RenderContext<Row>): string {
+  const raw = cellValue(row, col.key);
+  const v = toNumber(raw);
+  if (v === null) return blankOr(raw);
+  const size = checkPx(col.iconSize, "iconAssign iconSize");
+  const on = withAlpha(col.fill, col.fillOpacity, "iconAssign fill");
+  const off = withAlpha(col.empty, col.emptyOpacity, "iconAssign empty");
+  const half = (x: number): number => Math.floor(x + 0.5);
+  let steps: number[];
+  let filled: (s: number) => boolean;
+  let title: string;
+  if (col.buckets !== undefined) {
+    const b = tileOf(ctx, col.key, row, i, col.buckets) ?? 0;
+    steps = Array.from({ length: col.buckets }, (_, k) => k + 1);
+    filled = (s) => s <= half(b);
+    title = `${b} out of ${col.buckets}`;
+  } else {
+    if (!(col.seqBy > 0)) throw new TableSpecError(`iconAssign seqBy must be positive, got ${col.seqBy}`);
+    const top = half(statsOf(ctx, col.key).max);
+    const n = half(v);
+    steps = [];
+    if (top === 0) steps.push(0);
+    else for (let s = 1; s <= top; s += col.seqBy) steps.push(s);
+    if (steps.length > 1000)
+      throw new TableSpecError(`iconAssign would draw ${steps.length} icons per cell; set buckets or seqBy`);
+    filled = top === 0 ? (s) => s < n : (s) => s <= n;
+    title = `${naturalDigits(v)} out of ${top}`;
+  }
+  const icons = steps.map((s) => iconSvg(col.icon, filled(s) ? on : off, size)).join("");
+  const box = `<span title="${escapeAttr(title)}" aria-label="${escapeAttr(title)}" role="img">${icons}</span>`;
+  const label = escapeHtml(fmtNum(v, col.numberFormat));
+  switch (col.showValues) {
+    case "right":
+      return `${box}<span style="margin-left:6px">${label}</span>`;
+    case "left":
+      return `<span style="margin-right:6px">${label}</span>${box}`;
+    case "above":
+      return `<div>${label}</div><div>${box}</div>`;
+    case "below":
+      return `<div>${box}</div><div>${label}</div>`;
+    default:
+      return box;
+  }
+}
+
+type MergeStackCol<Row> = Extract<ColumnSpec<Row>, { kind: "mergeStack" }>;
+/** reactablefmtr merge_column: the value and a second column's value, `spacing + 3` px apart, optional mark first. */
+function mergeStack<Row>(col: MergeStackCol<Row>, row: Row, i: number, ctx: RenderContext<Row>): string {
+  const main = `font-size:${checkPx(col.size, "mergeStack size")}px;${styleAttr({ color: col.color, "font-weight": col.weight, "font-style": col.style })}`;
+  const sub = `font-size:${checkPx(col.stackSize, "mergeStack stackSize")}px;${styleAttr({ color: col.stackColor, "font-weight": col.stackWeight, "font-style": col.stackStyle })}`;
+  const gap = checkPx(col.spacing, "mergeStack spacing") + 3;
+  const a = blankOr(cellValue(row, col.key));
+  const b = blankOr(cellValue(row, col.stack));
+  const body =
+    col.position === "below"
+      ? `<div><div style="${main};margin-bottom:${gap}px">${a}</div><div style="${sub}">${b}</div></div>`
+      : col.position === "above"
+        ? `<div><div style="${sub};margin-bottom:${gap}px">${b}</div><div style="${main}">${a}</div></div>`
+        : col.position === "left"
+          ? `<span style="${sub};margin-right:${gap}px">${b}</span><span style="${main}">${a}</span>`
+          : `<span style="${main};margin-right:${gap}px">${a}</span><span style="${sub}">${b}</span>`;
+  const m = markOf(col, row, i, ctx);
+  const stacked = col.position === "below" || col.position === "above"; // already one block
+  return m
+    ? `<div style="display:flex;align-items:center;gap:6px">${m}${stacked ? body : `<div>${body}</div>`}</div>`
+    : body;
+}
+
+type BubbleCol<Row> = Extract<ColumnSpec<Row>, { kind: "bubble" }>;
+/** reactablefmtr bubble_grid: a circle or square `maxSize * |v| / max|v|` px across, coloured on the column's ramp. */
+function bubble<Row>(col: BubbleCol<Row>, row: Row, i: number, ctx: RenderContext<Row>): string {
+  const raw = cellValue(row, col.key);
+  const v = toNumber(raw);
+  if (v === null) return blankOr(raw);
+  if (col.colors.length === 0) throw new TableSpecError("bubble colors needs at least one colour");
+  const st = statsOf(ctx, col.key);
+  const px = Number(
+    (sizeOf(v, st, col.minValue, col.maxValue) * checkPx(col.maxSize, "bubble maxSize")).toFixed(2),
+  );
+  const base =
+    refColor(col, row, i, ctx) ??
+    (ramp(
+      col.colors.map((c) => hex6(c)),
+      [0, 1],
+      col.bias,
+    )(normalized(v, col.minValue ?? st.min, col.maxValue ?? st.max)) as string);
+  const fill = withAlpha(base, col.opacity, "bubble opacity");
+  const ink = col.showText ? (col.textColor ?? onColor(solid(fill, tableBg(ctx)))) : "transparent";
+  return `<div style="${styleAttr({
+    background: fill,
+    color: ink,
+    display: "inline-flex",
+    "justify-content": "center",
+    "align-items": "center",
+    "text-align": "center",
+    height: `${px}px`,
+    width: `${px}px`,
+    "border-radius": col.shape === "circles" ? "50%" : undefined,
+  })}">${escapeHtml(fmtNum(v, col.numberFormat))}</div>`;
+}
+
+/** highlight's extreme mode (reactablefmtr highlight_min/max/min_max): "min", "max" or null for this row. */
+function extremeOf<Row>(
+  col: Extract<ColumnSpec<Row>, { kind: "highlight" }>,
+  row: Row,
+  ctx: RenderContext<Row>,
+): "min" | "max" | null {
+  if (col.extreme === undefined) return col.when !== undefined && matches(col.when, row) ? "max" : null;
+  const v = toNumber(cellValue(row, col.key));
+  if (v === null) return null;
+  const st = statsOf(ctx, col.key);
+  if (col.extreme !== "max" && v === st.min) return "min";
+  if (col.extreme !== "min" && v === st.max) return "max";
+  return null;
+}
+
 /** The column kinds `columnScales` computes a scale for. */
 export const isScaled = <Row>(
   col: ColumnSpec<Row>,
@@ -155,9 +527,26 @@ export function columnScales<Row>(
     const nums = domainRows.map((r) => toNumber(cellValue(r, col.key)));
     let values: (number | null)[] = nums;
     let own = (n: number | null): number | null => n; // a rendered row's value when it is not in domainRows (I2)
+    let spanned: readonly [number, number] | undefined;
+    let buckets: readonly string[] | undefined;
     if (col.kind === "colorPills" && col.fillType === "rank") {
       values = averageRanks(nums, col.rankOrder === "desc");
       own = () => null; // a rank exists only within domainRows
+    }
+    if (col.kind === "colorRanks" && col.evenBreaks) {
+      // reactablefmtr even_breaks: colour i of n for the i-th equal-count bucket (dplyr::ntile), no ramp
+      buckets = col.palette.map((c) => hex6(c));
+      values = ntile(nums, buckets.length);
+      own = () => null;
+    } else if (col.kind === "colorRanks" && col.span && col.domain === undefined) {
+      // reactablefmtr span: one range over several columns (TRUE: every numeric column of the data)
+      const keys =
+        col.span === true
+          ? [...new Set(domainRows.flatMap((r) => Object.keys(r as object)))].filter((k) =>
+              domainRows.some((r) => typeof cellValue(r, k) === "number"),
+            )
+          : col.span;
+      spanned = domainOf(keys.map((k) => domainRows.map((r) => toNumber(cellValue(r, k)))));
     }
     if (col.kind === "percentileBar") {
       const present = nums.filter((n): n is number => n !== null);
@@ -170,7 +559,9 @@ export function columnScales<Row>(
         n === null ? null : typeof scale === "number" ? n * scale : proportion ? lo + n * (hi - lo) : n;
       values = nums.map(own);
     }
-    const domain: readonly [number, number] = col.domain ?? domainOf([values]);
+    const domain: readonly [number, number] = buckets
+      ? [1, buckets.length]
+      : (col.domain ?? spanned ?? domainOf([values]));
     const fmt = (): string => `(${naturalDigits(domain[0])} to ${naturalDigits(domain[1])})`;
     if (col.kind === "colorPills" && col.domain === undefined)
       warnFn(
@@ -178,7 +569,10 @@ export function columnScales<Row>(
         `no domain given, so the colors span the observed range ${fmt()}; set domain to compare colors across tables or columns`,
       ); // _cells.py:1197-1201
     const palette = col.palette.map((c) => hex6(c));
-    const color = ramp(col.reverse ? [...palette].reverse() : palette, domain);
+    const ordered = col.reverse ? [...palette].reverse() : palette;
+    const color = buckets
+      ? (b: number): string | null => ordered[b - 1] ?? null
+      : ramp(ordered, domain, col.kind === "colorRanks" ? (col.bias ?? 1) : 1);
     const outside = values.filter((v) => v !== null && color(v) === null).length;
     if (col.kind === "colorPills" && outside > 0)
       warnFn(
@@ -330,7 +724,7 @@ export function renderCell<Row>(col: ColumnSpec<Row>, row: Row, i: number, ctx: 
         fill = col.naColor;
         text = "";
       } else {
-        fill = sc.color(s) ?? "#808080";
+        fill = refColor(col, row, i, ctx) ?? sc.color(s) ?? "#808080";
         text = pillLabel(col, toNumber(cellValue(row, col.key)));
       }
       const ink = col.textColor ?? onColor(solid(fill, tableBg(ctx)));
@@ -392,9 +786,20 @@ export function renderCell<Row>(col: ColumnSpec<Row>, row: Row, i: number, ctx: 
         checkHeight(Number.parseFloat(col.height), "image"),
       );
     }
+    // ---- reactablefmtr-style kinds
+    case "dataBar":
+      return dataBar(col, row, i, ctx);
+    case "iconSet":
+      return iconSet(col, row, i, ctx);
+    case "iconAssign":
+      return iconAssign(col, row, i, ctx);
+    case "mergeStack":
+      return mergeStack(col, row, i, ctx);
+    case "bubble":
+      return bubble(col, row, i, ctx);
     default: {
       const bad: never = col;
-      throw new TableSpecError(`unknown column kind ${String((bad as { kind: string }).kind)}`); // exhaustive over the 21 kinds
+      throw new TableSpecError(`unknown column kind ${String((bad as { kind: string }).kind)}`); // exhaustive over the 26 kinds
     }
   }
 }
@@ -425,17 +830,23 @@ export function kindCellStyle<Row>(
       // data_color on the <td>; null or outside the domain -> na_color "white" (gt_color_ranks default)
       const sc = ctx.scales.get(col.key);
       const s = sc?.values[i] ?? null;
-      const fill = (s === null ? null : sc?.color(s)) ?? "#ffffff";
-      return styleAttr({ "background-color": fill, color: onColor(solid(fill, tableBg(ctx))) });
+      const ref = s === null ? undefined : refColor(col, row, i, ctx); // a null cell stays white (na_color)
+      const fill = ref ?? (s === null ? null : sc?.color(s)) ?? "#ffffff";
+      return styleAttr({
+        "background-color": fill,
+        color: col.showText === false ? "transparent" : onColor(solid(fill, tableBg(ctx))),
+      });
     }
-    case "highlight":
-      return matches(col.when, row)
+    case "highlight": {
+      const hit = extremeOf(col, row, ctx);
+      return hit
         ? styleAttr({
             "background-color": col.fill,
-            color: col.textColor,
+            color: col.textColor ?? (col.extreme === undefined ? undefined : hit === "min" ? "red" : "green"),
             "font-weight": col.bold ? "bold" : undefined,
           })
         : "";
+    }
     case "highlightNa":
       return isNa(col, cellValue(row, col.key))
         ? styleAttr({

@@ -36,6 +36,27 @@ export function applyFilters<Row>(spec: TableSpec<Row>, rows: readonly Row[], st
 // @beta
 export function applySort<Row>(spec: TableSpec<Row>, rows: readonly Row[], sort: Sort | null): Row[];
 
+// @public
+export type BarTextPosition = "inside-end" | "outside-end" | "inside-base" | "outside-base" | "center" | "above" | "none";
+
+// @public
+export interface ColorRefOpts<Row> {
+    // (undocumented)
+    readonly colorRef?: keyof Row & string;
+    // (undocumented)
+    readonly idSystem?: IdSystem;
+    // (undocumented)
+    readonly league?: League;
+    // (undocumented)
+    readonly season?: SeasonInput;
+    // (undocumented)
+    readonly strict?: boolean;
+    // (undocumented)
+    readonly team?: keyof Row & string;
+    // (undocumented)
+    readonly which?: Which;
+}
+
 // @public (undocumented)
 export interface ColumnBase<Row, K extends keyof Row & string = keyof Row & string> {
     // (undocumented)
@@ -50,17 +71,20 @@ export interface ColumnBase<Row, K extends keyof Row & string = keyof Row & stri
     readonly sortable?: boolean;
     // (undocumented)
     readonly subheader?: string;
+    readonly tooltip?: boolean;
     readonly width?: string;
 }
 
 // @public (undocumented)
 export interface ColumnFactory<Row> {
+    bubble<K extends NumericKey<Row>>(key: K, o?: Base<Row, K> & Partial<Opt<Col<Row, "bubble">, never>>): Col<Row, "bubble">;
     // (undocumented)
     colorPills<K extends NumericKey<Row>>(key: K, o?: Base<Row, K> & Partial<Opt<Col<Row, "colorPills">, never>>): Col<Row, "colorPills">;
     // (undocumented)
     colorRanks<K extends NumericKey<Row>>(key: K, o?: Base<Row, K> & Partial<Opt<Col<Row, "colorRanks">, never>>): Col<Row, "colorRanks">;
     // (undocumented)
     colorResults<K extends keyof Row & string>(key: K, o?: Base<Row, K> & Partial<Opt<Col<Row, "colorResults">, never>>): Col<Row, "colorResults">;
+    dataBar<K extends NumericKey<Row>>(key: K, o?: Base<Row, K> & Partial<Opt<Col<Row, "dataBar">, never>>): Col<Row, "dataBar">;
     // (undocumented)
     delta<K extends NumericKey<Row>>(from: K, to: NumericKey<Row>, o?: Base<Row, K> & Partial<Opt<Col<Row, "delta">, "to">>): Col<Row, "delta">;
     fmtRank: ColumnFactory<Row>["rank"];
@@ -68,10 +92,11 @@ export interface ColumnFactory<Row> {
     fmtTally: ColumnFactory<Row>["tally"];
     // (undocumented)
     headshot<K extends keyof Row & string>(key: K, o: Base<Row, K> & Partialize<Opt<Col<Row, "headshot">, never>, "league">): Col<Row, "headshot">;
-    // (undocumented)
-    highlight<K extends keyof Row & string>(key: K, when: Col<Row, "highlight">["when"], o?: Base<Row, K> & Partial<Opt<Col<Row, "highlight">, "when">>): Col<Row, "highlight">;
+    highlight<K extends keyof Row & string>(key: K, when: Predicate<Row> | "min" | "max" | "both", o?: Base<Row, K> & Partial<Opt<Col<Row, "highlight">, "when" | "extreme">>): Col<Row, "highlight">;
     // (undocumented)
     highlightNa<K extends keyof Row & string>(key: K, o?: Base<Row, K> & Partial<Opt<Col<Row, "highlightNa">, never>>): Col<Row, "highlightNa">;
+    iconAssign<K extends NumericKey<Row>>(key: K, o?: Base<Row, K> & Partial<Opt<Col<Row, "iconAssign">, never>>): Col<Row, "iconAssign">;
+    iconSet<K extends NumericKey<Row>>(key: K, o?: Base<Row, K> & Partial<Opt<Col<Row, "iconSet">, never>>): Col<Row, "iconSet">;
     // (undocumented)
     image<K extends keyof Row & string>(key: K, o?: Base<Row, K> & Partial<Opt<Col<Row, "image">, never>>): Col<Row, "image">;
     // (undocumented)
@@ -82,6 +107,7 @@ export interface ColumnFactory<Row> {
     //
     // (undocumented)
     logo<K extends keyof Row & string>(key: K, o: Base<Row, K> & Partialize<Opt<Col<Row, "logo">, never>, "league">): Col<Row, "logo">;
+    mergeStack<K extends keyof Row & string>(key: K, stack: keyof Row & string, o?: Base<Row, K> & Partial<Opt<Col<Row, "mergeStack">, "stack">>): Col<Row, "mergeStack">;
     // (undocumented)
     mergeStackTeamColor<K extends keyof Row & string>(key: K, stack: keyof Row & string, team: keyof Row & string, o: Base<Row, K> & Partialize<Opt<Col<Row, "mergeStackTeamColor">, "stack" | "team">, "league">): Col<Row, "mergeStackTeamColor">;
     // Warning: (ae-forgotten-export) The symbol "Opt" needs to be exported by the entry point index.d.ts
@@ -170,7 +196,7 @@ export type ColumnSpec<Row> = (ColumnBase<Row> & {
     readonly league: EspnHeadshotLeague;
     readonly idSystem: HeadshotIdSystem;
     readonly height: number;
-}) | (ColumnBase<Row, NumericKey<Row>> & {
+}) | (ColumnBase<Row, NumericKey<Row>> & ColorRefOpts<Row> & {
     readonly kind: "colorPills";
     readonly palette: readonly string[];
     readonly domain?: readonly [number, number];
@@ -186,11 +212,15 @@ export type ColumnSpec<Row> = (ColumnBase<Row> & {
     readonly pillHeight: number;
     readonly textColor?: string;
     readonly naColor?: string;
-}) | (ColumnBase<Row, NumericKey<Row>> & {
+}) | (ColumnBase<Row, NumericKey<Row>> & ColorRefOpts<Row> & {
     readonly kind: "colorRanks";
     readonly palette: readonly string[];
     readonly domain?: readonly [number, number];
     readonly reverse: boolean;
+    readonly bias?: number;
+    readonly span?: boolean | readonly (keyof Row & string)[];
+    readonly showText?: boolean;
+    readonly evenBreaks?: boolean;
 }) | (ColumnBase<Row> & {
     readonly kind: "colorResults";
     readonly winColor: string;
@@ -228,8 +258,9 @@ export type ColumnSpec<Row> = (ColumnBase<Row> & {
     readonly showOnly?: "filled" | "neutral";
 }) | (ColumnBase<Row> & {
     readonly kind: "highlight";
-    readonly when: Predicate<Row>;
-    readonly fill: string;
+    readonly when?: Predicate<Row>;
+    readonly extreme?: "min" | "max" | "both";
+    readonly fill?: string;
     readonly textColor?: string;
     readonly bold: boolean;
 }) | (ColumnBase<Row> & {
@@ -263,6 +294,100 @@ export type ColumnSpec<Row> = (ColumnBase<Row> & {
     readonly kind: "image";
     readonly height: string;
     readonly alt?: keyof Row & string;
+})
+/**
+* reactablefmtr `data_bars`: a horizontal bar per cell, its length `|value| / max|value|` (or scaled between
+* `minValue` and `maxValue`). `align` ("left" | "right") is the side the bar grows from. One `fill` colour paints
+* every bar; several are a ramp over the column's range (or, with `gradient`, a left-to-right gradient). A column
+* with negatives (or `posNeg: true`) draws diverging bars around a centre line, `fill[0]` left and `fill[1]` right
+* when two colours are given.
+*/
+| (ColumnBase<Row, NumericKey<Row>> & ColorRefOpts<Row> & MarkOpts<Row> & {
+    readonly kind: "dataBar";
+    readonly fill: readonly string[];
+    readonly background: string;
+    readonly bias: number;
+    readonly minValue?: number;
+    readonly maxValue?: number;
+    readonly textPosition: BarTextPosition;
+    readonly textColor?: string;
+    readonly numberFormat?: NumberFormat;
+    readonly barHeight?: number;
+    readonly roundEdges: boolean;
+    readonly gradient: boolean;
+    readonly posNeg?: boolean;
+})
+/**
+* reactablefmtr `icon_sets`: the value with an icon, icons and colours each assigned by equal-count buckets of the
+* column (dplyr::ntile): with three colours the bottom third gets `colors[0]`.
+*/
+| (ColumnBase<Row, NumericKey<Row>> & {
+    readonly kind: "iconSet";
+    readonly icons: readonly IconName[];
+    readonly colors: readonly string[];
+    readonly opacity: number;
+    readonly iconPosition: "left" | "right" | "above" | "below" | "over";
+    readonly iconSize: number;
+    readonly iconRef?: keyof Row & string;
+    readonly iconColorRef?: keyof Row & string;
+    readonly numberFormat?: NumberFormat;
+})
+/**
+* reactablefmtr `icon_assign`: the value as a row of icons, one per unit up to the column's maximum, filled up to
+* the (rounded) value; `buckets` shows the value's bucket out of `buckets` instead.
+*/
+| (ColumnBase<Row, NumericKey<Row>> & {
+    readonly kind: "iconAssign";
+    readonly icon: IconName;
+    readonly fill: string;
+    readonly empty: string;
+    readonly fillOpacity: number;
+    readonly emptyOpacity: number;
+    readonly iconSize: number;
+    readonly buckets?: number;
+    readonly seqBy: number;
+    readonly showValues: "none" | "left" | "right" | "above" | "below";
+    readonly numberFormat?: NumberFormat;
+})
+/**
+* reactablefmtr `merge_column`: the cell's value with a second column's value beside it (`position`), each with its
+* own size, colour, weight and style; optionally a logo, wordmark or headshot first.
+*/
+| (ColumnBase<Row> & MarkOpts<Row> & {
+    readonly kind: "mergeStack";
+    readonly stack: keyof Row & string;
+    readonly position: "right" | "left" | "above" | "below";
+    readonly size: number;
+    readonly color?: string;
+    readonly weight: "normal" | "bold";
+    readonly style: "normal" | "italic";
+    readonly stackSize: number;
+    readonly stackColor: string;
+    readonly stackWeight: "normal" | "bold";
+    readonly stackStyle: "normal" | "italic";
+    readonly spacing: number;
+    readonly team?: keyof Row & string;
+    readonly league?: League;
+    readonly season?: SeasonInput;
+    readonly idSystem?: IdSystem;
+    readonly strict?: boolean;
+})
+/**
+* reactablefmtr `bubble_grid`: a circle (or square) per cell, `maxSize * |value| / max|value|` px across, coloured on
+* a ramp of the column's range (or the row's `colorRef` / `team` colour), with the value inside.
+*/
+| (ColumnBase<Row, NumericKey<Row>> & ColorRefOpts<Row> & {
+    readonly kind: "bubble";
+    readonly shape: "circles" | "squares";
+    readonly colors: readonly string[];
+    readonly bias: number;
+    readonly opacity: number;
+    readonly minValue?: number;
+    readonly maxValue?: number;
+    readonly maxSize: number;
+    readonly showText: boolean;
+    readonly textColor?: string;
+    readonly numberFormat?: NumberFormat;
 });
 
 // @public (undocumented)
@@ -523,13 +648,40 @@ export interface GoogleFont {
 export const GT_ALIASES: Readonly<Record<string, Alias>>;
 
 // @public
+export type IconName = "circle" | "square" | "diamond" | "star" | "triangle-up" | "triangle-down" | "arrow-up" | "arrow-down" | "arrow-right" | "check" | "xmark" | "minus" | "plus" | "heart";
+
+// @public
 export function isMissing(v: unknown): boolean;
+
+// @public
+export interface MarkOpts<Row> {
+    // (undocumented)
+    readonly mark?: "logo" | "wordmark" | "headshot";
+    // (undocumented)
+    readonly markHeight?: number;
+    // (undocumented)
+    readonly markKey?: keyof Row & string;
+}
 
 // @public (undocumented)
 export function matches<Row>(p: Predicate<Row>, row: Row): boolean;
 
 // @public
 export function nextSortDir(current: Sort | null, col: string): SortDir | null;
+
+// @public
+export interface NumberFormat {
+    // (undocumented)
+    readonly digits?: number;
+    // (undocumented)
+    readonly prefix?: string;
+    // (undocumented)
+    readonly scale?: number;
+    // (undocumented)
+    readonly suffix?: string;
+    // (undocumented)
+    readonly type?: FormatType;
+}
 
 // @public
 export const NUMERIC_KINDS: ReadonlySet<string>;

@@ -144,6 +144,10 @@ export const NUMERIC_KINDS: ReadonlySet<string> = new Set([
   "colorPills",
   "colorRanks",
   "percentileBar",
+  "dataBar",
+  "iconSet",
+  "iconAssign",
+  "bubble",
 ]);
 
 /** null, undefined, "", NaN, and an invalid `Date` are missing; `withMissingLast` sorts them last. */

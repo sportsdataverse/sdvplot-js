@@ -6,15 +6,49 @@ import { TableSpecError } from "./errors.js";
 export function ramp(
   palette: readonly string[],
   [lo, hi]: readonly [number, number],
+  bias = 1,
 ): (v: number) => string | null {
   const k = palette.length - 1;
+  if (!(bias > 0)) throw new TableSpecError(`bias must be a positive number, got ${String(bias)}`);
+  // grDevices::colorRamp(bias): stop i sits at (i / k) ^ bias; bias 1 is the evenly spaced great_tables ramp
+  const stops = palette.map((_, i) => (k === 0 ? 0 : (i / k) ** bias));
   return (v) => {
     if (!(lo <= v && v <= hi)) return null;
     if (k === 0) return palette[0] ?? null;
     const t = hi === lo ? 0.5 : (v - lo) / (hi - lo);
-    const i = Math.min(Math.floor(t * k), k - 1);
-    return mix(palette[i] as string, palette[i + 1] as string, t * k - i);
+    if (bias === 1) {
+      const i = Math.min(Math.floor(t * k), k - 1);
+      return mix(palette[i] as string, palette[i + 1] as string, t * k - i);
+    }
+    let i = 0;
+    while (i < k - 1 && t > (stops[i + 1] as number)) i++;
+    const a = stops[i] as number;
+    const b = stops[i + 1] as number;
+    return mix(palette[i] as string, palette[i + 1] as string, Math.min(1, Math.max(0, (t - a) / (b - a))));
   };
+}
+
+/** dplyr::ntile(x, n): rank with ties broken by position (row_number), then `n` equal-count buckets, larger first; null stays null. */
+export function ntile(values: readonly (number | null)[], n: number): (number | null)[] {
+  if (!(Number.isInteger(n) && n > 0))
+    throw new TableSpecError(`buckets must be a positive integer, got ${String(n)}`);
+  const order = values
+    .map((v, i) => [v, i] as const)
+    .filter((p): p is readonly [number, number] => p[0] !== null)
+    .sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  const len = order.length;
+  const out: (number | null)[] = values.map(() => null);
+  const nLarger = len % n;
+  const larger = Math.ceil(len / n);
+  const smaller = Math.floor(len / n);
+  const threshold = larger * nLarger;
+  order.forEach(([, i], j) => {
+    const x = j + 1;
+    out[i] = Math.floor(
+      x <= threshold ? (x + larger - 1) / larger : (x - threshold + smaller - 1) / smaller + nLarger,
+    );
+  });
+  return out;
 }
 
 /** Python `_ranks` (_cells.py:1051-1066): R rank(ties = "average", na.last = "keep") ascending; desc flips it as top − r + 1, top = the largest rank. */
