@@ -5,7 +5,7 @@ sidebar_position: 12
 
 Decorations are everything around and across the cells: titles and notes, rules and stripes, rows picked out,
 legends, a long table folded into blocks. Each is one builder method (sdvplotR's `gt_*` helpers, renamed), they stack
-in any order, and like the rest of a spec they are plain data. All 25 are shown here on the same eight AFC teams.
+in any order, and like the rest of a spec they are plain data. All 26 are shown here on the same eight AFC teams.
 
 ## Titles and notes
 
@@ -70,6 +70,14 @@ adds stars from a p-value column.
 <Live id="sdvtables/decorations/legendContinuous" />
 
 <Live id="sdvtables/decorations/legendDiscrete" />
+
+`legendIcon` is reactablefmtr's `add_icon_legend`: a row of icons with their labels, right-aligned under the table by
+default. `iconSet` takes reactablefmtr's three presets (`"ski rating"`, `"medals"`, `"batteries"`) with their colours
+and labels, which `labels` can rename; or pass your own `icons` (circle, square, diamond, double-diamond, triangle-up,
+triangle-down, medal and four battery levels) with a colour and a label each. The icons are small inline SVGs, so no
+icon font loads. With `showLabels: false` each label stays on its icon as the accessible name.
+
+<Live id="sdvtables/decorations/legendIcon" />
 
 <Live id="sdvtables/decorations/scaleNote" />
 

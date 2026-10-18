@@ -6,6 +6,7 @@ import { booktabs } from "./booktabs.js";
 import { broadsheet } from "./broadsheet.js";
 import { brutalist } from "./brutalist.js";
 import { drench } from "./drench.js";
+import { FMTR_THEMES, fmtrTeam } from "./fmtr.js";
 import { gtutils } from "./gtutils.js";
 import { kenpom } from "./kenpom.js";
 import { midnight } from "./midnight.js";
@@ -41,6 +42,8 @@ export const THEMES: Readonly<Record<string, ThemeDef>> = {
   terminal,
   tier,
   tufte,
+  ...FMTR_THEMES, // the 27 reactablefmtr themes, fmtr-<name>
+  "fmtr-team": fmtrTeam,
 };
 export const THEME_NAMES: readonly string[] = Object.keys(THEMES);
 export function resolveTheme(ref: ThemeRef): Theme {
@@ -49,3 +52,5 @@ export function resolveTheme(ref: ThemeRef): Theme {
   return def(ref);
 }
 export type { Theme, ThemeTokens, GoogleFont, ThemeDef } from "./tokens.js";
+/** The 27 reactablefmtr themes' sdvtables names (`fmtr-cerulean` ... `fmtr-void`), for `themePreview`. */
+export const FMTR_THEME_NAMES: readonly string[] = Object.keys(FMTR_THEMES);

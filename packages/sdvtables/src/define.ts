@@ -480,6 +480,19 @@ export class TableBuilder<Row> {
   font(family: string, o: Partial<Omit<D<Row, "font">, "type" | "family">> = {}): TableBuilder<Row> {
     return this.add({ type: "font", family, google: true, ...o });
   }
+  /**
+   * reactablefmtr `add_icon_legend`: icons with labels, by default right-aligned below the table.
+   */
+  legendIcon(o: Partial<Omit<D<Row, "legendIcon">, "type">> = {}): TableBuilder<Row> {
+    return this.add({
+      type: "legendIcon",
+      showLabels: true,
+      align: "right",
+      location: "bottom",
+      iconSize: 16,
+      ...o,
+    });
+  }
   build(): TableSpec<Row> {
     if (this.s.columns.length === 0)
       throw new TableSpecError("a table needs at least one column: call .columns(c => [...])");

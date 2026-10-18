@@ -50,6 +50,7 @@ const DECORATIONS = {
   borderBars: 1,
   legendContinuous: 1,
   legendDiscrete: 1,
+  legendIcon: 1,
   significance: 1,
   outliers: 1,
   scaleNote: 1,

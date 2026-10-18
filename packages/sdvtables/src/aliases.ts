@@ -1,4 +1,5 @@
-// src/aliases.ts — every sdvplotR gt_* / pal_* / reactable_sdv_* export (74, sdvplotR NAMESPACE) → its sdvtables target.
+// src/aliases.ts — every sdvplotR gt_* / pal_* / reactable_sdv_* export (74, sdvplotR NAMESPACE), and the reactablefmtr themes and
+// add_icon_legend, → its sdvtables target.
 // Target forms: "c.<kind>" (column factory), "builder.<method>" (TableBuilder), "theme.<name>" (THEME_NAMES),
 // "html.<export>" (the ./html subpath), a bare root export ("snakeAlign", "PAL_MIDNIGHT"), or a Phase 5 name.
 /** One sdvplotR/gtUtils name and where it lives in sdvtables. */
@@ -89,6 +90,35 @@ export const GT_ALIASES: Readonly<Record<string, Alias>> = {
   reactable_sdv_cols_label: { target: "labelHtml", status: "not-ported", note: "as gt_sdv_cols_label" },
   reactable_sdv_team_color_bar: T("c.teamColorBar"),
   reactable_sdv_team_color_bg: T("c.teamColorBg"),
+  // reactablefmtr 2.1.0 themes (its own function names) and add_icon_legend
+  cerulean: T("theme.fmtr-cerulean"),
+  clean: T("theme.fmtr-clean"),
+  cosmo: T("theme.fmtr-cosmo"),
+  cyborg: T("theme.fmtr-cyborg"),
+  dark: T("theme.fmtr-dark"),
+  darkly: T("theme.fmtr-darkly"),
+  default: T("theme.fmtr-default"),
+  espn: T("theme.fmtr-espn"),
+  fivethirtyeight: T("theme.fmtr-fivethirtyeight"),
+  flatly: T("theme.fmtr-flatly"),
+  hoverdark: T("theme.fmtr-hoverdark"),
+  hoverlight: T("theme.fmtr-hoverlight"),
+  journal: T("theme.fmtr-journal"),
+  lux: T("theme.fmtr-lux"),
+  midnight: T("theme.fmtr-midnight"),
+  midnightblue: T("theme.fmtr-midnightblue"),
+  minty: T("theme.fmtr-minty"),
+  no_lines: T("theme.fmtr-no-lines"),
+  nytimes: T("theme.fmtr-nytimes"),
+  pff: T("theme.fmtr-pff"),
+  sandstone: T("theme.fmtr-sandstone"),
+  sanfran: T("theme.fmtr-sanfran"),
+  slate: T("theme.fmtr-slate"),
+  spacelab: T("theme.fmtr-spacelab"),
+  sunrise: T("theme.fmtr-sunrise"),
+  superhero: T("theme.fmtr-superhero"),
+  void: T("theme.fmtr-void"),
+  add_icon_legend: T("builder.legendIcon", "SVG icons, no Font Awesome"),
 };
 /** Look up the sdvtables equivalent of an sdvplotR/gtUtils function name. */
 export const aliasFor = (name: string): Alias | undefined => GT_ALIASES[name];

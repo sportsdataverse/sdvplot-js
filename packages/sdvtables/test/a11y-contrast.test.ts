@@ -1,7 +1,7 @@
 import { contrast, loadLeague, mix } from "@sportsdataverse/sdvplot";
 import { beforeAll, expect, test } from "vitest";
 import { BASE_CSS } from "../src/themes/base-css.js";
-import { THEME_NAMES, resolveTheme } from "../src/themes/index.js";
+import { FMTR_THEME_NAMES, THEME_NAMES, resolveTheme } from "../src/themes/index.js";
 import type { Theme, ThemeTokens } from "../src/themes/tokens.js";
 
 // WCAG 2.2 1.4.11 (non-text contrast): the visual cue of a control or a state needs 3:1 against what it touches.
@@ -121,6 +121,19 @@ const themes = (): [string, Theme][] => [
     }),
   ]),
   ["sdv (dark)", resolveTheme({ name: "sdv", density: "comfortable", options: { style: "dark" } })],
+  // reactablefmtr's opt-in striped rows and hover fill sit under the same cues
+  ...FMTR_THEME_NAMES.map((name): [string, Theme] => [
+    `${name} (striped, highlight)`,
+    resolveTheme({ name, density: "comfortable", options: { striped: "true", highlight: "true" } }),
+  ]),
+  [
+    "fmtr-team KC (striped, highlight)",
+    resolveTheme({
+      name: "fmtr-team",
+      density: "comfortable",
+      options: { league: "nfl", team: "KC", striped: "true", highlight: "true" },
+    }),
+  ],
 ];
 
 test("I4: the filter boxes' border reaches 3:1 against the table background in every theme", () => {

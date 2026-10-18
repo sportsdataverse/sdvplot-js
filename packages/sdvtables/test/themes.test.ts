@@ -281,7 +281,7 @@ test("kenpom bands odd/even and the scaled px sizes; sofa/tier style enum; drenc
   // white ink → the light-type branch (_themes.py:929-930): rule = adjustLuminance(color, 0.9), band = adjustLuminance(color, −0.7) — oracle values above
   expect(dr.tokens.hline).toBe("1px solid #ff6676");
   expect(dr.tokens.groupBg).toBe("#af0000");
-  expect(THEME_NAMES.length).toBe(20);
+  expect(THEME_NAMES.length).toBe(48); // 20 sdvplotR/gtUtils + 27 reactablefmtr + fmtr-team
 });
 test("almanac, athletic, booktabs spot values", () => {
   const a = tk("almanac", undefined, "compact");

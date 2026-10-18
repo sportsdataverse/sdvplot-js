@@ -81,6 +81,37 @@ const R_NAMES = [
   "reactable_sdv_team_color_bar",
   "reactable_sdv_team_color_bg",
 ];
+// reactablefmtr 2.1.0: its 27 theme functions and add_icon_legend
+const FMTR_NAMES = [
+  "cerulean",
+  "clean",
+  "cosmo",
+  "cyborg",
+  "dark",
+  "darkly",
+  "default",
+  "espn",
+  "fivethirtyeight",
+  "flatly",
+  "hoverdark",
+  "hoverlight",
+  "journal",
+  "lux",
+  "midnight",
+  "midnightblue",
+  "minty",
+  "no_lines",
+  "nytimes",
+  "pff",
+  "sandstone",
+  "sanfran",
+  "slate",
+  "spacelab",
+  "sunrise",
+  "superhero",
+  "void",
+  "add_icon_legend",
+];
 test("every R name has an alias row; ported targets resolve to a real factory kind, builder method, theme, ./html export or root export", () => {
   const members: Readonly<Record<string, readonly string[]>> = {
     c: Object.keys(columnFactory<Record<string, unknown>>()),
@@ -89,7 +120,7 @@ test("every R name has an alias row; ported targets resolve to a real factory ki
     html: Object.keys(html),
     root: Object.keys(root),
   };
-  for (const name of R_NAMES) {
+  for (const name of [...R_NAMES, ...FMTR_NAMES]) {
     const a = GT_ALIASES[name];
     expect(a, name).toBeDefined();
     if (a?.status !== "ported") continue;
@@ -98,7 +129,8 @@ test("every R name has an alias row; ported targets resolve to a real factory ki
   }
   expect(R_NAMES).toHaveLength(74);
   expect(new Set(R_NAMES).size).toBe(74);
-  expect(Object.keys(GT_ALIASES).sort()).toEqual([...R_NAMES].sort());
+  expect(FMTR_NAMES).toHaveLength(28);
+  expect(Object.keys(GT_ALIASES).sort()).toEqual([...R_NAMES, ...FMTR_NAMES].sort());
   expect(
     Object.values(GT_ALIASES)
       .filter((a) => a.status === "phase-5")

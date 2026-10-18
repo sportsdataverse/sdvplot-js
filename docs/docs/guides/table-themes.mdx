@@ -4,9 +4,9 @@ sidebar_position: 10
 ---
 
 A theme sets everything about a table that is not its data: fonts, colours, rules, spacing. sdvtables ships the 20
-themes of sdvplotR and gtUtils, each one function call on the builder, so a table can match a site, a publication or
-a team without any CSS of your own. The [theme gallery](/gallery/sdvtables/#every-theme) shows all 20 on the same
-rows.
+themes of sdvplotR and gtUtils and the 27 of reactablefmtr, each one function call on the builder, so a table can
+match a site, a publication or a team without any CSS of your own. The
+[theme gallery](/gallery/sdvtables/#every-theme) shows every one on the same rows.
 
 ## One theme
 
@@ -24,6 +24,40 @@ rows.
 
 <Live id="sdvtables/themes-api/secondary-on" />
 
+## reactablefmtr themes
+
+The 27 themes of [reactablefmtr](https://kcuilla.github.io/reactablefmtr/) are registered as `fmtr-<name>`
+(`fmtr-espn`, `fmtr-nytimes`, `fmtr-fivethirtyeight`, ...), so they never collide with the house themes: the house
+`midnight` and reactablefmtr's `fmtr-midnight` are different tables. `no_lines` is `fmtr-no-lines`, and `GT_ALIASES`
+maps each reactablefmtr name to its theme. Colours, sizes, rules and padding are reactablefmtr's own, read from its
+source. A few were moved just far enough to pass sdvtables' 3:1 contrast checks on the row cues and the filter
+boxes: the body type of espn, lux, minty, pff, spacelab and sunrise, and the stripe and hover fills of darkly,
+hoverlight and midnight.
+
+<Live id="sdvtables/themes/fmtr-espn" />
+
+Each theme function's arguments are options: `fontSize`, `fontColor`, `headerFontSize`, `headerFontColor`,
+`backgroundColor` and `cellPadding`. reactable's `striped` and `highlight` are options too (`"true"`), off by default as
+in reactable. The highlight fills the row under the pointer (the engine's hovered row), and is on by default in
+`fmtr-hoverdark` and `fmtr-hoverlight`.
+
+```ts
+defineTable<Row>()
+  .columns((c) => [c.text("team"), c.int("wins")])
+  .theme("fmtr-nytimes", { options: { striped: "true", fontSize: "14" } })
+  .build();
+```
+
+`fmtr-team` is reactablefmtr's `default` look with the header filled in a team's primary colour (`{ league, team }`),
+the header ink picked by contrast, a rule in the secondary colour, and stripe and hover tints that keep the body type
+at 4.5:1.
+
+<Live id="sdvtables/themes/fmtr-team" />
+
+`FMTR_THEME_NAMES` lists the 27; hand it to `themePreview` to see them side by side.
+
+<Live id="sdvtables/themes-api/fmtr-preview" />
+
 ## Density
 
 `.theme(name, { density })` scales type and padding from `DENSITY`: compact, comfortable or social.
@@ -32,7 +66,7 @@ rows.
 
 ## Comparing themes
 
-`themePreview(spec, rows, names)` renders one table per theme (all 20 when `names` is left out), for choosing one.
+`themePreview(spec, rows, names)` renders one table per theme (every theme when `names` is left out), for choosing one.
 
 <Live id="api/sdvtables/themePreview" />
 

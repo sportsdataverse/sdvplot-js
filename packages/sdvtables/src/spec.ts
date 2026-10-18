@@ -453,7 +453,49 @@ export type Decoration<Row> =
       readonly google: boolean;
       readonly weight?: number | string;
       readonly style?: "normal" | "italic";
-    };
+    }
+  | LegendIconDecoration;
+
+/** A `legendIcon` shape, drawn as inline SVG (reactablefmtr draws Font Awesome icons; sdvtables loads no icon font). */
+export type LegendIconShape =
+  | "circle"
+  | "square"
+  | "diamond"
+  | "double-diamond"
+  | "triangle-up"
+  | "triangle-down"
+  | "medal"
+  | "battery-quarter"
+  | "battery-half"
+  | "battery-three-quarters"
+  | "battery-full";
+/**
+ * reactablefmtr `add_icon_legend`: a row of icons with labels above or below the table. Either a preset `iconSet`
+ * (reactablefmtr's "ski rating", "medals" or "batteries", with its colours and labels) or your own `icons`, one
+ * colour and one label each.
+ */
+export interface LegendIconDecoration {
+  readonly type: "legendIcon";
+  /** reactablefmtr's preset `icon_set`; its labels can be renamed with `labels` (same count). */
+  readonly iconSet?: "ski rating" | "medals" | "batteries";
+  /** Custom shapes, used when `iconSet` is absent. */
+  readonly icons?: readonly LegendIconShape[];
+  /** One CSS colour per custom icon (recycled when shorter). */
+  readonly colors?: readonly string[];
+  /** One label per icon; required with `icons` when `showLabels` is true. */
+  readonly labels?: readonly string[];
+  /** Write each label beside its icon; false keeps the label as the icon's accessible name only. */
+  readonly showLabels: boolean;
+  /** Bold line above the icons. */
+  readonly title?: string;
+  /** Small muted line below the icons. */
+  readonly footer?: string;
+  readonly align: "left" | "right";
+  /** reactablefmtr appends the legend after the table: "bottom". */
+  readonly location: "top" | "bottom";
+  /** Icon height in px (reactablefmtr: font-size 16px). */
+  readonly iconSize: number;
+}
 
 export type DecorationType = Decoration<never>["type"];
 export interface ThemeRef {
