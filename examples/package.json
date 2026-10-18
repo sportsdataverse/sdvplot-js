@@ -44,6 +44,7 @@
     "uplot": "1.6.32",
     "vega": "^6.4.0",
     "vega-embed": "^7.3.0",
-    "vega-lite": "^6.4.3"
+    "vega-lite": "^6.4.3",
+    "victory": "37.3.6"
   }
 }

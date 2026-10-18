@@ -90,6 +90,35 @@ export interface SurfaceBackdropProps {
     ylim?: readonly [number, number];
     // (undocumented)
     yTrans?: number;
+export function LogoPoint(props: LogoPointProps): ReactElement | null;
+
+// Warning: (ae-forgotten-export) The symbol "Shared" needs to be exported by the entry point react.d.ts
+//
+// @public
+export interface LogoPointProps extends Shared {
+    alpha?: number;
+    datum?: object;
+    events?: object;
+    // Warning: (ae-forgotten-export) The symbol "SeasonInput" needs to be exported by the entry point react.d.ts
+    season?: SeasonInput;
+    size?: number;
+    team: string;
+    x?: number;
+    y?: number;
+}
+
+// @public
+export function LogoTick(props: LogoTickProps): ReactElement;
+
+// @public
+export interface LogoTickProps extends Shared {
+    season?: SeasonInput;
+    size?: number;
+    text?: unknown;
+    textAnchor?: string;
+    verticalAnchor?: string;
+    x?: number;
+    y?: number;
 }
 
 // @public
@@ -136,6 +165,7 @@ export function Wordmark(props: Omit<TeamLogoProps, "markType">): ReactElement |
 // Warnings were encountered during analysis:
 //
 // dist/react.d.ts:173:5 - (ae-forgotten-export) The symbol "ColorOptions" needs to be exported by the entry point react.d.ts
+// dist/react.d.ts:172:5 - (ae-forgotten-export) The symbol "ColorOptions" needs to be exported by the entry point react.d.ts
 
 // (No @packageDocumentation comment for this package)
 
