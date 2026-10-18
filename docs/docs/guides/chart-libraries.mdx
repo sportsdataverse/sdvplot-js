@@ -26,6 +26,20 @@ and `withWordmarks` place images at each row's point.
 
 <Live id="sdvplot/plotly/headshots-wordmarks" />
 
+## Plotly: a whole league, with a hover point under each logo
+
+Layout images take no hover, so this chart keeps an invisible marker under each of the 32 logos for the tooltip. A
+descending axis range reverses the y axis, and `withLogos` places every image on it as Plotly draws it.
+
+<Live id="sdvplot/plotly/epa-logos" />
+
+## Plotly: logos down the y axis
+
+`withAxisLogos(figure, "y", …)` puts the logos left of a horizontal bar chart, one per category band, and grows the
+left margin to fit them. stats.nba.com names teams by nickname, and sdvplot resolves "Clippers" as it would "LAC".
+
+<Live id="sdvplot/plotly/nba-y-axis-logos" />
+
 ## Vega-Lite
 
 The same verbs add a native `image` layer to a Vega-Lite spec; compile it and render it as usual. `logoLayer` is that
@@ -39,6 +53,20 @@ layer on its own, to drop into a layered spec of your own, and `teamColorScale` 
 
 <Live id="sdvplot/vega/headshots-wordmarks" />
 
+## Vega-Lite: logos down the y axis
+
+On a nominal y axis, `withAxisLogos` blanks the labels and draws a logo left of each band, here for the NHL's Atlantic
+Division in team colours.
+
+<Live id="sdvplot/vega/nhl-y-axis-logos" />
+
+## Vega-Lite: a whole league in a layered spec
+
+`withLogos` also takes a layered spec: it reads the x and y encodings from the layer that has them, reversed scale
+included, and adds its image layer beside the reference rules and a transparent hover layer.
+
+<Live id="sdvplot/vega/epa-logos" />
+
 ## ECharts
 
 For ECharts the verbs add a `custom` series that draws the images, sized from the grid at render time; axis logos
@@ -50,6 +78,20 @@ in any ECharts project.
 <Live id="sdvplot/echarts/axis-logos" />
 
 <Live id="sdvplot/echarts/headshots-wordmarks" />
+
+## ECharts: logos down the y axis
+
+A category y axis takes rich-text logo labels too; `inverse: true` puts first place on top, as a standings table
+reads.
+
+<Live id="sdvplot/echarts/nhl-y-axis-logos" />
+
+## ECharts: a logo at the end of each line
+
+`withLogos` places images at any row's point, so one row per team at its last value ends each line with its logo, and
+`teamColorPalette` colours the lines in series order.
+
+<Live id="sdvplot/echarts/season-margin-logos" />
 
 ## Images that travel with the file
 

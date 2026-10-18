@@ -1,0 +1,62 @@
+---
+title: Table recipes
+sidebar_position: 13.5
+---
+
+Every cell kind and decoration has its own page in the [gallery](/gallery/sdvtables/), one feature at a time. These
+recipes put several together into finished tables, the way reactable and reactablefmtr showcases do: league marks,
+colour scales, a theme and, where the table is long enough to need it, sorting, filtering and paging. Each one runs on
+the [sample data](/sample-data).
+
+## NBA standings, sortable and filterable
+
+Logos, a team-colour bar beside each nickname and the wins coloured by rank, for the 2023-24 Pacific Division. Click a
+header to sort or type a city into the filter box; games behind and win % are computed from the captured wins and
+losses.
+
+<Live id="sdvtables/recipes/nba-pacific" />
+
+## NHL standings, grouped
+
+The Atlantic Division split into the top three, who qualify for the playoffs, and everyone else. `groupBy` and
+`groupStripes` mark the two groups, `tally` writes the record and `percentileBar` places each team's points percentage
+on a track.
+
+<Live id="sdvtables/recipes/nhl-atlantic" />
+
+## NFL EPA per play, paged
+
+All 32 teams, eight to a page, with logos and wordmarks. Offence and defence share one colour scale, so one legend
+reads for both, and `delta` shows the net with an arrow.
+
+<Live id="sdvtables/recipes/nfl-epa" />
+
+## A game log in the team's colours
+
+The `sdvTeam` theme takes its heading colour from the team named in its options. Here it frames Philadelphia's 2024
+regular season: opponent logos, results, scores and margins, six games to a page.
+
+<Live id="sdvtables/recipes/eagles-game-log" />
+
+## Quarterbacks on a dark theme
+
+`midnight` is a dark theme. The table shows ESPN headshots, each quarterback's name above his team in the team colour, and a
+missing value shown as an empty pill. `rowAccent` turns the division into a coloured left edge and `spotlight` lights
+Buffalo and dims the rest.
+
+<Live id="sdvtables/recipes/afc-quarterbacks-dark" />
+
+## A hockey scoring summary
+
+The four goals of the PWHL's game 42, with team logos looked up by HockeyTech id, each scorer above the team name in
+its colour, and the score after each goal. A `cutline` marks the end of each period but the last.
+
+<Live id="sdvtables/recipes/pwhl-scoring" />
+
+## World Cup passing
+
+France's completed first-half passes in the 2018 final, one row per passer: mean length, metres gained toward goal as
+colour pills, and the share that ended in the attacking third as a percentile bar. The table is sortable and pages six
+passers at a time. Passers are shown by StatsBomb player id: the fixture carries no names.
+
+<Live id="sdvtables/recipes/wc2018-passing" />
