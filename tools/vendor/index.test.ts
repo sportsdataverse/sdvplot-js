@@ -88,6 +88,25 @@ test("SPORTYR_VENDOR_NOTE is appended to VENDOR_SOURCE after the date", { timeou
   expect(line.split(" ").slice(0, 2)).toEqual(["sportyR", "2.2.3"]);
 });
 
+test(
+  "re-vendoring the same sha with a different note keeps the old line (a re-pin needs a new sha)",
+  { timeout: 60_000 },
+  () => {
+    const { root, repo } = sandbox();
+    const run = (note: string) =>
+      spawnSync(process.execPath, [TSX, SCRIPT], {
+        cwd: root,
+        env: { ...process.env, SPORTYR_REPO: repo, SPORTYR_VENDOR_NOTE: note },
+        encoding: "utf8",
+      });
+    const source = join(root, "packages/sporty/data/VENDOR_SOURCE");
+    expect(run("PR #68 (unmerged)").status).toBe(0);
+    const first = readFileSync(source, "utf8");
+    expect(run("").status).toBe(0);
+    expect(readFileSync(source, "utf8")).toBe(first);
+  },
+);
+
 test("--check fails when the vendored copy differs from HEAD", { timeout: 60_000 }, () => {
   const { root, repo, dest } = sandbox();
   writeFileSync(dest, BLOB.replaceAll("\n", "\r\n"));
