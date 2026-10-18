@@ -60,7 +60,7 @@ Python      gt_theme_source(gt, "${t.id}")
             plottable_sdv_theme("${t.id}")
             itables_sdv_theme("${t.id}")
 R           gt_theme_source(gt, "${t.id}")
-            reactable_theme_sdv("${t.id}")`}</code>
+            reactable_sdv_theme("${t.id}")`}</code>
           </pre>
         </details>
       </figcaption>
