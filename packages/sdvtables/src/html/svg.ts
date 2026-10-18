@@ -109,6 +109,10 @@ interface Frame {
 function frameOf(col: Sparkline | Sparkbar, present: readonly number[], bars: boolean, row: number): Frame {
   const [t = 0, r = 0, b = 0, l = 0, grown = 22] = margins(col.labels, col.statline !== undefined, bars);
   const h = col.chartHeight ?? grown;
+  if (col.chartWidth <= l + r || h <= t + b)
+    throw new TableSpecError(
+      `column "${col.key}": ${col.kind} chartWidth x chartHeight ${plainNumber(col.chartWidth)} x ${plainNumber(h)} leaves no room inside its margins (${l + r} x ${t + b} px with these labels/statline); make the chart larger`,
+    );
   // bars stand on zero, so the scale holds it (reactablefmtr's smallest bar would have no height)
   const lo = col.minValue ?? Math.min(...present, ...(bars ? [0] : []));
   const hi = col.maxValue ?? Math.max(...present, ...(bars ? [0] : []));

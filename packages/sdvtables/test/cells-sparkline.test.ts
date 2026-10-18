@@ -241,8 +241,9 @@ test("numeric strings in a series are read as toNumber reads them; other text is
   expect(attr(draw(["1", "0x10", "2"]), "path", "d")).toBe("M13,20 h0 M87,3 h0");
 });
 
-test("an explicit chartHeight of 22 is honoured with labels on; the default grows", () => {
-  expect(draw([1, 3, 2], { labels: ["max"], chartHeight: 22 })).toContain('height="22"');
+test("an explicit chartHeight is honoured with labels on; the default grows", () => {
+  // a "max" label needs 14 + 10 px of margin; 26 leaves a drawable box and is below the grown default of 30
+  expect(draw([1, 3, 2], { labels: ["max"], chartHeight: 26 })).toContain('height="26"');
   expect(draw([1, 3, 2], { labels: ["max"] })).toContain('height="30"');
   expect(
     defineTable<Row>()
@@ -256,4 +257,12 @@ test("statlineColor and labelSize are CSS values: url( and quotes are rejected, 
     /sparkline statlineColor/,
   );
   expect(() => draw([1, 2], { labels: ["max"], labelSize: '1em"><script>' })).toThrow(/sparkline labelSize/);
+});
+
+test("a chart too small for its margins is an error, not a mirrored or missing chart", () => {
+  // statline margins are l13 + r28: at 40 px wide the x axis would run backwards
+  expect(() => draw([1, 2, 3], { statline: "mean", chartWidth: 40 })).toThrow(/leaves no room inside its margins/);
+  // a "max" label grows the margins to t14 + b10: at 20 px tall the y scale would flip
+  expect(() => draw([1, 2, 3], { labels: ["max"], chartHeight: 20 })).toThrow(/sparkline chartWidth x chartHeight/);
+  expect(draw([1, 2, 3], { statline: "mean", chartWidth: 60 })).toContain("<svg");
 });
