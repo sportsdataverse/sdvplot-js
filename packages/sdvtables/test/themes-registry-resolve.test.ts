@@ -78,7 +78,20 @@ describe("registry themes resolve", () => {
     expect(listTableThemes().length).toBe(reg.count);
     expect(listTableThemes({ category: "journal" }).every((r) => r.category === "journal")).toBe(true);
   });
-  it("unknown theme still errors", () => {
+  it("unknown theme errors with close matches across house, fmtr and registry names", () => {
     expect(() => resolveTheme(ref("datagolff"))).toThrow(TableSpecError);
+    expect(() => resolveTheme(ref("datagolff"))).toThrow(/did you mean "datagolf"/);
+    expect(() => resolveTheme(ref("datagolff"))).toThrow(/listTableThemes\(\)/);
+    expect(() => resolveTheme(ref("almanak"))).toThrow(/did you mean "almanac"/);
+    expect(() => resolveTheme(ref("zzzzzzzzzzzz"))).not.toThrow(/did you mean/);
+  });
+  it("serif and mono faces fall back to their generic family, sans to the system stack", () => {
+    const eh = registryTheme(ref("evolving-hockey")).tokens; // Crimson Text body, Roboto Slab title
+    expect(eh.fontBody).toBe("'Crimson Text', serif");
+    expect(eh.fontTitle).toBe("'Roboto Slab', serif");
+    expect(registryTheme(ref("the-pudding")).tokens.fontTitle).toBe("'Fraunces', serif");
+    expect(registryTheme(ref("gtextras-dot-matrix")).tokens.fontBody).toBe("'Courier Prime', monospace");
+    expect(registryTheme(ref("aer")).tokens.fontBody).toBe("'Source Serif 4', serif");
+    expect(registryTheme(ref("the-pudding")).tokens.fontBody).toMatch(/^'Inter', system-ui, .*sans-serif/);
   });
 });

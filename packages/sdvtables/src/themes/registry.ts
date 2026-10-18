@@ -114,6 +114,19 @@ function darkAdvice(category: string): string {
 }
 
 /** Whether `name` is a registry theme id. */
+// The CSS generic family a face falls back to, guessed from its name: the same rule as sdvplot
+// `_generic_family` and sdvplotR `.tt_generic_family`; keep the three regexes identical.
+const MONO = /mono|code|courier/i;
+const SERIF =
+  /serif|slab|bodoni|caslon|garamond|playfair|lora|newsreader|tinos|spectral|gelasio|merriweather|crimson|fraunces/i;
+const genericFamily = (family: string): "monospace" | "serif" | "sans-serif" =>
+  MONO.test(family) ? "monospace" : SERIF.test(family) && !/sans/i.test(family) ? "serif" : "sans-serif";
+// serif and mono faces fall back to their generic; sans faces keep the house system stack (ends in sans-serif)
+const registryFontStack = (family: string): string => {
+  const g = genericFamily(family);
+  return g === "sans-serif" ? fontStack(family) : `'${family}', ${g}`;
+};
+
 export const isRegistryTheme = (name: string): boolean => Object.hasOwn(SPECS, name);
 
 /**
@@ -135,7 +148,7 @@ export function registryTheme(ref: ThemeRef): Theme {
   const p = palette(spec, mode);
   const st = spec.structure;
   const d = densitySizes(ref.density);
-  const fam = (k: string) => fontStack(String(spec.fonts[k] ?? spec.fonts.body ?? "Inter"));
+  const fam = (k: string) => registryFontStack(String(spec.fonts[k] ?? spec.fonts.body ?? "Inter"));
   const tokens: ThemeTokens = {
     ...baseTokens(d, fam("body")),
     fontTitle: fam("title"),

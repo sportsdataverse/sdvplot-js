@@ -20,7 +20,7 @@ const PALETTE =
   "page bg text muted accent rule hline labelBg labelColor stripe summaryBg link pos neg posBg negBg heatLow heatMid heatHigh".split(
     " ",
   );
-const HOUSE_NAMES = Object.keys(THEMES).filter((k) => !k.startsWith("fmtr-")); // the 22
+const HOUSE_NAMES = Object.keys(THEMES).filter((k) => !k.startsWith("fmtr-")); // the house themes (20 keys today)
 const FMTR_BARE = FMTR_NAMES.flatMap((n) => [n, n.replace(/_/g, "-")]);
 
 describe("table_themes.json registry", () => {
