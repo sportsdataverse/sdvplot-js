@@ -11,6 +11,7 @@ import {
   setWarningHandler,
   teamColorsSync,
 } from "../src/index.js";
+import { MIN_DELTA_E, deltaE } from "../src/team-palette.js";
 import { type UPlotLike, drawnMarks, logoPlugin, withTeamSeries } from "../src/uplot.js";
 import { BUF, KC, ROWS, ROWS_UNKNOWN } from "./_fixtures.js";
 import { type Call, calls, mockCanvas } from "./chartjs/harness.js";
@@ -292,10 +293,27 @@ describe("withTeamSeries", () => {
       expect(c).toHaveLength(30);
       for (const x of c) expect(contrast(x, background)).toBeGreaterThanOrEqual(3);
     }
-    // a colour that already reads is kept as it is
+    // a colour that already reads, and sits apart from every earlier team's, is kept as it is; no two teams share one
     const plain = strokes();
-    strokes("#181a1b").forEach((x, i) => {
-      if (contrast(plain[i] as string, "#181a1b") >= 3) expect(x).toBe(plain[i]);
+    const dark = strokes("#181a1b");
+    dark.forEach((x, i) => {
+      const apart = dark.slice(0, i).every((p) => deltaE(plain[i] as string, p) >= MIN_DELTA_E);
+      if (contrast(plain[i] as string, "#181a1b") >= 3 && apart) expect(x).toBe(plain[i]);
     });
+    expect(new Set(dark).size).toBe(30);
+    // the light default (no background) is the plain team colours, untouched by either pass
+    expect(plain).toEqual((teamColorsSync("nba", teams) as string[]).map((c) => c.toLowerCase()));
+  });
+
+  test("the Lakers and the Warriors on a dark chart get two colours, both readable and distinct", async () => {
+    await loadLeague("nba");
+    const got = withTeamSeries({ series: [{}, {}, {}] }, [{ team: "LAL" }, { team: "GS" }], {
+      team: "team",
+      league: "nba",
+      background: "#181a1b",
+    }).series.map((s) => (s as { stroke?: string }).stroke);
+    const [lal, gs] = got.slice(1) as [string, string];
+    expect(deltaE(lal, gs)).toBeGreaterThanOrEqual(MIN_DELTA_E);
+    for (const c of [lal, gs]) expect(contrast(c, "#181a1b")).toBeGreaterThanOrEqual(3);
   });
 });

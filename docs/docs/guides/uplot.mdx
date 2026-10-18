@@ -34,7 +34,11 @@ scale; pass `scale` for another one. `x` is on uPlot's "x" scale, and a time sca
 uPlot draws on a transparent canvas, so the series colours have to read on whatever is behind it. Pass the chart's
 background as `background` and every colour keeps at least 3:1 contrast against it (WCAG's minimum for graphics): a
 team colour under that gives way to the team's other colour, else is lightened (on a dark background) or darkened
-until it reads. A colour that already reads is kept.
+until it reads. Each colour must also stay apart from every earlier team's (a CIE76 ΔE of 10 or more): one that
+would land too close takes the team's other colour, or is stepped lighter or darker until it is distinct and still
+reads, so two teams never share one colour (on a dark chart the Lakers and the Warriors would otherwise both turn
+gold). If nothing works it keeps the readable colour and warns once. A colour that already reads and is distinct is
+kept. Without `background` the colours are the teams' own.
 
 <Live id="sdvplot/uplot/dark-mode" />
 

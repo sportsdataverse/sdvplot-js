@@ -5,7 +5,7 @@ import type { ExampleMeta } from "../../contract.js";
 
 export const meta = {
   title:
-    "uPlot: the 2023-24 Pacific's series colours on a light and a dark chart, each at 3:1 contrast or better",
+    "uPlot: the 2023-24 Pacific's series colours on a light and a dark chart, each at 3:1 contrast or better and distinct",
   tags: ["uplot", "withTeamSeries", "contrast", "dark mode", "nba"],
 } satisfies ExampleMeta;
 
@@ -20,7 +20,8 @@ const strokes = (background: string): string[] =>
     .map((s) => s.stroke ?? "");
 
 // uPlot draws on a transparent canvas: give withTeamSeries the colour behind it, and a team colour that would not
-// read there gives way to the team's other colour, or is lightened (dark) or darkened (light) until it does.
+// read there gives way to the team's other colour, or is lightened (dark) or darkened (light) until it does; one that
+// would land too close to an earlier team's is moved apart (on the dark chart the Lakers and Warriors keep two colours).
 const light = strokes("#ffffff");
 const dark = strokes("#181a1b");
 export default NBA_STANDINGS.map((s, i) => ({

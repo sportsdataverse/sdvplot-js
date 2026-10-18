@@ -14,9 +14,10 @@ import {
   markPlacements,
 } from "./_web.js";
 import type { DrawnMark } from "./_web.js";
-import { contrast, hex6, mix, onColor } from "./contrast.js";
+import { hex6 } from "./contrast.js";
 import { InputError, UnsupportedTargetError, warn } from "./errors.js";
 import type { Placement } from "./placement.js";
+import { teamPalette } from "./team-palette.js";
 import type { IdSystem, League, SeasonInput, Which } from "./types.js";
 export type { DrawnMark, MarkOptions, Row } from "./_web.js";
 
@@ -172,23 +173,13 @@ export interface UPlotSeriesOptions {
   fallback?: string;
   /**
    * The chart's background. Given, a team colour under 3:1 contrast against it is swapped for the team's other
-   * colour, else moved towards white (on a dark background) or black (a light one) until it reads: dark mode.
+   * colour, else moved towards white (on a dark background) or black (a light one) until it reads: dark mode. A
+   * colour that would then sit too close to an earlier team's (CIE76 ΔE under 10) takes the team's other colour, or
+   * is stepped lighter or darker until it is distinct; failing that it is kept, with one warning.
    */
   background?: string;
   /** Also fill the area under each line in its colour, at this opacity in [0, 1]. Default: no fill. */
   fill?: number;
-}
-const MIN_CONTRAST = 3; // WCAG 1.4.11: graphical objects
-/** `c`, else `alt`, else `c` mixed towards the background's ink until it reaches 3:1 against `bg`. */
-function readable(c: string, alt: string | null | undefined, bg: string): string {
-  if (contrast(c, bg) >= MIN_CONTRAST) return c;
-  if (alt != null && contrast(alt, bg) >= MIN_CONTRAST) return alt;
-  const ink = onColor(bg);
-  for (let t = 0.05; t < 1; t += 0.05) {
-    const m = mix(c, ink, t);
-    if (contrast(m, bg) >= MIN_CONTRAST) return m;
-  }
-  return ink;
 }
 const rgba = (hex: string, alpha: number): string => {
   const n = Number.parseInt(hex.slice(1), 16);
@@ -198,7 +189,7 @@ const rgba = (hex: string, alpha: number): string => {
 /**
  * Team colours for a uPlot chart's series: row `i`'s team strokes `series[i + 1]` (series 0 is uPlot's x), and with
  * `fill` also fills the area under it. The rest of each series is kept and the options are copied, never changed. With
- * `background`, every colour keeps 3:1 contrast against it (dark mode).
+ * `background`, every colour keeps 3:1 contrast against it (dark mode) and stays distinct from the others.
  *
  * @example
  * ```ts
@@ -237,10 +228,10 @@ export function withTeamSeries<F extends object>(opts: F, rows: readonly Row[], 
       ? []
       : colorList(o.league, teams, { ...co, which: o.which === "secondary" ? "primary" : "secondary" });
   const colors = main.map((c) => hex6(c ?? fallback, { dropAlpha: true }));
+  const strokes = bg === undefined ? colors : teamPalette(colors, other, bg, teams.map(String));
   const out = series.map((s: unknown, i) => {
-    const c = colors[i - 1];
-    if (c === undefined) return s;
-    const stroke = bg === undefined ? c : readable(c, other[i - 1], bg);
+    const stroke = strokes[i - 1];
+    if (stroke === undefined) return s;
     return { ...(s as object), stroke, ...(fill === undefined ? {} : { fill: rgba(stroke, fill) }) };
   });
   return { ...opts, series: out };
