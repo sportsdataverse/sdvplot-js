@@ -40,9 +40,13 @@ if (check) {
   const version = /^Version:\s*(\S+)/m.exec(git("show", "HEAD:DESCRIPTION").toString())?.[1] ?? "unknown";
   // `sportyR <DESCRIPTION version> <git sha> <date>`; fixtures-version.test.ts ties fixtures/sporty/VERSION to it. The
   // date is when that commit was first vendored: re-vendoring the same commit keeps the line, so git status stays clean.
+  // SPORTYR_VENDOR_NOTE (free text after the date) records a vendor from an unmerged branch, e.g. its name and PR.
+  // The line is kept whenever the sha is unchanged, so a changed (or dropped) note alone does NOT rewrite it: to re-pin
+  // after sportyR PR #68 merges, re-vendor at the merge commit's sha (without the note), never the branch sha again.
   const source = join(dir, "VENDOR_SOURCE");
   const stamp = `sportyR ${version} ${sha}`;
+  const note = process.env.SPORTYR_VENDOR_NOTE?.trim();
   if (!existsSync(source) || !readFileSync(source, "utf8").startsWith(`${stamp} `))
-    writeFileSync(source, `${stamp} ${new Date().toISOString().slice(0, 10)}\n`);
+    writeFileSync(source, `${stamp} ${new Date().toISOString().slice(0, 10)}${note ? ` ${note}` : ""}\n`);
   console.log(`vendored sportyR ${version} (${sha})`);
 }

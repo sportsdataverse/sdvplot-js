@@ -57,7 +57,7 @@ test("teamBenchArea: field side at y = 0, back side at team_bench_width", () => 
   ]);
 });
 
-test("fieldApron: a rectangular bench with equal sides has an infinite slope, so the corner sits at x1 (R quirk)", () => {
+test("fieldApron: a bench without a slanted side (rectangular, or equal sides) puts the corner at x1 (sportyR #71)", () => {
   const o = {
     fieldLength: 100,
     fieldWidth: 50,
@@ -68,7 +68,7 @@ test("fieldApron: a rectangular bench with equal sides has an infinite slope, so
     fieldBorderThickness: 1,
   };
   expect(fieldApron({ ...o, benchShape: "Rectangular" })[1]?.[0]).toBeCloseTo(30 + 0.1 + 1, 12);
-  // any other shape: back/2 + bench border + field border / 2
-  expect(fieldApron({ ...o, benchShape: "trapezoid" })[1]?.[0]).toBeCloseTo(30 + 0.1 + 0.5, 12);
+  // a trapezoid whose sides are equal has no slant either: x1 too (was back/2 + bench border + field border / 2)
+  expect(fieldApron({ ...o, benchShape: "trapezoid" })[1]?.[0]).toBeCloseTo(30 + 0.1 + 1, 12);
   expect(fieldApron(o)).toHaveLength(17);
 });

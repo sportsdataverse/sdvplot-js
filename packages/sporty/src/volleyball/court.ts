@@ -30,7 +30,7 @@ const isOneOf = <T extends string>(list: readonly T[], v: string): v is T =>
 
 /**
  * Port of sportyR `geom_volleyball()`: one PolygonFeature per ggplot layer R adds, in R's layer order.
- * Documented divergences: an unknown `displayRange` throws (R falls back to "full"); `units` also converts the anchors and display limits.
+ * Documented divergences: an unknown `displayRange` throws (R falls back to "full"); `units` scales the points, anchors and display limits, as sportyR 2.3.0 does (#74).
  * Preserved R quirk: the substitution-zone loop repeats `substitution_zone_rep_pattern` times (0 gives none).
  */
 export function volleyballCourt(

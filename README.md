@@ -18,7 +18,7 @@
 
 Team identity, colors, logos, wordmarks, headshots, playing surfaces and publication tables for JavaScript and
 TypeScript plots, from the SportsDataverse. sdvplot-js resolves team abbreviations, names and provider ids across 28
-leagues and picks the right era's mark for a season; draws courts, rinks and fields for nine sports; and renders
+leagues and picks the right era's mark for a season; draws courts, rinks and fields for ten sports; and renders
 themed tables with team logos. The marks work with Observable Plot, d3, React, Chart.js, Plotly, Vega-Lite and
 ECharts. These are the TypeScript ports of [sdvplot](https://sdvplot.sportsdataverse.org/) (Python),
 [sdvplotR](https://sdvplotR.sportsdataverse.org/) and [sportyR](https://github.com/sportsdataverse/sportyR) /

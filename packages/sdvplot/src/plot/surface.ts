@@ -18,7 +18,8 @@ export interface SurfaceOpts extends SurfaceSceneOptions {
 }
 
 /**
- * Plot marks + scales for a team-painted sporty surface. Only an unsupported league throws `InputError`; sporty's own
+ * Plot marks + scales for a team-painted sporty surface, for any key of `SURFACES`. An unsupported key, or a `team` on a key
+ * without team identities, throws `InputError`; sporty's own
  * errors (`SportyError` subclasses: unknown displayRange/unit, bad arcResolution) propagate unwrapped.
  *
  * @example
@@ -34,7 +35,7 @@ export interface SurfaceOpts extends SurfaceSceneOptions {
  * ```
  */
 export function surface(
-  league: League,
+  league: League | (string & {}),
   o: SurfaceOpts = {},
 ): { marks: Plot.Markish[]; scales: ReturnType<typeof surfaceScales>; scene: Scene } {
   const { centerLogo, ...opts } = o;
@@ -45,7 +46,7 @@ export function surface(
     const height = centerLogo === true ? 0.25 : checkHeight(centerLogo);
     marks.push(
       logos([{ x: 0, y: 0, team }], {
-        league,
+        league: league as League, // surfaceScene threw already if a team was passed for a key without team identities
         x: "x",
         y: "y",
         team: "team",

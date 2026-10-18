@@ -4,18 +4,39 @@
 
 ```ts
 
+import { BaseballColorKey } from '@sportsdataverse/sporty';
+import { BaseballDisplayRange } from '@sportsdataverse/sporty';
+import { BaseballParamUpdates } from '@sportsdataverse/sporty';
 import { BaseType } from 'd3';
 import { BasketballColorKey } from '@sportsdataverse/sporty';
 import { BasketballDisplayRange } from '@sportsdataverse/sporty';
 import { BasketballParamUpdates } from '@sportsdataverse/sporty';
+import { CurlingColorKey } from '@sportsdataverse/sporty';
+import { CurlingDisplayRange } from '@sportsdataverse/sporty';
+import { CurlingParamUpdates } from '@sportsdataverse/sporty';
 import { FootballColorKey } from '@sportsdataverse/sporty';
 import { FootballDisplayRange } from '@sportsdataverse/sporty';
 import { FootballParamUpdates } from '@sportsdataverse/sporty';
 import { HockeyColorKey } from '@sportsdataverse/sporty';
 import { HockeyDisplayRange } from '@sportsdataverse/sporty';
 import { HockeyParamUpdates } from '@sportsdataverse/sporty';
+import { LacrosseColorKey } from '@sportsdataverse/sporty';
+import { LacrosseDisplayRange } from '@sportsdataverse/sporty';
+import { LacrosseParamUpdates } from '@sportsdataverse/sporty';
 import { ScaleOrdinal } from 'd3';
 import { Selection as Selection_2 } from 'd3';
+import { SoccerColorKey } from '@sportsdataverse/sporty';
+import { SoccerDisplayRange } from '@sportsdataverse/sporty';
+import { SoccerParamUpdates } from '@sportsdataverse/sporty';
+import { SoftballColorKey } from '@sportsdataverse/sporty';
+import { SoftballDisplayRange } from '@sportsdataverse/sporty';
+import { SoftballParamUpdates } from '@sportsdataverse/sporty';
+import { TennisColorKey } from '@sportsdataverse/sporty';
+import { TennisDisplayRange } from '@sportsdataverse/sporty';
+import { TennisParamUpdates } from '@sportsdataverse/sporty';
+import { VolleyballColorKey } from '@sportsdataverse/sporty';
+import { VolleyballDisplayRange } from '@sportsdataverse/sporty';
+import { VolleyballParamUpdates } from '@sportsdataverse/sporty';
 
 // Warning: (ae-forgotten-export) The symbol "Sel" needs to be exported by the entry point d3.d.ts
 // Warning: (ae-forgotten-export) The symbol "Value" needs to be exported by the entry point d3.d.ts
@@ -68,7 +89,7 @@ export interface AppendSignatureOptions {
 // Warning: (ae-forgotten-export) The symbol "League" needs to be exported by the entry point d3.d.ts
 //
 // @public
-export function appendSurface<G extends SVGGElement | SVGSVGElement, D>(sel: Sel<G, D>, league: League, o: D3SurfaceOptions): Sel<SVGGElement, D>;
+export function appendSurface<G extends SVGGElement | SVGSVGElement, D>(sel: Sel<G, D>, league: League | (string & {}), o: D3SurfaceOptions): Sel<SVGGElement, D>;
 
 // @public (undocumented)
 export type AppendTeamMarks = <G extends SVGElement, D>(sel: Sel<G, D>, xs: ArrayLike<Value>, ys: ArrayLike<Value>, teams: readonly Value[], o: D3MarkOptions) => Sel<SVGGElement, D>;

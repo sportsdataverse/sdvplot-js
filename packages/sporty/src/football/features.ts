@@ -11,8 +11,8 @@ const isRectangular = (benchShape: string): boolean =>
   ["rectangle", "rectangular"].includes(benchShape.toLowerCase());
 
 /**
- * R's bench-corner x for the apron/border outlines. Rectangular benches with equal sides divide by zero, so
- * `m = Inf` and the corner falls back to `x1` (JS and R agree on Infinity here).
+ * R's bench-corner x for the apron/border outlines (sportyR #71): a slanted bench (not rectangular, with depth and
+ * differing sides) puts the corner on the line parallel to the bench's side; any other bench uses `x1`.
  */
 function outerCornerX(
   benchShape: string,
@@ -23,12 +23,16 @@ function outerCornerX(
   teamBenchWidth: number,
   teamBenchAreaBorderThickness: number,
 ): number {
-  if (!isRectangular(benchShape))
-    return teamBenchLengthBackSide / 2 + teamBenchAreaBorderThickness + thickness / 2;
+  const x1 = teamBenchLengthFieldSide / 2 + teamBenchAreaBorderThickness + thickness;
+  if (
+    isRectangular(benchShape) ||
+    !(teamBenchWidth > 0) ||
+    teamBenchLengthBackSide === teamBenchLengthFieldSide
+  )
+    return x1;
   const m = teamBenchWidth / (teamBenchLengthBackSide / 2 - teamBenchLengthFieldSide / 2);
   const y2 = startingDepth + thickness;
   const y1 = startingDepth - teamBenchWidth - teamBenchAreaBorderThickness;
-  const x1 = teamBenchLengthFieldSide / 2 + teamBenchAreaBorderThickness + thickness;
   return (y2 - y1) / m + x1;
 }
 

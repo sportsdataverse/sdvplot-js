@@ -34,7 +34,7 @@ export interface ChartSurface {
  * court. Throws `InputError` for a league without a surface, or for a scene whose bbox is empty (an `xlim` or `ylim` of
  * zero width) here, when it is built, not inside a Chart.js draw. A non-linear axis is left unpainted, with one warning.
  */
-export function surface(league: League, o: ChartSurfaceOptions = {}): ChartSurface {
+export function surface(league: League | (string & {}), o: ChartSurfaceOptions = {}): ChartSurface {
   const { xAxisID = "x", yAxisID = "y", ...rest } = o;
   const scene = surfaceScene(league, rest);
   const [x0, y0, x1, y1] = scene.bbox;

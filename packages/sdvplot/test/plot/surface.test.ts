@@ -50,8 +50,8 @@ test("the plain surface, rotation passes through, unsupported league lists the s
     return bb[2] - bb[0];
   };
   expect(width(90)).toBeLessThan(width());
-  expect(() => surface("mls" as never)).toThrow(InputError);
-  expect(() => surface("mls" as never)).toThrow(/nba/);
+  expect(() => surface("cricket")).toThrow(InputError);
+  expect(() => surface("cricket")).toThrow(/nba/);
 });
 test("centerLogo without a team draws no image", () => {
   const s = surface("nhl", { centerLogo: true });

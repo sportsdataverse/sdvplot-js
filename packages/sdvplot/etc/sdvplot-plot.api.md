@@ -4,11 +4,17 @@
 
 ```ts
 
+import { BaseballColorKey } from '@sportsdataverse/sporty';
+import { BaseballDisplayRange } from '@sportsdataverse/sporty';
+import { BaseballParamUpdates } from '@sportsdataverse/sporty';
 import { BasketballColorKey } from '@sportsdataverse/sporty';
 import { BasketballDisplayRange } from '@sportsdataverse/sporty';
 import { BasketballParamUpdates } from '@sportsdataverse/sporty';
 import { BasketballZone } from '@sportsdataverse/sporty';
 import { BasketballZoneArea } from '@sportsdataverse/sporty';
+import { CurlingColorKey } from '@sportsdataverse/sporty';
+import { CurlingDisplayRange } from '@sportsdataverse/sporty';
+import { CurlingParamUpdates } from '@sportsdataverse/sporty';
 import { FootballColorKey } from '@sportsdataverse/sporty';
 import { FootballDisplayRange } from '@sportsdataverse/sporty';
 import { FootballParamUpdates } from '@sportsdataverse/sporty';
@@ -17,9 +23,25 @@ import { FrameName } from '@sportsdataverse/sporty';
 import { HockeyColorKey } from '@sportsdataverse/sporty';
 import { HockeyDisplayRange } from '@sportsdataverse/sporty';
 import { HockeyParamUpdates } from '@sportsdataverse/sporty';
+import { LacrosseColorKey } from '@sportsdataverse/sporty';
+import { LacrosseDisplayRange } from '@sportsdataverse/sporty';
+import { LacrosseParamUpdates } from '@sportsdataverse/sporty';
 import * as Plot from '@observablehq/plot';
 import { Scene } from '@sportsdataverse/sporty';
+import { SoccerColorKey } from '@sportsdataverse/sporty';
+import { SoccerDisplayRange } from '@sportsdataverse/sporty';
+import { SoccerParamUpdates } from '@sportsdataverse/sporty';
+import { SoftballColorKey } from '@sportsdataverse/sporty';
+import { SoftballDisplayRange } from '@sportsdataverse/sporty';
+import { SoftballParamUpdates } from '@sportsdataverse/sporty';
+import { Sport } from '@sportsdataverse/sporty';
 import { surfaceScales } from '@sportsdataverse/sporty/plot';
+import { TennisColorKey } from '@sportsdataverse/sporty';
+import { TennisDisplayRange } from '@sportsdataverse/sporty';
+import { TennisParamUpdates } from '@sportsdataverse/sporty';
+import { VolleyballColorKey } from '@sportsdataverse/sporty';
+import { VolleyballDisplayRange } from '@sportsdataverse/sporty';
+import { VolleyballParamUpdates } from '@sportsdataverse/sporty';
 
 // @public (undocumented)
 export type Axis = "x" | "y" | "fx" | "fy";
@@ -211,7 +233,7 @@ export interface ShotZonesOptions extends GeoPassThrough {
 export function sizeRender(height: number, placed: readonly Placement[], kind: Kind, ids?: readonly string[]): Plot.RenderFunction;
 
 // @public
-export function surface(league: League, o?: SurfaceOpts): {
+export function surface(league: League | (string & {}), o?: SurfaceOpts): {
     marks: Plot.Markish[];
     scales: ReturnType<typeof surfaceScales>;
     scene: Scene;
