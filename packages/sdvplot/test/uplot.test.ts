@@ -98,8 +98,11 @@ async function chart(
 
 describe("logoPlugin", () => {
   test("draws each row's logo centred on uPlot's valToPos of its x and y, height of the plot tall", async () => {
-    const u = await chart([logoPlugin(ROWS, { x: "x", y: "y", team: "team", league: "nfl", height: 0.1 })]);
-    expect(FakeImage.made.map((i) => i.src)).toEqual([logoUrlSync(KC, "nfl"), logoUrlSync(BUF, "nfl")]); // preloaded
+    const plugin = logoPlugin(ROWS, { x: "x", y: "y", team: "team", league: "nfl", height: 0.1 });
+    expect(FakeImage.made).toEqual([]); // building the options fetches nothing
+    const u = await chart([plugin]);
+    // preloaded as the chart starts, before its first draw
+    expect(FakeImage.made.map((i) => i.src)).toEqual([logoUrlSync(KC, "nfl"), logoUrlSync(BUF, "nfl")]);
     expect(FakeImage.made.every((i) => i.crossOrigin === "anonymous")).toBe(true);
     expect(draws(u)).toEqual([]); // nothing until the images load
     await landAll(); // each load redraws the chart

@@ -1,8 +1,8 @@
 /**
- * The uPlot adapter: team colours for each series' `stroke` / `fill`, and team logos drawn on uPlot's canvas by a plugin
- * (its `draw` hook), at points in data units. Pure: uplot is never imported (the types here are structural, read from
- * uplot 1.6.31 and later), so the options can be built anywhere, a server included; only `new uPlot(...)` needs a
- * browser. Call after `loadLeague(league)` / `preloadAll()`.
+ * The uPlot adapter: team colours for each series' `stroke` / `fill`, and team logos drawn on uPlot's canvas by a
+ * plugin (its `draw` hook), at points in data units. Pure: uplot is never imported (the types here are structural,
+ * read from uplot 1.6.31 and later), so the options can be built anywhere, a server included; only `new uPlot(...)`
+ * needs a browser. Call after `loadLeague(league)` / `preloadAll()`.
  */
 import {
   type MarkOptions,
@@ -55,9 +55,10 @@ const drawn = new WeakMap<object, Map<object, DrawnMark[]>>();
 /**
  * Team logos on a uPlot chart: a plugin whose `draw` hook paints each row's logo centred on its `x` / `y` (data units,
  * placed with uPlot's own `valToPos`), `height` of the plot area tall (a fraction, as in the spec adapters), over the
- * series. The images start loading as the plugin is built (or when the chart starts, on a server) and the chart redraws
- * as each one lands. A team with no logo draws nothing and warns once, as `sdvplot/echarts` does; an image that fails
- * to load is never drawn and warns once; a point outside the plot area (after a zoom) is not drawn over the axes.
+ * series. The images start loading when the chart starts (uPlot's `init` hook, before its first draw), and the
+ * chart redraws as each one lands; building the plugin fetches nothing. A team with no logo draws nothing and warns
+ * once, as `sdvplot/echarts` does; an image that fails to load is never drawn and warns once; a point outside the plot
+ * area (after a zoom) is not drawn over the axes.
  *
  * `rows` can also be a function of the chart, read at every draw: give it `u.data` and the logos follow live data
  * (`u.setData(...)`), such as a logo at each line's newest point.
@@ -66,15 +67,16 @@ const drawn = new WeakMap<object, Map<object, DrawnMark[]>>();
  * ```ts
  * import { loadLeague } from "@sportsdataverse/sdvplot";
  * import { logoPlugin } from "@sportsdataverse/sdvplot/uplot";
- * import uPlot from "uplot";
  *
  * await loadLeague("nfl");
- * const ends = [
- *   { minute: 60, wp: 0.9, team: "PHI" },
- *   { minute: 60, wp: 0.1, team: "KC" },
+ * // the 2024 Chiefs and Bills: points for (x) against points against (y)
+ * const rows = [
+ *   { team: "KC", pf: 385, pa: 326 },
+ *   { team: "BUF", pf: 525, pa: 368 },
  * ];
- * const plugin = logoPlugin(ends, { x: "minute", y: "wp", team: "team", league: "nfl", height: 0.15 });
- * new uPlot({ width: 640, height: 320, series: [{}, {}], plugins: [plugin] }, [[0, 60], [0.5, 0.9]], document.body);
+ * const plugin = logoPlugin(rows, { x: "pf", y: "pa", team: "team", league: "nfl", height: 0.15 });
+ * // in the browser: new uPlot({ width: 640, height: 320, series, plugins: [plugin] }, data, element)
+ * Object.keys(plugin.hooks);
  * ```
  */
 export function logoPlugin(
@@ -84,6 +86,8 @@ export function logoPlugin(
   const h = checkHeight(o.height ?? 0.1);
   const a = checkAlpha(o.alpha ?? 1);
   const yScale = o.scale ?? "y";
+  // ponytail: one cached placement per rows identity; a rows function returning a fresh array re-resolves its teams
+  // every draw, cheap for a few end logos (memoise by team if a feed ever draws hundreds)
   let placed: { rows: readonly Row[]; ps: Placement[] } | undefined;
   const placements = (rs: readonly Row[]): Placement[] => {
     if (placed?.rows !== rs) placed = { rows: rs, ps: markPlacements(rs, "logo", o) };
@@ -109,7 +113,7 @@ export function logoPlugin(
   const preload = (): void => {
     if (typeof rows !== "function") for (const p of placements(rows)) load(p.url);
   };
-  preload(); // validates the rows now; loads nothing without a DOM (a server builds options, the browser draws)
+  if (typeof rows !== "function") placements(rows); // validates the rows now, when the options are built
   return {
     hooks: {
       init(u) {
@@ -146,7 +150,8 @@ export function logoPlugin(
   };
 }
 
-/** Test hook: [teamId, x, y, height, url] per logo the chart's `logoPlugin`s last drew, `height` a fraction of the plot area. */
+/** Test hook: [teamId, x, y, height, url] per logo the chart's `logoPlugin`s last drew, `height` a fraction of the
+ *  plot area. */
 export function drawnMarks(u: UPlotLike): DrawnMark[] {
   return [...(drawn.get(u)?.values() ?? [])].flat();
 }
@@ -201,9 +206,9 @@ const rgba = (hex: string, alpha: number): string => {
  * import { withTeamSeries } from "@sportsdataverse/sdvplot/uplot";
  *
  * await loadLeague("nfl");
- * const opts = withTeamSeries(
- *   { width: 640, height: 320, series: [{}, { label: "Philadelphia" }, { label: "Kansas City" }] },
- *   [{ team: "PHI" }, { team: "KC" }],
+ * withTeamSeries(
+ *   { width: 640, height: 320, series: [{}, { label: "Kansas City" }, { label: "Buffalo" }] },
+ *   [{ team: "KC" }, { team: "BUF" }],
  *   { team: "team", league: "nfl", background: "#181a1b" },
  * );
  * ```
