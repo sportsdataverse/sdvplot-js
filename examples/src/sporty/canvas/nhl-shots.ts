@@ -35,4 +35,4 @@ for (const s of NHL_SHOTS) {
 }
 
 const png = canvas.toBuffer("image/png").toString("base64");
-export default `<img src="data:image/png;base64,${png}" width="${width}" height="${height}" alt="The 27 first-period shots of Edmonton at Florida, 24 June 2024, on a Panthers-painted rink: shots on goal filled in the shooting team's colour, misses white, the goal larger and ringed">`;
+export default `<img src="data:image/png;base64,${png}" width="${width}" height="${height}" alt="The 27 first-period shots of Edmonton at Florida, 24 June 2024, on a Panthers-painted rink: shots on goal filled in the shooting team's colour, misses white, the two goals (one each) larger and ringed">`;

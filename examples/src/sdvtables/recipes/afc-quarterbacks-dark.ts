@@ -35,7 +35,8 @@ const spec = defineTable<Standing>()
   .spotlight({ key: "team", op: "==", value: "BUF" }, { accentColor: "#C60C30" })
   .titleHeader("Josh Allen's Bills, and the rest of the AFC East and West", {
     kicker: "NFL 2024",
-    subtitle: "Starting quarterback, record, league-wide SRS rank and net EPA per play",
+    subtitle:
+      "Starting quarterback, record, league-wide SRS rank and net EPA per play; East rows edged blue, West amber",
   })
   .sourceNote(
     "Source: nflverse games, players and play_by_play_2024. New England's net EPA is blanked in the sample data.",

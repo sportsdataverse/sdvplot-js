@@ -29,7 +29,7 @@ const spec = defineTable<(typeof rows)[number]>()
     c.text("site", { label: "", filterable: true }),
     c.colorResults("result", { label: "" }),
     c.tally(["phi", "opp"], { label: "Score" }),
-    c.delta("opp", "phi", { label: "Margin", decimals: 0 }),
+    c.delta("opp", "phi", { label: "Margin", decimals: 0, sortable: false }), // its key holds the opponent's points, not the margin
   ])
   .title("Philadelphia Eagles, 2024")
   .subtitle("Regular season: 14-3, then a Super Bowl win over Kansas City")

@@ -39,4 +39,4 @@ for (const s of shots) {
 }
 
 const png = canvas.toBuffer("image/png").toString("base64");
-export default `<img src="data:image/png;base64,${png}" width="${width}" height="${height}" alt="Brooklyn's first 2,000 shots of 2025-26 on the defensive half of a Nets-painted court, made shots in the team's secondary colour, misses red">`;
+export default `<img src="data:image/png;base64,${png}" width="${width}" height="${height}" alt="Brooklyn's first 2,000 shots of 2025-26 on a Nets-painted half court, made shots in the team's secondary colour, misses red">`;

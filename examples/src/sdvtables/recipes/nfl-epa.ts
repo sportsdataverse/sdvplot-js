@@ -34,7 +34,7 @@ const spec = defineTable<(typeof rows)[number]>()
     c.wordmark("team", { league: "nfl", label: "Team", filterable: true }),
     c.colorPills("off", { label: "Offence", digits: 3, domain: [-0.25, 0.25] }),
     c.colorPills("saved", { label: "Defence", digits: 3, domain: [-0.25, 0.25] }),
-    c.delta("net", "off", { label: "Net", decimals: 3, arrows: true }),
+    c.delta("net", "off", { label: "Net", decimals: 3, arrows: true, sortable: false }), // its key holds EPA allowed, so sorting it would sort by defence
   ])
   .legendContinuous({ title: "EPA per play", digits: 2 })
   .titleHeader("Who moved the ball, and who stopped it", {
