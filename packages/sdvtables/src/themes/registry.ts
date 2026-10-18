@@ -102,12 +102,16 @@ function weights(spec: RegistrySpec): Partial<ThemeTokens> {
   return out;
 }
 
-/** The 3 sorted ids of dark-capable registry themes sharing `category`, for the light-only error. */
-const darkAlternatives = (category: string): string[] =>
-  Object.keys(SPECS)
-    .filter((id) => SPECS[id]?.category === category && SPECS[id]?.darkPolicy !== "none")
-    .sort()
-    .slice(0, 3);
+/** Why a light-only theme has no dark mode: 3 sorted dark-capable ids in its category, else 3 from any category. */
+function darkAdvice(category: string): string {
+  const dark = Object.keys(SPECS)
+    .filter((id) => SPECS[id]?.darkPolicy !== "none")
+    .sort();
+  const same = dark.filter((id) => SPECS[id]?.category === category).slice(0, 3);
+  return same.length
+    ? `dark-capable themes in category "${category}": ${same.join(", ")}`
+    : `no dark-capable themes in category "${category}"; try: ${dark.slice(0, 3).join(", ")}`;
+}
 
 /** Whether `name` is a registry theme id. */
 export const isRegistryTheme = (name: string): boolean => Object.hasOwn(SPECS, name);
@@ -126,9 +130,7 @@ export function registryTheme(ref: ThemeRef): Theme {
   if (mode !== "light" && mode !== "dark")
     throw new TableSpecError(`mode must be "light" or "dark", not "${mode}"`);
   if (mode === "dark" && (spec.darkPolicy === "none" || !spec.dark)) {
-    throw new TableSpecError(
-      `theme "${ref.name}" is light-only; dark-capable themes in category "${spec.category}": ${darkAlternatives(spec.category).join(", ")}`,
-    );
+    throw new TableSpecError(`theme "${ref.name}" is light-only; ${darkAdvice(spec.category)}`);
   }
   const p = palette(spec, mode);
   const st = spec.structure;

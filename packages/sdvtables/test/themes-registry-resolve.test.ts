@@ -41,22 +41,32 @@ describe("registry themes resolve", () => {
     }
   });
   it("light-only theme + dark throws naming it and 3 same-category dark ids", () => {
-    const cat = (themes.nejm as Spec).category;
+    const cat = (themes.moneypuck as Spec).category;
     const expected = Object.keys(themes)
       .filter((k) => (themes[k] as Spec).category === cat && (themes[k] as Spec).darkPolicy !== "none")
       .sort()
       .slice(0, 3);
     let err: unknown;
     try {
-      resolveTheme(ref("nejm", "dark"));
+      resolveTheme(ref("moneypuck", "dark"));
     } catch (e) {
       err = e;
     }
     expect(err).toBeInstanceOf(TableSpecError);
     const m = (err as Error).message;
-    expect(m).toMatch(/nejm/);
+    expect(m).toMatch(/moneypuck/);
     expect(m).toMatch(/light-only/);
     for (const id of expected) expect(m).toContain(id);
+  });
+  it("light-only theme in a category with no dark ids falls back to 3 dark ids from any category", () => {
+    const dark = Object.keys(themes)
+      .filter((k) => (themes[k] as Spec).darkPolicy !== "none")
+      .sort()
+      .slice(0, 3);
+    expect(dark).toHaveLength(3);
+    expect(() => resolveTheme(ref("nejm", "dark"))).toThrow(
+      new RegExp(`no dark-capable themes in category "journal"; try: ${dark.join(", ")}`),
+    );
   });
   it("house themes win", () => {
     expect(resolveTheme(ref("almanac")).name).toBe("almanac");
