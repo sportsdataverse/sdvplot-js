@@ -104,3 +104,46 @@ test("build() rejects bad size, bias, opacity, fill and bounds; a lone minValue 
   bad({ minValue: 1, maxValue: 1 }, /minValue must be below maxValue/);
   expect(() => render([1, 2], { minValue: 5 })).toThrow(/row 0: gauge minValue 5 is above/);
 });
+
+// ---- self-review follow-ups (#68)
+
+test("mixed negatives with showMinMax: the scale is 0 to max |v|, ends printed, each negative's |v| gauged", () => {
+  const out = render([-8, 4, -2], { showMinMax: true });
+  const svg = cellOf(out, 2);
+  expect(svg).toContain('aria-label="Gauge: -2 (its absolute value, 2, is gauged) on a scale from 0 to 8"');
+  expect(svg).toMatch(/class="sdvt-min"[^>]*>0<\/text>/);
+  expect(svg).toMatch(/class="sdvt-max"[^>]*>8<\/text>/);
+  expect(svg).toMatch(/class="sdvt-value"[^>]*>-2<\/text>/);
+  // a quarter of the way round: the same arc as +2
+  expect(attr(svg, "path", "d", 1)).toBe(
+    attr(cellOf(render([8, 4, 2], { showMinMax: true }), 2), "path", "d", 1),
+  );
+  expect(cellOf(out, 0)).toContain(
+    'aria-label="Gauge: -8 (its absolute value, 8, is gauged) on a scale from 0 to 8"',
+  );
+});
+
+test("a negative minValue is rejected at build() and at render, naming the option", () => {
+  expect(() =>
+    defineTable<Row>()
+      .columns((c) => [c.gauge("g", { minValue: -10 })])
+      .build(),
+  ).toThrow(/column "g": gauge minValue must be at least 0/);
+  const col = {
+    ...defineTable<Row>()
+      .columns((c) => [c.gauge("g")])
+      .build().columns[0],
+    minValue: -10,
+  };
+  const spec = { columns: [col], decorations: [], theme: { name: "sdv", density: "comfortable" } } as never;
+  expect(() => renderHTML(spec, [{ team: "LV", g: 5 }], { css: "none" })).toThrow(
+    /gauge minValue must be at least 0/,
+  );
+});
+
+test("background, textColor and textSize are CSS values: url( and quotes are rejected, naming the option", () => {
+  expect(() => render([1, 2], { background: "url(https://x)" })).toThrow(/gauge background/);
+  expect(() => render([1, 2], { textColor: 'red" onload="x' })).toThrow(/gauge textColor/);
+  expect(() => render([1, 2], { textSize: "url(x)" })).toThrow(/gauge textSize/);
+  expect(() => render([1, 2], { fill: ['#fff" onload="x'] })).toThrow(/gauge fill/);
+});

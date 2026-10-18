@@ -170,8 +170,11 @@ export interface SeriesChartOpts {
   readonly minValue?: number;
   /** The value at the top of every cell's chart; default: each series' own maximum (sparkbar: the higher of 0 and it). */
   readonly maxValue?: number;
-  /** The chart's height in px (reactablefmtr `height`); the default 22 grows to 28 or 30 when labels sit above the points, as in reactablefmtr. */
-  readonly chartHeight: number;
+  /**
+   * The chart's height in px (reactablefmtr `height`). Default (undefined): 22, grown to 28 or 30 when labels sit
+   * above the points, as in reactablefmtr; any number given is used as is, 22 included.
+   */
+  readonly chartHeight?: number;
   /** The chart's width in px (`width` is the column's CSS width, as on every kind). */
   readonly chartWidth: number;
 }
@@ -521,7 +524,7 @@ export type ColumnSpec<Row> =
         readonly fill: readonly string[];
         /** The unfilled track. */
         readonly background: string;
-        /** The value of an empty gauge; default 0. */
+        /** The value of an empty gauge, at least 0 (the gauge measures the absolute value); default 0. */
         readonly minValue?: number;
         /** The value of a full gauge; default: the column's largest absolute value. */
         readonly maxValue?: number;

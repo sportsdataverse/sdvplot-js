@@ -543,9 +543,16 @@ function chartColor<Row>(
     ? undefined
     : readableInk(first, own === undefined ? undefined : other, tableBg(ctx), 3);
 }
-/** A cell's series: each finite number kept, anything else (null, NaN, ±Infinity, text) a gap; null when not an array. */
+/**
+ * A cell's series: each finite number, or numeric string as `toNumber` reads it (a JSON spec may carry "12"), kept;
+ * anything else (null, NaN, ±Infinity, a boolean, other text) a gap. null when the cell is not an array.
+ */
 function seriesOf(v: unknown): (number | null)[] | null {
-  return Array.isArray(v) ? v.map((x) => (typeof x === "number" && Number.isFinite(x) ? x : null)) : null;
+  if (!Array.isArray(v)) return null;
+  return v.map((x) => {
+    const n = typeof x === "number" || typeof x === "string" ? toNumber(x) : null;
+    return n !== null && Number.isFinite(n) ? n : null;
+  });
 }
 function seriesCell<Row>(
   col: Extract<ColumnSpec<Row>, { kind: "sparkline" | "sparkbar" }>,

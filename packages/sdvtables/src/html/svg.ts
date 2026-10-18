@@ -63,6 +63,11 @@ export function plainNumber(v: number): string {
   const places = Math.max(4, 3 - Math.floor(Math.log10(Math.abs(v))));
   return v.toFixed(places).replace(/0+$/, "").replace(/\.$/, "");
 }
+/** `toFixed` without a negative zero: -0.4 at 0 decimals prints "0", not "-0". */
+const fixed = (v: number, d: number): string => {
+  const s = v.toFixed(d);
+  return /^-0(.0*)?$/.test(s) ? s.slice(1) : s;
+};
 /** A spec colour or size bound for an SVG attribute: a CSS value (cssValue names the field), escaped. */
 const att = (v: string, field: string): string => escapeAttr(cssValue(v, field));
 /** R type 7 (d3.quantile), as dataui's innerquartiles band. */
@@ -103,7 +108,7 @@ interface Frame {
 }
 function frameOf(col: Sparkline | Sparkbar, present: readonly number[], bars: boolean, row: number): Frame {
   const [t = 0, r = 0, b = 0, l = 0, grown = 22] = margins(col.labels, col.statline !== undefined, bars);
-  const h = col.chartHeight === 22 ? grown : col.chartHeight;
+  const h = col.chartHeight ?? grown;
   // bars stand on zero, so the scale holds it (reactablefmtr's smallest bar would have no height)
   const lo = col.minValue ?? Math.min(...present, ...(bars ? [0] : []));
   const hi = col.maxValue ?? Math.max(...present, ...(bars ? [0] : []));
@@ -122,7 +127,7 @@ function statlineSvg(col: Sparkline | Sparkbar, f: Frame, present: readonly numb
   const y = n2(f.y(v));
   const c = att(col.statlineColor, `${col.kind} statlineColor`);
   const size = att(col.statlineLabelSize, `${col.kind} statlineLabelSize`);
-  return `<line class="sdvt-statline" x1="${n2(f.left)}" x2="${n2(f.right)}" y1="${y}" y2="${y}" stroke="${c}" stroke-width="1" stroke-dasharray="2,2" stroke-opacity="0.75"/><text class="sdvt-statline-label" x="${n2(f.right + 5)}" y="${y}" dominant-baseline="middle" fill="${c}" font-weight="bold" font-size="${size}">${v.toFixed(col.decimals)}</text>`;
+  return `<line class="sdvt-statline" x1="${n2(f.left)}" x2="${n2(f.right)}" y1="${y}" y2="${y}" stroke="${c}" stroke-width="1" stroke-dasharray="2,2" stroke-opacity="0.75"/><text class="sdvt-statline-label" x="${n2(f.right + 5)}" y="${y}" dominant-baseline="middle" fill="${c}" font-weight="bold" font-size="${size}">${fixed(v, col.decimals)}</text>`;
 }
 function bandlineSvg(col: Sparkline | Sparkbar, f: Frame, present: readonly number[]): string {
   if (col.bandline === undefined) return "";
@@ -136,7 +141,7 @@ function bandlineSvg(col: Sparkline | Sparkbar, f: Frame, present: readonly numb
 function summary(name: string, col: Sparkline | Sparkbar, present: readonly number[]): string {
   const n = present.length;
   let out = `${name} of ${n} value${n === 1 ? "" : "s"}: min ${plainNumber(Math.min(...present))}, max ${plainNumber(Math.max(...present))}, last ${plainNumber(present[n - 1] as number)}`;
-  if (col.statline) out += `; ${col.statline} line at ${STAT[col.statline](present).toFixed(col.decimals)}`;
+  if (col.statline) out += `; ${col.statline} line at ${fixed(STAT[col.statline](present), col.decimals)}`;
   if (col.bandline)
     out += `; band over the ${col.bandline === "innerquartiles" ? "inner quartiles" : "range"}`;
   return out;
@@ -249,7 +254,7 @@ export function sparklineSvg(
         : endsOnly && i === at.last
           ? `x="${n2(x + 6)}" y="${n2(y)}" text-anchor="start" dominant-baseline="middle"`
           : `x="${n2(x)}" y="${n2(y - 7)}" text-anchor="middle"`;
-    body += `<text class="sdvt-label" ${pos} fill="currentColor" font-size="${size}">${(values[i] as number).toFixed(col.decimals)}</text>`;
+    body += `<text class="sdvt-label" ${pos} fill="currentColor" font-size="${size}">${fixed(values[i] as number, col.decimals)}</text>`;
   }
   return chartSvg("sparkline", col.chartWidth, f.h, summary("Sparkline", col, xs), body);
 }
@@ -282,7 +287,7 @@ export function sparkbarSvg(
   const size = att(col.labelSize, "sparkbar labelSize");
   for (const i of labelled(col.labels, at, idx)) {
     const [x, y] = tops.get(i) as Pt;
-    body += `<text class="sdvt-label" x="${n2(x)}" y="${n2(y - 3)}" text-anchor="middle" fill="currentColor" font-size="${size}">${(values[i] as number).toFixed(col.decimals)}</text>`;
+    body += `<text class="sdvt-label" x="${n2(x)}" y="${n2(y - 3)}" text-anchor="middle" fill="currentColor" font-size="${size}">${fixed(values[i] as number, col.decimals)}</text>`;
   }
   return chartSvg("sparkbar", col.chartWidth, f.h, summary("Bar chart", col, xs), body);
 }

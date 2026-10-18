@@ -130,7 +130,7 @@ export interface ColumnFactory<Row> {
     o?: Base<Row, K> & Partial<Opt<Col<Row, "bubble">, never>>,
   ): Col<Row, "bubble">;
   /**
-   * reactablefmtr `react_sparkline` on an array column (defaults: `slategray`, 1.5px line, `chartWidth` 100 x `chartHeight` 22px, not sortable;
+   * reactablefmtr `react_sparkline` on an array column (defaults: `slategray`, 1.5px line, `chartWidth` 100 x 22px (taller with labels), not sortable;
    * `statline` / `bandline` red, labels 0.8em with 0 decimals).
    */
   sparkline<K extends SeriesKey<Row>>(
@@ -160,7 +160,6 @@ const SERIES_DEFAULTS = {
   labels: [],
   labelSize: "0.8em",
   decimals: 0,
-  chartHeight: 22,
   chartWidth: 100,
 } as const;
 const SERIES_POINTS: readonly string[] = ["first", "last", "min", "max", "all"];
@@ -191,17 +190,20 @@ export function checkChart<Row>(col: ColumnSpec<Row>): void {
   if (col.minValue !== undefined && col.maxValue !== undefined && col.minValue >= col.maxValue)
     fail(`minValue must be below maxValue, got ${col.minValue} and ${col.maxValue}`);
   if (col.kind === "gauge") {
+    // the gauge measures |v|, so a negative bottom would give 5 and -5 one fill
+    if (col.minValue !== undefined && col.minValue < 0)
+      fail(`minValue must be at least 0 (the gauge fills by the absolute value), got ${col.minValue}`);
     positive("size", col.size);
     positive("bias", col.bias);
     unit("opacity", col.opacity);
     if (col.fill.length === 0) fail("fill needs at least one colour");
     return;
   }
-  positive("chartHeight", col.chartHeight);
+  if (col.chartHeight !== undefined) positive("chartHeight", col.chartHeight);
   positive("chartWidth", col.chartWidth);
   unit("bandlineOpacity", col.bandlineOpacity);
-  if (!(Number.isInteger(col.decimals) && col.decimals >= 0))
-    fail(`decimals must be a whole number of at least 0, got ${String(col.decimals)}`);
+  if (!(Number.isInteger(col.decimals) && col.decimals >= 0 && col.decimals <= 20))
+    fail(`decimals must be a whole number from 0 to 20, got ${String(col.decimals)}`);
   oneOf("statline", col.statline, ["mean", "median", "min", "max"]);
   oneOf("bandline", col.bandline, ["innerquartiles", "range"]);
   for (const n of col.labels) oneOf("labels", n, SERIES_POINTS);

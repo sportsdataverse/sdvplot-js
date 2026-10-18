@@ -810,7 +810,7 @@ export interface SeriesChartOpts {
     readonly bandline?: SeriesBand;
     readonly bandlineColor: string;
     readonly bandlineOpacity: number;
-    readonly chartHeight: number;
+    readonly chartHeight?: number;
     readonly chartWidth: number;
     readonly decimals: number;
     readonly labels: readonly SeriesPoint[];

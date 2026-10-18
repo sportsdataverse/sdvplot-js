@@ -115,3 +115,41 @@ test("a hand-written spec that skips build() is still checked before its numbers
   const spec = { columns: [col], decorations: [], theme: { name: "sdv", density: "comfortable" } } as never;
   expect(() => renderHTML(spec, [{ team: "LAR", s: [1, 2] }], { css: "none" })).toThrow(/chartWidth/);
 });
+
+// ---- self-review follow-ups (#68)
+
+test("all-equal series: [5,5,5] bars fill to the top, [0,0] (hi === lo) draws zero-height bars, no NaN", () => {
+  const five = bars(draw([5, 5, 5]));
+  expect(five.map((b) => [b[1], b[3]])).toEqual([
+    ["3", "19"],
+    ["3", "19"],
+    ["3", "19"],
+  ]);
+  const zero = draw([0, 0]);
+  expect(bars(zero).map((b) => [b[1], b[3]])).toEqual([
+    ["12.5", "0"],
+    ["12.5", "0"],
+  ]);
+  expect(zero).toContain("Bar chart of 2 values: min 0, max 0, last 0");
+  expect(zero).not.toMatch(/NaN|Infinity/);
+});
+
+test("a single-value sparkbar is one bar across the band, from zero to the value", () => {
+  const svg = draw([4]);
+  expect(bars(svg)).toEqual([["20.4", "3", "59.2", "19"]]);
+  expect(svg).toContain('aria-label="Bar chart of 1 value: min 4, max 4, last 4"');
+});
+
+test("highlightBars colours, statlineColor and labelSize are CSS values: url( and quotes are rejected", () => {
+  expect(() => draw([1, 2], { highlightBars: { max: 'red" onload="x' } })).toThrow(/sparkbar highlightBars/);
+  expect(() => draw([1, 2], { highlightBars: ["min"], statline: "mean", statlineColor: "url(#x)" })).toThrow(
+    /sparkbar statlineColor/,
+  );
+  expect(() => draw([1, 2], { labels: ["max"], labelSize: "url(x)" })).toThrow(/sparkbar labelSize/);
+});
+
+test("the -0 label: a value that rounds to zero prints 0", () => {
+  expect(
+    [...draw([-0.3, 2], { labels: ["all"] }).matchAll(/class="sdvt-label"[^>]*>([^<]*)</g)].map((m) => m[1]),
+  ).toEqual(["0", "2"]);
+});

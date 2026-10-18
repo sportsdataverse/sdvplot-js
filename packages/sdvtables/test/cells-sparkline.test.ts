@@ -206,3 +206,54 @@ test("sparkline columns are not sortable by default, left aligned, and carry the
     'class="sdvt-cell sdvt-kind-sparkline sdvt-left"',
   );
 });
+
+// ---- self-review follow-ups (#68)
+
+test("the exact path around a NaN gap: the point before it is a dot, the run after it a line", () => {
+  // x 13, 37.67, 62.33, 87; y: 1 -> 20, 2 -> 11.5, 3 -> 3
+  expect(attr(draw([1, Number.NaN, 2, 3]), "path", "d")).toBe("M13,20 h0 M62.33,11.5 L87,3");
+});
+
+test("an all-equal series (hi === lo) sits mid-height; a negative-only series scales to itself", () => {
+  expect(attr(draw([5, 5, 5]), "path", "d")).toBe("M13,11.5 L50,11.5 L87,11.5");
+  expect(attr(draw([0, 0]), "path", "d")).toBe("M13,11.5 L87,11.5");
+  const neg = draw([-3, -1]);
+  expect(attr(neg, "path", "d")).toBe("M13,20 L87,3");
+  expect(neg).toContain("Sparkline of 2 values: min -3, max -1, last -1");
+});
+
+test("labels and the statline never print -0; decimals is bounded to 0..20", () => {
+  const svg = draw([-0.4, 1], { labels: ["all"], statline: "min" });
+  expect([...svg.matchAll(/class="sdvt-label"[^>]*>([^<]*)</g)].map((m) => m[1])).toEqual(["0", "1"]);
+  expect(svg).toMatch(/class="sdvt-statline-label"[^>]*>0</);
+  expect(svg).toContain("; min line at 0");
+  expect(svg).not.toMatch(/>-0</); // the aria-label keeps "min -0.4": only the printed values round
+  const build = (decimals: number) => () =>
+    defineTable<Row>()
+      .columns((c) => [c.sparkline("s", { decimals })])
+      .build();
+  expect(build(21)).toThrow(/column "s": sparkline decimals must be a whole number from 0 to 20/);
+  expect(build(20)).not.toThrow();
+});
+
+test("numeric strings in a series are read as toNumber reads them; other text is a gap", () => {
+  expect(attr(draw(["1", "3", "2"]), "path", "d")).toBe("M13,20 L50,3 L87,11.5");
+  expect(attr(draw(["1", "0x10", "2"]), "path", "d")).toBe("M13,20 h0 M87,3 h0");
+});
+
+test("an explicit chartHeight of 22 is honoured with labels on; the default grows", () => {
+  expect(draw([1, 3, 2], { labels: ["max"], chartHeight: 22 })).toContain('height="22"');
+  expect(draw([1, 3, 2], { labels: ["max"] })).toContain('height="30"');
+  expect(
+    defineTable<Row>()
+      .columns((c) => [c.sparkline("s")])
+      .build().columns[0],
+  ).not.toHaveProperty("chartHeight");
+});
+
+test("statlineColor and labelSize are CSS values: url( and quotes are rejected, naming the option", () => {
+  expect(() => draw([1, 2], { statline: "mean", statlineColor: "url(https://x)" })).toThrow(
+    /sparkline statlineColor/,
+  );
+  expect(() => draw([1, 2], { labels: ["max"], labelSize: '1em"><script>' })).toThrow(/sparkline labelSize/);
+});
