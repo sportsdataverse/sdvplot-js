@@ -28,6 +28,7 @@ export const SOURCES: Readonly<Record<string, string>> = {
   "@sportsdataverse/sdvplot/vega": "packages/sdvplot/src/vega.ts",
   "@sportsdataverse/sdvplot/echarts": "packages/sdvplot/src/echarts.ts",
   "@sportsdataverse/sdvplot/recharts": "packages/sdvplot/src/recharts.ts",
+  "@sportsdataverse/sdvplot/uplot": "packages/sdvplot/src/uplot.ts",
   "@sportsdataverse/sdvplot/export": "packages/sdvplot/src/export/index.ts",
   "@sportsdataverse/sdvplot/interact": "packages/sdvplot/src/interact/index.ts",
   "@sportsdataverse/sporty": "packages/sporty/src/index.ts",

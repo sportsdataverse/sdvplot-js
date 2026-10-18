@@ -49,6 +49,11 @@ const EXEMPT: readonly (readonly [spec: string, name: RegExp | "*", reason: stri
   ["@sportsdataverse/sdvplot/vega", /^(drawnMarks|drawnAxisMarks|visibleAxisLabels)$/, HOOKS],
   ["@sportsdataverse/sdvplot/echarts", /^(drawnMarks|drawnAxisMarks|visibleAxisLabels)$/, HOOKS],
   [
+    "@sportsdataverse/sdvplot/uplot",
+    /^drawnMarks$/,
+    "test hook: what logoPlugin last painted on a chart, read back in a test (needs a canvas; the gate has none)",
+  ],
+  [
     "@sportsdataverse/sdvplot/echarts",
     /^renderLogo$/,
     "the renderItem withLogos/withWordmarks/withHeadshots install on their custom series; every ECharts image example draws through it",

@@ -35,6 +35,7 @@ const DRAWN: Readonly<Record<string, string>> = {
   vega: ".sdv-live-output svg.marks",
   echarts: ".sdv-live-output [_echarts_instance_] svg",
   chartjs: ".sdv-live-output canvas",
+  uplot: ".sdv-live-output .uplot canvas",
 };
 
 describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the built docs", () => {
@@ -81,7 +82,7 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
       await page.waitForLoadState("networkidle"); // the images the chart loads, so a failed one is logged
       expect(await figure.locator(".sdv-live-static").count(), "the static copy is replaced").toBe(0);
       expect(await figure.locator(".sdv-live-error").count(), "no error alert").toBe(0);
-      if (lib === "chartjs") {
+      if (lib === "chartjs" || lib === "uplot") {
         const painted = await figure.locator("canvas").evaluate((c: HTMLCanvasElement) =>
           c
             .getContext("2d")

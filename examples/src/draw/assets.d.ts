@@ -4,6 +4,9 @@ declare module "*.ttf" {
   export default url;
 }
 
+/** webpack (Docusaurus' CSS rule) bundles a stylesheet import. */
+declare module "*.css";
+
 /** The two calls the docs make; plotly.js ships no types for its dist bundles. */
 declare module "plotly.js-basic-dist-min" {
   const Plotly: {

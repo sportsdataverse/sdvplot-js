@@ -1,0 +1,66 @@
+---
+title: uPlot
+sidebar_position: 7.6
+---
+
+[uPlot](https://github.com/leeoniya/uPlot) draws time series on a canvas, fast enough for thousands of points and a
+live feed. `@sportsdataverse/sdvplot/uplot` gives a uPlot chart team colours for its series and a plugin that paints
+team logos on the canvas. It never imports uplot (install `uplot` 1.6.31 or later beside it, an optional peer), so the
+options can be built anywhere, a server included; only `new uPlot(...)` needs a browser. It is synchronous: load the
+league first (`loadLeague`). The chart below is drawn by uPlot in your browser.
+
+## Team colours and a logo at the end of each line
+
+`withTeamSeries(opts, rows, { team, league })` colours uPlot's series from rows of teams: row `i`'s team strokes
+`series[i + 1]` (`series[0]` is uPlot's x). The rest of each series (label, width, value formatter) is kept, and the
+options are copied, never changed. `fill: 0.2` also fills the area under each line in its colour at that opacity. A
+team that does not resolve takes `fallback` (default `#808080`).
+
+`logoPlugin(rows, { x, y, team, league, height })` is a uPlot plugin: put it in `plugins`. Its `draw` hook paints each
+row's logo centred on the row's `x` and `y` (in data units, placed with uPlot's own `valToPos`), `height` of the plot
+area tall (a fraction in (0, 1], as in the Plotly, Vega-Lite and ECharts adapters; default 0.1). Here the rows are the
+last point of each line, so each line ends in its team's logo.
+
+<Live id="sdvplot/uplot/win-probability" />
+
+Building the plugin fetches nothing. The images start loading when the chart starts (uPlot's `init` hook, before its
+first draw), with `crossOrigin = "anonymous"` so the canvas stays exportable, and the chart redraws as each one lands. A team with no
+logo draws nothing and warns once, as the ECharts adapter does; an image that fails to load is never drawn (no broken
+image) and warns once. A point outside the plot area, after a zoom, is not drawn over the axes. `y` is read on the "y"
+scale; pass `scale` for another one. `x` is on uPlot's "x" scale, and a time scale counts seconds.
+
+## Dark mode
+
+uPlot draws on a transparent canvas, so the series colours have to read on whatever is behind it. Pass the chart's
+background as `background` and every colour keeps at least 3:1 contrast against it (WCAG's minimum for graphics): a
+team colour under that gives way to the team's other colour, else is lightened (on a dark background) or darkened
+until it reads. A colour that already reads is kept.
+
+<Live id="sdvplot/uplot/dark-mode" />
+
+uPlot's own axes and legend are dark ink by default; on a dark page set each axis' `stroke` and the legend's colour too.
+
+## A live feed
+
+There is no `withLiveAppend`: appending is uPlot's own `u.setData(data)`. The team colours live in the options, so
+they survive every `setData`. For logos that follow the data, pass `logoPlugin` a function of the chart instead of
+rows: it is called at every draw, so it can read the newest point from `u.data`.
+
+This replays Super Bowl LIX one play at a time, as a live feed would arrive (a browser module; `replay(el)` returns
+what stops it):
+
+<Snippet file="uplot/live-replay.ts" />
+
+Each team's logo loads once, however often the chart redraws.
+
+## Reading back what was drawn
+
+`drawnMarks(u)` returns `[team id, x, y, height, url]` for each logo the chart's plugins last painted, `height` as a
+fraction of the plot area, the same shape as the spec adapters' `drawnMarks`. A test can draw the chart (a browser, or
+jsdom with a 2D context such as `@napi-rs/canvas` behind its canvases) and check which teams were drawn where.
+
+## uPlot's release cadence
+
+uPlot's last release, 1.6.32, came out on 2025-03-14. If no release follows, uPlot leaves the two-year
+release window in March 2027, and its place here is reviewed then. The adapter needs little of it: it reads a chart's
+`ctx`, `bbox`, `data`, `valToPos` and `redraw`, and writes series options.

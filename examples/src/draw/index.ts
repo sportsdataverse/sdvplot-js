@@ -34,6 +34,8 @@ async function drawWith(el: HTMLElement, s: BrowserSpec): Promise<() => void> {
       return (await import(/* webpackChunkName: "draw-echarts" */ "./echarts.js")).default(el, s);
     case "chartjs":
       return (await import(/* webpackChunkName: "draw-chartjs" */ "./chartjs.js")).default(el, s);
+    case "uplot":
+      return (await import(/* webpackChunkName: "draw-uplot" */ "./uplot.js")).default(el, s);
   }
 }
 

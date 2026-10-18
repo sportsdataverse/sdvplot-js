@@ -72,4 +72,13 @@ export type BrowserSpec =
       readonly width: number;
       readonly height: number;
       readonly label: string;
+    }
+  /** `opts` builds fresh uPlot options per chart; `data` is uPlot's columns (x first, then one array per series). */
+  | {
+      readonly lib: "uplot";
+      readonly opts: () => object;
+      readonly data: readonly ArrayLike<number | null | undefined>[];
+      readonly width: number;
+      readonly height: number;
+      readonly label: string;
     };
