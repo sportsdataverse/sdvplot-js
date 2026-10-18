@@ -7,11 +7,12 @@
  */
 import { type ReactElement, createElement } from "react";
 import { type Row, aspect, checkAlpha, colorList, imageSource, place, seasons } from "./_web.js";
-import { contrast, hex6, mix, onColor } from "./contrast.js";
+import { hex6 } from "./contrast.js";
 import { InputError, warn } from "./errors.js";
 import type { EspnHeadshotLeague } from "./headshots.js";
 import { type Placement, placedName } from "./placement.js";
 import type { Value } from "./resolve.js";
+import { teamPalette } from "./team-palette.js";
 import type { HeadshotIdSystem, IdSystem, League, MarkType, SeasonInput, Variant, Which } from "./types.js";
 export type { Row } from "./_web.js";
 export { embedSources } from "./_web.js"; // public: build `embed` with it, as for the other adapters
@@ -286,25 +287,15 @@ export interface RechartsColorOptions {
   fallback?: string;
   /**
    * The chart's background. Given, a team colour under 3:1 contrast against it is swapped for the team's other
-   * colour, else moved towards white (on a dark background) or black (a light one) until it reads: dark mode.
+   * colour, else moved towards white (on a dark background) or black (a light one) until it reads: dark mode. A
+   * colour that would then sit too close to an earlier team's (CIE76 ΔE under 10) takes the team's other colour, or
+   * is stepped lighter or darker until it is distinct; failing that it is kept, with one warning.
    */
   background?: string;
 }
-const MIN_CONTRAST = 3; // WCAG 1.4.11: graphical objects
-/** `c`, else `alt`, else `c` mixed towards the background's ink until it reaches 3:1 against `bg`. */
-function readable(c: string, alt: string | undefined, bg: string): string {
-  if (contrast(c, bg) >= MIN_CONTRAST) return c;
-  if (alt !== undefined && contrast(alt, bg) >= MIN_CONTRAST) return alt;
-  const ink = onColor(bg);
-  for (let t = 0.05; t < 1; t += 0.05) {
-    const m = mix(c, ink, t);
-    if (contrast(m, bg) >= MIN_CONTRAST) return m;
-  }
-  return ink;
-}
 /**
  * One colour per team, in order, for each series' `stroke` / `fill`. With `background`, every colour keeps 3:1
- * contrast against it (dark mode).
+ * contrast against it (dark mode) and stays distinct from the others.
  *
  * @example
  * ```tsx
@@ -329,5 +320,6 @@ export function teamColorPalette(
   const bg = o.background === undefined ? undefined : hex6(o.background);
   if (bg === undefined) return main.map((c) => c ?? fallback);
   const other = colorList(league, teams, { ...co, which: o.which === "secondary" ? "primary" : "secondary" });
-  return main.map((c, i) => readable(c ?? fallback, other[i] ?? undefined, bg));
+  const colors = main.map((c) => hex6(c ?? fallback, { dropAlpha: true }));
+  return teamPalette(colors, other, bg, teams.map(String));
 }

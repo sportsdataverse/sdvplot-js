@@ -16,7 +16,9 @@ league first (`loadLeague`). The court, field or rink backdrop is a component, `
 tall, where its label would be (under a bottom axis, left of a left one). A category that resolves to no logo keeps its
 text label, as the ECharts adapter does. `teamColorPalette(league, teams, { background })` gives one colour per team;
 with `background`, a colour under 3:1 contrast against it gives way to the team's other colour, or is lightened (on a
-dark background) or darkened until it reads.
+dark background) or darkened until it reads, and a colour that would then sit too close to an earlier team's (CIE76
+ΔE under 10, as the Lakers' and the Warriors' golds on a dark background) takes the team's other colour or is stepped
+lighter or darker until the two tell apart.
 
 <Live id="sdvplot/recharts/nba-pacific-logo-ticks" />
 
