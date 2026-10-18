@@ -36,6 +36,8 @@ const DRAWN: Readonly<Record<string, string>> = {
   echarts: ".sdv-live-output [_echarts_instance_] svg",
   chartjs: ".sdv-live-output canvas",
   uplot: ".sdv-live-output .uplot canvas",
+  // the sdvplot marks inside LayerChart's svg: Svelte mounted, and the marks' lazy import of layerchart resolved
+  svelte: ".sdv-live-output svg.lc-layout-svg :is(image[data-sdv-id], g[data-sdv-surface])",
 };
 
 describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the built docs", () => {

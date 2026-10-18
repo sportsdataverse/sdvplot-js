@@ -8,6 +8,7 @@ const require = createRequire(import.meta.url);
 const dir = (pkg: string): string => dirname(require.resolve(`${pkg}/package.json`));
 /** The chart libraries the browser upgrades draw with: examples/src/draw/<lib>.ts, chunk `draw-<lib>`. */
 const CHART_LIBS = ["plotly", "vega", "echarts", "chartjs", "uplot"] as const;
+const CHART_LIBS = ["plotly", "vega", "echarts", "chartjs", "svelte"] as const;
 /**
  * Vega's self-contained build (its d3 inside). The module build imports the d3-* packages Observable Plot imports,
  * and a module imported from two chunks cannot be scope-hoisted into either: every Plot and D3 page grew 4.8 KB
@@ -45,6 +46,13 @@ export default function sdvExamples(_context: LoadContext): Plugin {
         module: {
           rules: [
             { test: VEGA, type: "javascript/auto" },
+            // sdvplot/svelte's components, the Svelte snippets the svelte examples draw, and LayerChart's own .svelte files
+            // and .svelte.js rune modules. Svelte 5 reads a component's TypeScript itself; its CSS is injected.
+            {
+              test: /\.svelte$/,
+              use: { loader: "svelte-loader", options: { compilerOptions: { css: "injected" } } },
+            },
+            { test: /\.svelte\.js$/, use: "svelte-loader" },
             // A page holding <Live id> is compiled from examples/out/<id>.json too: a warm cache must see it change.
             {
               test: /\.mdx?$/,

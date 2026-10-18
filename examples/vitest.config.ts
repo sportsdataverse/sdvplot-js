@@ -1,3 +1,4 @@
+import { svelte } from "@sveltejs/vite-plugin-svelte";
 import { defineConfig } from "vitest/config";
 import { ALIASES, DEFINES, abs } from "./sources.js";
 
@@ -11,6 +12,7 @@ const DOCS = [
 ];
 
 export default defineConfig({
+  plugins: [svelte()], // sdvplot/svelte's components and the Svelte snippets the docs draw
   resolve: { alias: [...ALIASES, ...DOCS] },
   define: DEFINES,
   esbuild: { jsx: "automatic" }, // the docs' tsconfig is not react-jsx, the examples' is
