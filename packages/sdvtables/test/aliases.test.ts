@@ -81,7 +81,7 @@ const R_NAMES = [
   "reactable_sdv_team_color_bar",
   "reactable_sdv_team_color_bg",
 ];
-// reactablefmtr 2.1.0: its 27 theme functions and add_icon_legend
+// reactablefmtr 2.1.0: its 27 theme functions, add_icon_legend and its cell formatters
 const FMTR_NAMES = [
   "cerulean",
   "clean",
@@ -111,6 +111,18 @@ const FMTR_NAMES = [
   "superhero",
   "void",
   "add_icon_legend",
+  // reactablefmtr 2.1.0 cell formatters ported as kinds or kind options
+  "data_bars",
+  "icon_sets",
+  "icon_assign",
+  "merge_column",
+  "bubble_grid",
+  "color_tiles",
+  "color_scales",
+  "pill_buttons",
+  "highlight_min",
+  "highlight_max",
+  "highlight_min_max",
 ];
 test("every R name has an alias row; ported targets resolve to a real factory kind, builder method, theme, ./html export or root export", () => {
   const members: Readonly<Record<string, readonly string[]>> = {
@@ -129,7 +141,8 @@ test("every R name has an alias row; ported targets resolve to a real factory ki
   }
   expect(R_NAMES).toHaveLength(74);
   expect(new Set(R_NAMES).size).toBe(74);
-  expect(FMTR_NAMES).toHaveLength(28);
+  expect(FMTR_NAMES).toHaveLength(39);
+  expect(new Set(FMTR_NAMES).size).toBe(39);
   expect(Object.keys(GT_ALIASES).sort()).toEqual([...R_NAMES, ...FMTR_NAMES].sort());
   expect(
     Object.values(GT_ALIASES)
