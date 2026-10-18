@@ -78,8 +78,9 @@ export interface NumberFormat {
 }
 /**
  * Per-row colour for a reactablefmtr-style kind (reactablefmtr `fill_color_ref` / `color_ref`): `colorRef` names a
- * column holding a hex colour per row; or `team` names a column of team names/ids, resolved in `league` to the team's
- * `which` colour. `colorRef` wins over `team`; a row with neither falls back to the kind's own scale.
+ * column holding a hex colour or CSS colour name (`"steelblue"`) per row, any other value being blank; or `team` names
+ * a column of team names/ids, resolved in `league` to the team's `which` colour. `colorRef` wins over `team`; a row
+ * with neither falls back to the kind's own scale.
  */
 export interface ColorRefOpts<Row> {
   readonly colorRef?: keyof Row & string;
@@ -351,7 +352,7 @@ export type ColumnSpec<Row> =
       readonly iconSize: number;
       /** A column naming each row's icon (an `IconName`), instead of the buckets. */
       readonly iconRef?: keyof Row & string;
-      /** A column holding each row's hex icon colour, instead of the buckets. */
+      /** A column holding each row's icon colour (hex or CSS colour name, else blank), instead of the buckets. */
       readonly iconColorRef?: keyof Row & string;
       readonly numberFormat?: NumberFormat;
     })
