@@ -704,6 +704,85 @@ export type SoccerParamUpdates = {
 };
 
 // @public (undocumented)
+export const SOFTBALL_LEAGUES: readonly ["custom", "ncaa"];
+
+// @public (undocumented)
+export const SOFTBALL_SPECS: Readonly<Record<SoftballLeague, Readonly<SoftballParams>>>;
+
+// @public (undocumented)
+export type SoftballLeague = (typeof SOFTBALL_LEAGUES)[number];
+
+// @public (undocumented)
+export type SoftballLoosen<T> = T extends readonly (readonly number[])[] ? readonly number[] | readonly (readonly number[])[] : T extends readonly number[] ? number | readonly number[] : T extends readonly boolean[] ? boolean | readonly boolean[] : T extends readonly string[] ? string | readonly string[] : T;
+
+// @public (undocumented)
+export interface SoftballParams {
+    // (undocumented)
+    backstop_radius: number;
+    // (undocumented)
+    base_side_length: number;
+    // (undocumented)
+    baseline_distance: number;
+    // (undocumented)
+    batters_box_length: number;
+    // (undocumented)
+    batters_box_width: number;
+    // (undocumented)
+    batters_box_y_adj: number;
+    // (undocumented)
+    catchers_box_depth: number;
+    // (undocumented)
+    catchers_box_width: number;
+    // (undocumented)
+    center_field_distance: number;
+    // (undocumented)
+    coaches_box_depth: number;
+    // (undocumented)
+    coaches_box_length: number;
+    // (undocumented)
+    coaches_box_width: number;
+    // (undocumented)
+    field_units: "" | "ft";
+    // (undocumented)
+    foul_line_to_foul_grass: number;
+    // (undocumented)
+    home_plate_circle_radius: number;
+    // (undocumented)
+    home_plate_edge_length: number;
+    // (undocumented)
+    home_plate_side_to_batters_box: number;
+    // (undocumented)
+    infield_arc_radius: number;
+    // (undocumented)
+    left_field_distance: number;
+    // (undocumented)
+    line_width: number;
+    // (undocumented)
+    pitchers_circle_radius: number;
+    // (undocumented)
+    pitchers_lane_length: number;
+    // (undocumented)
+    pitchers_plate_front_to_home_plate: number;
+    // (undocumented)
+    pitchers_plate_length: number;
+    // (undocumented)
+    pitchers_plate_width: number;
+    // (undocumented)
+    right_field_distance: number;
+    // (undocumented)
+    running_lane_depth: number;
+    // (undocumented)
+    running_lane_length: number;
+    // (undocumented)
+    running_lane_start_distance: number;
+}
+
+// @public (undocumented)
+export type SoftballParamUpdates = {
+    [K in keyof SoftballParams]?: SoftballLoosen<SoftballParams[K]>;
+};
+
+// @public (undocumented)
 export const TENNIS_LEAGUES: readonly ["atp", "custom", "ita", "itf", "ncaa", "usta", "wta"];
 
 // @public (undocumented)

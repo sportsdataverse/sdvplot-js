@@ -5,5 +5,6 @@ export * from "./football.js";
 export * from "./hockey.js";
 export * from "./lacrosse.js";
 export * from "./soccer.js";
+export * from "./softball.js";
 export * from "./tennis.js";
 export * from "./volleyball.js";

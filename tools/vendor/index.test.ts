@@ -72,6 +72,22 @@ test("vendors HEAD's LF blob from a CRLF checkout, and --check then passes", { t
   expect(c.stdout).toContain("vendor --check: ok");
 });
 
+test("SPORTYR_VENDOR_NOTE is appended to VENDOR_SOURCE after the date", { timeout: 60_000 }, () => {
+  const { root, repo } = sandbox();
+  const w = spawnSync(process.execPath, [TSX, SCRIPT], {
+    cwd: root,
+    env: { ...process.env, SPORTYR_REPO: repo, SPORTYR_VENDOR_NOTE: "branch fix/x, PR #68 (unmerged)" },
+    encoding: "utf8",
+  });
+  expect(w.status, w.stderr).toBe(0);
+  const line = readFileSync(join(root, "packages/sporty/data/VENDOR_SOURCE"), "utf8");
+  expect(line).toMatch(
+    /^sportyR 2\.2\.3 [0-9a-f]{7,} \d{4}-\d{2}-\d{2} branch fix\/x, PR #68 \(unmerged\)\n$/,
+  );
+  // fixtures-version.test.ts reads fields 1 and 2 (version, sha); the note must not shift them
+  expect(line.split(" ").slice(0, 2)).toEqual(["sportyR", "2.2.3"]);
+});
+
 test("--check fails when the vendored copy differs from HEAD", { timeout: 60_000 }, () => {
   const { root, repo, dest } = sandbox();
   writeFileSync(dest, BLOB.replaceAll("\n", "\r\n"));

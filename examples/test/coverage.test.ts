@@ -18,6 +18,7 @@ const SPORTS = [
   "HOCKEY",
   "LACROSSE",
   "SOCCER",
+  "SOFTBALL",
   "TENNIS",
   "VOLLEYBALL",
 ];

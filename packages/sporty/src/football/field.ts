@@ -80,7 +80,11 @@ export function footballField(
   }
 
   const p = mergeParams(FOOTBALL_SPECS[key], opts.updates, ARRAY_FIELDS);
-  const colors = mergeColors(FOOTBALL_DEFAULT_COLORS, opts.colorUpdates);
+  // Bordered fields get a white border outline by default, before the user's colours (geom-football.R 667, sportyR #67)
+  const defaults = p.field_bordered
+    ? { ...FOOTBALL_DEFAULT_COLORS, field_border_outline: "#ffffff", red_zone_border_outline: "#ffffff" }
+    : FOOTBALL_DEFAULT_COLORS;
+  const colors = mergeColors(defaults, opts.colorUpdates);
   const col = (k: FootballColorKey): Color => colorAt(colors[k], 0);
   arcResolution(opts.arcResolution); // validated for a uniform API; the field draws no arcs
   const from = normalizeUnit(p.field_units || "ft"); // custom's "" (R's `%or% "ft"` only catches NULL)

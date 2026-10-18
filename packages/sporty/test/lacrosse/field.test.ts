@@ -15,7 +15,7 @@ test("NCAAM: yards, 73 polygons in R order, contrasting centre marker #ffcb05, b
     "offensive_zone",
   ]);
   expect(polys.find((p) => p.name === "face_off_marker")!.fill).toBe("#ffcb05"); // first face_off_marker = the centre one
-  expect(polys.find((p) => p.name === "goal_arc")!.points).toHaveLength(205); // n = 200 default → 205 (NULL thickness)
+  expect(polys.find((p) => p.name === "goal_arc")!.points).toHaveLength(2 * 200 + 5); // thickness defaults to 0 (sportyR #64)
   expect(polys.filter((p) => p.name === "goal_circle")[0]!.points).toHaveLength(2 * (2 * 200 + 5));
 });
 test("NCAAW: metres, 89 polygons (4 hash-mark separations × 4); hash marks rotated by −sep/(fan+circle) rad", () => {
@@ -28,7 +28,7 @@ test("NCAAW: metres, 89 polygons (4 hash-mark separations × 4); hash marks rota
 test("NLL (Review Focus 4): oval field, boards stroked, hidden-by-flag features present but transparent; feet", () => {
   const s = lacrosseField("nll");
   expect(s.units).toBe("ft");
-  expect(s.bbox).toEqual([-105, -47.5, 105, 47.5]);
+  expect(s.bbox).toEqual([-105, -48, 105, 48]); // y covers the benches and penalty boxes (sportyR #63)
   const polys = s.features.filter((f) => f.kind === "polygon");
   expect(polys).toHaveLength(73);
   expect(polys[0]!.points).toEqual([[0, 0]]);
@@ -41,7 +41,7 @@ test("NLL (Review Focus 4): oval field, boards stroked, hidden-by-flag features 
   expect(polys.find((p) => p.name === "face_off_marker")!.fill).toBe("#ffffff"); // contrasting flag absent → white
   expect(polys.find((p) => p.name === "goal_circle")!.points).toHaveLength(2 * 200 + 5); // clipped (full_360 false)
 });
-test("PLL goal arc has the inner arc (thickness present); usam marker stays white (flag false); offense half; user colour beats the contrast rule (documented divergence 6)", () => {
+test("PLL goal arc has the inner arc (thickness present); usam marker stays white (flag false); offense half; user colour beats the contrast rule (sportyR #65)", () => {
   expect(
     lacrosseField("pll")
       .features.filter((f) => f.kind === "polygon")
@@ -53,7 +53,7 @@ test("PLL goal arc has the inner arc (thickness present); usam marker stays whit
     lacrosseField("ncaam", { colorUpdates: { center_face_off_marker: "#123456" } }).features.find(
       (f) => f.name === "face_off_marker",
     )!.fill,
-  ).toBe("#123456"); // R: #ffcb05
+  ).toBe("#123456");
   expect(lacrosseField("world lacrosse", { units: "yd" }).bbox[2]).toBeCloseTo(105 / 3, 9);
   expect(() => lacrosseField("ncaam", { updates: { center_face_off_marker_shape: "triangle" } })).toThrow(
     SportyError,

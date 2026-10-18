@@ -9,7 +9,8 @@ args <- commandArgs(trailingOnly = TRUE); sports <- if (length(args)) args else 
 root <- file.path(dirname(dirname(dirname(normalizePath(sub("--file=", "", grep("--file=", commandArgs(), value = TRUE)))))), "fixtures", "sporty")
 geoms <- list(basketball = geom_basketball, hockey = geom_hockey, football = geom_football,
               soccer = geom_soccer, baseball = geom_baseball, tennis = geom_tennis,
-              volleyball = geom_volleyball, curling = geom_curling, lacrosse = geom_lacrosse)
+              volleyball = geom_volleyball, curling = geom_curling, lacrosse = geom_lacrosse,
+              softball = geom_softball)
 dims <- sportyR:::surface_dimensions
 # Gate (spec §7): the installed sportyR's data must equal the vendored JSON the TS specs are generated from. Every
 # ported sport is checked (not only the requested ones) because VERSION records the sha256 of the whole file.
@@ -30,6 +31,7 @@ ranges$tennis <- c("full", "in bounds only", "serve", "receive", "receivicehalf"
 ranges$baseball <- c("full", "infield")
 ranges$curling <- c("full", "in bounds only", "house")
 ranges$lacrosse <- c("full", "in bounds only", "offense", "defense")
+ranges$softball <- c("full", "infield")
 for (sport in sports) for (league in setdiff(names(dims[[sport]]), "custom")) {
   dir <- file.path(root, sport, gsub(" ", "_", league)); dir.create(dir, recursive = TRUE, showWarnings = FALSE)
   g <- geoms[[sport]](league = league)

@@ -1,0 +1,5 @@
+---
+"@sportsdataverse/sporty": minor
+---
+
+Re-vendored from sportyR 2.3.0 (branch `fix/geometry-quirks`, sportyR PR #68, not yet merged), with its geometry fixes ported and every oracle fixture regenerated. Changed output: NLL and World Lacrosse draw a real 85 ft neutral zone (#60); lacrosse penalty-box fills sit 0.25 ft further out, at `boards_thickness` (#61); women's goal-fan hash marks are placed at the angle they are rotated by (#62); the full lacrosse display range covers benches and penalty boxes (NLL / World Lacrosse y to ±48 ft, #63); a goal arc without a line thickness draws as a ring (#64); the contrasting centre face-off colour is applied after the user's colours and only when the marker matches the centre line, so recolouring `center_line` keeps the marker white (#65); the NCAA football coaching line sits 6 ft outside the sideline (`restricted_area_width` 1.8889 yd, #66); and NCAA, NFHS and NFL fields get a white border outline by default (`field_bordered`), CFL unchanged (#67).

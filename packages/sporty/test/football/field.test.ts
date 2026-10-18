@@ -108,3 +108,18 @@ test("rotation and translation move the numbers with the field; the label angle 
   expect(b.y).toBeCloseTo(a.x + 10, 12);
   expect(b.rotation).toBe(90);
 });
+
+test("sportyR #67: field_bordered leagues default the border outlines to white; CFL keeps them transparent; a user colour wins", () => {
+  const fills = (league: string, o = {}) =>
+    footballField(league, o)
+      .features.filter((f) => f.name === "field_border_outline" || f.name === "red_zone_border_outline")
+      .map((f) => f.fill);
+  for (const league of ["ncaa", "nfl", "nfhs11", "nfhs6"]) {
+    expect(fills(league).length, league).toBeGreaterThan(0);
+    expect(new Set(fills(league)), league).toEqual(new Set(["#ffffff"]));
+  }
+  expect(new Set(fills("cfl"))).toEqual(new Set(["#ffffff00"]));
+  expect(new Set(fills("ncaa", { colorUpdates: { field_border_outline: "#123456" } }))).toEqual(
+    new Set(["#123456", "#ffffff"]),
+  );
+});
