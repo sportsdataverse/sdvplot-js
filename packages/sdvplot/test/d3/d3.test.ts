@@ -119,5 +119,5 @@ test("appendSurface describes the surface (sporty's default, or ariaDescription)
 
 test("appendSurface throws InputError for a league with no surface", () => {
   const svg = select(document.body).append("svg");
-  expect(() => appendSurface(svg, "mlb", { x: (v) => v, y: (v) => v })).toThrow(InputError);
+  expect(() => appendSurface(svg, "cricket", { x: (v) => v, y: (v) => v })).toThrow(InputError);
 });
