@@ -7,6 +7,7 @@ import type {
   Density,
   NumericKey,
   Predicate,
+  SeriesKey,
   TableSpec,
 } from "./spec.js";
 
@@ -128,9 +129,91 @@ export interface ColumnFactory<Row> {
     key: K,
     o?: Base<Row, K> & Partial<Opt<Col<Row, "bubble">, never>>,
   ): Col<Row, "bubble">;
+  /**
+   * reactablefmtr `react_sparkline` on an array column (defaults: `slategray`, 1.5px line, `chartWidth` 100 x `chartHeight` 22px, not sortable;
+   * `statline` / `bandline` red, labels 0.8em with 0 decimals).
+   */
+  sparkline<K extends SeriesKey<Row>>(
+    key: K,
+    o?: Base<Row, K> & Partial<Opt<Col<Row, "sparkline">, never>>,
+  ): Col<Row, "sparkline">;
+  /** reactablefmtr `react_sparkbar` on an array column (defaults: `slategray` bars, 100 x 22px, not sortable). */
+  sparkbar<K extends SeriesKey<Row>>(
+    key: K,
+    o?: Base<Row, K> & Partial<Opt<Col<Row, "sparkbar">, never>>,
+  ): Col<Row, "sparkbar">;
+  /** reactablefmtr `gauge_chart` (defaults: fill `#15607A`, track `#EEEEEE`, size 1 = 50px wide, scale 0 to max |value|). */
+  gauge<K extends NumericKey<Row>>(
+    key: K,
+    o?: Base<Row, K> & Partial<Opt<Col<Row, "gauge">, never>>,
+  ): Col<Row, "gauge">;
   /** gtUtils aliases — same objects, old names (see src/aliases.ts). */
   fmtRank: ColumnFactory<Row>["rank"];
   fmtTally: ColumnFactory<Row>["tally"];
+}
+
+const SERIES_DEFAULTS = {
+  statlineColor: "red",
+  statlineLabelSize: "0.8em",
+  bandlineColor: "red",
+  bandlineOpacity: 0.2,
+  labels: [],
+  labelSize: "0.8em",
+  decimals: 0,
+  chartHeight: 22,
+  chartWidth: 100,
+} as const;
+const SERIES_POINTS: readonly string[] = ["first", "last", "min", "max", "all"];
+/** build()'s (and the renderer's) checks of a sparkline, sparkbar or gauge column: each error names the column and the option. Internal. */
+export function checkChart<Row>(col: ColumnSpec<Row>): void {
+  if (col.kind !== "sparkline" && col.kind !== "sparkbar" && col.kind !== "gauge") return;
+  const fail = (m: string): never => {
+    throw new TableSpecError(`column "${col.key}": ${col.kind} ${m}`);
+  };
+  const positive = (name: string, v: unknown): void => {
+    if (!(typeof v === "number" && Number.isFinite(v) && v > 0))
+      fail(`${name} must be a positive finite number, got ${String(v)}`);
+  };
+  const unit = (name: string, v: unknown): void => {
+    if (!(typeof v === "number" && v >= 0 && v <= 1))
+      fail(`${name} must be between 0 and 1, got ${String(v)}`);
+  };
+  const oneOf = (name: string, v: unknown, ok: readonly string[]): void => {
+    if (v !== undefined && !ok.includes(v as string))
+      fail(`${name} must be one of ${ok.join(", ")}, got ${JSON.stringify(v)}`);
+  };
+  for (const [name, v] of [
+    ["minValue", col.minValue],
+    ["maxValue", col.maxValue],
+  ] as const)
+    if (v !== undefined && !(typeof v === "number" && Number.isFinite(v)))
+      fail(`${name} must be a finite number, got ${String(v)}`);
+  if (col.minValue !== undefined && col.maxValue !== undefined && col.minValue >= col.maxValue)
+    fail(`minValue must be below maxValue, got ${col.minValue} and ${col.maxValue}`);
+  if (col.kind === "gauge") {
+    positive("size", col.size);
+    positive("bias", col.bias);
+    unit("opacity", col.opacity);
+    if (col.fill.length === 0) fail("fill needs at least one colour");
+    return;
+  }
+  positive("chartHeight", col.chartHeight);
+  positive("chartWidth", col.chartWidth);
+  unit("bandlineOpacity", col.bandlineOpacity);
+  if (!(Number.isInteger(col.decimals) && col.decimals >= 0))
+    fail(`decimals must be a whole number of at least 0, got ${String(col.decimals)}`);
+  oneOf("statline", col.statline, ["mean", "median", "min", "max"]);
+  oneOf("bandline", col.bandline, ["innerquartiles", "range"]);
+  for (const n of col.labels) oneOf("labels", n, SERIES_POINTS);
+  const marks = col.kind === "sparkline" ? col.highlightPoints : col.highlightBars;
+  const name = col.kind === "sparkline" ? "highlightPoints" : "highlightBars";
+  for (const n of marks === undefined ? [] : Array.isArray(marks) ? marks : Object.keys(marks))
+    oneOf(name, n, SERIES_POINTS);
+  if (col.kind === "sparkline") {
+    positive("lineWidth", col.lineWidth);
+    positive("pointSize", col.pointSize);
+    unit("areaOpacity", col.areaOpacity);
+  } else unit("fillOpacity", col.fillOpacity);
 }
 
 /** gtUtils/sdvplot `_RANK_PALETTE` (green → red), shared by colorRanks, the legend fallback and tiers. */
@@ -335,6 +418,41 @@ export function columnFactory<Row>(): ColumnFactory<Row> {
       opacity: 1,
       maxSize: 100,
       showText: true,
+      ...o,
+    }),
+    // react_sparkline / react_sparkbar / gauge_chart 2.1.0 formals, except lineWidth and pointSize (1 and 1.1 there):
+    // 1.5 for both, as sdvplot's reactable_sdv_sparkline, so the two libraries draw alike
+    sparkline: (key, o = {}) => ({
+      kind: "sparkline",
+      key,
+      sortable: false,
+      lineColor: "slategray",
+      lineWidth: 1.5,
+      showArea: false,
+      areaOpacity: 0.1,
+      pointSize: 1.5,
+      ...SERIES_DEFAULTS,
+      ...o,
+    }),
+    sparkbar: (key, o = {}) => ({
+      kind: "sparkbar",
+      key,
+      sortable: false,
+      fillColor: "slategray",
+      fillOpacity: 1,
+      ...SERIES_DEFAULTS,
+      ...o,
+    }),
+    gauge: (key, o = {}) => ({
+      kind: "gauge",
+      key,
+      fill: ["#15607A"],
+      background: "#EEEEEE",
+      showMinMax: false,
+      size: 1,
+      boldText: false,
+      bias: 1,
+      opacity: 1,
       ...o,
     }),
   };
@@ -608,6 +726,7 @@ export class TableBuilder<Row> {
         throw new TableSpecError(
           `column "${col.key}": highlight needs a predicate or "min", "max" or "both"`,
         );
+      checkChart(col);
     }
     if (this.s.decorations.filter((d) => d.type === "title").length > 1)
       throw new TableSpecError("only one .title()");

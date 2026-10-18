@@ -551,6 +551,29 @@ export const KC_PHI_GAMES_2024: readonly NflGame[] = [
   { game_id: "2024_18_NYG_PHI", week: 18, away_team: "NYG", away_score: 13, home_team: "PHI", home_score: 20 },
   { game_id: "2024_18_KC_DEN", week: 18, away_team: "KC", away_score: 0, home_team: "DEN", home_score: 38 },
 ];
+/** One AFC team's 2024 regular season week by week: index 0 is week 1, `null` the bye week. */
+export type AfcWeeks = {
+  readonly team: string;
+  /** Points scored minus points allowed in each week's game. */
+  readonly margins: readonly (number | null)[];
+  /** Points scored in each week's game. */
+  readonly points: readonly (number | null)[];
+};
+/**
+ * The eight STANDINGS teams' 2024 regular seasons as weekly series (weeks 1 to 18, the bye a gap), in STANDINGS'
+ * order, from fixtures/examples/nfl_games_2024_reg.csv: what the in-cell charts (sparkline, sparkbar) draw.
+ */
+// biome-ignore format: one team per line
+export const AFC_WEEKS_2024: readonly AfcWeeks[] = [
+  { team: "KC", margins: [7, 1, 5, 7, 13, null, 10, 7, 6, 2, -9, 3, 2, 2, 14, 8, 19, -38], points: [27, 26, 22, 17, 26, null, 28, 27, 30, 16, 21, 30, 19, 19, 21, 27, 29, 0] },
+  { team: "LAC", margins: [12, 23, -10, -7, null, 7, -2, 18, 17, 10, 7, -7, 4, -2, -23, 7, 33, 14], points: [22, 26, 10, 10, null, 23, 15, 26, 27, 27, 34, 23, 17, 17, 17, 34, 40, 34] },
+  { team: "DEN", margins: [-6, -7, 19, 1, 16, -7, 23, 14, -31, -2, 32, 10, 9, null, 18, -7, -6, 38], points: [20, 6, 26, 10, 34, 16, 33, 28, 10, 14, 38, 29, 41, null, 31, 27, 24, 38] },
+  { team: "LV", margins: [-12, 3, -14, 4, -16, -19, -5, -7, -17, null, -15, -10, -2, -15, -6, 5, 15, -14], points: [10, 26, 22, 20, 18, 13, 15, 20, 24, null, 19, 19, 17, 13, 9, 19, 25, 20] },
+  { team: "BUF", margins: [6, 21, 37, -25, -3, 3, 24, 21, 3, 10, 9, null, 25, -2, 6, 3, 26, -7], points: [34, 31, 47, 10, 20, 23, 34, 31, 30, 30, 30, null, 35, 42, 48, 24, 40, 16] },
+  { team: "MIA", margins: [3, -21, -21, -19, 5, null, -6, -1, -3, 8, 15, 19, -13, 6, -8, 12, 17, -12], points: [20, 10, 3, 12, 15, null, 10, 27, 27, 23, 34, 34, 17, 32, 12, 29, 20, 20] },
+  { team: "NYJ", margins: [-13, 7, 21, -1, -6, -3, -22, -3, 8, -25, -1, null, -5, -6, 7, -10, -26, 12], points: [19, 24, 24, 9, 17, 20, 15, 22, 21, 6, 27, null, 21, 26, 32, 9, 14, 32] },
+  { team: "NE", margins: [6, -3, -21, -17, -5, -20, -16, 3, -3, 16, -6, -19, -1, null, -13, -3, -33, 7], points: [16, 20, 3, 13, 10, 21, 16, 25, 17, 19, 22, 15, 24, null, 17, 21, 7, 23] },
+];
 /**
  * One SPADL action (socceraction 1.5.3) of StatsBomb open-data match 8658: metres from the bottom-left corner of a
  * 105 x 68 pitch, attacking left to right (fixtures/examples/spadl_8658_france_h1_passes.csv).

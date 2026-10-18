@@ -38,6 +38,9 @@ const KINDS = {
   iconAssign: 1,
   mergeStack: 1,
   bubble: 1,
+  sparkline: 1,
+  sparkbar: 1,
+  gauge: 1,
 } satisfies Record<ColumnKind, 1>;
 const DECORATIONS = {
   title: 1,

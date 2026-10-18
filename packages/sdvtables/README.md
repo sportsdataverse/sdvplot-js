@@ -227,10 +227,11 @@ decorations (title, caption, stripes) are not cells and are not carried over. Wr
 
 ## **Surface**
 
-- 26 column kinds on the `c` factory (`text`, `num`, `int`, `pct`, `rank`, `delta`, `tally`, `logo`, `wordmark`,
+- 29 column kinds on the `c` factory (`text`, `num`, `int`, `pct`, `rank`, `delta`, `tally`, `logo`, `wordmark`,
   `headshot`, `colorPills`, `colorRanks`, `colorResults`, `percentileBar`, `indicatorBox`, `highlight`,
   `highlightNa`, `mergeStackTeamColor`, `teamColorBar`, `teamColorBg`, `image`, and the reactablefmtr formatters
-  `dataBar`, `iconSet`, `iconAssign`, `mergeStack`, `bubble`; `fmtRank`/`fmtTally` alias `rank`/`tally`).
+  `dataBar`, `iconSet`, `iconAssign`, `mergeStack`, `bubble`, and the in-cell charts `sparkline`, `sparkbar`, `gauge`
+  (inline SVG, array-valued columns for the first two); `fmtRank`/`fmtTally` alias `rank`/`tally`).
   Any column takes `tooltip: true` (the value as a `title` attribute).
 - 25 table decorations as builder methods (titles, legends, cutlines, row accents, snake layout, tiers, watermark, ...).
 - Conditions are data predicates (`{ key, op, value }`), not callbacks, so specs stay serializable.

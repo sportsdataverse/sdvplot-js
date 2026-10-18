@@ -11,6 +11,7 @@ import {
   teamColorsSync,
 } from "@sportsdataverse/sdvplot";
 import type { EspnHeadshotLeague, League, SeasonInput, Which } from "@sportsdataverse/sdvplot";
+import { checkChart } from "../define.js";
 import { TableSpecError } from "../errors.js";
 import { formatNumber, formatValue, isBlank, naturalDigits, ordinal, toNumber } from "../format.js";
 import { matches } from "../predicate.js";
@@ -20,6 +21,7 @@ import { teamNameSync } from "../team-name.js";
 import type { Theme } from "../themes/tokens.js";
 import { checkPx, cssValue, escapeAttr, escapeHtml, styleAttr } from "./escape.js";
 import { ICON_NAMES, iconSvg } from "./icons.js";
+import { gaugeSvg, sparkbarSvg, sparklineSvg } from "./svg.js";
 /** One scaled column (pills, ranks, percentile), computed once per column by Task 8's columnScales. */
 export interface ColumnScale {
   readonly domain: readonly [number, number];
@@ -89,6 +91,7 @@ export function teamIdsOf<Row>(
   const out = new Map<string, (string | undefined)[]>();
   for (const c of spec.columns) {
     checkRefs(c);
+    checkChart(c); // a hand-written (JSON) spec skips build(): its chart numbers reach SVG attributes
     // the reactablefmtr-style kinds join in when they name a team column (team colours, or a logo/wordmark mark)
     const optIn = "team" in c && c.kind !== "mergeStackTeamColor" && c.team !== undefined;
     if (
@@ -158,6 +161,8 @@ interface Stats {
   readonly min: number;
   readonly max: number;
   readonly maxAbs: number;
+  /** min, max and max |v| over the finite values only (gauge: an infinity is a gap, never the scale's end) */
+  readonly finite: readonly [number, number, number];
   readonly index: ReadonlyMap<unknown, number>;
   readonly tiles: Map<number, readonly (number | null)[]>;
 }
@@ -174,11 +179,15 @@ function statsOf<Row>(ctx: RenderContext<Row>, key: string): Stats {
   if (hit) return hit;
   const nums = ctx.domainRows.map((r) => toNumber(cellValue(r, key)));
   const present = nums.filter((n): n is number => n !== null);
+  const fin = present.filter(Number.isFinite);
   const st: Stats = {
     nums,
     min: present.length ? Math.min(...present) : Number.NaN,
     max: present.length ? Math.max(...present) : Number.NaN,
     maxAbs: present.length ? Math.max(...present.map(Math.abs)) : Number.NaN,
+    finite: fin.length
+      ? [Math.min(...fin), Math.max(...fin), Math.max(...fin.map(Math.abs))]
+      : [Number.NaN, Number.NaN, Number.NaN],
     index: new Map(ctx.domainRows.map((r, j) => [r, j] as const)),
     tiles: new Map(),
   };
@@ -503,6 +512,82 @@ function bubble<Row>(col: BubbleCol<Row>, row: Row, i: number, ctx: RenderContex
   })}">${escapeHtml(fmtNum(v, col.numberFormat))}</div>`;
 }
 
+// ---- in-cell charts (reactablefmtr react_sparkline, react_sparkbar, gauge_chart); the SVG is drawn in svg.ts
+
+type ChartCol<Row> = Extract<ColumnSpec<Row>, { kind: "sparkline" | "sparkbar" | "gauge" }>;
+/**
+ * The row's own chart colour: `colorRef`'s hex value as given, else the team's `which` colour checked for 3:1
+ * non-text contrast (WCAG 1.4.11) on the table background: its other colour when that reads, else blended toward
+ * readable. Undefined when the row has neither.
+ */
+function chartColor<Row>(
+  col: ChartCol<Row>,
+  row: Row,
+  i: number,
+  ctx: RenderContext<Row>,
+): string | undefined {
+  if (col.colorRef !== undefined) {
+    const c = dataColor(cellValue(row, col.colorRef));
+    if (c !== undefined) return c;
+  }
+  const id = col.team === undefined ? undefined : ctx.teamIds.get(col.key)?.[i];
+  if (id === undefined || col.league === undefined) return undefined;
+  const which = col.which ?? "primary";
+  const own = teamColorsSync(col.league, id, { which, idSystem: "team_id" });
+  const other = teamColorsSync(col.league, id, {
+    which: which === "primary" ? "secondary" : "primary",
+    idSystem: "team_id",
+  });
+  const first = own ?? other;
+  return first === undefined
+    ? undefined
+    : readableInk(first, own === undefined ? undefined : other, tableBg(ctx), 3);
+}
+/** A cell's series: each finite number kept, anything else (null, NaN, ±Infinity, text) a gap; null when not an array. */
+function seriesOf(v: unknown): (number | null)[] | null {
+  return Array.isArray(v) ? v.map((x) => (typeof x === "number" && Number.isFinite(x) ? x : null)) : null;
+}
+function seriesCell<Row>(
+  col: Extract<ColumnSpec<Row>, { kind: "sparkline" | "sparkbar" }>,
+  row: Row,
+  i: number,
+  ctx: RenderContext<Row>,
+): string {
+  const values = seriesOf(cellValue(row, col.key));
+  if (values === null || values.every((v) => v === null)) return ""; // empty, missing or not an array: blank
+  const color = chartColor(col, row, i, ctx);
+  return col.kind === "sparkline"
+    ? sparklineSvg(col, values, color ?? col.lineColor, i)
+    : sparkbarSvg(col, values, color ?? col.fillColor, i);
+}
+type GaugeCol<Row> = Extract<ColumnSpec<Row>, { kind: "gauge" }>;
+/** reactablefmtr gauge_chart: |v| fills a half circle from minValue (0) to maxValue (the column's max |v|). */
+function gauge<Row>(col: GaugeCol<Row>, row: Row, i: number, ctx: RenderContext<Row>): string {
+  const raw = cellValue(row, col.key);
+  const v = toNumber(raw);
+  if (v === null) return blankOr(raw); // text passes through (reactablefmtr returns a non-numeric value as is)
+  if (!Number.isFinite(v)) return ""; // ±Infinity is a gap, as NaN
+  const [cmin, cmax, cabs] = statsOf(ctx, col.key).finite;
+  const lo = col.minValue ?? 0;
+  const hi = col.maxValue ?? (Number.isFinite(cabs) ? cabs : Math.abs(v));
+  if (lo > hi)
+    throw new TableSpecError(
+      `column "${col.key}" row ${i}: gauge minValue ${naturalDigits(lo)} is above the column's largest absolute value ${naturalDigits(hi)}; give maxValue too`,
+    );
+  const color =
+    chartColor(col, row, i, ctx) ??
+    (col.fill.length === 1
+      ? (col.fill[0] as string)
+      : (ramp(
+          col.fill.map((c) => hex6(c)),
+          [0, 1],
+          col.bias,
+        )(normalized(v, Number.isFinite(cmin) ? cmin : v, Number.isFinite(cmax) ? cmax : v)) as string));
+  return gaugeSvg(col, v, lo, hi, escapeAttr(cssValue(color, "gauge fill")), (n) =>
+    fmtNum(n, col.numberFormat),
+  );
+}
+
 /** highlight's extreme mode (reactablefmtr highlight_min/max/min_max): "min", "max" or null for this row. */
 function extremeOf<Row>(
   col: Extract<ColumnSpec<Row>, { kind: "highlight" }>,
@@ -816,9 +901,14 @@ export function renderCell<Row>(col: ColumnSpec<Row>, row: Row, i: number, ctx: 
       return mergeStack(col, row, i, ctx);
     case "bubble":
       return bubble(col, row, i, ctx);
+    case "sparkline":
+    case "sparkbar":
+      return seriesCell(col, row, i, ctx);
+    case "gauge":
+      return gauge(col, row, i, ctx);
     default: {
       const bad: never = col;
-      throw new TableSpecError(`unknown column kind ${String((bad as { kind: string }).kind)}`); // exhaustive over the 26 kinds
+      throw new TableSpecError(`unknown column kind ${String((bad as { kind: string }).kind)}`); // exhaustive over the 29 kinds
     }
   }
 }

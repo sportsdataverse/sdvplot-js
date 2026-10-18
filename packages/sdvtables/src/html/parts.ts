@@ -116,6 +116,7 @@ function alignOf<Row>(col: ColumnSpec<Row>): "left" | "center" | "right" {
     case "iconSet":
       return "right";
     case "bubble":
+    case "gauge":
       return "center";
     case "logo":
     case "wordmark":
