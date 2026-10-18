@@ -66,12 +66,13 @@ test("icons bucket separately from colours; iconRef / iconColorRef read the row;
   );
   expect(cellOf(over, "pf")).toContain('<span style="font-size:0;color:transparent">385</span>');
   expect(ICON_NAMES).toContain("star");
-  expect(() =>
-    renderHTML(
-      defineTable<R>()
-        .columns((c) => [c.iconSet("pf", { iconRef: "team" })])
-        .build(),
-      rows,
-    ),
-  ).toThrow(/unknown icon "KC"/);
+  // an iconRef value that is not an icon name ("KC") falls back to the bucket icon instead of throwing
+  const unknown = renderHTML(
+    defineTable<R>()
+      .columns((c) => [c.iconSet("pf", { iconRef: "team" })])
+      .build(),
+    rows,
+    { css: "none" },
+  );
+  expect(cellOf(unknown, "pf")).toContain("<svg");
 });

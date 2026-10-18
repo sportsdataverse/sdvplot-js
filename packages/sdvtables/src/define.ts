@@ -591,6 +591,10 @@ export class TableBuilder<Row> {
     for (const col of this.s.columns) {
       if (seen.has(col.key)) throw new TableSpecError(`column key "${col.key}" appears twice`);
       seen.add(col.key);
+      if (col.kind === "highlight" && col.when === undefined && col.extreme === undefined)
+        throw new TableSpecError(
+          `column "${col.key}": highlight needs a predicate or "min", "max" or "both"`,
+        );
     }
     if (this.s.decorations.filter((d) => d.type === "title").length > 1)
       throw new TableSpecError("only one .title()");

@@ -8,7 +8,15 @@ import { fnv1a32, tableId } from "../table-id.js";
 import { BASE_CSS, tokensCSS } from "../themes/base-css.js";
 import { resolveTheme } from "../themes/index.js";
 import type { GoogleFont, Theme } from "../themes/tokens.js";
-import { type RenderContext, columnScales, isScaled, kindCellStyle, renderCell, teamIdsOf } from "./cells.js";
+import {
+  type RenderContext,
+  cellValue,
+  columnScales,
+  isScaled,
+  kindCellStyle,
+  renderCell,
+  teamIdsOf,
+} from "./cells.js";
 import { applyDecorations } from "./decorations.js";
 import { cssValue, escapeAttr, escapeHtml, styleOf } from "./escape.js";
 import { fontsLink } from "./fonts.js";
@@ -232,9 +240,9 @@ export function renderParts<Row>(
     if (c.tooltip !== true) return `>${html}`;
     const text = html
       .replace(/<[^>]*>/g, " ")
-      .replace(/s+/g, " ")
+      .replace(/\s+/g, " ")
       .trim();
-    const raw = (row as Readonly<Record<string, unknown>>)[c.key];
+    const raw = cellValue(row, c.key);
     const title = text || (raw === null || raw === undefined ? "" : escapeAttr(raw));
     return title ? ` title="${title}">${html}` : `>${html}`;
   };

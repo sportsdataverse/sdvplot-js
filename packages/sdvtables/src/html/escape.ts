@@ -10,8 +10,8 @@ const MAP: Readonly<Record<string, string>> = {
 export const escapeHtml = (s: unknown): string =>
   String(s ?? "").replace(/[&<>"']/g, (c) => MAP[c] as string);
 export const escapeAttr: (s: unknown) => string = escapeHtml;
-/** What can end a CSS declaration, rule, string, attribute or element. */
-const CSS_UNSAFE = /[;{}<>"\\\n\r]/;
+/** What can end a CSS declaration, rule, string, attribute or element, or make the value fetch a resource (`url(`). */
+const CSS_UNSAFE = /[;{}<>"\\\n\r]|url\(/i;
 /** True when `v` can sit in a CSS declaration value as is (the non-throwing check, for data). */
 export const isCssValue = (v: unknown): boolean => !CSS_UNSAFE.test(String(v));
 /** A spec value bound for a CSS declaration (deco `<style>` rule or inline style): returned as is, or TableSpecError naming the field. */
@@ -19,7 +19,7 @@ export function cssValue(v: unknown, field: string): string {
   const s = String(v);
   if (CSS_UNSAFE.test(s))
     throw new TableSpecError(
-      `${field} ${JSON.stringify(s)} is not a CSS value: it may not contain ; { } < > " \\ or a line break`,
+      `${field} ${JSON.stringify(s)} is not a CSS value: it may not contain ; { } < > " \\ url( or a line break`,
     );
   return s;
 }

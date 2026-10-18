@@ -19,7 +19,7 @@ import type { ColumnSpec, IconName, MarkOpts, NumberFormat, TableSpec } from "..
 import { teamNameSync } from "../team-name.js";
 import type { Theme } from "../themes/tokens.js";
 import { checkPx, cssValue, escapeAttr, escapeHtml, styleAttr } from "./escape.js";
-import { iconSvg } from "./icons.js";
+import { ICON_NAMES, iconSvg } from "./icons.js";
 /** One scaled column (pills, ranks, percentile), computed once per column by Task 8's columnScales. */
 export interface ColumnScale {
   readonly domain: readonly [number, number];
@@ -161,6 +161,8 @@ interface Stats {
   readonly index: ReadonlyMap<unknown, number>;
   readonly tiles: Map<number, readonly (number | null)[]>;
 }
+// ponytail: keyed by the domainRows array, so rows are treated as immutable — mutating a row between renders of the
+// same array serves stale stats; pass a new array after changing rows.
 const STATS = new WeakMap<readonly unknown[], Map<string, Stats>>();
 function statsOf<Row>(ctx: RenderContext<Row>, key: string): Stats {
   let byKey = STATS.get(ctx.domainRows);
@@ -204,6 +206,21 @@ function sizeOf(v: number, st: Stats, minValue: number | undefined, maxValue: nu
 /** reactablefmtr's colour position: (v - min) / (max - min) over the column, 1 when every value is the same. */
 const normalized = (v: number, lo: number, hi: number): number =>
   hi === lo ? 1 : clamp01((v - lo) / (hi - lo));
+/**
+ * A row's colour value (`colorRef`, `iconColorRef`): the trimmed string when it is a hex colour `solid()` can read
+ * (`#rgb`, `#rgba`, `#rrggbb`, `#rrggbbaa`), else undefined. Data never reaches CSS unchecked and never throws: a
+ * blank, named (`"red"`) or hostile (`url(...)`) value is treated as blank.
+ */
+function dataColor(v: unknown): string | undefined {
+  if (isBlank(v)) return undefined;
+  const s = String(v).trim();
+  try {
+    hex6(s, { dropAlpha: true });
+    return s;
+  } catch {
+    return undefined;
+  }
+}
 /** The row's own colour: `colorRef`'s value, else `team`'s `which` colour; undefined when neither gives one. */
 function refColor<Row>(
   col: {
@@ -218,8 +235,8 @@ function refColor<Row>(
   ctx: RenderContext<Row>,
 ): string | undefined {
   if (col.colorRef !== undefined) {
-    const v = cellValue(row, col.colorRef);
-    if (!isBlank(v)) return cssValue(String(v).trim(), `colorRef ${col.colorRef}`);
+    const c = dataColor(cellValue(row, col.colorRef));
+    if (c !== undefined) return c;
   }
   if (col.team === undefined || col.league === undefined) return undefined;
   const id = ctx.teamIds.get(col.key)?.[i];
@@ -295,7 +312,7 @@ function dataBar<Row>(col: DataBarCol<Row>, row: Row, i: number, ctx: RenderCont
             col.fill.map((c) => hex6(c)),
             [0, 1],
             col.bias,
-          )(normalized(v, st.min, st.max)) as string));
+          )(normalized(v, st.min, st.max)) as string)); // reactablefmtr data_bars: colour over the column's range, minValue/maxValue set width only (bubble_grid uses them for both)
   const gradient = col.gradient ? `linear-gradient(to right, ${col.fill.join(", ")})` : undefined;
   const inside = pos === "inside-end" || pos === "inside-base" || pos === "center";
   const inkOn = col.gradient ? (col.fill.at(v < 0 ? 0 : -1) as string) : fill;
@@ -353,14 +370,15 @@ function iconSet<Row>(col: IconSetCol<Row>, row: Row, i: number, ctx: RenderCont
   const raw = cellValue(row, col.key);
   const v = toNumber(raw);
   if (v === null) return blankOr(raw);
+  // a blank or unknown iconRef / iconColorRef value falls back to the row's bucket icon / colour (one bad row never throws)
+  const named = col.iconRef === undefined ? undefined : cellValue(row, col.iconRef);
   const icon: IconName =
-    col.iconRef !== undefined
-      ? (String(cellValue(row, col.iconRef)).trim() as IconName)
+    !isBlank(named) && ICON_NAMES.includes(String(named).trim() as IconName)
+      ? (String(named).trim() as IconName)
       : (col.icons[(tileOf(ctx, col.key, row, i, col.icons.length) ?? 1) - 1] as IconName);
   const color =
-    col.iconColorRef !== undefined
-      ? String(cellValue(row, col.iconColorRef)).trim()
-      : (col.colors[(tileOf(ctx, col.key, row, i, col.colors.length) ?? 1) - 1] as string);
+    (col.iconColorRef === undefined ? undefined : dataColor(cellValue(row, col.iconColorRef))) ??
+    (col.colors[(tileOf(ctx, col.key, row, i, col.colors.length) ?? 1) - 1] as string);
   const svg = iconSvg(
     icon,
     withAlpha(color, col.opacity, "iconSet colors"),
@@ -404,6 +422,7 @@ function iconAssign<Row>(col: IconAssignCol<Row>, row: Row, i: number, ctx: Rend
     const top = half(statsOf(ctx, col.key).max);
     const n = half(v);
     steps = [];
+    // ponytail: an all-negative column (top < 0) draws no icons, only the value; R's seq(1, top) errors there
     if (top === 0) steps.push(0);
     else for (let s = 1; s <= top; s += col.seqBy) steps.push(s);
     if (steps.length > 1000)
