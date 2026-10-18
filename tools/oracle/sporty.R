@@ -45,6 +45,9 @@ for (sport in sports) for (league in setdiff(names(dims[[sport]]), "custom")) {
       next
     }
     if (!inherits(layer$geom, "GeomPolygon")) next
+    # A 0-row layer draws nothing (sportyR 2.3.0's goal fan returns an empty frame for fan-less lacrosse leagues);
+    # sporty emits no feature for it, so it gets no fixture
+    if (nrow(layer$data) == 0) next
     k <- k + 1
     df <- layer$data[, c("x", "y")]
     df$fill <- layer$aes_params$fill %||% NA

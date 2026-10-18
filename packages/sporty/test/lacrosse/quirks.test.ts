@@ -28,14 +28,60 @@ test("#61: penalty box fills are offset by boards_thickness (0.25 ft), not the a
   expect(centre(b!.points)[0]).toBeCloseTo(4 + 0.25 + 4, 9);
 });
 
-test("#62: a goal-fan hash mark is placed at the angle it is rotated by, sep / (fan + circle radius)", () => {
+test("#62/#69: a goal-fan hash mark sits on the 10.6 m arc about the goal-line centre, at the angle it is rotated by", () => {
   const s = lacrosseField("ncaaw");
   const marks = polys(s, "goal_fan_hash_mark"); // 4 separations x 4 copies; copy 0 is unreflected
-  const fanCentre = 55 - 8.899 + 2.6; // goal x anchor + goal_circle_radius
+  const gx = 55 - 8.899; // goal x anchor = centre of the goal line
   [0, 4, 8, 12].forEach((sep, i) => {
     const [x, y] = centre(marks[4 * i]!.points);
-    expect(Math.atan2(y, x - fanCentre), `sep ${sep}`).toBeCloseTo(Math.PI - sep / (10.6 + 2.6), 9);
+    expect(Math.atan2(y, x - gx), `sep ${sep}`).toBeCloseTo(Math.PI - sep / 10.6, 9);
+    expect(Math.hypot(x - gx, y), `sep ${sep}`).toBeCloseTo(10.6, 9);
   });
+});
+
+test("#69: the women's 8 m arc is 10.6 m from the goal-line centre, from 45-degree lines that start on the goal circle", () => {
+  for (const league of ["ncaaw", "usaw"]) {
+    const s = lacrosseField(league);
+    const gx = 55 - 8.899;
+    const fan = polys(s, "goal_fan")[0]!.points;
+    expect(Math.max(...fan.map(([x, y]) => Math.hypot(x - gx, y))), league).toBeCloseTo(10.6, 9);
+    expect(fan[0]![0], league).toBeCloseTo(gx, 9); // B: on the goal line extended, at the goal circle
+    expect(fan[0]![1], league).toBeCloseTo(2.6, 9);
+    const [cx, cy] = fan[1]!; // C: where the 45-degree line meets the arc
+    expect((cy - 2.6) / (cx - gx), league).toBeCloseTo(-1, 9);
+    expect(Math.hypot(cx - gx, cy), league).toBeCloseTo(10.6, 9);
+    const mark = polys(s, "goal_mouth_hash_mark")[0]!.points; // goal-line-extended marks: 30.5 cm
+    expect(Math.max(...mark.map((p) => p[0])) - Math.min(...mark.map((p) => p[0])), league).toBeCloseTo(
+      0.305,
+      9,
+    );
+  }
+});
+
+test("goal fan early return: a league without a fan outside the goal circle draws no goal_fan polygon", () => {
+  for (const league of ["ncaam", "pll", "usam", "nll"])
+    expect(polys(lacrosseField(league), "goal_fan"), league).toEqual([]);
+  expect(lacrosseField("custom").features.length).toBeGreaterThan(0);
+});
+
+test("#70: the PLL two-point arc runs parallel to the sideline 13 yd out, then a 15 yd arc", () => {
+  const s = lacrosseField("pll");
+  const gx = 50 - 15;
+  const arc = polys(s, "goal_arc")[0]!.points;
+  expect(Math.max(...arc.map((p) => Math.abs(p[1])))).toBeCloseTo(13, 9);
+  expect(arc[0]).toEqual([expect.closeTo(gx + 15, 9), expect.closeTo(13, 9)]);
+  expect(arc[1]).toEqual([expect.closeTo(gx - Math.sqrt(15 ** 2 - 13 ** 2), 9), expect.closeTo(13, 9)]);
+  const front = arc.filter(([x]) => x < gx - Math.sqrt(15 ** 2 - 13 ** 2) - 1e-9);
+  expect(front.length).toBeGreaterThan(0);
+  for (const [x, y] of front)
+    expect([15, 15 - 0.1111]).toContainEqual(expect.closeTo(Math.hypot(x - gx, y), 9));
+});
+
+test("#72: each NLL / World Lacrosse penalty box is penalty_box_length (8 ft) inside, so the outer wall is 0.25 ft further out", () => {
+  for (const league of ["nll", "world lacrosse"]) {
+    const outline = polys(lacrosseField(league), "penalty_box_outline")[0]!.points;
+    expect(Math.max(...outline.map((p) => p[0])), league).toBeCloseTo(4 + 8 + 2 * 0.25, 9);
+  }
 });
 
 test("#63: the full display range covers the benches and penalty boxes (NLL y to 48 ft); other leagues unchanged", () => {
@@ -44,9 +90,9 @@ test("#63: the full display range covers the benches and penalty boxes (NLL y to
   expect(lacrosseField("ncaam").bbox).toEqual([-60, -35, 60, 35]);
 });
 
-test("#64: goal_arc_line_thickness defaults to 0, so an arc without it is a ring, not a filled block", () => {
+test("#64: goal_arc_line_thickness defaults to 0, so an arc without it is a ring (2n + 9 points with the #70 corners), not a filled block", () => {
   const arc = polys(lacrosseField("ncaam"), "goal_arc")[0]!.points;
-  expect(arc).toHaveLength(2 * 200 + 5);
+  expect(arc).toHaveLength(2 * 200 + 9);
 });
 
 test("#65: the contrasting centre face-off colour applies only when the user set neither it nor a matching centre line", () => {

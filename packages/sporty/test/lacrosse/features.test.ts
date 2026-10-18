@@ -32,23 +32,13 @@ test("goalCircle full-360 is two mirrored half rings (2·(2n+5) points); clipped
   const a = Math.acos(5 / 9) / Math.PI;
   expect(clipped[1]![0]).toBeCloseTo(9 * Math.cos(a * Math.PI), 10);
 });
-test("goalArc: undefined thickness reproduces R's NULL recycling (n+5 points, no inner arc); a number gives 2n+5", () => {
-  expect(
-    goalArc({ goalArcExtension: 1, goalArcRadius: 15, lineThickness: undefined, npoints: 10 }),
-  ).toHaveLength(15);
-  expect(
-    goalArc({ goalArcExtension: 1, goalArcRadius: 15, lineThickness: undefined, npoints: 10 }).slice(-4),
-  ).toEqual(
-    [
-      [1, -15],
-      [1, -15],
-      [1, 15],
-      [1, 15],
-    ].map(([x, y]) => [x, y]),
-  );
-  expect(
-    goalArc({ goalArcExtension: 1, goalArcRadius: 15, lineThickness: 0.1111, npoints: 10 }),
-  ).toHaveLength(25);
+test("goalArc: without goalArcParallelLineToCenter it is the old semicircle ring (2n+9 points, max |y| = radius)", () => {
+  const arc = goalArc({ goalArcExtension: 1, goalArcRadius: 15, lineThickness: 0.1111, npoints: 10 });
+  expect(arc).toHaveLength(29);
+  expect(Math.max(...arc.map((p) => Math.abs(p[1])))).toBeCloseTo(15, 12);
+  expect(arc[0]).toEqual([1, 15]);
+  expect(arc[1]).toEqual([-0, 15]); // the parallel line degenerates to the semicircle's end
+  expect(goalArc({ goalArcExtension: 1, goalArcRadius: 15, npoints: 10 })).toHaveLength(29); // thickness defaults to 0
 });
 test("fieldApron oval is a single point; neutralZone is a zero-width rectangle when nzoneLength = 0 (R quirk preserved)", () => {
   expect(

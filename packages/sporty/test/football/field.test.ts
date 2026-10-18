@@ -123,3 +123,11 @@ test("sportyR #67: field_bordered leagues default the border outlines to white; 
     new Set(["#123456", "#ffffff"]),
   );
 });
+
+test("sportyR #71: the NFL trapezoid bench's outer corner follows the slanted side (19.15 yd, not 19.41)", () => {
+  const xs = footballField("nfl")
+    .features.filter((f) => f.kind === "polygon" && f.name === "field_apron")
+    .flatMap((f) => (f.kind === "polygon" ? f.points.map((p) => Math.abs(p[0])) : []));
+  expect(xs.some((x) => Math.abs(x - 19.14685) < 1e-4)).toBe(true);
+  expect(xs.some((x) => Math.abs(x - 19.4097) < 1e-3)).toBe(false);
+});

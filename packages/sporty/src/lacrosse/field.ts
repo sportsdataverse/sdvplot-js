@@ -332,6 +332,7 @@ export function lacrosseField(
       goalArcExtension: p.goal_arc_extension ?? 0,
       goalArcRadius: p.goal_arc_radius ?? 0,
       lineThickness: p.goal_arc_line_thickness ?? 0,
+      goalArcParallelLineToCenter: p.goal_arc_parallel_line_to_center,
       npoints,
     }),
     col("goal_arc"),
@@ -340,26 +341,20 @@ export function lacrosseField(
     true,
     false,
   );
-  add(
-    "goal_fan",
-    F.goalFan({
-      goalFanRadius: p.goal_fan_radius ?? 0,
-      goalCircleRadius: p.goal_circle_radius,
-      lineThickness: p.goal_fan_line_thickness ?? 0,
-      npoints,
-    }),
-    col("goal_fan"),
-    gx,
-    0,
-    true,
-    false,
-  );
+  const fan = F.goalFan({
+    goalFanRadius: p.goal_fan_radius ?? 0,
+    goalCircleRadius: p.goal_circle_radius,
+    lineThickness: p.goal_fan_line_thickness ?? 0,
+    npoints,
+  });
+  // fan-less leagues: R adds an empty (invisible) layer; sporty adds no feature
+  if (fan.length > 0) add("goal_fan", fan, col("goal_fan"), gx, 0, true, false);
   for (const sep of p.goal_fan_hash_mark_separation_from_center ?? []) {
-    // The fan is an arc of radius fan + circle radius, so a mark at arc distance sep sits theta = sep / R radians along it
-    // and is rotated by -theta to stay perpendicular (sportyR #62: placement and rotation now use the same angle).
-    const thetaBuild = sep / ((p.goal_fan_radius ?? 1) + p.goal_circle_radius); // radians
+    // The fan's arc has radius goal_fan_radius about the goal-line centre (sportyR #69), so a mark at arc distance sep
+    // sits theta = sep / R radians along it and is rotated by -theta to stay perpendicular (#62: one angle for both).
+    const thetaBuild = sep / (p.goal_fan_radius ?? 1); // radians
     const thetaPlace = thetaBuild / Math.PI; // units of π, as R's placement site writes it
-    const R = (p.goal_fan_radius ?? 0) + p.goal_circle_radius;
+    const R = p.goal_fan_radius ?? 0;
     const mark = F.goalFanHashMark({
       goalFanHashMarkLength: p.goal_fan_hash_mark_length ?? 0,
       lineThickness: p.goal_fan_hash_mark_line_thickness ?? 0,
@@ -369,7 +364,7 @@ export function lacrosseField(
       "goal_fan_hash_mark",
       mark,
       col("goal_fan_hash_mark"),
-      gx + p.goal_circle_radius + R * Math.cos((1 - thetaPlace) * Math.PI),
+      gx + R * Math.cos((1 - thetaPlace) * Math.PI),
       R * Math.sin((1 - thetaPlace) * Math.PI),
       true,
       true,
@@ -468,7 +463,7 @@ export function lacrosseField(
   const hfl = Math.max(
     L / 2 + p.field_apron_thickness,
     (p.bench_separation ?? 0) / 2 + (p.bench_length ?? 0) + boards,
-    (p.penalty_box_separation ?? 0) / 2 + (p.penalty_box_length ?? 0) + boards,
+    (p.penalty_box_separation ?? 0) / 2 + (p.penalty_box_length ?? 0) + 2 * boards, // #72: two walls
   );
   const hfw =
     W / 2 +

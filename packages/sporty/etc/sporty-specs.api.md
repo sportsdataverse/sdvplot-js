@@ -558,6 +558,8 @@ export interface LacrosseParams {
     // (undocumented)
     goal_arc_line_thickness?: number;
     // (undocumented)
+    goal_arc_parallel_line_to_center?: number;
+    // (undocumented)
     goal_arc_radius?: number;
     // (undocumented)
     goal_circle_full_360: boolean;
