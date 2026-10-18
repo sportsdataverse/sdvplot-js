@@ -18,11 +18,6 @@ export const MIN_CONTRAST = 3;
  */
 export const MIN_DELTA_E = 20;
 /** The step, as a fraction of the way to the target colour, of the readable and lightness mixes. */
- * needs several times that. 10 keeps same-family colours apart (a navy from a royal blue, two golds a shade apart)
- * without pushing every red or blue of a 30-team league off its brand colour.
- */
-export const MIN_DELTA_E = 10;
-/** The step, as a fraction of the way to the target colour, of the last-resort mix. */
 const STEP = 0.05;
 
 const lin = (v: number): number => {
@@ -79,11 +74,6 @@ function nearby(base: string): string[] {
         out.push(fromLab([Math.min(100, Math.max(0, l + dl)), cc * Math.cos(hh), cc * Math.sin(hh)]));
       }
   return out;
-/** CIE76 ΔE: the Euclidean distance of two colours in Lab. */
-export function deltaE(a: string, b: string): number {
-  const [l1, a1, b1] = lab(a);
-  const [l2, a2, b2] = lab(b);
-  return Math.hypot(l1 - l2, a1 - a2, b1 - b2);
 }
 
 /** `c`, else `alt`, else `c` mixed towards the background's ink until it reaches 3:1 against `bg`. */
@@ -105,9 +95,6 @@ export function readable(c: string, alt: string | null | undefined, bg: string):
  * and distinct, taking the one closest to the team's brand colour (ΔE; the first generated on a tie). Only when none
  * is left does it keep the readable colour and warn once. Deterministic: the same colours give the same palette. A
  * colour already readable and distinct is returned as it is.
- * colour (made readable), then its own colour stepped towards the background's ink or towards the background, by
- * `STEP`, until it is distinct and still 3:1; failing all of that it keeps the readable colour and warns once.
- * Deterministic: the same colours give the same palette. A colour already readable and distinct is returned as it is.
  *
  * @param colors - each team's colour (`#rrggbb`).
  * @param alts - each team's other colour, or null.
@@ -157,24 +144,12 @@ export function teamPalette(
       }
     }
     if (pick !== undefined) return keep(pick);
-  const clash = (c: string): number => out.findIndex((p) => deltaE(c, p) < MIN_DELTA_E);
-  colors.forEach((color, i) => {
-    const alt = alts[i] ?? null;
-    const first = readable(color, alt, bg);
-    const tries = [alt === null ? null : readable(alt, null, bg)];
-    for (let t = STEP; t < 1; t += STEP) tries.push(mix(first, ink, t), mix(first, bg, t));
-    const pick =
-      clash(first) < 0
-        ? first
-        : tries.find((c): c is string => c !== null && contrast(c, bg) >= MIN_CONTRAST && clash(c) < 0);
-    if (pick !== undefined) return void out.push(pick);
     const j = clash(first);
     warn(
       `team-palette:${bg}:${labels[j]}:${labels[i]}`,
       `${labels[i]} (${first}) stays within ΔE ${MIN_DELTA_E} of ${labels[j]} (${out[j]}) on ${bg}: no readable colour of it is distinct`,
     );
     keep(first);
-    out.push(first);
   });
   return out;
 }

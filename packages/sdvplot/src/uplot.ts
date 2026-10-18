@@ -175,8 +175,9 @@ export interface UPlotSeriesOptions {
   /**
    * The chart's background. Given, a team colour under 3:1 contrast against it is swapped for the team's other
    * colour, else moved towards white (on a dark background) or black (a light one) until it reads: dark mode. A
-   * colour that would then sit too close to an earlier team's (CIE76 ΔE under 10) takes the team's other colour, or
-   * is stepped lighter or darker until it is distinct; failing that it is kept, with one warning.
+   * colour that would then sit too close to an earlier team's (CIE76 ΔE under 20) takes the team's other colour, or
+   * the nearest colour to its own (lightness, hue or chroma stepped) that is distinct and still reads; failing that it
+   * is kept, with one warning.
    */
   background?: string;
   /** Also fill the area under each line in its colour, at this opacity in [0, 1]. Default: no fill. */
