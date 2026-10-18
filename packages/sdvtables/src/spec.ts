@@ -78,8 +78,11 @@ export interface NumberFormat {
 }
 /**
  * Per-row colour for a reactablefmtr-style kind (reactablefmtr `fill_color_ref` / `color_ref`): `colorRef` names a
- * column holding a hex colour per row; or `team` names a column of team names/ids, resolved in `league` to the team's
- * `which` colour. `colorRef` wins over `team`; a row with neither falls back to the kind's own scale.
+ * column holding a hex colour or CSS colour name (`"steelblue"`) per row; or `team` names a column of team names/ids,
+ * resolved in `league` to the team's `which` colour. `colorRef` wins over `team`. Any other `colorRef` value (blank,
+ * unknown name, `rgb()`, `url(...)`) counts as no row colour: never written to CSS, the row falls back to `team`, then
+ * the kind's own scale (or `iconSet`'s bucket colour). A `dataBar` with `gradient: true` ignores both, as reactablefmtr
+ * does (`fill_gradient` drops `fill_color_ref`).
  */
 export interface ColorRefOpts<Row> {
   readonly colorRef?: keyof Row & string;
@@ -333,6 +336,7 @@ export type ColumnSpec<Row> =
         /** Bar thickness in px (default 18, or 5 for `textPosition: "above"`). */
         readonly barHeight?: number;
         readonly roundEdges: boolean;
+        /** Paint `fill` (2+ colours) as a left-to-right gradient; overrides `colorRef` / `team`, as reactablefmtr does. */
         readonly gradient: boolean;
         /** Diverging bars; default: when the column has a negative value. */
         readonly posNeg?: boolean;
@@ -351,7 +355,7 @@ export type ColumnSpec<Row> =
       readonly iconSize: number;
       /** A column naming each row's icon (an `IconName`), instead of the buckets. */
       readonly iconRef?: keyof Row & string;
-      /** A column holding each row's hex icon colour, instead of the buckets. */
+      /** A column holding each row's icon colour (hex or CSS colour name, else blank), instead of the buckets. */
       readonly iconColorRef?: keyof Row & string;
       readonly numberFormat?: NumberFormat;
     })
