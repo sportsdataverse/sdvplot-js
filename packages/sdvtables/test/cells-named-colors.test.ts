@@ -21,7 +21,8 @@ test("namedColor: the 148 CSS names, case-insensitive and trimmed; transparent, 
   expect(namedColor("red")).toBe("#ff0000");
   expect(namedColor(" SteelBlue ")).toBe("#4682b4");
   expect(namedColor("rebeccapurple")).toBe("#663399");
-  expect(namedColor("darkgrey")).toBe(namedColor("darkgray"));
+  expect(namedColor("darkgrey")).toBe("#a9a9a9");
+  expect(namedColor("darkgray")).toBe("#a9a9a9");
   for (const s of ["transparent", "redd", "constructor", "__proto__", "toString", "", "grey50"])
     expect(namedColor(s), s).toBeUndefined();
 });
