@@ -8,6 +8,7 @@ export default defineConfig({
       "@sportsdataverse/sporty/plot": fileURLToPath(new URL("../sporty/src/plot.ts", import.meta.url)),
       "@sportsdataverse/sporty/d3": fileURLToPath(new URL("../sporty/src/d3.ts", import.meta.url)),
       "@sportsdataverse/sporty/canvas": fileURLToPath(new URL("../sporty/src/canvas.ts", import.meta.url)),
+      "@sportsdataverse/sporty/svg": fileURLToPath(new URL("../sporty/src/svg.ts", import.meta.url)),
       "@sportsdataverse/sporty": fileURLToPath(new URL("../sporty/src/index.ts", import.meta.url)),
     },
   },

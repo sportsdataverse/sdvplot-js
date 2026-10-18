@@ -33,13 +33,41 @@ export interface HeadshotProps extends ImgProps {
 }
 
 // @public
+export function SurfaceBackdrop(props: SurfaceBackdropProps): ReactElement;
+
+// @public
+export interface SurfaceBackdropProps {
+    // (undocumented)
+    arcResolution?: number;
+    colorUpdates?: Readonly<Record<string, string>>;
+    displayRange?: string;
+    // Warning: (ae-forgotten-export) The symbol "League" needs to be exported by the entry point react.d.ts
+    league: League;
+    rotation?: number;
+    // Warning: (ae-forgotten-export) The symbol "SeasonInput" needs to be exported by the entry point react.d.ts
+    season?: SeasonInput;
+    team?: Value;
+    // (undocumented)
+    units?: "ft" | "m" | "yd" | "in" | "cm" | "mm";
+    updates?: Readonly<Record<string, unknown>>;
+    xAxisId?: string | number;
+    // (undocumented)
+    xlim?: readonly [number, number];
+    // (undocumented)
+    xTrans?: number;
+    yAxisId?: string | number;
+    // (undocumented)
+    ylim?: readonly [number, number];
+    // (undocumented)
+    yTrans?: number;
+}
+
+// @public
 export function TeamLogo(input: TeamLogoProps): ReactElement | null;
 
 // @public (undocumented)
 export interface TeamLogoProps extends ImgProps {
     alt?: string;
-    // Warning: (ae-forgotten-export) The symbol "League" needs to be exported by the entry point react.d.ts
-    //
     // (undocumented)
     league: League;
     // Warning: (ae-forgotten-export) The symbol "MarkType" needs to be exported by the entry point react.d.ts
@@ -81,7 +109,7 @@ export function Wordmark(props: Omit<TeamLogoProps, "markType">): ReactElement |
 
 // Warnings were encountered during analysis:
 //
-// dist/react.d.ts:65:5 - (ae-forgotten-export) The symbol "ColorOptions" needs to be exported by the entry point react.d.ts
+// dist/react.d.ts:121:5 - (ae-forgotten-export) The symbol "ColorOptions" needs to be exported by the entry point react.d.ts
 
 // (No @packageDocumentation comment for this package)
 
