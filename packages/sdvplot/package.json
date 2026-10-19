@@ -19,7 +19,8 @@
     "uplot",
     "nivo",
     "victory",
-    "deck.gl"
+    "deck.gl",
+    "cytoscape"
   ],
   "homepage": "https://plot.sportsdataverse.org",
   "bugs": "https://github.com/sportsdataverse/sdvplot-js/issues",
@@ -109,6 +110,10 @@
     "./deckgl": {
       "types": "./dist/deckgl.d.ts",
       "import": "./dist/deckgl.js"
+    },
+    "./cytoscape": {
+      "types": "./dist/cytoscape.d.ts",
+      "import": "./dist/cytoscape.js"
     },
     "./package.json": "./package.json"
   },
