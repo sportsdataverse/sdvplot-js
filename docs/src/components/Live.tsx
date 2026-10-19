@@ -197,6 +197,11 @@ export default function Live(p: LiveProps): ReactElement {
         // (after a failure, the alert says why). The library is the example's folder (sdvplot/<lib>/...).
         <p className="sdv-live-note">
           With JavaScript on, {VALUE_LIBS[p.id.split("/")[1] ?? ""] ?? "plotly.js"} draws this figure here.
+        // a Plotly figure or deck.gl layers: the static copy is their data, not a picture of it (after a failure, the
+        // alert says why). The library is the example's folder (sdvplot/<lib>/...).
+        <p className="sdv-live-note">
+          With JavaScript on, {p.id.split("/")[1] === "deckgl" ? "deck.gl" : "plotly.js"} draws this figure
+          here.
         </p>
       )}
       {output}

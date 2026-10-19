@@ -1,0 +1,60 @@
+---
+title: deck.gl
+sidebar_position: 7.95
+---
+
+[deck.gl](https://deck.gl/) draws large data sets with WebGL: layers of points, arcs and polygons you can pan, zoom
+and tilt, on a map or in your own coordinates. `@sportsdataverse/sdvplot/deckgl` builds the props for three of its
+layers: team logos at points, arcs in team colours, and a sporty playing surface. It never imports deck.gl (install
+`@deck.gl/core` and `@deck.gl/layers` 9.4 or later beside it, optional peers), so the props can be built anywhere, a
+server included; pass them to the layer, as in `new IconLayer(logoIconLayer(rows, o))`. The props are plain objects:
+the data rows, accessor functions that read them, and the layer's own settings. `surfaceLayer` draws through
+`@sportsdataverse/sporty`, which this subpath imports when it loads. It is synchronous: load the league first
+(`loadLeague`). The charts below are drawn by deck.gl in your browser: drag to pan and scroll to zoom.
+
+The Python package builds the same props for pydeck (`sdvplot.pydeck`: `logo_icon_layer`, `pass_arc_layer` and
+`surface_layer`). The two are held to one shared fixture of real rows and the props each must build from them.
+
+## Shots on a rink
+
+`surfaceLayer(sport, league, o)` is sporty's surface as `PolygonLayer` props: one data row per polygon feature, in
+sporty's drawing order, filled in its colour (alpha included). It is in the surface's own coordinates, deck.gl's
+`"cartesian"` coordinate system: feet for a rink and metres for a pitch, the origin at the centre. That is the frame
+NHL api-web reports shots in, so they need no conversion. `o` goes to sporty's `surface()` (`updates`,
+`colorUpdates`, `units`, ...). Text features (a football field's yard numbers) and hidden ones are left out. Draw it
+in an `OrthographicView` with `flipY: false`, so y runs up as it does on the surface.
+
+`logoIconLayer(rows, { x, y, team, league, size })` is `IconLayer` props with one logo per row at its `x` and `y`.
+The logos are deck.gl's auto-packed icons: each data row's `icon` names the logo's URL, and deck.gl fetches each URL
+once and packs it into its own atlas, 128 px tall at the logo's aspect, centred on the point. `size` is the logo's
+height on screen in px (default 32). A team with no logo is left out with one warning, as the other adapters do. Over
+a surface, give the icons `coordinateSystem: "cartesian"` too (this page's drawer does it for every layer).
+
+<Live id="sdvplot/deckgl/nhl-shots" />
+
+## Passes as arcs, readable on the grass
+
+`passArcLayer(rows, { x, y, xend, yend, team, league })` is `ArcLayer` props with one arc per row, from (`x`, `y`) to
+(`xend`, `yend`). Its source end takes the team's primary colour and its target end the secondary (`which:
+"secondary"` swaps them), so each arc shows its direction; each team keeps one colour per end. deck.gl's arcs stand
+upright, which a top-down view sees as straight lines: `tilt: 90` lays them flat on the surface, and `height` (deck.gl's
+`getHeight`, default 1) sets how far each curve swings; 0.3 keeps them inside the pitch.
+
+Pass the colour the arcs are drawn on as `background` and every colour keeps at least 3:1 contrast against it, as in
+dark mode: here the background is the pitch's own grass, so France's navy gives way to a colour that reads on it.
+Each team's colour also stays apart from the others' (a CIE76 ΔE of 20 or more), through sdvplot's shared team
+palette (the Python package ports it, and the shared fixture holds both to every NBA, NFL, MLB and NHL team). A team that does not resolve takes `fallback` (default
+`#808080`); a row with a missing coordinate is left out with one warning.
+
+<Live id="sdvplot/deckgl/france-passes" />
+
+## On a map
+
+Without a surface, `x` and `y` are a longitude and a latitude: `logoIconLayer` and `passArcLayer` work on deck.gl's
+default map view as they are, with their coordinate system left at deck.gl's default.
+
+## Reading back what was drawn
+
+There is no `drawnMarks` here: the props are the record. `props.data` holds each logo's `position`, `icon` (with its
+`url`) and resolved `team` id, and each arc's `source`, `target` and `[r, g, b, a]` colours, with the input row's
+`index`, so a test can check them without a WebGL context.

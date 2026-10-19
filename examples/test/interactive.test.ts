@@ -38,6 +38,7 @@ const DRAWN: Readonly<Record<string, string>> = {
   uplot: ".sdv-live-output .uplot canvas",
   // the sdvplot marks inside LayerChart's svg: Svelte mounted, and the marks' lazy import of layerchart resolved
   svelte: ".sdv-live-output svg.lc-layout-svg :is(image[data-sdv-id], g[data-sdv-surface])",
+  deckgl: ".sdv-live-output canvas",
 };
 
 describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the built docs", () => {
@@ -91,6 +92,19 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
             ?.getImageData(0, 0, c.width, c.height)
             .data.some((v, i) => i % 4 === 3 && v > 0),
         );
+        expect(painted, "the canvas is painted").toBe(true);
+      }
+      // deck.gl draws with WebGL (its drawing buffer is kept, deck.gl's default): copy the canvas onto a 2D one to read it
+      if (lib === "deckgl") {
+        const painted = await figure.locator("canvas").evaluate(async (c: HTMLCanvasElement) => {
+          await new Promise((r) => setTimeout(r, 1000)); // a frame after the last icon lands
+          const copy = document.createElement("canvas");
+          copy.width = c.width;
+          copy.height = c.height;
+          const ctx = copy.getContext("2d");
+          ctx?.drawImage(c, 0, 0);
+          return ctx?.getImageData(0, 0, c.width, c.height).data.some((v, i) => i % 4 === 3 && v > 0);
+        });
         expect(painted, "the canvas is painted").toBe(true);
       }
       // ECharts draws the server's SVG, tag for tag: init() alone already leaves an <svg>, and a series that drew nothing
