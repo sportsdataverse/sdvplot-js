@@ -52,6 +52,9 @@ const EXEMPT: readonly (readonly [spec: string, name: RegExp | "*", reason: stri
     "@sportsdataverse/sdvplot/uplot",
     /^drawnMarks$/,
     "test hook: what logoPlugin last painted on a chart, read back in a test (needs a canvas; the gate has none)",
+    "@sportsdataverse/sdvplot/lightweight-charts",
+    /^drawnMarks$/,
+    "test hook: what a logoMarkers primitive last painted on a chart, read back in a test (needs a canvas; the gate has none)",
   ],
   [
     "@sportsdataverse/sdvplot/echarts",
@@ -151,14 +154,21 @@ const PACKAGES = ["sdvplot", "sporty", "sdvtables"] as const;
 
 /**
  * Specifier → value exports, read from the committed api-extractor reports (`etc/<pkg>[-<sub>].api.md`, one per
- * subpath; `-` in the file name is `/` in the subpath, so `sdvplot-chartjs-surface` is `sdvplot/chartjs/surface`).
+ * subpath; `-` in the file name is `/` in the subpath, so `sdvplot-chartjs-surface` is `sdvplot/chartjs/surface`, unless
+ * the package exports the subpath with its `-`, as `sdvplot-lightweight-charts` is `sdvplot/lightweight-charts`).
  * A value is an exported function, const, let, class or enum, or an `export { local as name }` of one.
  */
 function valueExports(): [string, string[]][] {
   const out: [string, string[]][] = [];
   for (const pkg of PACKAGES) {
+    const exported = new Set(
+      Object.keys(JSON.parse(readFileSync(abs(`packages/${pkg}/package.json`), "utf8")).exports).map((k) =>
+        k.slice(2),
+      ),
+    );
     for (const f of readdirSync(abs(`packages/${pkg}/etc`)).filter((n) => n.endsWith(".api.md"))) {
-      const sub = f.slice(pkg.length, -".api.md".length).replace(/^-/, "").replace(/-/g, "/");
+      const stem = f.slice(pkg.length, -".api.md".length).replace(/^-/, "");
+      const sub = exported.has(stem) ? stem : stem.replace(/-/g, "/");
       const text = readFileSync(abs(`packages/${pkg}/etc/${f}`), "utf8");
       const kind = "(?:declare )?(?:abstract )?(?:function|const|class|let|enum)";
       const names = [...text.matchAll(new RegExp(`^export ${kind} (\\w+)`, "gm"))].map((m) => m[1] ?? "");

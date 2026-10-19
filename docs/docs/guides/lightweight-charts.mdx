@@ -1,0 +1,98 @@
+---
+title: Lightweight Charts
+sidebar_position: 7.9
+---
+
+[TradingView Lightweight Charts](https://www.tradingview.com/lightweight-charts/) draws time series on a canvas: price
+lines with a crosshair, a price scale and a live last-value label, which suits a betting line moving or a win
+probability swinging through a game. `@sportsdataverse/sdvplot/lightweight-charts` gives it team colours, prices read
+as probabilities or odds, team logos at points, and the TradingView attribution its licence asks for. It never imports
+lightweight-charts (install `lightweight-charts` 5.2.1 or later beside it, an optional peer), so everything can be
+built anywhere, a server included; only `createChart(...)` needs a browser. It is synchronous: load the league first
+(`loadLeague`). The chart below is drawn by Lightweight Charts in your browser.
+
+## The TradingView attribution
+
+Lightweight Charts is licensed under the Apache License 2.0, and its README (at 5.2.1) adds:
+
+> This license requires specifying TradingView as the product creator.
+> You shall add the "attribution notice" from the NOTICE file and a link to [https://www.tradingview.com/](https://www.tradingview.com/) to the page
+> of your website or mobile application that is available to your users.
+
+and that its `attributionLogo` chart option "will satisfy the link requirement". So a page that shows a chart needs
+two things:
+
+- **The link.** `withAttribution(chartOptions)` returns the options for `createChart` with `layout.attributionLogo` on:
+  the library draws TradingView's logo on the chart, a link to tradingview.com. It is on by default. The options are
+  copied, never changed. If your options turn the logo off (`layout: { attributionLogo: false }`), `withAttribution`
+  turns it back on and warns once.
+- **The notice.** `TRADINGVIEW_NOTICE` is the attribution notice, verbatim from the library's NOTICE file at 5.2.1.
+  Show it on the page; this site shows it under every Lightweight Charts figure:
+
+  ```text
+  TradingView Lightweight Charts™
+  Copyright (с) 2025 TradingView, Inc. https://www.tradingview.com/
+  ```
+
+The only way to turn the logo off is explicit: `withAttribution(chartOptions, { attributedElsewhere: true })`. Pass it
+only when your page already shows the notice and a link to https://www.tradingview.com/ somewhere else (a footer, an
+about page the chart links to). Meeting the licence is then yours: the adapter can no longer show it for you.
+
+sdvplot does not bundle or redistribute Lightweight Charts; the repository's `NOTICE.md` records the notice all the
+same.
+
+## Team colours, and prices read as probabilities or odds
+
+`teamSeriesOptions(team, { league, units })` is a LineSeries' options in the team's colour, for
+`chart.addSeries(LineSeries, ...)`. `units` says what the prices are, and sets the series' `priceFormat`, which the
+price scale, the crosshair label and the last-value label all read:
+
+- `"probability"`: a fraction in [0, 1], read as a percentage ("58.5%", "100%");
+- `"american"`: American odds, read with their sign ("+150", "-120").
+
+Without `units`, Lightweight Charts formats the numbers itself. A team that does not resolve takes `fallback` (default
+`#808080`) and warns.
+
+`logoMarkers(rows, { x, y, team, league, height })` paints each row's logo centred on its `x` (a time, as in the series'
+data) and `y` (a price on the series' scale), placed with the chart's own `timeToCoordinate` and `priceToCoordinate`,
+`height` of the pane tall (a fraction in (0, 1], as in the Plotly, Vega-Lite and ECharts adapters; default 0.1).
+Lightweight Charts' series markers draw only shapes and text, so the logos come from a series primitive: attach it with
+`series.attachPrimitive(logos)`. With `units`, `logoMarkers` also checks the `y` values: a "probability" over 1 (58.46
+rather than 0.5846) or American odds between -100 and +100 (1.91 is decimal odds) throw.
+
+Here each team's line is its win probability in Super Bowl LIX, by seconds played (Lightweight Charts' `time`), and
+each line ends in its team's logo:
+
+<Live id="sdvplot/lightweight-charts/win-probability" />
+
+Building `logoMarkers` fetches nothing. The images start loading when it is attached, with
+`crossOrigin = "anonymous"` so the canvas stays exportable, and the chart redraws as each one lands. A team with no logo
+draws nothing and warns once, as the ECharts adapter does; an image that fails to load is never drawn (no broken image)
+and warns once. A row at a time the series has no point for, or a price off the pane, is not drawn: keep the logos
+inside the series' price range, or give the price scale room (`scaleMargins`).
+
+Lightweight Charts' `time` must rise strictly. Plays that start on the same clock reading share a time, so the example
+keeps the last play at each second.
+
+## Dark mode, and several teams on one chart
+
+Pass the chart's background as `background` and the colour keeps at least 3:1 contrast against it (WCAG's minimum for
+graphics): a team colour under that gives way to the team's other colour, else is lightened (on a dark background) or
+darkened until it reads. Pass every team on the chart as `teams`, in order, and each also stays apart from the earlier
+ones (a CIE76 ΔE of 20 or more), so two teams never share a colour. Call `teamSeriesOptions` once per series with the
+same `teams`. A colour that already reads and is distinct is kept; without `background` the colours are the teams' own.
+A team that does not resolve never moves a real team's colour. Set the chart's own `layout.background` and
+`layout.textColor` to match.
+
+## Betting lines
+
+`units: "american"` is there for a moneyline moving over the days before a game, with `logoMarkers` marking where it
+opened or closed. The examples here hold no real line history yet, and they never invent one, so the gallery shows a win
+probability only.
+
+## Reading back what was drawn
+
+`drawnMarks(logos)` returns `[team id, x, y, height, url]` for each logo the primitive last painted, `height` as a
+fraction of the pane, the same shape as the other adapters' `drawnMarks`. A test can draw the chart (a browser, or jsdom
+with a 2D context behind its canvases, as sdvplot's own tests do with the real library) and check which teams were
+drawn where.

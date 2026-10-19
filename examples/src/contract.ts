@@ -135,6 +135,19 @@ export type BrowserSpec =
         /** Vertical field of view, degrees. */
         readonly fov: number;
       };
+  /**
+   * `chart` builds fresh createChart options per chart; each series is a LineSeries: its options, its data (`time` in
+   * seconds, rising) and the primitives attached to it. The page shows TradingView's attribution notice under the chart
+   * (Lightweight Charts' licence): `<Live>` adds it for an example tagged `lightweight-charts`.
+   */
+  | {
+      readonly lib: "lightweight-charts";
+      readonly chart: () => object;
+      readonly series: readonly {
+        readonly options: () => object;
+        readonly data: readonly { readonly time: number; readonly value: number }[];
+        readonly primitives?: () => readonly object[];
+      }[];
       readonly width: number;
       readonly height: number;
       readonly label: string;
