@@ -27,7 +27,7 @@ const SAVANT_2026 = resolve(HERE, "../../../fixtures/examples/mlb_statcast_searc
 
 /** Baseball Savant's CSV (quoted fields, a BOM) as rows of strings. */
 function savant(file = SAVANT): Record<string, string>[] {
-  const text = readFileSync(file, "utf8").replace(/^﻿/, "");
+  const text = readFileSync(file, "utf8").replace(/^\uFEFF/, "");
   const rows: string[][] = [];
   let row: string[] = [];
   let field = "";
