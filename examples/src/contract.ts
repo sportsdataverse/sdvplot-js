@@ -1,3 +1,5 @@
+import type { ReactElement } from "react";
+
 /** Every example module exports `meta` (this shape, as a literal) and a default export: its output. */
 export interface ExampleMeta {
   readonly title: string;
@@ -115,6 +117,20 @@ export type BrowserSpec =
       readonly lib: "cytoscape";
       readonly elements: () => object;
       readonly style: readonly object[];
+  /**
+   * A react-three-fiber scene (`<Surface3D>`, `<Trajectory>`, ...), drawn in a `<Canvas>` at the example's size. The
+   * world is z up: the camera stands at `camera.position` with +z up and looks at `camera.target`; drag to turn it
+   * round the target. `scene` builds fresh elements per chart.
+   */
+  | {
+      readonly lib: "three";
+      readonly scene: () => ReactElement;
+      readonly camera: {
+        readonly position: readonly [x: number, y: number, z: number];
+        readonly target: readonly [x: number, y: number, z: number];
+        /** Vertical field of view, degrees. */
+        readonly fov: number;
+      };
       readonly width: number;
       readonly height: number;
       readonly label: string;

@@ -168,6 +168,7 @@ const config: Config = {
           `${sdvplot}/src/victory.ts`,
           `${sdvplot}/src/deckgl.ts`,
           `${sdvplot}/src/cytoscape.ts`,
+          `${sdvplot}/src/three/index.ts`,
           `${sdvplot}/src/testing/index.ts`,
           `${sdvplot}/src/export/index.ts`,
           `${sdvplot}/src/interact/index.ts`,

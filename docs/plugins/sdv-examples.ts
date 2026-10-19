@@ -17,6 +17,7 @@ const CHART_LIBS = [
   "deckgl",
   "cytoscape",
 ] as const;
+const CHART_LIBS = ["plotly", "vega", "echarts", "chartjs", "three"] as const;
 /**
  * Vega's self-contained build (its d3 inside). The module build imports the d3-* packages Observable Plot imports,
  * and a module imported from two chunks cannot be scope-hoisted into either: every Plot and D3 page grew 4.8 KB

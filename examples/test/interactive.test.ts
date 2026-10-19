@@ -40,6 +40,7 @@ const DRAWN: Readonly<Record<string, string>> = {
   svelte: ".sdv-live-output svg.lc-layout-svg :is(image[data-sdv-id], g[data-sdv-surface])",
   deckgl: ".sdv-live-output canvas",
   cytoscape: ".sdv-live-output canvas",
+  three: ".sdv-live-output canvas",
 };
 
 describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the built docs", () => {
@@ -117,6 +118,27 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
           deck.redraw("render test");
           await frame();
           const [surface, layer] = deck.props.layers;
+      // Three.js draws with WebGL (the drawer keeps its drawing buffer: copy it onto a 2D canvas to read it). Sample
+      // where a mark is known to be: project a point 85% along each tube to the screen, check by raycast that the tube
+      // is what is in front there, and read its pixel: the tube's own colour (unlit and not tone-mapped, so the team
+      // colour exactly). Then raycast points low in the frame onto the field and read the colour of the loop on top there:
+      // the field's vertex colours, back in sRGB.
+      if (lib === "three") {
+        const marks = await figure.locator('.sdv-live-output [role="figure"]').evaluate(async (el) => {
+          // biome-ignore lint/suspicious/noExplicitAny: three.js objects, read through the drawer's handle
+          type Any = any;
+          const box = el as HTMLElement & { sdvThree?: { get: () => Any; THREE: Any } };
+          const frame = () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+          const meshes = (): Any[] =>
+            (box.sdvThree?.get().scene.children ?? []).filter((o: Any) => o.isMesh === true);
+          for (let t = 0; t < 300 && meshes().length < 2; t++) await frame(); // the lazy peers and meshes
+          const three = box.sdvThree;
+          if (three === undefined) return "no three.js handle on the figure";
+          const { THREE } = three;
+          const { scene, camera, invalidate } = three.get();
+          invalidate();
+          await frame();
+          await frame();
           const canvas = el.querySelector("canvas") as HTMLCanvasElement;
           const k = canvas.width / canvas.clientWidth; // device pixels per CSS pixel
           const copy = document.createElement("canvas");
@@ -231,6 +253,65 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
             : "no nodes, or no edge clear of the nodes";
         });
         expect(marks, "each sampled node and edge is drawn in its colour where Cytoscape placed it").toBe("");
+          const ray = new THREE.Raycaster();
+          const front = (ndc: Any): Any => {
+            ray.setFromCamera(new THREE.Vector2(ndc.x, ndc.y), camera);
+            return ray.intersectObjects(scene.children, true)[0];
+          };
+          /** Whether a pixel within `r` of the NDC point is within 24 per channel of `rgb`. */
+          const shows = (ndc: Any, rgb: number[], r: number): boolean => {
+            const x = Math.round(((ndc.x + 1) / 2) * canvas.clientWidth * k);
+            const y = Math.round(((1 - ndc.y) / 2) * canvas.clientHeight * k);
+            const px = ctx.getImageData(x - r, y - r, 2 * r + 1, 2 * r + 1).data;
+            for (let i = 0; i < px.length; i += 4)
+              if ([0, 1, 2].every((c) => Math.abs((px[i + c] as number) - (rgb[c] as number)) <= 24))
+                return true;
+            return false;
+          };
+          const out: string[] = [];
+          const surface = meshes().find((m) => m.material.vertexColors === true);
+          const tubes = meshes().filter((m) => m.material.vertexColors !== true);
+          if (surface === undefined || tubes.length === 0) return "no field or no tubes in the scene";
+          let checked = 0;
+          for (const tube of tubes) {
+            const pos = tube.geometry.getAttribute("position");
+            const ring = Math.floor((pos.count / 12) * 0.85); // <Trajectory>'s 12 vertices a ring
+            const c = new THREE.Vector3();
+            for (let j = 0; j < 12; j++) c.add(new THREE.Vector3().fromBufferAttribute(pos, ring * 12 + j));
+            const ndc = c.divideScalar(12).project(camera);
+            if (front(ndc)?.object !== tube) continue; // another tube in front of it there
+            checked++;
+            const hex: string = tube.material.color.getHexString();
+            const rgb = [0, 2, 4].map((i) => Number.parseInt(hex.slice(i, i + 2), 16));
+            if (!shows(ndc, rgb, 2)) out.push(`tube #${hex}: not drawn in its colour where it is`);
+          }
+          if (checked < tubes.length / 2)
+            out.push(`only ${checked} of ${tubes.length} tubes in front to sample`);
+          const colour = surface.geometry.getAttribute("color");
+          const srgb = (v: number): number =>
+            Math.round(255 * (v <= 0.0031308 ? 12.92 * v : 1.055 * v ** (1 / 2.4) - 0.055));
+          let field = 0;
+          for (const [x, y] of [
+            [0, -0.85],
+            [-0.6, -0.8],
+            [0.6, -0.8],
+            [-0.3, -0.6],
+            [0.3, -0.6],
+          ] as const) {
+            if (front({ x, y })?.object !== surface) continue;
+            // every loop is at z = 0, so the ray meets each loop under the point at one distance: the one drawn on top is
+            // the last in drawing order (the highest triangle)
+            const top = ray
+              .intersectObject(surface)
+              .reduce((m: Any, h: Any) => (m === undefined || h.faceIndex > m.faceIndex ? h : m), undefined);
+            field++;
+            const rgb = [colour.getX(top.face.a), colour.getY(top.face.a), colour.getZ(top.face.a)].map(srgb);
+            if (!shows({ x, y }, rgb, 1)) out.push(`field at ${x}, ${y}: not its loop's colour ${rgb}`);
+          }
+          if (field < 3) out.push(`only ${field} field points hit`);
+          return out.join("; ");
+        });
+        expect(marks, "each tube and the field show their own colours where they are").toBe("");
       }
       // ECharts draws the server's SVG, tag for tag: init() alone already leaves an <svg>, and a series that drew nothing
       // would still leave its axes

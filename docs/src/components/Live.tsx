@@ -58,13 +58,15 @@ const VALUE_LIBS: Readonly<Record<string, string>> = {
   deckgl: "deck.gl",
   cytoscape: "Cytoscape.js",
 };
+/** The library a browser upgrade draws with, by the example's folder, where it is not plotly.js. */
+const LIB_NAMES: Readonly<Record<string, string>> = { three: "Three.js" };
 
 /**
  * An example: the prerendered output (static HTML, so the page is complete without JavaScript), the code that
  * produced it, and, for DOM and React outputs that have a browser loader, a live re-run that replaces the static
  * copy once the example comes within a screen of the viewport. An adapter example with a browser upgrade (Plotly,
- * Vega, ECharts, Chart.js: `export const browser`) is drawn by its library instead, in the same place and at the same
- * moment. A re-run or a drawing that throws shows the error over the static output; it never leaves a blank.
+ * Vega, ECharts, Chart.js, Three.js: `export const browser`) is drawn by its library instead, in the same place and
+ * at the same moment. A re-run or a drawing that throws shows the error over the static output; it never leaves a blank.
  */
 export default function Live(p: LiveProps): ReactElement {
   const figure = useRef<HTMLElement>(null);
@@ -203,6 +205,10 @@ export default function Live(p: LiveProps): ReactElement {
         // (sdvplot/<lib>/...).
         <p className="sdv-live-note">
           With JavaScript on, {VALUE_LIBS[p.id.split("/")[1] ?? ""] ?? "plotly.js"} draws this figure here.
+        // a Plotly figure or a Three.js scene: the static copy is its data, not a picture of it (after a failure, the
+        // alert says why). The library is the example's folder (sdvplot/<lib>/...).
+        <p className="sdv-live-note">
+          With JavaScript on, {LIB_NAMES[p.id.split("/")[1] ?? ""] ?? "plotly.js"} draws this figure here.
         </p>
       )}
       {output}
