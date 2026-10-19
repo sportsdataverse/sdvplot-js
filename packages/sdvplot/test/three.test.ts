@@ -269,6 +269,14 @@ describe("trajectoryTube: a tube along a 3D polyline, in world units", () => {
     }
   });
 
+  test("a path that doubles back (A, B, A) has no direction at B: an InputError, not NaN vertices", () => {
+    const [a, b] = path as unknown as [P3, P3];
+    expect(() => trajectoryTube([a, b, a], { radius: R, color: "#000000" })).toThrow(InputError);
+    expect(() => trajectoryTube([a, b, a, b], { radius: R, color: "#000000" })).toThrow(
+      /doubles back at point 1/,
+    );
+  });
+
   test("a repeated point is skipped (no zero-length step to orient a ring on)", () => {
     const twice = [path[0] as P3, path[0] as P3, ...path.slice(1)];
     expect(trajectoryTube(twice, { radius: R, color: "#000000", radialSegments: 8 }).positions.length).toBe(
@@ -408,6 +416,19 @@ describe("surfaceMesh: sporty's surface as one triangle mesh in the z = 0 plane"
     expect(Math.min(...ys2)).toBe(0);
     expect(Math.max(...ys2)).toBeCloseTo(17 / 12, 3);
     expect(surfaceMesh("hockey", "nhl").loops[0]?.name).not.toBe("background"); // a rink has no background colour
+  });
+
+  test("a fill that is not hex (a CSS name through colorUpdates) is an InputError naming the feature", () => {
+    expect(() => surfaceMesh("baseball", "mlb", { colorUpdates: { infield_dirt: "red" } })).toThrow(
+      InputError,
+    );
+    expect(() => surfaceMesh("baseball", "mlb", { colorUpdates: { infield_dirt: "red" } })).toThrow(
+      /infield_dirt's fill "red" is not a hex colour/,
+    );
+    // short hex is spelled out: #f00 is #ff0000
+    const short = surfaceMesh("baseball", "mlb", { colorUpdates: { infield_dirt: "#f00" } });
+    const long = surfaceMesh("baseball", "mlb", { colorUpdates: { infield_dirt: "#ff0000" } });
+    expect(Array.from(short.colors)).toEqual(Array.from(long.colors));
   });
 
   test("hidden features and text are left out; sporty's options pass through (units, colorUpdates)", () => {

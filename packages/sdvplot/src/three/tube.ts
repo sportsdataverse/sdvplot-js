@@ -167,9 +167,15 @@ export function trajectoryTube(points: readonly Point3[], o: TrajectoryTubeOptio
   if (path.length < 2) throw new InputError("trajectoryTube needs at least two different points");
 
   const n = path.length;
-  const tangents = path.map((_, k) =>
-    unit(minus(path[Math.min(k + 1, n - 1)] as P3, path[Math.max(k - 1, 0)] as P3)),
-  );
+  const tangents = path.map((p, k) => {
+    const d = minus(path[Math.min(k + 1, n - 1)] as P3, path[Math.max(k - 1, 0)] as P3);
+    // a path that doubles back (A, B, A) has no direction at B: no ring can be squared to it
+    if (dot(d, d) === 0)
+      throw new InputError(
+        `trajectoryTube: the path doubles back at point ${k} (${p.join(", ")}): its neighbours are the same point`,
+      );
+    return unit(d);
+  });
   // the first ring's frame: a normal square to the first tangent, from the axis it leans on least
   const t0 = tangents[0] as P3;
   const ax =

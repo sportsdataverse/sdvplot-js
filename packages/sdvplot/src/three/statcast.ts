@@ -54,7 +54,10 @@ const Y0 = 50;
  * "Determining Pitch Movement from PITCHf/x Data", 2012, https://baseball.physics.illinois.edu/Movement.pdf). Savant's
  * CSV leaves out x and z at y = 50, so they are solved from where the fit crosses the plate (plate_x, plate_z: at its
  * front edge, y = 17/12 ft, through 2025; at its middle, y = 8.5/12 ft, from 2026, per the same documentation); the
- * path then runs, equal steps in time, from y = release_pos_y to that plane. Traced back to the release, it lands on
+ * path then runs, equal steps in time, from y = release_pos_y to that plane. The 2026 middle-of-plate rule is from
+ * Savant's documentation of its MLB search: for its World Baseball Classic or minor-league searches, pass `plate`
+ * explicitly rather than rely on `game_year`. Each field must be a number: filter out rows with an empty CSV cell
+ * first, since `Number("")` is 0 and would pass as a real value. Traced back to the release, it lands on
  * Savant's own release_pos_x / release_pos_z within their 0.01 ft rounding (checked on 2024 and 2026 pitches).
  *
  * @example

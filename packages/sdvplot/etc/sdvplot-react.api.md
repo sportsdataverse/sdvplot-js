@@ -153,7 +153,7 @@ export interface TeamLogoProps extends ImgProps {
 }
 
 // @public
-export function Trajectory(input: TrajectoryProps): ReactElement;
+export function Trajectory(input: TrajectoryProps): ReactElement | null;
 
 // @public
 export interface TrajectoryProps {
@@ -204,6 +204,7 @@ export function Wordmark(props: Omit<TeamLogoProps, "markType">): ReactElement |
 // dist/react.d.ts:281:5 - (ae-forgotten-export) The symbol "ColorOptions" needs to be exported by the entry point react.d.ts
 // dist/react.d.ts:146:5 - (ae-forgotten-export) The symbol "ColorOptions" needs to be exported by the entry point react.d.ts
 // dist/react.d.ts:122:5 - (ae-forgotten-export) The symbol "ColorOptions" needs to be exported by the entry point react.d.ts
+// dist/react.d.ts:125:5 - (ae-forgotten-export) The symbol "ColorOptions" needs to be exported by the entry point react.d.ts
 
 // (No @packageDocumentation comment for this package)
 

@@ -16,7 +16,8 @@ export const meta = {
 } satisfies ExampleMeta;
 
 await loadLeague("mlb");
-// From Baseball Savant's pitch-level search for 2024-06-15 (MLB Advanced Media data): all four pitches of Jamie
+// From Baseball Savant's pitch-level search for 2024-06-15. Data © MLB Advanced Media, L.P., subject to MLB's terms
+// of use (https://www.mlb.com/official-information/terms-of-use). All four pitches of Jamie
 // Westbrook's strikeout against the Yankees at Fenway Park (a curveball, a changeup, a slider, then a 96.3 mph
 // four-seamer he swung through), and the curveball Cavan Biggio took for strike three against the Royals at Dodger
 // Stadium. Both come in a bottom half, so the away team pitches.
@@ -80,6 +81,8 @@ export const browser = {
 
 // Three.js draws only in a browser; without JavaScript the page shows what the meshes hold.
 export default {
+  credit:
+    "Data: Baseball Savant. Data © MLB Advanced Media, L.P. (https://www.mlb.com/official-information/terms-of-use)",
   field: { loops: field.loops.length, triangles: field.indices.length / 3, units: field.units },
   pitches: flights.map((f) => {
     const tube = trajectoryTube(f.path, { radius: BALL, color: f.color });

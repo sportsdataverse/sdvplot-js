@@ -6,8 +6,10 @@ import {
   lazy,
   useEffect,
   useMemo,
+  useState,
 } from "react";
-import { OptionalDependencyError } from "../errors.js";
+import { OptionalDependencyError, warn } from "../errors.js";
+import { checkLeague, getLeagueSync, loadLeague } from "../index-data.js";
 import { type TrajectoryTubeOptions, type TubeMesh, trajectoryTube } from "../three/tube.js";
 import type { IdSystem, League, SeasonInput, Which } from "../types.js";
 
@@ -65,6 +67,17 @@ function meshOf(THREE: Three, fiber: Fiber): ComponentType<MeshProps> {
   };
 }
 
+/** Whether `league` (a known league, else InputError) is loaded for the *Sync lookups. */
+function loaded(league: League): boolean {
+  checkLeague(league);
+  try {
+    getLeagueSync(league);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 /** `<Surface3D>` props: sporty's sport and league, and sporty's `surface()` options. */
 export interface Surface3DProps {
   /** sporty's sport, e.g. "baseball". */
@@ -111,7 +124,8 @@ const SurfaceBody = lazy(async (): Promise<{ default: ComponentType<Surface3DPro
  * `up={[0, 0, 1]}`. Drawn unlit in sporty's colours, before the scene's other objects and without depth writes, so its
  * features paint over each other in order with no z-fighting. Put it inside your `<Canvas>`. `three` and
  * `@react-three/fiber` (0.186.1 and 9.8.1 or later) and `@sportsdataverse/sporty` load when it first renders, never
- * with `sdvplot/react`; a missing peer throws `OptionalDependencyError` then. A server render draws nothing.
+ * with `sdvplot/react`; a missing peer throws `OptionalDependencyError` then. The failed load is kept until the page
+ * reloads, so installing the peer needs a reload. A server render draws nothing.
  *
  * See it drawn in the Three.js guide (`sdvplot/three/statcast-pitches` in the gallery).
  */
@@ -164,15 +178,39 @@ const TubeBody = lazy(
  * A team-coloured tube along a 3D path (a pitch, a ball flight) in a react-three-fiber scene: `trajectoryTube` as one
  * mesh, `radius` round in the points' world units, drawn unlit and not tone-mapped so the team's colour shows as it
  * is. Put it inside your `<Canvas>`, over a `<Surface3D>` in the same units. `three` and `@react-three/fiber` load
- * when it first renders, never with `sdvplot/react`; a missing peer throws `OptionalDependencyError` then, and a bad
- * radius or colour throws `InputError`. A server render draws nothing.
+ * when it first renders, never with `sdvplot/react`; a missing peer throws `OptionalDependencyError` then (kept until
+ * the page reloads, so installing the peer needs a reload), and a bad radius or colour throws `InputError`. With
+ * `team`, the team's league must be loaded for its colour: until it is, the tube draws nothing (one warning), and in
+ * the browser it loads the league and then draws. A server render draws nothing.
  *
  * See it drawn in the Three.js guide (`sdvplot/three/statcast-pitches` in the gallery).
  */
-export function Trajectory({ points, renderOrder = 0, ...o }: TrajectoryProps): ReactElement {
-  const key = JSON.stringify([points, o]);
+export function Trajectory({ points, renderOrder = 0, ...o }: TrajectoryProps): ReactElement | null {
+  // a team's colour needs its league loaded: until it is, draw nothing (a server render included), and load it here
+  const league = o.color === undefined ? o.league : undefined;
+  const ready = league === undefined || loaded(league);
+  const [, loadedNow] = useState(0);
+  useEffect(() => {
+    if (ready || league === undefined) return;
+    let live = true;
+    loadLeague(league).then(
+      () => live && loadedNow((n) => n + 1),
+      () => {}, // a league that cannot load leaves the tube undrawn, as it is now
+    );
+    return () => {
+      live = false;
+    };
+  }, [league, ready]);
+  const key = JSON.stringify([points, o, ready]);
   // biome-ignore lint/correctness/useExhaustiveDependencies: `key` is the props by value
-  const tube = useMemo(() => trajectoryTube(points, o as TrajectoryTubeOptions), [key]);
+  const tube = useMemo(() => (ready ? trajectoryTube(points, o as TrajectoryTubeOptions) : null), [key]);
+  if (tube === null) {
+    warn(
+      `three:Trajectory:unloaded:${league}`,
+      `<Trajectory team> draws nothing until league ${league} is loaded: await loadLeague("${league}") first (on a server, before rendering)`,
+    );
+    return null;
+  }
   return (
     <Suspense fallback={null}>
       <TubeBody tube={tube} renderOrder={renderOrder} />

@@ -1,5 +1,6 @@
 import { type PolygonFeature, surface as sportySurface } from "@sportsdataverse/sporty";
 import type { LeagueOf, OptionsOf, Sport, Units } from "@sportsdataverse/sporty";
+import { InputError } from "../errors.js";
 
 /** One closed loop of `surfaceMesh`: where its vertices and triangles sit in the mesh buffers. */
 export interface SurfaceLoop {
@@ -181,9 +182,18 @@ function triangulate(r: readonly Pt[]): number[] {
   return out;
 }
 
-/** "#rrggbb" or "#rrggbbaa" as r, g, b in linear sRGB and a, each 0 to 1. */
-function linear(color: string): [number, number, number, number] {
-  const c = color.replace(/^#/, "");
+/**
+ * A feature's fill ("#rgb", "#rgba", "#rrggbb" or "#rrggbbaa") as r, g, b in linear sRGB and a, each 0 to 1. Anything
+ * else (a CSS colour name given through `colorUpdates`, say) is an InputError naming the feature: a vertex colour
+ * cannot be parsed from it.
+ */
+function linear(color: string, name: string): [number, number, number, number] {
+  if (!/^#([0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(color))
+    throw new InputError(
+      `surfaceMesh: ${name}'s fill ${JSON.stringify(color)} is not a hex colour (#rrggbb or #rrggbbaa)`,
+    );
+  let c = color.slice(1);
+  if (c.length <= 4) c = [...c].map((d) => d + d).join("");
   const lin = (s: number): number => (s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4);
   const [r, g, b] = [0, 2, 4].map((i) => lin(Number.parseInt(c.slice(i, i + 2), 16) / 255));
   return [r as number, g as number, b as number, c.length === 8 ? Number.parseInt(c.slice(6), 16) / 255 : 1];
@@ -254,7 +264,7 @@ export function surfaceMesh<S extends Sport>(
   let v = 0;
   let i = 0;
   for (const { name, color, ring: r } of parts) {
-    const rgba = linear(color);
+    const rgba = linear(color, name);
     r.forEach(([x, y], k) => {
       positions.set([x, y, 0], 3 * (v + k));
       colors.set(rgba, 4 * (v + k));

@@ -135,3 +135,4 @@ credit, as the terms ask.
   Savant's own release point on these 2026 pitches and on the 2024 ones.
 
 Statcast data is MLB Advanced Media's, published on Baseball Savant; the 3D example names Baseball Savant as its source.
+Data © MLB Advanced Media, L.P. Use is subject to MLB's terms of use: <https://www.mlb.com/official-information/terms-of-use>.
