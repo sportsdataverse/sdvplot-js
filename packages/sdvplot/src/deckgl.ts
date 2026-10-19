@@ -256,9 +256,10 @@ function endColors(ids: readonly (string | null)[], o: PassArcOptions, which: Wh
 /**
  * deck.gl `ArcLayer` props: one arc per row from (x, y) to (xend, yend), in the team's colours: its primary colour at
  * the source and its secondary at the target (`which: "secondary"` swaps them), so the two ends tell the direction
- * apart where the two colours differ (see `background`). Each team keeps one colour per end, the teams taken in the order they first appear. With `background`, every colour keeps
- * 3:1 contrast against it and stays distinct from the other teams' (the shared team palette). A team that does not
- * resolve takes `fallback`; a row with a missing coordinate is left out with one warning.
+ * apart where the two colours differ (see `background`). Each team keeps one colour per end, the teams taken in the
+ * order they first appear. With `background`, every colour keeps 3:1 contrast against it and stays distinct from the
+ * other teams' (the shared team palette). A team that does not resolve takes `fallback`; a row with a missing
+ * coordinate is left out with one warning.
  *
  * @example
  * ```ts
