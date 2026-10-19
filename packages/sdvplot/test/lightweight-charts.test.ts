@@ -326,6 +326,20 @@ describe("logoMarkers: a series primitive painting team logos", () => {
     expect(draws(el)).toEqual([]);
   });
 
+  test("attached again: draws its loaded logos at once, loading nothing new", async () => {
+    const prim = logoMarkers(ENDS, { x: "t", y: "wp", team: "team", league: "nfl" });
+    const { s } = chart(prim);
+    await landAll();
+    expect(drawnMarks(prim)).toHaveLength(2);
+    s.detachPrimitive(prim);
+    expect(drawnMarks(prim)).toEqual([]); // detached, it is on no chart
+    await frame();
+    s.attachPrimitive(prim);
+    await frame();
+    expect(drawnMarks(prim)).toHaveLength(2);
+    expect(FakeImage.made).toHaveLength(2);
+  });
+
   test("units: height is a fraction of the pane, not px; a probability is a fraction, American odds are |v| >= 100", () => {
     const o = { x: "t", y: "wp", team: "team", league: "nfl" } as const;
     for (const height of [24, 1.5, 0, Number.NaN])

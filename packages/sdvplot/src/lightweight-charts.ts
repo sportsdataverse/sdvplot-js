@@ -206,7 +206,8 @@ export interface LwcRenderTarget {
 export interface LwcSeriesPrimitive {
   /** Lightweight Charts calls this on `attachPrimitive`: the logos start loading. */
   attached(param: LwcAttached): void;
-  /** Lightweight Charts calls this on `detachPrimitive`: the chart is forgotten and nothing more is drawn. */
+  /** Lightweight Charts calls this on `detachPrimitive`: the chart is forgotten, nothing more is drawn, and
+   *  `drawnMarks` reads empty. */
   detached(): void;
   /** Lightweight Charts calls this when the view changes; the logos are placed at each draw, so it does nothing. */
   updateAllViews(): void;
@@ -301,9 +302,11 @@ export function logoMarkers(rows: readonly Row[], o: LogoMarkersOptions): LwcSer
     attached(param) {
       at = param;
       for (const p of ps) load(p.url);
+      param.requestUpdate(); // logos loaded before (attached again) draw now, not at the next unrelated redraw
     },
     detached() {
       at = undefined;
+      drawn.delete(primitive);
     },
     updateAllViews() {},
     paneViews: () => views,
