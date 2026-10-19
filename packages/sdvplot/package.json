@@ -125,6 +125,7 @@
     "@nivo/core": ">=0.99",
     "@nivo/swarmplot": ">=0.99",
     "@observablehq/plot": ">=0.6.16",
+    "@react-three/fiber": ">=9.8.1",
     "@resvg/resvg-js": ">=2.6",
     "@sportsdataverse/sporty": "workspace:^0",
     "chart.js": ">=4.4",
@@ -134,6 +135,7 @@
     "react": ">=18",
     "recharts": ">=3.8",
     "svelte": ">=5.57",
+    "three": ">=0.186.1",
     "uplot": ">=1.6.31",
     "victory": ">=37.3.6"
   },
@@ -157,6 +159,9 @@
       "optional": true
     },
     "@observablehq/plot": {
+      "optional": true
+    },
+    "@react-three/fiber": {
       "optional": true
     },
     "@resvg/resvg-js": {
@@ -184,6 +189,9 @@
       "optional": true
     },
     "svelte": {
+      "optional": true
+    },
+    "three": {
       "optional": true
     },
     "uplot": {
@@ -219,6 +227,8 @@
     "@nivo/core": "0.99.0",
     "@nivo/swarmplot": "0.99.0",
     "@observablehq/plot": "^0.6.17",
+    "@react-three/fiber": "9.8.1",
+    "@react-three/test-renderer": "9.1.1",
     "@resvg/resvg-js": "^2.6.2",
     "@sportsdataverse/sporty": "workspace:^",
     "@sveltejs/package": "2.5.8",
@@ -232,6 +242,7 @@
     "@types/plotly.js": "^3.0.15",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "@types/three": "0.186.0",
     "chart.js": "4.5.1",
     "cytoscape": "3.34.3",
     "d3": "^7.9.0",
@@ -245,6 +256,7 @@
     "recharts": "3.10.1",
     "svelte": "5.57.1",
     "svelte-check": "4.7.6",
+    "three": "0.186.1",
     "uplot": "1.6.32",
     "vega": "^6.4.0",
     "vega-lite": "^6.4.3",
