@@ -1,0 +1,113 @@
+---
+title: "Apache Superset: a read-only connection to sdv-db"
+sidebar_label: With Apache Superset
+sidebar_position: 16.5
+---
+
+[Apache Superset](https://superset.apache.org) can query sdv-db, the SportsDataverse PostgreSQL warehouse, and chart
+the results. sdv-db is private, so every name below is a placeholder: `<host>`, `<port>`, `<db>`, `<schema>`,
+`<readonly_user>`, `<password>` and `<owner_role>`. Its maintainers can tell you the real values. Never paste them
+into a dashboard, a chart description or a shared file.
+
+The UI names below are from Superset 6.1.0 and 7.0.0rc2, which use the same names.
+
+## 1. A read-only role in PostgreSQL
+
+Superset runs whatever SQL its users type in SQL Lab, so give it a role that can only read. Run this once as a role
+that may grant on `<db>`. Repeat the schema statements for each schema Superset should see.
+
+```sql
+-- A login role that cannot create databases, roles or anything else.
+CREATE ROLE <readonly_user> WITH LOGIN PASSWORD '<password>'
+  NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION;
+
+-- Connect to the database, and see the schema's objects.
+GRANT CONNECT ON DATABASE <db> TO <readonly_user>;
+GRANT USAGE ON SCHEMA <schema> TO <readonly_user>;
+
+-- Read the tables and views that exist now.
+GRANT SELECT ON ALL TABLES IN SCHEMA <schema> TO <readonly_user>;
+
+-- No writes, and no new objects in the schema.
+REVOKE INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER
+  ON ALL TABLES IN SCHEMA <schema> FROM <readonly_user>;
+REVOKE CREATE ON SCHEMA <schema> FROM <readonly_user>;
+
+-- Make each session read-only by default.
+ALTER ROLE <readonly_user> SET default_transaction_read_only = on;
+```
+
+- **Grants given to PUBLIC still apply.** The `REVOKE` statements remove only what was granted to `<readonly_user>`
+  itself. A privilege granted to `PUBLIC` still reaches the role. Before PostgreSQL 15, that included `CREATE` on the
+  `public` schema. Check what `PUBLIC` holds with your administrator before relying on the role.
+- **`default_transaction_read_only` is a default, not a lock.** A session may switch it off. The grants are what
+  enforce read-only access.
+- **Check the role.** This should return `false`:
+
+  ```sql
+  SELECT has_table_privilege('<readonly_user>', '<schema>.<table>', 'INSERT');
+  ```
+
+### Tables created later (default privileges)
+
+`GRANT ... ON ALL TABLES` covers only the tables that exist when it runs. A table the warehouse's loader creates
+tomorrow stays unreadable to Superset unless the role that creates it grants by default:
+
+```sql
+ALTER DEFAULT PRIVILEGES FOR ROLE <owner_role> IN SCHEMA <schema>
+  GRANT SELECT ON TABLES TO <readonly_user>;
+```
+
+- `<owner_role>` is the role that creates the tables, such as the loader's role, not the one you are logged in as.
+- Run this once for every role that creates tables in the schema.
+- Default privileges apply only to objects created after this statement. Re-run the `GRANT SELECT ON ALL TABLES`
+  above to cover tables created in between.
+
+## 2. Add the database in Superset
+
+Superset's database documentation lists `psycopg2` as the PostgreSQL driver. If your Superset image lacks it, install
+it there first.
+
+1. Go to **Settings → Data → Database Connections** and click **+ Database**.
+   - In Superset 7 with the `SEMANTIC_LAYERS` feature flag on, these read **Data Connections** and
+     **New → Database**.
+   - The **Data → Connect database** item in the **+** menu only appears while no database other than the examples is
+     connected, so it is not a dependable route.
+2. Choose **PostgreSQL**. Then either fill in the form, or click **Connect this database with a SQLAlchemy URI string
+   instead** and enter:
+
+   ```text
+   postgresql://<readonly_user>:<password>@<host>:<port>/<db>
+   ```
+
+   - The port is usually `5432`.
+   - Append `?sslmode=require` (a libpq option) if your server needs TLS.
+   - Give it a **Display Name**, and press **Test connection**.
+3. Open the **Advanced** tab, then **SQL Lab**:
+   - **Expose database in SQL Lab**: on, if analysts should write queries against it. Off keeps it to charts and
+     datasets only.
+   - **Allow DDL and DML**: **off**. This is the API's `allow_dml` field, and it is off by default. It appears once
+     **Expose database in SQL Lab** is on. Leave **Allow CREATE TABLE AS** and **Allow CREATE VIEW AS** off too.
+4. Under **Security**, leave **Allow file uploads to database** off.
+5. Press **Connect**.
+
+Superset's settings and the role are two separate guards. With **Allow DDL and DML** off, SQL Lab refuses statements
+that change data or schema. If one slips through, the read-only role refuses it.
+
+## 3. sdvplot figures beside a Superset dashboard
+
+Superset cannot draw sdvplot figures itself yet. A static figure can still sit on a dashboard as an image:
+
+1. Write it as a PNG with `toPNG` from `@sportsdataverse/sdvplot/export` (see [Export to PNG](./export.mdx)).
+2. Serve the PNG from a web server.
+3. Add a **Markdown** component to the dashboard containing `![alt text](https://<image-host>/<figure>.png)`.
+
+Superset's default content security policy (`TALISMAN_CONFIG` in `superset_config.py`) only allows images from its own
+origin and a short list of others. Add `https://<image-host>` to that policy's `img-src`, or the browser will block
+the image.
+
+## A native Superset chart plugin: planned
+
+A chart type that draws sporty surfaces, team logos and team colours inside Superset is planned for after Superset 7.0
+final ships. Superset 7 builds its plugin packages (`@superset-ui/core`, `@superset-ui/chart-controls`) from its own
+source tree and does not publish them, so a plugin cannot yet be built and tested outside a Superset checkout.
