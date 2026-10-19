@@ -109,8 +109,8 @@ function empty(r: readonly Pt[]): boolean {
 
 /**
  * A ring that crosses itself split at each crossing into rings that do not, each to be filled: what an SVG fill shows
- * of a figure-of-eight. sporty has a few: the NHL goaltender's trapezoid and the NLL goal fan twist at their corners by
- * an inch. Rings come back un-oriented (`ring` orients them).
+ * of a figure-of-eight. sporty has a few: the NHL goaltender's trapezoids and the faceoff hash marks nearest centre
+ * ice twist at their corners by an inch. Rings come back un-oriented (`ring` orients them).
  */
 function simple(r: readonly Pt[]): Pt[][] {
   const n = r.length;

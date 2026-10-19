@@ -60,12 +60,8 @@ function meshOf(THREE: Three, fiber: Fiber): ComponentType<MeshProps> {
       invalidate();
       return () => geometry.dispose();
     }, [geometry, invalidate]);
-    // the geometry is ours to free (above): react-three-fiber must not dispose it as well
-    return createElement(
-      "mesh",
-      { geometry, renderOrder, dispose: null },
-      createElement("meshBasicMaterial", material),
-    );
+    // react-three-fiber frees the material it made; the geometry, made here, is freed above
+    return createElement("mesh", { geometry, renderOrder }, createElement("meshBasicMaterial", material));
   };
 }
 
@@ -85,7 +81,12 @@ export interface Surface3DProps {
 const SurfaceBody = lazy(async (): Promise<{ default: ComponentType<Surface3DProps> }> => {
   const [[THREE, fiber], { surfaceMesh }] = await Promise.all([
     peers("Surface3D"),
-    import("../three/surface.js"),
+    import("../three/surface.js").catch((e: unknown) => {
+      throw new OptionalDependencyError(
+        "Surface3D needs the optional peer @sportsdataverse/sporty, which could not be loaded: pnpm add @sportsdataverse/sporty",
+        { cause: e },
+      );
+    }),
   ]);
   const Drawn = meshOf(THREE, fiber);
   const material = {
@@ -112,15 +113,7 @@ const SurfaceBody = lazy(async (): Promise<{ default: ComponentType<Surface3DPro
  * `@react-three/fiber` (0.186.1 and 9.8.1 or later) and `@sportsdataverse/sporty` load when it first renders, never
  * with `sdvplot/react`; a missing peer throws `OptionalDependencyError` then. A server render draws nothing.
  *
- * @example
- * ```tsx
- * import { Canvas } from "@react-three/fiber";
- * import { Surface3D } from "@sportsdataverse/sdvplot/react";
- *
- * <Canvas camera={{ position: [0, -40, 30], up: [0, 0, 1] }}>
- *   <Surface3D sport="baseball" league="mlb" />
- * </Canvas>;
- * ```
+ * See it drawn in the Three.js guide (`sdvplot/three/statcast-pitches` in the gallery).
  */
 export function Surface3D(props: Surface3DProps): ReactElement {
   return (
@@ -174,23 +167,7 @@ const TubeBody = lazy(
  * when it first renders, never with `sdvplot/react`; a missing peer throws `OptionalDependencyError` then, and a bad
  * radius or colour throws `InputError`. A server render draws nothing.
  *
- * @example
- * ```tsx
- * import { Canvas } from "@react-three/fiber";
- * import { Surface3D, Trajectory } from "@sportsdataverse/sdvplot/react";
- * import { statcastPitchPath } from "@sportsdataverse/sdvplot/three";
- *
- * // a 96.3 mph four-seamer, Yankees at Red Sox, 2024-06-15 (Baseball Savant: game 746946, at-bat 48, pitch 4)
- * const pitch = {
- *   vx0: -6.245145230392043, vy0: -140.0548111003631, vz0: -4.647911601289857,
- *   ax: 12.681580763686934, ay: 32.15363682007945, az: -12.428443024407864,
- *   plate_x: 0.42927397039380755, plate_z: 3.546869816011372, release_pos_y: 54.12, game_year: 2024,
- * };
- * <Canvas camera={{ position: [-8, -14, 7], up: [0, 0, 1] }}>
- *   <Surface3D sport="baseball" league="mlb" />
- *   <Trajectory points={statcastPitchPath(pitch)} radius={0.121} team="NYY" league="mlb" background="#395d33" />
- * </Canvas>;
- * ```
+ * See it drawn in the Three.js guide (`sdvplot/three/statcast-pitches` in the gallery).
  */
 export function Trajectory({ points, renderOrder = 0, ...o }: TrajectoryProps): ReactElement {
   const key = JSON.stringify([points, o]);

@@ -66,16 +66,19 @@ test("<Surface3D> draws surfaceMesh as one mesh: its buffers, vertex colours, fl
   await r.unmount();
 });
 
-test("<Surface3D> passes sporty's options through, and frees its geometry when it unmounts", async () => {
+test("<Surface3D> passes sporty's options through, and frees its geometry and material when it unmounts", async () => {
   const { r, mesh } = await drawn(
     <Surface3D sport="baseball" league="mlb" options={{ colorUpdates: { infield_dirt: "#ff0000" } }} />,
   );
   const want = surfaceMesh("baseball", "mlb", { colorUpdates: { infield_dirt: "#ff0000" } });
   expect(Array.from(mesh.geometry.getAttribute("color").array)).toEqual(Array.from(want.colors));
   const freed = vi.fn();
+  const freedMaterial = vi.fn();
   mesh.geometry.addEventListener("dispose", freed);
+  mesh.material.addEventListener("dispose", freedMaterial);
   await r.unmount();
   expect(freed).toHaveBeenCalledTimes(1);
+  expect(freedMaterial).toHaveBeenCalledTimes(1);
 });
 
 test("<Trajectory> draws trajectoryTube in the team's colour, unlit and not tone-mapped, so the colour shows as it is", async () => {
