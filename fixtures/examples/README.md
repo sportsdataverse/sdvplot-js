@@ -95,6 +95,16 @@ unchanged, with the header). StatsBomb's terms (<https://github.com/statsbomb/op
 StatsBomb logo. The example that draws it (`sporty/plot/pass-map`) names StatsBomb in its caption, and its `statsbomb`
 tag makes the docs' `<Live>` show the logo, linked to <https://statsbomb.com>, with "Data: StatsBomb open data".
 
+`statsbomb_8658_france_h1_pass_recipients.csv` (`WC2018_FINAL_FRANCE_RECIPIENTS`): who passed and who received each of
+those 75 passes, written by `tools/sample-data/statsbomb_8658_recipients.py` from StatsBomb open data at commit
+`e3355d71f961dc88123d4c63655f37341c8c3957` (2023-07-26, the last to change match 8658's events and lineups; fetched
+2026-10-18): `data/events/8658.json` (sha256 `a9aa72c042153fa351c3591ee11e7fba95b0c8841c4489da4aa6809de1edbdf5`) and
+`data/lineups/8658.json` (sha256 `84696fa0d36f14e6aa557d9dcdf11f4ac0f304e6e7a547bb160f740f85a71f53`). Per SPADL row, in
+its order: `action_id` and `original_event_id` copied from `spadl_8658_france_h1_passes.csv`; `player_id` (the event's
+`player.id`, checked equal to SPADL's) and `recipient_id` (`pass.recipient.id`) from the event with that id; each name the
+lineup's `player_nickname`, or its `player_name` where the nickname is null. 75 rows with the header, as served. The
+example that draws it (`sdvplot/cytoscape/france-pass-network`) credits StatsBomb as above.
+
 `docs/static/img/statsbomb-logo.png`: StatsBomb's logo, from the open-data repository's
 `img/SB - Icon Lockup - Colour positive.png` (<https://github.com/statsbomb/open-data/tree/master/img>, last changed in
 3bfc16d, 2022-03-03; fetched 2026-10-08; 5885 x 943 PNG, 120,793 bytes, sha256

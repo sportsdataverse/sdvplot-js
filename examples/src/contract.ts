@@ -103,6 +103,14 @@ export type BrowserSpec =
         readonly props: object;
       }[];
       readonly bounds: readonly [x0: number, y0: number, x1: number, y1: number];
+  /**
+   * A Cytoscape.js graph laid out at its nodes' own positions (the preset layout). `elements` builds a fresh copy per
+   * graph (Cytoscape keeps what it is given); `style` is its stylesheet JSON.
+   */
+  | {
+      readonly lib: "cytoscape";
+      readonly elements: () => object;
+      readonly style: readonly object[];
       readonly width: number;
       readonly height: number;
       readonly label: string;

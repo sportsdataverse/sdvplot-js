@@ -17,6 +17,7 @@ import {
   SUPER_BOWL_LIX_TDS,
   SUPER_BOWL_LIX_WP,
   WC2018_FINAL_FRANCE_PASSES,
+  WC2018_FINAL_FRANCE_RECIPIENTS,
 } from "../src/data.js";
 import { EXAMPLES } from "../src/registry.gen.js";
 
@@ -416,4 +417,20 @@ test("WC2018_FINAL_FRANCE_PASSES are the captured SPADL rows, unchanged", () => 
     })),
   );
   expect(WC2018_FINAL_FRANCE_PASSES).toHaveLength(75);
+});
+
+test("WC2018_FINAL_FRANCE_RECIPIENTS are the captured StatsBomb passers and receivers, one per SPADL pass", () => {
+  expect(WC2018_FINAL_FRANCE_RECIPIENTS).toEqual(
+    csv("fixtures/examples/statsbomb_8658_france_h1_pass_recipients.csv").map((r) => ({
+      action_id: Number(r.action_id),
+      player_id: Number(r.player_id),
+      player_name: r.player_name,
+      recipient_id: Number(r.recipient_id),
+      recipient_name: r.recipient_name,
+    })),
+  );
+  // the same passes, in the same order, by the same passers as the SPADL rows
+  expect(WC2018_FINAL_FRANCE_RECIPIENTS.map((r) => [r.action_id, r.player_id])).toEqual(
+    WC2018_FINAL_FRANCE_PASSES.map((p) => [p.action_id, p.player_id]),
+  );
 });

@@ -39,6 +39,7 @@ const DRAWN: Readonly<Record<string, string>> = {
   // the sdvplot marks inside LayerChart's svg: Svelte mounted, and the marks' lazy import of layerchart resolved
   svelte: ".sdv-live-output svg.lc-layout-svg :is(image[data-sdv-id], g[data-sdv-surface])",
   deckgl: ".sdv-live-output canvas",
+  cytoscape: ".sdv-live-output canvas",
 };
 
 describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the built docs", () => {
@@ -144,6 +145,62 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
           return (layer?.props.data.length ?? 0) > 0 ? out.join("; ") : "no marks";
         });
         expect(marks, "each sampled mark is picked and visible where it was placed").toBe("");
+      // Cytoscape draws on stacked canvases. Sample where marks are known to be: the first nodes' fill (beside the
+      // initials, inside the circle) and the widest edges' midpoints, from Cytoscape's own rendered positions; the
+      // pixels there must be the colour Cytoscape computed for that element, not the page behind it.
+      if (lib === "cytoscape") {
+        const marks = await figure.locator('.sdv-live-output [role="figure"]').evaluate(async (el) => {
+          type Ele = {
+            id: () => string;
+            style: (k: string) => string;
+            renderedPosition: () => { x: number; y: number };
+            renderedMidpoint: () => { x: number; y: number };
+            renderedWidth: () => number;
+            data: (k: string) => number;
+          };
+          type Cyish = { nodes: () => { toArray: () => Ele[] }; edges: () => { toArray: () => Ele[] } };
+          const cy = (el as HTMLElement & { sdvCy?: Cyish }).sdvCy;
+          if (cy === undefined) return "no graph on the figure";
+          const frame = () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+          for (let t = 0; t < 5; t++) await frame();
+          const layers = [...el.querySelectorAll("canvas")];
+          const first = layers[0];
+          if (first === undefined) return "no canvas";
+          const k = first.width / first.clientWidth; // device pixels per CSS pixel
+          const copy = document.createElement("canvas");
+          [copy.width, copy.height] = [first.width, first.height];
+          const ctx = copy.getContext("2d", { willReadFrequently: true }) as CanvasRenderingContext2D;
+          for (const c of layers) ctx.drawImage(c, 0, 0);
+          const rgb = (s: string) => (s.match(/\d+/g) ?? []).slice(0, 3).map(Number);
+          /** Whether a 5 x 5 device-pixel window at (x, y) CSS px holds a pixel within 48 of `want` in every channel. */
+          const holds = (x: number, y: number, want: number[]) => {
+            const px = ctx.getImageData(Math.round(x * k) - 2, Math.round(y * k) - 2, 5, 5).data;
+            for (let i = 0; i < px.length; i += 4)
+              if ([0, 1, 2].every((c) => Math.abs((px[i + c] as number) - (want[c] as number)) <= 48))
+                return true;
+            return false;
+          };
+          const out: string[] = [];
+          const nodes = cy.nodes().toArray();
+          for (const n of nodes.slice(0, 5)) {
+            const p = n.renderedPosition();
+            const fill = rgb(n.style("background-color"));
+            // below the initials, still inside the circle
+            if (!holds(p.x, p.y + 0.35 * n.renderedWidth(), fill))
+              out.push(`node ${n.id()}: no ${fill} drawn there`);
+          }
+          const edges = cy
+            .edges()
+            .toArray()
+            .sort((a, b) => b.data("width") - a.data("width"));
+          for (const e of edges.slice(0, 3)) {
+            const m = e.renderedMidpoint();
+            const line = rgb(e.style("line-color"));
+            if (!holds(m.x, m.y, line)) out.push(`edge ${e.id()}: no ${line} drawn at its midpoint`);
+          }
+          return nodes.length > 0 && edges.length > 0 ? out.join("; ") : "no nodes or edges";
+        });
+        expect(marks, "each sampled node and edge is drawn in its colour where Cytoscape placed it").toBe("");
       }
       // ECharts draws the server's SVG, tag for tag: init() alone already leaves an <svg>, and a series that drew nothing
       // would still leave its axes
