@@ -121,6 +121,14 @@ export interface SurfaceBackdropProps {
     ylim?: readonly [number, number];
     // (undocumented)
     yTrans?: number;
+export function Surface3D(props: Surface3DProps): ReactElement;
+
+// @public
+export interface Surface3DProps {
+    league: string;
+    options?: Record<string, unknown>;
+    renderOrder?: number;
+    sport: string;
 }
 
 // @public
@@ -142,6 +150,33 @@ export interface TeamLogoProps extends ImgProps {
     team: Value;
     // (undocumented)
     variant?: Variant;
+}
+
+// @public
+export function Trajectory(input: TrajectoryProps): ReactElement;
+
+// @public
+export interface TrajectoryProps {
+    background?: string;
+    color?: string;
+    fallback?: string;
+    // Warning: (ae-forgotten-export) The symbol "IdSystem" needs to be exported by the entry point react.d.ts
+    //
+    // (undocumented)
+    idSystem?: IdSystem;
+    // (undocumented)
+    league?: League;
+    points: readonly (readonly [x: number, y: number, z: number])[];
+    radialSegments?: number;
+    radius: number;
+    renderOrder?: number;
+    // Warning: (ae-forgotten-export) The symbol "SeasonInput" needs to be exported by the entry point react.d.ts
+    //
+    // (undocumented)
+    season?: SeasonInput;
+    team?: unknown;
+    // Warning: (ae-forgotten-export) The symbol "Which" needs to be exported by the entry point react.d.ts
+    which?: Which;
 }
 
 // Warning: (ae-forgotten-export) The symbol "ResolveOptions" needs to be exported by the entry point react.d.ts
@@ -167,6 +202,7 @@ export function Wordmark(props: Omit<TeamLogoProps, "markType">): ReactElement |
 // Warnings were encountered during analysis:
 //
 // dist/react.d.ts:281:5 - (ae-forgotten-export) The symbol "ColorOptions" needs to be exported by the entry point react.d.ts
+// dist/react.d.ts:146:5 - (ae-forgotten-export) The symbol "ColorOptions" needs to be exported by the entry point react.d.ts
 
 // (No @packageDocumentation comment for this package)
 

@@ -26,6 +26,7 @@ export default defineConfig({
     victory: "src/victory.ts",
     deckgl: "src/deckgl.ts",
     cytoscape: "src/cytoscape.ts",
+    three: "src/three/index.ts",
   },
   external: [
     "react",
@@ -43,6 +44,8 @@ export default defineConfig({
     "@sportsdataverse/sporty/canvas",
     "@sportsdataverse/sporty/svg",
     "@resvg/resvg-js",
+    "three",
+    "@react-three/fiber",
   ],
   format: ["esm"],
   dts: true,

@@ -114,3 +114,24 @@ rounded to whole pixels), with Pillow 12.3's Lanczos filter (`reducing_gap=3.0`)
 (`optimize=True`, `compress_level=9`; its 1,112 colours rule out a lossless palette): 9,986 bytes, sha256
 `23f55187241a7bf12f7c9711f449973379b2056e94ebbeb5bf79bbda723d81fe`. The artwork is unchanged. Used only as that
 credit, as the terms ask.
+
+## Statcast pitches (Baseball Savant)
+
+- `mlb_statcast_search_2024-06-15_head.csv` (`STATCAST_PITCHES_2024_06_15`): Baseball Savant's pitch-level search for
+  2024-06-15, the header (119 columns) and its first 46 pitches, byte for byte (UTF-8 BOM and Savant's quoting kept).
+  Copied unchanged by `tools/sample-data/sdv_py_captures.py` from sportsdataverse-py's
+  `tests/fixtures/mlb_statcast/search_2024-06-15_head.csv` (captured 2026-09-17 from
+  `https://baseballsavant.mlb.com/statcast_search/csv?all=true&type=details&player_type=batter&game_date_gt=2024-06-15&game_date_lt=2024-06-15`,
+  the request `mlb_statcast_search("2024-06-15", "2024-06-15")` sends; last changed in sportsdataverse-py 6678b0f, read
+  at b4229f1, 2026-10-18; sha256 `f605ab3da13670a78f53286484758505a4fe78d95a9730bce4a8de8d94248608`, which the tool
+  checks). The pitches span 7 games. `examples/src/data.ts` holds every row with the columns the 3D examples read.
+- `mlb_statcast_search_2026-06-15_head.csv`: the same search for 2026-06-15, the header and its first 5 pitches, byte
+  for byte. Captured 2026-10-19 with `curl` from
+  `https://baseballsavant.mlb.com/statcast_search/csv?all=true&type=details&player_type=batter&game_date_gt=2026-06-15&game_date_lt=2026-06-15`
+  (2,791 pitches in the response; its first 6 lines kept); sha256
+  `df1e2f7fa36a18c79c87efaf0a28697cfe112aa52c47f9389107c8efe340c56d`. Savant's CSV documentation
+  (<https://baseballsavant.mlb.com/csv-docs>, read 2026-10-19) says `plate_x`/`plate_z` are measured at the front of
+  home plate through 2025 and at its middle from 2026; sdvplot's `test/three.test.ts` holds `statcastPitchPath` to
+  Savant's own release point on these 2026 pitches and on the 2024 ones.
+
+Statcast data is MLB Advanced Media's, published on Baseball Savant; the 3D example names Baseball Savant as its source.

@@ -20,7 +20,9 @@
     "nivo",
     "victory",
     "deck.gl",
-    "cytoscape"
+    "cytoscape",
+    "threejs",
+    "react-three-fiber"
   ],
   "homepage": "https://plot.sportsdataverse.org",
   "bugs": "https://github.com/sportsdataverse/sdvplot-js/issues",
@@ -114,6 +116,10 @@
     "./cytoscape": {
       "types": "./dist/cytoscape.d.ts",
       "import": "./dist/cytoscape.js"
+    },
+    "./three": {
+      "types": "./dist/three.d.ts",
+      "import": "./dist/three.js"
     },
     "./package.json": "./package.json"
   },
