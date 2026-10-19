@@ -108,6 +108,8 @@
     "./package.json": "./package.json"
   },
   "peerDependencies": {
+    "@deck.gl/core": ">=9.4.0",
+    "@deck.gl/layers": ">=9.4.0",
     "@nivo/bump": ">=0.99",
     "@nivo/chord": ">=0.99",
     "@nivo/core": ">=0.99",
@@ -125,6 +127,12 @@
     "victory": ">=37.3.6"
   },
   "peerDependenciesMeta": {
+    "@deck.gl/core": {
+      "optional": true
+    },
+    "@deck.gl/layers": {
+      "optional": true
+    },
     "@nivo/bump": {
       "optional": true
     },
@@ -189,6 +197,8 @@
     "provenance": true
   },
   "devDependencies": {
+    "@deck.gl/core": "9.4.0",
+    "@deck.gl/layers": "9.4.0",
     "@napi-rs/canvas": "^1.0.10",
     "@nivo/bump": "0.99.0",
     "@nivo/chord": "0.99.0",
