@@ -260,12 +260,15 @@ describe("surfaceLayer", () => {
     const scene = surface("hockey", "nhl");
     const polys = scene.features.filter((f) => f.kind === "polygon");
     const data = p.data as SurfaceRow[];
-    // one row per closed loop, in sporty's order: the same features, their points all kept
+    // one row per closed loop, in sporty's order: the same features, their points kept (a ring split where it crosses
+    // itself also gains the crossing point)
     const names = data.map((d) => d.name).filter((n, i, a) => n !== a[i - 1]);
     expect(names).toEqual(polys.map((f) => f.name).filter((n, i, a) => n !== a[i - 1]));
-    expect(data.reduce((n, d) => n + d.polygon.length, 0)).toBe(
-      polys.reduce((n, f) => n + f.points.length, 0),
-    );
+    const drawnPts = new Set(data.flatMap((d) => d.polygon.map((pt) => pt.join())));
+    // all but the four points of the centre circle's zero-area slivers on the centre line (x = 0), left out as empty
+    const lost = polys.flatMap((f) => f.points).filter((pt) => !drawnPts.has(pt.join()));
+    expect(lost.length).toBeLessThanOrEqual(4);
+    for (const pt of lost) expect(Math.abs(pt[0])).toBe(0);
     expect(call(p.getPolygon, data[0])).toEqual(polys[0]?.points);
     expect(call(p.getFillColor, data[0])).toEqual(rgba(polys[0]?.fill as string));
     // the goal frame fill is translucent (#a5acaf4d): its alpha survives
@@ -290,6 +293,53 @@ describe("surfaceLayer", () => {
     // each half lies on one side of its circle's centre, as sporty draws it (a half ring, not a ring and a hole)
     const [left, right] = rows.slice(0, 2).map((r) => r.polygon.map((pt) => pt[0]));
     expect(Math.max(...(left as number[]))).toBeLessThanOrEqual(Math.min(...(right as number[])) + 1e-9);
+  });
+
+  test("a ring that crosses itself is split into simple rings, and a ring with no area is left out (as three does)", () => {
+    type P = readonly [number, number];
+    const turn = (a: P, b: P, c: P) => (b[0] - a[0]) * (c[1] - a[1]) - (c[0] - a[0]) * (b[1] - a[1]);
+    const crosses = (r: readonly P[]): boolean => {
+      const n = r.length;
+      for (let i = 0; i < n; i++)
+        for (let j = i + 2; j < n; j++) {
+          if (i === 0 && j === n - 1) continue;
+          const [a, b, c, d] = [r[i] as P, r[(i + 1) % n] as P, r[j] as P, r[(j + 1) % n] as P];
+          if (
+            Math.sign(turn(a, b, c)) * Math.sign(turn(a, b, d)) < 0 &&
+            Math.sign(turn(c, d, a)) * Math.sign(turn(c, d, b)) < 0
+          )
+            return true;
+        }
+      return false;
+    };
+    const area = (r: readonly P[]) =>
+      r.reduce((s, a, i) => {
+        const b = r[(i + 1) % r.length] as P;
+        return s + a[0] * b[1] - b[0] * a[1];
+      }, 0) / 2;
+    // sporty's NHL goaltender trapezoids and some faceoff hash marks twist at a corner by an inch
+    const twisted = surface("hockey", "nhl").features.filter(
+      (f) => f.kind === "polygon" && ["goaltenders_restricted_area", "odzone_faceoff_lines"].includes(f.name),
+    );
+    expect(twisted.some((f) => f.kind === "polygon" && crosses(f.points))).toBe(true);
+    for (const [sport, league] of [
+      ["hockey", "nhl"],
+      ["lacrosse", "nll"],
+      ["basketball", "nba"],
+    ] as const) {
+      const rows = surfaceLayer(sport, league).data as SurfaceRow[];
+      expect(
+        rows.filter((d) => crosses(d.polygon)).map((d) => d.name),
+        `${sport} crossing`,
+      ).toEqual([]);
+      // the NLL goal fan goes out along a line and back: no area, as sporty's own SVG shows it (nothing)
+      expect(
+        rows.filter((d) => Math.abs(area(d.polygon)) < 1e-6).map((d) => d.name),
+        `${sport} empty`,
+      ).toEqual([]);
+    }
+    const nhl = surfaceLayer("hockey", "nhl").data as SurfaceRow[];
+    expect(nhl.filter((d) => d.name === "goaltenders_restricted_area").length).toBeGreaterThan(2);
   });
 
   test("sporty's own options pass through (colour updates, pitch size); a hidden feature is left out", () => {

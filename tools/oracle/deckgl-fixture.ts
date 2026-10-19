@@ -168,9 +168,16 @@ export async function deckglSharedFixture(): Promise<string> {
   const fills = (data: { fillColor: number[] }[]): number[][] =>
     [...new Set(data.map((d) => JSON.stringify(d.fillColor)))].sort().map((s) => JSON.parse(s));
   const rink = surfaceLayer("hockey", "nhl");
-  // each faceoff feature is drawn as two half-ring (or two L) loops in one path: the rows per feature name pin the
-  // loop split, which both languages must make (sportypy draws the same features with the same names)
-  const LOOPED = ["odzone_faceoff_circle", "nodzone_faceoff_spot_ring", "odzone_faceoff_lines"];
+  // Rows per feature name pin the ring rules both languages apply: a faceoff circle, spot ring or the centre circle is
+  // two half rings in one path (the loop split), and a goaltender trapezoid crosses itself at a corner (the
+  // self-crossing split: three rings per trapezoid). Left out: the faceoff hash marks, which sporty draws as 8 loops
+  // that twist (24 rows once split) and sportypy as 16 that do not.
+  const LOOPED = [
+    "odzone_faceoff_circle",
+    "nodzone_faceoff_spot_ring",
+    "center_faceoff_circle",
+    "goaltenders_restricted_area",
+  ];
   const loops = Object.fromEntries(LOOPED.map((n) => [n, rink.data.filter((d) => d.name === n).length]));
   const pitch = surfaceLayer("soccer", "fifa", { updates: { pitch_length: 105, pitch_width: 68 } });
   const surfaces = [

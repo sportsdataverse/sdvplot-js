@@ -378,6 +378,55 @@ function loops(points: readonly Pt[]): Pt[][] {
   return out;
 }
 
+// Copied from ./three/surface.ts (PR #79), where the three.js surface needs the same split: kept here so this PR stands
+// alone. ponytail: one shared internal module (src/rings.ts) for both once both have merged.
+const turn = (a: Pt, b: Pt, c: Pt): number => (b[0] - a[0]) * (c[1] - a[1]) - (c[0] - a[0]) * (b[1] - a[1]);
+function signedArea(r: readonly Pt[]): number {
+  let s = 0;
+  for (let i = 0; i < r.length; i++) {
+    const [a, b] = [r[i] as Pt, r[(i + 1) % r.length] as Pt];
+    s += a[0] * b[1] - b[0] * a[1];
+  }
+  return s / 2;
+}
+/**
+ * No area to fill: a path that goes out along a line and back along it (the NLL goal fan), which a fill leaves
+ * invisible, as sporty's own SVG does, or the sliver left where a ring touched itself.
+ */
+function empty(r: readonly Pt[]): boolean {
+  let [x0, y0, x1, y1] = [
+    Number.POSITIVE_INFINITY,
+    Number.POSITIVE_INFINITY,
+    Number.NEGATIVE_INFINITY,
+    Number.NEGATIVE_INFINITY,
+  ];
+  for (const [x, y] of r)
+    [x0, y0, x1, y1] = [Math.min(x0, x), Math.min(y0, y), Math.max(x1, x), Math.max(y1, y)];
+  return r.length < 3 || Math.abs(signedArea(r)) <= 1e-9 * ((x1 - x0) ** 2 + (y1 - y0) ** 2);
+}
+/**
+ * A ring that crosses itself split at each crossing into rings that do not, each to be filled: what an SVG (nonzero)
+ * fill shows of a figure-of-eight, and what deck.gl's earcut cannot triangulate. sporty has a few: the NHL goaltender's
+ * trapezoids and some faceoff hash marks twist at their corners by an inch.
+ */
+function simple(r: readonly Pt[]): Pt[][] {
+  const n = r.length;
+  const side = (a: Pt, b: Pt, c: Pt): number => Math.sign(turn(a, b, c));
+  for (let i = 0; i < n; i++)
+    for (let j = i + 2; j < n; j++) {
+      if (i === 0 && j === n - 1) continue; // neighbours across the closing edge
+      const [a, b, c, d] = [r[i] as Pt, r[(i + 1) % n] as Pt, r[j] as Pt, r[(j + 1) % n] as Pt];
+      if (side(a, b, c) * side(a, b, d) >= 0 || side(c, d, a) * side(c, d, b) >= 0) continue;
+      const s = turn(c, d, a) / (turn(c, d, a) - turn(c, d, b)); // where the crossing is along a -> b
+      const x: Pt = [a[0] + s * (b[0] - a[0]), a[1] + s * (b[1] - a[1])];
+      return [
+        ...simple([...r.slice(0, i + 1), x, ...r.slice(j + 1)]),
+        ...simple([x, ...r.slice(i + 1, j + 1)]),
+      ];
+    }
+  return [[...r]];
+}
+
 const drawn = (f: PolygonFeature): boolean =>
   f.points.length > 0 &&
   f.points.every(([x, y]) => Number.isFinite(x) && Number.isFinite(y)) &&
@@ -388,7 +437,8 @@ const drawn = (f: PolygonFeature): boolean =>
  * e.g. `surfaceLayer("hockey", "nhl")`, `surfaceLayer("soccer", "fifa")`), in the surface's own coordinates: deck.gl's
  * `"cartesian"` coordinate system, in the surface's units (feet for a rink, metres for a pitch) with the origin at its
  * centre, the frame sporty draws in and NHL api-web's shot coordinates are in. Each closed loop of a polygon feature
- * is one data row (a faceoff circle is two: its half rings), in sporty's drawing order, filled with its colour (alpha
+ * is one data row (a faceoff circle is two: its half rings; a loop that crosses itself is split at the crossing into
+ * rings that do not, and a loop with no area is left out), in sporty's drawing order, filled with its colour (alpha
  * included). sporty's default strokes equal their fills, so
  * the layer is fill-only; a hidden feature (a `#rrggbb00` fill) and text features (a football field's yard numbers)
  * are left out. `o` is passed to sporty's `surface()` (`updates`, `colorUpdates`, `units`, `rotation`, ...); sporty's
@@ -414,7 +464,10 @@ export function surfaceLayer<S extends Sport>(
   const data = scene.features
     .filter((f): f is PolygonFeature => f.kind === "polygon" && drawn(f))
     .flatMap((f) =>
-      loops(f.points).map((polygon): SurfaceRow => ({ name: f.name, polygon, fillColor: rgba(f.fill) })),
+      loops(f.points)
+        .flatMap(simple)
+        .filter((r) => !empty(r))
+        .map((polygon): SurfaceRow => ({ name: f.name, polygon, fillColor: rgba(f.fill) })),
     );
   return {
     id,
