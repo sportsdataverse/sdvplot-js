@@ -17,6 +17,7 @@ import {
 import {
   type LwcSeriesPrimitive,
   TRADINGVIEW_NOTICE,
+  attributionNotice,
   drawnMarks,
   logoMarkers,
   teamSeriesOptions,
@@ -157,6 +158,24 @@ describe("withAttribution: the TradingView notice is on by default", () => {
     expect(tvLink(el)).toBeNull();
   });
 
+  test("attributionNotice puts the notice on the page once: its text is TRADINGVIEW_NOTICE exactly, the URL a link", () => {
+    const host = document.body.appendChild(document.createElement("div"));
+    const p = attributionNotice(host);
+    expect(p.tagName).toBe("P");
+    expect(p.parentElement).toBe(host);
+    expect(p.textContent).toBe(TRADINGVIEW_NOTICE);
+    expect(p.textContent).toContain("Copyright (с) 2025"); // the Cyrillic letter survives
+    const a = p.querySelector("a");
+    expect(a?.getAttribute("href")).toBe("https://www.tradingview.com/");
+    expect(a?.textContent).toBe("https://www.tradingview.com/");
+    expect(attributionNotice(host)).toBe(p); // idempotent: the same notice, not a second one
+    expect(host.querySelectorAll("p")).toHaveLength(1);
+    // a notice deeper inside (another chart's figure) does not stand in for this container's own
+    const outer = document.body.appendChild(document.createElement("div"));
+    attributionNotice(outer.appendChild(document.createElement("div")));
+    expect(attributionNotice(outer).parentElement).toBe(outer);
+  });
+
   test("TRADINGVIEW_NOTICE is the NOTICE file's text at 5.2.1, verbatim in both NOTICE.md files", () => {
     // the NOTICE of tradingview/lightweight-charts at tag v5.2.1; its "с" is Cyrillic U+0441, as upstream writes it
     expect(TRADINGVIEW_NOTICE).toBe(
@@ -179,6 +198,8 @@ describe("teamSeriesOptions", () => {
     const a = teamSeriesOptions("KC", { league: "nfl", units: "american" });
     const fa = a.priceFormat?.formatter as (v: number) => string;
     expect([150, -120, 100, -100].map(fa)).toEqual(["+150", "-120", "+100", "-100"]);
+    // rounded symmetrically (half away from zero), and never a signed zero
+    expect([150.5, -150.5, 0.4, -0.4, 0, -0].map(fa)).toEqual(["+151", "-151", "0", "0", "0", "0"]);
     expect(a.priceFormat?.minMove).toBe(1);
     expect(teamSeriesOptions("KC", { league: "nfl" })).toEqual({ color: teamColorsSync("nfl", ["KC"])[0] });
     expect(() => teamSeriesOptions("KC", { league: "nfl", units: "percent" as never })).toThrow(InputError);

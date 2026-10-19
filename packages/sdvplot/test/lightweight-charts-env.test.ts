@@ -64,6 +64,9 @@ test("SSR and no lightweight-charts: ./lightweight-charts imports in Node with n
   });
   expect(typeof prim.paneViews).toBe("function");
   // attached on a server (no Image): it loads nothing and does not throw
+  // on a server there is no page: attributionNotice does nothing and hands the container back
+  const container = {} as HTMLElement;
+  expect(lwc.attributionNotice(container)).toBe(container);
   prim.attached({
     chart: { timeScale: () => ({ timeToCoordinate: () => null }) },
     series: { priceToCoordinate: () => null },

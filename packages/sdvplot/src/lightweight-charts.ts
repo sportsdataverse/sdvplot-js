@@ -7,7 +7,7 @@
  *
  * Lightweight Charts is Apache-2.0 and asks every page that shows it for TradingView's attribution notice
  * (`TRADINGVIEW_NOTICE`) and a link to https://www.tradingview.com/. `withAttribution` keeps the library's own
- * attribution logo on, which is that link; the notice text is the page's to show.
+ * attribution logo on, which is that link, and `attributionNotice` puts the notice on the page.
  */
 import {
   type MarkOptions,
@@ -53,11 +53,14 @@ export interface AttributionOptions {
  *
  * @example
  * ```ts
- * import { TRADINGVIEW_NOTICE, withAttribution } from "@sportsdataverse/sdvplot/lightweight-charts";
+ * import { attributionNotice, withAttribution } from "@sportsdataverse/sdvplot/lightweight-charts";
+ * import { createChart } from "lightweight-charts";
  *
- * const options = withAttribution({ width: 640, height: 320 });
- * // in the browser: createChart(element, options), and show TRADINGVIEW_NOTICE on the page
- * [options.layout.attributionLogo, TRADINGVIEW_NOTICE];
+ * const el = document.body.appendChild(document.createElement("div"));
+ * // the chart, with TradingView's logo (its link) on it, and TradingView's notice on the page
+ * const chart = createChart(el, withAttribution({ width: 640, height: 320 }));
+ * const notice = attributionNotice(el.parentElement ?? el);
+ * [chart.options().layout.attributionLogo, notice.textContent];
  * ```
  */
 export function withAttribution<F extends object = Record<never, never>>(
@@ -78,6 +81,40 @@ export function withAttribution<F extends object = Record<never, never>>(
   return { ...opts, layout: { ...opts.layout, attributionLogo: off !== true } };
 }
 
+/**
+ * Puts TradingView's attribution notice on the page, as Lightweight Charts' licence asks: a `<p>` appended to
+ * `container`, holding `TRADINGVIEW_NOTICE` (its URL a link, its two lines kept), and returned. Idempotent: called
+ * again on the same container it returns the notice already there rather than adding a second. Give it the element
+ * around the chart (`el.parentElement ?? el` for the chart's own `el`), so the notice sits under the chart. On a
+ * server (no `document`) it does nothing and returns `container`. `withAttribution`'s example draws a chart with it.
+ *
+ * @example
+ * ```ts
+ * import { TRADINGVIEW_NOTICE, attributionNotice } from "@sportsdataverse/sdvplot/lightweight-charts";
+ *
+ * const figure = document.body.appendChild(document.createElement("figure"));
+ * const notice = attributionNotice(figure);
+ * // once per container, and exactly TradingView's notice
+ * [attributionNotice(figure) === notice, notice.textContent === TRADINGVIEW_NOTICE];
+ * ```
+ */
+export function attributionNotice(container: HTMLElement): HTMLElement {
+  if (typeof document === "undefined") return container;
+  for (const c of Array.from(container.children))
+    if (c instanceof HTMLElement && c.dataset.sdvAttribution === "tradingview") return c;
+  const doc = container.ownerDocument;
+  const url = "https://www.tradingview.com/";
+  const p = doc.createElement("p");
+  p.dataset.sdvAttribution = "tradingview";
+  p.style.whiteSpace = "pre-line"; // the notice's two lines
+  const a = doc.createElement("a");
+  a.href = url;
+  a.textContent = url;
+  p.append(TRADINGVIEW_NOTICE.slice(0, -url.length), a);
+  container.append(p);
+  return p;
+}
+
 /** What a price is: a probability (a fraction in [0, 1], read as a percentage) or American odds (-110, +150). */
 export type PriceUnits = "probability" | "american";
 const UNITS: readonly PriceUnits[] = ["probability", "american"];
@@ -86,7 +123,11 @@ const checkUnits = (u: unknown): PriceUnits | undefined => {
   throw new InputError(`units is "probability" or "american", not ${JSON.stringify(u)}`);
 };
 const percent = (p: number): string => `${Number((p * 100).toFixed(1))}%`;
-const american = (v: number): string => `${v > 0 ? "+" : ""}${Math.round(v)}`;
+/** American odds as text: rounded half away from zero, signed, and "0" (never "+0" or "-0") for a zero. */
+const american = (v: number): string => {
+  const r = Math.sign(v) * Math.round(Math.abs(v));
+  return r === 0 ? "0" : `${r > 0 ? "+" : ""}${r}`;
+};
 
 /** A Lightweight Charts custom price format. */
 export interface LwcPriceFormat {

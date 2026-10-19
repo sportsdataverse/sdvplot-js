@@ -21,7 +21,7 @@
   optional peer it never imports or redistributes. Lightweight Charts' licence asks every page that shows one of its
   charts for TradingView's attribution notice (below, verbatim from its NOTICE file) and a link to
   https://www.tradingview.com/. `withAttribution` keeps the library's attribution logo, that link, on by default;
-  `TRADINGVIEW_NOTICE` holds the notice text for the page to show.
+  `attributionNotice` puts the notice (`TRADINGVIEW_NOTICE`) on the page.
 
 ## d3-hexbin
 

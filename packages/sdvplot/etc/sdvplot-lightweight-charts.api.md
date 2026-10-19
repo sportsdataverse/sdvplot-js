@@ -5,6 +5,9 @@
 ```ts
 
 // @public
+export function attributionNotice(container: HTMLElement): HTMLElement;
+
+// @public
 export interface AttributionOptions {
     attributedElsewhere?: boolean;
 }

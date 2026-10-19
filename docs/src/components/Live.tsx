@@ -181,21 +181,9 @@ export default function Live(p: LiveProps): ReactElement {
       </div>
     );
   // StatsBomb's open-data terms: published analysis of their data carries the StatsBomb logo with the credit. A card is
-  // already a link, so its logo is not one. Lightweight Charts' licence (Apache-2.0): a page showing one of its charts
-  // carries TradingView's attribution notice, verbatim from its NOTICE file (TRADINGVIEW_NOTICE in
-  // sdvplot/lightweight-charts; examples/test/attribution.test.ts holds the two equal), and a link to tradingview.com.
+  // already a link, so its logo is not one.
   const credit = (linked: boolean): ReactElement | null => {
-    const tags = (p.tags ?? "").split(" ");
-    if (tags.includes("lightweight-charts")) {
-      const tv = "https://www.tradingview.com/";
-      return (
-        <span className="sdv-credit sdv-credit-notice">
-          <span>TradingView Lightweight Charts™</span>
-          <span>Copyright (с) 2025 TradingView, Inc. {linked ? <a href={tv}>{tv}</a> : tv}</span>
-        </span>
-      );
-    }
-    if (!tags.includes("statsbomb")) return null;
+    if (!(p.tags ?? "").split(" ").includes("statsbomb")) return null;
     const logo = <img src={statsbombLogo} alt="StatsBomb" width={100} height={16} />;
     return (
       <span className="sdv-credit">
@@ -220,6 +208,7 @@ export default function Live(p: LiveProps): ReactElement {
         <p className="sdv-live-note">
           With JavaScript on, {VALUE_LIBS[p.id.split("/")[1] ?? ""] ?? "plotly.js"} draws this figure here.
         // a Plotly figure or Lightweight Charts options: the static copy is its data, not a picture of it (after a
+        // a Plotly figure or a Lightweight Charts chart: the static copy is its data, not a picture of it (after a
         // failure, the alert says why). The library is the example's folder (sdvplot/<lib>/...).
         <p className="sdv-live-note">
           With JavaScript on, {LIB_NAMES[p.id.split("/")[1] ?? ""] ?? "plotly.js"} draws this figure here.

@@ -26,13 +26,21 @@ two things:
   the library draws TradingView's logo on the chart, a link to tradingview.com. It is on by default. The options are
   copied, never changed. If your options turn the logo off (`layout: { attributionLogo: false }`), `withAttribution`
   turns it back on and warns once.
-- **The notice.** `TRADINGVIEW_NOTICE` is the attribution notice, verbatim from the library's NOTICE file at 5.2.1.
-  Show it on the page; this site shows it under every Lightweight Charts figure:
+- **The notice.** `attributionNotice(container)` puts it on the page: a `<p>` appended to `container` (give it the
+  element around the chart, `el.parentElement ?? el`), holding `TRADINGVIEW_NOTICE`, the attribution notice verbatim
+  from the library's NOTICE file at 5.2.1, with its URL as a link:
 
   ```text
   TradingView Lightweight Charts™
   Copyright (с) 2025 TradingView, Inc. https://www.tradingview.com/
   ```
+
+  It returns that `<p>`. Called again on the same container it returns the same notice and adds none, so a chart
+  that is redrawn keeps one notice. On a server (no `document`) it does nothing.
+
+Both calls, around `createChart` (a browser module):
+
+<Snippet file="lightweight-charts/chart.ts" />
 
 The only way to turn the logo off is explicit: `withAttribution(chartOptions, { attributedElsewhere: true })`. Pass it
 only when your page already shows the notice and a link to https://www.tradingview.com/ somewhere else (a footer, an
@@ -48,7 +56,8 @@ same.
 price scale, the crosshair label and the last-value label all read:
 
 - `"probability"`: a fraction in [0, 1], read as a percentage ("58.5%", "100%");
-- `"american"`: American odds, read with their sign ("+150", "-120").
+- `"american"`: American odds, read with their sign ("+150", "-120"), rounded to whole points half away from zero
+  (150.5 reads "+151", -150.5 reads "-151"); a price that rounds to zero reads "0", never "+0" or "-0".
 
 Without `units`, Lightweight Charts formats the numbers itself. A team that does not resolve takes `fallback` (default
 `#808080`) and warns.

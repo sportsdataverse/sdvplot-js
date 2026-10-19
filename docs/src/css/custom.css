@@ -81,12 +81,6 @@
 .sdv-credit img {
   display: block;
 }
-/* a licence notice: its lines as written */
-.sdv-credit-notice {
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0;
-}
 
 /* ---- the home page's "What's covered" (src/components/Coverage.tsx) ---- */
 .sdv-sr-only {

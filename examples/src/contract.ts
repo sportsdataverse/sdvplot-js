@@ -136,19 +136,19 @@ export type BrowserSpec =
         readonly fov: number;
       };
   /**
-   * `chart` builds fresh createChart options per chart; each series is a LineSeries: its options, its data (`time` in
-   * seconds, rising) and the primitives attached to it. The page shows TradingView's attribution notice under the chart
-   * (Lightweight Charts' licence): `<Live>` adds it for an example tagged `lightweight-charts`.
+   * `mount` is the example's own Lightweight Charts code: it draws into `el` with the module it is handed (the drawer
+   * imports it, so the example never does) and returns what it built, the chart, its series and each series'
+   * primitives (the render test reads them). It also puts TradingView's attribution notice on the page.
    */
   | {
       readonly lib: "lightweight-charts";
-      readonly chart: () => object;
-      readonly series: readonly {
-        readonly options: () => object;
-        readonly data: readonly { readonly time: number; readonly value: number }[];
-        readonly primitives?: () => readonly object[];
-      }[];
-      readonly width: number;
-      readonly height: number;
+      readonly mount: (
+        lwc: typeof import("lightweight-charts"),
+        el: HTMLElement,
+      ) => {
+        readonly chart: { remove(): void };
+        readonly series: readonly object[];
+        readonly primitives: readonly (readonly object[])[];
+      };
       readonly label: string;
     };

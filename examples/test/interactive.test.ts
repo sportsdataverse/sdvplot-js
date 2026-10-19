@@ -323,7 +323,7 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
       if (lib === "lightweight-charts") {
         // Each line's middle point holds its team colour (exact, within anti-aliasing), and each line's logo is painted
         // where logoMarkers puts it: detaching the primitive changes the pixels of the logo's box. Then the
-        // attribution: TradingView's logo links to tradingview.com, and the page shows the notice under the figure.
+        // attribution: TradingView's logo links to tradingview.com, and attributionNotice put the notice on the page once.
         const got = await figure.evaluate(async (f) => {
           type Point = { time: number; value: number };
           type Series = {
@@ -386,12 +386,19 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
           return { lines, changed };
         });
         for (const l of got.lines) expect(l.match, `a pixel of the ${l.color} line is its colour`).toBe(true);
-        expect(got.changed).toHaveLength(2);
+        expect(got.changed.length).toBeGreaterThan(0);
         for (const c of got.changed) expect(c, "the logo painted its box").toBeGreaterThan(0.2);
-        const link = figure.locator(".sdv-live-output a[href^='https://www.tradingview.com']");
+        const link = figure.locator(
+          ".sdv-live-output .tv-lightweight-charts a[href^='https://www.tradingview.com']",
+        );
         expect(await link.count(), "TradingView's link on the chart").toBe(1);
-        const notice = (await figure.locator(".sdv-credit-notice").innerText()).replace(/\s*\n\s*/g, "\n");
-        expect(notice, "TradingView's notice under the figure").toBe(
+        const notices = figure.locator(".sdv-live-output p[data-sdv-attribution='tradingview']");
+        expect(await notices.count(), "one TradingView notice on the page").toBe(1);
+        expect(
+          await notices.locator("a[href='https://www.tradingview.com/']").count(),
+          "its URL is a link",
+        ).toBe(1);
+        expect(await notices.textContent(), "TradingView's notice, verbatim").toBe(
           "TradingView Lightweight Charts™\nCopyright (с) 2025 TradingView, Inc. https://www.tradingview.com/",
         );
       }

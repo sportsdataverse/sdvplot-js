@@ -1,12 +1,25 @@
 import { SUPER_BOWL_LIX_WP } from "@sportsdataverse/examples/data";
 import { loadLeague } from "@sportsdataverse/sdvplot";
-import { logoMarkers, teamSeriesOptions, withAttribution } from "@sportsdataverse/sdvplot/lightweight-charts";
+import {
+  attributionNotice,
+  logoMarkers,
+  teamSeriesOptions,
+  withAttribution,
+} from "@sportsdataverse/sdvplot/lightweight-charts";
+import type { Time, UTCTimestamp } from "lightweight-charts";
 import type { ExampleMeta } from "../../contract.js";
 
 export const meta = {
   title:
     "Lightweight Charts: Super Bowl LIX win probability in team colours, read as percentages, a logo at the end of each line",
-  tags: ["lightweight-charts", "teamSeriesOptions", "logoMarkers", "withAttribution", "nfl"],
+  tags: [
+    "lightweight-charts",
+    "teamSeriesOptions",
+    "logoMarkers",
+    "withAttribution",
+    "attributionNotice",
+    "nfl",
+  ],
 } satisfies ExampleMeta;
 
 await loadLeague("nfl");
@@ -35,23 +48,37 @@ const end = (team: string, points: readonly { time: number; value: number }[]) =
   });
 };
 
-// In the browser: createChart(element, chart()), then one addSeries(LineSeries, options()) per line, its setData, and
-// attachPrimitive for its logo, as this page does. withAttribution keeps TradingView's attribution logo (its link) on
-// the chart, and the page shows TradingView's notice (TRADINGVIEW_NOTICE) under it, as Lightweight Charts' licence asks.
+// In the browser this page calls mount with lightweight-charts' module and the chart's element.
 export const browser = {
   lib: "lightweight-charts",
-  chart: () =>
-    withAttribution({
-      rightPriceScale: { scaleMargins: { top: 0.1, bottom: 0.1 } },
-      timeScale: { rightOffset: 12, tickMarkFormatter: (t: number) => `${Math.round(t / 60)}'` },
-      localization: { timeFormatter: (t: number) => `${(t / 60).toFixed(1)} minutes played` },
-    }),
-  series: [
-    { options: () => ({ ...line("PHI"), title: "PHI" }), data: phi, primitives: () => [end("PHI", phi)] },
-    { options: () => ({ ...line("KC"), title: "KC" }), data: kc, primitives: () => [end("KC", kc)] },
-  ],
-  width: 640,
-  height: 320,
+  mount: ({ createChart, LineSeries }: typeof import("lightweight-charts"), el: HTMLElement) => {
+    // TradingView's logo (the link its licence asks for) stays on the chart
+    const chart = createChart(
+      el,
+      withAttribution({
+        width: 640,
+        height: 320,
+        rightPriceScale: { scaleMargins: { top: 0.1, bottom: 0.1 } },
+        timeScale: { rightOffset: 12, tickMarkFormatter: (t: Time) => `${Math.round(Number(t) / 60)}'` },
+        localization: { timeFormatter: (t: Time) => `${(Number(t) / 60).toFixed(1)} minutes played` },
+      }),
+    );
+    const lines = [
+      ["PHI", phi],
+      ["KC", kc],
+    ] as const;
+    const primitives = lines.map(([team, points]) => [end(team, points)]);
+    const series = lines.map(([team, points], i) => {
+      const s = chart.addSeries(LineSeries, { ...line(team), title: team });
+      s.setData(points.map((p) => ({ time: p.time as UTCTimestamp, value: p.value })));
+      for (const p of primitives[i] ?? []) s.attachPrimitive(p);
+      return s;
+    });
+    chart.timeScale().fitContent();
+    // and TradingView's notice goes on the page, under the chart
+    attributionNotice(el.parentElement ?? el);
+    return { chart, series, primitives };
+  },
   label:
     "Super Bowl LIX win probability by minute, Philadelphia in Eagles green and Kansas City in Chiefs red, each line ending in its team's logo",
 } as const;
