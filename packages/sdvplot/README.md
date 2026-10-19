@@ -41,6 +41,11 @@ package >= 0.99 to draw; `<LogoBump>` loads `@nivo/bump`), `@observablehq/plot` 
 2.5.1 for `/svelte`, `@sportsdataverse/sporty` for `/deckgl` (draw its props with `@deck.gl/core` and
 `@deck.gl/layers` >= 9.4) and for `/three` (draw its buffers with `three` >= 0.186.1; `/react`'s `<Surface3D>` and
 `<Trajectory>` also need `@react-three/fiber` >= 9.8.1), and `@resvg/resvg-js` for `/export`'s `toPNG`.
+ESM only, Node >= 20.18.1. The core and the `bins`, `testing`, `plotly`, `vega`, `echarts` and `lightweight-charts`
+subpaths need no peer. The others use optional peers, which npm and pnpm do not install for you, so add the ones
+for the subpaths you import: `react` >= 18 for `/react`, `@observablehq/plot` >= 0.6.16 for `/plot`, `d3` >= 7 for
+`/d3` and `/interact`, `chart.js` >= 4.4 for `/chartjs` and `/chartjs/surface`, and `@resvg/resvg-js` for `/export`'s
+`toPNG`.
 
 `/plot`, `/d3`, `/shots` and `/chartjs/surface` also need `@sportsdataverse/sporty`, whether or not you draw a
 surface: they import it when they load, and fail to load without it. No other subpath imports sporty when it loads
@@ -138,6 +143,7 @@ The backgrounds default to `#ffffff` (light) and `#181a1b` (dark); pass `theme: 
 | `@sportsdataverse/sdvplot/deckgl` | `logoIconLayer` (IconLayer props: team logos at points), `passArcLayer` (ArcLayer props in team colours; with `background`, 3:1 contrast and distinct), `surfaceLayer` (PolygonLayer props: a sporty surface in its own cartesian coordinates) (never imports deck.gl; `@deck.gl/core` and `@deck.gl/layers` >= 9.4 are optional peers) |
 | `@sportsdataverse/sdvplot/cytoscape` | `passNetwork` (a passing network as Cytoscape elements and stylesheet: headshot or team-coloured initials nodes, directed edges as wide as their passes), `teamStylesheet` (team colours for nodes and edges; with `background`, 3:1 contrast and distinct) (never imports cytoscape; `cytoscape` >= 3.34.3 is an optional peer) |
 | `@sportsdataverse/sdvplot/three` | Plain mesh buffers in world units for Three.js: `surfaceMesh` (a sporty surface as one triangle mesh at z = 0), `trajectoryTube` (a team-coloured tube along a 3D path), `teamColorPalette`, `statcastPitchPath` (a Statcast pitch's flight); `/react` draws them with `<Surface3D>` and `<Trajectory>` (never imports three; `three` >= 0.186.1 and `@react-three/fiber` >= 9.8.1 are optional peers) |
+| `@sportsdataverse/sdvplot/lightweight-charts` | `withAttribution` (TradingView's attribution logo on by default; show `TRADINGVIEW_NOTICE` on the page), `teamSeriesOptions` (a line in team colours; prices read as probabilities or American odds), `logoMarkers` (a series primitive painting team logos at points) (no runtime dependency; draw with `lightweight-charts` >= 5.2.1, an optional peer, Apache-2.0 with an attribution notice) |
 
 ## **Observable Plot: Plot's own options, transforms and tips**
 

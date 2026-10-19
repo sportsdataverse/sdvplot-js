@@ -17,6 +17,11 @@
   (Copyright 2002 Cynthia Brewer, Mark Harrower, and The Pennsylvania State University, Apache License 2.0);
   `sizeCells` ports `quantile` from **d3-array** 3.2.4 (Copyright 2010-2023 Mike Bostock, ISC). The ISC permission
   notice and ColorBrewer's licence notice follow this list verbatim.
+- `@sportsdataverse/sdvplot/lightweight-charts` works with **TradingView Lightweight Charts™** (Apache License 2.0), an
+  optional peer it never imports or redistributes. Lightweight Charts' licence asks every page that shows one of its
+  charts for TradingView's attribution notice (below, verbatim from its NOTICE file) and a link to
+  https://www.tradingview.com/. `withAttribution` keeps the library's attribution logo, that link, on by default;
+  `TRADINGVIEW_NOTICE` holds the notice text for the page to show.
 
 ## d3-hexbin
 
@@ -91,4 +96,14 @@ Unless required by applicable law or agreed to in writing, software distributed
 under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.
+```
+
+## TradingView Lightweight Charts (Apache License 2.0)
+
+The `NOTICE` file of tradingview/lightweight-charts at tag v5.2.1
+(https://github.com/tradingview/lightweight-charts/blob/v5.2.1/NOTICE), verbatim:
+
+```text
+TradingView Lightweight Charts™
+Copyright (с) 2025 TradingView, Inc. https://www.tradingview.com/
 ```

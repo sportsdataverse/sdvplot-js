@@ -1,0 +1,5 @@
+---
+"@sportsdataverse/sdvplot": minor
+---
+
+New subpath `@sportsdataverse/sdvplot/lightweight-charts` for TradingView Lightweight Charts (a new optional peer, >= 5.2.1; never imported): `withAttribution` returns `createChart` options with TradingView's attribution logo on (the link its Apache-2.0 licence asks for; only the explicit `{ attributedElsewhere: true }` turns it off), and `TRADINGVIEW_NOTICE` is the licence's attribution notice, verbatim, for the page to show; `teamSeriesOptions` gives a line series its team's colour (with `background`, 3:1 contrast and distinct from the other teams on the chart) and reads its prices as probabilities ("58.5%") or American odds ("+150") on the price scale, crosshair and last-value line; `logoMarkers` is a series primitive painting team logos at points (a fraction of the pane tall; a team with no logo, or an image that fails to load, draws nothing and warns once; a probability that is not a fraction, or American odds under 100, are rejected). `drawnMarks` reads back what it drew.
