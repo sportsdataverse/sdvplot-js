@@ -1,0 +1,287 @@
+import { surface } from "@sportsdataverse/sporty";
+import { beforeEach, describe, expect, test, vi } from "vitest";
+import { contrast } from "../src/contrast.js";
+import {
+  type ArcRow,
+  type IconRow,
+  type SurfaceRow,
+  logoIconLayer,
+  passArcLayer,
+  surfaceLayer,
+} from "../src/deckgl.js";
+import { InputError } from "../src/errors.js";
+import { logoUrlSync, resetWarnings, resolveSync, setWarningHandler, teamColorsSync } from "../src/index.js";
+import { MIN_CONTRAST, MIN_DELTA_E, deltaE, teamPalette } from "../src/team-palette.js";
+import "./_fixtures.js"; // preloads every league
+
+beforeEach(() => resetWarnings()); // warn() dedupes per key per process; every test counts its own
+
+// Real rows: the first shots of game 7 of the 2024 Stanley Cup Final (NHL api-web play-by-play, the examples'
+// NHL_SHOTS) and France's first completed passes of the 2018 World Cup final (StatsBomb open data through SPADL, the
+// examples' WC2018_FINAL_FRANCE_PASSES; France is ESPN soccer team 478).
+const SHOTS = [
+  { event_id: 251, team: "EDM", x: 82, y: -3 },
+  { event_id: 55, team: "FLA", x: -81, y: 30 },
+  { event_id: 81, team: "EDM", x: 64, y: 4 },
+];
+const PASSES = [
+  {
+    action_id: 42,
+    team: "478",
+    start_x: 54.68750000000001,
+    start_y: 6.375,
+    end_x: 56.4375,
+    end_y: 1.2750000000000057,
+  },
+  { action_id: 46, team: "478", start_x: 22.3125, start_y: 9.775000000000006, end_x: 6.5625, end_y: 31.875 },
+];
+const ARC = {
+  x: "start_x",
+  y: "start_y",
+  xend: "end_x",
+  yend: "end_y",
+  team: "team",
+  league: "soccer",
+} as const;
+const FRANCE = { ...ARC, idSystem: "team_id" } as const;
+const rgba = (hex: string): number[] =>
+  [1, 3, 5, 7].map((i) => Number.parseInt(hex.slice(i, i + 2) || "ff", 16));
+const hex = ([r, g, b]: readonly number[]): string =>
+  `#${[r, g, b].map((v) => (v as number).toString(16).padStart(2, "0")).join("")}`;
+/** Calls an accessor prop on a row, as deck.gl does (a constant is returned as it is). */
+const call = (accessor: unknown, row: unknown): unknown =>
+  typeof accessor === "function" ? (accessor as (d: unknown) => unknown)(row) : accessor;
+const warnings = (fn: () => void): string[] => {
+  const spy = vi.fn();
+  setWarningHandler(spy);
+  try {
+    fn();
+  } finally {
+    setWarningHandler(null);
+  }
+  return spy.mock.calls.map((c) => String(c[0]));
+};
+
+describe("logoIconLayer", () => {
+  test("one icon per row at the row's (x, y), the team's logo by URL (deck.gl's auto-packed icons), centred", () => {
+    const p = logoIconLayer(SHOTS, { x: "x", y: "y", team: "team", league: "nhl" });
+    const data = p.data as IconRow[];
+    expect(data.map((d) => call(p.getPosition, d))).toEqual([
+      [82, -3],
+      [-81, 30],
+      [64, 4],
+    ]);
+    const edm = logoUrlSync("EDM", "nhl") as string;
+    const fla = logoUrlSync("FLA", "nhl") as string;
+    expect(data.map((d) => (call(p.getIcon, d) as { url: string }).url)).toEqual([edm, fla, edm]);
+    // the archive's EDM and FLA logos are 500 x 500: the atlas cell keeps that aspect, 128 px tall
+    expect(call(p.getIcon, data[0])).toEqual({ url: edm, width: 128, height: 128, anchorY: 64, mask: false });
+    expect(data.map((d) => d.team)).toEqual(resolveSync(["EDM", "FLA", "EDM"], "nhl"));
+    expect(data.map((d) => d.index)).toEqual([0, 1, 2]);
+    expect(p).toMatchObject({ id: "sdvplot-logos", getSize: 32, sizeUnits: "pixels", opacity: 1 });
+  });
+
+  test("size is the logo's height in px and alpha the layer's opacity; a fractional size or bad alpha throws", () => {
+    const p = logoIconLayer(SHOTS, {
+      x: "x",
+      y: "y",
+      team: "team",
+      league: "nhl",
+      size: 48,
+      alpha: 0.5,
+      id: "shots",
+    });
+    expect(p).toMatchObject({ id: "shots", getSize: 48, opacity: 0.5 });
+    for (const size of [0.1, 0, Number.NaN])
+      expect(() => logoIconLayer(SHOTS, { x: "x", y: "y", team: "team", league: "nhl", size })).toThrow(
+        InputError,
+      );
+    expect(() => logoIconLayer(SHOTS, { x: "x", y: "y", team: "team", league: "nhl", alpha: 2 })).toThrow(
+      InputError,
+    );
+  });
+
+  test("a team with no logo is left out (no broken image) with one warning, as the other adapters do", () => {
+    const rows = [{ team: "XXX", x: 1, y: 1 }, ...SHOTS];
+    let p: ReturnType<typeof logoIconLayer> | undefined;
+    const w = warnings(() => {
+      p = logoIconLayer(rows, { x: "x", y: "y", team: "team", league: "nhl" });
+    });
+    expect(w).toHaveLength(1);
+    expect((p?.data as IconRow[]).map((d) => d.index)).toEqual([1, 2, 3]);
+  });
+
+  test("a column that is not in the rows throws", () => {
+    expect(() => logoIconLayer(SHOTS, { x: "xc", y: "y", team: "team", league: "nhl" })).toThrow(InputError);
+  });
+});
+
+describe("passArcLayer", () => {
+  test("one arc per row from (x, y) to (xend, yend), the team's primary colour at the source, its secondary at the target", () => {
+    const p = passArcLayer(PASSES, FRANCE);
+    const data = p.data as ArcRow[];
+    expect(data.map((d) => [call(p.getSourcePosition, d), call(p.getTargetPosition, d)])).toEqual(
+      PASSES.map((r) => [
+        [r.start_x, r.start_y],
+        [r.end_x, r.end_y],
+      ]),
+    );
+    const [primary] = teamColorsSync("soccer", ["478"], { idSystem: "team_id" });
+    const [secondary] = teamColorsSync("soccer", ["478"], { idSystem: "team_id", which: "secondary" });
+    for (const d of data) {
+      expect(call(p.getSourceColor, d)).toEqual(rgba(primary as string));
+      expect(call(p.getTargetColor, d)).toEqual(rgba(secondary as string));
+      expect(d.team).toBe("478");
+    }
+    expect(p).toMatchObject({ id: "sdvplot-arcs", getWidth: 2, widthUnits: "pixels", opacity: 1 });
+    expect("getTilt" in p).toBe(false);
+  });
+
+  test("which: secondary swaps the ends; tilt lays the arcs flat (90) and is checked", () => {
+    const p = passArcLayer(PASSES, { ...FRANCE, which: "secondary", tilt: 90, width: 3 });
+    const [d] = p.data as ArcRow[];
+    const [primary] = teamColorsSync("soccer", ["478"], { idSystem: "team_id" });
+    expect(call(p.getTargetColor, d)).toEqual(rgba(primary as string));
+    expect(p).toMatchObject({ getTilt: 90, getWidth: 3 });
+    expect(() => passArcLayer(PASSES, { ...FRANCE, tilt: 91 })).toThrow(InputError);
+    expect(() => passArcLayer(PASSES, { ...FRANCE, width: 0 })).toThrow(InputError);
+    expect(passArcLayer(PASSES, { ...FRANCE, height: 0.3 })).toMatchObject({ getHeight: 0.3 });
+    expect("getHeight" in passArcLayer(PASSES, FRANCE)).toBe(false);
+    expect(() => passArcLayer(PASSES, { ...FRANCE, height: -1 })).toThrow(InputError);
+  });
+
+  test("dark mode (Review Focus 4): with a background every colour reads at 3:1, through the shared team palette", () => {
+    const background = "#181a1b";
+    const p = passArcLayer(PASSES, { ...FRANCE, background });
+    const [d] = p.data as ArcRow[];
+    const source = hex(call(p.getSourceColor, d) as number[]);
+    const target = hex(call(p.getTargetColor, d) as number[]);
+    const [primary] = teamColorsSync("soccer", ["478"], { idSystem: "team_id" });
+    const [secondary] = teamColorsSync("soccer", ["478"], { idSystem: "team_id", which: "secondary" });
+    expect(contrast(primary as string, background)).toBeLessThan(MIN_CONTRAST); // France's navy on a dark chart
+    expect(source).toBe(teamPalette([primary as string], [secondary], background)[0]);
+    expect(target).toBe(teamPalette([secondary as string], [primary], background)[0]);
+    for (const c of [source, target]) expect(contrast(c, background)).toBeGreaterThanOrEqual(MIN_CONTRAST);
+  });
+
+  test("teams keep one colour each, in order of first appearance, and stay distinct (the Lakers and the Warriors)", () => {
+    const rows = [
+      { team: "GS", x: 0, y: 0, xe: 1, ye: 1 },
+      { team: "LAL", x: 0, y: 0, xe: 2, ye: 2 },
+      { team: "GS", x: 0, y: 0, xe: 3, ye: 3 },
+    ];
+    const o = {
+      x: "x",
+      y: "y",
+      xend: "xe",
+      yend: "ye",
+      team: "team",
+      league: "nba",
+      background: "#181a1b",
+    } as const;
+    const p = passArcLayer(rows, o);
+    const src = (p.data as ArcRow[]).map((d) => hex(call(p.getSourceColor, d) as number[]));
+    expect(src[0]).toBe(src[2]);
+    expect(deltaE(src[0] as string, src[1] as string)).toBeGreaterThanOrEqual(MIN_DELTA_E);
+    expect((p.data as ArcRow[]).map((d) => d.team)).toEqual(resolveSync(["GS", "LAL", "GS"], "nba"));
+  });
+
+  test("an unknown team takes the fallback grey; a row with a missing end is left out with one warning", () => {
+    const rows = [
+      { team: "XXX", start_x: 1, start_y: 1, end_x: 2, end_y: 2 },
+      { team: "478", start_x: 1, start_y: null, end_x: 2, end_y: 2 },
+      ...PASSES,
+    ];
+    let p: ReturnType<typeof passArcLayer> | undefined;
+    const w = warnings(() => {
+      p = passArcLayer(rows, FRANCE);
+    });
+    expect(w).toHaveLength(2); // the resolver's, and the missing end's
+    const data = p?.data as ArcRow[];
+    expect(data.map((d) => d.index)).toEqual([0, 2, 3]);
+    expect(call(p?.getSourceColor, data[0])).toEqual(rgba("#808080"));
+    expect(data[0]?.team).toBe("XXX");
+  });
+});
+
+test("passArcLayer: an unresolved team is named by its value as text, as sdvplot.pydeck names it", () => {
+  const rows = [
+    { team: null, start_x: 1, start_y: 1, end_x: 2, end_y: 2 },
+    { team: 123456, start_x: 1, start_y: 1, end_x: 2, end_y: 2 },
+  ];
+  let p: ReturnType<typeof passArcLayer> | undefined;
+  warnings(() => {
+    p = passArcLayer(rows, FRANCE);
+  });
+  expect((p?.data as ArcRow[]).map((d) => d.team)).toEqual(["", "123456"]);
+  expect((p?.data as ArcRow[]).map((d) => call(p?.getSourceColor, d))).toEqual([
+    rgba("#808080"),
+    rgba("#808080"),
+  ]);
+});
+
+describe("surfaceLayer", () => {
+  test("sporty's rink as PolygonLayer props in the rink's own frame (deck.gl's cartesian coordinates), feet", () => {
+    const p = surfaceLayer("hockey", "nhl");
+    const scene = surface("hockey", "nhl");
+    const polys = scene.features.filter((f) => f.kind === "polygon");
+    const data = p.data as SurfaceRow[];
+    // one row per closed loop, in sporty's order: the same features, their points all kept
+    const names = data.map((d) => d.name).filter((n, i, a) => n !== a[i - 1]);
+    expect(names).toEqual(polys.map((f) => f.name).filter((n, i, a) => n !== a[i - 1]));
+    expect(data.reduce((n, d) => n + d.polygon.length, 0)).toBe(
+      polys.reduce((n, f) => n + f.points.length, 0),
+    );
+    expect(call(p.getPolygon, data[0])).toEqual(polys[0]?.points);
+    expect(call(p.getFillColor, data[0])).toEqual(rgba(polys[0]?.fill as string));
+    // the goal frame fill is translucent (#a5acaf4d): its alpha survives
+    const fill = data.find((d) => d.name === "goal_frame_fill");
+    expect(call(p.getFillColor, fill)).toEqual([165, 172, 175, 77]);
+    expect(p).toMatchObject({
+      id: "sdvplot-surface",
+      coordinateSystem: "cartesian",
+      filled: true,
+      stroked: false,
+    });
+  });
+
+  test("a faceoff circle's two half rings, one path in sporty, are two loops that each close: deck.gl fills each as drawn", () => {
+    const scene = surface("hockey", "nhl");
+    const circles = scene.features.filter((f) => f.kind === "polygon" && f.name === "odzone_faceoff_circle");
+    const rows = (surfaceLayer("hockey", "nhl").data as SurfaceRow[]).filter(
+      (d) => d.name === "odzone_faceoff_circle",
+    );
+    expect(rows).toHaveLength(2 * circles.length);
+    for (const r of rows) expect(r.polygon.at(-1)).toEqual(r.polygon[0]);
+    // each half lies on one side of its circle's centre, as sporty draws it (a half ring, not a ring and a hole)
+    const [left, right] = rows.slice(0, 2).map((r) => r.polygon.map((pt) => pt[0]));
+    expect(Math.max(...(left as number[]))).toBeLessThanOrEqual(Math.min(...(right as number[])) + 1e-9);
+  });
+
+  test("sporty's own options pass through (colour updates, pitch size); a hidden feature is left out", () => {
+    const p = surfaceLayer("hockey", "nhl", {
+      colorUpdates: { boards: "#ff4c00", referee_crease: "#00000000" },
+    });
+    const data = p.data as SurfaceRow[];
+    expect(
+      call(
+        p.getFillColor,
+        data.find((d) => d.name === "boards"),
+      ),
+    ).toEqual(rgba("#ff4c00"));
+    expect(data.some((d) => d.name === "referee_crease")).toBe(false);
+    const pitch = surfaceLayer("soccer", "fifa", { updates: { pitch_length: 105, pitch_width: 68 } });
+    const xs = (pitch.data as SurfaceRow[]).flatMap((d) => d.polygon.map((pt) => pt[0]));
+    expect(Math.max(...xs)).toBeCloseTo(55.2, 6); // half of 105 m, plus sporty's apron
+  });
+
+  test("text features (a football field's yard numbers) and hidden ones are left out: the layer holds polygons only", () => {
+    const scene = surface("football", "nfl");
+    expect(scene.features.some((f) => f.kind === "text")).toBe(true);
+    // sporty hides 46 of the field's polygons by default (yardage marker boxes, red zone borders): fill alpha 00
+    const shown = scene.features.filter((f) => f.kind === "polygon" && !/^#[0-9a-f]{6}00$/i.test(f.fill));
+    expect(shown.length).toBeLessThan(scene.features.filter((f) => f.kind === "polygon").length);
+    const data = surfaceLayer("football", "nfl").data as SurfaceRow[];
+    expect(data.map((d) => d.name)).toEqual(shown.map((f) => f.name));
+  });
+});

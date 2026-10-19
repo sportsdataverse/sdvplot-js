@@ -18,7 +18,8 @@
     "recharts",
     "uplot",
     "nivo",
-    "victory"
+    "victory",
+    "deck.gl"
   ],
   "homepage": "https://plot.sportsdataverse.org",
   "bugs": "https://github.com/sportsdataverse/sdvplot-js/issues",
@@ -104,6 +105,10 @@
     "./victory": {
       "types": "./dist/victory.d.ts",
       "import": "./dist/victory.js"
+    },
+    "./deckgl": {
+      "types": "./dist/deckgl.d.ts",
+      "import": "./dist/deckgl.js"
     },
     "./package.json": "./package.json"
   },
