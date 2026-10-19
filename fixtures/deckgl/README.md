@@ -1,7 +1,8 @@
 # deck.gl / pydeck shared fixture
 
-`shared.json` is written by `pnpm oracle:deckgl` (`tools/oracle/deckgl.ts`; build sporty first,
-`pnpm --filter @sportsdataverse/sporty build`) from this repo's `./deckgl` adapter. Never hand-edit it. The Python
+`shared.json` is written by `pnpm oracle:deckgl` (`tools/oracle/deckgl.ts`, which runs `tools/oracle/deckgl-fixture.ts`;
+build sporty first, `pnpm --filter @sportsdataverse/sporty build`) from this repo's `./deckgl` adapter. Never hand-edit
+it: `deckgl-shared.test.ts` rebuilds it from the sources on every run and fails if the bytes differ. The Python
 package [sdvplot](https://github.com/sportsdataverse/sdvplot) commits the same bytes as `tests/fixtures/deckgl_shared.json`,
 and both repos' tests pin its sha256 (`packages/sdvplot/test/deckgl-shared.test.ts` here, `tests/test_pydeck_shared.py`
 there): `sdvplot.pydeck` must rebuild every value in it, so a test failure there is a difference between the two
@@ -15,7 +16,9 @@ languages. After regenerating, copy the file into sdvplot and update the digest 
   and Florida logos (the Python test serves them as its manifest).
 - **Layers:** six `logoIconLayer` / `passArcLayer` cases, each with its options, its props (an accessor written as the
   name of the row field it returns) and its data, exactly.
-- **Surfaces:** the NHL rink and a 105 x 68 m FIFA pitch: the props, every fill colour, and the extent. The vertices
+- **Surfaces:** the NHL rink and a 105 x 68 m FIFA pitch: the props, every fill colour, the extent, and the rows per
+  looped feature (`loops`: each faceoff circle, spot ring and pair of faceoff lines is two closed loops in one path, so
+  the rink has 8, 16 and 16 rows of them; a regression in the loop split fails both languages). The vertices
   are not shared: sporty and sportypy sample arcs differently. The rink has no `extent_y`: sportypy 1.0 sets the
   penalty boxes 0.4167 ft nearer centre ice than sporty does, so the two rinks' lowest points differ.
 - **Palettes:** the shared team palette (`src/team-palette.ts`, ported to Python as `sdvplot._team_palette`) on every

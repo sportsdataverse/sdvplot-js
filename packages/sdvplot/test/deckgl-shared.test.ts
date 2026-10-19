@@ -4,6 +4,7 @@
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { describe, expect, test, vi } from "vitest";
+import { deckglSharedFixture } from "../../../tools/oracle/deckgl-fixture.js";
 import { logoIconLayer, passArcLayer, surfaceLayer } from "../src/deckgl.js";
 import { setWarningHandler } from "../src/index.js";
 import { teamPalette } from "../src/team-palette.js";
@@ -12,7 +13,7 @@ import "./_fixtures.js"; // preloads every league
 const PATH = new URL("../../../fixtures/deckgl/shared.json", import.meta.url);
 const BYTES = readFileSync(PATH);
 /** The same digest is pinned in sdvplot's tests/test_pydeck_shared.py: the two copies are one file. */
-const SHA256 = "acb197164795e8663ccd8e139ca2e847a8f80f5549c0b30aefe18b71ca89ec08";
+const SHA256 = "f211c844eed0e239e2ae8d7bab93c70a118eb0ae77667237d5d39c8832856d14";
 
 type Props = Record<string, unknown> & { data: Record<string, unknown>[] };
 interface LayerCase {
@@ -32,6 +33,7 @@ interface SurfaceCase {
   fills: number[][];
   extent_x: [number, number];
   extent_y: [number, number] | null;
+  loops: Record<string, number>;
 }
 interface PaletteCase {
   league: string;
@@ -70,6 +72,10 @@ const extent = (data: { polygon: (readonly [number, number])[] }[], k: 0 | 1): [
 };
 const sortRgba = (c: number[][]): number[][] => [...c].sort((a, b) => a.join().localeCompare(b.join()));
 
+test("the oracle rebuilds the committed fixture byte for byte: it has not drifted from the adapter", async () => {
+  expect(await deckglSharedFixture()).toBe(BYTES.toString("utf8"));
+});
+
 test("the fixture is the file sdvplot (Python) commits, byte for byte, and was written without a warning", () => {
   expect(createHash("sha256").update(BYTES).digest("hex")).toBe(SHA256);
   expect(FIXTURE.warnings).toEqual([]);
@@ -103,6 +109,12 @@ describe.each(FIXTURE.surfaces.map((s) => [s.name, s] as const))("surface %s", (
     ).toEqual(sortRgba(s.fills));
     expect(extent(built.data, 0)).toEqual(s.extent_x);
     if (s.extent_y !== null) expect(extent(built.data, 1)).toEqual(s.extent_y);
+    // rows per looped feature: a faceoff circle's two half rings are two rows (the loop split)
+    for (const [name, n] of Object.entries(s.loops))
+      expect(
+        built.data.filter((d) => (d as unknown as { name: string }).name === name),
+        name,
+      ).toHaveLength(n);
   });
 });
 

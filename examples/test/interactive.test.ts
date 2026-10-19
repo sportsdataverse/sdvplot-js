@@ -95,17 +95,56 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
         expect(painted, "the canvas is painted").toBe(true);
       }
       // deck.gl draws with WebGL (its drawing buffer is kept, deck.gl's default): copy the canvas onto a 2D one to read it
+      // deck.gl draws with WebGL. Sample where a mark is known to be: project the first marks (a logo's centre, an
+      // arc's start) to the screen, pick there (deck.gl's own hit test: the mark layer drew at that point), and read
+      // the canvas around it (its drawing buffer is kept, deck.gl's default): a pixel there must differ from the
+      // surface's fill under it, so the mark is visible, not only drawn.
       if (lib === "deckgl") {
-        const painted = await figure.locator("canvas").evaluate(async (c: HTMLCanvasElement) => {
-          await new Promise((r) => setTimeout(r, 1000)); // a frame after the last icon lands
+        const marks = await figure.locator('.sdv-live-output [role="figure"]').evaluate(async (el) => {
+          type Picked = { layer: { id: string }; object?: { fillColor?: number[] } };
+          type Deckish = {
+            props: {
+              layers: { id: string; isLoaded: boolean; props: { data: Record<string, unknown>[] } }[];
+            };
+            getViewports: () => { project: (p: number[]) => number[] }[];
+            pickMultipleObjects: (o: { x: number; y: number; radius: number; depth: number }) => Picked[];
+            redraw: (reason: string) => void;
+          };
+          const deck = (el as HTMLElement & { sdvDeck?: Deckish }).sdvDeck;
+          if (deck === undefined) return "no deck on the figure";
+          const frame = () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+          for (let t = 0; t < 100 && !deck.props.layers.every((l) => l.isLoaded); t++) await frame(); // the logos
+          deck.redraw("render test");
+          await frame();
+          const [surface, layer] = deck.props.layers;
+          const canvas = el.querySelector("canvas") as HTMLCanvasElement;
+          const k = canvas.width / canvas.clientWidth; // device pixels per CSS pixel
           const copy = document.createElement("canvas");
-          copy.width = c.width;
-          copy.height = c.height;
-          const ctx = copy.getContext("2d");
-          ctx?.drawImage(c, 0, 0);
-          return ctx?.getImageData(0, 0, c.width, c.height).data.some((v, i) => i % 4 === 3 && v > 0);
+          [copy.width, copy.height] = [canvas.width, canvas.height];
+          const ctx = copy.getContext("2d", { willReadFrequently: true }) as CanvasRenderingContext2D;
+          ctx.drawImage(canvas, 0, 0);
+          const out: string[] = [];
+          for (const d of (layer?.props.data ?? []).slice(0, 5)) {
+            const at = (d.position ?? d.source) as number[];
+            const [x, y] = deck.getViewports()[0]?.project(at) ?? [Number.NaN, Number.NaN];
+            const picked = deck.pickMultipleObjects({ x: x as number, y: y as number, radius: 2, depth: 20 });
+            if (!picked.some((p) => p.layer.id === layer?.id)) out.push(`${at}: no ${layer?.id} picked`);
+            const fill = picked.find((p) => p.layer.id === surface?.id)?.object?.fillColor ?? [0, 0, 0, 0];
+            const px = ctx.getImageData(
+              Math.round((x as number) * k) - 3,
+              Math.round((y as number) * k) - 3,
+              7,
+              7,
+            ).data;
+            let differs = false;
+            for (let i = 0; i < px.length; i += 4)
+              if ([0, 1, 2].some((c) => Math.abs((px[i + c] as number) - (fill[c] as number)) > 40))
+                differs = true;
+            if (!differs) out.push(`${at}: nothing but the surface's ${fill} drawn there`);
+          }
+          return (layer?.props.data.length ?? 0) > 0 ? out.join("; ") : "no marks";
         });
-        expect(painted, "the canvas is painted").toBe(true);
+        expect(marks, "each sampled mark is picked and visible where it was placed").toBe("");
       }
       // ECharts draws the server's SVG, tag for tag: init() alone already leaves an <svg>, and a series that drew nothing
       // would still leave its axes

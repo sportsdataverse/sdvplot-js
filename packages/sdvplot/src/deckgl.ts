@@ -139,7 +139,11 @@ export interface PassArcOptions {
   /**
    * The background the arcs are drawn on. Given, each end's colour keeps 3:1 contrast against it (dark mode) and
    * stays distinct (CIE76 ΔE of 20 or more) from every other team's colour at that end, through the shared team
-   * palette, as `teamColorPalette` does in the other adapters.
+   * palette, as `teamColorPalette` does in the other adapters. Caveat: a colour that does not read gives way to the
+   * team's other colour, so when only one of a team's two colours reads on the background, both ends take it and the
+   * arcs no longer show their direction (France's navy and mint on a dark pitch are both mint). Pick a background on
+   * which both colours read (France's both read on a mid-tone green such as `#4a7f3a`), or check that
+   * `sourceColor` and `targetColor` differ.
    */
   background?: string;
   /** The colour of a team that does not resolve, or has no colour. Default "#808080". */
@@ -233,29 +237,26 @@ const label = (t: unknown): string =>
 
 /**
  * One colour per distinct team at one end of the arcs (`ids[j]` null for a team that did not resolve): the teams'
- * `which` colours, or the shared palette of them on `background`.
+ * `which` colours, or the shared palette of them on `background`. A team that did not resolve takes the fallback and
+ * stays out of the palette, so it never moves a real team's colour (and no warning names it).
  */
 function endColors(ids: readonly (string | null)[], o: PassArcOptions, which: Which): string[] {
   const fallback = hex6(o.fallback ?? "#808080");
   const co = { idSystem: "team_id" as const, ...(o.season === undefined ? {} : { season: o.season }) };
   const known = ids.filter((id): id is string => id !== null);
-  const pick = (w: Which): (string | null)[] => {
-    const got = colorList(o.league, known, { ...co, which: w });
-    let k = 0;
-    return ids.map((id) => (id === null ? null : (got[k++] ?? null)));
-  };
-  const main = pick(which);
-  const other = pick(which === "primary" ? "secondary" : "primary");
+  const main = colorList(o.league, known, { ...co, which });
+  const other = colorList(o.league, known, { ...co, which: which === "primary" ? "secondary" : "primary" });
   // a team with no `which` colour (often no secondary) takes its other colour, then the fallback
-  const colors = main.map((c, i) => hex6(c ?? other[i] ?? fallback, { dropAlpha: true }));
-  if (o.background === undefined) return colors;
-  return teamPalette(colors, other, hex6(o.background), ids.map(String));
+  let colors = main.map((c, i) => hex6(c ?? other[i] ?? fallback, { dropAlpha: true }));
+  if (o.background !== undefined) colors = teamPalette(colors, other, hex6(o.background), known);
+  let k = 0;
+  return ids.map((id) => (id === null ? fallback : (colors[k++] as string)));
 }
 
 /**
  * deck.gl `ArcLayer` props: one arc per row from (x, y) to (xend, yend), in the team's colours: its primary colour at
- * the source and its secondary at the target (`which: "secondary"` swaps them), so each arc shows its direction. Each
- * team keeps one colour per end, the teams taken in the order they first appear. With `background`, every colour keeps
+ * the source and its secondary at the target (`which: "secondary"` swaps them), so the two ends tell the direction
+ * apart where the two colours differ (see `background`). Each team keeps one colour per end, the teams taken in the order they first appear. With `background`, every colour keeps
  * 3:1 contrast against it and stays distinct from the other teams' (the shared team palette). A team that does not
  * resolve takes `fallback`; a row with a missing coordinate is left out with one warning.
  *

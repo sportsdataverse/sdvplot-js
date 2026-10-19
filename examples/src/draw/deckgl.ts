@@ -18,7 +18,8 @@ const draw: Draw<"deckgl"> = async (el, s) => {
   const [x0, y0, x1, y1] = s.bounds;
   const layers = s.layers().map(({ layer, props }) => {
     const Layer = LAYERS[layer] as new (p: object) => InstanceType<(typeof LAYERS)[typeof layer]>;
-    return new Layer({ ...props, coordinateSystem: "cartesian" });
+    // pickable: the render test picks what deck.gl drew under a mark (no handler here, so nothing on the page reacts)
+    return new Layer({ ...props, coordinateSystem: "cartesian", pickable: true });
   });
   const deck = new Deck({
     parent: box,
@@ -32,6 +33,8 @@ const draw: Draw<"deckgl"> = async (el, s) => {
     controller: true,
     layers,
   });
+  // the render test reads the deck from its box, to project a mark and sample what is drawn there
+  (box as HTMLElement & { sdvDeck?: unknown }).sdvDeck = deck;
   return () => {
     deck.finalize();
     box.remove();

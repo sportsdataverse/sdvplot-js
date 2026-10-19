@@ -204,6 +204,40 @@ describe("passArcLayer", () => {
   });
 });
 
+test("passArcLayer: on a background where only one of a team's colours reads, both ends take it; where both read, they differ", () => {
+  const ends = (background: string) => {
+    const [d] = passArcLayer(PASSES, { ...FRANCE, background }).data as ArcRow[];
+    return [hex(d?.sourceColor ?? []), hex(d?.targetColor ?? [])];
+  };
+  // sporty's default grass: France's navy is under 3:1, so the source end takes the mint too (the documented caveat)
+  const [s1, t1] = ends("#195f0c");
+  expect(s1).toBe(t1);
+  // the france-passes example's mid-tone grass: navy and mint both read, so the arcs show their direction
+  const [s2, t2] = ends("#4a7f3a");
+  expect(s2).not.toBe(t2);
+  for (const c of [s2, t2]) expect(contrast(c as string, "#4a7f3a")).toBeGreaterThanOrEqual(MIN_CONTRAST);
+});
+
+test("passArcLayer: an unresolved team takes the fallback as given and stays out of the palette", () => {
+  // a grey background on which the fallback grey does not read: the palette would have moved it
+  const background = "#7a7a7a";
+  const rows = [{ team: "XXX", start_x: 1, start_y: 1, end_x: 2, end_y: 2 }, ...PASSES];
+  let p: ReturnType<typeof passArcLayer> | undefined;
+  const w = warnings(() => {
+    p = passArcLayer(rows, { ...FRANCE, background });
+  });
+  expect(w.some((m) => /\bnull\b/.test(m))).toBe(false);
+  const data = p?.data as ArcRow[];
+  expect(call(p?.getSourceColor, data[0])).toEqual(rgba("#808080"));
+  expect(call(p?.getTargetColor, data[0])).toEqual(rgba("#808080"));
+  // France's colours are the palette of France alone: the unresolved team did not take a place in it
+  const [primary] = teamColorsSync("soccer", ["478"], { idSystem: "team_id" });
+  const [secondary] = teamColorsSync("soccer", ["478"], { idSystem: "team_id", which: "secondary" });
+  expect(hex(call(p?.getSourceColor, data[1]) as number[])).toBe(
+    teamPalette([primary as string], [secondary], background)[0],
+  );
+});
+
 test("passArcLayer: an unresolved team is named by its value as text, as sdvplot.pydeck names it", () => {
   const rows = [
     { team: null, start_x: 1, start_y: 1, end_x: 2, end_y: 2 },
