@@ -21,7 +21,8 @@ const passes = WC2018_FINAL_FRANCE_PASSES.map((p) => {
 // StatsBomb ids are not ESPN athlete ids, and soccer has no ESPN headshots, so every player is the fallback node: a
 // circle in France's navy with the name's initials in white (headshots: false says so, so nothing warns). Each node
 // sits at the mean of where the player passed from and received; edges point at the receiver, 10 px for the most
-// frequent pair and the others in proportion.
+// frequent pair and the others in proportion. minWeight: 2 draws only the pairs that linked up at least twice (the
+// usual pass-map threshold: the one-off pairs would bury the regular links).
 const { elements, style } = passNetwork(passes, {
   from: "player_id",
   to: "recipient_id",
@@ -35,6 +36,7 @@ const { elements, style } = passNetwork(passes, {
   xend: "end_x",
   yend: "end_y",
   headshots: false,
+  minWeight: 2,
 });
 if (elements.nodes.length !== 11)
   throw new Error(`expected France's 11 passers and receivers, got ${elements.nodes.length}`);
@@ -47,14 +49,14 @@ export const browser = {
   style,
   width: 760,
   height: 500,
-  label: `France's first-half passing network in the 2018 World Cup final: ${elements.nodes.length} players at their average positions, attacking left to right, and ${elements.edges.length} passer-to-receiver links, the most frequent ${name(top.data.source)} to ${name(top.data.target)} (${top.data.weight} passes)`,
+  label: `France's first-half passing network in the 2018 World Cup final: ${elements.nodes.length} players at their average positions, attacking left to right, and ${elements.edges.length} passer-to-receiver links used at least twice, the most frequent ${name(top.data.source)} to ${name(top.data.target)} (${top.data.weight} passes)`,
 } as const;
 
 // Cytoscape draws only in a browser; without JavaScript the page shows what the network holds.
 export default {
   players: elements.nodes.length,
   links: elements.edges.length,
-  passes: elements.edges.reduce((s, e) => s + e.data.weight, 0),
+  passesOnTheseLinks: elements.edges.reduce((s, e) => s + e.data.weight, 0),
   mostFrequent: `${name(top.data.source)} to ${name(top.data.target)}, ${top.data.weight} passes`,
   node: elements.nodes[0],
   edge: top,

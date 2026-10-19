@@ -27,8 +27,10 @@ function csv(name: string): Record<string, string>[] {
 // 8658: positions through SPADL, passer and receiver from the events and lineup; the examples' fixtures). France is ESPN
 // soccer team 478.
 const who = new Map(csv("statsbomb_8658_france_h1_pass_recipients.csv").map((r) => [r.action_id, r]));
-const FRANCE = csv("spadl_8658_france_h1_passes.csv").map((p) => {
-  const r = who.get(p.action_id) as Record<string, string>;
+const SPADL = csv("spadl_8658_france_h1_passes.csv");
+const FRANCE = SPADL.map((p) => {
+  // a missing key leaves the passer NaN, which the fixture test below names, rather than a TypeError at import
+  const r = who.get(p.action_id) ?? {};
   return {
     passer: Number(r.player_id),
     passer_name: r.player_name,
@@ -115,6 +117,13 @@ const rule = (style: readonly StyleBlock[], selector: string): Record<string, un
 const byId = (nodes: readonly CyNode[], id: number): CyNode =>
   nodes.find((n) => n.data.id === String(id)) as CyNode;
 
+test("the fixtures join: a passer and receiver for each of the 75 SPADL passes, the same passer in both", () => {
+  expect(who.size).toBe(75);
+  expect(SPADL).toHaveLength(75);
+  expect(FRANCE.map((r) => r.passer)).toEqual(SPADL.map((p) => Number(p.player_id)));
+  expect(FRANCE.every((r) => Number.isInteger(r.receiver))).toBe(true);
+});
+
 describe("passNetwork: elements", () => {
   test("a node per player and a directed edge per passer -> receiver pair, weighted by its passes", () => {
     const { elements } = quiet(() => passNetwork(FRANCE, NET));
@@ -150,6 +159,16 @@ describe("passNetwork: elements", () => {
     expect(elements.edges.length).toBeGreaterThan(0);
     expect(elements.edges.every((e) => e.data.weight >= 2)).toBe(true);
     expect(elements.nodes).toHaveLength(11);
+  });
+
+  test("no pair is left out unless minWeight is given: a fractional weight (xT, xG) keeps every edge", () => {
+    const rows = FRANCE.map((r) => ({ ...r, w: 0.4 }));
+    const counted = quiet(() => passNetwork(FRANCE, NET)).elements.edges;
+    const fractional = quiet(() => passNetwork(rows, { ...NET, weight: "w" })).elements.edges;
+    expect(fractional.map((e) => e.data.id)).toEqual(counted.map((e) => e.data.id));
+    for (const [i, e] of fractional.entries())
+      expect(e.data.weight).toBeCloseTo(0.4 * (counted[i]?.data.weight ?? 0), 10);
+    expect(Math.max(...fractional.map((e) => e.data.width))).toBe(10);
   });
 
   test("a `weight` column is summed per pair in place of counting rows", () => {

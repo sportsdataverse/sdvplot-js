@@ -103,7 +103,11 @@ export interface PassNetworkOptions extends CyColorOptions {
   toName?: string;
   /** Name of a row column summed per pair in place of counting rows. */
   weight?: string;
-  /** Pairs with a smaller weight are left out (every player stays). Default 1. */
+  /**
+   * Given, pairs whose weight (passes, or the summed `weight` column) is smaller are left out; every player stays.
+   * Default: none, so no pair is left out (a fractional weight such as xT keeps every pair). 2 or 3 is the usual
+   * threshold for a pass map.
+   */
   minWeight?: number;
   /** With `y`, `xend` and `yend`: the row columns of each pass's start (x, y) and end; all four or none. */
   x?: string;
@@ -282,8 +286,8 @@ export function teamStylesheet(o: TeamStylesheetOptions): StyleBlock[] {
 export function passNetwork(rows: readonly Row[], o: PassNetworkOptions): PassNetwork {
   const edgeWidth = checkPx("edgeWidth", o.edgeWidth ?? 10);
   checkPx("nodeSize", o.nodeSize ?? 40);
-  const minWeight = o.minWeight ?? 1;
-  if (!real(minWeight) || minWeight < 0)
+  const minWeight = o.minWeight;
+  if (minWeight !== undefined && (!real(minWeight) || minWeight < 0))
     throw new InputError(`minWeight is 0 or more, got ${String(minWeight)}`);
   const at = [o.x, o.y, o.xend, o.yend];
   const placed = at.every((c) => c !== undefined);
@@ -378,7 +382,7 @@ export function passNetwork(rows: readonly Row[], o: PassNetworkOptions): PassNe
       `cytoscape:headshots:${o.league}:${shownList(noImage)}`,
       `drew ${noImage.length} player(s) with no headshot as team-coloured initials: ${shownList(noImage)}`,
     );
-  const kept = [...pairs.values()].filter((p) => p.weight >= minWeight);
+  const kept = [...pairs.values()].filter((p) => minWeight === undefined || p.weight >= minWeight);
   const heaviest = Math.max(0, ...kept.map((p) => p.weight));
   const edges = kept.map(
     (p): CyEdge => ({

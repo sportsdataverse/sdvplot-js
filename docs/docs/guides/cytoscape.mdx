@@ -13,8 +13,10 @@ that `cytoscape({ container, elements, style })` takes. It is synchronous: load 
 
 `passNetwork(rows, { from, to, team, league })` reads one pass per row: the passer's player id in `from`, the
 receiver's in `to`, and the passing team in `team`. It returns one node per player and one edge per passer to receiver
-pair. An edge's `weight` is the pair's passes, or the sum of a `weight` column if you name one, and `minWeight` leaves
-out the rarer pairs. Every player stays when it does. Edges run from passer to receiver with an arrow at the receiver,
+pair. An edge's `weight` is the pair's passes, or the sum of a `weight` column (xT, say) if you name one. Every pair is
+drawn unless you give `minWeight`, which leaves out the pairs whose weight is smaller. Every player stays when it does.
+A threshold of 2 or 3 passes is the usual convention for a pass map: it hides the one-off pairs so the regular links
+read. Edges run from passer to receiver with an arrow at the receiver,
 drawn as bezier curves, so a pair that passed both ways shows as two separate edges.
 
 Sizes are Cytoscape's style units, px at zoom 1:
@@ -40,7 +42,8 @@ A row with no passer, no receiver, or a missing coordinate or weight is left out
 A player whose headshot resolves is drawn as it: the headshot is the node's `background-image`, clipped to the
 circle, with the team's colour as its border and the name below. `headshots` says what the ids are. It is `"espn"`
 by default (ESPN athlete ids, for the leagues sdvplot has ESPN headshots for), or `"gsis"` for nflverse ids, which
-needs `loadGsis()` first.
+needs `loadGsis()` first. Cytoscape loads a `background-image` cross-origin, so a headshot from a host that sends no
+CORS headers fails to load, and that node shows as a plain circle in the team's colour (ESPN's sends them).
 
 Any other player is the fallback node, a circle in the team's colour with the initials in black or white, whichever
 reads on it. One warning names those players, as the other adapters warn about a mark they cannot draw.
@@ -49,7 +52,8 @@ Soccer has no ESPN headshots, so every soccer player is drawn as the fallback no
 none, so nothing warns.
 
 The example below is France's first half in the 2018 World Cup final, from StatsBomb open data. Each pass starts and
-ends where socceraction's SPADL puts it, and its passer and receiver come from the StatsBomb event behind it.
+ends where socceraction's SPADL puts it, and its passer and receiver come from the StatsBomb event behind it. It passes
+`minWeight: 2`, so only pairs that linked up at least twice are drawn.
 
 <Live id="sdvplot/cytoscape/france-pass-network" />
 
