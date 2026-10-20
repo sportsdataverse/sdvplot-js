@@ -135,6 +135,10 @@ export type BrowserSpec =
         /** Vertical field of view, degrees. */
         readonly fov: number;
       };
+      readonly width: number;
+      readonly height: number;
+      readonly label: string;
+    }
   /**
    * `mount` is the example's own Lightweight Charts code: it draws into `el` with the module it is handed (the drawer
    * imports it, so the example never does) and returns what it built, the chart, its series and each series'

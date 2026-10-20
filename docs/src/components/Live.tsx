@@ -12,9 +12,6 @@ import {
   useState,
 } from "react";
 
-/** The library a value-output browser upgrade is drawn by, by its folder (sdvplot/<lib>/...); Plotly when absent. */
-const LIB_NAMES: Readonly<Record<string, string>> = { "lightweight-charts": "Lightweight Charts" };
-
 /** A React example that throws while rendering in the browser reports to its <Live>, not to the page's crash screen. */
 class Boundary extends Component<
   { onError: (e: unknown) => void; children: ReactNode },
@@ -61,6 +58,7 @@ const VALUE_LIBS: Readonly<Record<string, string>> = {
   deckgl: "deck.gl",
   cytoscape: "Cytoscape.js",
   three: "Three.js",
+  "lightweight-charts": "Lightweight Charts",
 };
 
 /**
@@ -202,16 +200,11 @@ export default function Live(p: LiveProps): ReactElement {
   return (
     <figure className="sdv-live" data-example={p.id} ref={figure}>
       {p.browser === true && p.kind === "value" && !mounted && error === null && (
-        // a Plotly figure, uPlot options, a Svelte chart's props, deck.gl layers, a Cytoscape graph or a Three.js
-        // scene: the static copy is its data, not a picture of it (after a failure, the alert says why). The library is
-        // the example's folder (sdvplot/<lib>/...).
+        // a Plotly figure, uPlot options, a Svelte chart's props, deck.gl layers, a Cytoscape graph, a Three.js scene
+        // or a Lightweight Charts chart: the static copy is its data, not a picture of it (after a failure, the alert
+        // says why). The library is the example's folder (sdvplot/<lib>/...).
         <p className="sdv-live-note">
           With JavaScript on, {VALUE_LIBS[p.id.split("/")[1] ?? ""] ?? "plotly.js"} draws this figure here.
-        // a Plotly figure or Lightweight Charts options: the static copy is its data, not a picture of it (after a
-        // a Plotly figure or a Lightweight Charts chart: the static copy is its data, not a picture of it (after a
-        // failure, the alert says why). The library is the example's folder (sdvplot/<lib>/...).
-        <p className="sdv-live-note">
-          With JavaScript on, {LIB_NAMES[p.id.split("/")[1] ?? ""] ?? "plotly.js"} draws this figure here.
         </p>
       )}
       {output}

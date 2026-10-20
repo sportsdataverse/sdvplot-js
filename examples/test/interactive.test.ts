@@ -320,6 +320,7 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
           return out.join("; ");
         });
         expect(marks, "each tube and the field show their own colours where they are").toBe("");
+      }
       if (lib === "lightweight-charts") {
         // Each line's middle point holds its team colour (exact, within anti-aliasing), and each line's logo is painted
         // where logoMarkers puts it: detaching the primitive changes the pixels of the logo's box. Then the

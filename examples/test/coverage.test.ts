@@ -52,6 +52,8 @@ const EXEMPT: readonly (readonly [spec: string, name: RegExp | "*", reason: stri
     "@sportsdataverse/sdvplot/uplot",
     /^drawnMarks$/,
     "test hook: what logoPlugin last painted on a chart, read back in a test (needs a canvas; the gate has none)",
+  ],
+  [
     "@sportsdataverse/sdvplot/lightweight-charts",
     /^drawnMarks$/,
     "test hook: what a logoMarkers primitive last painted on a chart, read back in a test (needs a canvas; the gate has none)",
