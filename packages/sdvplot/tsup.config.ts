@@ -23,6 +23,7 @@ export default defineConfig({
     // internal: what the ./svelte components (built by svelte-package into dist/svelte) import as ../svelte-core.js
     "svelte-core": "src/svelte-core.ts",
     nivo: "src/nivo.ts",
+    victory: "src/victory.ts",
   },
   external: [
     "react",
@@ -30,6 +31,7 @@ export default defineConfig({
     "recharts",
     "layerchart",
     "@nivo/bump",
+    "victory",
     "@observablehq/plot",
     "d3",
     "chart.js",

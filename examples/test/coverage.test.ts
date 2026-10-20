@@ -64,6 +64,11 @@ const EXEMPT: readonly (readonly [spec: string, name: RegExp | "*", reason: stri
     "the same embedSources every adapter re-exports, shown by the sdvplot/echarts, /plotly and /vega embed-sources examples; logoLayer's and logoNode's `embed` takes its map",
   ],
   [
+    "@sportsdataverse/sdvplot/victory",
+    only(["embedSources"]),
+    "the same embedSources every adapter re-exports, shown by the sdvplot/echarts, /plotly and /vega embed-sources examples; <LogoPoint embed> and <LogoTick embed> take its map",
+  ],
+  [
     "@sportsdataverse/sporty",
     tables(
       ["LEAGUES", "FEATURES", "DISPLAY_RANGES", "COLOR_KEYS", "SPECS"],

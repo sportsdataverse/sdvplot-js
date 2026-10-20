@@ -35,7 +35,8 @@
       "@sportsdataverse/examples/data": ["../examples/src/data.ts"],
       "@sportsdataverse/sdvplot/uplot": ["../packages/sdvplot/src/uplot.ts"],
       "@sportsdataverse/sdvplot/svelte": ["../packages/sdvplot/src/svelte/index.ts"],
-      "@sportsdataverse/sdvplot/nivo": ["../packages/sdvplot/src/nivo.ts"]
+      "@sportsdataverse/sdvplot/nivo": ["../packages/sdvplot/src/nivo.ts"],
+      "@sportsdataverse/sdvplot/victory": ["../packages/sdvplot/src/victory.ts"]
     }
   },
   "include": [
