@@ -80,6 +80,8 @@ export type BrowserSpec =
       readonly data: readonly ArrayLike<number | null | undefined>[];
       readonly width: number;
       readonly height: number;
+      readonly label: string;
+    }
   /**
    * A Svelte 5 component of examples/snippets/svelte (by file name: the docs show that file), mounted with `props`;
    * it sizes its own LayerChart chart.
