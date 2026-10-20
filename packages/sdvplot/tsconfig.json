@@ -7,7 +7,8 @@
       "@sportsdataverse/sporty": ["../sporty/src/index.ts"],
       "@sportsdataverse/sporty/plot": ["../sporty/src/plot.ts"],
       "@sportsdataverse/sporty/d3": ["../sporty/src/d3.ts"],
-      "@sportsdataverse/sporty/canvas": ["../sporty/src/canvas.ts"]
+      "@sportsdataverse/sporty/canvas": ["../sporty/src/canvas.ts"],
+      "@sportsdataverse/sporty/svg": ["../sporty/src/svg.ts"]
     }
   },
   "include": ["src", "test"]
