@@ -59,6 +59,11 @@ const EXEMPT: readonly (readonly [spec: string, name: RegExp | "*", reason: stri
     "the renderItem withLogos/withWordmarks/withHeadshots install on their custom series; every ECharts image example draws through it",
   ],
   [
+    "@sportsdataverse/sdvplot/nivo",
+    only(["embedSources"]),
+    "the same embedSources every adapter re-exports, shown by the sdvplot/echarts, /plotly and /vega embed-sources examples; logoLayer's and logoNode's `embed` takes its map",
+  ],
+  [
     "@sportsdataverse/sporty",
     tables(
       ["LEAGUES", "FEATURES", "DISPLAY_RANGES", "COLOR_KEYS", "SPECS"],

@@ -1,0 +1,73 @@
+---
+title: nivo
+sidebar_position: 7.8
+---
+
+[nivo](https://nivo.rocks) draws charts as React components, and lets you add layers of your own on top of a chart's
+built-in ones, or swap the component that draws each node. `@sportsdataverse/sdvplot/nivo` gives you three pieces for
+it: `teamColors`, a chart's `colors`; `logoLayer`, a custom layer of team logos over a Bump, SwarmPlot or Chord; and
+`logoNode`, logos as the nodes themselves. It never imports nivo (install `@nivo/core` and the chart's package, 0.99
+or later, beside it: optional peers), and it is synchronous, so load the league first (`loadLeague`). The ready-made
+bump chart is a component, `<LogoBump>`, in `@sportsdataverse/sdvplot/react`. Each chart below is drawn by nivo in
+your browser.
+
+## A weekly power ranking, a logo at the end of each line
+
+`teamColors({ league })` is a `colors` accessor: a Bump series (and a Chord arc) is read by its `id`, so a series whose
+`id` is a team is drawn in the team's colour. `logoLayer({ league, height })` goes into the chart's `layers`, after the
+built-in layers it should sit over. On a Bump it draws a logo at each series' last point (`at: "first"` or `"all"` for
+the others; a week with no rank has no point), reading the team from the series' `id` or, with `team`, from a field of
+the series object. The ranks here come from the AFC East's and West's 2024 results, week by week: most wins so far (a
+tie counts half), then the best point differential, then the name. Denver and New England share one navy, and
+Buffalo's is close, so the chart passes its `background` and every team (`teams`): each colour then reads and stays
+apart from the others (New England moves off Denver's navy to a blue of its own), as in the dark-mode section below.
+
+<Live id="sdvplot/nivo/afc-power-ranks" />
+
+`height` is a fraction of the plot height, in (0, 1], as in the spec adapters: nivo hands a custom layer the plot
+area's `innerHeight`, so a px value (24) throws. A team with no logo draws nothing and warns once, as the ECharts
+adapter does. The logos sit at nivo's final positions: with `animate` on they appear at the end of the motion rather
+than travel with it. The layer's group has `pointer-events: none`, so the lines under it keep their hover.
+
+## `<LogoBump>` on a dark background
+
+`<LogoBump league data />` is nivo's `Bump` with both of the above: team-coloured lines and a logo at the end of each
+line (`logoHeight`, `at`). Every other prop goes to nivo as is. With `width` and `height` it draws at that size, without
+them it fills its parent (`ResponsiveBump`). `background` turns on the dark-mode palette: a team colour under 3:1
+contrast against it gives way to the team's other colour, or is lightened until it reads, and a colour that would then
+sit too close to an earlier team's (CIE76 ΔE under 20) takes the team's other colour, or else the colour nearest its
+own (its lightness, hue or chroma stepped) that is distinct and still reads; if none is, it keeps the readable colour
+and warns once. `@nivo/bump` loads when the
+component first renders, never with `sdvplot/react`, and a missing package throws `OptionalDependencyError` then. A
+server render draws nothing; the chart appears once the page's scripts run. (nivo's own `Bump` with `logoLayer`
+renders on the server, logos included.)
+
+<Live id="sdvplot/nivo/logo-bump-dark" />
+
+For the same palette on nivo's own chart, pass every team the chart draws: `teamColors({ league, teams, background
+})`. The colours depend on the whole set, so `background` without `teams` throws, and a team outside `teams` is drawn
+in the `fallback` colour, with one warning. `teamColors` is the nivo counterpart of `teamColorPalette` in the ECharts,
+Recharts and Svelte adapters: an accessor nivo calls per datum, rather than a list of colours.
+
+## Logos as the nodes
+
+`logoNode({ league, team })` is a SwarmPlot's `circleComponent` (or a Bump's `pointComponent`): each node is drawn as
+its team's logo, as tall as nivo sized the node (the chart's `size` or `pointSize`, in px), in place of the circle. The
+team is the node's `id`, or with `team` a field of its datum. It does not wire up the mouse handlers nivo hands a node,
+so pass `useMesh` for tooltips. The data is nflverse's 2024 regular season: EPA per play on offense and on defense.
+
+<Live id="sdvplot/nivo/epa-swarm" />
+
+## A Chord
+
+On a Chord, `teamColors({ league })` colours each arc and its ribbons by the arc's id (the chart's `keys`), and
+`logoLayer({ league, height })` in its `layers` puts each team's logo outside the ring at the middle of its
+arc, `height` × the plot height tall. nivo sizes the ring to the plot area, so leave room for the logos in the chart's
+`margin`.
+
+## Reading back what was drawn
+
+Every image carries the `data-sdv-*` attributes that `drawnMarks` from `@sportsdataverse/sdvplot/testing` reads, so a
+test can render the chart (jsdom, or a browser) and check which teams were drawn where. `x` and `y` are nivo's pixel
+positions inside the plot area. A `logoLayer` image's `height` reads as the fraction of the plot height it was given; a
+`logoNode` image's reads in px, the node's size, as a node component gets no plot height.

@@ -16,7 +16,8 @@
     "chartjs",
     "react",
     "recharts",
-    "uplot"
+    "uplot",
+    "nivo"
   ],
   "homepage": "https://plot.sportsdataverse.org",
   "bugs": "https://github.com/sportsdataverse/sdvplot-js/issues",
@@ -95,9 +96,17 @@
       "types": "./dist/svelte/index.d.ts",
       "svelte": "./dist/svelte/index.js"
     },
+    "./nivo": {
+      "types": "./dist/nivo.d.ts",
+      "import": "./dist/nivo.js"
+    },
     "./package.json": "./package.json"
   },
   "peerDependencies": {
+    "@nivo/bump": ">=0.99",
+    "@nivo/chord": ">=0.99",
+    "@nivo/core": ">=0.99",
+    "@nivo/swarmplot": ">=0.99",
     "@observablehq/plot": ">=0.6.16",
     "@resvg/resvg-js": ">=2.6",
     "@sportsdataverse/sporty": "workspace:^0",
@@ -110,6 +119,18 @@
     "uplot": ">=1.6.31"
   },
   "peerDependenciesMeta": {
+    "@nivo/bump": {
+      "optional": true
+    },
+    "@nivo/chord": {
+      "optional": true
+    },
+    "@nivo/core": {
+      "optional": true
+    },
+    "@nivo/swarmplot": {
+      "optional": true
+    },
     "@observablehq/plot": {
       "optional": true
     },
@@ -160,6 +181,10 @@
   },
   "devDependencies": {
     "@napi-rs/canvas": "^1.0.10",
+    "@nivo/bump": "0.99.0",
+    "@nivo/chord": "0.99.0",
+    "@nivo/core": "0.99.0",
+    "@nivo/swarmplot": "0.99.0",
     "@observablehq/plot": "^0.6.17",
     "@resvg/resvg-js": "^2.6.2",
     "@sportsdataverse/sporty": "workspace:^",
