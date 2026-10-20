@@ -32,16 +32,13 @@ pnpm add @sportsdataverse/sdvplot
 yarn add @sportsdataverse/sdvplot
 ```
 
-ESM only, Node >= 20.18.1. The core and the `bins`, `testing`, `plotly`, `vega`, `echarts` and `uplot` subpaths need no
-peer. The others use optional peers, which npm and pnpm do not install for you, so add the ones for the subpaths you
-import: `react` >= 18 for `/react`, `/recharts` (with `recharts` >= 3.8 to draw) and `/nivo` (with `@nivo/core` and the
-chart's `@nivo/*` package >= 0.99 to draw; `<LogoBump>` loads `@nivo/bump`), `@observablehq/plot` >= 0.6.16 for `/plot`,
-`d3` >= 7 for `/d3` and `/interact`, `chart.js` >= 4.4 for `/chartjs` and `/chartjs/surface`, `svelte` >= 5.57 and
-`layerchart` >= 2.5.1 for `/svelte`, and `@resvg/resvg-js` for `/export`'s `toPNG`.
-ESM only, Node >= 20.18.1. The core and the `bins`, `testing`, `plotly`, `vega`, `echarts` and `victory` subpaths need no
-peer. The others use optional peers, which npm and pnpm do not install for you, so add the ones for the subpaths you
-import: `react` >= 18 for `/react` (with `victory` >= 37.3.6 for `<LogoPoint>` and `<LogoTick>`), `@observablehq/plot` >= 0.6.16 for `/plot`, `d3` >= 7 for `/d3` and `/interact`,
-`chart.js` >= 4.4 for `/chartjs` and `/chartjs/surface`, and `@resvg/resvg-js` for `/export`'s `toPNG`.
+ESM only, Node >= 20.18.1. The core and the `bins`, `testing`, `plotly`, `vega`, `echarts`, `uplot` and `victory`
+subpaths need no peer. The others use optional peers, which npm and pnpm do not install for you, so add the ones for
+the subpaths you import: `react` >= 18 for `/react` (with `victory` >= 37.3.6 for `<LogoPoint>` and `<LogoTick>`),
+`/recharts` (with `recharts` >= 3.8 to draw) and `/nivo` (with `@nivo/core` and the chart's `@nivo/*` package >= 0.99
+to draw; `<LogoBump>` loads `@nivo/bump`), `@observablehq/plot` >= 0.6.16 for `/plot`, `d3` >= 7 for `/d3` and
+`/interact`, `chart.js` >= 4.4 for `/chartjs` and `/chartjs/surface`, `svelte` >= 5.57 and `layerchart` >= 2.5.1 for
+`/svelte`, and `@resvg/resvg-js` for `/export`'s `toPNG`.
 
 `/plot`, `/d3`, `/shots` and `/chartjs/surface` also need `@sportsdataverse/sporty`, whether or not you draw a
 surface: they import it when they load, and fail to load without it. No other subpath imports sporty when it loads
@@ -118,8 +115,7 @@ The backgrounds default to `#ffffff` (light) and `#181a1b` (dark); pass `theme: 
 | Import | Contents |
 | --- | --- |
 | `@sportsdataverse/sdvplot` | `resolve`, `suggest`, `teams`, `rowsFrom`, `palette`, `teamColors`, `matchupColors`, `logoUrl`, `marks` (`full: true` fetches the whole manifest lazily), `selectMark`, `selectMarkSync`, `place`, `placeSync`, `prepareTiers`, `headshotUrl`, `loadGsis`, contrast helpers (`hex6`, `luminance`, `contrast`, `onColor`, `mix`, `solid`), the selection store `createSelection` with `focusIds`, `toId`, `sameIds`, `sameCursor` (see [Linked interactivity](#linked-interactivity)), `versions`, errors, types |
-| `@sportsdataverse/sdvplot/react` | `TeamLogo`, `Wordmark`, `Headshot`, `useTeamColors`, `useResolve`, `useSelection` (re-renders on every change of a selection store), `SurfaceBackdrop` (a court, field or rink under a Recharts chart; loads `recharts` and `@sportsdataverse/sporty` when it renders), `LogoBump` (a nivo bump chart with team colours and end logos; loads `@nivo/bump` when it renders) (React >= 18, optional peer) |
-| `@sportsdataverse/sdvplot/react` | `TeamLogo`, `Wordmark`, `Headshot`, `useTeamColors`, `useResolve`, `useSelection` (re-renders on every change of a selection store), `LogoPoint` and `LogoTick` (team logos as a Victory scatter's points and an axis' tick labels) (React >= 18, optional peer) |
+| `@sportsdataverse/sdvplot/react` | `TeamLogo`, `Wordmark`, `Headshot`, `useTeamColors`, `useResolve`, `useSelection` (re-renders on every change of a selection store), `SurfaceBackdrop` (a court, field or rink under a Recharts chart; loads `recharts` and `@sportsdataverse/sporty` when it renders), `LogoBump` (a nivo bump chart with team colours and end logos; loads `@nivo/bump` when it renders), `LogoPoint` and `LogoTick` (team logos as a Victory scatter's points and an axis' tick labels) (React >= 18, optional peer) |
 | `@sportsdataverse/sdvplot/plot` | Observable Plot marks and scales: `logos`, `wordmarks`, `headshots`, `axisLogos`, `teamColor`/`teamFill`, `meanLines`/`medianLines`, `titleImage`, `teamTiers`, `surface`, shot-chart marks `shotCells`, `shotZones`, `shootingSignature`, `linkIds` (stamps any mark's link ids; the image marks take an `id` option) (needs `@observablehq/plot` and `@sportsdataverse/sporty` installed to import) |
 | `@sportsdataverse/sdvplot/d3` | `appendLogos`, `appendWordmarks`, `appendHeadshots` (circular faces: `clip`, `ring`, `placeholder`), `teamColorScale`, `appendSurface`, shot-chart `appendLegend` and `appendSignature` (needs `d3` and `@sportsdataverse/sporty` installed to import) |
 | `@sportsdataverse/sdvplot/bins` | Dependency-free x/y binning for any data: `hexbin` and `hexagonPath` (a d3-hexbin port), `squarebin` and `squarePath`, `binner` (hexagons, squares, or equal-area squares from one options object), `cellPath`, `cellPoints` |
