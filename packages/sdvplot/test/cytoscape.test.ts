@@ -171,6 +171,16 @@ describe("passNetwork: elements", () => {
     expect(Math.max(...fractional.map((e) => e.data.width))).toBe(10);
   });
 
+  test("a pair whose summed weight is negative (xT) is 0 px wide, never negative; its weight keeps the sum", () => {
+    const rows = FRANCE.map((r, i) => ({ ...r, w: i === 0 ? -5 : 0.1 }));
+    const edges = quiet(() => passNetwork(rows, { ...NET, weight: "w" })).elements.edges;
+    const neg = edges.filter((e) => e.data.weight < 0);
+    expect(neg.length).toBeGreaterThan(0);
+    for (const e of neg) expect(e.data.width).toBe(0);
+    for (const e of edges) expect(e.data.width).toBeGreaterThanOrEqual(0);
+    expect(Math.max(...edges.map((e) => e.data.width))).toBe(10);
+  });
+
   test("a `weight` column is summed per pair in place of counting rows", () => {
     const rows = FRANCE.map((r) => ({ ...r, w: 2 }));
     const counted = quiet(() => passNetwork(FRANCE, NET)).elements.edges;

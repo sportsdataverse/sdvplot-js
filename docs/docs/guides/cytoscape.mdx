@@ -23,7 +23,8 @@ Sizes are Cytoscape's style units, px at zoom 1:
 
 - `nodeSize` is a node's diameter (default 40).
 - `edgeWidth` is the width of the heaviest pair's edge (default 10). The other edges are as wide as their share of
-  that weight, so a pair with half its passes is half as wide.
+  that weight, so a pair with half its passes is half as wide. A pair whose summed `weight` is 0 or less (xT can be
+  negative) is 0 px wide, since Cytoscape takes no negative width; its `weight` keeps the sum.
 
 Both must be 1 or more. A fraction, as the other adapters take for a mark's height, is refused.
 
@@ -70,10 +71,11 @@ Its base blocks also draw `passNetwork`'s elements: the node size, headshot and 
 `data.width`. `which: "secondary"` uses each team's other colour.
 
 Pass the colour the graph is drawn on as `background` and every team colour keeps at least 3:1 contrast against it,
-as in dark mode. Each team's colour also stays apart from the others' (a CIE76 ΔE of 20 or more), through sdvplot's
-shared team palette, which the other adapters use too. A headshot node's name takes the ink that reads on the
-background. A team that does not resolve gets no rule: its elements keep `fallback` (default `#808080`), and it never
-moves a real team's colour.
+as in dark mode. Each team's colour also aims to stay apart from the others' (a CIE76 ΔE of 20 or more), through
+sdvplot's shared team palette, which the other adapters use too; if no candidate is both, it keeps the readable colour
+and warns once. A headshot node's name takes the ink that reads on the
+background. A team that does not resolve gets no rule: its elements keep `fallback` (default `#808080`) as given, its
+contrast unchecked, and it never moves a real team's colour.
 
 ## Reading back what was drawn
 

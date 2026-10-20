@@ -44,7 +44,10 @@ export interface CyEdge {
     target: string;
     /** The pair's passes (or summed `weight`). */
     weight: number;
-    /** The edge's width in px: `edgeWidth` for the heaviest pair, the others in proportion to their weight. */
+    /**
+     * The edge's width in px: `edgeWidth` for the heaviest pair, the others in proportion to their weight; 0 for a pair
+     * whose weight is 0 or less (a summed xT can be negative), since Cytoscape takes no negative width.
+     */
     width: number;
     /** The passer's resolved team id; absent when it does not resolve. */
     team?: string;
@@ -71,8 +74,9 @@ export interface CyColorOptions {
   which?: Which;
   /**
    * The background the network is drawn on (Cytoscape's container). Given, every team colour keeps 3:1 contrast
-   * against it (dark mode) and stays distinct (CIE76 ΔE of 20 or more) from every other team's, through the shared team
-   * palette, as `teamColorPalette` does in the other adapters; a headshot node's name takes the ink that reads on it.
+   * against it (dark mode) and aims to stay distinct (CIE76 ΔE of 20 or more) from every other team's, through the
+   * shared team palette, as `teamColorPalette` does in the other adapters (when it cannot, it keeps the readable colour
+   * and warns once); a headshot node's name takes the ink that reads on it.
    */
   background?: string;
   /** The colour of an element whose team does not resolve, or has no colour. Default "#808080". */
@@ -391,7 +395,8 @@ export function passNetwork(rows: readonly Row[], o: PassNetworkOptions): PassNe
         source: p.source,
         target: p.target,
         weight: p.weight,
-        width: heaviest > 0 ? (edgeWidth * p.weight) / heaviest : edgeWidth,
+        // a pair whose summed weight is 0 or less (xT can be negative) is 0 px wide: Cytoscape refuses a negative width
+        width: heaviest > 0 ? (edgeWidth * Math.max(0, p.weight)) / heaviest : edgeWidth,
         ...(p.team === undefined ? {} : { team: p.team }),
       },
     }),

@@ -147,6 +147,9 @@ importers:
       chart.js:
         specifier: 4.5.1
         version: 4.5.1
+      cytoscape:
+        specifier: 3.34.3
+        version: 3.34.3
       d3:
         specifier: ^7.9.0
         version: 7.9.0
@@ -267,6 +270,9 @@ importers:
       chart.js:
         specifier: 4.5.1
         version: 4.5.1
+      cytoscape:
+        specifier: 3.34.3
+        version: 3.34.3
       d3:
         specifier: ^7.9.0
         version: 7.9.0
@@ -4540,6 +4546,10 @@ packages:
 
   csstype@3.2.3:
     resolution: {integrity: sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ==}
+
+  cytoscape@3.34.3:
+    resolution: {integrity: sha512-yfYGhRcGAntq6YBD583j4n0Eg3jIxvWmZtz/5uz9UYkeIStSlMxuUja+ec5j3iBD8nv1rwaOAYMW09tBdkSeaQ==}
+    engines: {node: '>=0.10'}
 
   d3-array@1.2.4:
     resolution: {integrity: sha512-KHW6M86R+FUPYGb3R5XiYjXPq7VzwxZ22buHhAEVG5ztoEcZZMLov530mmccaqA1GghZArjQV46fuc8kUqhhHw==}
@@ -14484,6 +14494,8 @@ snapshots:
       rrweb-cssom: 0.8.0
 
   csstype@3.2.3: {}
+
+  cytoscape@3.34.3: {}
 
   d3-array@1.2.4: {}
 

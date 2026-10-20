@@ -145,9 +145,7 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
           return (layer?.props.data.length ?? 0) > 0 ? out.join("; ") : "no marks";
         });
         expect(marks, "each sampled mark is picked and visible where it was placed").toBe("");
-      // Cytoscape draws on stacked canvases. Sample where marks are known to be: the first nodes' fill (beside the
-      // initials, inside the circle) and the widest edges' midpoints, from Cytoscape's own rendered positions; the
-      // pixels there must be the colour Cytoscape computed for that element, not the page behind it.
+      }
       // Cytoscape draws on stacked canvases. Sample where marks are known to be, from Cytoscape's own rendered
       // positions: the first nodes' fill (below the initials, inside the circle), and the midpoints of the widest edges
       // that lie clear of every node (so the pixel can only be the edge's, even when a team's nodes and edges share a
