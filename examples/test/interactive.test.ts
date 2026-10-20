@@ -118,27 +118,6 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
           deck.redraw("render test");
           await frame();
           const [surface, layer] = deck.props.layers;
-      // Three.js draws with WebGL (the drawer keeps its drawing buffer: copy it onto a 2D canvas to read it). Sample
-      // where a mark is known to be: project a point 85% along each tube to the screen, check by raycast that the tube
-      // is what is in front there, and read its pixel: the tube's own colour (unlit and not tone-mapped, so the team
-      // colour exactly). Then raycast points low in the frame onto the field and read the colour of the loop on top there:
-      // the field's vertex colours, back in sRGB.
-      if (lib === "three") {
-        const marks = await figure.locator('.sdv-live-output [role="figure"]').evaluate(async (el) => {
-          // biome-ignore lint/suspicious/noExplicitAny: three.js objects, read through the drawer's handle
-          type Any = any;
-          const box = el as HTMLElement & { sdvThree?: { get: () => Any; THREE: Any } };
-          const frame = () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
-          const meshes = (): Any[] =>
-            (box.sdvThree?.get().scene.children ?? []).filter((o: Any) => o.isMesh === true);
-          for (let t = 0; t < 300 && meshes().length < 2; t++) await frame(); // the lazy peers and meshes
-          const three = box.sdvThree;
-          if (three === undefined) return "no three.js handle on the figure";
-          const { THREE } = three;
-          const { scene, camera, invalidate } = three.get();
-          invalidate();
-          await frame();
-          await frame();
           const canvas = el.querySelector("canvas") as HTMLCanvasElement;
           const k = canvas.width / canvas.clientWidth; // device pixels per CSS pixel
           const copy = document.createElement("canvas");
@@ -253,6 +232,34 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
             : "no nodes, or no edge clear of the nodes";
         });
         expect(marks, "each sampled node and edge is drawn in its colour where Cytoscape placed it").toBe("");
+      }
+      // Three.js draws with WebGL (the drawer keeps its drawing buffer: copy it onto a 2D canvas to read it). Sample
+      // where a mark is known to be: project a point 85% along each tube to the screen, check by raycast that the tube
+      // is what is in front there, and read its pixel: the tube's own colour (unlit and not tone-mapped, so the team
+      // colour exactly). Then raycast points low in the frame onto the field and read the colour of the loop on top there:
+      // the field's vertex colours, back in sRGB.
+      if (lib === "three") {
+        const marks = await figure.locator('.sdv-live-output [role="figure"]').evaluate(async (el) => {
+          // biome-ignore lint/suspicious/noExplicitAny: three.js objects, read through the drawer's handle
+          type Any = any;
+          const box = el as HTMLElement & { sdvThree?: { get: () => Any; THREE: Any } };
+          const frame = () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+          const meshes = (): Any[] =>
+            (box.sdvThree?.get().scene.children ?? []).filter((o: Any) => o.isMesh === true);
+          for (let t = 0; t < 300 && meshes().length < 2; t++) await frame(); // the lazy peers and meshes
+          const three = box.sdvThree;
+          if (three === undefined) return "no three.js handle on the figure";
+          const { THREE } = three;
+          const { scene, camera, invalidate } = three.get();
+          invalidate();
+          await frame();
+          await frame();
+          const canvas = el.querySelector("canvas") as HTMLCanvasElement;
+          const k = canvas.width / canvas.clientWidth; // device pixels per CSS pixel
+          const copy = document.createElement("canvas");
+          [copy.width, copy.height] = [canvas.width, canvas.height];
+          const ctx = copy.getContext("2d", { willReadFrequently: true }) as CanvasRenderingContext2D;
+          ctx.drawImage(canvas, 0, 0);
           const ray = new THREE.Raycaster();
           const front = (ndc: Any): Any => {
             ray.setFromCamera(new THREE.Vector2(ndc.x, ndc.y), camera);

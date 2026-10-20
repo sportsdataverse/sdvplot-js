@@ -434,6 +434,8 @@ test("WC2018_FINAL_FRANCE_RECIPIENTS are the captured StatsBomb passers and rece
   expect(WC2018_FINAL_FRANCE_RECIPIENTS.map((r) => [r.action_id, r.player_id])).toEqual(
     WC2018_FINAL_FRANCE_PASSES.map((p) => [p.action_id, p.player_id]),
   );
+});
+
 /** Baseball Savant's CSV (quoted fields, commas inside them, a BOM) as rows of strings. */
 function savant(file: string): Record<string, string>[] {
   const text = readFileSync(abs(file), "utf8").replace(/^\uFEFF/, "");

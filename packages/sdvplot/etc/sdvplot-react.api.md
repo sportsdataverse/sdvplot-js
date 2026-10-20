@@ -96,6 +96,17 @@ export interface LogoTickProps extends Shared_2 {
 }
 
 // @public
+export function Surface3D(props: Surface3DProps): ReactElement;
+
+// @public
+export interface Surface3DProps {
+    league: string;
+    options?: Record<string, unknown>;
+    renderOrder?: number;
+    sport: string;
+}
+
+// @public
 export function SurfaceBackdrop(props: SurfaceBackdropProps): ReactElement;
 
 // @public
@@ -121,14 +132,6 @@ export interface SurfaceBackdropProps {
     ylim?: readonly [number, number];
     // (undocumented)
     yTrans?: number;
-export function Surface3D(props: Surface3DProps): ReactElement;
-
-// @public
-export interface Surface3DProps {
-    league: string;
-    options?: Record<string, unknown>;
-    renderOrder?: number;
-    sport: string;
 }
 
 // @public
@@ -160,8 +163,6 @@ export interface TrajectoryProps {
     background?: string;
     color?: string;
     fallback?: string;
-    // Warning: (ae-forgotten-export) The symbol "IdSystem" needs to be exported by the entry point react.d.ts
-    //
     // (undocumented)
     idSystem?: IdSystem;
     // (undocumented)
@@ -170,8 +171,6 @@ export interface TrajectoryProps {
     radialSegments?: number;
     radius: number;
     renderOrder?: number;
-    // Warning: (ae-forgotten-export) The symbol "SeasonInput" needs to be exported by the entry point react.d.ts
-    //
     // (undocumented)
     season?: SeasonInput;
     team?: unknown;
@@ -201,10 +200,7 @@ export function Wordmark(props: Omit<TeamLogoProps, "markType">): ReactElement |
 
 // Warnings were encountered during analysis:
 //
-// dist/react.d.ts:281:5 - (ae-forgotten-export) The symbol "ColorOptions" needs to be exported by the entry point react.d.ts
-// dist/react.d.ts:146:5 - (ae-forgotten-export) The symbol "ColorOptions" needs to be exported by the entry point react.d.ts
-// dist/react.d.ts:122:5 - (ae-forgotten-export) The symbol "ColorOptions" needs to be exported by the entry point react.d.ts
-// dist/react.d.ts:125:5 - (ae-forgotten-export) The symbol "ColorOptions" needs to be exported by the entry point react.d.ts
+// dist/react.d.ts:341:5 - (ae-forgotten-export) The symbol "ColorOptions" needs to be exported by the entry point react.d.ts
 
 // (No @packageDocumentation comment for this package)
 

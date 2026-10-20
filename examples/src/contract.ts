@@ -117,6 +117,10 @@ export type BrowserSpec =
       readonly lib: "cytoscape";
       readonly elements: () => object;
       readonly style: readonly object[];
+      readonly width: number;
+      readonly height: number;
+      readonly label: string;
+    }
   /**
    * A react-three-fiber scene (`<Surface3D>`, `<Trajectory>`, ...), drawn in a `<Canvas>` at the example's size. The
    * world is z up: the camera stands at `camera.position` with +z up and looks at `camera.target`; drag to turn it

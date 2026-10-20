@@ -33,19 +33,14 @@ yarn add @sportsdataverse/sdvplot
 ```
 
 ESM only, Node >= 20.18.1. The core and the `bins`, `testing`, `plotly`, `vega`, `echarts`, `uplot`, `victory` and
-`cytoscape` subpaths need no peer. The others use optional peers, which npm and pnpm do not install for you, so add the ones for
-the subpaths you import: `react` >= 18 for `/react` (with `victory` >= 37.3.6 for `<LogoPoint>` and `<LogoTick>`),
-`/recharts` (with `recharts` >= 3.8 to draw) and `/nivo` (with `@nivo/core` and the chart's `@nivo/*` package >= 0.99
-to draw; `<LogoBump>` loads `@nivo/bump`), `@observablehq/plot` >= 0.6.16 for `/plot`, `d3` >= 7 for `/d3` and
-`/interact`, `chart.js` >= 4.4 for `/chartjs` and `/chartjs/surface`, `svelte` >= 5.57 and `layerchart` >= 2.5.1 for
-`/svelte`, `@sportsdataverse/sporty` for `/deckgl` (draw its props with `@deck.gl/core` and `@deck.gl/layers` >= 9.4),
-and `@resvg/resvg-js` for `/export`'s `toPNG`.
-ESM only, Node >= 20.18.1. The core and the `bins`, `testing`, `plotly`, `vega` and `echarts` subpaths need no
-peer. The others use optional peers, which npm and pnpm do not install for you, so add the ones for the subpaths you
-import: `react` >= 18 for `/react`, `@observablehq/plot` >= 0.6.16 for `/plot`, `d3` >= 7 for `/d3` and `/interact`,
-`chart.js` >= 4.4 for `/chartjs` and `/chartjs/surface`, `@sportsdataverse/sporty` for `/three` (draw its buffers
-with `three` >= 0.186.1; `/react`'s `<Surface3D>` and `<Trajectory>` also need `@react-three/fiber` >= 9.8.1), and
-`@resvg/resvg-js` for `/export`'s `toPNG`.
+`cytoscape` subpaths need no peer. The others use optional peers, which npm and pnpm do not install for you, so add
+the ones for the subpaths you import: `react` >= 18 for `/react` (with `victory` >= 37.3.6 for `<LogoPoint>` and
+`<LogoTick>`), `/recharts` (with `recharts` >= 3.8 to draw) and `/nivo` (with `@nivo/core` and the chart's `@nivo/*`
+package >= 0.99 to draw; `<LogoBump>` loads `@nivo/bump`), `@observablehq/plot` >= 0.6.16 for `/plot`, `d3` >= 7 for
+`/d3` and `/interact`, `chart.js` >= 4.4 for `/chartjs` and `/chartjs/surface`, `svelte` >= 5.57 and `layerchart` >=
+2.5.1 for `/svelte`, `@sportsdataverse/sporty` for `/deckgl` (draw its props with `@deck.gl/core` and
+`@deck.gl/layers` >= 9.4) and for `/three` (draw its buffers with `three` >= 0.186.1; `/react`'s `<Surface3D>` and
+`<Trajectory>` also need `@react-three/fiber` >= 9.8.1), and `@resvg/resvg-js` for `/export`'s `toPNG`.
 
 `/plot`, `/d3`, `/shots` and `/chartjs/surface` also need `@sportsdataverse/sporty`, whether or not you draw a
 surface: they import it when they load, and fail to load without it. No other subpath imports sporty when it loads

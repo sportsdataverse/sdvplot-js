@@ -51,7 +51,6 @@ install for you, so add the ones for the subpaths you import:
 | `@sportsdataverse/sdvplot`, `/bins`, `/testing`, `/plotly`, `/vega`, `/echarts`, `/uplot` | nothing |
 | `@sportsdataverse/sdvplot/deckgl` | `@sportsdataverse/sporty` (draw with `@deck.gl/core` and `@deck.gl/layers` >= 9.4) |
 | `@sportsdataverse/sdvplot/cytoscape` | nothing (draw its elements and style with `cytoscape` >= 3.34.3) |
-| `@sportsdataverse/sdvplot`, `/bins`, `/testing`, `/plotly`, `/vega`, `/echarts` | nothing |
 | `@sportsdataverse/sdvplot/three` | `@sportsdataverse/sporty` (draw with `three` >= 0.186.1; `<Surface3D>` and `<Trajectory>` in `/react` also need `@react-three/fiber` >= 9.8.1) |
 | `@sportsdataverse/sdvplot/plot` | `@observablehq/plot` >= 0.6.16 and `@sportsdataverse/sporty` |
 | `@sportsdataverse/sdvplot/d3` | `d3` >= 7 and `@sportsdataverse/sporty` |

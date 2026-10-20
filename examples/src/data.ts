@@ -756,6 +756,8 @@ export const WC2018_FINAL_FRANCE_RECIPIENTS: readonly PassRecipient[] = [
   { action_id: 700, player_id: 5492, player_name: "Samuel Umtiti", recipient_id: 20004, recipient_name: "Paul Pogba" },
   { action_id: 708, player_id: 3099, player_name: "Hugo Lloris", recipient_id: 3604, recipient_name: "Olivier Giroud" },
   { action_id: 723, player_id: 3604, player_name: "Olivier Giroud", recipient_id: 5484, recipient_name: "Lucas Hernandez" },
+];
+/**
  * One Statcast pitch from Baseball Savant's pitch-level search
  * (fixtures/examples/mlb_statcast_search_2024-06-15_head.csv): Savant's own column names and values. Feet, feet per second and feet per second squared in Statcast's frame: x to
  * the catcher's right (first-base side), y from the point of home plate towards the mound, z up. `vx0`..`vz0` are the
