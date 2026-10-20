@@ -94,7 +94,6 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
         );
         expect(painted, "the canvas is painted").toBe(true);
       }
-      // deck.gl draws with WebGL (its drawing buffer is kept, deck.gl's default): copy the canvas onto a 2D one to read it
       // deck.gl draws with WebGL. Sample where a mark is known to be: project the first marks (a logo's centre, an
       // arc's start) to the screen, pick there (deck.gl's own hit test: the mark layer drew at that point), and read
       // the canvas around it (its drawing buffer is kept, deck.gl's default): a pixel there must differ from the
