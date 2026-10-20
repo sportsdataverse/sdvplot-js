@@ -14,6 +14,7 @@ import {
   NHL_STANDINGS,
   PWHL_GOALS,
   STANDINGS,
+  STATCAST_PITCHES_2024_06_15,
   SUPER_BOWL_LIX_TDS,
   SUPER_BOWL_LIX_WP,
   WC2018_FINAL_FRANCE_PASSES,
@@ -433,4 +434,61 @@ test("WC2018_FINAL_FRANCE_RECIPIENTS are the captured StatsBomb passers and rece
   expect(WC2018_FINAL_FRANCE_RECIPIENTS.map((r) => [r.action_id, r.player_id])).toEqual(
     WC2018_FINAL_FRANCE_PASSES.map((p) => [p.action_id, p.player_id]),
   );
+});
+
+/** Baseball Savant's CSV (quoted fields, commas inside them, a BOM) as rows of strings. */
+function savant(file: string): Record<string, string>[] {
+  const text = readFileSync(abs(file), "utf8").replace(/^\uFEFF/, "");
+  const rows: string[][] = [];
+  let row: string[] = [];
+  let field = "";
+  let quoted = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i] as string;
+    if (quoted) {
+      if (c !== '"') field += c;
+      else if (text[i + 1] === '"') {
+        field += '"';
+        i++;
+      } else quoted = false;
+    } else if (c === '"') quoted = true;
+    else if (c === ",") {
+      row.push(field);
+      field = "";
+    } else if (c === "\n") {
+      row.push(field);
+      rows.push(row);
+      row = [];
+      field = "";
+    } else if (c !== "\r") field += c;
+  }
+  const [head = [], ...body] = rows;
+  return body.map((r) => Object.fromEntries(r.map((v, i) => [head[i], v])));
+}
+
+test("STATCAST_PITCHES_2024_06_15 are the captured Savant pitches, every value as served", () => {
+  const rows = savant("fixtures/examples/mlb_statcast_search_2024-06-15_head.csv");
+  expect(rows).toHaveLength(46);
+  const keys = Object.keys(STATCAST_PITCHES_2024_06_15[0] ?? {});
+  const TEXT = new Set([
+    "game_date",
+    "home_team",
+    "away_team",
+    "inning_topbot",
+    "player_name",
+    "pitch_type",
+    "pitch_name",
+    "description",
+  ]);
+  expect(STATCAST_PITCHES_2024_06_15).toEqual(
+    rows.map((r) =>
+      Object.fromEntries(
+        keys.map((k) => {
+          const v = r[k] as string;
+          return [k, TEXT.has(k) ? v : Number(v)];
+        }),
+      ),
+    ),
+  );
+  expect(STATCAST_PITCHES_2024_06_15.filter((p) => p.player_name === "Suárez, Eugenio")).toHaveLength(6);
 });

@@ -38,7 +38,8 @@
       "@sportsdataverse/sdvplot/nivo": ["../packages/sdvplot/src/nivo.ts"],
       "@sportsdataverse/sdvplot/victory": ["../packages/sdvplot/src/victory.ts"],
       "@sportsdataverse/sdvplot/deckgl": ["../packages/sdvplot/src/deckgl.ts"],
-      "@sportsdataverse/sdvplot/cytoscape": ["../packages/sdvplot/src/cytoscape.ts"]
+      "@sportsdataverse/sdvplot/cytoscape": ["../packages/sdvplot/src/cytoscape.ts"],
+      "@sportsdataverse/sdvplot/three": ["../packages/sdvplot/src/three/index.ts"]
     }
   },
   "include": [

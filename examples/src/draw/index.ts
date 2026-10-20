@@ -42,6 +42,8 @@ async function drawWith(el: HTMLElement, s: BrowserSpec): Promise<() => void> {
       return (await import(/* webpackChunkName: "draw-deckgl" */ "./deckgl.js")).default(el, s);
     case "cytoscape":
       return (await import(/* webpackChunkName: "draw-cytoscape" */ "./cytoscape.js")).default(el, s);
+    case "three":
+      return (await import(/* webpackChunkName: "draw-three" */ "./three.js")).default(el, s);
   }
 }
 

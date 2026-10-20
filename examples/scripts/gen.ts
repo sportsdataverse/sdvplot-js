@@ -109,8 +109,10 @@ export function generate(): readonly ExampleEntry[] {
   const browser = entries.flatMap((e) => {
     const text = browserModule(readFileSync(join(EX, e.file), "utf8"), e.file);
     if (text === null) return [];
-    mkdirSync(dirname(join(EX, `src/generated/browser/${e.id}.ts`)), { recursive: true });
-    writeFileSync(join(EX, `src/generated/browser/${e.id}.ts`), text);
+    // a .tsx example's upgrade keeps its JSX (a react-three-fiber scene), so it keeps its extension
+    const out = join(EX, `src/generated/browser/${e.id}.${e.lang}`);
+    mkdirSync(dirname(out), { recursive: true });
+    writeFileSync(out, text);
     return [e.id];
   });
   const generated = registryModules(entries, browser);

@@ -18,6 +18,8 @@ export { SurfaceBackdrop, type SurfaceBackdropProps } from "./recharts.js";
 export { LogoBump, type LogoBumpProps } from "./nivo.js";
 export { LogoPoint, type LogoPointProps, LogoTick, type LogoTickProps } from "./victory.js";
 
+export { Surface3D, type Surface3DProps, Trajectory, type TrajectoryProps } from "./three.js";
+
 type ImgProps = Omit<ImgHTMLAttributes<HTMLImageElement>, "src" | "alt" | "height" | "width">;
 
 export interface TeamLogoProps extends ImgProps {

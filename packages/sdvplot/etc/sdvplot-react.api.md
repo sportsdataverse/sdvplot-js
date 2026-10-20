@@ -96,6 +96,17 @@ export interface LogoTickProps extends Shared_2 {
 }
 
 // @public
+export function Surface3D(props: Surface3DProps): ReactElement;
+
+// @public
+export interface Surface3DProps {
+    league: string;
+    options?: Record<string, unknown>;
+    renderOrder?: number;
+    sport: string;
+}
+
+// @public
 export function SurfaceBackdrop(props: SurfaceBackdropProps): ReactElement;
 
 // @public
@@ -144,6 +155,29 @@ export interface TeamLogoProps extends ImgProps {
     variant?: Variant;
 }
 
+// @public
+export function Trajectory(input: TrajectoryProps): ReactElement | null;
+
+// @public
+export interface TrajectoryProps {
+    background?: string;
+    color?: string;
+    fallback?: string;
+    // (undocumented)
+    idSystem?: IdSystem;
+    // (undocumented)
+    league?: League;
+    points: readonly (readonly [x: number, y: number, z: number])[];
+    radialSegments?: number;
+    radius: number;
+    renderOrder?: number;
+    // (undocumented)
+    season?: SeasonInput;
+    team?: unknown;
+    // Warning: (ae-forgotten-export) The symbol "Which" needs to be exported by the entry point react.d.ts
+    which?: Which;
+}
+
 // Warning: (ae-forgotten-export) The symbol "ResolveOptions" needs to be exported by the entry point react.d.ts
 // Warning: (ae-forgotten-export) The symbol "TeamId" needs to be exported by the entry point react.d.ts
 //
@@ -166,7 +200,7 @@ export function Wordmark(props: Omit<TeamLogoProps, "markType">): ReactElement |
 
 // Warnings were encountered during analysis:
 //
-// dist/react.d.ts:281:5 - (ae-forgotten-export) The symbol "ColorOptions" needs to be exported by the entry point react.d.ts
+// dist/react.d.ts:341:5 - (ae-forgotten-export) The symbol "ColorOptions" needs to be exported by the entry point react.d.ts
 
 // (No @packageDocumentation comment for this package)
 
