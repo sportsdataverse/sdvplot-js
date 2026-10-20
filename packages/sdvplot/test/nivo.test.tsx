@@ -225,7 +225,9 @@ describe("logoLayer on a SwarmPlot and a Chord", () => {
     images(container).forEach((img, i) => {
       const arc = p.arcs[i] as ChordLayerProps["arcs"][0];
       const a = (arc.startAngle + arc.endAngle) / 2;
-      const r = p.radius + h / 2 + 4;
+      const w = Number(img.getAttribute("width"));
+      // the mark clears the ring by its half-extent along the radius (a wide mark at 3 or 9 o'clock sits further out)
+      const r = p.radius + (Math.abs(Math.sin(a)) * w) / 2 + (Math.abs(Math.cos(a)) * h) / 2 + 4;
       expect(centre(img).x).toBeCloseTo(cx + r * Math.sin(a));
       expect(centre(img).y).toBeCloseTo(cy - r * Math.cos(a));
       expect(centre(img).h).toBeCloseTo(h);

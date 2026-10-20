@@ -215,6 +215,7 @@ export function logoLayer(o: NivoLayerOptions): NivoLayer {
   return function SdvLogoLayer(props) {
     let frame: number;
     let ts: Target[];
+    let chord: { cx: number; cy: number; radius: number; mids: number[] } | undefined;
     if (props.points !== undefined) {
       frame = props.innerHeight ?? 0;
       ts = bumpPoints(props.points, at).flatMap((p) =>
@@ -240,16 +241,25 @@ export function logoLayer(o: NivoLayerOptions): NivoLayer {
     } else if (props.arcs !== undefined && props.center !== undefined && props.radius !== undefined) {
       const [cx, cy] = props.center;
       frame = 2 * cy; // nivo centres the chord in the plot area
-      const r = props.radius + (height * frame) / 2 + CHORD_GAP;
-      ts = props.arcs.map((a) => {
-        const mid = (a.startAngle + a.endAngle) / 2;
-        return { x: cx + r * Math.sin(mid), y: cy - r * Math.cos(mid), raw: a.id as Value, row: {} };
-      });
+      // placed below, once each mark's aspect is known
+      chord = { cx, cy, radius: props.radius, mids: props.arcs.map((a) => (a.startAngle + a.endAngle) / 2) };
+      ts = props.arcs.map((a) => ({ x: cx, y: cy, raw: a.id as Value, row: {} }));
     } else
       throw new UnsupportedTargetError(
         `logoLayer draws on a nivo Bump (points), SwarmPlot (nodes) or Chord (arcs) layer; got props ${Object.keys(props).join(", ")}`,
       );
     const ps = placed(ts, o);
+    if (chord !== undefined)
+      for (const p of ps) {
+        // clear the ring by the mark's half-extent along its radius: a w x h box reaches |sin m| w/2 + |cos m| h/2
+        const m = chord.mids[p.index] as number;
+        const h = height * frame;
+        const r =
+          chord.radius + (Math.abs(Math.sin(m)) * h * aspect(p)) / 2 + (Math.abs(Math.cos(m)) * h) / 2;
+        const t = ts[p.index] as Target;
+        t.x = chord.cx + (r + CHORD_GAP) * Math.sin(m);
+        t.y = chord.cy - (r + CHORD_GAP) * Math.cos(m);
+      }
     return createElement(
       "g",
       { "data-sdv-layer": "logos", pointerEvents: "none" }, // the lines and nodes under it keep their mouse events
