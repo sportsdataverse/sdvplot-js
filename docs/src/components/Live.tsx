@@ -51,6 +51,9 @@ export interface LiveProps {
   readonly href?: string;
 }
 
+/** Who draws an upgrade whose static copy is a value, by the example's folder (sdvplot/<lib>/...); else plotly.js. */
+const VALUE_LIBS: Readonly<Record<string, string>> = { uplot: "uPlot", svelte: "Svelte (with LayerChart)" };
+
 /**
  * An example: the prerendered output (static HTML, so the page is complete without JavaScript), the code that
  * produced it, and, for DOM and React outputs that have a browser loader, a live re-run that replaces the static
@@ -190,10 +193,10 @@ export default function Live(p: LiveProps): ReactElement {
   return (
     <figure className="sdv-live" data-example={p.id} ref={figure}>
       {p.browser === true && p.kind === "value" && !mounted && error === null && (
-        // a Plotly figure or uPlot options: the static copy is its data, not a picture of it (after a failure, the
-        // alert says why). The library is the example's folder (sdvplot/<lib>/...).
+        // a Plotly figure, uPlot options or a Svelte chart's props: the static copy is its data, not a picture of it
+        // (after a failure, the alert says why). The library is the example's folder (sdvplot/<lib>/...).
         <p className="sdv-live-note">
-          With JavaScript on, {p.id.split("/")[1] === "uplot" ? "uPlot" : "plotly.js"} draws this figure here.
+          With JavaScript on, {VALUE_LIBS[p.id.split("/")[1] ?? ""] ?? "plotly.js"} draws this figure here.
         </p>
       )}
       {output}

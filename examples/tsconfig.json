@@ -33,7 +33,8 @@
       "@sportsdataverse/sdvtables/react": ["../packages/sdvtables/src/react/index.tsx"],
       "@sportsdataverse/sdvtables/export": ["../packages/sdvtables/src/export/index.ts"],
       "@sportsdataverse/examples/data": ["../examples/src/data.ts"],
-      "@sportsdataverse/sdvplot/uplot": ["../packages/sdvplot/src/uplot.ts"]
+      "@sportsdataverse/sdvplot/uplot": ["../packages/sdvplot/src/uplot.ts"],
+      "@sportsdataverse/sdvplot/svelte": ["../packages/sdvplot/src/svelte/index.ts"]
     }
   },
   "include": [

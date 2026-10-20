@@ -22,7 +22,8 @@ function scriptOf(file: string, text: string): string | undefined {
   return undefined;
 }
 
-// What the frameworks declare for these files: Astro's global, Svelte 5's runes and component modules.
+// What the frameworks declare for these files: Astro's global, Svelte 5's runes and component modules (a .svelte
+// import, sdvplot/svelte's components included, is unknown here: svelte-check types sdvplot's own).
 // `$props(): any` means a component's prop types are not checked at its call sites, only inside its script.
 const AMBIENT = `
 declare const Astro: { props: any; params: Record<string, string | undefined> };
@@ -30,6 +31,7 @@ declare function $props(): any;
 declare function $state<T>(initial: T): T;
 declare function $state<T>(): T | undefined;
 declare function $effect(fn: () => void | (() => void)): void;
+declare function $derived<T>(value: T): T;
 declare module "*.svelte" { const component: unknown; export default component; }
 `;
 

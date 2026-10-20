@@ -20,3 +20,15 @@ declare module "plotly.js-basic-dist-min" {
   };
   export default Plotly;
 }
+
+/** A Svelte component: Svelte compiles it (vite-plugin-svelte in the gate, svelte-loader in the docs). tsc cannot read
+ *  one, so its props are not checked here; svelte-check types sdvplot's own (packages/sdvplot tsconfig.svelte.json). */
+declare module "*.svelte" {
+  import type { Component } from "svelte";
+  // biome-ignore lint/suspicious/noExplicitAny: any component's props
+  const component: Component<any>;
+  export default component;
+}
+
+/** A stylesheet import (Docusaurus' CSS rule bundles it). */
+declare module "*.css";

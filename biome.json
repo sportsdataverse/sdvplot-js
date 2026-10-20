@@ -16,7 +16,7 @@
       "docs/docs/api/**",
       "docs/src/css/sdv-theme.css",
       "spikes/**",
-      "examples/snippets/**/*.svelte",
+      "**/*.svelte",
       "examples/snippets/**/*.astro"
     ]
   },

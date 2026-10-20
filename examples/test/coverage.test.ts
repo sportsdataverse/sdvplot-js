@@ -106,7 +106,36 @@ const EXEMPT: readonly (readonly [spec: string, name: RegExp | "*", reason: stri
     only(["tableToPNG", "htmlToPNG", "socialCrop", "batchToPNG"]),
     "needs a Chromium binary; the docs build and the gate run without one — exercised by the render-tests CI job (SDV_RENDER_TESTS=1) and shown in guides/export.mdx",
   ],
+  [
+    "@sportsdataverse/sdvplot/svelte",
+    only(["LogoMark", "HeadshotMark", "SurfaceBackdrop"]),
+    "Svelte components, used in .svelte markup, which an example module cannot hold: the examples/snippets/svelte components use each, and the sdvplot/svelte examples draw those snippets live (checked below)",
+  ],
+  [
+    "@sportsdataverse/sdvplot/svelte",
+    only(["embedSources"]),
+    "the same embedSources every adapter re-exports, shown by the sdvplot/echarts, /plotly and /vega embed-sources examples; LogoMark's `embed` takes its map",
+  ],
 ];
+
+test("each sdvplot/svelte component is used by a snippet that an example draws", () => {
+  // a Svelte browser spec: `lib: "svelte"`, then the snippet it mounts by name
+  const drawn = new Set(
+    EXAMPLES.flatMap((e) => [...e.code.matchAll(/lib: "svelte",\s*component: "(\w+)"/g)].map((m) => m[1])),
+  );
+  // the markup outside HTML comments: a component named only in a comment is not used
+  const markup = (f: string): string =>
+    readFileSync(abs(`examples/snippets/svelte/${f}`), "utf8").replace(/<!--[\s\S]*?-->/g, "");
+  for (const name of ["LogoMark", "HeadshotMark", "SurfaceBackdrop"]) {
+    const users = readdirSync(abs("examples/snippets/svelte")).filter((f) =>
+      new RegExp(`<${name}\\b`).test(markup(f)),
+    );
+    expect(
+      users.some((f) => drawn.has(f.replace(/\.svelte$/, ""))),
+      `${name}: no drawn snippet uses it`,
+    ).toBe(true);
+  }
+});
 
 const PACKAGES = ["sdvplot", "sporty", "sdvtables"] as const;
 
