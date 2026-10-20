@@ -39,7 +39,8 @@ server.
 The bars take their colours from `teamColorPalette(league, teams, { background })`, one per team in order. On a dark
 background a team colour under 3:1 contrast gives way to the team's other colour, or is lightened until it reads, and a
 colour that would then sit too close to an earlier team's (CIE76 ΔE under 20) takes the team's other colour, or else
-the colour nearest its own (its lightness, hue or chroma stepped) that is distinct and still reads. Here Denver and
+the colour nearest its own (its lightness, hue or chroma stepped) that is distinct and still reads; if none is, it
+keeps the readable colour and warns once. Here Denver and
 New England share one navy. The chart's own background and axis ink are yours to set (here in the axes'
 `style`), or come with the base theme.
 

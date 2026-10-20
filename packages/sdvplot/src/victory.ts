@@ -33,7 +33,8 @@ export interface VictoryColorOptions {
 /**
  * One colour per team, in order: a `colorScale` for a `VictoryGroup`, `VictoryStack`, `VictoryPie` or
  * `VictoryLegend`, or a series' `style.data.stroke` / `fill`. With `background`, every colour keeps 3:1 contrast
- * against it (dark mode) and stays distinct from the others. It has the shape of `sdvplot/echarts`'
+ * against it (dark mode) and aims to stay distinct from the others (when it cannot, it keeps the readable colour and
+ * warns once). It has the shape of `sdvplot/echarts`'
  * `teamColorPalette`; `teamTheme` puts the same colours into a Victory theme.
  *
  * @example
@@ -94,8 +95,8 @@ export interface TeamThemeColors {
  * A Victory theme from team colours (`teamColorPalette`): the palette as the `colorScale` of every group, stack, pie
  * and legend, so each child of a `VictoryGroup` is drawn in its team's colour, and the first team's colour for a lone
  * line, area, bar or scatter. Built over `base` (a Victory theme), whose other keys and styles are kept. Pass it as a
- * `VictoryChart`'s `theme`. With `background`, every colour keeps 3:1 contrast against it and stays distinct from the
- * others; the chart's own background and axis ink are the base theme's to set.
+ * `VictoryChart`'s `theme`. With `background`, every colour keeps 3:1 contrast against it and aims to stay distinct from
+ * the others (else the readable colour and one warning); the chart's own background and axis ink are the base theme's to set.
  *
  * @example
  * ```tsx
