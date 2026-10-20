@@ -48,7 +48,7 @@ install for you, so add the ones for the subpaths you import:
 
 | You import | Also install |
 | --- | --- |
-| `@sportsdataverse/sdvplot`, `/bins`, `/testing`, `/plotly`, `/vega`, `/echarts` | nothing |
+| `@sportsdataverse/sdvplot`, `/bins`, `/testing`, `/plotly`, `/vega`, `/echarts`, `/uplot` | nothing |
 | `@sportsdataverse/sdvplot/plot` | `@observablehq/plot` >= 0.6.16 and `@sportsdataverse/sporty` |
 | `@sportsdataverse/sdvplot/d3` | `d3` >= 7 and `@sportsdataverse/sporty` |
 | `@sportsdataverse/sdvplot/shots` | `@sportsdataverse/sporty` |

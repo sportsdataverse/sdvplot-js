@@ -19,6 +19,7 @@ export default defineConfig({
     vega: "src/vega.ts",
     echarts: "src/echarts.ts",
     recharts: "src/recharts.ts",
+    uplot: "src/uplot.ts",
   },
   external: [
     "react",

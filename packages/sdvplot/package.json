@@ -15,7 +15,8 @@
     "d3",
     "chartjs",
     "react",
-    "recharts"
+    "recharts",
+    "uplot"
   ],
   "homepage": "https://plot.sportsdataverse.org",
   "bugs": "https://github.com/sportsdataverse/sdvplot-js/issues",
@@ -86,6 +87,10 @@
       "types": "./dist/recharts.d.ts",
       "import": "./dist/recharts.js"
     },
+    "./uplot": {
+      "types": "./dist/uplot.d.ts",
+      "import": "./dist/uplot.js"
+    },
     "./package.json": "./package.json"
   },
   "peerDependencies": {
@@ -95,7 +100,8 @@
     "chart.js": ">=4.4",
     "d3": ">=7",
     "react": ">=18",
-    "recharts": ">=3.8"
+    "recharts": ">=3.8",
+    "uplot": ">=1.6.31"
   },
   "peerDependenciesMeta": {
     "@observablehq/plot": {
@@ -117,6 +123,9 @@
       "optional": true
     },
     "recharts": {
+      "optional": true
+    },
+    "uplot": {
       "optional": true
     }
   },
@@ -159,6 +168,7 @@
     "react-dom": "^19.3.0",
     "react-is": "^19.3.0",
     "recharts": "3.10.1",
+    "uplot": "1.6.32",
     "vega": "^6.4.0",
     "vega-lite": "^6.4.3"
   }
