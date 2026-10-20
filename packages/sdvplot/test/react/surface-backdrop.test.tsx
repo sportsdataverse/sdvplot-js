@@ -57,6 +57,11 @@ test("SurfaceBackdrop paints the league's team-painted surface over the plot are
   expect(all[0]?.hasAttribute("data-sdv-surface")).toBe(true);
 });
 
+test("a bigint team id renders (the memo key does not JSON.stringify a bigint)", async () => {
+  const { container } = chart(<SurfaceBackdrop league="nba" team={1610612743n} displayRange="defense" />);
+  await waitFor(() => expect(container.querySelector("g[data-sdv-surface] svg")).not.toBeNull());
+});
+
 test("a domain wider than the surface maps the scene's bbox into data coordinates, clipped to the plot area", async () => {
   const w = x1 - x0;
   const { container } = chart(<SurfaceBackdrop league="nba" displayRange="defense" />, [

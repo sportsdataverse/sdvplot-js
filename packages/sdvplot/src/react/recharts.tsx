@@ -86,7 +86,8 @@ const Backdrop = lazy(async (): Promise<{ default: ComponentType<SurfaceBackdrop
     const sx = useXScale(xAxisId);
     const sy = useYScale(yAxisId);
     const clip = `sdv-surface-${useId().replace(/[^\w-]/g, "")}`;
-    const key = JSON.stringify(o);
+    // a bigint team id is a `Value`: JSON.stringify throws on bigint, so key it as text
+    const key = JSON.stringify(o, (_k, v: unknown) => (typeof v === "bigint" ? `${v}n` : v));
     // biome-ignore lint/correctness/useExhaustiveDependencies: `key` is `o` by value (a fresh object every render)
     const scene = useMemo(() => surfaces.surfaceScene(league, o as SurfaceSceneOptions), [league, key]);
     // undefined: the chart has not laid out yet (the first render), which is not worth a warning
@@ -145,7 +146,7 @@ const Backdrop = lazy(async (): Promise<{ default: ComponentType<SurfaceBackdrop
  * A team-painted court, field or rink under a Recharts chart's series: place it as a child of the chart (before the
  * series), as Recharts 3 renders any element there (`<Customized>` is deprecated). The surface is drawn in the
  * numeric axes' units: set both axes' `domain` to the surface's bbox (sporty's `surface(...).bbox`) to fill the plot
- * area, or to any range in those units to show part of it. recharts (3.2 or later) and `@sportsdataverse/sporty`
+ * area, or to any range in those units to show part of it. recharts (3.8 or later) and `@sportsdataverse/sporty`
  * load when it first renders, never with `sdvplot/react`; either missing throws `OptionalDependencyError` then. A
  * server render draws nothing (it loads on the client).
  *

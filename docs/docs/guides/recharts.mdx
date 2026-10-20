@@ -6,7 +6,7 @@ sidebar_position: 7.5
 [Recharts](https://recharts.github.io) draws a chart from React components, and lets a series or an axis hand each
 point or tick to a function of your own. `@sportsdataverse/sdvplot/recharts` gives you those functions: team logos and
 player headshots as a series' `dot` or `shape`, team logos as an axis' `tick`, and team colours for each series. It
-never imports recharts (install `recharts` 3.2 or later beside it, an optional peer), and it is synchronous, so load the
+never imports recharts (install `recharts` 3.8 or later beside it, an optional peer), and it is synchronous, so load the
 league first (`loadLeague`). The court, field or rink backdrop is a component, `<SurfaceBackdrop>`, in
 `@sportsdataverse/sdvplot/react`. Each chart below is drawn by Recharts in your browser.
 
@@ -18,7 +18,8 @@ text label, as the ECharts adapter does. `teamColorPalette(league, teams, { back
 with `background`, a colour under 3:1 contrast against it gives way to the team's other colour, or is lightened (on a
 dark background) or darkened until it reads, and a colour that would then sit too close to an earlier team's (CIE76
 ΔE under 20, as the Lakers' and the Warriors' golds on a dark background) takes the team's other colour, or the nearest
-colour to its own (lightness, hue or chroma stepped) that tells the two apart and still reads.
+colour to its own (lightness, hue or chroma stepped) that tells the two apart and still reads. If no candidate does
+both, it keeps the readable colour and warns once, so ΔE 20 is a target, not a guarantee.
 
 <Live id="sdvplot/recharts/nba-pacific-logo-ticks" />
 
@@ -45,8 +46,7 @@ its `shape`. `logoDot` works there too. An id with no headshot draws nothing and
 them (Recharts 3 renders any element there; `<Customized>` is deprecated). It draws the surface in the axes' units, so
 both axes must be `type="number"` with a numeric `domain` in the surface's units: the surface's bbox (sporty's
 `surface(...).bbox`) fills the plot area, any other range in those units shows part of it. Reversed and log axes are not
-supported: on them, and on a category axis, it draws nothing and warns once (recharts 3.8 or later is needed to tell a
-reversed or log axis apart; on 3.2 to 3.7 it would draw the surface mirrored or stretched). recharts and `@sportsdataverse/sporty` load when it first renders,
+supported: on them, and on a category axis, it draws nothing and warns once. recharts and `@sportsdataverse/sporty` load when it first renders,
 never with `sdvplot/react`, and a missing one throws `OptionalDependencyError` then. On the server it draws nothing; it
 appears once the page's scripts run.
 
