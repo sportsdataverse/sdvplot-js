@@ -372,6 +372,19 @@ describe("surfaceMesh: sporty's surface as one triangle mesh in the z = 0 plane"
     }
   });
 
+  test("the NHL neutral-zone faceoff spots are drawn: 8 spot rings, each two non-empty half rings, none dropped", () => {
+    // sportyR builds each half ring from (cos(pi/2) r, r) = (6.1e-17 r, r) back to an exact (0, r) (sportyR#79): at the
+    // origin the "back at the first point" split would never fire and the halves would cancel as one ~zero-area ring.
+    // sporty places them at the spots (x = +-20, +-69 ft), where the 6e-17 rounds away; this holds that.
+    const rink = surfaceMesh("hockey", "nhl");
+    const spots = rink.loops.filter((l) => l.name === "nodzone_faceoff_spot_ring");
+    expect(spots).toHaveLength(16);
+    for (const l of spots) {
+      expect(l.indexCount).toBeGreaterThan(0);
+      expect(loopArea(rink, l)).toBeGreaterThan(0.4); // a half ring of the spot's band, ~0.48 sq ft
+    }
+  });
+
   test("colours are each feature's sporty fill, in three's linear-sRGB working space, alpha kept", () => {
     const m = surfaceMesh("baseball", "mlb");
     const scene = surface("baseball", "mlb");

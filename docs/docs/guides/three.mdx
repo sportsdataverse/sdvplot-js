@@ -81,9 +81,10 @@ Media via Baseball Savant. Data © MLB Advanced Media, L.P.; see MLB's
 
 `teamColorPalette(league, teams, { background })` gives one colour per team, as in the other adapters. With the
 colour the marks are seen against as `background` (the example uses the field's grass), every colour keeps at least
-3:1 contrast against it, as in dark mode, and the teams stay apart (a CIE76 ΔE of 20 or more), through sdvplot's
-shared team palette. A team listed twice gets one colour; a team that does not resolve takes `fallback` (default
-`#808080`) and stays out of the palette. `trajectoryTube` takes the same `background` for a single team's tube.
+3:1 contrast against it, as in dark mode, and the teams aim to stay apart (a CIE76 ΔE of 20 or more), through
+sdvplot's shared team palette; if no candidate is both, it keeps the readable colour and warns once. A team listed
+twice gets one colour; a team that does not resolve takes `fallback` (default `#808080`) as given, its contrast
+unchecked, and stays out of the palette. `trajectoryTube` takes the same `background` for a single team's tube.
 
 ## Without React
 

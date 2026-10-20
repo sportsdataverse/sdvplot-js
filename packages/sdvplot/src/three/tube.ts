@@ -25,8 +25,8 @@ export interface ThreeColorOptions {
 
 /**
  * One colour per team, in order, for each team's mesh material (a `Trajectory`'s `color`, a `MeshBasicMaterial`'s
- * `color`). With `background`, every colour keeps 3:1 contrast against it (dark mode) and the teams stay distinct. A
- * team listed twice gets one colour.
+ * `color`). With `background`, every colour keeps 3:1 contrast against it (dark mode) and the teams aim to stay
+ * distinct (when they cannot, it keeps the readable colour and warns once). A team listed twice gets one colour.
  *
  * @example
  * ```ts

@@ -46,20 +46,48 @@ const draw: Draw<"three"> = async (el, s) => {
   box.style.width = `${s.width}px`;
   box.style.height = `${s.height}px`;
   box.style.maxWidth = "100%";
-  const root = createRoot(box);
-  root.render(
-    <Canvas
-      frameloop="demand"
-      gl={{ preserveDrawingBuffer: true }}
-      camera={{ position: [...s.camera.position], up: [0, 0, 1], fov: s.camera.fov, near: 0.5, far: 2000 }}
-    >
-      <Rig target={s.camera.target} box={box} />
-      {s.scene()}
-    </Canvas>,
-  );
-  return () => {
+  // Resolve once the Canvas has drawn its first frame, so Live keeps the static copy until then; a WebGL or render
+  // error before that rejects, and Live shows its alert. This root is not under Live's error boundary, so an error
+  // after that is shown in the box itself (and logged) rather than lost.
+  let ready = false;
+  let fail: (e: unknown) => void = () => {};
+  const failed = new Promise<never>((_, reject) => {
+    fail = reject;
+  });
+  const root = createRoot(box, {
+    onUncaughtError: (e) => {
+      if (!ready) return fail(e);
+      console.error(e);
+      const alert = document.createElement("p");
+      alert.setAttribute("role", "alert");
+      alert.textContent = `This scene threw in your browser: ${e instanceof Error ? e.message : String(e)}`;
+      box.replaceChildren(alert);
+    },
+  });
+  const remove = (): void => {
     root.unmount();
     box.remove();
   };
+  const created = new Promise<void>((resolve) =>
+    root.render(
+      <Canvas
+        frameloop="demand"
+        gl={{ preserveDrawingBuffer: true }}
+        camera={{ position: [...s.camera.position], up: [0, 0, 1], fov: s.camera.fov, near: 0.5, far: 2000 }}
+        onCreated={() => resolve()}
+      >
+        <Rig target={s.camera.target} box={box} />
+        {s.scene()}
+      </Canvas>,
+    ),
+  );
+  try {
+    await Promise.race([created, failed]);
+  } catch (e) {
+    remove();
+    throw e;
+  }
+  ready = true;
+  return remove;
 };
 export default draw;
