@@ -91,4 +91,19 @@ export type BrowserSpec =
       readonly component: "BumpChart" | "QbHeadshots" | "CourtShots";
       readonly props: Readonly<Record<string, unknown>>;
       readonly label: string;
+    }
+  /**
+   * deck.gl layers over a sporty surface, drawn top down (an OrthographicView, y up) in the surface's own coordinates
+   * and fitted to `bounds` (`[x0, y0, x1, y1]`). `layers` builds fresh props per chart: each names its layer class.
+   */
+  | {
+      readonly lib: "deckgl";
+      readonly layers: () => readonly {
+        readonly layer: "PolygonLayer" | "IconLayer" | "ArcLayer";
+        readonly props: object;
+      }[];
+      readonly bounds: readonly [x0: number, y0: number, x1: number, y1: number];
+      readonly width: number;
+      readonly height: number;
+      readonly label: string;
     };

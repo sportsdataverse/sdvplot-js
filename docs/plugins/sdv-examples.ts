@@ -7,7 +7,7 @@ import { DEFINES, SOURCES, abs } from "../../examples/sources";
 const require = createRequire(import.meta.url);
 const dir = (pkg: string): string => dirname(require.resolve(`${pkg}/package.json`));
 /** The chart libraries the browser upgrades draw with: examples/src/draw/<lib>.ts, chunk `draw-<lib>`. */
-const CHART_LIBS = ["plotly", "vega", "echarts", "chartjs", "uplot", "svelte"] as const;
+const CHART_LIBS = ["plotly", "vega", "echarts", "chartjs", "uplot", "svelte", "deckgl"] as const;
 /**
  * Vega's self-contained build (its d3 inside). The module build imports the d3-* packages Observable Plot imports,
  * and a module imported from two chunks cannot be scope-hoisted into either: every Plot and D3 page grew 4.8 KB

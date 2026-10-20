@@ -24,6 +24,7 @@ export default defineConfig({
     "svelte-core": "src/svelte-core.ts",
     nivo: "src/nivo.ts",
     victory: "src/victory.ts",
+    deckgl: "src/deckgl.ts",
   },
   external: [
     "react",

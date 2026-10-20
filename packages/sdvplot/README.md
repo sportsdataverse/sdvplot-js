@@ -38,7 +38,8 @@ the subpaths you import: `react` >= 18 for `/react` (with `victory` >= 37.3.6 fo
 `/recharts` (with `recharts` >= 3.8 to draw) and `/nivo` (with `@nivo/core` and the chart's `@nivo/*` package >= 0.99
 to draw; `<LogoBump>` loads `@nivo/bump`), `@observablehq/plot` >= 0.6.16 for `/plot`, `d3` >= 7 for `/d3` and
 `/interact`, `chart.js` >= 4.4 for `/chartjs` and `/chartjs/surface`, `svelte` >= 5.57 and `layerchart` >= 2.5.1 for
-`/svelte`, and `@resvg/resvg-js` for `/export`'s `toPNG`.
+`/svelte`, `@sportsdataverse/sporty` for `/deckgl` (draw its props with `@deck.gl/core` and `@deck.gl/layers` >= 9.4),
+and `@resvg/resvg-js` for `/export`'s `toPNG`.
 
 `/plot`, `/d3`, `/shots` and `/chartjs/surface` also need `@sportsdataverse/sporty`, whether or not you draw a
 surface: they import it when they load, and fail to load without it. No other subpath imports sporty when it loads
@@ -133,6 +134,7 @@ The backgrounds default to `#ffffff` (light) and `#181a1b` (dark); pass `theme: 
 | `@sportsdataverse/sdvplot/svelte` | Svelte 5 components for LayerChart charts: `LogoMark` (team logos or wordmarks at data points), `HeadshotMark`, `SurfaceBackdrop` (a team-painted court, field or rink in the chart's units), plus `teamColorPalette` (with `background`, 3:1 contrast for dark mode and distinct teams) and `embedSources` (optional peers `svelte` >= 5.57 and `layerchart` >= 2.5.1, loaded when a component renders; `SurfaceBackdrop` also needs `@sportsdataverse/sporty`) |
 | `@sportsdataverse/sdvplot/nivo` | `teamColors` (a chart's `colors`; with `background` and `teams`: 3:1 contrast and distinct colours for dark mode), `logoLayer` (a custom layer of logos over a Bump, SwarmPlot or Chord), `logoNode` (logos as a SwarmPlot's or Bump's nodes), `embedSources` (React >= 18; never imports nivo, optional peers >= 0.99) |
 | `@sportsdataverse/sdvplot/victory` | `teamTheme` (a Victory theme from team colours), `teamColorPalette` (a `colorScale`; with `background`: 3:1 contrast and distinct colours for dark mode), `embedSources` (no runtime dependency; draw with `victory` >= 37.3.6) |
+| `@sportsdataverse/sdvplot/deckgl` | `logoIconLayer` (IconLayer props: team logos at points), `passArcLayer` (ArcLayer props in team colours; with `background`, 3:1 contrast and distinct), `surfaceLayer` (PolygonLayer props: a sporty surface in its own cartesian coordinates) (never imports deck.gl; `@deck.gl/core` and `@deck.gl/layers` >= 9.4 are optional peers) |
 
 ## **Observable Plot: Plot's own options, transforms and tips**
 
