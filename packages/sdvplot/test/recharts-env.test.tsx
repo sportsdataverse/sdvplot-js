@@ -80,9 +80,9 @@ test("./react loads recharts and sporty only when SurfaceBackdrop renders (Revie
   ).toEqual([]);
 });
 
-test("the ./recharts subpath is exported, with recharts an optional peer at 3.2 or later", () => {
+test("the ./recharts subpath is exported, with recharts an optional peer at 3.8 or later", () => {
   const pkg = JSON.parse(readFileSync(resolve(SRC, "../package.json"), "utf8"));
   expect(pkg.exports["./recharts"]).toEqual({ types: "./dist/recharts.d.ts", import: "./dist/recharts.js" });
-  expect(pkg.peerDependencies.recharts).toBe(">=3.2");
+  expect(pkg.peerDependencies.recharts).toBe(">=3.8");
   expect(pkg.peerDependenciesMeta.recharts).toEqual({ optional: true });
 });

@@ -1,7 +1,7 @@
 /**
  * The Recharts adapter: team logos and player headshots as Recharts render props (a series' `dot` or `shape`, an
  * axis' `tick`), and team colours for the series' `stroke` / `fill`. Pure: recharts is never imported (the prop types
- * here are structural, read from recharts 3.2 and later); React's `createElement` builds the SVG `<image>` each prop
+ * here are structural, read from recharts 3.8 and later); React's `createElement` builds the SVG `<image>` each prop
  * returns. Call after `loadLeague(league)` / `preloadAll()`. The court / field / rink backdrop is a component,
  * `<SurfaceBackdrop>` in `sdvplot/react`.
  */

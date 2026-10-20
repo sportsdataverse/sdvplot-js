@@ -55,8 +55,8 @@ install for you, so add the ones for the subpaths you import:
 | `@sportsdataverse/sdvplot/chartjs` | `chart.js` >= 4.4 |
 | `@sportsdataverse/sdvplot/chartjs/surface` | `chart.js` >= 4.4 and `@sportsdataverse/sporty` |
 | `@sportsdataverse/sdvplot/interact` | `d3` >= 7 |
-| `@sportsdataverse/sdvplot/react` | `react` >= 18 (`<SurfaceBackdrop>` also loads `recharts` >= 3.2 and `@sportsdataverse/sporty` when it renders) |
-| `@sportsdataverse/sdvplot/recharts` | `react` >= 18 (draw with `recharts` >= 3.2) |
+| `@sportsdataverse/sdvplot/react` | `react` >= 18 (`<SurfaceBackdrop>` also loads `recharts` >= 3.8 and `@sportsdataverse/sporty` when it renders) |
+| `@sportsdataverse/sdvplot/recharts` | `react` >= 18 (draw with `recharts` >= 3.8) |
 | `@sportsdataverse/sdvplot/export` | `@resvg/resvg-js` (for `toPNG`) |
 | `@sportsdataverse/sporty`, `/svg`, `/specs`, `/canvas` | nothing (`@napi-rs/canvas` >= 0.1.50 gives `/canvas` a 2D context in Node) |
 | `@sportsdataverse/sporty/plot` | `@observablehq/plot` >= 0.6.16 |

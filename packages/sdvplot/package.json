@@ -95,7 +95,7 @@
     "chart.js": ">=4.4",
     "d3": ">=7",
     "react": ">=18",
-    "recharts": ">=3.2"
+    "recharts": ">=3.8"
   },
   "peerDependenciesMeta": {
     "@observablehq/plot": {

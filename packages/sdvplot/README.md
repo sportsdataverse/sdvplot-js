@@ -34,7 +34,7 @@ yarn add @sportsdataverse/sdvplot
 
 ESM only, Node >= 20.18.1. The core and the `bins`, `testing`, `plotly`, `vega` and `echarts` subpaths need no
 peer. The others use optional peers, which npm and pnpm do not install for you, so add the ones for the subpaths you
-import: `react` >= 18 for `/react` and `/recharts` (with `recharts` >= 3.2 to draw), `@observablehq/plot` >= 0.6.16 for `/plot`, `d3` >= 7 for `/d3` and `/interact`,
+import: `react` >= 18 for `/react` and `/recharts` (with `recharts` >= 3.8 to draw), `@observablehq/plot` >= 0.6.16 for `/plot`, `d3` >= 7 for `/d3` and `/interact`,
 `chart.js` >= 4.4 for `/chartjs` and `/chartjs/surface`, and `@resvg/resvg-js` for `/export`'s `toPNG`.
 
 `/plot`, `/d3`, `/shots` and `/chartjs/surface` also need `@sportsdataverse/sporty`, whether or not you draw a
@@ -125,7 +125,7 @@ The backgrounds default to `#ffffff` (light) and `#181a1b` (dark); pass `theme: 
 | `@sportsdataverse/sdvplot/plotly` | `withLogos`, `withWordmarks`, `withHeadshots`, `withAxisLogos`, `teamColorway`, `embedSources` (no runtime dependency) |
 | `@sportsdataverse/sdvplot/vega` | `withLogos`, `withWordmarks`, `withHeadshots`, `logoLayer`, `withAxisLogos`, `teamColorScale`, `embedSources` (no runtime dependency) |
 | `@sportsdataverse/sdvplot/echarts` | `withLogos`, `withWordmarks`, `withHeadshots`, `withAxisLogos`, `teamColorPalette`, `embedSources` (no runtime dependency) |
-| `@sportsdataverse/sdvplot/recharts` | Recharts render props: `logoDot`, `headshotDot` (a series' `dot` / `shape`), `logoTick` (an axis' `tick`), `teamColorPalette` (with `background`: 3:1 contrast for dark mode), `embedSources` (React >= 18; never imports recharts, an optional peer >= 3.2) |
+| `@sportsdataverse/sdvplot/recharts` | Recharts render props: `logoDot`, `headshotDot` (a series' `dot` / `shape`), `logoTick` (an axis' `tick`), `teamColorPalette` (with `background`: 3:1 contrast for dark mode), `embedSources` (React >= 18; never imports recharts, an optional peer >= 3.8) |
 
 ## **Observable Plot: Plot's own options, transforms and tips**
 
