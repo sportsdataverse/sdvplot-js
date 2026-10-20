@@ -375,6 +375,11 @@ describe("logoMarkers: a series primitive painting team logos", () => {
       /American odds.*decimal/,
     );
     expect(() => logoMarkers([{ t: 1, wp: -110, team: "PHI" }], { ...o, units: "american" })).not.toThrow();
+    // a missing y is not a value to check: the row is skipped with one warning, as without units
+    const gap = { t: 0, wp: null, team: "PHI" };
+    const odds = [gap, { t: 1, wp: -110, team: "PHI" }];
+    expect(() => warnings(() => logoMarkers(odds, { ...o, units: "american" }))).not.toThrow();
+    expect(() => warnings(() => logoMarkers([gap, ...ENDS], { ...o, units: "probability" }))).not.toThrow();
     expect(() => logoMarkers(ENDS, { ...o, units: "percent" as never })).toThrow(InputError);
     expect(() => logoMarkers(ENDS, { ...o, team: "club" })).toThrow(/team column/);
   });

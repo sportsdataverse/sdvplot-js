@@ -88,7 +88,8 @@ keeps the last play at each second.
 Pass the chart's background as `background` and the colour keeps at least 3:1 contrast against it (WCAG's minimum for
 graphics): a team colour under that gives way to the team's other colour, else is lightened (on a dark background) or
 darkened until it reads. Pass every team on the chart as `teams`, in order, and each also stays apart from the earlier
-ones (a CIE76 ΔE of 20 or more), so two teams never share a colour. Call `teamSeriesOptions` once per series with the
+ones (a CIE76 ΔE of 20 or more); if no candidate is both readable and distinct, it keeps the readable colour and warns
+once. Call `teamSeriesOptions` once per series with the
 same `teams`. A colour that already reads and is distinct is kept; without `background` the colours are the teams' own.
 A team that does not resolve never moves a real team's colour. Set the chart's own `layout.background` and
 `layout.textColor` to match.

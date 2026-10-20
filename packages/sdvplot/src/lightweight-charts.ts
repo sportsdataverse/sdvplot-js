@@ -176,7 +176,8 @@ export interface TeamSeriesOptions {
 /**
  * A LineSeries' options in a team's colour, for `chart.addSeries(LineSeries, ...)`. With `units`, the prices read as
  * probabilities ("58.5%") or American odds ("+150", "-120") on the price scale, the crosshair and the last-value line.
- * With `background`, the colour keeps 3:1 contrast against it and stays distinct from the other `teams` on the chart.
+ * With `background`, the colour keeps 3:1 contrast against it and aims to stay distinct from the other `teams` on the
+ * chart (when it cannot, it keeps the readable colour and warns once).
  * A team that does not resolve takes `fallback` and warns; it never moves a real team's colour.
  *
  * @example
@@ -292,6 +293,8 @@ export function logoMarkers(rows: readonly Row[], o: LogoMarkersOptions): LwcSer
   const units = checkUnits(o.units);
   if (units !== undefined)
     for (const r of rows) {
+      // a missing y is left to markPlacements, which skips the row with one warning (Number(null) is 0, a "probability")
+      if (r[o.y] === undefined || r[o.y] === null) continue;
       const v = Number(r[o.y]);
       if (units === "probability" && !(v >= 0 && v <= 1))
         throw new InputError(
