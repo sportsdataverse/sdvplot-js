@@ -191,7 +191,8 @@ const rgba = (hex: string, alpha: number): string => {
 /**
  * Team colours for a uPlot chart's series: row `i`'s team strokes `series[i + 1]` (series 0 is uPlot's x), and with
  * `fill` also fills the area under it. The rest of each series is kept and the options are copied, never changed. With
- * `background`, every colour keeps 3:1 contrast against it (dark mode) and stays distinct from the others.
+ * `background`, every colour keeps 3:1 contrast against it (dark mode) and aims to stay distinct from the others (when
+ * it cannot, it keeps the readable colour and warns once).
  *
  * @example
  * ```ts
