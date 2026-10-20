@@ -17,6 +17,7 @@ const CHART_LIBS = [
   "deckgl",
   "cytoscape",
   "three",
+  "lightweight-charts",
 ] as const;
 /**
  * Vega's self-contained build (its d3 inside). The module build imports the d3-* packages Observable Plot imports,

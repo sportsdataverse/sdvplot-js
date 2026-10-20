@@ -27,6 +27,7 @@ export default defineConfig({
     deckgl: "src/deckgl.ts",
     cytoscape: "src/cytoscape.ts",
     three: "src/three/index.ts",
+    "lightweight-charts": "src/lightweight-charts.ts",
   },
   external: [
     "react",

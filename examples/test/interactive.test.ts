@@ -41,6 +41,7 @@ const DRAWN: Readonly<Record<string, string>> = {
   deckgl: ".sdv-live-output canvas",
   cytoscape: ".sdv-live-output canvas",
   three: ".sdv-live-output canvas",
+  "lightweight-charts": ".sdv-live-output .tv-lightweight-charts canvas",
 };
 
 describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the built docs", () => {
@@ -319,6 +320,88 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
           return out.join("; ");
         });
         expect(marks, "each tube and the field show their own colours where they are").toBe("");
+      }
+      if (lib === "lightweight-charts") {
+        // Each line's middle point holds its team colour (exact, within anti-aliasing), and each line's logo is painted
+        // where logoMarkers puts it: detaching the primitive changes the pixels of the logo's box. Then the
+        // attribution: TradingView's logo links to tradingview.com, and attributionNotice put the notice on the page once.
+        const got = await figure.evaluate(async (f) => {
+          type Point = { time: number; value: number };
+          type Series = {
+            data(): Point[];
+            options(): { color: string };
+            priceToCoordinate(price: number): number;
+            detachPrimitive(p: object): void;
+            attachPrimitive(p: object): void;
+          };
+          type Chart = {
+            panes(): { getHTMLElement(): HTMLElement }[];
+            paneSize(): { height: number };
+            timeScale(): { timeToCoordinate(time: number): number };
+          };
+          const box = f.querySelector(".sdv-live-output [role='figure']") as unknown as {
+            sdvLwc: { chart: Chart; series: Series[]; primitives: object[][] };
+          };
+          const { chart, series, primitives } = box.sdvLwc;
+          const canvas = chart.panes()[0]?.getHTMLElement().querySelector("canvas") as HTMLCanvasElement;
+          const ratio = canvas.width / canvas.clientWidth;
+          // the pixels of the square of half-side r (CSS px) centred on (x, y), as [r, g, b, a]
+          const read = (x: number, y: number, r: number): number[][] => {
+            const [x0, y0, side] = [x - r, y - r, 2 * r].map((v) => Math.round(v * ratio)) as [
+              number,
+              number,
+              number,
+            ];
+            const d =
+              canvas.getContext("2d")?.getImageData(x0, y0, side, side).data ?? new Uint8ClampedArray();
+            return Array.from({ length: d.length / 4 }, (_, i) => [...d.subarray(4 * i, 4 * i + 4)]);
+          };
+          const near = (a: readonly number[], b: readonly number[]) =>
+            a.every((v, i) => Math.abs(v - (b[i] ?? 0)) <= 24);
+          const lines = series.map((s) => {
+            const data = s.data();
+            const mid = data[Math.floor(data.length / 2)] as Point;
+            const color = s.options().color;
+            const want = [1, 3, 5].map((i) => Number.parseInt(color.slice(i, i + 2), 16));
+            const px = read(chart.timeScale().timeToCoordinate(mid.time), s.priceToCoordinate(mid.value), 2);
+            return { color, match: px.some((p) => (p[3] ?? 0) > 200 && near(p.slice(0, 3), want)) };
+          });
+          const ends = series.map((s) => {
+            const last = s.data().at(-1) as Point;
+            return [chart.timeScale().timeToCoordinate(last.time), s.priceToCoordinate(last.value)] as const;
+          });
+          const r = (0.12 * chart.paneSize().height) / 3; // inside the logo, which is 0.12 of the pane tall
+          const before = ends.map(([x, y]) => read(x, y, r));
+          series.forEach((s, i) => {
+            for (const p of primitives[i] ?? []) s.detachPrimitive(p);
+          });
+          await new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)));
+          const changed = ends.map(([x, y], i) => {
+            const after = read(x, y, r);
+            return after.filter((p, k) => !near(p, before[i]?.[k] ?? [])).length / after.length;
+          });
+          series.forEach((s, i) => {
+            for (const p of primitives[i] ?? []) s.attachPrimitive(p); // back, for the screenshot
+          });
+          await new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)));
+          return { lines, changed };
+        });
+        for (const l of got.lines) expect(l.match, `a pixel of the ${l.color} line is its colour`).toBe(true);
+        expect(got.changed.length).toBeGreaterThan(0);
+        for (const c of got.changed) expect(c, "the logo painted its box").toBeGreaterThan(0.2);
+        const link = figure.locator(
+          ".sdv-live-output .tv-lightweight-charts a[href^='https://www.tradingview.com']",
+        );
+        expect(await link.count(), "TradingView's link on the chart").toBe(1);
+        const notices = figure.locator(".sdv-live-output p[data-sdv-attribution='tradingview']");
+        expect(await notices.count(), "one TradingView notice on the page").toBe(1);
+        expect(
+          await notices.locator("a[href='https://www.tradingview.com/']").count(),
+          "its URL is a link",
+        ).toBe(1);
+        expect(await notices.textContent(), "TradingView's notice, verbatim").toBe(
+          "TradingView Lightweight Charts™\nCopyright (с) 2025 TradingView, Inc. https://www.tradingview.com/",
+        );
       }
       // ECharts draws the server's SVG, tag for tag: init() alone already leaves an <svg>, and a series that drew nothing
       // would still leave its axes

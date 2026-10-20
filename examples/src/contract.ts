@@ -138,4 +138,21 @@ export type BrowserSpec =
       readonly width: number;
       readonly height: number;
       readonly label: string;
+    }
+  /**
+   * `mount` is the example's own Lightweight Charts code: it draws into `el` with the module it is handed (the drawer
+   * imports it, so the example never does) and returns what it built, the chart, its series and each series'
+   * primitives (the render test reads them). It also puts TradingView's attribution notice on the page.
+   */
+  | {
+      readonly lib: "lightweight-charts";
+      readonly mount: (
+        lwc: typeof import("lightweight-charts"),
+        el: HTMLElement,
+      ) => {
+        readonly chart: { remove(): void };
+        readonly series: readonly object[];
+        readonly primitives: readonly (readonly object[])[];
+      };
+      readonly label: string;
     };
