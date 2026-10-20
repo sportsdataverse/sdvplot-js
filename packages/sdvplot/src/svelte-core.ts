@@ -253,7 +253,8 @@ export interface TeamColorPaletteOptions {
 }
 /**
  * One colour per team, in order: a LayerChart series' `color`, a `<Spline stroke>`, or the chart's `cRange`. With
- * `background`, every colour keeps 3:1 contrast against it (dark mode) and stays distinct from the others.
+ * `background`, every colour keeps 3:1 contrast against it (dark mode) and aims to stay distinct from the others (when
+ * it cannot, it keeps the readable colour and warns once).
  *
  * @example
  * ```ts
