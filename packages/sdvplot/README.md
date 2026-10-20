@@ -32,8 +32,8 @@ pnpm add @sportsdataverse/sdvplot
 yarn add @sportsdataverse/sdvplot
 ```
 
-ESM only, Node >= 20.18.1. The core and the `bins`, `testing`, `plotly`, `vega`, `echarts`, `uplot` and `victory`
-subpaths need no peer. The others use optional peers, which npm and pnpm do not install for you, so add the ones for
+ESM only, Node >= 20.18.1. The core and the `bins`, `testing`, `plotly`, `vega`, `echarts`, `uplot`, `victory` and
+`cytoscape` subpaths need no peer. The others use optional peers, which npm and pnpm do not install for you, so add the ones for
 the subpaths you import: `react` >= 18 for `/react` (with `victory` >= 37.3.6 for `<LogoPoint>` and `<LogoTick>`),
 `/recharts` (with `recharts` >= 3.8 to draw) and `/nivo` (with `@nivo/core` and the chart's `@nivo/*` package >= 0.99
 to draw; `<LogoBump>` loads `@nivo/bump`), `@observablehq/plot` >= 0.6.16 for `/plot`, `d3` >= 7 for `/d3` and
@@ -135,6 +135,7 @@ The backgrounds default to `#ffffff` (light) and `#181a1b` (dark); pass `theme: 
 | `@sportsdataverse/sdvplot/nivo` | `teamColors` (a chart's `colors`; with `background` and `teams`: 3:1 contrast and distinct colours for dark mode), `logoLayer` (a custom layer of logos over a Bump, SwarmPlot or Chord), `logoNode` (logos as a SwarmPlot's or Bump's nodes), `embedSources` (React >= 18; never imports nivo, optional peers >= 0.99) |
 | `@sportsdataverse/sdvplot/victory` | `teamTheme` (a Victory theme from team colours), `teamColorPalette` (a `colorScale`; with `background`: 3:1 contrast and distinct colours for dark mode), `embedSources` (no runtime dependency; draw with `victory` >= 37.3.6) |
 | `@sportsdataverse/sdvplot/deckgl` | `logoIconLayer` (IconLayer props: team logos at points), `passArcLayer` (ArcLayer props in team colours; with `background`, 3:1 contrast and distinct), `surfaceLayer` (PolygonLayer props: a sporty surface in its own cartesian coordinates) (never imports deck.gl; `@deck.gl/core` and `@deck.gl/layers` >= 9.4 are optional peers) |
+| `@sportsdataverse/sdvplot/cytoscape` | `passNetwork` (a passing network as Cytoscape elements and stylesheet: headshot or team-coloured initials nodes, directed edges as wide as their passes), `teamStylesheet` (team colours for nodes and edges; with `background`, 3:1 contrast and distinct) (never imports cytoscape; `cytoscape` >= 3.34.3 is an optional peer) |
 
 ## **Observable Plot: Plot's own options, transforms and tips**
 

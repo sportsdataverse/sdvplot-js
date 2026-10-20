@@ -25,6 +25,7 @@ export default defineConfig({
     nivo: "src/nivo.ts",
     victory: "src/victory.ts",
     deckgl: "src/deckgl.ts",
+    cytoscape: "src/cytoscape.ts",
   },
   external: [
     "react",

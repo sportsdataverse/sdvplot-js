@@ -19,7 +19,8 @@
     "uplot",
     "nivo",
     "victory",
-    "deck.gl"
+    "deck.gl",
+    "cytoscape"
   ],
   "homepage": "https://plot.sportsdataverse.org",
   "bugs": "https://github.com/sportsdataverse/sdvplot-js/issues",
@@ -110,6 +111,10 @@
       "types": "./dist/deckgl.d.ts",
       "import": "./dist/deckgl.js"
     },
+    "./cytoscape": {
+      "types": "./dist/cytoscape.d.ts",
+      "import": "./dist/cytoscape.js"
+    },
     "./package.json": "./package.json"
   },
   "peerDependencies": {
@@ -123,6 +128,7 @@
     "@resvg/resvg-js": ">=2.6",
     "@sportsdataverse/sporty": "workspace:^0",
     "chart.js": ">=4.4",
+    "cytoscape": ">=3.34.3",
     "d3": ">=7",
     "layerchart": ">=2.5.1",
     "react": ">=18",
@@ -160,6 +166,9 @@
       "optional": true
     },
     "chart.js": {
+      "optional": true
+    },
+    "cytoscape": {
       "optional": true
     },
     "d3": {
@@ -224,6 +233,7 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "chart.js": "4.5.1",
+    "cytoscape": "3.34.3",
     "d3": "^7.9.0",
     "echarts": "^6.1.0",
     "jsdom": "^26.1.0",

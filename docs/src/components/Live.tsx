@@ -56,6 +56,7 @@ const VALUE_LIBS: Readonly<Record<string, string>> = {
   uplot: "uPlot",
   svelte: "Svelte (with LayerChart)",
   deckgl: "deck.gl",
+  cytoscape: "Cytoscape.js",
 };
 
 /**
@@ -197,8 +198,9 @@ export default function Live(p: LiveProps): ReactElement {
   return (
     <figure className="sdv-live" data-example={p.id} ref={figure}>
       {p.browser === true && p.kind === "value" && !mounted && error === null && (
-        // a Plotly figure, uPlot options, a Svelte chart's props or deck.gl layers: the static copy is its data, not a
-        // picture of it (after a failure, the alert says why). The library is the example's folder (sdvplot/<lib>/...).
+        // a Plotly figure, uPlot options, a Svelte chart's props, deck.gl layers or a Cytoscape graph: the static copy
+        // is its data, not a picture of it (after a failure, the alert says why). The library is the example's folder
+        // (sdvplot/<lib>/...).
         <p className="sdv-live-note">
           With JavaScript on, {VALUE_LIBS[p.id.split("/")[1] ?? ""] ?? "plotly.js"} draws this figure here.
         </p>

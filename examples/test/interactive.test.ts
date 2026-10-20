@@ -39,6 +39,7 @@ const DRAWN: Readonly<Record<string, string>> = {
   // the sdvplot marks inside LayerChart's svg: Svelte mounted, and the marks' lazy import of layerchart resolved
   svelte: ".sdv-live-output svg.lc-layout-svg :is(image[data-sdv-id], g[data-sdv-surface])",
   deckgl: ".sdv-live-output canvas",
+  cytoscape: ".sdv-live-output canvas",
 };
 
 describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the built docs", () => {
@@ -144,6 +145,92 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
           return (layer?.props.data.length ?? 0) > 0 ? out.join("; ") : "no marks";
         });
         expect(marks, "each sampled mark is picked and visible where it was placed").toBe("");
+      }
+      // Cytoscape draws on stacked canvases. Sample where marks are known to be, from Cytoscape's own rendered
+      // positions: the first nodes' fill (below the initials, inside the circle), and the midpoints of the widest edges
+      // that lie clear of every node (so the pixel can only be the edge's, even when a team's nodes and edges share a
+      // colour). The canvases are composited over the page's own background, and every sampled colour must differ from
+      // that background, so neither a dark docs theme nor a transparent hole can pass for a mark.
+      if (lib === "cytoscape") {
+        const marks = await figure.locator('.sdv-live-output [role="figure"]').evaluate(async (el) => {
+          type Ele = {
+            id: () => string;
+            style: (k: string) => string;
+            renderedPosition: () => { x: number; y: number };
+            renderedMidpoint: () => { x: number; y: number };
+            renderedWidth: () => number;
+            data: (k: string) => number;
+          };
+          type Cyish = { nodes: () => { toArray: () => Ele[] }; edges: () => { toArray: () => Ele[] } };
+          const cy = (el as HTMLElement & { sdvCy?: Cyish }).sdvCy;
+          if (cy === undefined) return "no graph on the figure";
+          const frame = () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+          for (let t = 0; t < 5; t++) await frame();
+          const layers = [...el.querySelectorAll("canvas")];
+          const first = layers[0];
+          if (first === undefined) return "no canvas";
+          const rgb = (s: string) => (s.match(/[\d.]+/g) ?? []).map(Number);
+          // the page behind the graph: the nearest ancestor that paints a background
+          let page = [255, 255, 255];
+          for (let a: Element | null = el; a !== null; a = a.parentElement) {
+            const c = rgb(getComputedStyle(a).backgroundColor);
+            if (c.length === 3 || (c[3] ?? 0) > 0) {
+              page = c.slice(0, 3);
+              break;
+            }
+          }
+          const k = first.width / first.clientWidth; // device pixels per CSS pixel
+          const copy = document.createElement("canvas");
+          [copy.width, copy.height] = [first.width, first.height];
+          const ctx = copy.getContext("2d", { willReadFrequently: true }) as CanvasRenderingContext2D;
+          ctx.fillStyle = `rgb(${page.join(",")})`;
+          ctx.fillRect(0, 0, copy.width, copy.height);
+          for (const c of layers) ctx.drawImage(c, 0, 0);
+          const near = (a: number[], b: number[]) =>
+            [0, 1, 2].every((c) => Math.abs((a[c] ?? 0) - (b[c] ?? 0)) <= 48);
+          /** Whether a 5 x 5 device-pixel window at (x, y) CSS px holds a pixel within 48 of `want` in every channel. */
+          const holds = (x: number, y: number, want: number[]) => {
+            const px = ctx.getImageData(Math.round(x * k) - 2, Math.round(y * k) - 2, 5, 5).data;
+            for (let i = 0; i < px.length; i += 4)
+              if (near([px[i], px[i + 1], px[i + 2]] as number[], want)) return true;
+            return false;
+          };
+          const out: string[] = [];
+          const check = (what: string, x: number, y: number, want: number[]) => {
+            if (near(want, page))
+              out.push(`${what}: its colour ${want} cannot be told from the page's ${page}`);
+            else if (!holds(x, y, want)) out.push(`${what}: no ${want} drawn there`);
+          };
+          const nodes = cy.nodes().toArray();
+          for (const n of nodes.slice(0, 5)) {
+            const p = n.renderedPosition();
+            check(
+              `node ${n.id()}`,
+              p.x,
+              p.y + 0.35 * n.renderedWidth(),
+              rgb(n.style("background-color")).slice(0, 3),
+            );
+          }
+          const clear = (m: { x: number; y: number }) =>
+            nodes.every((n) => {
+              const p = n.renderedPosition();
+              return Math.hypot(m.x - p.x, m.y - p.y) > n.renderedWidth() / 2 + 6;
+            });
+          const edges = cy
+            .edges()
+            .toArray()
+            .sort((a, b) => b.data("width") - a.data("width"))
+            .filter((e) => clear(e.renderedMidpoint()))
+            .slice(0, 3);
+          for (const e of edges) {
+            const m = e.renderedMidpoint();
+            check(`edge ${e.id()}`, m.x, m.y, rgb(e.style("line-color")).slice(0, 3));
+          }
+          return nodes.length > 0 && edges.length > 0
+            ? out.join("; ")
+            : "no nodes, or no edge clear of the nodes";
+        });
+        expect(marks, "each sampled node and edge is drawn in its colour where Cytoscape placed it").toBe("");
       }
       // ECharts draws the server's SVG, tag for tag: init() alone already leaves an <svg>, and a series that drew nothing
       // would still leave its axes
