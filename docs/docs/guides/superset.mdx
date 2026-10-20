@@ -13,12 +13,22 @@ The UI names below are from Superset 6.1.0 and 7.0.0rc2, which use the same name
 
 ## 1. A read-only role in PostgreSQL
 
-Superset runs whatever SQL its users type in SQL Lab, so give it a role that can only read. Run this once as a role
-that may grant on `<db>`. Repeat the schema statements for each schema Superset should see.
+Superset runs whatever SQL its users type in SQL Lab, so give it a role that can only read. Repeat the schema
+statements for each schema Superset should see. Run this once as an administrator who holds every privilege it uses,
+or it can stop partway:
+
+- `CREATE ROLE` and `ALTER ROLE`: a superuser, or a role with `CREATEROLE` (on PostgreSQL 16 and later, one that also
+  has the admin option on the new role, which its creator gets).
+- The `GRANT` and `REVOKE` on the database, the schema and its tables: their owner, or a role granted those privileges
+  `WITH GRANT OPTION`.
+- `ALTER DEFAULT PRIVILEGES FOR ROLE <owner_role>` (below): `<owner_role>` itself, a member of it, or a superuser.
+
+Owning `<db>` alone is not enough: it gives no right to create roles, nor to grant on tables another role owns.
 
 ```sql
--- A login role that cannot create databases, roles or anything else.
-CREATE ROLE <readonly_user> WITH LOGIN PASSWORD '<password>'
+-- A login role that cannot create databases, roles or anything else. No password here: a password in SQL can end up
+-- in psql's history and the server's statement log. Set it below with psql's \password.
+CREATE ROLE <readonly_user> WITH LOGIN
   NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION;
 
 -- Connect to the database, and see the schema's objects.
@@ -35,6 +45,13 @@ REVOKE CREATE ON SCHEMA <schema> FROM <readonly_user>;
 
 -- Make each session read-only by default.
 ALTER ROLE <readonly_user> SET default_transaction_read_only = on;
+```
+
+Then set its password in psql, which prompts for it and sends it already encrypted, so the password never appears in
+a statement:
+
+```text
+\password <readonly_user>
 ```
 
 - **Grants given to PUBLIC still apply.** The `REVOKE` statements remove only what was granted to `<readonly_user>`
