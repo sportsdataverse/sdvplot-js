@@ -98,7 +98,12 @@ it there first.
    ```
 
    - The port is usually `5432`.
-   - Append `?sslmode=require` (a libpq option) if your server needs TLS.
+   - Percent-encode the password in the URI (`@` is `%40`, `/` is `%2F`, `:` is `%3A`), or the URI is split at the
+     wrong place. The form takes it as typed.
+   - Across any network you do not control, append `?sslmode=verify-full&sslrootcert=<ca.pem>` (libpq options): the
+     connection is encrypted and the server's certificate must be signed by that CA and match `<host>`.
+     `sslmode=require` only encrypts, so it cannot tell sdv-db from a server impersonating it, and with no `sslmode`
+     libpq's default (`prefer`) can fall back to no encryption at all.
    - Give it a **Display Name**, and press **Test connection**.
 3. Open the **Advanced** tab, then **SQL Lab**:
    - **Expose database in SQL Lab**: on, if analysts should write queries against it. Off keeps it to charts and
@@ -127,4 +132,5 @@ the image.
 
 A chart type that draws sporty surfaces, team logos and team colours inside Superset is planned for after Superset 7.0
 final ships. Superset 7 builds its plugin packages (`@superset-ui/core`, `@superset-ui/chart-controls`) from its own
-source tree and does not publish them, so a plugin cannot yet be built and tested outside a Superset checkout.
+source tree. Those names are on npm, but the releases there are an older SDK, not builds of Superset 7's tree, and no
+Superset 7 version has been published, so a plugin cannot yet be built and tested outside a Superset checkout.
