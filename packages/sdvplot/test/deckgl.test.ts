@@ -342,6 +342,33 @@ describe("surfaceLayer", () => {
     expect(nhl.filter((d) => d.name === "goaltenders_restricted_area").length).toBeGreaterThan(2);
   });
 
+  test("the NHL neutral-zone faceoff spots are drawn: each spot ring splits into its two half rings, none dropped", () => {
+    // sportyR builds each half ring from (cos(pi/2) r, r) = (6.1e-17 r, r) back to an exact (0, r) (sportyR#79): at the
+    // origin the "back at the first point" split would never fire and the two halves would cancel as one ~zero-area
+    // ring. sporty places them at the spots (x = +-20, +-69 ft), where the 6e-17 rounds away; this holds that.
+    const spots = surface("hockey", "nhl").features.filter((f) => f.name === "nodzone_faceoff_spot_ring");
+    expect(spots.length).toBe(8);
+    const rings = (surfaceLayer("hockey", "nhl").data as SurfaceRow[]).filter(
+      (d) => d.name === "nodzone_faceoff_spot_ring",
+    );
+    expect(rings.length).toBe(2 * spots.length);
+    const area = (r: readonly (readonly number[])[]): number =>
+      Math.abs(
+        r.reduce((s, p, i) => {
+          const q = r[(i + 1) % r.length] as readonly number[];
+          return s + (p[0] as number) * (q[1] as number) - (q[0] as number) * (p[1] as number);
+        }, 0) / 2,
+      );
+    for (const r of rings) expect(area(r.polygon)).toBeGreaterThan(0.4); // a half ring of the spot's band, ~0.48 sq ft
+  });
+
+  test("a shorthand colour's alpha is read: #rgba is translucent, #rgb0 hides the feature", () => {
+    const data = surfaceLayer("hockey", "nhl", { colorUpdates: { boards: "#f008", referee_crease: "#0000" } })
+      .data as SurfaceRow[];
+    expect(data.find((d) => d.name === "boards")?.fillColor).toEqual([255, 0, 0, 0x88]);
+    expect(data.some((d) => d.name === "referee_crease")).toBe(false);
+  });
+
   test("sporty's own options pass through (colour updates, pitch size); a hidden feature is left out", () => {
     const p = surfaceLayer("hockey", "nhl", {
       colorUpdates: { boards: "#ff4c00", referee_crease: "#00000000" },

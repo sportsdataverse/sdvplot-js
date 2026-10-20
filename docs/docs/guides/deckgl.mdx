@@ -42,9 +42,11 @@ upright, which a top-down view sees as straight lines: `tilt: 90` lays them flat
 `getHeight`, default 1) sets how far each curve swings; 0.3 keeps them inside the pitch.
 
 Pass the colour the arcs are drawn on as `background` and every colour keeps at least 3:1 contrast against it, as in
-dark mode. Each team's colour also stays apart from the others' (a CIE76 ΔE of 20 or more), through sdvplot's shared
-team palette (the Python package ports it, and the shared fixture holds both to every NBA, NFL, MLB and NHL team). A
-team that does not resolve takes `fallback` (default `#808080`) and stays out of the palette; a row with a missing
+dark mode. Each team's colour also aims to stay apart from the others' (a CIE76 ΔE of 20 or more), through sdvplot's
+shared team palette (the Python package ports it, and the shared fixture holds both to every NBA, NFL, MLB and NHL
+team); if no candidate is both readable and distinct, it keeps the readable colour and warns once. A team that does not
+resolve takes `fallback` (default `#808080`) as given and stays out of the palette, so its contrast is not checked: pick
+a fallback that reads on your background (the default grey has none on a `#808080` one). A row with a missing
 coordinate is left out with one warning.
 
 One caveat: a colour that does not read on the background gives way to the team's other colour. When only one of a

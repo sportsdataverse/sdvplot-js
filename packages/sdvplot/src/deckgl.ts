@@ -138,7 +138,7 @@ export interface PassArcOptions {
   which?: Which;
   /**
    * The background the arcs are drawn on. Given, each end's colour keeps 3:1 contrast against it (dark mode) and
-   * stays distinct (CIE76 ΔE of 20 or more) from every other team's colour at that end, through the shared team
+   * aims to stay distinct (CIE76 ΔE of 20 or more) from every other team's colour at that end, through the shared team
    * palette, as `teamColorPalette` does in the other adapters. Caveat: a colour that does not read gives way to the
    * team's other colour, so when only one of a team's two colours reads on the background, both ends take it and the
    * arcs no longer show their direction (France's navy and mint on a dark pitch are both mint). Pick a background on
@@ -178,10 +178,15 @@ function checkPx(name: string, v: unknown): number {
   if (!real(v) || v < 1) throw new InputError(`${name} is in px, 1 or more, got ${String(v)}`);
   return v;
 }
-/** `#rrggbb` / `#rrggbbaa` as deck.gl's `[r, g, b, a]`. */
+/** The alpha byte of `#rgb`, `#rgba`, `#rrggbb` or `#rrggbbaa` (255 when it gives none). */
+function alphaOf(color: string): number {
+  let c = String(color).trim().replace(/^#+/, "");
+  if (c.length === 4) c = [...c].map((ch) => ch + ch).join("");
+  return c.length === 8 ? Number.parseInt(c.slice(6), 16) : 255;
+}
+/** `#rgb`, `#rgba`, `#rrggbb` or `#rrggbbaa` as deck.gl's `[r, g, b, a]`. */
 function rgba(color: string): Rgba {
-  const c = String(color).trim().replace(/^#+/, "");
-  const a = c.length === 8 ? Number.parseInt(c.slice(6), 16) : 255;
+  const a = alphaOf(color);
   const [r, g, b] = [1, 3, 5].map((i) =>
     Number.parseInt(hex6(color, { dropAlpha: true }).slice(i, i + 2), 16),
   );
@@ -257,8 +262,9 @@ function endColors(ids: readonly (string | null)[], o: PassArcOptions, which: Wh
  * deck.gl `ArcLayer` props: one arc per row from (x, y) to (xend, yend), in the team's colours: its primary colour at
  * the source and its secondary at the target (`which: "secondary"` swaps them), so the two ends tell the direction
  * apart where the two colours differ (see `background`). Each team keeps one colour per end, the teams taken in the
- * order they first appear. With `background`, every colour keeps 3:1 contrast against it and stays distinct from the
- * other teams' (the shared team palette). A team that does not resolve takes `fallback`; a row with a missing
+ * order they first appear. With `background`, every colour keeps 3:1 contrast against it and aims to stay distinct from
+ * the other teams' (the shared team palette; when it cannot, it keeps the readable colour and warns once). A team that
+ * does not resolve takes `fallback`, as given (its contrast is not checked); a row with a missing
  * coordinate is left out with one warning.
  *
  * @example
@@ -430,7 +436,7 @@ function simple(r: readonly Pt[]): Pt[][] {
 const drawn = (f: PolygonFeature): boolean =>
   f.points.length > 0 &&
   f.points.every(([x, y]) => Number.isFinite(x) && Number.isFinite(y)) &&
-  !(f.fill.length === 9 && f.fill.endsWith("00"));
+  alphaOf(f.fill) !== 0;
 
 /**
  * deck.gl `PolygonLayer` props drawing sporty's playing surface for `sport` and `league` (sporty's own league keys,
