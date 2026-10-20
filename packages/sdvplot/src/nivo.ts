@@ -325,7 +325,7 @@ export interface NivoColorOptions {
 /**
  * A nivo `colors` accessor: each datum's team colour. A Bump series and a Chord arc are read by `id`; for a SwarmPlot
  * pass `by: "<team field>"`. With `background` (and `teams`), every colour keeps 3:1 contrast against it (dark mode)
- * and stays distinct from the others.
+ * and aims to stay distinct from the others (when it cannot, it keeps the readable colour and warns once).
  *
  * @example
  * ```ts

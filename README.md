@@ -55,10 +55,9 @@ install for you, so add the ones for the subpaths you import:
 | `@sportsdataverse/sdvplot/chartjs` | `chart.js` >= 4.4 |
 | `@sportsdataverse/sdvplot/chartjs/surface` | `chart.js` >= 4.4 and `@sportsdataverse/sporty` |
 | `@sportsdataverse/sdvplot/interact` | `d3` >= 7 |
-| `@sportsdataverse/sdvplot/react` | `react` >= 18 (`<SurfaceBackdrop>` also loads `recharts` >= 3.8 and `@sportsdataverse/sporty` when it renders) |
+| `@sportsdataverse/sdvplot/react` | `react` >= 18 (`<SurfaceBackdrop>` also loads `recharts` >= 3.8 and `@sportsdataverse/sporty`, `<LogoBump>` loads `@nivo/bump` >= 0.99, when they render) |
 | `@sportsdataverse/sdvplot/recharts` | `react` >= 18 (draw with `recharts` >= 3.8) |
 | `@sportsdataverse/sdvplot/svelte` | `svelte` >= 5.57 and `layerchart` >= 2.5.1 (`@sportsdataverse/sporty` too for `SurfaceBackdrop`) |
-| `@sportsdataverse/sdvplot/react` | `react` >= 18 (`<LogoBump>` also loads `@nivo/bump` >= 0.99 when it renders) |
 | `@sportsdataverse/sdvplot/nivo` | `react` >= 18 (draw with `@nivo/core` and `@nivo/bump`, `@nivo/swarmplot` or `@nivo/chord`, >= 0.99) |
 | `@sportsdataverse/sdvplot/export` | `@resvg/resvg-js` (for `toPNG`) |
 | `@sportsdataverse/sporty`, `/svg`, `/specs`, `/canvas` | nothing (`@napi-rs/canvas` >= 0.1.50 gives `/canvas` a 2D context in Node) |

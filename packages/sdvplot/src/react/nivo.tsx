@@ -19,7 +19,7 @@ export interface LogoBumpProps {
   season?: SeasonInput;
   /** How the series' ids are read. Default "auto". */
   idSystem?: IdSystem;
-  /** The chart's background: the line colours keep 3:1 contrast against it and stay distinct (`teamColors`). */
+  /** The chart's background: the line colours keep 3:1 contrast against it and aim to stay distinct (`teamColors`). */
   background?: string;
   /** Logo height as a fraction of the plot height, in (0, 1]. Default 0.08. */
   logoHeight?: number;

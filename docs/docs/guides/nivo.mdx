@@ -36,7 +36,8 @@ line (`logoHeight`, `at`). Every other prop goes to nivo as is. With `width` and
 them it fills its parent (`ResponsiveBump`). `background` turns on the dark-mode palette: a team colour under 3:1
 contrast against it gives way to the team's other colour, or is lightened until it reads, and a colour that would then
 sit too close to an earlier team's (CIE76 ΔE under 20) takes the team's other colour, or else the colour nearest its
-own (its lightness, hue or chroma stepped) that is distinct and still reads. `@nivo/bump` loads when the
+own (its lightness, hue or chroma stepped) that is distinct and still reads; if none is, it keeps the readable colour
+and warns once. `@nivo/bump` loads when the
 component first renders, never with `sdvplot/react`, and a missing package throws `OptionalDependencyError` then. A
 server render draws nothing; the chart appears once the page's scripts run. (nivo's own `Bump` with `logoLayer`
 renders on the server, logos included.)

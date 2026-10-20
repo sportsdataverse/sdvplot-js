@@ -34,6 +34,8 @@ export default (
     axisTop={null}
     axisRight={null}
     axisBottom={{ legend: "EPA per play", legendPosition: "middle", legendOffset: 36 }}
+    // logoNode draws no mouse handlers, so tooltips come from nivo's mesh
+    useMesh
     // each node is drawn as its team's logo, as tall as the node (size); the team comes from the datum's team field
     circleComponent={logoNode({ league: "nfl", team: "team" })}
   />
