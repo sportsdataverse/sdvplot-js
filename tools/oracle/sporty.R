@@ -37,6 +37,9 @@ ranges$softball <- c("full", "infield")
 # Writes a built plot's polygon layers and ggfittext labels into dir; returns c(polygons, texts)
 dump <- function(g, dir) {
   dir.create(dir, recursive = TRUE, showWarnings = FALSE)
+  # Clear this dir's earlier layer/text fixtures first: a layer that is now skipped (0 rows) or gone must not leave a stale
+  # file behind, since parity.test.ts counts the layer_ files
+  unlink(list.files(dir, pattern = "^(layer|text)_[0-9]+\\.csv$", full.names = TRUE))
   k <- 0; tk <- 0
   for (layer in g$layers) {
     if (inherits(layer$geom, "GeomFitText")) { # ggfittext label: box centre (from its xmin/xmax/ymin/ymax mapping), label, angle
