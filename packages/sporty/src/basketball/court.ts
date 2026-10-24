@@ -64,8 +64,7 @@ const RANGE_SYNONYMS: Readonly<Record<string, RangeGroup>> = {
 
 /**
  * Port of sportyR `geom_basketball()`: one PolygonFeature per ggplot layer R adds, in R's layer order.
- * Divergences: an unknown `displayRange` throws (R falls back to "full"); `units` also converts the
- * anchors and display limits (R converts only the feature points, so its non-native plots are broken).
+ * Divergences: an unknown `displayRange` throws (R falls back to "full"); `units` scales the points, anchors and display limits, as sportyR 2.4.0 does (#74).
  */
 export function basketballCourt(
   league: BasketballLeague | (string & {}),

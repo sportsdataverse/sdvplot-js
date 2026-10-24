@@ -56,7 +56,7 @@ export const colorAt = (c: Color | readonly Color[], i: number): Color =>
 export interface FeatureOptions {
   /** R `feature_outline_color` (default `#ffffff00` = no stroke). */
   stroke?: Color;
-  /** Convert the points AND anchors before placement (R converts points only; see `convertLimits`). */
+  /** Convert the points AND anchors before placement, as sportyR 2.4.0 scales the whole plot (#74; see `convertLimits`). */
   units?: readonly [from: Units, to: Units];
   /** 3-D hints, already in the Scene's units. */
   elevation?: number;
@@ -132,8 +132,8 @@ export function displayBbox(xlim: Limits, ylim: Limits, rotation: number): Scene
 }
 
 /**
- * Divergence from R: R converts the feature points but neither the anchors nor the display limits, so its
- * non-native plot is scrambled as well as cropped. We convert all three (see `addFeature`).
+ * Points, anchors and display limits all convert, which matches sportyR 2.4.0 (#74: it draws in rule-book units and
+ * scales the whole plot once; translations are in the requested units). The units_* oracle fixtures check it.
  */
 export const convertLimits = (
   xlim: Limits,

@@ -6,6 +6,7 @@ import {
   hockeyRink,
   lacrosseField,
   soccerPitch,
+  softballField,
   tennisCourt,
   volleyballCourt,
 } from "@sportsdataverse/sporty";
@@ -28,6 +29,7 @@ const scenes = [
   volleyballCourt("fivb"),
   curlingSheet("wcf"),
   lacrosseField("nll"),
+  softballField("ncaa"),
 ];
 
 const cells = scenes.map(

@@ -4,7 +4,7 @@ sidebar_position: 8
 ---
 
 `@sportsdataverse/sporty` is a port of [sportyR](https://sportyr.sportsdataverse.org): the courts, rinks, fields,
-pitches and sheets of nine sports, built to each league's published dimensions. A surface is a scene of polygons in
+pitches and sheets of ten sports, built to each league's published dimensions. A surface is a scene of polygons in
 the league's units, centred on the middle of the playing area, so tracking or event data in those units lands where
 it happened. Build the scene once, then draw it with whichever renderer you use, and move your data onto it with a
 coordinate frame.
@@ -19,7 +19,8 @@ sport, so a display range such as `"offense"` is checked against basketball's li
 <Live id="sporty/core/surface-generic" />
 
 Each sport also has its own entry point (`basketballCourt`, `hockeyRink`, `footballField`, `soccerPitch`,
-`baseballField`, `tennisCourt`, `volleyballCourt`, `curlingSheet`, `lacrosseField`), typed to that sport's leagues.
+`baseballField`, `softballField`, `tennisCourt`, `volleyballCourt`, `curlingSheet`, `lacrosseField`), typed to that
+sport's leagues.
 
 <Live id="sporty/core/typed-entries" />
 
@@ -180,10 +181,48 @@ scene powers sdvplot's D3 and Chart.js surfaces.
 
 <Live id="sdvplot/plot/surface-team" />
 
+## Every sport through sdvplot
+
+`SURFACES` is the surface-key table sdvplot (Python) and sdvplotR share: 59 keys over all ten sports. Keys that are also
+sdv team leagues take a `team`:
+
+| Sport | Keys | `team` |
+| --- | --- | --- |
+| football | `nfl`, `aaf`, `ufl`, `usfl`, `xfl`, `cfb`, `cfl`, `nfhs_football` | paints the end zones (team leagues only) |
+| basketball | `nba`, `nbagl`, `wnba`, `mbb`, `wbb`, `fiba`, `nfhs_basketball` | paints the lane and apron (team leagues only) |
+| hockey | `nhl`, `whl`, `pwhl`, `ahl`, `echl`, `ohl`, `qmjhl`, `ushl`, `phf`, `iihf`, `nwhl`, `ncaa_mhockey`, `ncaa_whockey` | paints the centre line and boards (team leagues only) |
+| baseball | `mlb`, `milb`, `ncaa_baseball`, `little_league`, `pony`, `nfhs_baseball` | resolves; the field stays plain |
+| softball | `ncaa_softball` | resolves; the field stays plain |
+| soccer | `soccer` (a 105 × 68 m pitch), `fifa`, `epl`, `mls`, `nwsl`, `ncaa_soccer` | `soccer` resolves, plain |
+| lacrosse | `nll`, `pll`, `world_lacrosse`, `ncaa_mlacrosse`, `ncaa_wlacrosse`, `usa_mlacrosse`, `usa_wlacrosse` | none |
+| tennis | `atp`, `wta`, `itf`, `ita`, `usta`, `ncaa_tennis` | none |
+| volleyball | `fivb`, `usa_volleyball`, `ncaa_volleyball` | none |
+| curling | `wcf`, `curling_canada` | none |
+
+A `team` on a key that is not an sdv team league (`atp`, `nll`, `fiba`, `epl`, ...) throws `InputError` ("no team
+identities for ..."). `pwhl` draws the PWHL's own rink, which differs from the NHL's only in having no goaltender
+trapezoid.
+
+The examples draw only real data: the PWHL goals come from HockeyTech play-by-play, and the other sports are shown as
+surfaces. Softball spray charts and lacrosse shot maps will follow once SDV has location data for those sports.
+
+<Live id="sdvplot/plot/softball-field-team" />
+
+<Live id="sdvplot/plot/lacrosse-fields" />
+
+<Live id="sdvplot/plot/pwhl-native-rink" />
+
+<Live id="sdvplot/plot/tennis-courts" />
+
+<Live id="sdvplot/plot/volleyball-courts" />
+
+<Live id="sdvplot/plot/curling-sheets" />
+
 ## Every league
 
 The gallery draws every league of every sport, for example the
-[PLL lacrosse field](/gallery/sporty/surfaces/lacrosse-pll); see [every surface](/gallery/sporty/#every-surface).
+[PLL lacrosse field](/gallery/sporty/surfaces/lacrosse-pll) or the
+[NCAA softball field](/gallery/sporty/surfaces/softball-ncaa); see [every surface](/gallery/sporty/#every-surface).
 
 <Live id="sporty/surfaces/lacrosse-pll" />
 

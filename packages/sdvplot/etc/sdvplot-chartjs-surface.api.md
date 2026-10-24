@@ -4,17 +4,38 @@
 
 ```ts
 
+import { BaseballColorKey } from '@sportsdataverse/sporty';
+import { BaseballDisplayRange } from '@sportsdataverse/sporty';
+import { BaseballParamUpdates } from '@sportsdataverse/sporty';
 import { BasketballColorKey } from '@sportsdataverse/sporty';
 import { BasketballDisplayRange } from '@sportsdataverse/sporty';
 import { BasketballParamUpdates } from '@sportsdataverse/sporty';
+import { CurlingColorKey } from '@sportsdataverse/sporty';
+import { CurlingDisplayRange } from '@sportsdataverse/sporty';
+import { CurlingParamUpdates } from '@sportsdataverse/sporty';
 import { FootballColorKey } from '@sportsdataverse/sporty';
 import { FootballDisplayRange } from '@sportsdataverse/sporty';
 import { FootballParamUpdates } from '@sportsdataverse/sporty';
 import { HockeyColorKey } from '@sportsdataverse/sporty';
 import { HockeyDisplayRange } from '@sportsdataverse/sporty';
 import { HockeyParamUpdates } from '@sportsdataverse/sporty';
+import { LacrosseColorKey } from '@sportsdataverse/sporty';
+import { LacrosseDisplayRange } from '@sportsdataverse/sporty';
+import { LacrosseParamUpdates } from '@sportsdataverse/sporty';
 import { Plugin as Plugin_2 } from 'chart.js';
 import { Scene } from '@sportsdataverse/sporty';
+import { SoccerColorKey } from '@sportsdataverse/sporty';
+import { SoccerDisplayRange } from '@sportsdataverse/sporty';
+import { SoccerParamUpdates } from '@sportsdataverse/sporty';
+import { SoftballColorKey } from '@sportsdataverse/sporty';
+import { SoftballDisplayRange } from '@sportsdataverse/sporty';
+import { SoftballParamUpdates } from '@sportsdataverse/sporty';
+import { TennisColorKey } from '@sportsdataverse/sporty';
+import { TennisDisplayRange } from '@sportsdataverse/sporty';
+import { TennisParamUpdates } from '@sportsdataverse/sporty';
+import { VolleyballColorKey } from '@sportsdataverse/sporty';
+import { VolleyballDisplayRange } from '@sportsdataverse/sporty';
+import { VolleyballParamUpdates } from '@sportsdataverse/sporty';
 
 // @public (undocumented)
 export interface ChartSurface {
@@ -48,7 +69,7 @@ export interface LinearScale {
 // Warning: (ae-forgotten-export) The symbol "League" needs to be exported by the entry point chartjs-surface.d.ts
 //
 // @public
-export function surface(league: League, o?: ChartSurfaceOptions): ChartSurface;
+export function surface(league: League | (string & {}), o?: ChartSurfaceOptions): ChartSurface;
 
 // (No @packageDocumentation comment for this package)
 

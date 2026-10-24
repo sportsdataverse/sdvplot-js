@@ -296,6 +296,9 @@ export function colorKeys(sport: "lacrosse"): typeof LACROSSE_COLOR_KEYS;
 export function colorKeys(sport: "soccer"): typeof SOCCER_COLOR_KEYS;
 
 // @public (undocumented)
+export function colorKeys(sport: "softball"): typeof SOFTBALL_COLOR_KEYS;
+
+// @public (undocumented)
 export function colorKeys(sport: "tennis"): typeof TENNIS_COLOR_KEYS;
 
 // @public (undocumented)
@@ -439,6 +442,9 @@ export function displayRanges(sport: "lacrosse"): typeof LACROSSE_DISPLAY_RANGES
 export function displayRanges(sport: "soccer"): typeof SOCCER_DISPLAY_RANGES;
 
 // @public (undocumented)
+export function displayRanges(sport: "softball"): typeof SOFTBALL_DISPLAY_RANGES;
+
+// @public (undocumented)
 export function displayRanges(sport: "tennis"): typeof TENNIS_DISPLAY_RANGES;
 
 // @public (undocumented)
@@ -470,6 +476,9 @@ export function features(sport: "lacrosse"): typeof LACROSSE_FEATURES;
 
 // @public (undocumented)
 export function features(sport: "soccer"): typeof SOCCER_FEATURES;
+
+// @public (undocumented)
+export function features(sport: "softball"): typeof SOFTBALL_FEATURES;
 
 // @public (undocumented)
 export function features(sport: "tennis"): typeof TENNIS_FEATURES;
@@ -865,6 +874,8 @@ export interface LacrosseParams {
     // (undocumented)
     goal_arc_line_thickness?: number;
     // (undocumented)
+    goal_arc_parallel_line_to_center?: number;
+    // (undocumented)
     goal_arc_radius?: number;
     // (undocumented)
     goal_circle_full_360: boolean;
@@ -944,7 +955,7 @@ export type LacrosseParamUpdates = {
 };
 
 // @public
-export type LeagueOf<S extends Sport> = S extends "baseball" ? BaseballLeague | (string & {}) : S extends "basketball" ? BasketballLeague | (string & {}) : S extends "curling" ? CurlingLeague | (string & {}) : S extends "football" ? FootballLeague | (string & {}) : S extends "hockey" ? HockeyLeague | (string & {}) : S extends "lacrosse" ? LacrosseLeague | (string & {}) : S extends "soccer" ? SoccerLeague | (string & {}) : S extends "tennis" ? TennisLeague | (string & {}) : S extends "volleyball" ? VolleyballLeague | (string & {}) : never;
+export type LeagueOf<S extends Sport> = S extends "baseball" ? BaseballLeague | (string & {}) : S extends "basketball" ? BasketballLeague | (string & {}) : S extends "curling" ? CurlingLeague | (string & {}) : S extends "football" ? FootballLeague | (string & {}) : S extends "hockey" ? HockeyLeague | (string & {}) : S extends "lacrosse" ? LacrosseLeague | (string & {}) : S extends "soccer" ? SoccerLeague | (string & {}) : S extends "softball" ? SoftballLeague | (string & {}) : S extends "tennis" ? TennisLeague | (string & {}) : S extends "volleyball" ? VolleyballLeague | (string & {}) : never;
 
 // @public
 export function leagues(sport: "baseball"): typeof BASEBALL_LEAGUES;
@@ -968,6 +979,9 @@ export function leagues(sport: "lacrosse"): typeof LACROSSE_LEAGUES;
 export function leagues(sport: "soccer"): typeof SOCCER_LEAGUES;
 
 // @public (undocumented)
+export function leagues(sport: "softball"): typeof SOFTBALL_LEAGUES;
+
+// @public (undocumented)
 export function leagues(sport: "tennis"): typeof TENNIS_LEAGUES;
 
 // @public (undocumented)
@@ -980,7 +994,7 @@ export function leagues(sport: Sport): readonly string[];
 export function normalizeUnit(u: string): Units;
 
 // @public
-export type OptionsOf<S extends Sport> = S extends "baseball" ? SurfaceOptions<BaseballParamUpdates, BaseballColorKey, BaseballDisplayRange> : S extends "basketball" ? SurfaceOptions<BasketballParamUpdates, BasketballColorKey, BasketballDisplayRange> : S extends "curling" ? SurfaceOptions<CurlingParamUpdates, CurlingColorKey, CurlingDisplayRange> : S extends "football" ? SurfaceOptions<FootballParamUpdates, FootballColorKey, FootballDisplayRange> : S extends "hockey" ? SurfaceOptions<HockeyParamUpdates, HockeyColorKey, HockeyDisplayRange> : S extends "lacrosse" ? SurfaceOptions<LacrosseParamUpdates, LacrosseColorKey, LacrosseDisplayRange> : S extends "soccer" ? SurfaceOptions<SoccerParamUpdates, SoccerColorKey, SoccerDisplayRange> : S extends "tennis" ? SurfaceOptions<TennisParamUpdates, TennisColorKey, TennisDisplayRange> : S extends "volleyball" ? SurfaceOptions<VolleyballParamUpdates, VolleyballColorKey, VolleyballDisplayRange> : never;
+export type OptionsOf<S extends Sport> = S extends "baseball" ? SurfaceOptions<BaseballParamUpdates, BaseballColorKey, BaseballDisplayRange> : S extends "basketball" ? SurfaceOptions<BasketballParamUpdates, BasketballColorKey, BasketballDisplayRange> : S extends "curling" ? SurfaceOptions<CurlingParamUpdates, CurlingColorKey, CurlingDisplayRange> : S extends "football" ? SurfaceOptions<FootballParamUpdates, FootballColorKey, FootballDisplayRange> : S extends "hockey" ? SurfaceOptions<HockeyParamUpdates, HockeyColorKey, HockeyDisplayRange> : S extends "lacrosse" ? SurfaceOptions<LacrosseParamUpdates, LacrosseColorKey, LacrosseDisplayRange> : S extends "soccer" ? SurfaceOptions<SoccerParamUpdates, SoccerColorKey, SoccerDisplayRange> : S extends "softball" ? SurfaceOptions<SoftballParamUpdates, SoftballColorKey, SoftballDisplayRange> : S extends "tennis" ? SurfaceOptions<TennisParamUpdates, TennisColorKey, TennisDisplayRange> : S extends "volleyball" ? SurfaceOptions<VolleyballParamUpdates, VolleyballColorKey, VolleyballDisplayRange> : never;
 
 // @public
 export function placeFeature(points: readonly Point[], p: Placement): Point[][];
@@ -1146,11 +1160,111 @@ export type SoccerParamUpdates = {
 // @public
 export function soccerPitch(league: SoccerLeague | (string & {}), opts?: SurfaceOptions<SoccerParamUpdates, SoccerColorKey, SoccerDisplayRange>): Scene;
 
-// @public (undocumented)
-export type Sport = "baseball" | "basketball" | "curling" | "football" | "hockey" | "lacrosse" | "soccer" | "tennis" | "volleyball";
+// @public
+export const SOFTBALL_COLOR_KEYS: readonly ["plot_background", "infield_dirt", "base", "pitchers_plate", "batters_box", "catchers_box", "foul_line", "running_lane", "pitchers_circle", "pitchers_lane", "coaches_box"];
 
 // @public
-export const SPORTS: readonly ["baseball", "basketball", "curling", "football", "hockey", "lacrosse", "soccer", "tennis", "volleyball"];
+export const SOFTBALL_DISPLAY_RANGES: readonly ["full", "infield"];
+
+// @public
+export const SOFTBALL_FEATURES: readonly ["infield_dirt", "home_plate", "base", "pitchers_plate", "batters_box", "catchers_box", "foul_line", "running_lane", "pitchers_circle", "pitchers_lane", "coaches_box"];
+
+// @public (undocumented)
+export const SOFTBALL_LEAGUES: readonly ["custom", "ncaa"];
+
+// @public (undocumented)
+export const SOFTBALL_SPECS: Readonly<Record<SoftballLeague, Readonly<SoftballParams>>>;
+
+// @public (undocumented)
+export type SoftballColorKey = (typeof SOFTBALL_COLOR_KEYS)[number];
+
+// @public (undocumented)
+export type SoftballDisplayRange = (typeof SOFTBALL_DISPLAY_RANGES)[number];
+
+// @public (undocumented)
+export type SoftballFeature = (typeof SOFTBALL_FEATURES)[number];
+
+// @public
+export function softballField(league: SoftballLeague | (string & {}), opts?: SurfaceOptions<SoftballParamUpdates, SoftballColorKey, SoftballDisplayRange>): Scene;
+
+// @public (undocumented)
+export type SoftballLeague = (typeof SOFTBALL_LEAGUES)[number];
+
+// @public (undocumented)
+export type SoftballLoosen<T> = T extends readonly (readonly number[])[] ? readonly number[] | readonly (readonly number[])[] : T extends readonly number[] ? number | readonly number[] : T extends readonly boolean[] ? boolean | readonly boolean[] : T extends readonly string[] ? string | readonly string[] : T;
+
+// @public (undocumented)
+export interface SoftballParams {
+    // (undocumented)
+    backstop_radius: number;
+    // (undocumented)
+    base_side_length: number;
+    // (undocumented)
+    baseline_distance: number;
+    // (undocumented)
+    batters_box_length: number;
+    // (undocumented)
+    batters_box_width: number;
+    // (undocumented)
+    batters_box_y_adj: number;
+    // (undocumented)
+    catchers_box_depth: number;
+    // (undocumented)
+    catchers_box_width: number;
+    // (undocumented)
+    center_field_distance: number;
+    // (undocumented)
+    coaches_box_depth: number;
+    // (undocumented)
+    coaches_box_length: number;
+    // (undocumented)
+    coaches_box_width: number;
+    // (undocumented)
+    field_units: "" | "ft";
+    // (undocumented)
+    foul_line_to_foul_grass: number;
+    // (undocumented)
+    home_plate_circle_radius: number;
+    // (undocumented)
+    home_plate_edge_length: number;
+    // (undocumented)
+    home_plate_side_to_batters_box: number;
+    // (undocumented)
+    infield_arc_radius: number;
+    // (undocumented)
+    left_field_distance: number;
+    // (undocumented)
+    line_width: number;
+    // (undocumented)
+    pitchers_circle_radius: number;
+    // (undocumented)
+    pitchers_lane_length: number;
+    // (undocumented)
+    pitchers_plate_front_to_home_plate: number;
+    // (undocumented)
+    pitchers_plate_length: number;
+    // (undocumented)
+    pitchers_plate_width: number;
+    // (undocumented)
+    right_field_distance: number;
+    // (undocumented)
+    running_lane_depth: number;
+    // (undocumented)
+    running_lane_length: number;
+    // (undocumented)
+    running_lane_start_distance: number;
+}
+
+// @public (undocumented)
+export type SoftballParamUpdates = {
+    [K in keyof SoftballParams]?: SoftballLoosen<SoftballParams[K]>;
+};
+
+// @public (undocumented)
+export type Sport = "baseball" | "basketball" | "curling" | "football" | "hockey" | "lacrosse" | "soccer" | "softball" | "tennis" | "volleyball";
+
+// @public
+export const SPORTS: readonly ["baseball", "basketball", "curling", "football", "hockey", "lacrosse", "soccer", "softball", "tennis", "volleyball"];
 
 // @public (undocumented)
 export class SportyError extends Error {
@@ -1177,6 +1291,9 @@ export function surface(sport: "lacrosse", league: LacrosseLeague | (string & {}
 
 // @public (undocumented)
 export function surface(sport: "soccer", league: SoccerLeague | (string & {}), opts?: SurfaceOptions<SoccerParamUpdates, SoccerColorKey, SoccerDisplayRange>): Scene;
+
+// @public (undocumented)
+export function surface(sport: "softball", league: SoftballLeague | (string & {}), opts?: SurfaceOptions<SoftballParamUpdates, SoftballColorKey, SoftballDisplayRange>): Scene;
 
 // @public (undocumented)
 export function surface(sport: "tennis", league: TennisLeague | (string & {}), opts?: SurfaceOptions<TennisParamUpdates, TennisColorKey, TennisDisplayRange>): Scene;

@@ -29,17 +29,15 @@ import {
 const isOneOf = <T extends string>(list: readonly T[], v: string): v is T =>
   (list as readonly string[]).includes(v);
 
-// R reads five keys that no league's JSON has, so `%or% 0` always yields 0 (preserved for parity; absent from LacrosseParams).
-const NZONE_LENGTH = 0; // geom-lacrosse.R 323/330/338: `nzone_length` (the JSON key is `neutral_zone_length`)
-const BOARD_THICKNESS = 0; // R 819/836: `board_thickness` (the JSON key is `boards_thickness`)
+// R reads three keys that no league's JSON has, so `%or% 0` always yields 0 (preserved for parity; absent from LacrosseParams).
 const CENTER_FACE_OFF_MARKER_RADIUS = 0; // R 535
 const CORNER_FACE_OFF_MARKER_BAR_WIDTH = 0; // R 541
 const CORNER_FACE_OFF_MARKER_BAR_LENGTH = 0; // R 542
 
 /**
- * Port of sportyR `geom_lacrosse()`: one PolygonFeature per ggplot layer R adds, in R's layer order.
- * Documented divergences: an unknown `displayRange` throws (R falls back to "full"); `units` also converts the anchors and
- * display limits; a user's `center_face_off_marker` colour wins over the contrasting `#ffcb05` (R overwrites it).
+ * Port of sportyR `geom_lacrosse()` (2.4.0, with the sportyR #60-#75 fixes): one PolygonFeature per ggplot layer R adds,
+ * in R's layer order. Documented divergences: an unknown `displayRange` throws (R falls back to "full"). `units`
+ * scales the points, anchors and display limits, as sportyR 2.4.0 does (#74).
  */
 export function lacrosseField(
   league: LacrosseLeague | (string & {}),
@@ -56,17 +54,15 @@ export function lacrosseField(
       `Unknown lacrosse display range "${opts.displayRange}"; expected one of: ${LACROSSE_DISPLAY_RANGES.join(", ")}`,
     );
   const p = mergeParams(LACROSSE_SPECS[key], opts.updates, ["goal_fan_hash_mark_separation_from_center"]);
-  // Colour pre-step (geom-lacrosse.R 296-311): R compares the DEFAULTS (always equal) and then overwrites even a user's
-  // value; here the user's value wins (documented divergence 6).
-  const contrast =
+  // Contrasting centre marker (geom-lacrosse.R 305-315, sportyR #65): after the user's colours merge, and only when the
+  // user did not pick the marker colour and it matches the (possibly user-set) centre line.
+  const merged = mergeColors(LACROSSE_DEFAULT_COLORS, opts.colorUpdates);
+  const colors =
     (p.center_face_off_marker_color_contrasting ?? false) &&
-    LACROSSE_DEFAULT_COLORS.center_face_off_marker === LACROSSE_DEFAULT_COLORS.center_line;
-  const colors = mergeColors(
-    LACROSSE_DEFAULT_COLORS,
-    contrast && opts.colorUpdates?.center_face_off_marker === undefined
-      ? { ...opts.colorUpdates, center_face_off_marker: "#ffcb05" }
-      : opts.colorUpdates,
-  );
+    opts.colorUpdates?.center_face_off_marker === undefined &&
+    merged.center_face_off_marker === merged.center_line
+      ? { ...merged, center_face_off_marker: "#ffcb05" }
+      : merged;
   const col = (k: LacrosseColorKey): Color => colorAt(colors[k], 0);
   const npoints = arcResolution(opts.arcResolution);
   const from = normalizeUnit(p.field_units || "ft"); // R: field_units %or% "ft" (custom's "")
@@ -101,7 +97,7 @@ export function lacrosseField(
     fieldLength: L,
     fieldWidth: W,
     cornerRadius: p.corner_radius ?? 0,
-    nzoneLength: NZONE_LENGTH,
+    nzoneLength: p.neutral_zone_length ?? 0,
     fieldShape: p.field_shape,
     npoints,
   };
@@ -132,7 +128,7 @@ export function lacrosseField(
   );
   add(
     "neutral_zone",
-    F.neutralZone({ nzoneLength: NZONE_LENGTH, fieldWidth: W }),
+    F.neutralZone({ nzoneLength: p.neutral_zone_length ?? 0, fieldWidth: W }),
     col("neutral_zone"),
     0,
     0,
@@ -233,7 +229,8 @@ export function lacrosseField(
     penaltyBoxLength: p.penalty_box_length ?? 0,
     penaltyBoxDepth: p.penalty_box_depth ?? 0,
   };
-  const penaltyX = (p.penalty_box_separation ?? 0) / 2 + BOARD_THICKNESS + (p.penalty_box_length ?? 0) / 2;
+  const penaltyX =
+    (p.penalty_box_separation ?? 0) / 2 + (p.boards_thickness ?? 0) + (p.penalty_box_length ?? 0) / 2;
   const penaltyFill = F.penaltyBoxFill(penaltyBox);
   add("penalty_box_fill", penaltyFill, col("team_a_penalty_box"), -penaltyX, -W / 2, false, false);
   add("penalty_box_fill", penaltyFill, col("team_b_penalty_box"), penaltyX, -W / 2, false, false);
@@ -334,7 +331,8 @@ export function lacrosseField(
     F.goalArc({
       goalArcExtension: p.goal_arc_extension ?? 0,
       goalArcRadius: p.goal_arc_radius ?? 0,
-      lineThickness: p.goal_arc_line_thickness, // R: no %or% — undefined reproduces its NULL recycling
+      lineThickness: p.goal_arc_line_thickness ?? 0,
+      goalArcParallelLineToCenter: p.goal_arc_parallel_line_to_center,
       npoints,
     }),
     col("goal_arc"),
@@ -343,24 +341,21 @@ export function lacrosseField(
     true,
     false,
   );
-  add(
-    "goal_fan",
-    F.goalFan({
-      goalFanRadius: p.goal_fan_radius ?? 0,
-      goalCircleRadius: p.goal_circle_radius,
-      lineThickness: p.goal_fan_line_thickness ?? 0,
-      npoints,
-    }),
-    col("goal_fan"),
-    gx,
-    0,
-    true,
-    false,
-  );
+  const fan = F.goalFan({
+    goalFanRadius: p.goal_fan_radius ?? 0,
+    goalCircleRadius: p.goal_circle_radius,
+    lineThickness: p.goal_fan_line_thickness ?? 0,
+    npoints,
+  });
+  // fan-less leagues: R adds an empty (invisible) layer; sporty adds no feature
+  if (fan.length > 0) add("goal_fan", fan, col("goal_fan"), gx, 0, true, false);
   for (const sep of p.goal_fan_hash_mark_separation_from_center ?? []) {
-    const thetaBuild = sep / ((p.goal_fan_radius ?? 1) + p.goal_circle_radius); // radians (features-list site, R 576)
-    const thetaPlace = sep / (p.goal_fan_radius ?? 1) / Math.PI; // units of π (placement site, R 1042) — R uses two formulas; both preserved
-    const R = (p.goal_fan_radius ?? 0) + p.goal_circle_radius;
+    // The fan's line runs from goal_fan_radius - t to goal_fan_radius about the goal-line centre (sportyR #69); the marks
+    // bisect it, so they are centred at R = goal_fan_radius - t / 2 (#75). A mark at arc distance sep sits theta = sep / R
+    // radians along that circle and is rotated by -theta to stay perpendicular (#62: one angle for both).
+    const R = (p.goal_fan_radius ?? 1) - (p.goal_fan_line_thickness ?? 0) / 2;
+    const thetaBuild = sep / R; // radians
+    const thetaPlace = thetaBuild / Math.PI; // units of π, as R's placement site writes it
     const mark = F.goalFanHashMark({
       goalFanHashMarkLength: p.goal_fan_hash_mark_length ?? 0,
       lineThickness: p.goal_fan_hash_mark_line_thickness ?? 0,
@@ -370,7 +365,7 @@ export function lacrosseField(
       "goal_fan_hash_mark",
       mark,
       col("goal_fan_hash_mark"),
-      gx + p.goal_circle_radius + R * Math.cos((1 - thetaPlace) * Math.PI),
+      gx + R * Math.cos((1 - thetaPlace) * Math.PI),
       R * Math.sin((1 - thetaPlace) * Math.PI),
       true,
       true,
@@ -463,10 +458,17 @@ export function lacrosseField(
     true,
     true,
   );
-  // Display range (geom-lacrosse.R 1202-1308) in native units; then converted (documented divergence 1), translated, rotated.
-  const hfl = L / 2 + p.field_apron_thickness;
-  const hfw = W / 2 + p.field_apron_thickness;
+  // Display range (geom-lacrosse.R 1219-1330) in native units; then converted (documented divergence 1), translated, rotated.
+  // The full extents cover the apron and any benches, penalty boxes and officials' box outside the boards (sportyR #63).
   const boards = p.boards_thickness ?? 0;
+  const hfl = Math.max(
+    L / 2 + p.field_apron_thickness,
+    (p.bench_separation ?? 0) / 2 + (p.bench_length ?? 0) + boards,
+    (p.penalty_box_separation ?? 0) / 2 + (p.penalty_box_length ?? 0) + 2 * boards, // #72: two walls
+  );
+  const hfw =
+    W / 2 +
+    Math.max(p.field_apron_thickness, 2 * boards + Math.max(p.bench_depth ?? 0, p.penalty_box_depth ?? 0));
   const inX = [-(L / 2 + boards), L / 2 + boards] as const;
   const off = [0, hfl] as const;
   const def = [-hfl, 0] as const;

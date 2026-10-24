@@ -299,45 +299,88 @@ export function goalCircleFill({
 export function goalArc({
   goalArcExtension = 0,
   goalArcRadius = 0,
-  lineThickness,
+  lineThickness: t = 0,
+  goalArcParallelLineToCenter,
   npoints,
-}: { goalArcExtension?: number; goalArcRadius?: number; lineThickness: number | undefined } & Arc): Point[] {
+}: {
+  goalArcExtension?: number;
+  goalArcRadius?: number;
+  lineThickness?: number;
+  /** sportyR #70: the parallel lines' distance from the goal-line centre (default: the radius, i.e. a semicircle). */
+  goalArcParallelLineToCenter?: number | undefined;
+} & Arc = {}): Point[] {
   const e = goalArcExtension;
   const r = goalArcRadius;
-  const outer = circle({ center: [0, 0], start: 0.5, end: 1.5, r, npoints });
-  if (lineThickness === undefined) return [[e, r], ...outer, [e, -r], [e, -r], [e, r], [e, r]]; // ponytail: R quirk preserved for parity (n + 5 points)
-  const t = lineThickness;
+  const wOuter = Math.min(goalArcParallelLineToCenter ?? r, r);
+  const wInner = wOuter - t;
+  const rInner = r - t;
+  // where the parallel lines meet the arc, towards the centre of the field
+  const xOuter = -Math.sqrt(Math.max(r ** 2 - wOuter ** 2, 0));
+  const xInner = -Math.sqrt(Math.max(rInner ** 2 - wInner ** 2, 0));
+  const thetaOuter = Math.atan2(wOuter, xOuter) / Math.PI;
+  const thetaInner = Math.atan2(wInner, xInner) / Math.PI;
   return [
-    [e, r],
-    ...outer,
-    [e, -r],
-    [e, -r + t],
-    ...circle({ center: [0, 0], start: 1.5, end: 0.5, r: r - t, npoints }),
-    [e, r - t],
-    [e, r],
+    [e, wOuter],
+    [xOuter, wOuter],
+    ...circle({ center: [0, 0], start: thetaOuter, end: 2 - thetaOuter, r, npoints }),
+    [xOuter, -wOuter],
+    [e, -wOuter],
+    [e, -wInner],
+    [xInner, -wInner],
+    ...circle({ center: [0, 0], start: 2 - thetaInner, end: thetaInner, r: rInner, npoints }),
+    [xInner, wInner],
+    [e, wInner],
+    [e, wOuter],
   ];
 }
 
-/** lacrosse_goal_fan (R 839): arcs centred at (goal_circle_radius, 0); the inner arc is inset by an angular `t/(R − t)/π` (2n + 6 points; R's sign mix kept). */
+/**
+ * lacrosse_goal_fan (sportyR #69, NCAA women's Rule 1 §6): 45-degree lines from the goal circle on the goal line extended
+ * (B) to the arc of radius `goalFanRadius` about the goal-line centre (C), joined by that arc. Empty when the fan does
+ * not reach past the goal circle.
+ */
 export function goalFan({
   goalFanRadius = 0,
   goalCircleRadius = 0,
   lineThickness = 0,
   npoints,
 }: { goalFanRadius?: number; goalCircleRadius?: number; lineThickness?: number } & Arc = {}): Point[] {
-  const c = goalCircleRadius;
-  const t = lineThickness;
-  const pi = Math.PI;
-  const inset = t / (goalFanRadius + c - t) / pi;
+  if (goalFanRadius <= goalCircleRadius) return [];
+  const dir: Point = [-1 / Math.sqrt(2), 1 / Math.sqrt(2)]; // upper 45-degree line, towards the centre of the field
+  // distance along the line from p (in direction dir) to the circle of the given radius about the goal-line centre
+  const toCircle = (p: Point, radius: number): number => {
+    const b = p[0] * dir[0] + p[1] * dir[1];
+    return -b + Math.sqrt(b ** 2 - (p[0] ** 2 + p[1] ** 2) + radius ** 2);
+  };
+  const along = (p: Point, d: number): Point => [p[0] + d * dir[0], p[1] + d * dir[1]];
+  const bOuter: Point = [0, goalCircleRadius];
+  const cOuter = along(bOuter, toCircle(bOuter, goalFanRadius));
+  const base: Point = [
+    bOuter[0] + (lineThickness * -1) / Math.sqrt(2),
+    bOuter[1] + (lineThickness * -1) / Math.sqrt(2),
+  ];
+  const bInner = along(base, toCircle(base, goalCircleRadius));
+  const cInner = along(base, toCircle(base, goalFanRadius - lineThickness));
+  const thetaOuter = Math.atan2(cOuter[1], cOuter[0]) / Math.PI;
+  const thetaInner = Math.atan2(cInner[1], cInner[0]) / Math.PI;
   return [
-    [c * Math.cos(0.5 * pi), c * Math.sin(0.5 * pi)],
-    [c * Math.cos(0.5 * pi) + t * Math.cos(0.75 * pi), c * Math.sin(0.5 * pi) + t * Math.sin(0.75 * pi)],
-    ...circle({ center: [c, 0], start: 0.75, end: 1.25, r: goalFanRadius + c, npoints }),
-    [c * Math.cos(1.5 * pi), c * Math.sin(1.5 * pi)],
-    [c * Math.cos(1.5 * pi) + t * Math.cos(1.25 * pi), c * Math.sin(1.5 * pi) - t * Math.sin(1.25 * pi)],
-    ...circle({ center: [c, 0], start: 1.25 - inset, end: 0.75 + inset, r: goalFanRadius + c - t, npoints }),
-    [c * Math.cos(0.5 * pi) + t * Math.cos(0.75 * pi), c * Math.sin(0.5 * pi) - t * Math.sin(0.75 * pi)],
-    [c * Math.cos(0.5 * pi), c * Math.sin(0.5 * pi)],
+    bOuter,
+    cOuter,
+    ...circle({ center: [0, 0], start: thetaOuter, end: 2 - thetaOuter, r: goalFanRadius, npoints }),
+    [cOuter[0], -cOuter[1]],
+    [bOuter[0], -bOuter[1]],
+    [bInner[0], -bInner[1]],
+    [cInner[0], -cInner[1]],
+    ...circle({
+      center: [0, 0],
+      start: 2 - thetaInner,
+      end: thetaInner,
+      r: goalFanRadius - lineThickness,
+      npoints,
+    }),
+    cInner,
+    bInner,
+    bOuter,
   ];
 }
 
@@ -496,12 +539,13 @@ export function penaltyBoxOutline({
   penaltyBoxDepth?: number;
 } = {}): Point[] {
   const h = s / 2;
+  // sportyR #72: each box is `l` inside, so the outer wall runs from h + l + t to h + l + 2t
   return [
     [0, -(2 * t + d)],
-    [h + l + t, -(2 * t + d)],
+    [h + l + 2 * t, -(2 * t + d)],
+    [h + l + 2 * t, -t],
     [h + l + t, -t],
-    [h + l, -t],
-    [h + l, -(t + d)],
+    [h + l + t, -(t + d)],
     [h + t, -(t + d)],
     [h + t, -t],
     [h, -t],

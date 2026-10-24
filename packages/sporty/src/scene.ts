@@ -11,6 +11,7 @@ export type Sport =
   | "hockey"
   | "lacrosse"
   | "soccer"
+  | "softball"
   | "tennis"
   | "volleyball";
 export interface PolygonFeature {

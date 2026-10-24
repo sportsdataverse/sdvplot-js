@@ -191,10 +191,10 @@ export interface D3SurfaceOptions extends SurfaceSceneOptions {
   /** Describes the surface for assistive technology; default sporty's ("nba basketball surface" and so on). */
   ariaDescription?: string;
 }
-/** Paint a league's surface (in `team`'s colours) into `sel` through the caller's x/y scales. Throws InputError for a league with no surface. */
+/** Paint a surface key's surface (in `team`'s colours) into `sel` through the caller's x/y scales. Throws InputError for a key with no surface (see `SURFACES`). */
 export function appendSurface<G extends SVGGElement | SVGSVGElement, D>(
   sel: Sel<G, D>,
-  league: League,
+  league: League | (string & {}),
   o: D3SurfaceOptions,
 ): Sel<SVGGElement, D> {
   const { x, y, ariaDescription, ...scene } = o;

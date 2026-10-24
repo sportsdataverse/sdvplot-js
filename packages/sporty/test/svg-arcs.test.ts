@@ -8,6 +8,7 @@ import { lacrosseField } from "../src/lacrosse/field.js";
 import type { Point, Scene } from "../src/scene.js";
 import { createCircle } from "../src/shapes.js";
 import { soccerPitch } from "../src/soccer/pitch.js";
+import { softballField } from "../src/softball/field.js";
 import { BASEBALL_LEAGUES } from "../src/specs/baseball.js";
 import { BASKETBALL_LEAGUES } from "../src/specs/basketball.js";
 import { CURLING_LEAGUES } from "../src/specs/curling.js";
@@ -15,6 +16,7 @@ import { FOOTBALL_LEAGUES } from "../src/specs/football.js";
 import { HOCKEY_LEAGUES } from "../src/specs/hockey.js";
 import { LACROSSE_LEAGUES } from "../src/specs/lacrosse.js";
 import { SOCCER_LEAGUES } from "../src/specs/soccer.js";
+import { SOFTBALL_LEAGUES } from "../src/specs/softball.js";
 import { TENNIS_LEAGUES } from "../src/specs/tennis.js";
 import { VOLLEYBALL_LEAGUES } from "../src/specs/volleyball.js";
 import { detectArcs, fmt, pathData, resampleArc } from "../src/svg-arcs.js";
@@ -22,7 +24,7 @@ import { toSVG } from "../src/svg.js";
 import { tennisCourt } from "../src/tennis/court.js";
 import { volleyballCourt } from "../src/volleyball/court.js";
 
-// Same enumeration as parity.test.ts: 62 sport/league surfaces (the 9 `custom` leagues included; their bbox is degenerate but their paths are not).
+// Same enumeration as parity.test.ts: 64 sport/league surfaces (the 10 `custom` leagues included; their bbox is degenerate but their paths are not).
 const SURFACES: [sport: string, leagues: readonly string[], build: (league: string) => Scene][] = [
   ["basketball", BASKETBALL_LEAGUES, basketballCourt as (l: string) => Scene],
   ["hockey", HOCKEY_LEAGUES, hockeyRink as (l: string) => Scene],
@@ -33,6 +35,7 @@ const SURFACES: [sport: string, leagues: readonly string[], build: (league: stri
   ["curling", CURLING_LEAGUES, curlingSheet as (l: string) => Scene],
   ["lacrosse", LACROSSE_LEAGUES, lacrosseField as (l: string) => Scene],
   ["volleyball", VOLLEYBALL_LEAGUES, volleyballCourt as (l: string) => Scene],
+  ["softball", SOFTBALL_LEAGUES, softballField as (l: string) => Scene],
 ];
 
 /** Walks absolute M/L/A path data; returns every `A` endpoint paired with the point the pen was on. */
@@ -178,7 +181,7 @@ test("every surface: arcs='svg' never emits an A whose endpoint is the current p
         expect(countA(pathData(f.points, "svg", 4)), `${league} ${f.name}`).toBe(expected);
       }
     }
-  expect(surfaces).toBe(62);
+  expect(surfaces).toBe(64);
   expect(fullCircles).toBeGreaterThan(10);
 });
 

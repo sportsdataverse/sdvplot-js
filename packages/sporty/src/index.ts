@@ -10,6 +10,7 @@ export { tennisCourt } from "./tennis/court.js";
 export { volleyballCourt } from "./volleyball/court.js";
 export { curlingSheet } from "./curling/sheet.js";
 export { lacrosseField } from "./lacrosse/field.js";
+export { softballField } from "./softball/field.js";
 export type {
   Color,
   Feature,
@@ -111,3 +112,12 @@ export type {
   LacrosseParams,
   LacrosseParamUpdates,
 } from "./specs/lacrosse.js";
+export { SOFTBALL_COLOR_KEYS, SOFTBALL_DISPLAY_RANGES, SOFTBALL_FEATURES } from "./softball/types.js";
+export type { SoftballColorKey, SoftballDisplayRange, SoftballFeature } from "./softball/types.js";
+export { SOFTBALL_LEAGUES, SOFTBALL_SPECS } from "./specs/softball.js";
+export type {
+  SoftballLeague,
+  SoftballLoosen,
+  SoftballParams,
+  SoftballParamUpdates,
+} from "./specs/softball.js";
