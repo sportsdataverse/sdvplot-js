@@ -26,7 +26,7 @@ const isOneOf = <T extends string>(list: readonly T[], v: string): v is T =>
 
 /**
  * Port of sportyR `geom_soccer()`: one PolygonFeature per ggplot layer R adds, in R's layer order.
- * Documented divergences: an unknown `displayRange` throws (R falls back to "full"); `units` scales the points, anchors and display limits, as sportyR 2.3.0 does (#74).
+ * Documented divergences: an unknown `displayRange` throws (R falls back to "full"); `units` scales the points, anchors and display limits, as sportyR 2.4.0 does (#74).
  */
 export function soccerPitch(
   league: SoccerLeague | (string & {}),

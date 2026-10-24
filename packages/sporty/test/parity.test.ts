@@ -119,7 +119,7 @@ for (const [sport, leagues, build] of SURFACES)
     });
   });
 
-// sportyR 2.3.0 #74 / #76: other units scale the whole plot once (anchors and limits included) and a translation moves
+// sportyR 2.4.0 #74 / #76: other units scale the whole plot once (anchors and limits included) and a translation moves
 // every feature once (football's yard-number boxes too). The oracle writes units_<u>/ and trans_10_-5/ for one league
 // per sport; each must match point for point, like the native fixtures.
 const UNIT_LEAGUE: Readonly<Record<string, string>> = {

@@ -35,9 +35,9 @@ const CORNER_FACE_OFF_MARKER_BAR_WIDTH = 0; // R 541
 const CORNER_FACE_OFF_MARKER_BAR_LENGTH = 0; // R 542
 
 /**
- * Port of sportyR `geom_lacrosse()` (2.3.0, with the sportyR #60-#75 fixes): one PolygonFeature per ggplot layer R adds,
+ * Port of sportyR `geom_lacrosse()` (2.4.0, with the sportyR #60-#75 fixes): one PolygonFeature per ggplot layer R adds,
  * in R's layer order. Documented divergences: an unknown `displayRange` throws (R falls back to "full"). `units`
- * scales the points, anchors and display limits, as sportyR 2.3.0 does (#74).
+ * scales the points, anchors and display limits, as sportyR 2.4.0 does (#74).
  */
 export function lacrosseField(
   league: LacrosseLeague | (string & {}),

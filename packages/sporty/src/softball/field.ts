@@ -30,7 +30,7 @@ const isOneOf = <T extends string>(list: readonly T[], v: string): v is T =>
   (list as readonly string[]).includes(v);
 
 /**
- * Port of sportyR `geom_softball()` (2.3.0): origin = back tip of home plate, +y toward centre field. `units` converts the
+ * Port of sportyR `geom_softball()` (2.4.0): origin = back tip of home plate, +y toward centre field. `units` converts the
  * points, anchors and display limits, as R does for softball. Divergence: an unknown `displayRange` throws (R falls back to
  * "full").
  */

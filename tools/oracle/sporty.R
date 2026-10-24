@@ -12,7 +12,7 @@ geoms <- list(basketball = geom_basketball, hockey = geom_hockey, football = geo
               soccer = geom_soccer, baseball = geom_baseball, tennis = geom_tennis,
               volleyball = geom_volleyball, curling = geom_curling, lacrosse = geom_lacrosse,
               softball = geom_softball)
-# sportyR's exported accessor (2.3.0, #73), not its internal table
+# sportyR's exported accessor (2.4.0, #73), not its internal table
 dims <- sapply(names(geoms), sportyR::get_surface_dimensions, simplify = FALSE)
 # Gate (spec §7): the installed sportyR's data must equal the vendored JSON the TS specs are generated from. Every
 # ported sport is checked (not only the requested ones) because VERSION records the sha256 of the whole file.
@@ -50,7 +50,7 @@ dump <- function(g, dir) {
       next
     }
     if (!inherits(layer$geom, "GeomPolygon")) next
-    # A 0-row layer draws nothing (sportyR 2.3.0's goal fan returns an empty frame for fan-less lacrosse leagues);
+    # A 0-row layer draws nothing (sportyR 2.4.0's goal fan returns an empty frame for fan-less lacrosse leagues);
     # sporty emits no feature for it, so it gets no fixture
     if (nrow(layer$data) == 0) next
     k <- k + 1

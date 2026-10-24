@@ -59,7 +59,7 @@ const RANGE_SYNONYMS: Readonly<Record<string, RangeGroup>> = {
 /**
  * Port of sportyR `geom_football()`: one PolygonFeature per ggplot polygon layer and one TextFeature per
  * `ggfittext::geom_fit_text` layer, in R's layer order. Divergences: an unknown `displayRange` throws (R falls
- * back to "full"); `units` scales the points, anchors and display limits, as sportyR 2.3.0 does (#74);
+ * back to "full"); `units` scales the points, anchors and display limits, as sportyR 2.4.0 does (#74);
  * custom's all-zero defaults give empty yard-line sets (R errors in `seq()`).
  */
 export function footballField(
