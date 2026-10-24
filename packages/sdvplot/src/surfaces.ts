@@ -219,7 +219,8 @@ const isTeamLeague = (v: string): v is League => (LEAGUES as readonly string[]).
  * unwrapped.
  */
 export function surfaceScene(league: League | (string & {}), o: SurfaceSceneOptions = {}): Scene {
-  const entry = SURFACES[league];
+  // own keys only: an inherited name ("constructor", "__proto__") must take the InputError path, not a TypeError
+  const entry = Object.hasOwn(SURFACES, league) ? SURFACES[league] : undefined;
   if (!entry)
     throw new InputError(
       `no surface for league '${league}'; supported: ${Object.keys(SURFACES).sort().join(", ")}`,

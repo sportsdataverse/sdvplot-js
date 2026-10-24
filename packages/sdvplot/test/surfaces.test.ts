@@ -153,6 +153,12 @@ test("SURFACES is the 22 pre-existing keys, unchanged, plus the 37 keys of the s
     new Set([...Object.keys(PRE_EXISTING), ...Object.keys(SHARED)]),
   );
 });
+test("an unknown key, including an inherited Object property name, is an InputError", () => {
+  for (const key of ["nope", "constructor", "toString", "__proto__", "hasOwnProperty"]) {
+    expect(() => surfaceScene(key), key).toThrow(InputError);
+    expect(() => surfaceScene(key), key).toThrow(`no surface for league '${key}'`);
+  }
+});
 test("a team on a surface without team identities is an InputError naming the league", () => {
   for (const key of ["atp", "wcf", "fiba", "nll"]) {
     expect(() => surfaceScene(key as never, { team: "X" }), key).toThrow(InputError);
