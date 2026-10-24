@@ -23,6 +23,7 @@
     "oracle:sporty": "Rscript tools/oracle/sporty.R",
     "oracle:shots": "tsx tools/oracle/shots.ts",
     "oracle:matchup-colors": "tsx tools/oracle/matchup-colors.ts",
+    "oracle:deckgl": "tsx tools/oracle/deckgl.ts",
     "changeset": "changeset",
     "version-packages": "changeset version && biome format --write .",
     "release": "pnpm build && changeset publish"
@@ -41,7 +42,7 @@
     "vitest": "^2.1.0"
   },
   "pnpm": {
-    "overrides": { "jsdom": "^26.1.0" },
+    "overrides": { "@types/node": "^22.0.0", "jsdom": "^26.1.0" },
     "patchedDependencies": { "tsup@8.5.1": "patches/tsup@8.5.1.patch" }
   }
 }

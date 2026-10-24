@@ -48,14 +48,22 @@ install for you, so add the ones for the subpaths you import:
 
 | You import | Also install |
 | --- | --- |
-| `@sportsdataverse/sdvplot`, `/bins`, `/testing`, `/plotly`, `/vega`, `/echarts` | nothing |
+| `@sportsdataverse/sdvplot`, `/bins`, `/testing`, `/plotly`, `/vega`, `/echarts`, `/uplot` | nothing |
+| `@sportsdataverse/sdvplot/deckgl` | `@sportsdataverse/sporty` (draw with `@deck.gl/core` and `@deck.gl/layers` >= 9.4) |
+| `@sportsdataverse/sdvplot/cytoscape` | nothing (draw its elements and style with `cytoscape` >= 3.34.3) |
+| `@sportsdataverse/sdvplot/three` | `@sportsdataverse/sporty` (draw with `three` >= 0.186.1; `<Surface3D>` and `<Trajectory>` in `/react` also need `@react-three/fiber` >= 9.8.1) |
+| `@sportsdataverse/sdvplot/lightweight-charts` | nothing to import it; `lightweight-charts` >= 5.2.1 to draw (Apache-2.0 with TradingView's attribution: `withAttribution` keeps its logo on the chart and `attributionNotice` puts its notice on the page) |
 | `@sportsdataverse/sdvplot/plot` | `@observablehq/plot` >= 0.6.16 and `@sportsdataverse/sporty` |
 | `@sportsdataverse/sdvplot/d3` | `d3` >= 7 and `@sportsdataverse/sporty` |
 | `@sportsdataverse/sdvplot/shots` | `@sportsdataverse/sporty` |
 | `@sportsdataverse/sdvplot/chartjs` | `chart.js` >= 4.4 |
 | `@sportsdataverse/sdvplot/chartjs/surface` | `chart.js` >= 4.4 and `@sportsdataverse/sporty` |
 | `@sportsdataverse/sdvplot/interact` | `d3` >= 7 |
-| `@sportsdataverse/sdvplot/react` | `react` >= 18 |
+| `@sportsdataverse/sdvplot/react` | `react` >= 18 (`<SurfaceBackdrop>` also loads `recharts` >= 3.8 and `@sportsdataverse/sporty`, `<LogoBump>` loads `@nivo/bump` >= 0.99, when they render; `<LogoTick>` loads `victory` >= 37.3.6 to draw a label as text) |
+| `@sportsdataverse/sdvplot/recharts` | `react` >= 18 (draw with `recharts` >= 3.8) |
+| `@sportsdataverse/sdvplot/svelte` | `svelte` >= 5.57 and `layerchart` >= 2.5.1 (`@sportsdataverse/sporty` too for `SurfaceBackdrop`) |
+| `@sportsdataverse/sdvplot/nivo` | `react` >= 18 (draw with `@nivo/core` and `@nivo/bump`, `@nivo/swarmplot` or `@nivo/chord`, >= 0.99) |
+| `@sportsdataverse/sdvplot/victory` | nothing (draw with `victory` >= 37.3.6) |
 | `@sportsdataverse/sdvplot/export` | `@resvg/resvg-js` (for `toPNG`) |
 | `@sportsdataverse/sporty`, `/svg`, `/specs`, `/canvas` | nothing (`@napi-rs/canvas` >= 0.1.50 gives `/canvas` a 2D context in Node) |
 | `@sportsdataverse/sporty/plot` | `@observablehq/plot` >= 0.6.16 |
@@ -65,7 +73,8 @@ install for you, so add the ones for the subpaths you import:
 | `@sportsdataverse/sdvtables/export` | `playwright` >= 1.45 |
 
 `/plot`, `/d3`, `/shots` and `/chartjs/surface` need `@sportsdataverse/sporty` whether or not you draw a surface:
-they import it when they load, and fail to load without it. No other subpath imports sporty. For an Observable Plot
+they import it when they load, and fail to load without it. No other subpath imports sporty when it loads (`/react`'s
+`<SurfaceBackdrop>` loads it when it first renders). For an Observable Plot
 chart:
 
 ```bash

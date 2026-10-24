@@ -33,17 +33,115 @@ export interface HeadshotProps extends ImgProps {
 }
 
 // @public
+export function LogoBump(input: LogoBumpProps): ReactElement;
+
+// @public
+export interface LogoBumpProps {
+    [prop: string]: unknown;
+    // Warning: (ae-forgotten-export) The symbol "NivoLayerOptions" needs to be exported by the entry point react.d.ts
+    at?: NivoLayerOptions["at"];
+    background?: string;
+    data: readonly {
+        readonly id: string;
+        readonly data: readonly {
+            x: number | string;
+            y: number | null;
+        }[];
+    }[];
+    height?: number;
+    // Warning: (ae-forgotten-export) The symbol "IdSystem" needs to be exported by the entry point react.d.ts
+    idSystem?: IdSystem;
+    layers?: readonly unknown[];
+    // Warning: (ae-forgotten-export) The symbol "League" needs to be exported by the entry point react.d.ts
+    league: League;
+    logoHeight?: number;
+    // Warning: (ae-forgotten-export) The symbol "MarkType" needs to be exported by the entry point react.d.ts
+    markType?: MarkType;
+    // Warning: (ae-forgotten-export) The symbol "SeasonInput" needs to be exported by the entry point react.d.ts
+    season?: SeasonInput;
+    // Warning: (ae-forgotten-export) The symbol "Variant" needs to be exported by the entry point react.d.ts
+    variant?: Variant;
+    width?: number;
+}
+
+// @public
+export function LogoPoint(props: LogoPointProps): ReactElement | null;
+
+// Warning: (ae-forgotten-export) The symbol "Shared_2" needs to be exported by the entry point react.d.ts
+//
+// @public
+export interface LogoPointProps extends Shared_2 {
+    alpha?: number;
+    datum?: object;
+    events?: object;
+    season?: SeasonInput;
+    size?: number;
+    team: string;
+    x?: number;
+    y?: number;
+}
+
+// @public
+export function LogoTick(props: LogoTickProps): ReactElement;
+
+// @public
+export interface LogoTickProps extends Shared_2 {
+    season?: SeasonInput;
+    size?: number;
+    text?: unknown;
+    textAnchor?: string;
+    verticalAnchor?: string;
+    x?: number;
+    y?: number;
+}
+
+// @public
+export function Surface3D(props: Surface3DProps): ReactElement;
+
+// @public
+export interface Surface3DProps {
+    league: string;
+    options?: Record<string, unknown>;
+    renderOrder?: number;
+    sport: string;
+}
+
+// @public
+export function SurfaceBackdrop(props: SurfaceBackdropProps): ReactElement;
+
+// @public
+export interface SurfaceBackdropProps {
+    // (undocumented)
+    arcResolution?: number;
+    colorUpdates?: Readonly<Record<string, string>>;
+    displayRange?: string;
+    league: League;
+    rotation?: number;
+    season?: SeasonInput;
+    team?: Value;
+    // (undocumented)
+    units?: "ft" | "m" | "yd" | "in" | "cm" | "mm";
+    updates?: Readonly<Record<string, unknown>>;
+    xAxisId?: string | number;
+    // (undocumented)
+    xlim?: readonly [number, number];
+    // (undocumented)
+    xTrans?: number;
+    yAxisId?: string | number;
+    // (undocumented)
+    ylim?: readonly [number, number];
+    // (undocumented)
+    yTrans?: number;
+}
+
+// @public
 export function TeamLogo(input: TeamLogoProps): ReactElement | null;
 
 // @public (undocumented)
 export interface TeamLogoProps extends ImgProps {
     alt?: string;
-    // Warning: (ae-forgotten-export) The symbol "League" needs to be exported by the entry point react.d.ts
-    //
     // (undocumented)
     league: League;
-    // Warning: (ae-forgotten-export) The symbol "MarkType" needs to be exported by the entry point react.d.ts
-    //
     // (undocumented)
     markType?: MarkType;
     // Warning: (ae-forgotten-export) The symbol "LogoUrlOptions" needs to be exported by the entry point react.d.ts
@@ -53,10 +151,31 @@ export interface TeamLogoProps extends ImgProps {
     size?: number;
     // (undocumented)
     team: Value;
-    // Warning: (ae-forgotten-export) The symbol "Variant" needs to be exported by the entry point react.d.ts
-    //
     // (undocumented)
     variant?: Variant;
+}
+
+// @public
+export function Trajectory(input: TrajectoryProps): ReactElement | null;
+
+// @public
+export interface TrajectoryProps {
+    background?: string;
+    color?: string;
+    fallback?: string;
+    // (undocumented)
+    idSystem?: IdSystem;
+    // (undocumented)
+    league?: League;
+    points: readonly (readonly [x: number, y: number, z: number])[];
+    radialSegments?: number;
+    radius: number;
+    renderOrder?: number;
+    // (undocumented)
+    season?: SeasonInput;
+    team?: unknown;
+    // Warning: (ae-forgotten-export) The symbol "Which" needs to be exported by the entry point react.d.ts
+    which?: Which;
 }
 
 // Warning: (ae-forgotten-export) The symbol "ResolveOptions" needs to be exported by the entry point react.d.ts
@@ -81,7 +200,7 @@ export function Wordmark(props: Omit<TeamLogoProps, "markType">): ReactElement |
 
 // Warnings were encountered during analysis:
 //
-// dist/react.d.ts:65:5 - (ae-forgotten-export) The symbol "ColorOptions" needs to be exported by the entry point react.d.ts
+// dist/react.d.ts:341:5 - (ae-forgotten-export) The symbol "ColorOptions" needs to be exported by the entry point react.d.ts
 
 // (No @packageDocumentation comment for this package)
 

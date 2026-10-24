@@ -375,7 +375,8 @@ export default toSVG(surface(${q(sport)}, ${q(league)}), { width: 640, arcs: "sv
 /**
  * The registry (metadata for the gate and the pages), the browser loaders (every example except `node` ones, which
  * import jsdom, fs, resvg, and `network` ones, whose browser run would download the real 18 MB manifest) and the
- * browser upgrades: `browser` names the examples whose upgrade module gen.ts wrote to `src/generated/browser/<id>.ts`.
+ * browser upgrades: `browser` names the examples whose upgrade module gen.ts wrote to `src/generated/browser/<id>.ts`
+ * (`.tsx` for a .tsx example).
  * The upgrades are their own module, so only a page that shows one loads their table (<Live browser>).
  */
 export function registryModules(

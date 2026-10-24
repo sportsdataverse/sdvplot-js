@@ -7,8 +7,11 @@
       "@sportsdataverse/sporty": ["../sporty/src/index.ts"],
       "@sportsdataverse/sporty/plot": ["../sporty/src/plot.ts"],
       "@sportsdataverse/sporty/d3": ["../sporty/src/d3.ts"],
-      "@sportsdataverse/sporty/canvas": ["../sporty/src/canvas.ts"]
+      "@sportsdataverse/sporty/canvas": ["../sporty/src/canvas.ts"],
+      "@sportsdataverse/sporty/svg": ["../sporty/src/svg.ts"]
     }
   },
-  "include": ["src", "test"]
+  "include": ["src", "test"],
+  // the ./svelte layer imports .svelte files, which tsc cannot read: svelte-check types it (tsconfig.svelte.json)
+  "exclude": ["src/svelte", "test/svelte"]
 }

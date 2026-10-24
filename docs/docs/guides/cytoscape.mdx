@@ -1,0 +1,85 @@
+---
+title: Cytoscape.js
+sidebar_position: 7.96
+---
+
+[Cytoscape.js](https://js.cytoscape.org/) draws graphs: nodes and the edges between them, which you can pan and move.
+`@sportsdataverse/sdvplot/cytoscape` builds one kind of graph, a passing network, with players as nodes and passes as
+edges in team colours. It never imports Cytoscape (install `cytoscape` 3.34.3 or later beside it, an optional peer),
+so the network can be built anywhere, a server included. What it returns is plain JSON, the `elements` and `style`
+that `cytoscape({ container, elements, style })` takes. It is synchronous: load the league first (`loadLeague`).
+
+## A passing network
+
+`passNetwork(rows, { from, to, team, league })` reads one pass per row: the passer's player id in `from`, the
+receiver's in `to`, and the passing team in `team`. It returns one node per player and one edge per passer to receiver
+pair. An edge's `weight` is the pair's passes, or the sum of a `weight` column (xT, say) if you name one. Every pair is
+drawn unless you give `minWeight`, which leaves out the pairs whose weight is smaller. Every player stays when it does.
+A threshold of 2 or 3 passes is the usual convention for a pass map: it hides the one-off pairs so the regular links
+read. Edges run from passer to receiver with an arrow at the receiver,
+drawn as bezier curves, so a pair that passed both ways shows as two separate edges.
+
+Sizes are Cytoscape's style units, px at zoom 1:
+
+- `nodeSize` is a node's diameter (default 40).
+- `edgeWidth` is the width of the heaviest pair's edge (default 10). The other edges are as wide as their share of
+  that weight, so a pair with half its passes is half as wide. A pair whose summed `weight` is 0 or less (xT can be
+  negative) is 0 px wide, since Cytoscape takes no negative width; its `weight` keeps the sum.
+
+Both must be 1 or more. A fraction, as the other adapters take for a mark's height, is refused.
+
+Name the players with `fromName` and `toName`, columns of the passer's and the receiver's names. A node's label is
+the name, and its initials are the first letters of the name's first and last words. Without names, both are the id.
+
+Give `x`, `y`, `xend` and `yend`, the columns of each pass's start and end, and each node sits at the mean of where
+that player passed from and received. You give all four or none. y runs up, as on a plot, and is flipped for
+Cytoscape's y-down model. `scale` is model px per data unit (default 10, so a 105 m pitch is 1,050 px across before
+the graph is fitted to its box). Draw these with the `preset` layout. Without positions, use a layout such as `cose`.
+
+A row with no passer, no receiver, or a missing coordinate or weight is left out, with one warning.
+
+## Headshots, and the fallback node
+
+A player whose headshot resolves is drawn as it: the headshot is the node's `background-image`, clipped to the
+circle, with the team's colour as its border and the name below. `headshots` says what the ids are. It is `"espn"`
+by default (ESPN athlete ids, for the leagues sdvplot has ESPN headshots for), or `"gsis"` for nflverse ids, which
+needs `loadGsis()` first. Cytoscape loads a `background-image` cross-origin, so a headshot from a host that sends no
+CORS headers fails to load, and that node shows as a plain circle in the team's colour (ESPN's sends them).
+
+Any other player is the fallback node, a circle in the team's colour with the initials in black or white, whichever
+reads on it. One warning names those players, as the other adapters warn about a mark they cannot draw.
+
+Soccer has no ESPN headshots, so every soccer player is drawn as the fallback node. `headshots: false` says you want
+none, so nothing warns.
+
+The example below is France's first half in the 2018 World Cup final, from StatsBomb open data. Each pass starts and
+ends where socceraction's SPADL puts it, and its passer and receiver come from the StatsBomb event behind it. It passes
+`minWeight: 2`, so only pairs that linked up at least twice are drawn.
+
+<Live id="sdvplot/cytoscape/france-pass-network" />
+
+## Team colours: `teamStylesheet`
+
+`passNetwork`'s `style` is `teamStylesheet(o)`, which you can also use on your own graph. Every node and edge whose
+`data.team` is a team's resolved id takes that team's colour:
+
+- a node's fill (a headshot node's border);
+- the node's initials, in the ink that reads on that fill;
+- an edge's line and arrow.
+
+Its base blocks also draw `passNetwork`'s elements: the node size, headshot and initials nodes, and edges as wide as
+`data.width`. `which: "secondary"` uses each team's other colour.
+
+Pass the colour the graph is drawn on as `background` and every team colour keeps at least 3:1 contrast against it,
+as in dark mode. Each team's colour also aims to stay apart from the others' (a CIE76 ΔE of 20 or more), through
+sdvplot's shared team palette, which the other adapters use too; if no candidate is both, it keeps the readable colour
+and warns once. A headshot node's name takes the ink that reads on the
+background. A team that does not resolve gets no rule: its elements keep `fallback` (default `#808080`) as given, its
+contrast unchecked, and it never moves a real team's colour.
+
+## Reading back what was drawn
+
+There is no `drawnMarks` here, because the elements are the record. Each node holds its player `id`, `label`,
+`initials`, resolved `team`, `image` (on a headshot node) and `position`. Each edge holds its `source`, `target`,
+`weight`, `width` and `team`. A test can check them without a browser, or hand them to Cytoscape headless
+(`cytoscape({ headless: true, styleEnabled: true, elements, style })`) and read the computed style.

@@ -20,6 +20,9 @@ only whole records (rows, plays, events) are dropped, except in the win-probabil
 - spadl_8658_france_h1_passes.csv: socceraction/8658_spadl.csv (StatsBomb open-data match 8658, France v Croatia, the
   2018 World Cup final, as socceraction 1.5.3 SPADL), the rows of France (team_id 771) in period 1 whose type_name is
   pass and result_name is success: 75 rows, each line unchanged, with the header.
+- mlb_statcast_search_2024-06-15_head.csv: mlb_statcast/search_2024-06-15_head.csv (the first 46 pitches of Baseball
+  Savant's pitch-level search for 2024-06-15), copied byte for byte (its UTF-8 BOM and Savant's quoting kept); the
+  sha256 is checked, so a changed capture fails here rather than slipping into the examples.
 
 Run: `uv run tools/sample-data/sdv_py_captures.py` (reads ../sdv-py), or `--sdv-py <path to a sportsdataverse-py
 checkout>`.
@@ -28,6 +31,7 @@ checkout>`.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 from typing import Any
@@ -125,6 +129,11 @@ def main() -> None:
     (OUT / "spadl_8658_france_h1_passes.csv").write_text(
         "\n".join([spadl[0], *kept]) + "\n", encoding="utf-8", newline="\n"
     )
+
+    savant = (fx / "mlb_statcast" / "search_2024-06-15_head.csv").read_bytes()
+    sha = hashlib.sha256(savant).hexdigest()
+    assert sha == "f605ab3da13670a78f53286484758505a4fe78d95a9730bce4a8de8d94248608", sha
+    (OUT / "mlb_statcast_search_2024-06-15_head.csv").write_bytes(savant)
 
 
 if __name__ == "__main__":

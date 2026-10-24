@@ -1,0 +1,76 @@
+---
+title: Svelte and LayerChart
+sidebar_position: 7.7
+---
+
+[LayerChart](https://layerchart.com) builds charts out of Svelte components: a `<Chart>` holds the scales, and marks
+such as `<Spline>` or `<Points>` sit in its `<Svg>` layer. `@sportsdataverse/sdvplot/svelte` adds Svelte 5
+components that sit there too: team logos and player headshots as marks, a team-painted court, field or rink as a
+backdrop, and a palette for team-coloured series. Install `svelte` (5.57 or later: 5.56 cannot compile LayerChart 2.5.1) and `layerchart` (2.5.1 or later)
+beside it; both are optional peers. The components read sdvplot's team data synchronously, so load the league first
+(`loadLeague`). The charts below are drawn by Svelte in your browser.
+
+## Logo marks: a bump chart
+
+`<LogoMark data x y team league />` draws each row's team logo centred on the row's `x` and `y` columns, placed with
+the chart's own scales (the middle of the band on a band scale). `height` is a fraction of the plot area's height, in
+(0, 1] (default 0.1), as in the Plotly, Vega-Lite, ECharts and uPlot adapters: LayerChart hands its marks the plot
+area's size, so a pixel size such as `24` is refused with an error that says so. `data` defaults to the chart's own
+data. `markType="wordmark"` draws wordmarks, and `season`, `variant`, `idSystem`, `alpha` and `embed` work as in the
+other adapters.
+
+`teamColorPalette(league, teams, { background })` gives one colour per team for the lines (a `<Spline stroke>`, a
+series' `color` or the chart's `cRange`). With `background`, each colour keeps at least 3:1 contrast against it and
+aims to stay apart from every earlier team's (a CIE76 ΔE of 20 or more), as in the uPlot and Recharts adapters: a team
+whose colours both clash takes the nearest colour to its own (lightness, hue or chroma stepped) that is distinct and
+reads. If no candidate is both, it keeps the readable colour and warns once, so ΔE 20 is a target, not a guarantee.
+
+Here each AFC West team's division rank after every week of 2024 is a line in its colour, and the rows of the last
+week, picked by week, put each team's logo at its line's end:
+
+<Live id="sdvplot/svelte/bump-chart" />
+
+The component the page mounts:
+
+<Snippet file="svelte/BumpChart.svelte" />
+
+A team with no logo draws nothing (no broken image) and warns once, as the ECharts adapter does. Every image carries
+the `data-sdv-*` attributes `drawnMarks` (`@sportsdataverse/sdvplot/testing`) reads, so a test can check which teams
+were drawn where, in data units, with `height` as the fraction asked for.
+
+## Headshot marks
+
+`<HeadshotMark x y player league />` draws ESPN headshots (600:436) from a column of athlete ids; `idSystem="gsis"`
+reads nflverse gsis ids after `loadGsis()`. An id with no headshot draws nothing and warns once.
+
+<Live id="sdvplot/svelte/qb-headshots" />
+
+<Snippet file="svelte/QbHeadshots.svelte" />
+
+## A court, field or rink under the marks
+
+`<SurfaceBackdrop league team displayRange />` paints the league's surface in the team's colours, in the chart's x and
+y units: put it first in the `<Svg>` layer so the marks draw over it, and set the chart's `xDomain` and `yDomain` to
+the surface's bbox (sporty's `surface(...).bbox`) to fill the plot area, or to any range in those units to show part
+of it. It is clipped to the plot area. Both scales must be numeric, linear and unreversed: on a band, log or reversed
+scale it draws nothing and warns once, rather than a stretched or mirrored court. It also needs
+`@sportsdataverse/sporty` installed.
+
+<Live id="sdvplot/svelte/court-shots" />
+
+<Snippet file="svelte/CourtShots.svelte" />
+
+## Loading, server rendering and a missing peer
+
+Importing `@sportsdataverse/sdvplot/svelte` loads neither layerchart nor sporty: each component imports what it needs
+when it first renders, and reads LayerChart's chart context once that has loaded. So:
+
+- The marks and the backdrop draw on the client. In a SvelteKit server render (`<Chart ssr>`), LayerChart draws its
+  own marks and axes and the sdvplot components draw nothing; they appear once the page hydrates. The module itself
+  touches no `window` or `document`, so importing it on the server is safe.
+- Without layerchart installed, the import still works and `teamColorPalette` still works; a component that renders
+  throws `OptionalDependencyError` ("LogoMark needs the optional peer layerchart, which could not be loaded: pnpm add
+  layerchart"), which a `<svelte:boundary>` catches.
+
+The components ship as Svelte source under the `svelte` export condition, as Svelte libraries do, so your app's Svelte
+compiler builds them (Vite and SvelteKit pick the condition up themselves).

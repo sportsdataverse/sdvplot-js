@@ -180,8 +180,26 @@ function hideBrowser(): () => void {
 /**
  * A browser has a 2D canvas and jsdom does not: Observable Plot paints a continuous legend's ramp on one
  * (`Plot.legend`). Back each jsdom `<canvas>` with an @napi-rs/canvas of its size while a browser example runs.
+ * Nor has jsdom `matchMedia`, which Lightweight Charts reads to follow the device pixel ratio: a browser example gets
+ * one that matches nothing (a ratio of 1, never changing).
  */
 function browserCanvas(): () => void {
+  const media = Object.getOwnPropertyDescriptor(globalThis, "matchMedia");
+  if (typeof globalThis.matchMedia !== "function")
+    Object.defineProperty(globalThis, "matchMedia", {
+      configurable: true,
+      writable: true,
+      value: (query: string) => ({
+        matches: false,
+        media: query,
+        onchange: null,
+        addListener() {},
+        removeListener() {},
+        addEventListener() {},
+        removeEventListener() {},
+        dispatchEvent: () => false,
+      }),
+    });
   const proto = HTMLCanvasElement.prototype;
   const saved = (["getContext", "toDataURL"] as const).map(
     (k) => [k, Object.getOwnPropertyDescriptor(proto, k)] as const,
@@ -202,6 +220,8 @@ function browserCanvas(): () => void {
   });
   return () => {
     for (const [k, d] of saved) if (d !== undefined) Object.defineProperty(proto, k, d);
+    if (media === undefined) Reflect.deleteProperty(globalThis, "matchMedia");
+    else Object.defineProperty(globalThis, "matchMedia", media);
   };
 }
 

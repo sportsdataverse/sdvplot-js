@@ -34,6 +34,20 @@ async function drawWith(el: HTMLElement, s: BrowserSpec): Promise<() => void> {
       return (await import(/* webpackChunkName: "draw-echarts" */ "./echarts.js")).default(el, s);
     case "chartjs":
       return (await import(/* webpackChunkName: "draw-chartjs" */ "./chartjs.js")).default(el, s);
+    case "uplot":
+      return (await import(/* webpackChunkName: "draw-uplot" */ "./uplot.js")).default(el, s);
+    case "svelte":
+      return (await import(/* webpackChunkName: "draw-svelte" */ "./svelte.js")).default(el, s);
+    case "deckgl":
+      return (await import(/* webpackChunkName: "draw-deckgl" */ "./deckgl.js")).default(el, s);
+    case "cytoscape":
+      return (await import(/* webpackChunkName: "draw-cytoscape" */ "./cytoscape.js")).default(el, s);
+    case "three":
+      return (await import(/* webpackChunkName: "draw-three" */ "./three.js")).default(el, s);
+    case "lightweight-charts":
+      return (
+        await import(/* webpackChunkName: "draw-lightweight-charts" */ "./lightweight-charts.js")
+      ).default(el, s);
   }
 }
 

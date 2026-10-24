@@ -1,0 +1,100 @@
+---
+title: Three.js
+sidebar_position: 7.97
+---
+
+[Three.js](https://threejs.org/) draws 3D scenes with WebGL, and [react-three-fiber](https://r3f.docs.pmnd.rs/)
+writes them as React components. `@sportsdataverse/sdvplot/three` builds what a sports scene needs as plain mesh
+buffers: a sporty playing surface as one flat mesh, and a tube along any 3D path in a team's colour, with a helper
+that turns a Statcast pitch into its path. It never imports three.js (install `three` 0.186.1 or later beside it, an
+optional peer), so the buffers can be built anywhere, a server included: `Float32Array` positions and colours and a
+`Uint32Array` of indices, ready for a three.js `BufferGeometry`. `surfaceMesh` draws through
+`@sportsdataverse/sporty`, which this subpath imports when it loads; the team colours are synchronous, so load the
+league first (`loadLeague`).
+
+For react-three-fiber, `@sportsdataverse/sdvplot/react` draws the buffers with two components, `<Surface3D>` and
+`<Trajectory>`, to put inside your own `<Canvas>`. They load `three` and `@react-three/fiber` (9.8.1 or later, which
+needs React 19) only when they first render, so `sdvplot/react` imports and server-renders without them; a missing
+one throws `OptionalDependencyError` then, naming what to install. That failed load is kept until the page reloads, so
+reload after installing the peer. A server render draws nothing: the scene draws on the client. A `<Trajectory>` in
+a team's colour needs the team's league loaded (`loadLeague`): until it is, it draws nothing, with one warning, and in
+the browser it loads the league and then draws.
+
+## Units and the frame
+
+Everything is in world units, never px: the surface's own (feet for a baseball field or a rink, metres for a pitch),
+and the tube's `radius` in the same units as its points. A tube is as thick as its radius whatever the camera, and
+`trajectoryTube` refuses a `width`, `size` or `lineWidth` with an `InputError` that says so. The ground is the x-y
+plane at z = 0 with z up, in sporty's frame: a baseball field has home plate's point at the origin and +y towards
+centre field, the other surfaces their centre at the origin. three.js's own default is y up, so give the camera
+`up={[0, 0, 1]}` (or turn the group -90 degrees about x).
+
+## A field, flat, in one mesh
+
+`surfaceMesh(sport, league, o)` is sporty's surface as one triangle mesh: positions, vertex colours (r, g, b, a in
+linear sRGB, three.js's working colour space, so the drawn colour is sporty's) and indices, with `loops` naming where
+each feature's triangles sit. The surface's background colour, if it has one (a baseball field's outfield grass), is
+the first loop, over the whole extent; then each closed loop of each feature in sporty's drawing order. sporty draws
+some features as two loops in one path (a faceoff circle's half rings) and a few that cross themselves at a corner
+(the NHL goaltender's trapezoid); each is split into simple loops before it is filled, so nothing is filled on the
+wrong side. Hidden features and text are left out, and sporty's heights are flattened: z is 0 throughout. `o` goes to
+sporty's `surface()` (`colorUpdates`, `units`, `rotation`, ...).
+
+Every loop lies in the same plane, so draw the mesh in order, without depth writes and before the rest of the scene:
+later loops then paint over earlier ones with no z-fighting. `<Surface3D sport league options>` does exactly that: a
+`MeshBasicMaterial` with `vertexColors`, `transparent`, `depthWrite: false`, `toneMapped: false` and both sides,
+`renderOrder` -1.
+
+## Pitches in flight
+
+`statcastPitchPath(pitch)` turns a Baseball Savant (Statcast) pitch into its flight, `[x, y, z]` points in feet from
+the release to home plate. Statcast describes each pitch with the nine-parameter fit of the PITCHf/x era: a constant
+acceleration (`ax`, `ay`, `az`) and the velocity (`vx0`, `vy0`, `vz0`) where the pitch crosses y = 50 ft, so its
+position is p(t) = p₅₀ + v₀t + ½at² ([Savant's CSV documentation](https://baseballsavant.mlb.com/csv-docs); A. M.
+Nathan, [Determining Pitch Movement from PITCHf/x Data](https://baseball.physics.illinois.edu/Movement.pdf), 2012).
+Savant's CSV leaves out where the pitch was at y = 50, so it is solved from where the fit crosses the plate
+(`plate_x`, `plate_z`), and the path runs from `release_pos_y` to that plane in equal steps of time (`steps`, default
+40). Savant measures that crossing at the plate's front edge through 2025 and at its middle from 2026, so the path
+reads the pitch's `game_year` (or takes `plate: "front" | "middle"`; that rule is from Savant's documentation of its MLB search, so pass `plate`
+for its World Baseball Classic or minor-league searches). Every field must be a number: drop rows with an empty CSV
+cell first, since `Number("")` is 0. Traced back to the release, it lands on Savant's
+own release point within its 0.01 ft rounding; the tests check that on real pitches of both seasons. Statcast's
+frame is sporty's baseball frame, x to the catcher's right (the first-base side), so the path draws over the field
+unconverted.
+
+`trajectoryTube(points, { radius, team, league })` is a tube along the path: a ring of `radialSegments` vertices
+(default 12) round each point, carried along without twisting, its colour the team's. `<Trajectory points radius team
+league>` draws it unlit and not tone-mapped, so the team's colour shows exactly as it is. Pass `color` instead of a
+team for a colour of your own.
+
+Below, two strikeouts from June 15, 2024, pitch by pitch: the Yankees' four pitches to Jamie Westbrook at Fenway Park
+(a curveball, a changeup, a slider, then a 96.3 mph four-seamer he swung through) and the Royals' curveball that Cavan
+Biggio took for strike three at Dodger Stadium. Each tube is a baseball's radius, in the pitching team's colour: on
+the dark grass the Yankees' navy and the Royals' royal blue would not read, so `teamColorPalette` gives each its own
+second colour, gray and powder blue. Three.js draws it in your browser: drag to turn the camera. Data: MLB Advanced
+Media via Baseball Savant. Data © MLB Advanced Media, L.P.; see MLB's
+[terms of use](https://www.mlb.com/official-information/terms-of-use).
+
+<Live id="sdvplot/three/statcast-pitches" />
+
+## Team colours against the scene
+
+`teamColorPalette(league, teams, { background })` gives one colour per team, as in the other adapters. With the
+colour the marks are seen against as `background` (the example uses the field's grass), every colour keeps at least
+3:1 contrast against it, as in dark mode, and the teams aim to stay apart (a CIE76 ΔE of 20 or more), through
+sdvplot's shared team palette; if no candidate is both, it keeps the readable colour and warns once. A team listed
+twice gets one colour; a team that does not resolve takes `fallback` (default `#808080`) as given, its contrast
+unchecked, and stays out of the palette. `trajectoryTube` takes the same `background` for a single team's tube.
+
+## Without React
+
+The buffers are what a three.js `BufferGeometry` takes. For a surface, set `position` from `positions` (3 per
+vertex), `color` from `colors` (4 per vertex) and the index from `indices`, and draw it with the material above; for a
+tube, `position`, `normal` (from `normals`) and the index, with a `MeshBasicMaterial` in the tube's `color` and
+`toneMapped: false`.
+
+## Reading back what was drawn
+
+There is no `drawnMarks` here: the buffers are the record. `surfaceMesh(...).loops` names each loop with its sporty
+colour and where its vertices and triangles are; a tube carries its `color`, `radius` and path `length`, so a test can
+check them without a WebGL context.

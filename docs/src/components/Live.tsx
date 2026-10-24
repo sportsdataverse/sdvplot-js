@@ -51,12 +51,22 @@ export interface LiveProps {
   readonly href?: string;
 }
 
+/** Who draws an upgrade whose static copy is a value, by the example's folder (sdvplot/<lib>/...); else plotly.js. */
+const VALUE_LIBS: Readonly<Record<string, string>> = {
+  uplot: "uPlot",
+  svelte: "Svelte (with LayerChart)",
+  deckgl: "deck.gl",
+  cytoscape: "Cytoscape.js",
+  three: "Three.js",
+  "lightweight-charts": "Lightweight Charts",
+};
+
 /**
  * An example: the prerendered output (static HTML, so the page is complete without JavaScript), the code that
  * produced it, and, for DOM and React outputs that have a browser loader, a live re-run that replaces the static
  * copy once the example comes within a screen of the viewport. An adapter example with a browser upgrade (Plotly,
- * Vega, ECharts, Chart.js: `export const browser`) is drawn by its library instead, in the same place and at the same
- * moment. A re-run or a drawing that throws shows the error over the static output; it never leaves a blank.
+ * Vega, ECharts, Chart.js, Three.js: `export const browser`) is drawn by its library instead, in the same place and
+ * at the same moment. A re-run or a drawing that throws shows the error over the static output; it never leaves a blank.
  */
 export default function Live(p: LiveProps): ReactElement {
   const figure = useRef<HTMLElement>(null);
@@ -190,8 +200,12 @@ export default function Live(p: LiveProps): ReactElement {
   return (
     <figure className="sdv-live" data-example={p.id} ref={figure}>
       {p.browser === true && p.kind === "value" && !mounted && error === null && (
-        // a Plotly figure: the static copy is its data, not a picture of it (after a failure, the alert says why)
-        <p className="sdv-live-note">With JavaScript on, plotly.js draws this figure here.</p>
+        // a Plotly figure, uPlot options, a Svelte chart's props, deck.gl layers, a Cytoscape graph, a Three.js scene
+        // or a Lightweight Charts chart: the static copy is its data, not a picture of it (after a failure, the alert
+        // says why). The library is the example's folder (sdvplot/<lib>/...).
+        <p className="sdv-live-note">
+          With JavaScript on, {VALUE_LIBS[p.id.split("/")[1] ?? ""] ?? "plotly.js"} draws this figure here.
+        </p>
       )}
       {output}
       <div className="sdv-live-output" ref={host}>

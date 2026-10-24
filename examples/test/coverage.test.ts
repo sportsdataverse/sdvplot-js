@@ -50,9 +50,29 @@ const EXEMPT: readonly (readonly [spec: string, name: RegExp | "*", reason: stri
   ["@sportsdataverse/sdvplot/vega", /^(drawnMarks|drawnAxisMarks|visibleAxisLabels)$/, HOOKS],
   ["@sportsdataverse/sdvplot/echarts", /^(drawnMarks|drawnAxisMarks|visibleAxisLabels)$/, HOOKS],
   [
+    "@sportsdataverse/sdvplot/uplot",
+    /^drawnMarks$/,
+    "test hook: what logoPlugin last painted on a chart, read back in a test (needs a canvas; the gate has none)",
+  ],
+  [
+    "@sportsdataverse/sdvplot/lightweight-charts",
+    /^drawnMarks$/,
+    "test hook: what a logoMarkers primitive last painted on a chart, read back in a test (needs a canvas; the gate has none)",
+  ],
+  [
     "@sportsdataverse/sdvplot/echarts",
     /^renderLogo$/,
     "the renderItem withLogos/withWordmarks/withHeadshots install on their custom series; every ECharts image example draws through it",
+  ],
+  [
+    "@sportsdataverse/sdvplot/nivo",
+    only(["embedSources"]),
+    "the same embedSources every adapter re-exports, shown by the sdvplot/echarts, /plotly and /vega embed-sources examples; logoLayer's and logoNode's `embed` takes its map",
+  ],
+  [
+    "@sportsdataverse/sdvplot/victory",
+    only(["embedSources"]),
+    "the same embedSources every adapter re-exports, shown by the sdvplot/echarts, /plotly and /vega embed-sources examples; <LogoPoint embed> and <LogoTick embed> take its map",
   ],
   [
     "@sportsdataverse/sporty",
@@ -102,20 +122,56 @@ const EXEMPT: readonly (readonly [spec: string, name: RegExp | "*", reason: stri
     only(["tableToPNG", "htmlToPNG", "socialCrop", "batchToPNG"]),
     "needs a Chromium binary; the docs build and the gate run without one — exercised by the render-tests CI job (SDV_RENDER_TESTS=1) and shown in guides/export.mdx",
   ],
+  [
+    "@sportsdataverse/sdvplot/svelte",
+    only(["LogoMark", "HeadshotMark", "SurfaceBackdrop"]),
+    "Svelte components, used in .svelte markup, which an example module cannot hold: the examples/snippets/svelte components use each, and the sdvplot/svelte examples draw those snippets live (checked below)",
+  ],
+  [
+    "@sportsdataverse/sdvplot/svelte",
+    only(["embedSources"]),
+    "the same embedSources every adapter re-exports, shown by the sdvplot/echarts, /plotly and /vega embed-sources examples; LogoMark's `embed` takes its map",
+  ],
 ];
+
+test("each sdvplot/svelte component is used by a snippet that an example draws", () => {
+  // a Svelte browser spec: `lib: "svelte"`, then the snippet it mounts by name
+  const drawn = new Set(
+    EXAMPLES.flatMap((e) => [...e.code.matchAll(/lib: "svelte",\s*component: "(\w+)"/g)].map((m) => m[1])),
+  );
+  // the markup outside HTML comments: a component named only in a comment is not used
+  const markup = (f: string): string =>
+    readFileSync(abs(`examples/snippets/svelte/${f}`), "utf8").replace(/<!--[\s\S]*?-->/g, "");
+  for (const name of ["LogoMark", "HeadshotMark", "SurfaceBackdrop"]) {
+    const users = readdirSync(abs("examples/snippets/svelte")).filter((f) =>
+      new RegExp(`<${name}\\b`).test(markup(f)),
+    );
+    expect(
+      users.some((f) => drawn.has(f.replace(/\.svelte$/, ""))),
+      `${name}: no drawn snippet uses it`,
+    ).toBe(true);
+  }
+});
 
 const PACKAGES = ["sdvplot", "sporty", "sdvtables"] as const;
 
 /**
  * Specifier → value exports, read from the committed api-extractor reports (`etc/<pkg>[-<sub>].api.md`, one per
- * subpath; `-` in the file name is `/` in the subpath, so `sdvplot-chartjs-surface` is `sdvplot/chartjs/surface`).
+ * subpath; `-` in the file name is `/` in the subpath, so `sdvplot-chartjs-surface` is `sdvplot/chartjs/surface`, unless
+ * the package exports the subpath with its `-`, as `sdvplot-lightweight-charts` is `sdvplot/lightweight-charts`).
  * A value is an exported function, const, let, class or enum, or an `export { local as name }` of one.
  */
 function valueExports(): [string, string[]][] {
   const out: [string, string[]][] = [];
   for (const pkg of PACKAGES) {
+    const exported = new Set(
+      Object.keys(JSON.parse(readFileSync(abs(`packages/${pkg}/package.json`), "utf8")).exports).map((k) =>
+        k.slice(2),
+      ),
+    );
     for (const f of readdirSync(abs(`packages/${pkg}/etc`)).filter((n) => n.endsWith(".api.md"))) {
-      const sub = f.slice(pkg.length, -".api.md".length).replace(/^-/, "").replace(/-/g, "/");
+      const stem = f.slice(pkg.length, -".api.md".length).replace(/^-/, "");
+      const sub = exported.has(stem) ? stem : stem.replace(/-/g, "/");
       const text = readFileSync(abs(`packages/${pkg}/etc/${f}`), "utf8");
       const kind = "(?:declare )?(?:abstract )?(?:function|const|class|let|enum)";
       const names = [...text.matchAll(new RegExp(`^export ${kind} (\\w+)`, "gm"))].map((m) => m[1] ?? "");

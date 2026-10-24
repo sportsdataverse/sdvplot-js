@@ -14,6 +14,11 @@ import { type LogoUrlOptions, logoUrlSync } from "../marks.js";
 import { type ResolveOptions, type Value, resolveSync } from "../resolve.js";
 import type { SelectionState, SelectionStore } from "../selection.js";
 import type { HeadshotIdSystem, League, MarkType, TeamId, Variant } from "../types.js";
+export { SurfaceBackdrop, type SurfaceBackdropProps } from "./recharts.js";
+export { LogoBump, type LogoBumpProps } from "./nivo.js";
+export { LogoPoint, type LogoPointProps, LogoTick, type LogoTickProps } from "./victory.js";
+
+export { Surface3D, type Surface3DProps, Trajectory, type TrajectoryProps } from "./three.js";
 
 type ImgProps = Omit<ImgHTMLAttributes<HTMLImageElement>, "src" | "alt" | "height" | "width">;
 

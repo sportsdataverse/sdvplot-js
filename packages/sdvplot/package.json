@@ -14,7 +14,16 @@
     "observable-plot",
     "d3",
     "chartjs",
-    "react"
+    "react",
+    "recharts",
+    "uplot",
+    "nivo",
+    "victory",
+    "deck.gl",
+    "cytoscape",
+    "threejs",
+    "react-three-fiber",
+    "lightweight-charts"
   ],
   "homepage": "https://plot.sportsdataverse.org",
   "bugs": "https://github.com/sportsdataverse/sdvplot-js/issues",
@@ -81,18 +90,90 @@
       "types": "./dist/echarts.d.ts",
       "import": "./dist/echarts.js"
     },
+    "./recharts": {
+      "types": "./dist/recharts.d.ts",
+      "import": "./dist/recharts.js"
+    },
+    "./uplot": {
+      "types": "./dist/uplot.d.ts",
+      "import": "./dist/uplot.js"
+    },
+    "./svelte": {
+      "types": "./dist/svelte/index.d.ts",
+      "svelte": "./dist/svelte/index.js"
+    },
+    "./nivo": {
+      "types": "./dist/nivo.d.ts",
+      "import": "./dist/nivo.js"
+    },
+    "./victory": {
+      "types": "./dist/victory.d.ts",
+      "import": "./dist/victory.js"
+    },
+    "./deckgl": {
+      "types": "./dist/deckgl.d.ts",
+      "import": "./dist/deckgl.js"
+    },
+    "./cytoscape": {
+      "types": "./dist/cytoscape.d.ts",
+      "import": "./dist/cytoscape.js"
+    },
+    "./three": {
+      "types": "./dist/three.d.ts",
+      "import": "./dist/three.js"
+    },
+    "./lightweight-charts": {
+      "types": "./dist/lightweight-charts.d.ts",
+      "import": "./dist/lightweight-charts.js"
+    },
     "./package.json": "./package.json"
   },
   "peerDependencies": {
+    "@deck.gl/core": ">=9.4.0",
+    "@deck.gl/layers": ">=9.4.0",
+    "@nivo/bump": ">=0.99",
+    "@nivo/chord": ">=0.99",
+    "@nivo/core": ">=0.99",
+    "@nivo/swarmplot": ">=0.99",
     "@observablehq/plot": ">=0.6.16",
+    "@react-three/fiber": ">=9.8.1",
     "@resvg/resvg-js": ">=2.6",
     "@sportsdataverse/sporty": "workspace:^0",
     "chart.js": ">=4.4",
+    "cytoscape": ">=3.34.3",
     "d3": ">=7",
-    "react": ">=18"
+    "layerchart": ">=2.5.1",
+    "lightweight-charts": ">=5.2.1",
+    "react": ">=18",
+    "recharts": ">=3.8",
+    "svelte": ">=5.57",
+    "three": ">=0.186.1",
+    "uplot": ">=1.6.31",
+    "victory": ">=37.3.6"
   },
   "peerDependenciesMeta": {
+    "@deck.gl/core": {
+      "optional": true
+    },
+    "@deck.gl/layers": {
+      "optional": true
+    },
+    "@nivo/bump": {
+      "optional": true
+    },
+    "@nivo/chord": {
+      "optional": true
+    },
+    "@nivo/core": {
+      "optional": true
+    },
+    "@nivo/swarmplot": {
+      "optional": true
+    },
     "@observablehq/plot": {
+      "optional": true
+    },
+    "@react-three/fiber": {
       "optional": true
     },
     "@resvg/resvg-js": {
@@ -104,16 +185,40 @@
     "chart.js": {
       "optional": true
     },
+    "cytoscape": {
+      "optional": true
+    },
     "d3": {
+      "optional": true
+    },
+    "layerchart": {
+      "optional": true
+    },
+    "lightweight-charts": {
       "optional": true
     },
     "react": {
       "optional": true
+    },
+    "recharts": {
+      "optional": true
+    },
+    "svelte": {
+      "optional": true
+    },
+    "three": {
+      "optional": true
+    },
+    "uplot": {
+      "optional": true
+    },
+    "victory": {
+      "optional": true
     }
   },
   "scripts": {
-    "build": "tsup",
-    "typecheck": "tsc -p tsconfig.json",
+    "build": "tsup && svelte-package -i src/svelte -o dist/svelte --tsconfig ./tsconfig.svelte.json && node ../../tools/svelte-dts.mjs dist/svelte",
+    "typecheck": "tsc -p tsconfig.json && svelte-check --tsconfig ./tsconfig.svelte.json --fail-on-warnings",
     "test": "vitest run",
     "api:report": "node ../../tools/api-extractor-all.mjs --local",
     "api:check": "node ../../tools/api-extractor-all.mjs",
@@ -129,26 +234,48 @@
     "provenance": true
   },
   "devDependencies": {
+    "@deck.gl/core": "9.4.0",
+    "@deck.gl/layers": "9.4.0",
     "@napi-rs/canvas": "^1.0.10",
+    "@nivo/bump": "0.99.0",
+    "@nivo/chord": "0.99.0",
+    "@nivo/core": "0.99.0",
+    "@nivo/swarmplot": "0.99.0",
     "@observablehq/plot": "^0.6.17",
+    "@react-three/fiber": "9.8.1",
+    "@react-three/test-renderer": "9.1.1",
     "@resvg/resvg-js": "^2.6.2",
     "@sportsdataverse/sporty": "workspace:^",
+    "@sveltejs/package": "2.5.8",
+    "@sveltejs/vite-plugin-svelte": "4.0.4",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
+    "@testing-library/svelte": "5.4.2",
     "@types/d3": "^7.4.3",
     "@types/jsdom": "^21.1.7",
     "@types/plotly.js": "^3.0.15",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "@types/three": "0.186.0",
     "chart.js": "4.5.1",
+    "cytoscape": "3.34.3",
     "d3": "^7.9.0",
     "echarts": "^6.1.0",
     "jsdom": "^26.1.0",
+    "layerchart": "2.5.1",
+    "lightweight-charts": "5.2.1",
     "linkedom": "^0.18",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
+    "react-is": "^19.3.0",
+    "recharts": "3.10.1",
+    "svelte": "5.57.1",
+    "svelte-check": "4.7.6",
+    "three": "0.186.1",
+    "uplot": "1.6.32",
     "vega": "^6.4.0",
-    "vega-lite": "^6.4.3"
+    "vega-lite": "^6.4.3",
+    "victory": "37.3.6"
   }
 }
