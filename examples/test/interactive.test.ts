@@ -103,7 +103,7 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
       // bar's middle is its own team colour.
       if (lib === "react-chartjs-2") {
         const marks = await figure
-          .locator('.sdv-live-output [role="img"]')
+          .locator('.sdv-live-output [role="figure"]')
           .first()
           .evaluate((el) => {
             type El = { x: number; y: number; base?: number; options: Record<string, unknown> };

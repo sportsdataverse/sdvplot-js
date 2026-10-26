@@ -11,7 +11,8 @@ import { type Draw, figureBox } from "./index.js";
  */
 const draw: Draw<"react-chartjs-2"> = async (el, s) => {
   await sourceSans;
-  const box: HTMLElement & { sdvChart?: Chart } = figureBox(el, s.label);
+  // a figure, not an img: a React chart may hold controls (the logo scatter's division buttons)
+  const box: HTMLElement & { sdvChart?: Chart } = figureBox(el, s.label, "figure");
   box.style.maxWidth = `${s.width}px`;
   const root = createRoot(box);
   flushSync(() => root.render(s.chart()));
