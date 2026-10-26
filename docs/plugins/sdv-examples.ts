@@ -12,6 +12,7 @@ const CHART_LIBS = [
   "vega",
   "echarts",
   "chartjs",
+  "react-chartjs-2",
   "uplot",
   "svelte",
   "deckgl",
