@@ -8,12 +8,14 @@ import {
   logoWatermarks,
   pointImages,
   teamColor,
+  teamColorPalette,
   teamFill,
   wordmarkPoints,
 } from "../../src/chartjs.js";
 import {
   InputError,
   UnsupportedTargetError,
+  contrast,
   hex6,
   loadLeague,
   marks,
@@ -23,7 +25,12 @@ import {
   setWarningHandler,
   teamColorsSync,
 } from "../../src/index.js";
+import { teamColorPalette as rechartsPalette } from "../../src/recharts.js";
+import { MIN_CONTRAST, MIN_DELTA_E, deltaE } from "../../src/team-palette.js";
 import { type Call, calls, draw, mockCanvas } from "./harness.js";
+
+/** The 2024 AFC East and West, as the examples' STANDINGS hold them. */
+const STANDINGS_TEAMS = ["KC", "LAC", "DEN", "LV", "BUF", "MIA", "NYJ", "NE"];
 
 Chart.register(...registerables);
 const warnings: string[] = [];
@@ -202,6 +209,23 @@ describe("team colours", () => {
       hex6(teamColorsSync("nfl", "KC", { which: "secondary" }) as string, { dropAlpha: true }),
     );
     expect(() => teamColor("KC", "nfl", { alpha: 2 })).toThrow(InputError);
+  });
+  test("dark mode: teamColorPalette keeps every colour at 3:1 on the background and MIN_DELTA_E from the others", () => {
+    const teams = STANDINGS_TEAMS;
+    const background = "#181a1b";
+    // the gap: the teams' own colours (teamColor) sink into a dark chart, e.g. the Raiders' black
+    expect(
+      teamColor(teams, "nfl").filter((c) => contrast(c, background) < MIN_CONTRAST).length,
+    ).toBeGreaterThan(0);
+    const c = teamColorPalette("nfl", teams, { background });
+    expect(c).toHaveLength(teams.length);
+    for (const x of c) expect(contrast(x, background)).toBeGreaterThanOrEqual(MIN_CONTRAST);
+    for (let i = 0; i < c.length; i++)
+      for (let j = i + 1; j < c.length; j++)
+        expect(deltaE(c[i]!, c[j]!), `${teams[i]} vs ${teams[j]}`).toBeGreaterThanOrEqual(MIN_DELTA_E);
+    // the same palette as every other adapter's teamColorPalette; without a background, the teams' own colours
+    expect(c).toEqual(rechartsPalette("nfl", teams, { background }));
+    expect(teamColorPalette("nfl", ["KC", "XXX"])).toEqual([teamColorsSync("nfl", "KC"), "#808080"]);
   });
 });
 

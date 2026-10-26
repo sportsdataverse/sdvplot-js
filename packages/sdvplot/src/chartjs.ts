@@ -8,12 +8,14 @@
  * given `loadImage`, which in Node is `@napi-rs/canvas`'s.
  */
 import type { Chart, Plugin, PointStyle, Scale, Tick } from "chart.js";
+import { colorList } from "./_web.js";
 import { teamColorsSync } from "./colors.js";
 import { contrast, hex6, onColor } from "./contrast.js";
 import { InputError, UnsupportedTargetError, warn } from "./errors.js";
 import type { EspnHeadshotLeague } from "./headshots.js";
 import { type Kind, type PlaceOptions, checkAlpha, placeSync } from "./placement.js";
 import type { Value } from "./resolve.js";
+import { teamPalette } from "./team-palette.js";
 import type { HeadshotIdSystem, IdSystem, League, SeasonInput, Variant, Which } from "./types.js";
 
 export interface PointOptions {
@@ -356,6 +358,51 @@ export function teamColor<T extends Value | readonly Value[]>(
   };
   const got: unknown = teamColorsSync(league, teams, co);
   return (Array.isArray(got) ? got.map(paint) : paint(got)) as ColorsFor<T>;
+}
+/** `teamColorPalette` options. */
+export interface ChartjsColorOptions {
+  which?: Which;
+  season?: SeasonInput;
+  idSystem?: IdSystem;
+  /** The colour of an unresolved team. Default "#808080". */
+  fallback?: string;
+  /**
+   * The chart's background. Given, a team colour under 3:1 contrast against it is swapped for the team's other
+   * colour, else moved towards white (on a dark background) or black (a light one) until it reads: dark mode. A
+   * colour that would then sit too close to an earlier team's (CIE76 ΔE under 20) takes the team's other colour, or
+   * the nearest colour to its own that is distinct and still reads; failing that it is kept, with one warning.
+   */
+  background?: string;
+}
+/**
+ * One colour per team, in order, for `backgroundColor` / `borderColor`. With `background`, every colour keeps 3:1
+ * contrast against it (dark mode) and stays distinct from the others, as every sdvplot adapter's `teamColorPalette`.
+ *
+ * @example
+ * ```ts
+ * import { loadLeague } from "@sportsdataverse/sdvplot";
+ * import { teamColorPalette } from "@sportsdataverse/sdvplot/chartjs";
+ *
+ * await loadLeague("nfl");
+ * teamColorPalette("nfl", ["KC", "LAC", "DEN", "LV"], { background: "#181a1b" });
+ * ```
+ */
+export function teamColorPalette(
+  league: League,
+  teams: readonly unknown[],
+  o: ChartjsColorOptions = {},
+): string[] {
+  const fallback = o.fallback ?? "#808080";
+  const co = {
+    ...(o.season === undefined ? {} : { season: o.season }),
+    ...(o.idSystem === undefined ? {} : { idSystem: o.idSystem }),
+  };
+  const main = colorList(league, teams, { ...co, ...(o.which === undefined ? {} : { which: o.which }) });
+  const bg = o.background === undefined ? undefined : hex6(o.background);
+  if (bg === undefined) return main.map((c) => c ?? fallback);
+  const other = colorList(league, teams, { ...co, which: o.which === "secondary" ? "primary" : "secondary" });
+  const colors = main.map((c) => hex6(c ?? fallback, { dropAlpha: true }));
+  return teamPalette(colors, other, bg, teams.map(String));
 }
 /** `teamColor` at 0.2 opacity by default: the fill under a radar or area dataset. */
 export function teamFill<T extends Value | readonly Value[]>(

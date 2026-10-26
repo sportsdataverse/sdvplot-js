@@ -35,6 +35,20 @@ export interface AxisLogoOptions {
 // @public
 export function axisLogos(axis: "x" | "y", o: AxisLogoOptions): Plugin_2;
 
+// @public
+export interface ChartjsColorOptions {
+    background?: string;
+    fallback?: string;
+    // (undocumented)
+    idSystem?: IdSystem;
+    // (undocumented)
+    season?: SeasonInput;
+    // Warning: (ae-forgotten-export) The symbol "Which" needs to be exported by the entry point chartjs.d.ts
+    //
+    // (undocumented)
+    which?: Which;
+}
+
 // Warning: (ae-forgotten-export) The symbol "Value" needs to be exported by the entry point chartjs.d.ts
 //
 // @public (undocumented)
@@ -114,11 +128,12 @@ export interface TeamColorOptions {
     onColor?: boolean;
     // (undocumented)
     season?: SeasonInput;
-    // Warning: (ae-forgotten-export) The symbol "Which" needs to be exported by the entry point chartjs.d.ts
-    //
     // (undocumented)
     which?: Which;
 }
+
+// @public
+export function teamColorPalette(league: League, teams: readonly unknown[], o?: ChartjsColorOptions): string[];
 
 // @public
 export function teamFill<T extends Value | readonly Value[]>(teams: T, league: League, o?: TeamColorOptions): ColorsFor<T>;
