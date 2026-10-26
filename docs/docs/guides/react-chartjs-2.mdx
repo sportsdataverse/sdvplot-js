@@ -1,0 +1,77 @@
+---
+title: react-chartjs-2
+sidebar_position: 7.1
+---
+
+[react-chartjs-2](https://react-chartjs-2.js.org) is Chart.js as React components: `<Chart type>`, `<Line>`, `<Bar>`,
+`<Scatter>` and the rest take a Chart.js config as props (`data`, `options`, `plugins`). Everything in
+`@sportsdataverse/sdvplot/chartjs` is a dataset option or a plugin object, so it passes through as it is: no React
+subpath, no wrapper. The pieces are the ones the [Chart.js section](./chart-libraries.mdx#chartjs) shows:
+`logoPoints`, `wordmarkPoints` and `headshotPoints` (with the `pointImages` plugin), `axisLogos`, `logoWatermarks`,
+`teamColor`, `teamFill` and `teamColorPalette`, and the court, field or rink of `@sportsdataverse/sdvplot/chartjs/surface`.
+They are synchronous, so load the league first (`loadLeague`), and they build `<img>` elements, so build them in the
+browser (a client component), not during a server render. Tested with react-chartjs-2 5.3.1 and Chart.js 4.5.1.
+
+Each chart below is drawn by react-chartjs-2 in your browser. The code also hands the same config to `new Chart(...)`
+in Node, on [`@napi-rs/canvas`](https://github.com/Brooooooklyn/canvas) with `loadImage`: that PNG is what the page
+shows before (or without) JavaScript.
+
+## Register Chart.js, not sdvplot
+
+react-chartjs-2 draws with what Chart.js has registered, so register its controllers, elements and scales once
+(`ChartJS.register(...registerables)`, or the pieces you use). That is global: it affects every chart on the page.
+sdvplot's plugins need no registration. Pass them to each chart in the `plugins` prop; nothing of sdvplot's is left
+registered when the chart unmounts. `ChartJS.register(pointImages)` works too, but then every chart on the page runs it.
+
+## Logos as points, updated in place
+
+`logoPoints(teams, { league, radius })` returns the dataset's `pointStyle` (one logo per point, in data order) and
+`pointRadius`; `pointImages` redraws the chart as each logo loads. On a prop change react-chartjs-2 does not rebuild the
+chart: it merges each dataset into the one with the same `label`, swaps `data.labels`, copies `options` over and calls
+`chart.update()`. So give each dataset a `label`, and a new set of teams brings its own logos to the same chart, with
+none of the old ones left behind. Pick the other division:
+
+<Live id="sdvplot/react-chartjs-2/afc-logo-scatter" />
+
+## A logo at the end of each line
+
+A line dataset takes one logo style, repeated for every point, and a `pointRadius` array that is zero except at the
+last point. `teamColor(team, league)` colours the line, and `{ alpha }` gives a translucent copy.
+
+<Live id="sdvplot/react-chartjs-2/afc-west-margin-trend" />
+
+## Logo ticks on a dark background
+
+`axisLogos("x", { league, size })` paints a category axis's team labels as the teams' logos and blanks their text
+(`variant: "dark"` takes a team's logo for dark backgrounds where it has one). `teamColorPalette(league, teams, {
+background })` gives one colour per team that keeps 3:1 contrast against the background and stays apart from the
+others (CIE76 ΔE 20), as every sdvplot adapter's `teamColorPalette` does; `teamColor` gives the teams' own colours,
+and Denver's navy and the Raiders' black sink into a dark chart (here they take their orange and silver). Chart.js
+leaves the canvas transparent, so a small `beforeDraw` plugin paints the background.
+
+<Live id="sdvplot/react-chartjs-2/afc-differentials-dark" />
+
+## What follows a prop change, and what needs a key
+
+react-chartjs-2 reads `plugins` once, when it creates the chart; a new plugin list on a later render is ignored, so a
+plugin built inline (`plugins={[axisLogos("x", o)]}`) is harmless, but its new copy never runs.
+
+- `pointImages`, `axisLogos` and the colours follow the data. `pointImages` looks at the datasets' point styles on
+  every draw. `axisLogos` reads `data.labels` on every update and wires its tick callback onto each fresh copy of the
+  options, once: new labels get their logos, without the tick padding growing.
+- `logoWatermarks(teams)` and `surface(league)` keep what they were built with. When the teams or the league change,
+  give `<Chart>` a `key` that changes with them, so React mounts a new chart with the new plugin:
+
+  ```tsx
+  <Line key={`${home}-${away}`} data={data} plugins={[logoWatermarks([home, away], { league: "nfl" })]} />
+  ```
+
+  react-chartjs-2's `redraw` prop does the same on every render. `useMemo` keeps a plugin from being rebuilt on each
+  render (`surface` builds a whole scene), but it does not make a new one reach the chart: the `key` does that.
+- On unmount react-chartjs-2 destroys the chart, and the plugins drop any image load they were still waiting on.
+  React's `StrictMode` (mount, unmount, mount) leaves one chart.
+
+The tests in `packages/sdvplot/test/chartjs/react-chartjs-2.test.tsx` hold all of this: a first render, prop updates
+of the same component (new teams, new labels, new colours), the `key` rebuild, `StrictMode` and unmount.
+
+In the gallery: [react-chartjs-2](/gallery/sdvplot/#react-chartjs-2).
