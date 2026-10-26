@@ -41,20 +41,16 @@ const config = (o: Pick<PointOptions, "loadImage"> = {}): ChartProps<"line"> => 
       // one logo style, repeated per point, drawn only at the line's end
       pointStyle: logoPoints([team], { league: "nfl", radius: 14, ...o }).pointStyle,
       pointRadius: points.map((_, i) => (i === points.length - 1 ? 14 : 0)),
+      clip: false, // the end logos may cross the chart area's edge; the layout padding leaves them room
     })),
   },
   options: {
     responsive: false,
     animation: false,
+    layout: { padding: { top: 16, right: 18 } },
     plugins: { legend: { display: false } },
     scales: {
-      x: {
-        type: "linear",
-        min: 1,
-        max: 18.6,
-        ticks: { stepSize: 1 },
-        title: { display: true, text: "Week" },
-      },
+      x: { type: "linear", min: 1, max: 18, ticks: { stepSize: 1 }, title: { display: true, text: "Week" } },
       y: { title: { display: true, text: "Point differential, season to date" } },
     },
   },
