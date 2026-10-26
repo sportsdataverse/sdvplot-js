@@ -60,12 +60,8 @@ plugin built inline (`plugins={[axisLogos("x", o)]}`) is harmless, but its new c
   every draw. `axisLogos` reads `data.labels` on every update and wires its tick callback onto each fresh copy of the
   options, once: new labels get their logos, without the tick padding growing.
 - `logoWatermarks(teams)` and `surface(league)` keep what they were built with. When the teams or the league change,
-  give `<Chart>` a `key` that changes with them, so React mounts a new chart with the new plugin:
-
-  ```tsx
-  <Line key={`${home}-${away}`} data={data} plugins={[logoWatermarks([home, away], { league: "nfl" })]} />
-  ```
-
+  give `<Chart>` a `key` that changes with them, so React mounts a new chart with the new plugin: for a win-probability
+  line, `key={home + away}` beside `plugins={[logoWatermarks([home, away], { league: "nfl" })]}`.
   react-chartjs-2's `redraw` prop does the same on every render. `useMemo` keeps a plugin from being rebuilt on each
   render (`surface` builds a whole scene), but it does not make a new one reach the chart: the `key` does that.
 - On unmount react-chartjs-2 destroys the chart, and the plugins drop any image load they were still waiting on.
