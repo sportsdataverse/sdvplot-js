@@ -129,6 +129,7 @@
     "./package.json": "./package.json"
   },
   "peerDependencies": {
+    "@antv/g2": ">=5.4.8",
     "@deck.gl/core": ">=9.4.0",
     "@deck.gl/layers": ">=9.4.0",
     "@nivo/bump": ">=0.99",
@@ -152,6 +153,9 @@
     "victory": ">=37.3.6"
   },
   "peerDependenciesMeta": {
+    "@antv/g2": {
+      "optional": true
+    },
     "@deck.gl/core": {
       "optional": true
     },
@@ -234,6 +238,7 @@
     "provenance": true
   },
   "devDependencies": {
+    "@antv/g2": "5.4.8",
     "@deck.gl/core": "9.4.0",
     "@deck.gl/layers": "9.4.0",
     "@napi-rs/canvas": "^1.0.10",
