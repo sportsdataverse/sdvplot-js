@@ -19,6 +19,7 @@ export default defineConfig({
     vega: "src/vega.ts",
     echarts: "src/echarts.ts",
     recharts: "src/recharts.ts",
+    shadcn: "src/shadcn.ts",
     uplot: "src/uplot.ts",
     // internal: what the ./svelte components (built by svelte-package into dist/svelte) import as ../svelte-core.js
     "svelte-core": "src/svelte-core.ts",
