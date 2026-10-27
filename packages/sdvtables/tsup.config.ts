@@ -7,10 +7,13 @@ export default defineConfig({
     html: "src/html/index.ts",
     react: "src/react/index.tsx",
     export: "src/export/index.ts",
+    aggrid: "src/aggrid.ts",
   },
   external: [
     "@sportsdataverse/sdvplot",
     "@sportsdataverse/sdvplot/export",
+    "@sportsdataverse/sdvplot/tanstack",
+    "ag-grid-community",
     "react",
     "react/jsx-runtime",
     "react-dom",

@@ -17,6 +17,7 @@ export default defineConfig({
     alias: [
       exact("@sportsdataverse/sdvplot", "../sdvplot/src/index.ts"),
       exact("@sportsdataverse/sdvplot/export", "../sdvplot/src/export/index.ts"),
+      exact("@sportsdataverse/sdvplot/tanstack", "../sdvplot/src/tanstack.ts"),
       // the linked-interactivity tests render sdvplot's Plot marks and link them (Phase 8)
       exact("@sportsdataverse/sdvplot/plot", "../sdvplot/src/plot/index.ts"),
       exact("@sportsdataverse/sdvplot/interact", "../sdvplot/src/interact/index.ts"),

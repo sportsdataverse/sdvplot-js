@@ -110,3 +110,7 @@ export function ordinal(n: number): string {
 }
 
 export const pxOf = (n: number): string => `${Number(fixed(n, 1, false))}px`;
+
+/** gt_scale_note's format: a num/int cell divided by the note's divisor, with its decimals (shared by the HTML table and sdvtables/mui). */
+export const scaledNumber = (n: number, s: { readonly divisor: number; readonly decimals: number }): string =>
+  formatNumber(n / s.divisor, { digits: s.decimals, big: true });

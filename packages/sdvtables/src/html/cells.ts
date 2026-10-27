@@ -13,7 +13,15 @@ import {
 import type { EspnHeadshotLeague, League, SeasonInput, Which } from "@sportsdataverse/sdvplot";
 import { checkChart } from "../define.js";
 import { TableSpecError } from "../errors.js";
-import { formatNumber, formatValue, isBlank, naturalDigits, ordinal, toNumber } from "../format.js";
+import {
+  formatNumber,
+  formatValue,
+  isBlank,
+  naturalDigits,
+  ordinal,
+  scaledNumber,
+  toNumber,
+} from "../format.js";
 import { matches } from "../predicate.js";
 import { averageRanks, domainOf, ntile, ramp } from "../scale.js";
 import type { ColumnSpec, IconName, MarkOpts, NumberFormat, TableSpec } from "../spec.js";
@@ -720,7 +728,7 @@ export function renderCell<Row>(col: ColumnSpec<Row>, row: Row, i: number, ctx: 
       const n = toNumber(cellValue(row, col.key));
       if (n === null) return "";
       const sc = ctx.scaled.get(col.key); // scaleNote (Task 10): Python fmt_number(scale_by = 1/divisor, decimals) replaces the column's own format
-      if (sc) return escapeHtml(formatNumber(n / sc.divisor, { digits: sc.decimals, big: true }));
+      if (sc) return escapeHtml(scaledNumber(n, sc));
       return escapeHtml(
         col.kind === "int"
           ? formatNumber(n, { digits: 0, big: true })

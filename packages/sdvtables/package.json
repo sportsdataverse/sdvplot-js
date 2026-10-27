@@ -11,7 +11,8 @@
     "html-tables",
     "gt",
     "great-tables",
-    "team-logos"
+    "team-logos",
+    "ag-grid"
   ],
   "homepage": "https://plot.sportsdataverse.org",
   "bugs": "https://github.com/sportsdataverse/sdvplot-js/issues",
@@ -33,6 +34,10 @@
     "./react": {
       "types": "./dist/react.d.ts",
       "import": "./dist/react.js"
+    },
+    "./aggrid": {
+      "types": "./dist/aggrid.d.ts",
+      "import": "./dist/aggrid.js"
     },
     "./export": {
       "types": "./dist/export.d.ts",

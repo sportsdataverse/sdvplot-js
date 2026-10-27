@@ -122,6 +122,24 @@ const SCALE_NAMES: Readonly<Record<number, readonly [string, string]>> = {
   1e12: ["trillions", "(trillions)"],
 };
 
+/** gt_scale_note (_layout.py:1495-1515): a scaleNote's checked note and label suffix (shared with sdvtables/mui). */
+export function scaleNoteOf<Row>(d: Extract<Decoration<Row>, { type: "scaleNote" }>): {
+  note: string;
+  suffix: string;
+} {
+  if (!(Number.isFinite(d.divisor) && d.divisor !== 0))
+    throw new TableSpecError(`scaleNote divisor must be a single non-zero number, got ${d.divisor}`);
+  if (d.columns.length === 0) throw new TableSpecError("scaleNote columns matched no columns");
+  const named = SCALE_NAMES[d.divisor];
+  const shown = Number.isInteger(d.divisor)
+    ? formatNumber(d.divisor, { digits: 0, big: true })
+    : naturalDigits(d.divisor, true);
+  return {
+    note: d.note ?? (named ? `Figures in ${named[0]}.` : `Figures divided by ${shown}.`),
+    suffix: d.labelSuffix ?? (named ? named[1] : `(÷${shown})`),
+  };
+}
+
 export function applyDecorations<Row>(
   spec: TableSpec<Row>,
   rows: readonly Row[],
@@ -416,17 +434,8 @@ export function applyDecorations<Row>(
         break;
       }
       case "scaleNote": {
-        // gt_scale_note (_layout.py:1495-1515)
-        if (!(Number.isFinite(d.divisor) && d.divisor !== 0))
-          throw new TableSpecError(`scaleNote divisor must be a single non-zero number, got ${d.divisor}`);
-        if (d.columns.length === 0) throw new TableSpecError("scaleNote columns matched no columns");
+        const { note, suffix } = scaleNoteOf(d);
         for (const k of d.columns) ctx.scaled.set(k, { divisor: d.divisor, decimals: d.decimals });
-        const named = SCALE_NAMES[d.divisor];
-        const shown = Number.isInteger(d.divisor)
-          ? formatNumber(d.divisor, { digits: 0, big: true })
-          : naturalDigits(d.divisor, true);
-        const note = d.note ?? (named ? `Figures in ${named[0]}.` : `Figures divided by ${shown}.`);
-        const suffix = d.labelSuffix ?? (named ? named[1] : `(÷${shown})`);
         if (d.where !== "label") out.foot.push(escapeHtml(note));
         if (d.where !== "sourceNote") {
           const prev = out.labelSuffix;
