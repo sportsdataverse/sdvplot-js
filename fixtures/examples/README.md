@@ -88,6 +88,15 @@ columns renamed, and `examples/test/sample-data.test.ts` checks the two are equa
   entries, unchanged; `plays` holds all 186 plays of `drives.previous[].plays[]`, each cut to `id`, `period.number` and
   `clock.displayValue`. The test joins each entry to its play by `playId` (one pregame entry has none) and turns the
   play's period and clock into minutes played, rounded to 0.01.
+- `espn_nfl_summary_401671889_drives.json` (`SUPER_BOWL_LIX_DRIVES`): the same game summary, from the same
+  `espn/summary_nfl.json` (sha256 above). Trimmed: `header` as in the touchdown file; `drives` holds all 26 drives of
+  `drives.previous[]`, each cut to `id`, `team.id`/`team.abbreviation`, `start.yardLine`/`start.text`, `result` and
+  `displayResult`. ESPN counts `start.yardLine` from Philadelphia's (the home team's) goal line; the data module turns
+  it into yards from the offence's goal (nflverse's `yardline_100`), and the test checks that against `start.text`.
+- `espn_nfl_summary_401671889_kc_passing.json` (`SUPER_BOWL_LIX_KC_TARGETS`, `SUPER_BOWL_LIX_KC_PASSER`): the same
+  game summary, from the same `espn/summary_nfl.json`. Trimmed: the Chiefs' `boxscore.players[]` entry, cut to its
+  `team.id`/`team.abbreviation` and its `passing` and `receiving` statistics, each unchanged. Patrick Mahomes is the one
+  passer (21 of 32), and the nine receivers' targets add up to 32: the test checks both.
 - `pwhl_pbp_42_shots.json` (`PWHL_GOALS`): HockeyTech `statviewfeed/gameCenterPlayByPlay`, PWHL game 42, PWHL Boston
   at PWHL Montreal, 2024-03-02 (Montreal won 3-1, per sportsdataverse-py's `hockeytech/pwhl_game_summary_42.json`).
   From `hockeytech/pwhl_pbp_42.json` (173 events). Trimmed: the 70 events whose `event` is `shot` or `goal`; the data

@@ -3,7 +3,8 @@
 # ///
 """Trims captures committed in sportsdataverse-py (tests/fixtures) into fixtures/examples, where
 examples/test/sample-data.test.ts checks the examples' data against them. Every kept record is copied unchanged and
-only whole records (rows, plays, events) are dropped, except in the win-probability file: its plays keep three fields.
+only whole records (rows, plays, events) are dropped, except in the win-probability file (its plays keep three fields)
+and the drives file (each drive keeps the fields named below).
 
 - nba_leaguestandingsv3_2023_24_pacific.json: nba_stats/leaguestandingsv3_2023_24.json, the Standings rows whose
   Division is "Pacific".
@@ -16,6 +17,10 @@ only whole records (rows, plays, events) are dropped, except in the win-probabil
   Passing Touchdown.
 - espn_nfl_summary_401671889_wp.json: espn/summary_nfl.json, every winprobability entry, unchanged, and every play
   (from drives.previous[].plays[]) cut to its id, period.number and clock.displayValue: what the rows join on.
+- espn_nfl_summary_401671889_drives.json: espn/summary_nfl.json, the header as in the touchdown file, and every drive
+  (drives.previous[]) cut to its id, team id and abbreviation, start.yardLine and start.text, result and displayResult.
+- espn_nfl_summary_401671889_kc_passing.json: espn/summary_nfl.json, the Chiefs' boxscore.players entry cut to its team
+  id and abbreviation, and its passing and receiving statistics, each unchanged (every athlete's stats with the keys).
 - pwhl_pbp_42_shots.json: hockeytech/pwhl_pbp_42.json, the events whose event is shot or goal.
 - spadl_8658_france_h1_passes.csv: socceraction/8658_spadl.csv (StatsBomb open-data match 8658, France v Croatia, the
   2018 World Cup final, as socceraction 1.5.3 SPADL), the rows of France (team_id 771) in period 1 whose type_name is
@@ -106,6 +111,30 @@ def main() -> None:
     ]
     assert len(plays) == 186, len(plays)
     write("espn_nfl_summary_401671889_wp.json", {"winprobability": wp, "plays": plays})
+
+    drives = [
+        {
+            "id": d["id"],
+            "team": {"id": d["team"]["id"], "abbreviation": d["team"]["abbreviation"]},
+            "start": {"yardLine": d["start"]["yardLine"], "text": d["start"]["text"]},
+            "result": d["result"],
+            "displayResult": d["displayResult"],
+        }
+        for d in summary["drives"]["previous"]
+    ]
+    assert len(drives) == 26, len(drives)
+    write(
+        "espn_nfl_summary_401671889_drives.json",
+        {"header": {"id": summary["header"]["id"], "competitions": [{"competitors": competitors}]}, "drives": drives},
+    )
+
+    (kc,) = [t for t in summary["boxscore"]["players"] if t["team"]["abbreviation"] == "KC"]
+    stats = [s for s in kc["statistics"] if s["name"] in ("passing", "receiving")]
+    assert [s["name"] for s in stats] == ["passing", "receiving"], stats
+    write(
+        "espn_nfl_summary_401671889_kc_passing.json",
+        {"team": {"id": kc["team"]["id"], "abbreviation": kc["team"]["abbreviation"]}, "statistics": stats},
+    )
 
     pwhl = [e for e in read(fx, "hockeytech/pwhl_pbp_42.json") if e["event"] in ("shot", "goal")]
     assert len(pwhl) == 70, len(pwhl)
