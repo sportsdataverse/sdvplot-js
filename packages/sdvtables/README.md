@@ -350,6 +350,24 @@ function Standings() {
 sort, filters, page and selection; only a structural `spec` change builds a new engine. Without `interactive` the
 component renders the static table. The `react` entry is marked `"use client"`.
 
+### MUI X Data Grid
+
+```tsx
+import { DataGrid } from "@mui/x-data-grid"; // peer: @mui/x-data-grid >= 9.15.0 (MIT; never -pro or -premium)
+import { prepare } from "@sportsdataverse/sdvtables/html";
+import { dataGridProps } from "@sportsdataverse/sdvtables/mui";
+
+await prepare(spec);
+<DataGrid rows={rows} {...dataGridProps(spec, rows, { teamRows: { key: "team", league: "nfl" } })} autoHeight />;
+```
+
+`dataGridProps(spec, rows, o)` maps a spec onto MUI X Data Grid: one `GridColDef` per column (label, alignment, px
+width, sdvtables' number formats through `valueFormatter`), logo, wordmark and headshot cells through `renderCell`,
+`teamColorBg` / `teamColorBar` cells and `teamRows` in sdvplot's team palette (`@sportsdataverse/sdvplot/mui`'s
+`teamColorPalette`) with black or white text by contrast, and the theme's fonts, colours, stripes and density as the
+grid's `sx` and `density`. It never imports MUI. Kinds drawn in HTML or SVG (pills, bars, sparklines...) show their
+plain value, with one warning per kind. Guide: [MUI X Data Grid](https://plot.sportsdataverse.org/docs/guides/mui-x-data-grid).
+
 ### AG Grid
 
 ```ts

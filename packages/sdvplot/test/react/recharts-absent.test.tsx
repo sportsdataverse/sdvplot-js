@@ -10,6 +10,10 @@ vi.mock("recharts", () => {
     code: "ERR_MODULE_NOT_FOUND",
   });
 });
+// sporty is a stand-in, not the real package: the backdrop loads it alongside recharts, and a real import that fails
+// under load (a vitest worker dying) could win the race and throw sporty's install error instead of recharts'.
+vi.mock("@sportsdataverse/sporty", () => ({}));
+vi.mock("@sportsdataverse/sporty/svg", () => ({}));
 afterEach(cleanup);
 // The backdrop's first render waits on a dynamic import (recharts, sporty), which takes well over waitFor's default
 // 1 s on a busy machine: seen timing out once in a full `pnpm test`. Raise the ceiling, not the expectation.
