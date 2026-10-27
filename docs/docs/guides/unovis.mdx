@@ -81,9 +81,10 @@ its `destroy` when the element goes. The sdvplot pieces are the same plain value
 `@unovis/react` 1.7.1 imports each `@unovis/ts` component by its folder (`@unovis/ts/components/graph`), and
 `@unovis/ts` has no `exports` map to say which file that is. Node's own ES module loader refuses such a folder import,
 so `@unovis/react` cannot be imported by plain Node (a server render or a test runner that hands `node_modules` to
-Node); import it where a bundler resolves it. webpack 5 treats both packages as strict ES modules and refuses the
-request too, until a rule turns `resolve.fullySpecified` off for `node_modules/@unovis`; this site's docs build has
-that rule. `@unovis/ts` itself names its files in full and imports in Node.
+Node); import it where a bundler resolves it. webpack 5 refuses `@unovis/react`'s folder imports as well (it
+resolves an ES module package's imports strictly), until a rule turns `resolve.fullySpecified` off for
+`node_modules/@unovis`; this site's docs build has that rule. `@unovis/ts`'s own imports name their files in full, so
+webpack and Node take it as it is.
 
 Unovis 1.7.1's type declarations re-export folders without file extensions (`export * from './components'`), which
 TypeScript follows only with `"moduleResolution": "bundler"` (or the older `"node"`). Under `"node16"` or
