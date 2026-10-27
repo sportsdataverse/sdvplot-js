@@ -23,7 +23,9 @@
     "cytoscape",
     "threejs",
     "react-three-fiber",
-    "lightweight-charts"
+    "lightweight-charts",
+    "g2",
+    "ant-design-charts"
   ],
   "homepage": "https://plot.sportsdataverse.org",
   "bugs": "https://github.com/sportsdataverse/sdvplot-js/issues",
@@ -125,6 +127,10 @@
     "./lightweight-charts": {
       "types": "./dist/lightweight-charts.d.ts",
       "import": "./dist/lightweight-charts.js"
+    },
+    "./g2": {
+      "types": "./dist/g2.d.ts",
+      "import": "./dist/g2.js"
     },
     "./package.json": "./package.json"
   },
