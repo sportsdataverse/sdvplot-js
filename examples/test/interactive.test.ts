@@ -613,7 +613,8 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
           );
           expect(painted, `a pixel of the ${m.key} mark is ${m.want}`).toBe(true);
         }
-        expect(got.logos.length, "logos in the legend or on the axis").toBeGreaterThan(0);
+        // every shadcn example charts the four AFC West teams, so each draws at least one logo per team
+        expect(got.logos.length, "a logo per team in the legend or on the axis").toBeGreaterThanOrEqual(4);
         for (const { loaded, box } of got.logos) {
           expect(loaded, "the logo loaded").toBe(true);
           const [x, y, w, h] = box;
