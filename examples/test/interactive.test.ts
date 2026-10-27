@@ -6,6 +6,7 @@ import { extname, join, normalize } from "node:path";
 import { createCanvas, loadImage } from "@napi-rs/canvas";
 import {
   contrast,
+  headshotUrl,
   loadLeague,
   logoUrlSync,
   mix,
@@ -31,6 +32,9 @@ import {
   NFL_TEAM_EPA_2024,
   NHL_STANDINGS,
   STANDINGS,
+  SUPER_BOWL_LIX_DRIVES,
+  SUPER_BOWL_LIX_KC_PASSER,
+  SUPER_BOWL_LIX_KC_TARGETS,
   nflPlays2024,
 } from "../src/data.js";
 import { EXAMPLES } from "../src/registry.gen.js";
@@ -75,6 +79,8 @@ const DRAWN: Readonly<Record<string, string>> = {
   "ant-design-charts": ".sdv-live-output canvas",
   "ag-grid": ".sdv-live-output .ag-root-wrapper .ag-row[row-id]",
   maplibre: ".sdv-live-output canvas.maplibregl-canvas",
+  // a node or a flow Unovis drew (both drawers, @unovis/ts and @unovis/react, sit in sdvplot/unovis)
+  unovis: ".sdv-live-output svg :is(g[class*=g-node], path[class*=visible])",
   // the team bars: Mosaic has queried DuckDB-WASM and Observable Plot has drawn them
   mosaic: ".sdv-live-output .plot svg g[aria-label=bar] rect",
 };
@@ -2352,6 +2358,374 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
 
   // A drawing that fails (here plotly.js never arrives) shows the alert over the static copy, leaves nothing drawn,
   // and drops the note that plotly.js draws the figure here.
+  // Unovis examples (sdvplot/unovis): Unovis itself draws each node and flow. What each drew is matched to the datum d3
+  // bound to it, so every flow and link is checked by its own ids. Every expectation here is worked out in the test
+  // from the shared data, with colours from the recharts adapter's palette (independent of the unovis module), and
+  // checked against REAL pixels: a flow's or a link's middle, a node's ring, and each image's box with the images
+  // hidden and shown.
+  const SANKEY_BAND = (y: number) =>
+    y >= 80 ? "Own 1-20" : y >= 60 ? "Own 21-40" : y >= 41 ? "Own 41 to opp. 41" : "Opp. 40 and in";
+  const kcGames = KC_PHI_GAMES_2024.filter((g) => g.home_team === "KC" || g.away_team === "KC");
+  const UNOVIS: Readonly<
+    Record<
+      string,
+      {
+        background?: string;
+        /** The teams in the order the example gives them to teamColorScale: with a background, the palette depends on it. */
+        palette: readonly string[];
+        /** source>target>team for each link (a flow per team, a pass, a game), with its count. */
+        links: readonly [key: string, team: string][];
+        /** Graph nodes: each node's id and the image its icon must show. */
+        images?: () => readonly [id: string, href: string][];
+        /** Graph nodes: each node's id and team (its ring's colour). */
+        rings?: readonly [id: string, team: string][];
+        /** Sankey nodes in a team's colour: each node's id and team. */
+        teamNodes?: readonly [id: string, team: string][];
+      }
+    >
+  > = {
+    "sdvplot/unovis/super-bowl-drives-sankey": {
+      palette: ["KC", "PHI"],
+      teamNodes: [
+        ["team:KC", "KC"],
+        ["team:PHI", "PHI"],
+      ],
+      links: [
+        ...new Set(
+          SUPER_BOWL_LIX_DRIVES.flatMap((d) => [
+            `team:${d.team}>band:${SANKEY_BAND(d.yardline_100)}>${d.team}`,
+            `band:${SANKEY_BAND(d.yardline_100)}>result:${d.result}>${d.team}`,
+          ]),
+        ),
+      ].map((k) => [k, k.split(">")[2] as string]),
+    },
+    "sdvplot/unovis/chiefs-passing-network": {
+      palette: ["KC"],
+      links: SUPER_BOWL_LIX_KC_TARGETS.map((r) => [`${SUPER_BOWL_LIX_KC_PASSER}>${r.player}>KC`, "KC"]),
+      images: () =>
+        [SUPER_BOWL_LIX_KC_PASSER, ...SUPER_BOWL_LIX_KC_TARGETS.map((r) => r.player)].map((p) => [
+          p,
+          headshotUrl(p, "nfl") as string,
+        ]),
+      rings: [SUPER_BOWL_LIX_KC_PASSER, ...SUPER_BOWL_LIX_KC_TARGETS.map((r) => r.player)].map((p) => [
+        p,
+        "KC",
+      ]),
+    },
+    "sdvplot/unovis/chiefs-2024-results-dark": {
+      background: "#111827",
+      // winner then loser, game by game
+      palette: [
+        ...new Set(
+          kcGames.flatMap((g) =>
+            g.home_score > g.away_score ? [g.home_team, g.away_team] : [g.away_team, g.home_team],
+          ),
+        ),
+      ],
+      links: kcGames.map((g) => {
+        const [w, l] = g.home_score > g.away_score ? [g.home_team, g.away_team] : [g.away_team, g.home_team];
+        return [`${w}>${l}>${w}`, w];
+      }),
+      images: () =>
+        [...new Set(kcGames.flatMap((g) => [g.away_team, g.home_team]))].map((t) => [
+          t,
+          logoUrlSync(t, "nfl", { variant: "dark" }) as string,
+        ]),
+      rings: [...new Set(kcGames.flatMap((g) => [g.away_team, g.home_team]))].map((t) => [t, t]),
+    },
+  };
+  test.each(EXAMPLES.filter((e) => e.id.startsWith("sdvplot/unovis/")).map((e) => e.id))(
+    "%s re-runs live: Unovis draws exactly its nodes and flows, each in its team's colour, with real image pixels",
+    async (id) => {
+      const entry = EXAMPLES.find((e) => e.id === id);
+      const spec = UNOVIS[id];
+      if (entry === undefined || spec === undefined) throw new Error(`${id} is not in the registry`);
+      await loadLeague("nfl");
+      const teams = spec.palette;
+      const want = rechartsPalette(
+        "nfl",
+        teams,
+        spec.background === undefined ? {} : { background: spec.background },
+      );
+      const colorOf = (t: string) => (want[teams.indexOf(t)] ?? "").toLowerCase();
+      // the oracle and the module both go through colorPalette: a background that changed nothing would pass both
+      if (spec.background !== undefined)
+        expect(want, "the dark palette differs from the light one").not.toEqual(
+          rechartsPalette("nfl", teams),
+        );
+      const page = await browser.newPage();
+      try {
+        const errors: string[] = [];
+        page.on("console", (m) => void (m.type() === "error" && errors.push(m.text())));
+        page.on("pageerror", (e) => void errors.push(e.message));
+        await page.goto(`${base}/gallery/${pagePath(entry)}/`);
+        const figure = page.locator(`figure[data-example="${id}"]`);
+        await figure.scrollIntoViewIfNeeded();
+        const svg = figure.locator(".sdv-live-output svg").first();
+        const n = spec.links.length;
+        // Unovis lays a graph out over a few frames: wait for every link to have its path and stroke or fill
+        await page.waitForFunction(
+          ([sel, count]) => {
+            const ps = [...document.querySelectorAll(sel as string)] as SVGPathElement[];
+            return (
+              ps.length === count &&
+              ps.every((p) => (p.getAttribute("d") ?? "") !== "" && (p.style.stroke || p.style.fill))
+            );
+          },
+          [
+            `figure[data-example="${id}"] .sdv-live-output svg path[class*=visible], figure[data-example="${id}"] .sdv-live-output svg g[class*=g-link] > path[class*=-link]:not([class*=support]):not([class*=band])`,
+            n,
+          ] as const,
+          { timeout: 30_000 },
+        );
+        await page.waitForLoadState("networkidle"); // the images
+        await page.waitForTimeout(1500); // a force layout's last ticks (Unovis fits the view when it settles)
+        await page.addStyleTag({ content: ".navbar { display: none !important; }" });
+        expect(await figure.locator(".sdv-live-static").count(), "the static copy is replaced").toBe(0);
+        expect(await figure.locator(".sdv-live-error").count(), "no error alert").toBe(0);
+        const got = await svg.evaluate((el) => {
+          type D = {
+            id?: string;
+            source?: { id: string };
+            target?: { id: string };
+            team?: string;
+            value?: number;
+          };
+          const box = el.getBoundingClientRect();
+          // a point in an element's own user units -> px from the svg's top left (what its screenshot is indexed by)
+          const at = (e: SVGGraphicsElement, x: number, y: number) => {
+            const m = e.getScreenCTM() as DOMMatrix;
+            const sx = m.a * x + m.c * y + m.e;
+            const sy = m.b * x + m.d * y + m.f;
+            return { x: sx - box.left, y: sy - box.top };
+          };
+          const data = (e: Element) => (e as unknown as { __data__: D }).__data__;
+          // Chromium reads a style colour back as rgb(r, g, b): as #rrggbb
+          const toHex = (c: string) => {
+            const m = /^rgba?\((\d+),\s*(\d+),\s*(\d+)/.exec(c);
+            return m === null
+              ? c.toLowerCase()
+              : `#${m
+                  .slice(1, 4)
+                  .map((v) => Number(v).toString(16).padStart(2, "0"))
+                  .join("")}`;
+          };
+          // flows (Sankey) and links (Graph): ids, colour, and five points along the middle
+          const links = [
+            ...el.querySelectorAll(
+              "path[class*=visible], g[class*=g-link] > path[class*=-link]:not([class*=support]):not([class*=band])",
+            ),
+          ].map((p) => {
+            const path = p as SVGPathElement;
+            const d = data(path);
+            const sankey = path.getAttribute("class")?.includes("visible") ?? false;
+            const s = getComputedStyle(path);
+            let points: { x: number; y: number }[];
+            if (sankey) {
+              // the ribbon's centre line: a cubic from (x0, y0) to (x1, y1) with controls at their middle x
+              const l = d as unknown as {
+                y0: number;
+                y1: number;
+                source: { x1: number };
+                target: { x0: number };
+              };
+              const [x0, x1, y0, y1] = [l.source.x1, l.target.x0, l.y0, l.y1];
+              const cx = (x0 + x1) / 2;
+              points = [0.5, 0.35, 0.65, 0.25, 0.75].map((t) => {
+                const u = 1 - t;
+                const x = u ** 3 * x0 + 3 * u * u * t * cx + 3 * u * t * t * cx + t ** 3 * x1;
+                const y = u ** 3 * y0 + 3 * u * u * t * y0 + 3 * u * t * t * y1 + t ** 3 * y1;
+                return at(path, x, y);
+              });
+            } else {
+              const len = path.getTotalLength();
+              points = [0.5, 0.4, 0.6, 0.3, 0.7].map((f) => {
+                const q = path.getPointAtLength(f * len);
+                return at(path, q.x, q.y);
+              });
+            }
+            return {
+              key: `${d.source?.id}>${d.target?.id}>${d.team}`,
+              color: toHex(sankey ? path.style.fill : path.style.stroke),
+              alpha: Number(s.opacity) * Number(sankey ? s.fillOpacity : s.strokeOpacity),
+              points,
+            };
+          });
+          // graph nodes: id, ring colour and a point on the ring, the icon's image and its box
+          const nodes = [...el.querySelectorAll("g[class*=g-node]")].map((g) => {
+            const shape = g.querySelector("circle[class*=node-shape]") as SVGCircleElement;
+            const use = g.querySelector("use") as SVGUseElement | null;
+            const href = use?.getAttribute("href") ?? null;
+            const image = href === null ? null : el.querySelector(`symbol[id="${href.slice(1)}"] > image`);
+            const r = Number(shape.getAttribute("r"));
+            const ring = [0, 45, 90, 135, 180, 225, 270, 315].map((deg) => {
+              const a = (deg * Math.PI) / 180;
+              return at(shape, r * Math.cos(a), r * Math.sin(a)); // the middle of the ring
+            });
+            const ub = use?.getBoundingClientRect();
+            return {
+              id: data(g).id ?? "",
+              stroke: toHex(shape.style.stroke),
+              ring,
+              image: image?.getAttribute("href") ?? null,
+              icon: ub === undefined ? null : [ub.left - box.left, ub.top - box.top, ub.width, ub.height],
+            };
+          });
+          // Sankey nodes: id, fill, opacity and points down the middle of the bar
+          const bars = [...el.querySelectorAll("rect[class*=-node]:not([class*=selection])")].map((r) => {
+            const rect = r as SVGRectElement;
+            const [w, h] = [Number(rect.getAttribute("width")), Number(rect.getAttribute("height"))];
+            return {
+              id: data(rect).id ?? "",
+              fill: toHex(rect.style.fill),
+              alpha: Number(getComputedStyle(rect).opacity) * Number(getComputedStyle(rect).fillOpacity),
+              points: [0.25, 0.5, 0.75].map((f) => at(rect, w / 2, f * h)),
+            };
+          });
+          return { links, nodes, bars };
+        });
+        const shoot = async () => {
+          const shot = await loadImage(await svg.screenshot());
+          const ctx = createCanvas(shot.width, shot.height).getContext("2d");
+          ctx.drawImage(shot, 0, 0);
+          return (x: number, y: number, w = 1, h = 1) => {
+            const d = ctx.getImageData(Math.round(x), Math.round(y), Math.max(1, w), Math.max(1, h)).data;
+            return Array.from(
+              { length: d.length / 4 },
+              (_, i) => [d[4 * i], d[4 * i + 1], d[4 * i + 2]] as number[],
+            );
+          };
+        };
+        const hex = (s: string) => [1, 3, 5].map((i) => Number.parseInt(s.slice(i, i + 2), 16));
+        const near = (a: number[], b: number[], d: number) =>
+          [0, 1, 2].every((c) => Math.abs((a[c] ?? 0) - (b[c] ?? 0)) <= d);
+        // exactly the example's links, each once, each in its own team's colour (the shared palette)
+        expect(got.links.map((l) => l.key).sort(), "every flow or link, by its ids, and no other").toEqual(
+          spec.links.map(([k]) => k).sort(),
+        );
+        for (const l of got.links)
+          expect.soft(l.color, `${l.key}'s colour`).toBe(colorOf(l.key.split(">")[2] as string));
+        // real pixels: at one of five points along a link's middle, its pixel is its colour over what is under it
+        // (Unovis draws flows half transparent), what is under it read with the links hidden
+        const shown = await shoot();
+        await svg.evaluate((el) => {
+          for (const p of el.querySelectorAll("g[class*=-link], path[class*=visible]"))
+            (p as SVGElement).style.visibility = "hidden";
+        });
+        const under = await shoot();
+        await svg.evaluate((el) => {
+          for (const p of el.querySelectorAll("g[class*=-link], path[class*=visible]"))
+            (p as SVGElement).style.visibility = "";
+        });
+        let painted = 0;
+        for (const l of got.links) {
+          // the expected team's colour, not the attribute read back: a link painted in another team's colour fails
+          const c = hex(colorOf(l.key.split(">")[2] as string));
+          const seen = l.points.map((p) => {
+            const [a] = shown(p.x, p.y);
+            const [b] = under(p.x, p.y);
+            // one, two or three layers of this team's colour: half-transparent flows of one team stack where they
+            // overlap (two PHI flows read 0.75 PHI on CI), and that is still this team's colour, not another's
+            const blends = [1, 2, 3].map((k) => {
+              const w = 1 - (1 - l.alpha) ** k;
+              return c.map((v, i) => w * v + (1 - w) * ((b ?? [])[i] ?? 0));
+            });
+            const blend = blends[0];
+            return { a, b, blend, ok: blends.some((x) => near(a ?? [], x, 14)) };
+          });
+          if (seen.some((s) => s.ok)) painted += 1;
+          else
+            console.log(
+              `${id}: ${l.key} has no pixel of ${l.color}: ${JSON.stringify(seen[0])} alpha ${l.alpha}`,
+            );
+        }
+        console.log(`${id}: ${painted} of ${got.links.length} links painted in their colour`);
+        // a link can cross under a node, a label or another link at all five points. In every run so far exactly one
+        // link per example missed (27/28, 8/9, 16/17), each under a node or a label: all but one must show. Two wrong
+        // links in the dark example (its background dropped: BUF and DEN) already fail this. Soft, so the node checks
+        // below still run and report.
+        expect
+          .soft(painted, "links whose middle pixels are their team's colour")
+          .toBeGreaterThanOrEqual(got.links.length - 1);
+        if (spec.rings !== undefined && spec.images !== undefined) {
+          // exactly the example's nodes; each ring its team's colour, in its pixels; each icon its own image
+          expect(got.nodes.map((v) => v.id).sort(), "every node, by id").toEqual(
+            spec.rings.map(([v]) => v).sort(),
+          );
+          const ringOf = new Map(spec.rings);
+          const imageOf = new Map(spec.images());
+          for (const v of got.nodes) {
+            const team = ringOf.get(v.id) ?? "";
+            expect.soft(v.stroke, `${v.id}'s ring`).toBe(colorOf(team));
+            expect.soft(v.image, `${v.id}'s image`).toBe(imageOf.get(v.id));
+            const ring = v.ring.some((p) => near(shown(p.x, p.y)[0] ?? [], hex(colorOf(team)), 14));
+            expect.soft(ring, `a pixel of ${v.id}'s ring is ${colorOf(team)}`).toBe(true);
+          }
+          // the images' own pixels: hiding every icon changes each icon's box (over 10%)
+          await svg.evaluate((el) => {
+            for (const u of el.querySelectorAll("g[class*=g-node] use"))
+              (u as SVGElement).style.visibility = "hidden";
+          });
+          const bare = await shoot();
+          const changed = got.nodes.map((v) => {
+            const [x, y, w, h] = (v.icon ?? [0, 0, 0, 0]).map(Math.round) as [number, number, number, number];
+            const a = shown(x, y, w, h);
+            const b = bare(x, y, w, h);
+            return a.filter((p, i) => !near(p, b[i] ?? [], 8)).length / a.length;
+          });
+          console.log(
+            `${id}: image boxes changed ${Math.min(...changed).toFixed(2)} to ${Math.max(...changed).toFixed(2)}`,
+          );
+          changed.forEach((c, i) =>
+            expect.soft(c, `${got.nodes[i]?.id}'s image paints its box`).toBeGreaterThan(0.1),
+          );
+          await svg.evaluate((el) => {
+            for (const u of el.querySelectorAll("g[class*=g-node] use"))
+              (u as SVGElement).style.visibility = "";
+          });
+        }
+        if (spec.teamNodes !== undefined) {
+          // each team's node bar: its fill, and its pixels, are the expected team colour over what is under it
+          await svg.evaluate((el) => {
+            for (const r of el.querySelectorAll("rect[class*=-node]"))
+              (r as SVGElement).style.visibility = "hidden";
+          });
+          const bare = await shoot();
+          await svg.evaluate((el) => {
+            for (const r of el.querySelectorAll("rect[class*=-node]"))
+              (r as SVGElement).style.visibility = "";
+          });
+          for (const [nid, team] of spec.teamNodes) {
+            const bar = got.bars.find((b) => b.id === nid);
+            expect.soft(bar?.fill, `${nid}'s fill`).toBe(colorOf(team));
+            const c = hex(colorOf(team));
+            const ok = (bar?.points ?? []).every((p) => {
+              const [a] = shown(p.x, p.y);
+              const [b] = bare(p.x, p.y);
+              const blend = c.map(
+                (v, i) => (bar?.alpha ?? 1) * v + (1 - (bar?.alpha ?? 1)) * ((b ?? [])[i] ?? 0),
+              );
+              return near(a ?? [], blend, 14);
+            });
+            expect.soft(ok, `${nid}'s bar is painted ${colorOf(team)}`).toBe(true);
+          }
+        }
+        if (spec.background !== undefined) {
+          // the card: an empty corner is its background
+          const [bg] = shown(4, 4);
+          expect(near(bg ?? [], hex(spec.background), 2), `the card is ${spec.background}`).toBe(true);
+        }
+        if (SHOTS !== undefined)
+          await figure
+            .locator(".sdv-live-output")
+            .screenshot({ path: join(SHOTS, `${id.replace(/\//g, "_")}.png`) });
+        expect(errors).toEqual([]);
+      } finally {
+        await page.close();
+      }
+    },
+  );
+
   test("a Plotly chart whose library fails keeps its static copy, under the alert", async () => {
     const id = "sdvplot/plotly/axis-logos";
     const entry = EXAMPLES.find((e) => e.id === id);

@@ -1,0 +1,434 @@
+{
+ "team": {
+  "id": "12",
+  "abbreviation": "KC"
+ },
+ "statistics": [
+  {
+   "name": "passing",
+   "keys": [
+    "completions/passingAttempts",
+    "passingYards",
+    "yardsPerPassAttempt",
+    "passingTouchdowns",
+    "interceptions",
+    "sacks-sackYardsLost",
+    "adjQBR",
+    "QBRating"
+   ],
+   "text": "Kansas City Passing",
+   "labels": [
+    "C/ATT",
+    "YDS",
+    "AVG",
+    "TD",
+    "INT",
+    "SACKS",
+    "QBR",
+    "RTG"
+   ],
+   "descriptions": [
+    "Completions/Attempts",
+    "Yards",
+    "Yards Per Pass Attempt",
+    "Touchdowns",
+    "Interceptions",
+    "Sacks",
+    "Adjusted QBR",
+    "Passer Rating"
+   ],
+   "athletes": [
+    {
+     "athlete": {
+      "id": "3139477",
+      "uid": "s:20~l:28~a:3139477",
+      "guid": "37d87523-280a-9d4a-0adb-22cfc6d3619c",
+      "firstName": "Patrick",
+      "lastName": "Mahomes",
+      "displayName": "Patrick Mahomes",
+      "links": [
+       {
+        "rel": [
+         "playercard",
+         "desktop",
+         "athlete"
+        ],
+        "href": "https://www.espn.com/nfl/player/_/id/3139477/patrick-mahomes",
+        "text": "Player Card"
+       }
+      ],
+      "headshot": {
+       "href": "https://a.espncdn.com/i/headshots/nfl/players/full/3139477.png",
+       "alt": "Patrick Mahomes"
+      },
+      "jersey": "15"
+     },
+     "stats": [
+      "21/32",
+      "257",
+      "8.0",
+      "3",
+      "2",
+      "6-31",
+      "10.0",
+      "95.4"
+     ]
+    }
+   ],
+   "totals": [
+    "21/32",
+    "226",
+    "8.0",
+    "3",
+    "2",
+    "6-31",
+    "--",
+    "95.4"
+   ]
+  },
+  {
+   "name": "receiving",
+   "keys": [
+    "receptions",
+    "receivingYards",
+    "yardsPerReception",
+    "receivingTouchdowns",
+    "longReception",
+    "receivingTargets"
+   ],
+   "text": "Kansas City Receiving",
+   "labels": [
+    "REC",
+    "YDS",
+    "AVG",
+    "TD",
+    "LONG",
+    "TGTS"
+   ],
+   "descriptions": [
+    "Receptions",
+    "Yards",
+    "Yards Per Reception",
+    "Touchdowns",
+    "Longest Reception",
+    "Receiving Targets"
+   ],
+   "athletes": [
+    {
+     "athlete": {
+      "id": "4683062",
+      "uid": "s:20~l:28~a:4683062",
+      "guid": "36240080-be64-3e8a-a33d-8defd9119656",
+      "firstName": "Xavier",
+      "lastName": "Worthy",
+      "displayName": "Xavier Worthy",
+      "links": [
+       {
+        "rel": [
+         "playercard",
+         "desktop",
+         "athlete"
+        ],
+        "href": "https://www.espn.com/nfl/player/_/id/4683062/xavier-worthy",
+        "text": "Player Card"
+       }
+      ],
+      "headshot": {
+       "href": "https://a.espncdn.com/i/headshots/nfl/players/full/4683062.png",
+       "alt": "Xavier Worthy"
+      },
+      "jersey": "1"
+     },
+     "stats": [
+      "8",
+      "157",
+      "19.6",
+      "2",
+      "50",
+      "8"
+     ]
+    },
+    {
+     "athlete": {
+      "id": "15847",
+      "uid": "s:20~l:28~a:15847",
+      "guid": "8af09abf-ebb7-2b77-eda0-f0dfead48cd6",
+      "firstName": "Travis",
+      "lastName": "Kelce",
+      "displayName": "Travis Kelce",
+      "links": [
+       {
+        "rel": [
+         "playercard",
+         "desktop",
+         "athlete"
+        ],
+        "href": "https://www.espn.com/nfl/player/_/id/15847/travis-kelce",
+        "text": "Player Card"
+       }
+      ],
+      "headshot": {
+       "href": "https://a.espncdn.com/i/headshots/nfl/players/full/15847.png",
+       "alt": "Travis Kelce"
+      },
+      "jersey": "87"
+     },
+     "stats": [
+      "4",
+      "39",
+      "9.8",
+      "0",
+      "13",
+      "6"
+     ]
+    },
+    {
+     "athlete": {
+      "id": "15795",
+      "uid": "s:20~l:28~a:15795",
+      "guid": "2dd1bd22-50e8-1dcb-8039-c85885c17fab",
+      "firstName": "DeAndre",
+      "lastName": "Hopkins",
+      "displayName": "DeAndre Hopkins",
+      "links": [
+       {
+        "rel": [
+         "playercard",
+         "desktop",
+         "athlete"
+        ],
+        "href": "https://www.espn.com/nfl/player/_/id/15795/deandre-hopkins",
+        "text": "Player Card"
+       }
+      ],
+      "headshot": {
+       "href": "https://a.espncdn.com/i/headshots/nfl/players/full/15795.png",
+       "alt": "DeAndre Hopkins"
+      },
+      "jersey": "8"
+     },
+     "stats": [
+      "2",
+      "18",
+      "9.0",
+      "1",
+      "11",
+      "5"
+     ]
+    },
+    {
+     "athlete": {
+      "id": "3120348",
+      "uid": "s:20~l:28~a:3120348",
+      "guid": "c388f414-394f-c68a-ba24-be496c43eb28",
+      "firstName": "JuJu",
+      "lastName": "Smith-Schuster",
+      "displayName": "JuJu Smith-Schuster",
+      "links": [
+       {
+        "rel": [
+         "playercard",
+         "desktop",
+         "athlete"
+        ],
+        "href": "https://www.espn.com/nfl/player/_/id/3120348/juju-smith-schuster",
+        "text": "Player Card"
+       }
+      ],
+      "headshot": {
+       "href": "https://a.espncdn.com/i/headshots/nfl/players/full/3120348.png",
+       "alt": "JuJu Smith-Schuster"
+      },
+      "jersey": "9"
+     },
+     "stats": [
+      "2",
+      "16",
+      "8.0",
+      "0",
+      "11",
+      "2"
+     ]
+    },
+    {
+     "athlete": {
+      "id": "4241372",
+      "uid": "s:20~l:28~a:4241372",
+      "guid": "e69daeb0-d5d8-fa4b-6561-c2a6e2587612",
+      "firstName": "Hollywood",
+      "lastName": "Brown",
+      "displayName": "Hollywood Brown",
+      "links": [
+       {
+        "rel": [
+         "playercard",
+         "desktop",
+         "athlete"
+        ],
+        "href": "https://www.espn.com/nfl/player/_/id/4241372/hollywood-brown",
+        "text": "Player Card"
+       }
+      ],
+      "headshot": {
+       "href": "https://a.espncdn.com/i/headshots/nfl/players/full/4241372.png",
+       "alt": "Hollywood Brown"
+      },
+      "jersey": "5"
+     },
+     "stats": [
+      "2",
+      "15",
+      "7.5",
+      "0",
+      "9",
+      "6"
+     ]
+    },
+    {
+     "athlete": {
+      "id": "3059915",
+      "uid": "s:20~l:28~a:3059915",
+      "guid": "ea5f682d-8b28-4e05-8d6d-408a64df32c7",
+      "firstName": "Kareem",
+      "lastName": "Hunt",
+      "displayName": "Kareem Hunt",
+      "links": [
+       {
+        "rel": [
+         "playercard",
+         "desktop",
+         "athlete"
+        ],
+        "href": "https://www.espn.com/nfl/player/_/id/3059915/kareem-hunt",
+        "text": "Player Card"
+       }
+      ],
+      "headshot": {
+       "href": "https://a.espncdn.com/i/headshots/nfl/players/full/3059915.png",
+       "alt": "Kareem Hunt"
+      },
+      "jersey": "29"
+     },
+     "stats": [
+      "1",
+      "5",
+      "5.0",
+      "0",
+      "5",
+      "1"
+     ]
+    },
+    {
+     "athlete": {
+      "id": "4361529",
+      "uid": "s:20~l:28~a:4361529",
+      "guid": "b80fe7c4-00cc-27e8-a8a5-e4f408778fb0",
+      "firstName": "Isiah",
+      "lastName": "Pacheco",
+      "displayName": "Isiah Pacheco",
+      "links": [
+       {
+        "rel": [
+         "playercard",
+         "desktop",
+         "athlete"
+        ],
+        "href": "https://www.espn.com/nfl/player/_/id/4361529/isiah-pacheco",
+        "text": "Player Card"
+       }
+      ],
+      "headshot": {
+       "href": "https://a.espncdn.com/i/headshots/nfl/players/full/4361529.png",
+       "alt": "Isiah Pacheco"
+      },
+      "jersey": "10"
+     },
+     "stats": [
+      "1",
+      "5",
+      "5.0",
+      "0",
+      "5",
+      "2"
+     ]
+    },
+    {
+     "athlete": {
+      "id": "4240472",
+      "uid": "s:20~l:28~a:4240472",
+      "guid": "afb8890f-26ff-5e4e-3daf-0d45063e1b4f",
+      "firstName": "Noah",
+      "lastName": "Gray",
+      "displayName": "Noah Gray",
+      "links": [
+       {
+        "rel": [
+         "playercard",
+         "desktop",
+         "athlete"
+        ],
+        "href": "https://www.espn.com/nfl/player/_/id/4240472/noah-gray",
+        "text": "Player Card"
+       }
+      ],
+      "headshot": {
+       "href": "https://a.espncdn.com/i/headshots/nfl/players/full/4240472.png",
+       "alt": "Noah Gray"
+      },
+      "jersey": "83"
+     },
+     "stats": [
+      "1",
+      "2",
+      "2.0",
+      "0",
+      "2",
+      "1"
+     ]
+    },
+    {
+     "athlete": {
+      "id": "3116389",
+      "uid": "s:20~l:28~a:3116389",
+      "guid": "41728606-98bf-ee0d-fcb7-539c733041fb",
+      "firstName": "Samaje",
+      "lastName": "Perine",
+      "displayName": "Samaje Perine",
+      "links": [
+       {
+        "rel": [
+         "playercard",
+         "desktop",
+         "athlete"
+        ],
+        "href": "https://www.espn.com/nfl/player/_/id/3116389/samaje-perine",
+        "text": "Player Card"
+       }
+      ],
+      "headshot": {
+       "href": "https://a.espncdn.com/i/headshots/nfl/players/full/3116389.png",
+       "alt": "Samaje Perine"
+      },
+      "jersey": "34"
+     },
+     "stats": [
+      "0",
+      "0",
+      "0.0",
+      "0",
+      "0",
+      "1"
+     ]
+    }
+   ],
+   "totals": [
+    "21",
+    "257",
+    "12.2",
+    "3",
+    "50",
+    "32"
+   ]
+  }
+ ]
+}
