@@ -75,6 +75,7 @@ install for you, so add the ones for the subpaths you import:
 | `@sportsdataverse/sdvtables`, `/html` | `@sportsdataverse/sdvplot` (a required peer; npm 7+ and pnpm install it for you) |
 | `@sportsdataverse/sdvtables/react` | `react` >= 18 |
 | `@sportsdataverse/sdvtables/export` | `playwright` >= 1.45 |
+| `@sportsdataverse/sdvtables/aggrid` | nothing (draw with `ag-grid-community` >= 36.2.0, the MIT Community edition; never `ag-grid-enterprise`) |
 
 `/plot`, `/d3`, `/shots` and `/chartjs/surface` need `@sportsdataverse/sporty` whether or not you draw a surface:
 they import it when they load, and fail to load without it. No other subpath imports sporty when it loads (`/react`'s
