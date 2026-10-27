@@ -39,7 +39,7 @@ export default (
   <Chart
     definition={defineChart({
       marks: [
-        lineY(rows, { x: "week", y: "diff", z: "team", strokeWidth: 2.5 }),
+        lineY(rows, { id: "margin", x: "week", y: "diff", z: "team", strokeWidth: 2.5 }),
         ...ends.map((d) => dot(d.data, d.options)),
       ],
       scales: {

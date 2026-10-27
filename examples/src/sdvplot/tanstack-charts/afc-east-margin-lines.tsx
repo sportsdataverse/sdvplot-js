@@ -36,7 +36,10 @@ const ends = logoDots(
 export default (
   <Chart
     definition={defineChart({
-      marks: [lineY(rows, { x: "week", y: "diff", z: "team" }), ...ends.map((d) => dot(d.data, d.options))],
+      marks: [
+        lineY(rows, { id: "margin", x: "week", y: "diff", z: "team" }),
+        ...ends.map((d) => dot(d.data, d.options)),
+      ],
       scales: {
         x: { scale: scaleLinear, axis: { label: "week" } },
         y: { scale: scaleLinear, nice: true, grid: true, axis: { label: "point differential" } },
