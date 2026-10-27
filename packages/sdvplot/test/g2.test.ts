@@ -195,6 +195,7 @@ describe("axisLogos", () => {
     // G2's parseHeightFromHTML reads the height from the element's own style
     expect(img.style.height).toBe("28px");
     expect(img.style.width).toBe("28px");
+    expect(img.style.marginLeft).toBe("-14px"); // centred on the box's left edge, where G2 puts the tick
   });
 
   test("a category with no logo keeps its text, HTML-escaped, and warns once over every render", () => {

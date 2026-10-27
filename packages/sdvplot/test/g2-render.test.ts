@@ -36,7 +36,7 @@ const ID = (t: string) => resolveSync(t, "nfl") as string;
 interface GNode {
   nodeName: string;
   style: Record<string, unknown>;
-  getBounds(): { center: number[] };
+  getBounds(): { center: number[]; halfExtents: number[] };
 }
 async function draw(options: object): Promise<{ chart: Chart; find: (sel: string) => GNode[] }> {
   const chart = new Chart({
@@ -95,9 +95,9 @@ test("teamColorScale is G2's scale.color; the image mark carries its rows, for a
   expect(ofMark(find, "image").map((i) => i.style.opacity)).toEqual(WEST.map((r) => r.wins / 20));
 });
 
-// Where an HTML label lands is the page's layout (jsdom has none): the Chromium render test checks each logo sits on its
-// column. Here, what G2 asks the page to draw.
-test("axisLogos on a column chart's x axis: one HTML label per band, in column order, the logo at its height; an unknown team keeps its text", async () => {
+// Where the logo lands in its box is the page's layout (jsdom has none): the Chromium render test checks each logo sits
+// on its column. Here, what G2 asks the page to draw, and where it puts each box.
+test("axisLogos on a column chart's x axis: one HTML label per band, its box on its column's tick, the logo at its height; an unknown team keeps its text", async () => {
   const rows = [...WEST, { team: "XXX", wins: 1 }];
   const warned: string[] = [];
   setWarningHandler((m) => warned.push(m));
@@ -117,8 +117,37 @@ test("axisLogos on a column chart's x axis: one HTML label per band, in column o
     expect(labels[i]?.style.height).toBe(26); // G2 read the height from the img's inline style
   });
   expect(html[4]).toMatch(/^<span[^>]*>XXX<\/span>$/);
-  const xs = labels.map((l) => centre(l)[0] as number);
-  expect(xs).toEqual([...xs].sort((a, b) => a - b));
-  expect(ofMark(find, "interval")).toHaveLength(5);
+  // @antv/component 2.1.12 puts each label box's left edge on its tick (the column's centre); the label's HTML centres
+  // itself there (2.1.11 centred the box instead: a change of version shows here)
+  const left = labels.map((l) => {
+    const b = l.getBounds();
+    return Math.round(((b.center[0] ?? 0) - (b.halfExtents[0] ?? 0)) * 100) / 100;
+  });
+  expect(left).toEqual(ofMark(find, "interval").map((b) => centre(b)[0]));
   expect(warned).toHaveLength(1);
+});
+
+test("a vertical team axis (transpose): the guide's logoMark at each bar's base is centred on the axis line, beside its bar", async () => {
+  const { find } = await draw({
+    type: "view",
+    data: WEST,
+    coordinate: { transform: [{ type: "transpose" }] },
+    axis: { x: { label: false } },
+    children: [
+      { type: "interval", encode: { x: "team", y: "wins" } },
+      logoMark(
+        WEST.map((r) => ({ team: r.team, base: 0 })),
+        { x: "team", y: "base", team: "team", league: "nfl", size: 22 },
+      ),
+    ],
+  });
+  const bars = ofMark(find, "interval").map((b) => b.getBounds());
+  const logos = ofMark(find, "image").map(centre);
+  expect(logos).toHaveLength(4);
+  // every logo on one vertical line, the bars' left edge (their base), each at its own bar's height
+  for (const [i, [x, y]] of logos.entries()) {
+    const bar = bars[i];
+    expect(x).toBeCloseTo((bar?.center[0] ?? 0) - (bar?.halfExtents[0] ?? 0), 1);
+    expect(y).toBeCloseTo(bar?.center[1] ?? 0, 1);
+  }
 });

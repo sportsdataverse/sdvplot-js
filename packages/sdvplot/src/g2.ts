@@ -223,12 +223,35 @@ function imageMark(
 export function logoMark(rows: readonly Row[], o: G2MarkOptions): G2ImageMark {
   return imageMark(rows, "logo", o);
 }
-/** Team wordmarks as a G2 `image` mark, `size` px tall at their own aspect ratio; as `logoMark` otherwise. */
+/**
+ * Team wordmarks as a G2 `image` mark, `size` px tall at their own aspect ratio; as `logoMark` otherwise.
+ *
+ * @example
+ * ```ts
+ * import { loadLeague } from "@sportsdataverse/sdvplot";
+ * import { drawnMarks, wordmarkMark } from "@sportsdataverse/sdvplot/g2";
+ *
+ * await loadLeague("nfl");
+ * // [team id, x, y, height in px, wordmark URL]: each wordmark 20 px tall, as wide as its own shape
+ * drawnMarks(wordmarkMark([{ team: "LV", wins: 4, week: 18 }], { x: "week", y: "wins", team: "team", league: "nfl", size: 20 }));
+ * ```
+ */
 export function wordmarkMark(rows: readonly Row[], o: G2MarkOptions): G2ImageMark {
   return imageMark(rows, "wordmark", o);
 }
-/** ESPN player headshots as a G2 `image` mark, from the row's `player` field; an id with no headshot draws nothing
- *  and warns once. `idSystem: "gsis"` needs `loadGsis()` first. */
+/**
+ * ESPN player headshots as a G2 `image` mark, from the row's `player` field; an id with no headshot draws nothing and
+ * warns once. `idSystem: "gsis"` needs `loadGsis()` first.
+ *
+ * @example
+ * ```ts
+ * import { headshotMark } from "@sportsdataverse/sdvplot/g2";
+ *
+ * // Patrick Mahomes (ESPN id 3139477) at his 2024 passing yards and touchdowns, 40 px tall
+ * const rows = [{ qb: "3139477", yards: 3928, tds: 26 }];
+ * headshotMark(rows, { x: "yards", y: "tds", player: "qb", league: "nfl", size: 40 }).data;
+ * ```
+ */
 export function headshotMark(rows: readonly Row[], o: G2HeadshotOptions): G2ImageMark {
   return imageMark(rows, "headshot", o);
 }
@@ -271,7 +294,8 @@ const escapeHtml = (s: string): string => s.replace(/[&<>"']/g, (c) => `&#${c.ch
 
 /**
  * Team logos as a horizontal band axis' labels (a column chart's `axis.x`), through G2's `labelRender`: each label is
- * HTML, the logo `size` px tall and centred on its tick. A category with no logo keeps its text and warns once. G2
+ * HTML, the logo `size` px tall and centred on its tick (laid out for `@antv/component` 2.1.12, the axis G2 5.4.8
+ * installs). A category with no logo keeps its text and warns once. G2
  * lays an HTML label out one band wide along a horizontal axis only; for a vertical axis (a bar chart's, or under
  * `transpose`) draw a `logoMark` at the axis' position instead. HTML labels are page elements over the chart, not
  * pixels on its canvas: a `toDataURL` export leaves them out.
@@ -299,11 +323,14 @@ export function axisLogos(o: G2AxisOptions): G2AxisLabels {
         ...(o.variant === undefined ? {} : { variant: o.variant }),
         ...(o.idSystem === undefined ? {} : { idSystem: o.idSystem }),
       })[0];
+      // G2's axis (@antv/component 2.1.12) puts an HTML label's box with its left edge on the tick: each label shifts
+      // itself left by half its own width to centre there. (2.1.11 and earlier centred the box: see the guide.)
       if (p === undefined)
-        return `<span style="display:block;text-align:center">${escapeHtml(String(value ?? ""))}</span>`;
+        return `<span style="display:block;width:max-content;transform:translateX(-50%)">${escapeHtml(String(value ?? ""))}</span>`;
       const alt = escapeHtml(`${placedName(p, o.league, value)} ${kind}`);
+      const w = h * aspect(p);
       // G2 reads the label's height from its inline style; imageSource escapes quotes and angle brackets
-      return `<img src="${imageSource(p, o.embed)}" alt="${alt}" data-sdv-id="${escapeHtml(p.id)}" style="display:block;margin:0 auto;width:${h * aspect(p)}px;height:${h}px">`;
+      return `<img src="${imageSource(p, o.embed)}" alt="${alt}" data-sdv-id="${escapeHtml(p.id)}" style="display:block;margin-left:${-w / 2}px;width:${w}px;height:${h}px">`;
     },
     labelOpacity: 1,
     labelAutoHide: false,
