@@ -15,6 +15,12 @@ const rows = NFL_TEAM_EPA_2024.map((t) => ({
   offense: t.off_epa / t.off_plays,
   defense: t.def_epa / t.def_plays,
 }));
+// for the chart's accessible name: the best offence and the stingiest defence, read from the rows
+const by = (better: (a: number, b: number) => boolean, key: "offense" | "defense") =>
+  rows.reduce((best, r) => (better(r[key], best[key]) ? r : best));
+const offence = by((a, b) => a > b, "offense");
+const defence = by((a, b) => a < b, "defense");
+const signed = (v: number) => `${v > 0 ? "+" : ""}${v.toFixed(3)}`;
 // one logo per team, 26 px tall, centred on its (offense, defense)
 const logos = logoMark(rows, { x: "offense", y: "defense", team: "team", league: "nfl", size: 26 });
 
@@ -51,8 +57,7 @@ export const browser = {
   }),
   width: 640,
   height: 480,
-  label:
-    "The 32 NFL teams of 2024 by offensive EPA per play (right is better) and defensive EPA per play allowed (up is better), each drawn as its logo: Baltimore the best offence, Denver the stingiest defence",
+  label: `The ${rows.length} NFL teams of 2024 by offensive EPA per play (right is better) and defensive EPA per play allowed (up is better), each drawn as its logo: ${offence.team} the best offence (${signed(offence.offense)}), ${defence.team} the stingiest defence (${signed(defence.defense)})`,
 } as const;
 
 // G2 draws only in a browser; without JavaScript the page shows what the logo mark draws: [team id, x, y, px, logo]

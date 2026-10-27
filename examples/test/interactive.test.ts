@@ -415,6 +415,7 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
             markType?: string;
             style: Record<string, unknown> & { visibility?: string };
             getBounds(): { center: number[]; halfExtents: number[] };
+            getPosition(): number[];
             __data__?: { points?: number[][] };
           };
           const box = f.querySelector(".sdv-live-output [role='img']") as
@@ -466,18 +467,15 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
             const [x = 0, y = 0] = b.getBounds().center;
             return { color: String(b.style.fill), match: near(read(x, y, 1)[0] ?? [], rgb(b.style.fill), 4) };
           });
-          // a mark's points are in the plot area's frame: an image's bounds centre less its point is that frame's origin
-          const [img] = images;
-          const [ix = 0, iy = 0] = img?.__data__?.points?.[0] ?? [];
-          const [cx = 0, cy = 0] = img?.getBounds().center ?? [];
-          const lines = (img === undefined ? [] : marks("line")).map((l) => {
+          // a mark's points are in the plot area's frame, whose origin is the mark element's own position
+          const lines = marks("line").map((l) => {
             const pts = l.__data__?.points ?? [];
             const [x = 0, y = 0] = pts[Math.floor(pts.length / 2)] ?? [];
+            const [ox = 0, oy = 0] = l.getPosition();
             const want = rgb(l.style.stroke);
-            const px = read(x + cx - ix, y + cy - iy, 3);
             return {
               color: String(l.style.stroke),
-              match: px.some((p) => (p[3] ?? 0) > 200 && near(p, want)),
+              match: read(x + ox, y + oy, 3).some((p) => (p[3] ?? 0) > 200 && near(p, want)),
             };
           });
           // the axis logos, page elements over the canvas: loaded, each centred over its own column
@@ -501,6 +499,9 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
         if (id.endsWith("axis-logos")) expect(got.axis.length, "axis logos").toBeGreaterThan(0);
         else expect(got.images, "sdvplot's logo marks").toBeGreaterThan(0);
         for (const c of got.changed) expect(c, "the logo painted its box").toBeGreaterThan(0.2);
+        // the examples that draw columns or lines have them: neither check may pass on an empty list
+        if (id.endsWith("axis-logos")) expect(got.columns.length, "columns drawn").toBeGreaterThan(0);
+        if (id.endsWith("margin-dark")) expect(got.lines.length, "lines drawn").toBeGreaterThan(0);
         for (const c of got.columns) expect(c.match, `a ${c.color} column's centre is its colour`).toBe(true);
         for (const l of got.lines) expect(l.match, `a pixel of the ${l.color} line is its colour`).toBe(true);
         for (const a of got.axis) {
