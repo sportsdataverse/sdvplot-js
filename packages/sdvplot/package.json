@@ -17,6 +17,8 @@
     "react",
     "recharts",
     "shadcn",
+    "mui",
+    "mui-x-charts",
     "uplot",
     "nivo",
     "victory",
@@ -102,6 +104,10 @@
       "types": "./dist/shadcn.d.ts",
       "import": "./dist/shadcn.js"
     },
+    "./mui": {
+      "types": "./dist/mui.d.ts",
+      "import": "./dist/mui.js"
+    },
     "./uplot": {
       "types": "./dist/uplot.d.ts",
       "import": "./dist/uplot.js"
@@ -149,6 +155,7 @@
     "@antv/g2": ">=5.4.8",
     "@deck.gl/core": ">=9.4.0",
     "@deck.gl/layers": ">=9.4.0",
+    "@mui/x-charts": ">=9.15.0",
     "@nivo/bump": ">=0.99",
     "@nivo/chord": ">=0.99",
     "@nivo/core": ">=0.99",
@@ -181,6 +188,9 @@
       "optional": true
     },
     "@deck.gl/layers": {
+      "optional": true
+    },
+    "@mui/x-charts": {
       "optional": true
     },
     "@nivo/bump": {
@@ -266,6 +276,11 @@
     "@antv/g2": "5.4.8",
     "@deck.gl/core": "9.4.0",
     "@deck.gl/layers": "9.4.0",
+    "@emotion/react": "11.14.0",
+    "@emotion/styled": "11.14.1",
+    "@mui/material": "9.5.0",
+    "@mui/system": "9.5.0",
+    "@mui/x-charts": "9.15.0",
     "@napi-rs/canvas": "^1.0.10",
     "@nivo/bump": "0.99.0",
     "@nivo/chord": "0.99.0",

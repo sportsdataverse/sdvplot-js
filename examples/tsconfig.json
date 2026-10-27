@@ -21,6 +21,7 @@
       "@sportsdataverse/sdvplot/echarts": ["../packages/sdvplot/src/echarts.ts"],
       "@sportsdataverse/sdvplot/recharts": ["../packages/sdvplot/src/recharts.ts"],
       "@sportsdataverse/sdvplot/shadcn": ["../packages/sdvplot/src/shadcn.ts"],
+      "@sportsdataverse/sdvplot/mui": ["../packages/sdvplot/src/mui.ts"],
       "@sportsdataverse/sdvplot/export": ["../packages/sdvplot/src/export/index.ts"],
       "@sportsdataverse/sdvplot/interact": ["../packages/sdvplot/src/interact/index.ts"],
       "@sportsdataverse/sporty": ["../packages/sporty/src/index.ts"],

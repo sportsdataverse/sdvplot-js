@@ -504,3 +504,16 @@
 .sdv-same-site svg {
   display: none;
 }
+
+/* MUI X Charts' tooltip is a table: keep Infima's table stripes, borders and block layout off it */
+.MuiChartsTooltip-table,
+.MuiChartsTooltip-table tr,
+.MuiChartsTooltip-table td,
+.MuiChartsTooltip-table th {
+  background-color: transparent;
+  border: 0;
+}
+.MuiChartsTooltip-table {
+  display: table;
+  margin: 0;
+}
