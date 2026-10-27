@@ -1,0 +1,95 @@
+---
+title: MUI X Data Grid
+sidebar_position: 13.25
+---
+
+[MUI X Data Grid](https://mui.com/x/react-data-grid/) (`@mui/x-data-grid`) is Material UI's React data grid: sorting,
+filtering, column menus and keyboard navigation over rows you hand it. `@sportsdataverse/sdvtables/mui` turns an
+sdvtables spec into a `<DataGrid>`'s props, so the same spec that renders a static HTML table also drives a grid, with
+its number formats, logos, headshots, team colours and theme. Only the MIT community package is used: nothing here needs
+`@mui/x-data-grid-pro` or `@mui/x-data-grid-premium`, and none of their features (row grouping, aggregation, column
+pinning, Excel export) is mapped.
+
+The subpath never imports MUI. It returns plain props whose types only match MUI's shapes (checked against MUI's own
+types), and builds its images with React's `createElement`, so it also renders on the server. `@mui/x-data-grid` is an
+optional peer, 9.15.0 or later; these examples run 9.15.0 with `@mui/material` 9.5.0. MUI's own peers
+(`@mui/material`, `@mui/system`, `@emotion/react` and `@emotion/styled`) are your app's, as for any MUI component. Each
+grid below is drawn by MUI in your browser.
+
+## A spec as grid props
+
+`dataGridProps(spec, rows)` returns `columns`, `getRowId`, `getRowClassName`, `sx`, `density` and `rowHeight`: spread
+them onto the grid next to `rows`. It is synchronous, so first `await prepare(spec)` from
+`@sportsdataverse/sdvtables/html`, which loads the leagues the logo and team colour columns need. The images and colours
+are worked out once, from the rows you pass, so build the props again (or `useMemo` them on `rows`) when the rows
+change. Your own grid props (`autoHeight`, `initialState`, `pageSizeOptions`, `checkboxSelection` and the rest) go next
+to them as usual.
+
+Each spec column becomes one `GridColDef`, with the label and alignment the HTML table gives it. A `width` in px becomes
+MUI's numeric width; a width in other units (a percentage, say) is left to MUI, with one warning. `num`, `int`, `pct`
+and `rank` columns keep sdvtables' formats through `valueFormatter` (grouped thousands, fixed decimals, a forced sign,
+U+2212 minus signs, ordinals) and sort and filter as numbers. `sortable` and `filterable` pass through, and a column's
+`subheader` becomes its header tooltip. A missing value shows as an empty cell, never "NaN".
+
+`getRowId` reads the spec's `rowKey` when it has one, and otherwise numbers the rows in the order you passed them; set a
+`rowKey` when the rows change after the props are built.
+
+## Logos and team-coloured rows
+
+`logo` and `wordmark` columns draw the team's image in the cell, `height` px tall, through MUI's `renderCell`; with
+`includeName` the name follows the logo. The team can be an abbreviation, a name or a numeric id, as a number or as a
+string, as everywhere in sdvtables. A team with no image in the archive, or one that is not found, keeps its text, and
+warns once, as the HTML table does. `rowHeight` grows so the tallest image fits the theme's density.
+
+`teamRows: { key, league }` fills each row with its team's colour. The colours are sdvplot's team palette for the
+theme's background, the same `teamColorPalette` that `@sportsdataverse/sdvplot/mui` gives MUI X Charts, so a team keeps
+3:1 contrast against the grid and stays distinct from the teams before it. Each colour is laid over the background at
+`alpha` (0.4 by default, as the `teamColorBg` column), and the row's text turns black or white, whichever reads better on
+that fill. `teamColorBg` and `teamColorBar` columns colour a single cell the same way, through MUI's `cellClassName`.
+
+The grid below is the sample AFC standings on the `sdv` theme, sorted by wins.
+
+<Live id="sdvtables/mui-x-data-grid/afc-standings-team-rows" />
+
+## Headshots
+
+`headshot` columns draw ESPN player headshots from the cell's ESPN athlete id, or from an nflverse gsis id with
+`idSystem: "gsis"` (`prepare` loads the gsis map). An id with no headshot keeps the id as text and warns once. This
+leaderboard is on the `booktabs` theme, with each quarterback's team as a `teamColorBar` cell, sorted by net EPA per
+play; New England's value is blank in the sample data, so MUI sorts it last.
+
+<Live id="sdvtables/mui-x-data-grid/afc-quarterbacks-headshots" />
+
+## Themes, dark ones included
+
+The theme's tokens become the grid's `sx`. Its background, text, muted text, rule and header colours and its body font
+set MUI's own CSS variables (`--DataGrid-t-color-background-base` and the rest), written on a doubled class so they win
+over MUI's defaults without a `ThemeProvider`. The header title takes the theme's label font, weight, size, case and
+tracking; a theme with stripes stripes odd rows through `getRowClassName`. Density follows the theme: `compact` is MUI's
+compact, `comfortable` MUI's standard and `social` MUI's comfortable.
+
+A dark theme such as `midnight` needs nothing more: the grid takes its dark background and light text, and team rows
+take the palette for that dark background, so a navy team lightens until it reads. MUI's own Material pieces that sit
+inside the grid (the pager, icon buttons) take the grid's text colour. Menus and panels that MUI opens in a portal sit
+outside the grid, so for a fully dark grid wrap it in a dark `ThemeProvider` as well. This grid keys its rows by
+stats.nba.com's numeric team id, which resolves to each team's logo and colour.
+
+<Live id="sdvtables/mui-x-data-grid/pacific-nba-midnight" />
+
+The themes name their fonts but do not load them: put the `<link>` that `fontsLinkFor(spec)` returns in the page's
+`<head>`, as these examples do.
+
+## What is not mapped
+
+The cell kinds that draw in HTML or SVG (pills, bars, sparklines, gauges, icons and the rest) show their plain value in
+the grid, with one warning per kind; render those tables with `renderHTML` or `<SdvTable>` instead. Decorations
+(titles, source notes, spotlights, legends) are the page's to add around the grid. Logos are plain `<img>` tags, so the
+grid's own CSV export and print keep the text, not the images.
+
+## Testing and server rendering
+
+Each image carries `data-sdv-id` (the team or player id) and `data-sdv-kind` (`logo`, `wordmark` or `headshot`), so a
+test can read back which images a grid drew and in which rows. The props are plain values and functions: build them in
+a client component, once the league has loaded, as MUI's grid is a client component itself.
+
+In the gallery: [MUI X Data Grid](/gallery/sdvtables/#mui-x-data-grid).
