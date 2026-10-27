@@ -4,7 +4,7 @@
 // dataset in place (matched by `label`) and calls `chart.update()`; on unmount it destroys the chart.
 import { cleanup, render } from "@testing-library/react";
 import { Chart as ChartJS, type ChartOptions, type Plugin, registerables } from "chart.js";
-import { type ReactElement, StrictMode, createRef } from "react";
+import { type ReactElement, StrictMode, createRef, useMemo } from "react";
 import { Chart } from "react-chartjs-2";
 import { afterEach, beforeAll, describe, expect, test, vi } from "vitest";
 import { surface } from "../../src/chartjs-surface.js";
@@ -139,8 +139,15 @@ describe("logoPoints + pointImages", () => {
 });
 
 /** Team-coloured bars with logo ticks, as a React user writes it: options and the plugin are new on every render. */
-function Bars({ teams, chart }: { teams: readonly string[]; chart: Ref }): ReactElement {
-  const options: ChartOptions<"bar"> = { ...BASE, scales: { x: { type: "category" } } };
+function Bars({
+  teams,
+  chart,
+  stable = false,
+}: { teams: readonly string[]; chart: Ref; stable?: boolean }): ReactElement {
+  const fresh: ChartOptions<"bar"> = { ...BASE, scales: { x: { type: "category" } } };
+  // stable: one options object for the component's life (useMemo), so react-chartjs-2 never copies options again
+  const memo = useMemo<ChartOptions<"bar">>(() => ({ ...BASE, scales: { x: { type: "category" } } }), []);
+  const options = stable ? memo : fresh;
   return (
     <Chart
       ref={chart as never}
@@ -185,6 +192,27 @@ describe("axisLogos + teamColor", () => {
         .getDatasetMeta(0)
         .data.map((b) => (b.options as { backgroundColor: string }).backgroundColor);
       expect(bars).toEqual(teamColor(teams, "nfl"));
+    }
+  });
+});
+
+describe("axisLogos with options that keep their identity (useMemo)", () => {
+  test("new labels only: Chart.js re-merges its own copy of the scales on each update; the padding is wired once", () => {
+    const chart: Ref = createRef();
+    const { rerender } = render(<Bars teams={WEST} chart={chart} stable />);
+    const c = chart.current as ChartJS;
+    expect(tickPadding(c)).toBe(3 + 24);
+    for (const teams of [EAST, WEST, EAST]) {
+      log(c).length = 0;
+      rerender(<Bars teams={teams} chart={chart} stable />);
+      expect(chart.current).toBe(c);
+      expect(tickPadding(c)).toBe(3 + 24); // not 3 + 24 + 24 ...
+      expect(c.scales.x?.ticks.map((t) => t.label)).toEqual(["", "", "", ""]);
+      const srcs = (drawn(c, 24) as HTMLImageElement[]).map((img) => img.src);
+      const want = (logoPoints(teams, { league: "nfl", radius: 12 }).pointStyle as HTMLImageElement[]).map(
+        (img) => img.src,
+      );
+      expect(srcs).toEqual(want);
     }
   });
 });
