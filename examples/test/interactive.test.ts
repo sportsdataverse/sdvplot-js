@@ -2208,11 +2208,17 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
         images?: () => readonly [id: string, href: string][];
         /** Graph nodes: each node's id and team (its ring's colour). */
         rings?: readonly [id: string, team: string][];
+        /** Sankey nodes in a team's colour: each node's id and team. */
+        teamNodes?: readonly [id: string, team: string][];
       }
     >
   > = {
     "sdvplot/unovis/super-bowl-drives-sankey": {
       palette: ["KC", "PHI"],
+      teamNodes: [
+        ["team:KC", "KC"],
+        ["team:PHI", "PHI"],
+      ],
       links: [
         ...new Set(
           SUPER_BOWL_LIX_DRIVES.flatMap((d) => [
@@ -2271,6 +2277,11 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
         spec.background === undefined ? {} : { background: spec.background },
       );
       const colorOf = (t: string) => (want[teams.indexOf(t)] ?? "").toLowerCase();
+      // the oracle and the module both go through colorPalette: a background that changed nothing would pass both
+      if (spec.background !== undefined)
+        expect(want, "the dark palette differs from the light one").not.toEqual(
+          rechartsPalette("nfl", teams),
+        );
       const page = await browser.newPage();
       try {
         const errors: string[] = [];
@@ -2389,7 +2400,18 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
               icon: ub === undefined ? null : [ub.left - box.left, ub.top - box.top, ub.width, ub.height],
             };
           });
-          return { links, nodes };
+          // Sankey nodes: id, fill, opacity and points down the middle of the bar
+          const bars = [...el.querySelectorAll("rect[class*=-node]:not([class*=selection])")].map((r) => {
+            const rect = r as SVGRectElement;
+            const [w, h] = [Number(rect.getAttribute("width")), Number(rect.getAttribute("height"))];
+            return {
+              id: data(rect).id ?? "",
+              fill: toHex(rect.style.fill),
+              alpha: Number(getComputedStyle(rect).opacity) * Number(getComputedStyle(rect).fillOpacity),
+              points: [0.25, 0.5, 0.75].map((f) => at(rect, w / 2, f * h)),
+            };
+          });
+          return { links, nodes, bars };
         });
         const shoot = async () => {
           const shot = await loadImage(await svg.screenshot());
@@ -2441,7 +2463,9 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
             );
         }
         console.log(`${id}: ${painted} of ${got.links.length} links painted in their colour`);
-        // a link can cross under a node, a label or another link at all five points; all but two must show
+        // a link can cross under a node, a label or another link at all five points; all but two must show. Measured
+        // in every run so far: exactly one link per example misses (27/28, 8/9, 16/17), each under a node or label. A
+        // wrong colour misses every link (see the report's negative controls), so the slack hides no colour bug.
         expect(painted, "links whose middle pixels are their team's colour").toBeGreaterThanOrEqual(
           got.links.length - 2,
         );
@@ -2481,6 +2505,32 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
             for (const u of el.querySelectorAll("g[class*=g-node] use"))
               (u as SVGElement).style.visibility = "";
           });
+        }
+        if (spec.teamNodes !== undefined) {
+          // each team's node bar: its fill, and its pixels, are the expected team colour over what is under it
+          await svg.evaluate((el) => {
+            for (const r of el.querySelectorAll("rect[class*=-node]"))
+              (r as SVGElement).style.visibility = "hidden";
+          });
+          const bare = await shoot();
+          await svg.evaluate((el) => {
+            for (const r of el.querySelectorAll("rect[class*=-node]"))
+              (r as SVGElement).style.visibility = "";
+          });
+          for (const [nid, team] of spec.teamNodes) {
+            const bar = got.bars.find((b) => b.id === nid);
+            expect.soft(bar?.fill, `${nid}'s fill`).toBe(colorOf(team));
+            const c = hex(colorOf(team));
+            const ok = (bar?.points ?? []).every((p) => {
+              const [a] = shown(p.x, p.y);
+              const [b] = bare(p.x, p.y);
+              const blend = c.map(
+                (v, i) => (bar?.alpha ?? 1) * v + (1 - (bar?.alpha ?? 1)) * ((b ?? [])[i] ?? 0),
+              );
+              return near(a ?? [], blend, 14);
+            });
+            expect.soft(ok, `${nid}'s bar is painted ${colorOf(team)}`).toBe(true);
+          }
         }
         if (spec.background !== undefined) {
           // the card: an empty corner is its background
