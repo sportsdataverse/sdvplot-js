@@ -10,19 +10,12 @@
  */
 import {
   type IdSystem,
-  InputError,
   type League,
   type SeasonInput,
   type Which,
-  checkAlpha,
-  headshotUrl,
   hex6,
-  logoUrlSync,
   mix,
   onColor,
-  resolveSync,
-  solid,
-  warn,
 } from "@sportsdataverse/sdvplot";
 import { teamColorPalette } from "@sportsdataverse/sdvplot/tanstack";
 import type {
@@ -37,10 +30,28 @@ import type {
   Theme,
   ThemeDefaultParams,
 } from "ag-grid-community";
-import { NUMERIC_KINDS, comparatorFor, withMissingLast } from "./engine.js";
-import { TableSpecError } from "./errors.js";
-import { formatNumber, isBlank, ordinal, scaledNumber, toNumber } from "./format.js";
-import { scaleNoteOf } from "./html/decorations.js";
+import {
+  type Fill,
+  type GridName,
+  cell,
+  checkHeight,
+  formatterFor,
+  headshotUrls,
+  logoMarks,
+  missingLast,
+  opaque,
+  pxWidth,
+  rankParts,
+  rowIds,
+  scaleNotes,
+  teamColorOf,
+  teamRowFills,
+  tint,
+  unmapped,
+  value,
+} from "./_grid.js";
+import { NUMERIC_KINDS } from "./engine.js";
+import { toNumber } from "./format.js";
 import { alignOf, labelOf } from "./html/parts.js";
 import type { ColumnSpec, TableSpec } from "./spec.js";
 import { teamNameSync } from "./team-name.js";
@@ -94,62 +105,15 @@ const ROW_HEIGHT = { compact: 32, comfortable: 42, social: 52 } as const;
 const HOVER = 0.08;
 const SELECTED = 0.16;
 
-const cell = (v: unknown): string => (isBlank(v) ? "" : String(v).trim());
-const value = (row: unknown, key: string): unknown =>
-  row == null ? undefined : (row as Record<string, unknown>)[key];
-const opaque = (t: ThemeTokens): string => (t.bg === "transparent" ? "#ffffff" : hex6(t.bg));
-const alphaHex = (a: number): string =>
-  Math.round(checkAlpha(a) * 255)
-    .toString(16)
-    .padStart(2, "0");
-/** `color` over `bg` at `alpha`, opaque, with its readable text colour. */
-const tint = (color: string, alpha: number, bg: string): { fill: string; ink: string } => {
-  const fill = solid(`${hex6(color, { dropAlpha: true })}${alphaHex(alpha)}`, bg);
-  return { fill, ink: onColor(fill) };
+const AG: GridName = {
+  fn: "gridOptions",
+  ns: "aggrid",
+  grid: "AG Grid",
+  short: "AG Grid",
+  built: "options",
 };
 /** A fill moved `t` away from its ink: lighter under black text, darker under white, so the text reads at least as well. */
-const shade = (f: { fill: string; ink: string }, t: number): string =>
-  mix(f.fill, f.ink === "#000000" ? "#ffffff" : "#000000", t);
-
-/** Each distinct cell value of `key` (trimmed text) -> its team id, by ONE resolveSync over the rows (one warning). */
-function teamIds(
-  rows: readonly unknown[],
-  key: string,
-  league: League,
-  o: { season?: SeasonInput | undefined; idSystem?: IdSystem | undefined },
-): Map<string, string> {
-  const raw = [...new Set(rows.map((r) => cell(value(r, key))).filter((v) => v !== ""))];
-  const ids = resolveSync(raw, league, {
-    ...(o.season === undefined ? {} : { season: o.season }),
-    ...(o.idSystem === undefined ? {} : { idSystem: o.idSystem }),
-    strict: false,
-  });
-  const out = new Map<string, string>();
-  raw.forEach((v, i) => {
-    const id = ids[i];
-    if (id !== undefined) out.set(v, id);
-  });
-  return out;
-}
-/** Each team id -> its palette colour for `bg` (sdvplot's `teamColorPalette`, not a fork of it). */
-function palette(
-  league: League,
-  ids: readonly string[],
-  which: Which | undefined,
-  bg: string,
-): Map<string, string> {
-  const colors = teamColorPalette(league, ids, {
-    idSystem: "team_id",
-    background: bg,
-    ...(which === undefined ? {} : { which }),
-  });
-  return new Map(ids.map((id, i) => [id, colors[i] ?? "#808080"]));
-}
-function checkHeight(h: number, kind: string): number {
-  if (!(Number.isFinite(h) && h >= 1))
-    throw new TableSpecError(`${kind} height must be a number of pixels >= 1, got ${String(h)}`);
-  return h;
-}
+const shade = (f: Fill, t: number): string => mix(f.fill, f.ink === "#000000" ? "#ffffff" : "#000000", t);
 
 /**
  * An AG Grid cell renderer class whose cell is `draw(params)`: a DOM node, or text. A class with `getGui` because
@@ -250,22 +214,12 @@ export function gridOptions<Row>(
   const t = resolveTheme(spec.theme).tokens;
   const bg = opaque(t);
   let tallest = 0;
-  // scaleNote, as the HTML table applies it: num/int cells divided (with its decimals), the label suffixed; last wins
-  const scaled = new Map<string, { divisor: number; decimals: number }>();
-  const labelSuffix = new Map<string, string>();
-  for (const d of spec.decorations) {
-    if (d.type !== "scaleNote") continue;
-    const { suffix } = scaleNoteOf(d);
-    for (const k of d.columns as readonly string[]) {
-      scaled.set(k, { divisor: d.divisor, decimals: d.decimals });
-      if (d.where !== "sourceNote") labelSuffix.set(k, ` ${suffix}`);
-    }
-  }
+  const { scaled, labelSuffix } = scaleNotes(spec);
   const header = headerStyle(t);
 
   const columnDefs = spec.columns.map((col): ColDef<Row> => {
     const align = alignOf(col);
-    const compare = comparatorFor(col, rows);
+    const sortBy = missingLast(col, rows);
     const numeric = NUMERIC_KINDS.has(col.kind);
     const def: ColDef<Row> = {
       colId: col.key,
@@ -273,7 +227,7 @@ export function gridOptions<Row>(
       headerName: labelOf(col) + (labelSuffix.get(col.key) ?? ""),
       // AG Grid negates a comparator's result for a descending sort: negate here too, so missing values stay last
       comparator: (a, b, _na, _nb, desc) => {
-        const r = withMissingLast(compare, desc ? "desc" : "asc")(a, b);
+        const r = sortBy(desc ? "desc" : "asc")(a, b);
         return desc ? -r : r;
       },
       cellStyle: { textAlign: align },
@@ -289,85 +243,44 @@ export function gridOptions<Row>(
           }
         : { cellDataType: false }),
     };
-    if (col.width !== undefined) {
-      const m = /^\s*(\d+(?:\.\d+)?)px\s*$/.exec(col.width);
-      if (m) def.width = Number(m[1]);
-      else
-        warn(
-          `sdvtables:aggrid:width:${col.key}`,
-          `gridOptions: column "${col.key}" width ${JSON.stringify(col.width)} is not in px; AG Grid widths are px numbers, so AG Grid's default is kept`,
-        );
-    }
-    return { ...def, ...kindProps(col, def.cellStyle as CellStyle) };
+    const width = pxWidth(col, AG);
+    if (width !== undefined) def.width = width;
+    const format = formatterFor(col, scaled);
+    return {
+      ...def,
+      ...(format === undefined ? {} : { valueFormatter: ({ value: v }) => format(v) }),
+      ...kindProps(col, def.cellStyle as CellStyle),
+    };
   });
 
   function kindProps(col: ColumnSpec<Row>, base: CellStyle): Partial<ColDef<Row>> {
     switch (col.kind) {
       case "text":
-        return {};
-      case "num": {
-        const sc = scaled.get(col.key);
-        if (sc) return { valueFormatter: numberFormat((n) => scaledNumber(n, sc)) };
-        return {
-          valueFormatter: numberFormat((n) =>
-            formatNumber(n, {
-              ...(col.digits === undefined ? {} : { digits: col.digits }),
-              big: col.big ?? false,
-              prefix: col.prefix ?? "",
-              suffix: col.suffix ?? "",
-              forceSign: col.forceSign ?? false,
-            }),
-          ),
-        };
-      }
-      case "int": {
-        const sc = scaled.get(col.key);
-        return {
-          valueFormatter: numberFormat((n) =>
-            sc ? scaledNumber(n, sc) : formatNumber(n, { digits: 0, big: true }),
-          ),
-        };
-      }
+      case "num":
+      case "int":
       case "pct":
-        return {
-          valueFormatter: numberFormat(
-            (n) => `${formatNumber(col.scale ? n * 100 : n, { digits: col.digits })}%`,
-          ),
-        };
+        return {};
       case "rank":
-        return {
-          valueFormatter: numberFormat(ordinal),
-          ...(col.superscript
-            ? {
-                // the HTML table's superscript suffix: 1<sup>st</sup>
-                cellRenderer: rendererOf(({ value: v }, doc) => {
-                  const n = toNumber(v);
-                  if (n === null) return "";
-                  const num = String(Math.trunc(n));
-                  const out = doc.createDocumentFragment();
-                  const sup = doc.createElement("sup");
-                  sup.style.fontSize = col.suffixSize;
-                  sup.textContent = ordinal(n).slice(num.length);
-                  out.append(num, sup);
-                  return out;
-                }),
-              }
-            : {}),
-        };
+        return col.superscript
+          ? {
+              // the HTML table's superscript suffix: 1<sup>st</sup>
+              cellRenderer: rendererOf(({ value: v }, doc) => {
+                const r = rankParts(v);
+                if (r === null) return "";
+                const out = doc.createDocumentFragment();
+                const sup = doc.createElement("sup");
+                sup.style.fontSize = col.suffixSize;
+                sup.textContent = r.suffix;
+                out.append(r.num, sup);
+                return out;
+              }),
+            }
+          : {};
       case "logo":
       case "wordmark": {
         const h = checkHeight(col.height, col.kind);
         tallest = Math.max(tallest, h);
-        const marks = new Map<string, { id: string; url: string }>();
-        for (const [v, id] of teamIds(rows, col.key, col.league, col)) {
-          const url = logoUrlSync(id, col.league, {
-            ...(col.season === undefined ? {} : { season: col.season }),
-            ...(col.variant === undefined ? {} : { variant: col.variant }),
-            markType: col.kind,
-            idSystem: "team_id",
-          }); // undefined: no mark archived, and sdvplot warned once
-          if (url !== undefined) marks.set(v, { id, url });
-        }
+        const marks = logoMarks(col, rows);
         const includeName = col.kind === "logo" && col.includeName;
         const kind = col.kind;
         return {
@@ -386,17 +299,7 @@ export function gridOptions<Row>(
       case "headshot": {
         const h = checkHeight(col.height, "headshot");
         tallest = Math.max(tallest, h);
-        const urls = new Map<string, string>();
-        for (const v of new Set(rows.map((r) => cell(value(r, col.key))))) {
-          if (v === "") continue;
-          const url = headshotUrl(v, col.league, { idSystem: col.idSystem });
-          if (url === undefined)
-            warn(
-              `sdvtables:aggrid:headshot:${col.league}:${v}`,
-              `gridOptions: no ${col.league} headshot for player ${JSON.stringify(v)}: the cell keeps the id`,
-            );
-          else urls.set(v, url);
-        }
+        const urls = headshotUrls(col, rows, AG);
         return {
           cellRenderer: rendererOf(({ value: raw }, doc) => {
             const text = cell(raw);
@@ -408,12 +311,10 @@ export function gridOptions<Row>(
       }
       case "teamColorBg":
       case "teamColorBar": {
-        const ids = teamIds(rows, col.key, col.league, col);
-        const colors = palette(col.league, [...new Set(ids.values())], col.which, bg);
+        const colorOf = teamColorOf(col, rows, bg, teamColorPalette);
         const bar = col.kind === "teamColorBar";
         const styleOf = (raw: unknown): CellStyle => {
-          const id = ids.get(cell(raw));
-          const color = (id === undefined ? undefined : colors.get(id)) ?? col.naColor;
+          const color = colorOf(raw);
           if (bar)
             return {
               ...base,
@@ -425,25 +326,15 @@ export function gridOptions<Row>(
         return { cellStyle: ({ value: raw }) => styleOf(raw) };
       }
       default:
-        warn(
-          `sdvtables:aggrid:kind:${col.kind}`,
-          `gridOptions: AG Grid cells for "${col.kind}" columns are not mapped yet; they show the plain value`,
-        );
+        unmapped(col.kind, AG);
         return {};
     }
   }
 
   // team rows: each team value's fill, ink and hover / selected shades, worked out once
   const rowFill = new Map<string, RowStyle>();
-  if (o.teamRows) {
-    const tr = o.teamRows;
-    const alpha = tr.alpha ?? 0.4;
-    const ids = teamIds(rows, tr.key, tr.league, tr);
-    const colors = palette(tr.league, [...new Set(ids.values())], tr.which, bg);
-    for (const [v, id] of ids) {
-      const color = colors.get(id);
-      if (color === undefined) continue;
-      const f = tint(color, alpha, bg);
+  if (o.teamRows)
+    for (const [v, f] of teamRowFills(rows, o.teamRows, bg, teamColorPalette))
       rowFill.set(v, {
         backgroundColor: f.fill,
         color: f.ink,
@@ -453,44 +344,13 @@ export function gridOptions<Row>(
         "--ag-row-hover-color": shade(f, HOVER),
         "--ag-selected-row-background-color": shade(f, SELECTED),
       } as RowStyle);
-    }
-  }
   const teamKey = o.teamRows?.key;
   const getRowStyle = ({ data }: RowClassParams<Row>): RowStyle | undefined =>
     teamKey === undefined ? undefined : rowFill.get(cell(value(data, teamKey)));
 
-  const key = spec.rowKey;
-  const keyOf = (row: Row, i: number | string): string => {
-    const v = value(row, key as string);
-    if (isBlank(v))
-      throw new InputError(
-        `gridOptions: row ${i} has no value for rowKey "${String(key)}" (${String(v)}); AG Grid needs an id for every row`,
-      );
-    return String(v);
-  };
   // every row's id, checked once: a repeat would give AG Grid one id twice, and it would drop a row
-  const index = new Map<Row, string>();
-  const seen = new Map<string, number>();
-  rows.forEach((r, i) => {
-    const id = key === undefined ? String(index.has(r) ? index.get(r) : i) : keyOf(r, i);
-    const j = seen.get(id);
-    if (j !== undefined)
-      throw new InputError(
-        key === undefined
-          ? `gridOptions: rows ${j} and ${i} are the same object, so AG Grid would give them one id and drop one; copy the row or set the spec's rowKey`
-          : `gridOptions: rows ${j} and ${i} have the same rowKey "${String(key)}" value "${id}"; AG Grid needs a unique id per row`,
-      );
-    seen.set(id, i);
-    if (!index.has(r)) index.set(r, id);
-  });
-  const getRowId = ({ data }: GetRowIdParams<Row>): string => {
-    const known = index.get(data);
-    if (known !== undefined) return known;
-    if (key !== undefined) return keyOf(data, "(not in rows)");
-    throw new TableSpecError(
-      "gridOptions: a row the options were not built from has no id; set the spec's rowKey, or build the options from the rows you give the grid",
-    );
-  };
+  const idOf = rowIds(rows, spec.rowKey, AG);
+  const getRowId = ({ data }: GetRowIdParams<Row>): string => idOf(data);
 
   const rowHeight = Math.max(ROW_HEIGHT[spec.theme.density], Math.ceil(tallest + 8));
   return {
@@ -502,13 +362,6 @@ export function gridOptions<Row>(
     ...(o.theme === undefined ? {} : { theme: o.theme.withParams(themeParams(t)) }),
   };
 }
-
-const numberFormat =
-  (f: (n: number) => string) =>
-  ({ value: v }: { value: unknown }): string => {
-    const n = toNumber(v);
-    return n === null ? "" : f(n);
-  };
 
 const set = (v: string): boolean => v !== "transparent" && v !== "inherit" && v !== "none" && v !== "";
 
