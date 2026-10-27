@@ -199,6 +199,11 @@ describe("logoDots / wordmarkDots / headshotDots", () => {
     expect(b.map((d) => d.options.id.startsWith("end-"))).toEqual([true, true]);
     expect(b[0]?.options.fill).toBe(`url(#${b[0]?.options.id})`);
     expect(drawnMarks(a, b)).toHaveLength(4);
+    // it becomes an SVG id and a url(#...) fill, which TanStack escapes: a character that needs escaping is refused,
+    // not left as a fill that names no pattern
+    for (const id of ["a&b", "a<b", "a>b", 'a"b', "a)b", "a b", ""])
+      expect(() => logoDots(ROWS, { ...BASE, id })).toThrow(InputError);
+    expect(() => logoDots(ROWS, { ...BASE, id: "end_2-x" })).not.toThrow();
     expect(drawnMarks()).toEqual([]);
   });
 

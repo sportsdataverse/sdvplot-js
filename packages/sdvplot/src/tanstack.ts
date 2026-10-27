@@ -108,7 +108,8 @@ interface Shared {
   embed?: ReadonlyMap<string, string>;
   /**
    * The start of each dot mark's id and pattern id. Default "sdv-logo", "sdv-wordmark" or "sdv-headshot"; give
-   * another when a chart draws the same images twice (TanStack needs each mark id once).
+   * another when a chart draws the same images twice (TanStack needs each mark id once). Letters, digits, `_` and
+   * `-` only (it becomes an SVG id); anything else throws `InputError`.
    */
   id?: string;
 }
@@ -216,6 +217,9 @@ function imageDots<R extends object, X extends string, Y extends string>(
 ): TanstackImageDot<R, X, Y>[] {
   const h = checkSize(o.size ?? 24);
   const fillOpacity = checkAlpha(o.alpha ?? 1);
+  // the id goes into an SVG id and a url(#...) fill, which TanStack escapes: only characters that need no escaping
+  if (o.id !== undefined && !/^[A-Za-z0-9_-]+$/.test(o.id))
+    throw new InputError(`id may hold only letters, digits, "_" and "-", got ${JSON.stringify(o.id)}`);
   const base = o.id ?? `sdv-${kind}`;
   // TanStack paints a dot's fill once per mark: one dot mark per image, its rows in their order
   const dots = new Map<string, TanstackImageDot<R, X, Y>>();
@@ -278,8 +282,8 @@ export function logoDots<R extends object, X extends keyof R & string, Y extends
   return imageDots(rows, "logo", o);
 }
 /**
- * Team wordmarks as TanStack `dot` marks, each wordmark `size` px tall at its own aspect ratio (so its dot is
- * wider than it is tall would suggest: the radius is the half-diagonal); as `logoDots` otherwise.
+ * Team wordmarks as TanStack `dot` marks, each wordmark `size` px tall at its own aspect ratio. The dot's radius is
+ * the half-diagonal of the wordmark's box, so a wide wordmark gets a large dot. As `logoDots` otherwise.
  *
  * @example
  * ```ts
