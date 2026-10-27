@@ -1,4 +1,9 @@
-import type { GeoJSONSourceSpecification, LayerSpecification, Map as MapLibreMap, MapOptions } from "maplibre-gl";
+import type {
+  GeoJSONSourceSpecification,
+  LayerSpecification,
+  Map as MapLibreMap,
+  MapOptions,
+} from "maplibre-gl";
 import { expectTypeOf, test } from "vitest";
 import type { LogoImageMap, LogoSymbols, RouteLines, basemap } from "../src/maplibre.js";
 
