@@ -13,7 +13,8 @@
     "great-tables",
     "team-logos",
     "mui",
-    "mui-x-data-grid"
+    "mui-x-data-grid",
+    "ag-grid"
   ],
   "homepage": "https://plot.sportsdataverse.org",
   "bugs": "https://github.com/sportsdataverse/sdvplot-js/issues",
@@ -40,6 +41,10 @@
       "types": "./dist/mui.d.ts",
       "import": "./dist/mui.js"
     },
+    "./aggrid": {
+      "types": "./dist/aggrid.d.ts",
+      "import": "./dist/aggrid.js"
+    },
     "./export": {
       "types": "./dist/export.d.ts",
       "import": "./dist/export.js"
@@ -58,11 +63,15 @@
   "peerDependencies": {
     "@mui/x-data-grid": ">=9.15.0",
     "@sportsdataverse/sdvplot": "workspace:^0",
+    "ag-grid-community": ">=36.2.0",
     "playwright": ">=1.45",
     "react": ">=18"
   },
   "peerDependenciesMeta": {
     "@mui/x-data-grid": {
+      "optional": true
+    },
+    "ag-grid-community": {
       "optional": true
     },
     "playwright": {
@@ -83,6 +92,7 @@
     "@testing-library/react": "^16.3.3",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "ag-grid-community": "36.2.0",
     "happy-dom": "^15.11.0",
     "jsdom": "^26.1.0",
     "playwright": "^1.64.0",

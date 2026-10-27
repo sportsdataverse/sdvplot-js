@@ -366,7 +366,31 @@ width, sdvtables' number formats through `valueFormatter`), logo, wordmark and h
 `teamColorBg` / `teamColorBar` cells and `teamRows` in sdvplot's team palette (`@sportsdataverse/sdvplot/mui`'s
 `teamColorPalette`) with black or white text by contrast, and the theme's fonts, colours, stripes and density as the
 grid's `sx` and `density`. It never imports MUI. Kinds drawn in HTML or SVG (pills, bars, sparklines...) show their
-plain value, with one warning per kind. Guide: [MUI X Data Grid](https://plot.sportsdataverse.org/docs/guides/mui-x-data-grid).
+plain value, with one warning per kind. Guide: [MUI X Data Grid](https://plot.sportsdataverse.org/guides/mui-x-data-grid).
+
+### AG Grid
+
+```ts
+import { AllCommunityModule, ModuleRegistry, createGrid, themeQuartz } from "ag-grid-community"; // peer: >= 36.2.0 (MIT)
+import { gridOptions } from "@sportsdataverse/sdvtables/aggrid";
+import { prepare } from "@sportsdataverse/sdvtables/html";
+
+ModuleRegistry.registerModules([AllCommunityModule]);
+await prepare(spec);
+const el = document.querySelector("#grid")!; // AG Grid fills its container: size it, or use domLayout: "autoHeight"
+createGrid(el, {
+  ...gridOptions(spec, rows, { theme: themeQuartz, teamRows: { key: "team", league: "nfl" } }),
+  domLayout: "autoHeight",
+});
+```
+
+`gridOptions(spec, rows, o)` maps a spec onto AG Grid Community: one column definition per column (label, alignment,
+px width, sdvtables' number formats through `valueFormatter`, sdvtables' sort with missing values last both ways),
+logo, wordmark and headshot cells through cell renderer classes that work in plain JavaScript and in ag-grid-react,
+`teamColorBg` / `teamColorBar` cells and `teamRows` in sdvplot's team palette with black or white text by contrast
+(kept through AG Grid's hover and selection), unique row ids, and, given AG Grid's `themeQuartz` (or another base), the
+theme's fonts and colours through AG Grid's Theming API. It never imports AG Grid at runtime. Community only: nothing
+here uses or needs `ag-grid-enterprise`. Guide: [AG Grid](https://plot.sportsdataverse.org/guides/ag-grid).
 
 ## **Export (Node; peer: playwright)**
 

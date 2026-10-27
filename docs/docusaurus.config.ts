@@ -212,6 +212,7 @@ const config: Config = {
           `${sdvtables}/src/html/index.ts`,
           `${sdvtables}/src/react/index.tsx`,
           `${sdvtables}/src/mui.ts`,
+          `${sdvtables}/src/aggrid.ts`,
           `${sdvtables}/src/export/index.ts`,
         ],
         tsconfig: `${sdvtables}/tsconfig.json`,

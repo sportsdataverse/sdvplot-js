@@ -190,6 +190,27 @@ export type BrowserSpec =
       readonly label: string;
     }
   /**
+   * An AG Grid (`ag-grid-community`, community modules only). `mount` is the example's own code: it draws the grid
+   * into `el` with the module it is handed (the drawer imports it, so the example never does) and returns the grid's
+   * API, which the drawer destroys and the render test reads. The box is at most `width` px wide and, with
+   * `height`, that tall (a grid that scrolls its rows); without it the grid sets its own height (`domLayout`).
+   */
+  | {
+      readonly lib: "ag-grid";
+      readonly mount: (ag: typeof import("ag-grid-community"), el: HTMLElement) => { destroy(): void };
+      readonly width: number;
+      readonly height?: number;
+      readonly label: string;
+    }
+  /** An ag-grid-react `<AgGridReact>` element, mounted in a React root in a box at most `width` px wide. */
+  | {
+      readonly lib: "ag-grid-react";
+      readonly grid: () => ReactElement;
+      readonly width: number;
+      readonly height?: number;
+      readonly label: string;
+    }
+  /**
    * `mount` is the example's own MapLibre GL JS code: it builds a map in `el` (sized `width` x `height`) with the
    * module it is handed, adds its sources and layers once the style has loaded, and resolves to the map and any deck.gl
    * overlay it added (the render test projects and samples them). `deck` loads deck.gl's MapLibre overlay and layers, for an example that draws

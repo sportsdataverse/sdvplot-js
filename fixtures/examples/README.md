@@ -48,6 +48,17 @@ Written by `uv run tools/sample-data/nfl_2024.py` from nflverse-data release ass
 `examples/src/data.ts` `NFL_TEAM_EPA_2024` is every row of `nfl_epa_2024_reg.csv`, and `KC_PHI_GAMES_2024` the 34 rows
 of `nfl_games_2024_reg.csv` with KC or PHI as the home or away team (id, week, teams and scores).
 
+- `nfl_plays_2024_wk1_6.json`: written by `uv run tools/sample-data/nfl_plays_2024.py --pbp <file>` from the same
+  release asset, `https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2024.parquet`
+  (fetched 2026-10-27, 20,597,560 bytes, sha256 `3fd2896bc0b911b615142d2f1fabae54a4bbba5ab7b73b28187b118ef8af6a3b`,
+  Last-Modified 2026-08-13). The script stops unless the file has that sha256 (its `PBP_SHA256`), then rebuilds
+  `nfl_epa_2024_reg.csv` from it and stops unless every value matches, so the plays are the ones that table counts. It
+  writes the 11,778 of them in weeks 1 to 6 (92 games) in the release's order, as columns: `games` and `teams` are
+  lookup lists that `game` and `posteam` index, `epa` is rounded to 4 decimals and `wp` to 3, and every other value is
+  as served. 544,192 bytes, sha256
+  `31e1ab9c114e5ec99082e6db0cadb5a9a3bc05a515ae621fc60c6c88322ecf8c`. `examples/src/plays.ts` turns the columns back
+  into rows (`defteam` is the game's other team), and `examples/src/data.ts` `nflPlays2024()` loads them on demand.
+
 ## NFL stadiums and airports
 
 Written by `uv run tools/sample-data/nfl_venues.py --stadiums ... --games ... --airports ...` from local checkouts

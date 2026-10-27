@@ -842,6 +842,15 @@ export const STATCAST_PITCHES_2024_06_15: readonly StatcastPitchRow[] = [
   { game_pk: 745329, game_date: "2024-06-15", game_year: 2024, home_team: "SF", away_team: "LAA", inning_topbot: "Bot", at_bat_number: 44, pitch_number: 1, pitcher: 663776, player_name: "Estrada, Thairo", pitch_type: "CH", pitch_name: "Changeup", description: "ball", release_speed: 84.3, release_pos_x: 0.96, release_pos_y: 54.22, release_pos_z: 6.04, vx0: -2.1805685046231296, vy0: -122.73410786593527, vz0: -1.8302134728473274, ax: 12.70295393901442, ay: 23.98776491174587, az: -21.933696468878406, plate_x: 1.0618124785017298, plate_z: 3.37036600484147 },
 ];
 
+export type { NflPlay2024 } from "./plays.js";
+/**
+ * The 11,778 rush and pass plays of weeks 1 to 6 of the 2024 NFL regular season, from nflverse's
+ * `pbp/play_by_play_2024.parquet` (the release asset NFL_TEAM_EPA_2024 is built from), as
+ * tools/sample-data/nfl_plays_2024.py wrote them to fixtures/examples/nfl_plays_2024_wk1_6.json. Loaded on demand: the
+ * file is half a megabyte, so only a page that shows the plays fetches it.
+ */
+export const nflPlays2024 = async (): Promise<readonly import("./plays.js").NflPlay2024[]> =>
+  (await import("./plays.js")).NFL_PLAYS_2024;
 /**
  * Each team's 2024 home stadium (fixtures/examples/nfl_stadiums_2024.csv): the `stadium_id` of most of its 2024
  * regular-season home games in nflverse `games.csv`, and that stadium's name and coordinates from nfl-data's

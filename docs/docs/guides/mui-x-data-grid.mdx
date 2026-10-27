@@ -20,7 +20,9 @@ grid below is drawn by MUI in your browser.
 
 `dataGridProps(spec, rows)` returns `columns`, `getRowId`, `getRowClassName`, `sx`, `density` and `rowHeight`: spread
 them onto the grid next to `rows`. It is synchronous, so first `await prepare(spec)` from
-`@sportsdataverse/sdvtables/html`, which loads the leagues the logo and team colour columns need. The images and colours
+`@sportsdataverse/sdvtables/html`, which loads the leagues the logo and team colour columns need. `prepare` reads only the
+spec, so when `teamRows` names a league no column uses (a plain text team column, say), also
+`await loadLeague(league)` from `@sportsdataverse/sdvplot` first. The images and colours
 are worked out once, from the rows you pass, so build the props again (or `useMemo` them on `rows`) when the rows
 change. Your own grid props (`autoHeight`, `initialState`, `pageSizeOptions`, `checkboxSelection` and the rest) go next
 to them as usual.

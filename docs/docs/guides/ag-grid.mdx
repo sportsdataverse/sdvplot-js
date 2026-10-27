@@ -1,0 +1,134 @@
+---
+title: AG Grid
+sidebar_position: 13.3
+---
+
+[AG Grid](https://www.ag-grid.com/) is a data grid for plain JavaScript, React and the other frameworks: sorting,
+filtering, pinned columns, keyboard navigation and row virtualisation, so a grid of tens of thousands of rows only draws
+the ones in view. `@sportsdataverse/sdvtables/aggrid` turns an sdvtables spec into AG Grid's grid options, so the same
+spec that renders a static HTML table also drives a grid, with its number formats, logos, headshots, team colours and
+theme.
+
+## Community only
+
+AG Grid comes in two editions. **AG Grid Community** (`ag-grid-community`, and `ag-grid-react` for React) is MIT
+licensed and free. **AG Grid Enterprise** (`ag-grid-enterprise`) is a commercial product that needs a licence key; its
+features include row grouping, pivoting, aggregation, Excel export, the set and multi filters, master and detail rows,
+integrated charts, cell range selection, the side bar and the status bar. sdvtables uses the Community edition only:
+`gridOptions` sets only Community options, none of its column filters is an Enterprise one, and nothing in sdvtables or
+in these examples imports `ag-grid-enterprise`. The package's tests check all three. If you add Enterprise yourself, its
+licence terms are yours to meet.
+
+The subpath never imports AG Grid at runtime: it uses AG Grid's types only, and the base theme comes in from your code,
+so the module loads on a server. `ag-grid-community` is an optional peer, 36.2.0 or later; these examples run 36.2.0.
+AG Grid 33 and later need their modules registered: register `AllCommunityModule` from `ag-grid-community` once, as the
+examples do. Each grid below is drawn by AG Grid in your browser; without JavaScript, the page shows the same table as
+sdvtables' HTML.
+
+## A spec as grid options
+
+`gridOptions(spec, rows, { theme })` returns `columnDefs`, `rowData`, `getRowId`, `getRowStyle`, `rowHeight` and, when
+you pass a base theme, `theme`. Hand them to `createGrid(element, options)` in plain JavaScript, or spread them onto
+`<AgGridReact>` in React, next to your own options (`domLayout`, `initialState`, `pagination` and the rest). It is
+synchronous, so first `await prepare(spec)` from `@sportsdataverse/sdvtables/html`, which loads the leagues the logo and
+team colour columns need. `prepare` reads only the spec, so when `teamRows` names a league no column uses (a plain text
+team column, say), also `await loadLeague(league)` from `@sportsdataverse/sdvplot` first. The images and colours are worked out once, from the rows you pass, so build the options again
+when the rows change.
+
+Each spec column becomes one column definition, with the label and alignment the HTML table gives it. A `width` in px
+becomes AG Grid's numeric width; a width in other units is left to AG Grid, with one warning. `num`, `int`, `pct` and
+`rank` columns keep sdvtables' formats through `valueFormatter` (grouped thousands, fixed decimals, a forced sign,
+U+2212 minus signs, ordinals with a superscript suffix) and are AG Grid number columns. A `scaleNote` divides its `num`
+and `int` columns and suffixes their labels exactly as in the HTML table. `sortable` and `filterable` pass through, and a
+column's `subheader` becomes its header tooltip. Filtering stays off unless you turn it on, with a column's `filterable`
+or AG Grid's `defaultColDef: { filter: true }`; a number column then gets AG Grid's number filter. A blank or
+unparseable value in a number column is missing: an empty cell, never "NaN" or 0, and no number filter matches it.
+
+Sorting is sdvtables' own, through each column's `comparator`: a column's `compare` if it has one, else numbers for the
+numeric kinds and text otherwise, with missing values last whether you sort ascending or descending, as in the
+interactive HTML table. (AG Grid's own comparator would put them first when ascending.)
+
+`getRowId` reads the spec's `rowKey` when it has one, and otherwise numbers the rows in the order you passed them; set a
+`rowKey` when the rows change after the options are built. AG Grid needs a unique id per row, so `gridOptions` throws
+when two rows share a `rowKey` value, when a row's `rowKey` value is blank, or, with no `rowKey`, when the same row object
+appears twice.
+
+## Logos and team-coloured rows
+
+`logo` and `wordmark` columns draw the team's image in the cell, `height` px tall; with `includeName` the name follows
+the logo. The team can be an abbreviation, a name or a numeric id, as a number or as a string. A team with no image in
+the archive, or one that is not found, keeps its text, and warns once, as the HTML table does. `rowHeight` grows so the
+tallest image fits the theme's density.
+
+The cells are AG Grid cell renderer classes that build their images with the DOM, so the same column definitions work in
+plain JavaScript (any page that hands AG Grid plain options) and in ag-grid-react. (ag-grid-react renders a plain
+function as a React component, so a renderer that returns a DOM element is a class.)
+
+`teamRows: { key, league }` fills each row with its team's colour. The colours are sdvplot's team palette for the
+theme's background, so a team keeps 3:1 contrast against the grid and stays distinct from the teams before it. Each
+colour is laid over the background at `alpha` (0.4 by default, as the `teamColorBg` column), and the row's text turns
+black or white, whichever reads better on that fill. The fill is the row's own style, so AG Grid's alternate-row colour
+does not replace it, and it runs to the grid's right edge. AG Grid paints hovered and selected rows with an overlay; on a
+team row that overlay is a slightly lighter or darker shade of the fill, chosen so the text reads at least as well as on
+the fill itself. `teamColorBg` and `teamColorBar` columns colour a single cell the same way.
+
+The grid below is the sample AFC standings on the `sdv` theme, in plain JavaScript, sorted by wins.
+
+<Live id="sdvtables/ag-grid/afc-standings-team-rows" />
+
+On a striped theme such as `savant`, AG Grid paints every other row in the stripe colour; a team row's own fill covers
+it, so the stripe shows only on rows whose team is not found. These grids also turn on AG Grid Community's row
+selection (`rowSelection: { mode: "singleRow", enableClickSelection: true }`): click a row, and it keeps a shade
+of its team's colour. This one is the 2025-26 NHL Atlantic Division.
+
+<Live id="sdvtables/ag-grid/atlantic-nhl-savant" />
+
+## Headshots
+
+`headshot` columns draw ESPN player headshots from the cell's ESPN athlete id, or from an nflverse gsis id with
+`idSystem: "gsis"` (`prepare` loads the gsis map). An id with no headshot keeps the id as text and warns once. A
+headshot has an empty `alt`: it is decorative, as the player's name belongs in a column of its own beside it.
+
+## Thousands of rows
+
+AG Grid draws only the rows in view, plus a few either side, and draws the others as you scroll. This grid holds all
+11,778 rush and pass plays of the first six weeks of the 2024 NFL season, from nflverse's play-by-play release. It is
+sorted by EPA, the offence's logo is pinned to the left while the other columns scroll, and every column has a filter.
+Only the logos of the rows in view are loaded.
+
+<Live id="sdvtables/ag-grid/nfl-plays-2024" />
+
+## Themes, dark ones included
+
+Pass AG Grid's base theme as `theme` (`themeQuartz`, `themeAlpine` or `themeBalham` from `ag-grid-community`), and
+`gridOptions` returns it with the sdvtables theme's colours and fonts applied through AG Grid's Theming API: background,
+text, muted text, rules, accent, the header's background, text colour, font, weight and size, the body font and size,
+and the stripe as AG Grid's odd-row colour. The header's case, tracking and italics, which AG Grid has no theme setting
+for, are set on each header. A dark background also sets AG Grid's dark colour scheme for its scrollbars and inputs.
+Density sets the row height: 32 px for `compact`, AG Grid's own 42 px for `comfortable` and 52 px for `social`.
+
+A dark theme such as `midnight` needs nothing more: the grid takes its dark background and light text, and team rows
+take the palette for that dark background, so a navy team lightens until it reads. This grid is React, through
+ag-grid-react, and keys its rows by stats.nba.com's numeric team id, which resolves to each team's logo and colour.
+
+<Live id="sdvtables/ag-grid/pacific-nba-midnight" />
+
+The themes name their fonts but do not load them: put the `<link>` that `fontsLinkFor(spec)` returns in the page's
+`<head>`, as these examples do.
+
+## What is not mapped
+
+The cell kinds that draw in HTML or SVG (pills, bars, sparklines, gauges, icons and the rest) show their plain value in
+the grid, with one warning per kind; render those tables with `renderHTML` or `<SdvTable>` instead. Decorations
+(titles, source notes, spotlights, legends) are the page's to add around the grid; a `scaleNote` scales its columns and
+labels, but its note is yours to place. A centred column's header stays left-aligned, as AG Grid has no centred header.
+Logos are plain `<img>` elements, so the grid's CSV export keeps the text, not the images.
+
+## Testing and server rendering
+
+Each image carries `data-sdv-id` (the team or player id) and `data-sdv-kind` (`logo`, `wordmark` or `headshot`), so a
+test can read back which images a grid drew and in which rows. The options are plain values, functions and classes, and
+the cell renderers touch the DOM only when AG Grid draws a cell, so building them on a server is safe; AG Grid itself
+draws in the browser.
+
+In the gallery: [AG Grid](/gallery/sdvtables/#ag-grid).

@@ -59,6 +59,10 @@ async function drawWith(el: HTMLElement, s: BrowserSpec): Promise<() => void> {
       return (
         await import(/* webpackChunkName: "draw-ant-design-charts" */ "./ant-design-charts.js")
       ).default(el, s);
+    case "ag-grid":
+      return (await import(/* webpackChunkName: "draw-ag-grid" */ "./ag-grid.js")).default(el, s);
+    case "ag-grid-react":
+      return (await import(/* webpackChunkName: "draw-ag-grid-react" */ "./ag-grid-react.js")).default(el, s);
     case "maplibre":
       return (await import(/* webpackChunkName: "draw-maplibre" */ "./maplibre.js")).default(el, s);
   }
