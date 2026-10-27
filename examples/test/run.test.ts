@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
+import { ScatterChart } from "@mui/x-charts/ScatterChart";
 import * as Plot from "@observablehq/plot";
 import { MANIFEST_URL, fetchManifest, loadLeague } from "@sportsdataverse/sdvplot";
 import { logos } from "@sportsdataverse/sdvplot/plot";
@@ -43,6 +44,26 @@ test("Review Focus 1: a throw fails the gate; a blank figure or no output is a p
   expect(problems(blank, await runExample(blank, out(undefined)))).toContain("rendered nothing");
   for (const empty of ["", [], {}])
     expect(problems(blank, await runExample(blank, out(empty)))).toContain("rendered nothing");
+});
+
+test("outline:none fails the gate, except on MUI X Charts' keyboard layer, which draws its own focus mark", async () => {
+  const chart = createElement(ScatterChart, {
+    width: 300,
+    height: 200,
+    skipAnimation: true,
+    series: [{ data: [{ x: 1, y: 2 }] }],
+  });
+  const r = await runExample(entry("t/mui"), out(chart));
+  expect(r.markup).toMatch(/outline:\s*none/); // MUI's proxy is there, and exempt
+  expect(problems(entry("t/mui"), r)).toEqual([]);
+  const ring = { ...r, markup: `${r.markup}<button style="outline: none">x</button>` };
+  expect(problems(entry("t/mui"), ring)).toContain("removes the focus outline (outline: none)");
+  // the same style on a div that is not MUI's proxy is still caught
+  const div = {
+    ...r,
+    markup: `${r.markup}<div role="none" tabindex="0">x</div><p style="outline:none">y</p>`,
+  };
+  expect(problems(entry("t/mui"), div)).toContain("removes the focus outline (outline: none)");
 });
 
 // Review Focus 2 (a table prerenders to renderHTML's string byte for byte) needs sdvtables/html: Phase 4.
