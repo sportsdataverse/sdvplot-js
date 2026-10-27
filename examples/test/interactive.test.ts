@@ -1549,8 +1549,9 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
           const f = fills[i] ?? "";
           const ink = onColor(f);
           const want = mix(f, ink === "#000000" ? "#ffffff" : "#000000", shade === "hover" ? 0.08 : 0.16);
-          expect(shade === "hover" ? r?.hover : r?.selected, `${what}: the row's shade`).toBe(want);
+          // the painted pixel first, so a missing or wrong shade fails here, on what the reader sees
           expect(agNear(px, agHex(want), 3), `${what}: ${agCss(px)} is the shade ${want} of ${f}`).toBe(true);
+          expect(shade === "hover" ? r?.hover : r?.selected, `${what}: the row's shade`).toBe(want);
           expect(
             contrast(agCss(agRgb(r?.ink ?? "")), want),
             `${what}: text on the shade`,
