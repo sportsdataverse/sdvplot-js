@@ -48,7 +48,8 @@ export default (
       <ChartTooltip
         content={<ChartTooltipContent labelFormatter={(_, payload) => `Week ${payload[0]?.payload.week}`} />}
       />
-      <ChartLegend content={<ChartLegendContent />} />
+      {/* itemSorter={null}: the legend in the lines' order (Recharts sorts it by name otherwise) */}
+      <ChartLegend content={<ChartLegendContent />} itemSorter={null} />
       {keys.map((key) => (
         <Line
           key={key}

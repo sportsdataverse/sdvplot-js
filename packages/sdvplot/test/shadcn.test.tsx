@@ -188,6 +188,10 @@ describe("teamChartConfig", () => {
     expect(b.kc?.icon).toBe(a.kc?.icon);
     expect(b.lv?.icon).toBe(a.lv?.icon);
     expect(teamChartConfig("nfl", ["KC"], { iconSize: 20 }).config.kc?.icon).not.toBe(a.kc?.icon);
+    // iconSize is rounded to a whole px: 20.4 is the 20 px icon, not a new component (and cache entry) per value
+    expect(teamChartConfig("nfl", ["KC"], { iconSize: 20.4 }).config.kc?.icon).toBe(
+      teamChartConfig("nfl", ["KC"], { iconSize: 20 }).config.kc?.icon,
+    );
     // a config built inside render, re-rendered: the same <img> node, not a remount
     function Legend({ n }: { n: number }) {
       const Icon = teamChartConfig("nfl", AFC_WEST).config.kc?.icon;

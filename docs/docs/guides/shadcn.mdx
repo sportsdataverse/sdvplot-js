@@ -25,11 +25,13 @@ keys }`, where `keys[i]` is the key of `teams[i]`. A key is the team value as gi
 ("Montréal" gives "montreal"), lower-cased, and each run of anything other than letters and digits turned into one
 dash, with the dashes at either end removed: "Trail Blazers" gives `trail-blazers`. Letters of other scripts stay, as CSS
 allows them. A value with nothing left becomes `team`. A key already taken gets `-2`, then `-3`, and so on, in the order
-of `teams`, so the same teams always get the same keys. Use `keys[i]` for that team's series `dataKey`, and its colour
+of `teams`, so the same `teams` in the same order always get the same keys. Pass each team once, and read its key
+from `keys[i]` rather than working it out again. Use `keys[i]` for that team's series `dataKey`, and its colour
 is `var(--color-<keys[i]>)`.
 
 The chart below has one line per team, with each team's key as the line's `dataKey`. The legend and the tooltip find
-each team's config entry by that `dataKey`, and draw its logo and name.
+each team's config entry by that `dataKey`, and draw its logo and name. Recharts' `<Legend>` (shadcn's `<ChartLegend>`)
+sorts its items by name unless told otherwise; pass `itemSorter={null}`, as this chart does, to keep the series order.
 
 <Live id="sdvplot/shadcn/afc-west-wins-trend" />
 

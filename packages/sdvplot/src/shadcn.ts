@@ -33,7 +33,8 @@ export interface TeamChartConfig {
   config: Record<string, TeamChartConfigItem>;
   /**
    * `keys[i]` is `teams[i]`'s key in `config`: name a series' `dataKey` with it, colour it `var(--color-<key>)`, and
-   * put it in a row column for `<ChartTooltipContent nameKey>`.
+   * put it in a row column for `<ChartTooltipContent nameKey>`. A clash is numbered in the order of `teams` (`lal`,
+   * `lal-2`), so read the key here rather than recomputing it, and pass each team once.
    */
   keys: string[];
 }
@@ -53,7 +54,7 @@ export interface TeamChartConfigOptions {
   background?: { light?: string; dark?: string };
   /** `false`: no logos, so shadcn draws its colour swatch for every team. Default true. */
   icon?: boolean;
-  /** The logo's height in px, 1 or more. Default 16. */
+  /** The logo's height in px, 1 or more, rounded to a whole px. Default 16. */
   iconSize?: number;
 }
 
@@ -84,7 +85,7 @@ function chartKeys(values: readonly unknown[]): string[] {
 }
 
 // ponytail: one icon component per (logo, size) for the process, so a config rebuilt on every render hands shadcn the
-// same component and React keeps the <img>; bounded by the logos a page draws.
+// same component and React keeps the <img>; bounded by the logos a page draws times the whole-px sizes asked for.
 const icons = new Map<string, ComponentType>();
 function logoIcon(src: string, id: string, h: number, aspect: number): ComponentType {
   const k = `${h}|${src}`;
@@ -132,9 +133,10 @@ export function teamChartConfig(
   teams: readonly unknown[],
   o: TeamChartConfigOptions = {},
 ): TeamChartConfig {
-  const h = o.iconSize ?? 16;
-  if (!(typeof h === "number" && Number.isFinite(h) && h >= 1))
-    throw new InputError(`iconSize is a logo height in px, 1 or more, got ${String(h)}`);
+  const size = o.iconSize ?? 16;
+  if (!(typeof size === "number" && Number.isFinite(size) && size >= 1))
+    throw new InputError(`iconSize is a logo height in px, 1 or more, got ${String(size)}`);
+  const h = Math.round(size); // whole px: a fractional size would add an icon (and a cache entry) per value
   const ro = {
     ...(o.season === undefined ? {} : { season: o.season }),
     ...(o.idSystem === undefined ? {} : { idSystem: o.idSystem }),
