@@ -36,6 +36,7 @@ const DRAWN: Readonly<Record<string, string>> = {
   vega: ".sdv-live-output svg.marks",
   echarts: ".sdv-live-output [_echarts_instance_] svg",
   chartjs: ".sdv-live-output canvas",
+  "react-chartjs-2": ".sdv-live-output canvas",
   uplot: ".sdv-live-output .uplot canvas",
   // the sdvplot marks inside LayerChart's svg: Svelte mounted, and the marks' lazy import of layerchart resolved
   svelte: ".sdv-live-output svg.lc-layout-svg :is(image[data-sdv-id], g[data-sdv-surface])",
@@ -89,7 +90,7 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
       await page.waitForLoadState("networkidle"); // the images the chart loads, so a failed one is logged
       expect(await figure.locator(".sdv-live-static").count(), "the static copy is replaced").toBe(0);
       expect(await figure.locator(".sdv-live-error").count(), "no error alert").toBe(0);
-      if (lib === "chartjs" || lib === "uplot") {
+      if (lib === "chartjs" || lib === "react-chartjs-2" || lib === "uplot") {
         const painted = await figure.locator("canvas").evaluate((c: HTMLCanvasElement) =>
           c
             .getContext("2d")
@@ -97,6 +98,56 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
             .data.some((v, i) => i % 4 === 3 && v > 0),
         );
         expect(painted, "the canvas is painted").toBe(true);
+      }
+      // react-chartjs-2: sample where Chart.js put each mark (the drawer leaves the chart on its box). A logo point (an
+      // image point style with a radius) is mostly opaque around its centre, which a 1 px grid line under it is not; a
+      // bar's middle is its own team colour.
+      if (lib === "react-chartjs-2") {
+        const marks = await figure
+          .locator('.sdv-live-output [role="figure"]')
+          .first()
+          .evaluate((el) => {
+            type El = { x: number; y: number; base?: number; options: Record<string, unknown> };
+            type Chartish = {
+              draw: () => void;
+              canvas: HTMLCanvasElement;
+              data: { datasets: unknown[] };
+              getDatasetMeta: (i: number) => { type: string; data: El[] };
+            };
+            const chart = (el as HTMLElement & { sdvChart?: Chartish }).sdvChart;
+            if (chart === undefined) return "no chart on the figure";
+            chart.draw();
+            const c = chart.canvas;
+            const k = c.width / c.clientWidth; // device pixels per CSS pixel
+            const g = c.getContext("2d") as CanvasRenderingContext2D;
+            const px = (x: number, y: number, r: number) =>
+              g.getImageData(Math.round(x * k) - r, Math.round(y * k) - r, 2 * r + 1, 2 * r + 1).data;
+            const out: string[] = [];
+            let checked = 0;
+            chart.data.datasets.forEach((_, d) => {
+              const meta = chart.getDatasetMeta(d);
+              for (const [i, e] of meta.data.entries()) {
+                const o = e.options;
+                if (o.pointStyle instanceof HTMLImageElement && (o.radius as number) > 0) {
+                  const r = Math.round(((o.radius as number) / 2) * k);
+                  const a = px(e.x, e.y, r);
+                  let opaque = 0;
+                  for (let j = 3; j < a.length; j += 4) if ((a[j] as number) > 128) opaque++;
+                  if (opaque < (a.length / 4) * 0.3) out.push(`dataset ${d} point ${i}: no logo drawn there`);
+                  checked++;
+                } else if (meta.type === "bar") {
+                  const want = String(o.backgroundColor);
+                  const rgb = [1, 3, 5].map((s) => Number.parseInt(want.slice(s, s + 2), 16));
+                  const a = px(e.x, (e.y + (e.base ?? e.y)) / 2, 0);
+                  if (![0, 1, 2].every((ch) => Math.abs((a[ch] as number) - (rgb[ch] as number)) <= 8))
+                    out.push(`bar ${i}: not ${want} at its middle`);
+                  checked++;
+                }
+              }
+            });
+            return checked > 0 ? out.join("; ") : "no logo point or bar to sample";
+          });
+        expect(marks, "each logo point and bar is drawn where Chart.js placed it").toBe("");
       }
       // deck.gl draws with WebGL. Sample where a mark is known to be: project the first marks (a logo's centre, an
       // arc's start) to the screen, pick there (deck.gl's own hit test: the mark layer drew at that point), and read

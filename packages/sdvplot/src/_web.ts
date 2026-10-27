@@ -1,10 +1,12 @@
 /** What the spec adapters (Plotly, Vega-Lite, ECharts) share: image sources, aspect ratios, row access, team colours. */
 import { teamColorsSync } from "./colors.js";
+import { hex6 } from "./contrast.js";
 import { DownloadError, InputError } from "./errors.js";
 import { HEADSHOT_ASPECT } from "./headshots.js";
 import { type Kind, type PlaceOptions, type Placement, placeSync as place } from "./placement.js";
 import type { Value } from "./resolve.js";
-import type { IdSystem, League, MarkType, SeasonInput, Variant } from "./types.js";
+import { teamPalette } from "./team-palette.js";
+import type { IdSystem, League, MarkType, SeasonInput, Variant, Which } from "./types.js";
 
 export type { Placement } from "./placement.js";
 export { checkAlpha, checkHeight, placeSync as place } from "./placement.js";
@@ -171,4 +173,40 @@ export function colorList(
   o: { which?: "primary" | "secondary"; season?: SeasonInput; idSystem?: IdSystem } = {},
 ): (string | null)[] {
   return teamColorsSync(league, teams as readonly Value[], o).map((c) => c ?? null);
+}
+
+/** The body of the recharts / victory / svelte `teamColorPalette`: one colour per team, readable on `background`. */
+export function colorPalette(
+  league: League,
+  teams: readonly unknown[],
+  o: {
+    which?: Which;
+    season?: SeasonInput;
+    idSystem?: IdSystem;
+    fallback?: string;
+    background?: string;
+  } = {},
+): string[] {
+  const fallback = o.fallback ?? "#808080";
+  const co = {
+    ...(o.season === undefined ? {} : { season: o.season }),
+    ...(o.idSystem === undefined ? {} : { idSystem: o.idSystem }),
+  };
+  const main = colorList(league, teams, { ...co, ...(o.which === undefined ? {} : { which: o.which }) });
+  const bg = o.background === undefined ? undefined : hex6(o.background);
+  if (bg === undefined) return main.map((c) => c ?? fallback);
+  const other = colorList(league, teams, { ...co, which: o.which === "secondary" ? "primary" : "secondary" });
+  const colors = main.map((c) => hex6(c ?? fallback, { dropAlpha: true }));
+  // The distinct-colour rule is between teams, not entries: a repeated team takes its first entry's colour.
+  // ponytail: dedupes on the value as given, so "KC" and "Kansas City" still count as two teams.
+  const keys = teams.map(String);
+  const first = [...new Map(keys.map((k, i) => [k, i] as const).reverse()).values()].sort((a, b) => a - b);
+  const palette = teamPalette(
+    first.map((i) => colors[i]!),
+    first.map((i) => other[i]),
+    bg,
+    first.map((i) => keys[i]!),
+  );
+  const byKey = new Map(first.map((i, j) => [keys[i]!, palette[j]!]));
+  return keys.map((k) => byKey.get(k)!);
 }

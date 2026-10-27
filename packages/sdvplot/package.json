@@ -272,6 +272,7 @@
     "lightweight-charts": "5.2.1",
     "linkedom": "^0.18",
     "react": "^19.3.0",
+    "react-chartjs-2": "5.3.1",
     "react-dom": "^19.3.0",
     "react-is": "^19.3.0",
     "recharts": "3.10.1",

@@ -110,7 +110,8 @@ or a page that has to work offline. Each of the three subpaths exports it.
 `teamColor` and `teamFill` from `@sportsdataverse/sdvplot/chartjs` return Chart.js colours (one per team) for
 `backgroundColor` and `borderColor`; `teamFill` is the translucent version for areas. These examples draw on
 [`@napi-rs/canvas`](https://github.com/Brooooooklyn/canvas) in Node and register a bundled font first, since a build
-server may have none; in your browser the same config is drawn on a canvas with the same font.
+server may have none; in your browser the same config is drawn on a canvas with the same font. In React, pass the same
+pieces to react-chartjs-2's `<Chart>`: see [react-chartjs-2](./react-chartjs-2.mdx).
 
 <Live id="sdvplot/chartjs/team-colors" />
 
@@ -151,4 +152,5 @@ React chart libraries have guides of their own, among them [Recharts](recharts.m
 legend and tooltip).
 
 In the gallery: [Plotly](/gallery/sdvplot/#plotly), [Vega-Lite](/gallery/sdvplot/#vega-lite),
-[ECharts](/gallery/sdvplot/#echarts), [Chart.js](/gallery/sdvplot/#chartjs) and [shadcn/ui](/gallery/sdvplot/#shadcn).
+[ECharts](/gallery/sdvplot/#echarts), [Chart.js](/gallery/sdvplot/#chartjs),
+[react-chartjs-2](/gallery/sdvplot/#react-chartjs-2) and [shadcn/ui](/gallery/sdvplot/#shadcn).
