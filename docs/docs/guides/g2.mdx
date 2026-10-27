@@ -1,0 +1,108 @@
+---
+title: G2 and Ant Design Charts
+sidebar_position: 7.98
+---
+
+[G2](https://g2.antv.antgroup.com/) is AntV's grammar of graphics: a chart is a spec of marks (`point`, `interval`,
+`line`, `image`, ...) over shared scales, given to `chart.options(spec)`. [Ant Design Charts](https://ant-design-charts.antgroup.com/)
+(`@ant-design/plots`, which `@ant-design/charts` re-exports) is its React layer: `<Scatter>`, `<Column>`, `<Line>`
+and the rest take a config that becomes a G2 spec. `@sportsdataverse/sdvplot/g2` builds the spec pieces both need:
+team colours as a G2 colour scale, team logos, wordmarks and headshots as G2 `image` marks, and logos as a band axis'
+labels. It never imports G2 (install `@antv/g2` 5.4.8 or later beside it, an optional peer, and for `axisLogos`
+`@antv/component` 2.1.12 or later; the examples here run Ant Design Charts 2.6.8), so every piece can be built
+anywhere, a server included; only the chart's `render()` needs a browser. It is synchronous: load the league first (`loadLeague`). The charts below are drawn by G2 in your browser.
+
+BizCharts, the older React layer, draws with G2 4, whose spec is different; it is not supported.
+
+## Team colours
+
+`teamColorScale(league, teams)` returns G2's `scale.color` for those teams, `{ type: "ordinal", domain, range }`: the
+domain is the team values exactly as your data holds them (each once, in order) and the range their colours. G2 matches
+the domain to the data by exact value, so pass a numeric team column (ESPN ids, say) as numbers: `"12"` would never
+match `12`, and G2 would colour the unmatched teams by position instead. Encode the team field
+as the mark's colour (`encode: { color: "team" }`, or `colorField: "team"` in Ant Design Charts) and give the scale
+as `scale: { color }`: each team draws in its own colour, and the legend lists them in this order. `teamColorPalette`
+returns the colours alone, for anything that takes them by position.
+
+Pass `background` (a hex colour) for a dark chart: a team colour under 3:1 contrast against it is swapped for the
+team's other colour or lifted until it reads, and the colours are kept apart from each other. G2's `dark` theme
+paints no background of its own (it is transparent), so pass the colour of the page behind the chart; the dark example
+below sits on `#141414`.
+
+## Logos as image marks
+
+`logoMark(rows, { x, y, team, league })` returns a G2 `image` mark: one logo per row, `size` px tall (default 24) and
+centred on the row's `x` and `y` fields, read through the chart's own scales, so a logo sits exactly where a point of
+that row would. `wordmarkMark` draws wordmarks at their own width, and `headshotMark(rows, { x, y, player, league })`
+ESPN headshots by player id (`idSystem: "gsis"` for nflverse ids, after `loadGsis()`). `size` is in px, as G2 sizes
+an image mark; a fraction such as `0.1` is refused with an `InputError`, not drawn as a sub-pixel image. `alpha` sets
+the opacity. A row whose team has no logo (or whose player has no headshot), or with no `x` or `y`, is left out with
+one warning; nothing draws a broken image.
+
+The mark is plain data and goes where G2 takes a mark:
+
+- **G2:** last in a view's `children`, so it draws on top: `chart.options({ type: "view", data, children: [...,
+  logoMark(rows, o)] })`. A view's own options reach every child, so the mark keeps each whole row (and adds its
+  `sdv_` fields): a view-level `encode` finds the same values in it, and a style callback you add to the mark can read
+  the row (fade each logo by wins, say). It is out of the tooltip and the legend: put a point mark under the logos
+  for a tooltip, as the scatter below does.
+- **Ant Design Charts:** in the config's `annotations`. Ant Design Charts hands each annotation to G2 as it is,
+  whereas a mark in its `children` would also take the plot's `xField`, `yField` and `colorField`, which would point
+  the logos at the plot's fields instead of their own.
+
+<Live id="sdvplot/g2/epa-logo-scatter" />
+
+<Live id="sdvplot/ant-design-charts/afc-points-scatter" />
+
+On a line chart, give `logoMark` only the last row of each line, and each line ends in its team's logo. This one is
+dark: the colours come from `teamColorScale(..., { background: "#141414" })`, and Ant Design Charts' `containerStyle`
+paints that background.
+
+<Live id="sdvplot/ant-design-charts/afc-west-margin-dark" />
+
+## Logos on the axis
+
+`axisLogos({ league })` returns options for a horizontal band axis whose categories are teams: spread them into
+`axis.x` (in G2 and in Ant Design Charts alike), beside any of your own such as `title`. It uses G2's `labelRender`,
+which draws each label as HTML: the team's logo, `size` px tall, centred under its column. A category with no logo
+keeps its text, with one warning. The options also turn off G2's label hiding and rotation (each logo box is one band
+wide, so they never overlap) and draw the labels at full opacity (G2's theme fades text labels to 0.45).
+
+<Live id="sdvplot/g2/afc-wins-axis-logos" />
+
+Three limits come with HTML labels, and all are G2's:
+
+- `axisLogos` needs `@antv/component` 2.1.12 or later, G2's axis package (an optional peer of sdvplot, so a package
+  manager warns about an older one). Where G2 puts an HTML label changed in that patch release: up to 2.1.11 it
+  centred each label's box on its tick, and from 2.1.12 (2026-09-21) it puts the box's left edge there. `axisLogos`
+  is laid out for 2.1.12, which G2 5.4.8 installs now; under a lockfile that still holds 2.1.11, each logo sits half
+  a column to the left, and updating `@antv/component` puts it back.
+- Each label's box is one band wide. A wordmark (`markType: "wordmark"`) wider than its band overflows the box into
+  its neighbours' bands; give fewer teams the axis, or a smaller `size`.
+
+- G2 lays an HTML label out one band wide along a horizontal axis only. On a vertical axis (a bar chart, or a column
+  chart under `coordinate: { transform: [{ type: "transpose" }] }`) it has no width to centre in. There, draw the
+  logos as a `logoMark` instead: give each team a row at the base of its bar (`0` for bars from zero), and each logo
+  is centred on the axis line beside its bar. Hide the team axis' own labels if they would show beside them: under
+  `transpose` the teams are still the `x` channel, so that is `axis: { x: { label: false } }`.
+- HTML labels are page elements laid over the chart, not pixels on its canvas: an export of the canvas
+  (`toDataURL`, Ant Design Charts' `downloadImage`) leaves them out. Image marks are on the canvas and export with it.
+
+## Ant Design Charts in React
+
+Every piece is a plain value, so it goes straight into a config: `scale: { color: teamColorScale(...) }`,
+`annotations: [logoMark(...)]`, `axis: { x: axisLogos(...) }`. Ant Design Charts compares the new config with the old
+one on every render (a deep compare, functions by identity) and updates the chart when they differ. The marks' style
+functions are the same on every call, but `axisLogos` builds a new `labelRender` each time: build the config once,
+outside the component or in a `useMemo`, and a re-render with the same data does not redraw the chart. G2 draws only
+in the browser, and the marks' style functions cannot cross from a React server component to a client one: build the
+config in the client component, after `loadLeague`.
+
+## Reading back what was drawn
+
+`drawnMarks(spec)` lists every image of every sdvplot mark in a mark, a list of marks, a G2 spec (its `children`, at
+any depth) or an Ant Design Charts config (its `children` and `annotations`): `[id, x, y, size in px, url]`, with the
+size read from the mark's own style. Tests use it to check what a chart will draw without drawing it; the scatter
+above shows its output where JavaScript is off.
+
+In the gallery: [G2](/gallery/sdvplot/#g2) and [Ant Design Charts](/gallery/sdvplot/#ant-design-charts).

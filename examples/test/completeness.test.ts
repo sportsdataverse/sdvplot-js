@@ -120,9 +120,9 @@ const STATIC_ONLY: Readonly<Record<string, string>> = {
     "the self-contained SVG file is the point; in a browser the logos would be refetched",
 };
 
-test("every Plotly, Vega, ECharts, Chart.js and react-chartjs-2 example is drawn by its library in the browser", () => {
+test("every Plotly, Vega, ECharts, Chart.js, react-chartjs-2, G2 and Ant Design Charts example is drawn by its library in the browser", () => {
   const adapters = EXAMPLES.filter((e) =>
-    /^sdvplot\/(plotly|vega|echarts|chartjs|react-chartjs-2)\//.test(e.id),
+    /^sdvplot\/(plotly|vega|echarts|chartjs|react-chartjs-2|g2|ant-design-charts)\//.test(e.id),
   ).map((e) => e.id);
   const upgraded = Object.keys(BROWSER);
   expect(adapters.filter((id) => !upgraded.includes(id) && !(id in STATIC_ONLY))).toEqual([]);
