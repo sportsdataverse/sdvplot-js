@@ -152,6 +152,19 @@ function inferSchema(rows: readonly PerspectiveRow[]): Record<string, Perspectiv
 
 const isNumber = (t: PerspectiveType | undefined): boolean => t === "integer" || t === "float";
 const quote = (s: string): string => `'${s}'`;
+const isObj = (v: unknown): v is Record<string, unknown> => typeof v === "object" && v !== null;
+const isFace = (v: unknown): boolean => v === undefined || typeof v === "string";
+/** A given theme (or what its function returned) must have every field perspectiveConfig reads. */
+const isTheme = (t: unknown): t is PerspectiveTheme =>
+  isObj(t) &&
+  isObj(t.fonts) &&
+  isFace(t.fonts.body) &&
+  isFace(t.fonts.numeric) &&
+  isObj(t.sizes) &&
+  typeof t.sizes.body === "number" &&
+  isObj(t.palette) &&
+  typeof t.palette.neg === "string" &&
+  typeof t.palette.pos === "string";
 
 function checkColumns(schema: PerspectiveSchema, cols: readonly (string | undefined)[]): void {
   const names = Object.keys(schema);
@@ -244,10 +257,7 @@ export function perspectiveConfig(
     throw new InputError(`mode must be 'light' or 'dark', not ${quote(String(mode))}`);
   // resolved before the plugin is known, as Python resolves theme= on every plugin (a light-only theme in dark throws)
   const resolved = typeof o.theme === "function" ? o.theme(mode) : o.theme;
-  if (
-    resolved !== undefined &&
-    (resolved === null || typeof resolved !== "object" || !("palette" in resolved))
-  )
+  if (o.theme !== undefined && !isTheme(resolved))
     throw new InputError(
       `theme must be a table theme spec or a function of the mode, not ${quote(String(resolved))}: pass (m) => tableThemeSpec(name, m) from @sportsdataverse/sdvtables`,
     );

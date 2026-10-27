@@ -294,7 +294,16 @@ describe("a registry theme", () => {
 
   test("a theme name, null or a spec-less object is an InputError, on every plugin", () => {
     for (const plugin of ["Datagrid", "Y Bar"])
-      for (const bad of ["datagolf", null, { fonts: {} }, () => "datagolf"])
+      for (const bad of [
+        "datagolf",
+        null,
+        { fonts: {} },
+        () => "datagolf",
+        () => undefined, // a function must return a spec: undefined is not "no theme"
+        { ...DATAGOLF, sizes: {} },
+        { ...DATAGOLF, palette: { neg: "#a62a23" } },
+        { ...DATAGOLF, fonts: { body: 12 } },
+      ])
         expect(() =>
           perspectiveConfig(EPA, { teamCol: "team", league: "nfl", plugin, theme: bad as never }),
         ).toThrow(/theme must be a table theme spec or a function of the mode.*tableThemeSpec/);
