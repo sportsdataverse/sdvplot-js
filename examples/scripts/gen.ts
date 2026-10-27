@@ -99,10 +99,12 @@ export function generate(): readonly ExampleEntry[] {
     mkdirSync(dirname(join(EX, f.path)), { recursive: true });
     writeFileSync(join(EX, f.path), f.text);
   }
-  // draw/ is the docs' browser renderer for BrowserSpec, vendor/ third-party code examples import: not examples
+  // draw/ is the docs' browser renderer for BrowserSpec, vendor/ third-party code examples import, and plays.ts the
+  // play-by-play data.ts loads on demand: not examples
   const skip = (rel: string): boolean =>
     rel === "contract.ts" ||
     rel === "data.ts" ||
+    rel === "plays.ts" ||
     rel === "draw" ||
     rel === "vendor" ||
     rel.endsWith(".gen.ts");
