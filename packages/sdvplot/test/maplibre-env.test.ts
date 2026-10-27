@@ -86,8 +86,12 @@ test("./maplibre is pure: maplibre-gl only as `import type`, no deck.gl, sporty 
         b.startsWith("@sportsdataverse/sporty"),
     ),
   ).toEqual([]);
-  for (const f of files)
-    expect(readFileSync(f, "utf8")).not.toMatch(/import\(\s*["'](maplibre-gl|@deck\.gl\/)/);
+  for (const f of files) {
+    const text = readFileSync(f, "utf8");
+    expect(text).not.toMatch(/import\(\s*["'](maplibre-gl|@deck\.gl\/)/);
+    // a side-effect import has no `from`, so the graph above does not see it
+    expect(text).not.toMatch(/^\s*import\s+["'](maplibre-gl|@deck\.gl\/)/m);
+  }
   // its one import of MapLibre is types
   expect(readFileSync(resolve(SRC, "maplibre.ts"), "utf8")).toMatch(
     /^import type \{[^}]*\} from "maplibre-gl";$/m,

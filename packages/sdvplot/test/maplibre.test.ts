@@ -18,7 +18,6 @@ import {
 import {
   type LogoImageMap,
   type LogoSymbols,
-  OPENFREEMAP_ATTRIBUTION,
   addLogoImages,
   basemap,
   drawnMarks,
@@ -305,7 +304,7 @@ describe("routeLines", () => {
       want[1],
     ]);
     for (const c of want) expect(contrast(c as string, background)).toBeGreaterThanOrEqual(3);
-    // PHI's midnight green does not read on #0c0c0c: the palette moved it
+    // PHI's midnight green does not read on #0c0c0c: the palette replaced it
     expect(want[1]).not.toBe(teamColorsSync("nfl", ["PHI"])[0]);
   });
 
@@ -334,6 +333,10 @@ describe("routeLines", () => {
   });
 });
 
+/** OpenFreeMap's credit, exactly as its TileJSON (https://tiles.openfreemap.org/planet) gave it on 2026-10-27. */
+const OPENFREEMAP_ATTRIBUTION =
+  '<a href="https://openfreemap.org" target="_blank">OpenFreeMap</a> <a href="https://www.openmaptiles.org/" target="_blank">&copy; OpenMapTiles</a> Data from <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>';
+
 describe("basemap", () => {
   test("OpenFreeMap's positron and dark styles, keyless, with the provider's credit", () => {
     expect(basemap()).toEqual({
@@ -346,8 +349,6 @@ describe("basemap", () => {
       background: "#0c0c0c",
       attribution: OPENFREEMAP_ATTRIBUTION,
     });
-    expect(OPENFREEMAP_ATTRIBUTION).toContain("OpenFreeMap");
-    expect(OPENFREEMAP_ATTRIBUTION).toContain("https://www.openstreetmap.org/copyright");
     expect(JSON.stringify(basemap("dark"))).not.toMatch(/key|token/i);
     expect(() => basemap("dusk" as never)).toThrow(InputError);
   });
