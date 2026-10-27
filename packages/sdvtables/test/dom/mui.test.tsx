@@ -1,11 +1,18 @@
 // @vitest-environment jsdom
-import { DataGrid } from "@mui/x-data-grid";
-import { contrast, preloadAll, resetWarnings, setWarningHandler, solid } from "@sportsdataverse/sdvplot";
+import { DataGrid, type DataGridProps } from "@mui/x-data-grid";
+import {
+  InputError,
+  contrast,
+  preloadAll,
+  resetWarnings,
+  setWarningHandler,
+  solid,
+} from "@sportsdataverse/sdvplot";
 import { teamColorPalette } from "@sportsdataverse/sdvplot/mui";
 import { cleanup, render } from "@testing-library/react";
 import { afterEach, beforeAll, beforeEach, expect, test } from "vitest";
 import { defineTable } from "../../src/define.js";
-import { prepare } from "../../src/html/index.js";
+import { prepare, renderHTML } from "../../src/html/index.js";
 import { dataGridProps } from "../../src/mui.js";
 import type { TableSpec } from "../../src/spec.js";
 import { resolveTheme } from "../../src/themes/index.js";
@@ -26,10 +33,11 @@ function grid<Row extends object>(
   spec: TableSpec<Row>,
   rows: readonly Row[],
   props = dataGridProps(spec, rows),
+  extra: Partial<DataGridProps<Row>> = {},
 ) {
   const { container } = render(
     <div style={{ width: 900 }}>
-      <DataGrid rows={rows} {...props} disableVirtualization hideFooter />
+      <DataGrid rows={rows} {...props} {...extra} disableVirtualization hideFooter />
     </div>,
   );
   return container;
@@ -388,4 +396,116 @@ test("row ids and heights: the index without a rowKey (a foreign row throws), an
     .theme("sdv")
     .build();
   expect(dataGridProps(plain, STANDINGS).rowHeight).toBe(52);
+});
+
+// ---- review fixes
+
+test("row ids: first-wins by row object; a repeated row, a repeated rowKey value or a blank rowKey value throws", () => {
+  const plain = defineTable<Standing>()
+    .columns((c) => [c.text("team")])
+    .theme("sdv")
+    .build();
+  const [a, b] = STANDINGS as [Standing, Standing];
+  // the same object twice: MUI would see one id twice and drop a row
+  expect(() => dataGridProps(plain, [a, b, a])).toThrow(/rows 0 and 2/);
+  const keyed = defineTable<Standing>()
+    .columns((c) => [c.text("team")])
+    .theme("sdv")
+    .rowKey("team")
+    .build();
+  expect(() => dataGridProps(keyed, [a, b, { ...a }])).toThrow(/rows 0 and 2 .*"KC"/);
+  for (const blank of [null, undefined, "", "  "]) {
+    const rows = [a, { ...b, team: blank as unknown as string }];
+    expect(() => dataGridProps(keyed, rows), String(blank)).toThrow(InputError);
+    expect(() => dataGridProps(keyed, rows), String(blank)).toThrow(/row 1 .*rowKey "team"/);
+  }
+  expect(STANDINGS.map((r) => dataGridProps(keyed, STANDINGS).getRowId(r))).toEqual(
+    STANDINGS.map((s) => s.team),
+  );
+});
+
+test("numbers: a blank or unparseable value is missing (empty, and last in both sort directions, as sdvtables' engine)", () => {
+  type R = { id: string; n: number | null };
+  const rows = [
+    { id: "a", n: 3 },
+    { id: "b", n: "" as unknown as number },
+    { id: "c", n: 1 },
+    { id: "d", n: null },
+    { id: "e", n: "x" as unknown as number },
+    { id: "f", n: 2 },
+  ] satisfies R[];
+  const spec = defineTable<R>()
+    .columns((c) => [c.text("id"), c.int("n")])
+    .theme("sdv")
+    .rowKey("id")
+    .build();
+  const props = dataGridProps(spec, rows);
+  const order = (sort: "asc" | "desc") => {
+    cleanup();
+    const got = cells(
+      grid(spec, rows, props, { initialState: { sorting: { sortModel: [{ field: "n", sort }] } } }),
+    );
+    return got.map((r) => `${r.id}:${r.cell.get("n")?.textContent}`);
+  };
+  expect(order("asc")).toEqual(["c:1", "f:2", "a:3", "b:", "d:", "e:"]);
+  expect(order("desc")).toEqual(["a:3", "f:2", "c:1", "b:", "d:", "e:"]);
+});
+
+test("formats match the HTML table: scaleNote's divisor, decimals and label suffix, and superscript ranks", async () => {
+  const spec = defineTable<Standing>()
+    .columns((c) => [c.text("team"), c.int("pf"), c.num("pa"), c.rank("srs_rank")])
+    .scaleNote(["pf", "pa"], { divisor: 1000, decimals: 2, where: "both" })
+    .theme("sdv")
+    .rowKey("team")
+    .build();
+  await prepare(spec);
+  const html = renderHTML(spec, STANDINGS, { css: "none" });
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  const htmlCell = (row: number, key: string) =>
+    doc.querySelector(`tr[data-row="${row}"] td[data-col="${key}"]`) as Element;
+  const htmlLabel = (key: string) => doc.querySelector(`th[data-col="${key}"]`)?.textContent?.trim() ?? "";
+  const props = dataGridProps(spec, STANDINGS);
+  expect(props.columns.map((c) => c.headerName)).toEqual(["team", "pf", "pa", "srs_rank"].map(htmlLabel));
+  const got = cells(grid(spec, STANDINGS, props));
+  for (const [i, s] of STANDINGS.entries()) {
+    for (const k of ["pf", "pa", "srs_rank"])
+      expect(got[i]?.cell.get(k)?.textContent, `${s.team} ${k}`).toBe(htmlCell(i, k).textContent);
+    // the rank's suffix is a superscript, as in the HTML table
+    expect(got[i]?.cell.get("srs_rank")?.querySelector("sup")?.textContent).toBe(
+      htmlCell(i, "srs_rank").querySelector("sup")?.textContent,
+    );
+  }
+  expect(got[0]?.cell.get("pf")?.textContent).toBe("0.39"); // 385 / 1000, 2 decimals
+  expect(warnings).toEqual([]);
+});
+
+test("team fills keep their colour on hover and when selected: a shifted shade with text that still reads", () => {
+  const spec = defineTable<Standing>()
+    .columns((c) => [c.text("team")])
+    .theme("midnight")
+    .rowKey("team")
+    .build();
+  const p = dataGridProps(spec, STANDINGS, { teamRows: { key: "team", league: "nfl" } });
+  for (const row of STANDINGS) {
+    const cls = p.getRowClassName({ row, indexRelativeToCurrentPage: 0 });
+    const base = p.sx[`& .${cls}`] as { backgroundColor: string };
+    for (const state of [":hover", ".Mui-selected", ".Mui-selected:hover"]) {
+      const key = Object.keys(p.sx).find((k) => k.split(", ").includes(`& .MuiDataGrid-row.${cls}${state}`));
+      expect(key, `${row.team} ${state}`).toBeDefined();
+      const rule = p.sx[key as string] as { backgroundColor: string; color: string };
+      expect(rule.backgroundColor).not.toBe(base.backgroundColor);
+      expect(contrast(rule.color, rule.backgroundColor), `${row.team} ${state}`).toBeGreaterThanOrEqual(4.5);
+    }
+  }
+});
+
+test("a headshot is decorative (empty alt): the player's name is in the row", async () => {
+  const spec = defineTable<Standing>()
+    .columns((c) => [c.headshot("qb_espn_id", { league: "nfl" }), c.text("qb")])
+    .theme("sdv")
+    .rowKey("team")
+    .build();
+  await prepare(spec);
+  const imgs = cells(grid(spec, STANDINGS)).map((r) => r.cell.get("qb_espn_id")?.querySelector("img"));
+  expect(imgs.map((i) => i?.getAttribute("alt"))).toEqual(STANDINGS.map(() => ""));
 });

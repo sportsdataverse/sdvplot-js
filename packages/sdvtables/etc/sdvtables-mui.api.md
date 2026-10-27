@@ -71,6 +71,7 @@ export interface SdvGridColDef<Row> {
     field: string;
     // (undocumented)
     filterable?: boolean;
+    getSortComparator?: (direction: "asc" | "desc" | null | undefined) => ((a: unknown, b: unknown) => number) | undefined;
     // (undocumented)
     headerAlign: Align;
     headerName: string;
@@ -79,6 +80,7 @@ export interface SdvGridColDef<Row> {
     sortable?: boolean;
     type?: "string" | "number";
     valueFormatter?: (value: never) => string;
+    valueGetter?: (value: never) => number | null;
     width?: number;
 }
 
