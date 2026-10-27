@@ -1,0 +1,365 @@
+{
+ "header": {
+  "id": "401671889",
+  "competitions": [
+   {
+    "competitors": [
+     {
+      "homeAway": "home",
+      "team": {
+       "id": "21",
+       "abbreviation": "PHI"
+      }
+     },
+     {
+      "homeAway": "away",
+      "team": {
+       "id": "12",
+       "abbreviation": "KC"
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "drives": [
+  {
+   "id": "4016718891",
+   "team": {
+    "id": "21",
+    "abbreviation": "PHI"
+   },
+   "start": {
+    "yardLine": 30,
+    "text": "PHI 30"
+   },
+   "result": "PUNT",
+   "displayResult": "Punt"
+  },
+  {
+   "id": "4016718892",
+   "team": {
+    "id": "12",
+    "abbreviation": "KC"
+   },
+   "start": {
+    "yardLine": 88,
+    "text": "KC 12"
+   },
+   "result": "PUNT",
+   "displayResult": "Punt"
+  },
+  {
+   "id": "4016718893",
+   "team": {
+    "id": "21",
+    "abbreviation": "PHI"
+   },
+   "start": {
+    "yardLine": 31,
+    "text": "PHI 31"
+   },
+   "result": "TD",
+   "displayResult": "Touchdown"
+  },
+  {
+   "id": "4016718894",
+   "team": {
+    "id": "12",
+    "abbreviation": "KC"
+   },
+   "start": {
+    "yardLine": 67,
+    "text": "KC 33"
+   },
+   "result": "PUNT",
+   "displayResult": "Punt"
+  },
+  {
+   "id": "4016718895",
+   "team": {
+    "id": "21",
+    "abbreviation": "PHI"
+   },
+   "start": {
+    "yardLine": 20,
+    "text": "PHI 20"
+   },
+   "result": "INT",
+   "displayResult": "Interception"
+  },
+  {
+   "id": "4016718896",
+   "team": {
+    "id": "12",
+    "abbreviation": "KC"
+   },
+   "start": {
+    "yardLine": 98,
+    "text": "KC 2"
+   },
+   "result": "PUNT",
+   "displayResult": "Punt"
+  },
+  {
+   "id": "4016718897",
+   "team": {
+    "id": "21",
+    "abbreviation": "PHI"
+   },
+   "start": {
+    "yardLine": 43,
+    "text": "PHI 43"
+   },
+   "result": "FG",
+   "displayResult": "Field Goal"
+  },
+  {
+   "id": "4016718898",
+   "team": {
+    "id": "12",
+    "abbreviation": "KC"
+   },
+   "start": {
+    "yardLine": 70,
+    "text": "KC 30"
+   },
+   "result": "INT TD",
+   "displayResult": "Interception Touchdown"
+  },
+  {
+   "id": "4016718899",
+   "team": {
+    "id": "12",
+    "abbreviation": "KC"
+   },
+   "start": {
+    "yardLine": 70,
+    "text": "KC 30"
+   },
+   "result": "PUNT",
+   "displayResult": "Punt"
+  },
+  {
+   "id": "40167188910",
+   "team": {
+    "id": "21",
+    "abbreviation": "PHI"
+   },
+   "start": {
+    "yardLine": 34,
+    "text": "PHI 34"
+   },
+   "result": "PUNT",
+   "displayResult": "Punt"
+  },
+  {
+   "id": "40167188911",
+   "team": {
+    "id": "12",
+    "abbreviation": "KC"
+   },
+   "start": {
+    "yardLine": 94,
+    "text": "KC 6"
+   },
+   "result": "INT",
+   "displayResult": "Interception"
+  },
+  {
+   "id": "40167188912",
+   "team": {
+    "id": "21",
+    "abbreviation": "PHI"
+   },
+   "start": {
+    "yardLine": 86,
+    "text": "KC 14"
+   },
+   "result": "TD",
+   "displayResult": "Touchdown"
+  },
+  {
+   "id": "40167188913",
+   "team": {
+    "id": "12",
+    "abbreviation": "KC"
+   },
+   "start": {
+    "yardLine": 70,
+    "text": "KC 30"
+   },
+   "result": "PUNT",
+   "displayResult": "Punt"
+  },
+  {
+   "id": "40167188914",
+   "team": {
+    "id": "21",
+    "abbreviation": "PHI"
+   },
+   "start": {
+    "yardLine": 37,
+    "text": "PHI 37"
+   },
+   "result": "END OF HALF",
+   "displayResult": "End of Half"
+  },
+  {
+   "id": "40167188915",
+   "team": {
+    "id": "12",
+    "abbreviation": "KC"
+   },
+   "start": {
+    "yardLine": 70,
+    "text": "KC 30"
+   },
+   "result": "PUNT",
+   "displayResult": "Punt"
+  },
+  {
+   "id": "40167188916",
+   "team": {
+    "id": "21",
+    "abbreviation": "PHI"
+   },
+   "start": {
+    "yardLine": 20,
+    "text": "PHI 20"
+   },
+   "result": "FG",
+   "displayResult": "Field Goal"
+  },
+  {
+   "id": "40167188917",
+   "team": {
+    "id": "12",
+    "abbreviation": "KC"
+   },
+   "start": {
+    "yardLine": 70,
+    "text": "KC 30"
+   },
+   "result": "DOWNS",
+   "displayResult": "Downs"
+  },
+  {
+   "id": "40167188918",
+   "team": {
+    "id": "21",
+    "abbreviation": "PHI"
+   },
+   "start": {
+    "yardLine": 54,
+    "text": "KC 46"
+   },
+   "result": "TD",
+   "displayResult": "Touchdown"
+  },
+  {
+   "id": "40167188919",
+   "team": {
+    "id": "12",
+    "abbreviation": "KC"
+   },
+   "start": {
+    "yardLine": 90,
+    "text": "KC 10"
+   },
+   "result": "TD",
+   "displayResult": "Touchdown"
+  },
+  {
+   "id": "40167188920",
+   "team": {
+    "id": "21",
+    "abbreviation": "PHI"
+   },
+   "start": {
+    "yardLine": 30,
+    "text": "PHI 30"
+   },
+   "result": "FG",
+   "displayResult": "Field Goal"
+  },
+  {
+   "id": "40167188921",
+   "team": {
+    "id": "12",
+    "abbreviation": "KC"
+   },
+   "start": {
+    "yardLine": 70,
+    "text": "KC 30"
+   },
+   "result": "FUMBLE",
+   "displayResult": "Fumble"
+  },
+  {
+   "id": "40167188922",
+   "team": {
+    "id": "21",
+    "abbreviation": "PHI"
+   },
+   "start": {
+    "yardLine": 67,
+    "text": "KC 33"
+   },
+   "result": "FG",
+   "displayResult": "Field Goal"
+  },
+  {
+   "id": "40167188923",
+   "team": {
+    "id": "12",
+    "abbreviation": "KC"
+   },
+   "start": {
+    "yardLine": 75,
+    "text": "KC 25"
+   },
+   "result": "TD",
+   "displayResult": "Touchdown"
+  },
+  {
+   "id": "40167188924",
+   "team": {
+    "id": "21",
+    "abbreviation": "PHI"
+   },
+   "start": {
+    "yardLine": 46,
+    "text": "PHI 46"
+   },
+   "result": "DOWNS",
+   "displayResult": "Downs"
+  },
+  {
+   "id": "40167188925",
+   "team": {
+    "id": "12",
+    "abbreviation": "KC"
+   },
+   "start": {
+    "yardLine": 50,
+    "text": "50"
+   },
+   "result": "TD",
+   "displayResult": "Touchdown"
+  },
+  {
+   "id": "40167188926",
+   "team": {
+    "id": "21",
+    "abbreviation": "PHI"
+   },
+   "start": {
+    "yardLine": 56,
+    "text": "KC 44"
+   },
+   "result": "END OF GAME",
+   "displayResult": "End of Game"
+  }
+ ]
+}

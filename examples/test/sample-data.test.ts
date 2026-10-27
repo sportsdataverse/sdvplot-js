@@ -17,6 +17,9 @@ import {
   PWHL_GOALS,
   STANDINGS,
   STATCAST_PITCHES_2024_06_15,
+  SUPER_BOWL_LIX_DRIVES,
+  SUPER_BOWL_LIX_KC_PASSER,
+  SUPER_BOWL_LIX_KC_TARGETS,
   SUPER_BOWL_LIX_TDS,
   SUPER_BOWL_LIX_WP,
   WC2018_FINAL_FRANCE_PASSES,
@@ -302,6 +305,68 @@ test("SUPER_BOWL_LIX_TDS are the captured ESPN touchdown plays, unchanged", () =
       }),
     ),
   );
+});
+
+test("SUPER_BOWL_LIX_DRIVES are the captured ESPN drives, unchanged; each start as ESPN words it", () => {
+  const body = capture("espn_nfl_summary_401671889_drives.json") as {
+    header: {
+      id: string;
+      competitions: { competitors: { homeAway: string; team: { abbreviation: string } }[] }[];
+    };
+    drives: {
+      id: string;
+      team: { abbreviation: string };
+      start: { yardLine: number; text: string };
+      displayResult: string;
+    }[];
+  };
+  expect(body.header.id).toBe("401671889");
+  const home = body.header.competitions[0]?.competitors.find((c) => c.homeAway === "home")?.team.abbreviation;
+  expect(home).toBe("PHI");
+  expect(SUPER_BOWL_LIX_DRIVES).toEqual(
+    body.drives.map((d) => ({
+      drive: d.id,
+      team: d.team.abbreviation,
+      yardline_100: d.team.abbreviation === home ? 100 - d.start.yardLine : d.start.yardLine,
+      result: d.displayResult,
+    })),
+  );
+  // ESPN's own words for each start ("KC 12", "PHI 30", "50"): in its own half 100 minus the line, else the line
+  for (const [i, d] of SUPER_BOWL_LIX_DRIVES.entries()) {
+    const text = body.drives[i]?.start.text ?? "";
+    const [side = "", yd] = text.split(" ");
+    const at = yd === undefined ? Number(side) : side === d.team ? 100 - Number(yd) : Number(yd);
+    expect(d.yardline_100, `drive ${d.drive} starts at ${text}`).toBe(at);
+  }
+});
+
+test("SUPER_BOWL_LIX_KC_TARGETS are the captured Chiefs receivers, unchanged; Mahomes threw every target", () => {
+  const body = capture("espn_nfl_summary_401671889_kc_passing.json") as {
+    team: { id: string; abbreviation: string };
+    statistics: {
+      name: string;
+      keys: string[];
+      athletes: { athlete: { id: string; displayName: string }; stats: string[] }[];
+    }[];
+  };
+  expect(body.team).toEqual({ id: "12", abbreviation: "KC" });
+  const [passing, receiving] = body.statistics;
+  expect([passing?.name, receiving?.name]).toEqual(["passing", "receiving"]);
+  const col = (k: string) => receiving?.keys.indexOf(k) ?? -1;
+  expect(SUPER_BOWL_LIX_KC_TARGETS).toEqual(
+    receiving?.athletes.map((a) => ({
+      player: a.athlete.id,
+      name: a.athlete.displayName,
+      targets: Number(a.stats[col("receivingTargets")]),
+      receptions: Number(a.stats[col("receptions")]),
+      yards: Number(a.stats[col("receivingYards")]),
+    })),
+  );
+  // one passer, 21 of 32: the 32 targets are all his
+  expect(passing?.athletes.map((a) => [a.athlete.id, a.stats[0]])).toEqual([
+    [SUPER_BOWL_LIX_KC_PASSER, "21/32"],
+  ]);
+  expect(SUPER_BOWL_LIX_KC_TARGETS.reduce((n, r) => n + r.targets, 0)).toBe(32);
 });
 
 test("SUPER_BOWL_LIX_WP is ESPN's captured win probability, each entry joined to the play it follows", () => {

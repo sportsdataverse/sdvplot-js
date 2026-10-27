@@ -13,5 +13,8 @@
   },
   "include": ["src", "test"],
   // the ./svelte layer imports .svelte files, which tsc cannot read: svelte-check types it (tsconfig.svelte.json)
-  "exclude": ["src/svelte", "test/svelte"]
+  // Unovis 1.7's declarations re-export folders without file extensions, which only bundler resolution follows (under
+  // NodeNext "@unovis/ts" exports no types), and are not written for exactOptionalPropertyTypes: tsconfig.unovis.json
+  // checks the two tests that import them. ./unovis itself never imports Unovis, so its published types need neither.
+  "exclude": ["src/svelte", "test/svelte", "test/unovis-render.test.ts", "test/unovis.types.ts"]
 }

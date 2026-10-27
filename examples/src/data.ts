@@ -427,6 +427,92 @@ export const SUPER_BOWL_LIX_TDS: readonly NflPlay[] = [
   { play_id: "4016718894124", period: 4, clock: "1:48", type: "Passing Touchdown", team: "KC", yardline: 50 },
 ];
 
+/** One drive of ESPN `summary` `drives.previous[]`, its fields renamed. */
+export type NflDrive = {
+  /** id */
+  readonly drive: string;
+  /** team.abbreviation: the offence */
+  readonly team: "KC" | "PHI";
+  /**
+   * Yards from the opponent's end zone where the drive started (nflverse's yardline_100): start.yardLine, which ESPN
+   * counts from Philadelphia's (the home team's) goal line, for Kansas City; 100 minus it for Philadelphia.
+   */
+  readonly yardline_100: number;
+  /** displayResult, as ESPN words it */
+  readonly result: string;
+};
+/**
+ * Super Bowl LIX's 26 drives (Kansas City at Philadelphia, 2025-02-09; the same game as SUPER_BOWL_LIX_TDS), in order:
+ * who had the ball, where the drive started and how it ended. Real: ESPN Site v2 `summary?event=401671889` as
+ * committed in sportsdataverse-py `tests/fixtures/espn/summary_nfl.json`, trimmed in
+ * fixtures/examples/espn_nfl_summary_401671889_drives.json; examples/test/sample-data.test.ts checks these rows equal
+ * it, and each start against ESPN's own `start.text`.
+ */
+// biome-ignore format: one captured drive per line
+export const SUPER_BOWL_LIX_DRIVES: readonly NflDrive[] = [
+  { drive: "4016718891", team: "PHI", yardline_100: 70, result: "Punt" },
+  { drive: "4016718892", team: "KC", yardline_100: 88, result: "Punt" },
+  { drive: "4016718893", team: "PHI", yardline_100: 69, result: "Touchdown" },
+  { drive: "4016718894", team: "KC", yardline_100: 67, result: "Punt" },
+  { drive: "4016718895", team: "PHI", yardline_100: 80, result: "Interception" },
+  { drive: "4016718896", team: "KC", yardline_100: 98, result: "Punt" },
+  { drive: "4016718897", team: "PHI", yardline_100: 57, result: "Field Goal" },
+  { drive: "4016718898", team: "KC", yardline_100: 70, result: "Interception Touchdown" },
+  { drive: "4016718899", team: "KC", yardline_100: 70, result: "Punt" },
+  { drive: "40167188910", team: "PHI", yardline_100: 66, result: "Punt" },
+  { drive: "40167188911", team: "KC", yardline_100: 94, result: "Interception" },
+  { drive: "40167188912", team: "PHI", yardline_100: 14, result: "Touchdown" },
+  { drive: "40167188913", team: "KC", yardline_100: 70, result: "Punt" },
+  { drive: "40167188914", team: "PHI", yardline_100: 63, result: "End of Half" },
+  { drive: "40167188915", team: "KC", yardline_100: 70, result: "Punt" },
+  { drive: "40167188916", team: "PHI", yardline_100: 80, result: "Field Goal" },
+  { drive: "40167188917", team: "KC", yardline_100: 70, result: "Downs" },
+  { drive: "40167188918", team: "PHI", yardline_100: 46, result: "Touchdown" },
+  { drive: "40167188919", team: "KC", yardline_100: 90, result: "Touchdown" },
+  { drive: "40167188920", team: "PHI", yardline_100: 70, result: "Field Goal" },
+  { drive: "40167188921", team: "KC", yardline_100: 70, result: "Fumble" },
+  { drive: "40167188922", team: "PHI", yardline_100: 33, result: "Field Goal" },
+  { drive: "40167188923", team: "KC", yardline_100: 75, result: "Touchdown" },
+  { drive: "40167188924", team: "PHI", yardline_100: 54, result: "Downs" },
+  { drive: "40167188925", team: "KC", yardline_100: 50, result: "Touchdown" },
+  { drive: "40167188926", team: "PHI", yardline_100: 44, result: "End of Game" },
+];
+
+/** One Chiefs receiver in ESPN `summary` `boxscore.players[].statistics` "receiving", its fields renamed. */
+export type NflReceiver = {
+  /** athlete.id: ESPN's athlete id, a string as ESPN serves it */
+  readonly player: string;
+  /** athlete.displayName */
+  readonly name: string;
+  /** receivingTargets */
+  readonly targets: number;
+  /** receptions */
+  readonly receptions: number;
+  /** receivingYards */
+  readonly yards: number;
+};
+/** Patrick Mahomes' ESPN athlete id: the Chiefs' one passer in Super Bowl LIX (21 of 32). */
+export const SUPER_BOWL_LIX_KC_PASSER = "3139477";
+/**
+ * The nine Chiefs Patrick Mahomes targeted in Super Bowl LIX, in ESPN's order. Mahomes threw all 32 of the Chiefs'
+ * passes, so these 32 targets are his. Real: ESPN Site v2 `summary?event=401671889` as committed in sportsdataverse-py
+ * `tests/fixtures/espn/summary_nfl.json`, the Chiefs' passing and receiving boxscore in
+ * fixtures/examples/espn_nfl_summary_401671889_kc_passing.json; examples/test/sample-data.test.ts checks these rows
+ * equal it, and that the targets add up to Mahomes' attempts.
+ */
+// biome-ignore format: one captured receiver per line
+export const SUPER_BOWL_LIX_KC_TARGETS: readonly NflReceiver[] = [
+  { player: "4683062", name: "Xavier Worthy", targets: 8, receptions: 8, yards: 157 },
+  { player: "15847", name: "Travis Kelce", targets: 6, receptions: 4, yards: 39 },
+  { player: "15795", name: "DeAndre Hopkins", targets: 5, receptions: 2, yards: 18 },
+  { player: "3120348", name: "JuJu Smith-Schuster", targets: 2, receptions: 2, yards: 16 },
+  { player: "4241372", name: "Hollywood Brown", targets: 6, receptions: 2, yards: 15 },
+  { player: "3059915", name: "Kareem Hunt", targets: 1, receptions: 1, yards: 5 },
+  { player: "4361529", name: "Isiah Pacheco", targets: 2, receptions: 1, yards: 5 },
+  { player: "4240472", name: "Noah Gray", targets: 1, receptions: 1, yards: 2 },
+  { player: "3116389", name: "Samaje Perine", targets: 1, receptions: 0, yards: 0 },
+];
+
 /** One PWHL goal from HockeyTech `gameCenterPlayByPlay`, its fields renamed. */
 export type PwhlGoal = {
   /** details.game_goal_id */

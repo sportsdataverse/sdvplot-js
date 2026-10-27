@@ -24,6 +24,9 @@ const CHART_LIBS = [
   "ag-grid",
   "ag-grid-react",
   "maplibre",
+  "unovis",
+  "unovis-react",
+  "mosaic",
 ] as const;
 /**
  * Vega's self-contained build (its d3 inside). The module build imports the d3-* packages Observable Plot imports,
@@ -62,6 +65,10 @@ export default function sdvExamples(_context: LoadContext): Plugin {
         module: {
           rules: [
             { test: VEGA, type: "javascript/auto" },
+            // @unovis/react 1.7 (an ES module package with no exports map) imports @unovis/ts's components by folder
+            // ("@unovis/ts/components/graph"), which webpack's ESM resolution refuses unless a request may omit the
+            // file's extension. Any webpack 5 app drawing with @unovis/react needs the same rule.
+            { test: /[\\/]node_modules[\\/]@unovis[\\/]/, resolve: { fullySpecified: false } },
             // sdvplot/svelte's components, the Svelte snippets the svelte examples draw, and LayerChart's own .svelte files
             // and .svelte.js rune modules. Svelte 5 reads a component's TypeScript itself; its CSS is injected.
             {

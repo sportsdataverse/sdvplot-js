@@ -31,7 +31,8 @@
     "ant-design-charts",
     "tanstack-charts",
     "maplibre",
-    "maps"
+    "maps",
+    "unovis"
   ],
   "homepage": "https://plot.sportsdataverse.org",
   "bugs": "https://github.com/sportsdataverse/sdvplot-js/issues",
@@ -154,6 +155,10 @@
       "types": "./dist/maplibre.d.ts",
       "import": "./dist/maplibre.js"
     },
+    "./unovis": {
+      "types": "./dist/unovis.d.ts",
+      "import": "./dist/unovis.js"
+    },
     "./package.json": "./package.json"
   },
   "peerDependencies": {
@@ -172,6 +177,7 @@
     "@resvg/resvg-js": ">=2.6",
     "@sportsdataverse/sporty": "workspace:^0",
     "@tanstack/charts": ">=1.1.0",
+    "@unovis/ts": ">=1.7.1",
     "chart.js": ">=4.4",
     "cytoscape": ">=3.34.3",
     "d3": ">=7",
@@ -231,6 +237,9 @@
     "@tanstack/charts": {
       "optional": true
     },
+    "@unovis/ts": {
+      "optional": true
+    },
     "chart.js": {
       "optional": true
     },
@@ -270,7 +279,7 @@
   },
   "scripts": {
     "build": "tsup && svelte-package -i src/svelte -o dist/svelte --tsconfig ./tsconfig.svelte.json && node ../../tools/svelte-dts.mjs dist/svelte",
-    "typecheck": "tsc -p tsconfig.json && svelte-check --tsconfig ./tsconfig.svelte.json --fail-on-warnings",
+    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.unovis.json && svelte-check --tsconfig ./tsconfig.svelte.json --fail-on-warnings",
     "test": "vitest run",
     "api:report": "node ../../tools/api-extractor-all.mjs --local",
     "api:check": "node ../../tools/api-extractor-all.mjs",
@@ -319,6 +328,7 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@types/three": "0.186.0",
+    "@unovis/ts": "1.7.1",
     "chart.js": "4.5.1",
     "cytoscape": "3.34.3",
     "d3": "^7.9.0",
