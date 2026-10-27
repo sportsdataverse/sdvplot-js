@@ -2463,12 +2463,13 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
             );
         }
         console.log(`${id}: ${painted} of ${got.links.length} links painted in their colour`);
-        // a link can cross under a node, a label or another link at all five points; all but two must show. Measured
-        // in every run so far: exactly one link per example misses (27/28, 8/9, 16/17), each under a node or label. A
-        // wrong colour misses every link (see the report's negative controls), so the slack hides no colour bug.
-        expect(painted, "links whose middle pixels are their team's colour").toBeGreaterThanOrEqual(
-          got.links.length - 2,
-        );
+        // a link can cross under a node, a label or another link at all five points. In every run so far exactly one
+        // link per example missed (27/28, 8/9, 16/17), each under a node or a label: all but one must show. Two wrong
+        // links in the dark example (its background dropped: BUF and DEN) already fail this. Soft, so the node checks
+        // below still run and report.
+        expect
+          .soft(painted, "links whose middle pixels are their team's colour")
+          .toBeGreaterThanOrEqual(got.links.length - 1);
         if (spec.rings !== undefined && spec.images !== undefined) {
           // exactly the example's nodes; each ring its team's colour, in its pixels; each icon its own image
           expect(got.nodes.map((v) => v.id).sort(), "every node, by id").toEqual(
