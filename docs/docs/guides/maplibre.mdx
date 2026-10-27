@@ -1,0 +1,101 @@
+---
+title: MapLibre GL JS
+sidebar_position: 7.97
+---
+
+[MapLibre GL JS](https://maplibre.org/maplibre-gl-js/docs/) draws interactive vector maps in the browser with WebGL.
+A map's look is a style, a JSON document of sources (where the data comes from) and layers (how it is drawn), and
+your own data joins it the same way: a GeoJSON source and a layer that reads it. `@sportsdataverse/sdvplot/maplibre`
+builds that JSON for teams: logos at their venues as a native symbol layer, team-coloured travel lines as a line
+layer, and a free basemap that needs no API key. It never imports MapLibre (install `maplibre-gl` 6.14.0 or later
+beside it, an optional peer, BSD-3-Clause); you pass your map in where one is needed. Every piece but the image
+loader can be built anywhere, a server included. It is synchronous: load the league first (`loadLeague`). The maps
+below are drawn by MapLibre in your browser.
+
+## Team logos at their venues
+
+`logoSymbols(rows, o)` reads each row's longitude, latitude and team (`x`, `y` and `team` name the columns) and
+returns `{ id, source, layer, images }`. The source is GeoJSON with one point per row, whose feature id is the row's
+index and whose properties are the resolved team, the logo's URL and the map image it draws. The layer is a `symbol`
+layer whose `icon-image` reads that property; every logo is shown, even where two overlap. `size` is the logo's height
+on screen in pixels (32 by default) and `alpha` its opacity. Team values can be abbreviations, names or ids, and
+numbers as well as strings: a column of numeric ESPN ids draws the same logos as the abbreviations.
+
+A symbol layer draws images the map already holds, so the logos go in first. `addLogoImages(map, logos)` loads each
+distinct logo once through the map (`loadImage`), adds it (`addImage`) at the pixel ratio that draws it `size` pixels
+tall (sharp on a high-density screen too), and skips any image the map already has, so calling it again after a
+style change adds nothing twice. Await it, then add the source and the layer (`map.addSource(logos.id,
+logos.source)` and `map.addLayer(logos.layer)`), all after the map's `load` event.
+
+A team with no archived logo, or one that does not resolve, is left out with one warning, and so is a row with a
+missing coordinate; a logo that fails to load is left undrawn with one warning. Each team's 2024 home stadium below
+comes from nfelo's stadium table ([greerreNFL/Stadiums](https://github.com/greerreNFL/Stadiums), with thanks;
+copied into sportsdataverse/nfl-data), joined to the season's games by nflverse's `stadium_id`. Two pairs of teams share a stadium, so one logo of each pair sits on the
+other.
+
+<Live id="sdvplot/maplibre/nfl-stadiums" />
+
+## Team-coloured travel
+
+`routeLines(rows, o)` draws one straight line per row, from (`x`, `y`) to (`xend`, `yend`) in longitude and
+latitude, in the team's colour: `{ id, source, layer }`, a GeoJSON source of two-point lines (the feature id is the
+row's index; the properties are the team and its colour) and a `line` layer whose `line-color` reads the colour.
+Each team keeps one colour, its primary unless `which` says secondary. `width` is in pixels (3 by default) and
+`alpha` sets the opacity. A team that does not resolve takes `fallback` (grey by default) and a row with a missing
+coordinate is left out with one warning. Add the lines before the logos, so the logos sit on top.
+
+On a dark basemap, pass its background as `background`: every team colour then keeps 3:1 contrast against it and
+stays apart from the other teams' colours, through the palette every sdvplot adapter shares. The contrast is measured
+against the basemap's land colour, its `background` layer, not its water, which on OpenFreeMap's dark style is a
+little lighter and on its light style a little darker.
+
+The road trips below fly airport to airport: each team's home airport comes from nflverse's
+[nfldata](https://github.com/nflverse/nfldata) `airports.csv`. The same rows feed `passArcLayer` for arcs instead
+(next section).
+
+<Live id="sdvplot/maplibre/road-trips" />
+
+## deck.gl layers on a MapLibre map
+
+deck.gl draws over a MapLibre map through `@deck.gl/mapbox`'s `MapboxOverlay` (9.4.0 or later, an optional peer; the
+name is historical, it works with MapLibre). Build its layers with `@sportsdataverse/sdvplot/deckgl`, exactly as
+for deck.gl alone, in longitude and latitude (deck.gl's default coordinates): `passArcLayer` gives arcs in team
+colours, primary at the source and secondary at the target, and `logoIconLayer` gives logos. Construct deck.gl's
+`ArcLayer` and `IconLayer` from those props, hand them to a `MapboxOverlay`, and add the overlay to the map as a
+control (`map.addControl`). Pass the basemap's background to `passArcLayer` as `background` for dark mode, as for
+`routeLines`. See [deck.gl](deckgl.mdx) for the layers themselves.
+
+<Live id="sdvplot/maplibre/deckgl-arcs-dark" />
+
+## A free basemap: OpenFreeMap
+
+`basemap("light")` or `basemap("dark")` returns `{ style, attribution, background }`. The style is the URL of
+[OpenFreeMap](https://openfreemap.org/)'s `positron` (light) or `dark` vector style, built from OpenStreetMap data;
+pass it as the map's `style`. The background is the colour the style paints its land in (`#f2f3f0` and `#0c0c0c`),
+for `routeLines` and `passArcLayer`. The attribution is OpenFreeMap's credit, as HTML.
+
+No API key, token or account is involved anywhere. OpenFreeMap's terms, as its site states them: the public instance
+is free, with no limit on map views or requests, no registration, no API keys and no cookies, and it is funded by
+donations. Attribution is required. MapLibre shows the credit by itself in its attribution control, which is on by
+default: keep it. Anything else that draws these tiles, or a static image exported from the map, must show the
+`attribution` text itself. Heavy users are asked to keep parallel requests modest, to send a recognisable
+User-Agent, and to contact OpenFreeMap before anything larger. There is no service-level agreement; for a guarantee,
+host the tiles yourself from OpenFreeMap's weekly planet downloads. Read the current terms, and the
+Terms of Service linked there, on [openfreemap.org](https://openfreemap.org/) before you ship.
+The map data is © OpenStreetMap contributors, under the Open Database License.
+
+Every view of a map requests the provider's tiles. These docs request none while they are built: the maps are drawn
+in your browser when you scroll to them, and the tests answer every OpenFreeMap request with a local stand-in style.
+Do the same in your own tests and server renders.
+
+## Server rendering
+
+The module imports no MapLibre code, so `logoSymbols`, `routeLines`, `basemap` and `drawnMarks` run in Node, in a
+server component or a build step, and the JSON they return can be sent to the page. Only `addLogoImages` needs a map,
+and so a browser. MapLibre itself needs WebGL: create the map in an effect, or behind a client-only boundary.
+
+MapLibre 6 parses tiles in a web worker that it loads from beside its own module file. A bundler that moves that
+module (webpack, as in these docs) leaves the map waiting for a worker that never starts: no error, and no `load`
+event. Hand MapLibre the worker's URL before the first map is created, with `setWorkerUrl`, pointing at the
+`maplibre-gl/dist/maplibre-gl-worker.mjs` file your bundler emits (in webpack 5, a `new URL` of that path relative to
+`import.meta.url`), served as JavaScript.

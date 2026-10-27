@@ -54,6 +54,7 @@ install for you, so add the ones for the subpaths you import:
 | `@sportsdataverse/sdvplot/three` | `@sportsdataverse/sporty` (draw with `three` >= 0.186.1; `<Surface3D>` and `<Trajectory>` in `/react` also need `@react-three/fiber` >= 9.8.1) |
 | `@sportsdataverse/sdvplot/g2` | nothing (draw with `@antv/g2` >= 5.4.8, or with Ant Design Charts, `@ant-design/plots`, whose configs are G2 specs; tested with 2.6.8; `axisLogos` needs `@antv/component` >= 2.1.12) |
 | `@sportsdataverse/sdvplot/tanstack` | nothing (draw with `@tanstack/charts` >= 1.1.0, through its React, Svelte or DOM `Chart`, SVG renderer) |
+| `@sportsdataverse/sdvplot/maplibre` | nothing (draw with `maplibre-gl` >= 6.14.0; deck.gl layers on the map with `@deck.gl/mapbox` >= 9.4.0; see the [MapLibre guide](https://plot.sportsdataverse.org/guides/maplibre)) |
 | `@sportsdataverse/sdvplot/lightweight-charts` | nothing to import it; `lightweight-charts` >= 5.2.1 to draw (Apache-2.0 with TradingView's attribution: `withAttribution` keeps its logo on the chart and `attributionNotice` puts its notice on the page) |
 | `@sportsdataverse/sdvplot/plot` | `@observablehq/plot` >= 0.6.16 and `@sportsdataverse/sporty` |
 | `@sportsdataverse/sdvplot/d3` | `d3` >= 7 and `@sportsdataverse/sporty` |
@@ -149,6 +150,7 @@ The [**sdvplot-js** documentation website](https://plot.sportsdataverse.org) has
 [D3](https://plot.sportsdataverse.org/guides/d3) ·
 [React](https://plot.sportsdataverse.org/guides/react) ·
 [Plotly, Vega-Lite, ECharts and Chart.js](https://plot.sportsdataverse.org/guides/chart-libraries) ·
+[MapLibre GL JS maps](https://plot.sportsdataverse.org/guides/maplibre) ·
 [Shot charts](https://plot.sportsdataverse.org/guides/shot-charts) ·
 [Playing surfaces](https://plot.sportsdataverse.org/guides/surfaces) ·
 [Node and SSR](https://plot.sportsdataverse.org/guides/node-ssr) ·
