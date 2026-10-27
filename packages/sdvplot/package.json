@@ -29,7 +29,8 @@
     "lightweight-charts",
     "g2",
     "ant-design-charts",
-    "tanstack-charts"
+    "tanstack-charts",
+    "unovis"
   ],
   "homepage": "https://plot.sportsdataverse.org",
   "bugs": "https://github.com/sportsdataverse/sdvplot-js/issues",
@@ -148,6 +149,10 @@
       "types": "./dist/tanstack.d.ts",
       "import": "./dist/tanstack.js"
     },
+    "./unovis": {
+      "types": "./dist/unovis.d.ts",
+      "import": "./dist/unovis.js"
+    },
     "./package.json": "./package.json"
   },
   "peerDependencies": {
@@ -260,7 +265,7 @@
   },
   "scripts": {
     "build": "tsup && svelte-package -i src/svelte -o dist/svelte --tsconfig ./tsconfig.svelte.json && node ../../tools/svelte-dts.mjs dist/svelte",
-    "typecheck": "tsc -p tsconfig.json && svelte-check --tsconfig ./tsconfig.svelte.json --fail-on-warnings",
+    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.unovis.json && svelte-check --tsconfig ./tsconfig.svelte.json --fail-on-warnings",
     "test": "vitest run",
     "api:report": "node ../../tools/api-extractor-all.mjs --local",
     "api:check": "node ../../tools/api-extractor-all.mjs",
