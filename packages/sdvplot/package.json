@@ -26,7 +26,8 @@
     "react-three-fiber",
     "lightweight-charts",
     "g2",
-    "ant-design-charts"
+    "ant-design-charts",
+    "tanstack-charts"
   ],
   "homepage": "https://plot.sportsdataverse.org",
   "bugs": "https://github.com/sportsdataverse/sdvplot-js/issues",
@@ -136,6 +137,10 @@
     "./g2": {
       "types": "./dist/g2.d.ts",
       "import": "./dist/g2.js"
+    },
+    "./tanstack": {
+      "types": "./dist/tanstack.d.ts",
+      "import": "./dist/tanstack.js"
     },
     "./package.json": "./package.json"
   },
