@@ -21,6 +21,8 @@ const CHART_LIBS = [
   "lightweight-charts",
   "g2",
   "ant-design-charts",
+  "ag-grid",
+  "ag-grid-react",
 ] as const;
 /**
  * Vega's self-contained build (its d3 inside). The module build imports the d3-* packages Observable Plot imports,
@@ -95,6 +97,14 @@ export default function sdvExamples(_context: LoadContext): Plugin {
                     chunks: "async",
                     enforce: true,
                     priority: 30,
+                  },
+                  // the 0.5 MB of play-by-play nflPlays2024() imports on demand: its own chunk, so the sample data stays small
+                  sdvPlays: {
+                    test: /[\\/](examples[\\/]src[\\/]plays\.ts|fixtures[\\/]examples[\\/]nfl_plays_2024_wk1_6\.json)$/,
+                    name: "sdv-plays",
+                    chunks: "async",
+                    enforce: true,
+                    priority: 35,
                   },
                   sdvSource: {
                     test: /[\\/]packages[\\/][^\\/]+[\\/]src[\\/]/,

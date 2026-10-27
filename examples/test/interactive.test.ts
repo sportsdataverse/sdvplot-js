@@ -4,15 +4,24 @@ import { type Server, createServer } from "node:http";
 import type { AddressInfo } from "node:net";
 import { extname, join, normalize } from "node:path";
 import { createCanvas, loadImage } from "@napi-rs/canvas";
-import { loadLeague, logoUrlSync, resolveSync } from "@sportsdataverse/sdvplot";
+import {
+  contrast,
+  loadLeague,
+  logoUrlSync,
+  mix,
+  onColor,
+  resolveSync,
+  solid,
+} from "@sportsdataverse/sdvplot";
 import { teamColors } from "@sportsdataverse/sdvplot/mui";
 import { teamColorPalette as rechartsPalette } from "@sportsdataverse/sdvplot/recharts";
-import { type Browser, chromium } from "playwright";
+import { teamColorPalette as agPalette } from "@sportsdataverse/sdvplot/tanstack";
+import { type Browser, type Page, chromium } from "playwright";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { pagePath } from "../scripts/pages.js";
 import { abs } from "../sources.js";
 import { BROWSER } from "../src/browser.gen.js";
-import { AFC_WEEKS_2024, NFL_TEAM_EPA_2024 } from "../src/data.js";
+import { AFC_WEEKS_2024, NBA_STANDINGS, NFL_TEAM_EPA_2024, STANDINGS, nflPlays2024 } from "../src/data.js";
 import { EXAMPLES } from "../src/registry.gen.js";
 import { MUI_PROXY_STYLE } from "./run.js";
 
@@ -51,6 +60,7 @@ const DRAWN: Readonly<Record<string, string>> = {
   "lightweight-charts": ".sdv-live-output .tv-lightweight-charts canvas",
   g2: ".sdv-live-output canvas",
   "ant-design-charts": ".sdv-live-output canvas",
+  "ag-grid": ".sdv-live-output .ag-root-wrapper .ag-row[row-id]",
 };
 
 describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the built docs", () => {
@@ -1108,6 +1118,324 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
       }
     },
   );
+
+  // AG Grid examples (sdvtables/aggrid): the grid shows exactly the example's rows (by AG Grid's row-id), in its sort
+  // order; each row's image is its own team's (by id); hiding the images changes each image's box (real logo pixels); a
+  // team-coloured row paints the fill gridOptions worked out from the palette, to the grid's right edge, under text that
+  // reads on it, and AG Grid's hover and selected overlays paint exactly its shades of that fill.
+  const agByWins = [...STANDINGS].sort((a, b) => b.wins - a.wins);
+  const AG_GRIDS: Readonly<
+    Record<
+      string,
+      {
+        rows: readonly string[];
+        field: string;
+        images: () => (string | undefined)[];
+        fills: () => (string | undefined)[];
+        bg: string;
+      }
+    >
+  > = {
+    "sdvtables/ag-grid/afc-standings-team-rows": {
+      rows: agByWins.map((s) => s.team),
+      field: "team",
+      images: () => agByWins.map((s) => resolveSync(s.team, "nfl")),
+      fills: () => {
+        // the palette is worked out over the rows as passed (STANDINGS order), laid over sdv's white at 0.4
+        const pal = agPalette(
+          "nfl",
+          STANDINGS.map((s) => s.team),
+          { background: "#FFFFFF" },
+        );
+        const of = new Map(STANDINGS.map((s, i) => [s.team, solid(`${pal[i]}66`, "#FFFFFF")]));
+        return agByWins.map((s) => of.get(s.team));
+      },
+      bg: "#ffffff",
+    },
+    "sdvtables/ag-grid/pacific-nba-midnight": {
+      rows: NBA_STANDINGS.map((s) => String(s.team_id)),
+      field: "team_id",
+      // stats.nba.com's numeric TeamID, resolved to the ESPN id the logo is stored under
+      images: () => NBA_STANDINGS.map((s) => resolveSync(s.team_id, "nba")),
+      fills: () => {
+        const ids = NBA_STANDINGS.map((s) => resolveSync(s.team_id, "nba"));
+        const pal = agPalette("nba", ids, { background: "#0C0D10", idSystem: "team_id" });
+        return pal.map((c) => solid(`${c}4d`, "#0C0D10"));
+      },
+      bg: "#0c0d10",
+    },
+  };
+  // a computed colour as [r, g, b]: rgb(r, g, b), or color(srgb r g b) in 0-1
+  const agRgb = (s: string) => {
+    const n = (s.match(/[\d.]+/g) ?? []).map(Number);
+    return (s.startsWith("color(srgb") ? n.map((v) => Math.round(v * 255)) : n).slice(0, 3);
+  };
+  const agHex = (s: string) => [1, 3, 5].map((i) => Number.parseInt(s.slice(i, i + 2), 16));
+  const agCss = (c: number[]) => `#${c.map((v) => v.toString(16).padStart(2, "0")).join("")}`;
+  const agNear = (a: number[], b: number[], d: number) =>
+    [0, 1, 2].every((c) => Math.abs((a[c] ?? 0) - (b[c] ?? 0)) <= d);
+  /** A screenshot of `loc` as a pixel reader: the [r, g, b] of each pixel of a box, row by row. */
+  const agShoot = async (loc: ReturnType<Page["locator"]>) => {
+    const shot = await loadImage(await loc.screenshot());
+    const ctx = createCanvas(shot.width, shot.height).getContext("2d");
+    ctx.drawImage(shot, 0, 0);
+    return (x: number, y: number, w = 1, h = 1) => {
+      const d = ctx.getImageData(Math.round(x), Math.round(y), Math.max(1, w), Math.max(1, h)).data;
+      return Array.from(
+        { length: d.length / 4 },
+        (_, i) => [d[4 * i], d[4 * i + 1], d[4 * i + 2]] as number[],
+      );
+    };
+  };
+  test.each(Object.keys(AG_GRIDS))(
+    "%s draws with AG Grid: the example's rows, each logo in its own row, real image pixels, team fills kept on hover and selection",
+    async (id) => {
+      const entry = EXAMPLES.find((e) => e.id === id);
+      const want = AG_GRIDS[id];
+      if (entry === undefined || want === undefined) throw new Error(`${id} has no registry entry`);
+      await Promise.all([loadLeague("nfl"), loadLeague("nba")]);
+      const page = await browser.newPage();
+      try {
+        const errors: string[] = [];
+        page.on("console", (m) => void (m.type() === "error" && errors.push(m.text())));
+        page.on("pageerror", (e) => void errors.push(e.message));
+        await page.goto(`${base}/gallery/${pagePath(entry)}/`);
+        const figure = page.locator(`figure[data-example="${id}"]`);
+        await figure.scrollIntoViewIfNeeded();
+        const grid = figure.locator(".sdv-live-output .ag-root-wrapper");
+        await grid.locator("img[data-sdv-id]").first().waitFor({ timeout: 30_000 });
+        await page.waitForLoadState("networkidle"); // the images
+        await page.addStyleTag({ content: ".navbar { display: none !important; }" });
+        expect(await figure.locator(".sdv-live-static").count(), "the static copy is replaced").toBe(0);
+        expect(await figure.locator(".sdv-live-error").count(), "no error alert").toBe(0);
+        const got = await grid.evaluate((el, field) => {
+          const box = el.getBoundingClientRect();
+          const rows = [...el.querySelectorAll<HTMLElement>(".ag-row[row-id]")]
+            .sort((a, b) => Number(a.getAttribute("row-index")) - Number(b.getAttribute("row-index")))
+            .map((r) => {
+              const img = r.querySelector(`.ag-cell[col-id="${field}"] img[data-sdv-id]`);
+              const ib = img?.getBoundingClientRect();
+              const rb = r.getBoundingClientRect();
+              // a spot in the "wins" cell clear of its right-aligned number: 4 px in from the cell's left edge
+              const wb = (r.querySelector('.ag-cell[col-id="wins"]') as HTMLElement).getBoundingClientRect();
+              const mid = rb.top - box.top + rb.height / 2;
+              return {
+                id: r.getAttribute("row-id"),
+                image: img?.getAttribute("data-sdv-id") ?? null,
+                loaded: img instanceof HTMLImageElement && img.complete && img.naturalWidth > 0,
+                box:
+                  ib === undefined
+                    ? null
+                    : [ib.x - box.left, ib.y - box.top, ib.width, ib.height].map(Math.round),
+                cell: [wb.left - box.left + 4, mid].map(Math.round),
+                // past the last column: the filler AG Grid paints in --ag-data-background-color
+                tail: [box.width - 4, mid].map(Math.round),
+                fill: getComputedStyle(r).backgroundColor,
+                ink: getComputedStyle(r).color,
+                hover: r.style.getPropertyValue("--ag-row-hover-color"),
+                selected: r.style.getPropertyValue("--ag-selected-row-background-color"),
+              };
+            });
+          const viewport = el.querySelector(".ag-grid-viewport") as HTMLElement;
+          return {
+            rows,
+            overflow: viewport.scrollWidth - viewport.clientWidth,
+            columnsWidth: Math.max(
+              ...[...el.querySelectorAll(".ag-header-cell")].map(
+                (h) => h.getBoundingClientRect().right - box.left,
+              ),
+            ),
+            width: box.width,
+            images: el.querySelectorAll("img[data-sdv-id]").length,
+            root: getComputedStyle(el).backgroundColor,
+            // AG Grid paints the header's background on its row's cell container
+            header: getComputedStyle(el.querySelector(".ag-header-row .ag-grid-scrolling-cells") as Element)
+              .backgroundColor,
+          };
+        }, want.field);
+        expect(
+          got.rows.map((r) => r.id),
+          "exactly the example's rows, by id, in its order",
+        ).toEqual(want.rows);
+        expect(got.images, "one image per row, no more").toBe(want.rows.length);
+        expect(got.overflow, "the columns fit the docs column: no horizontal scroll").toBe(0);
+        expect(got.columnsWidth, "room after the last column, for the filler check").toBeLessThan(
+          got.width - 8,
+        );
+        expect(
+          got.rows.map((r) => r.image),
+          "each row's image is its own team's",
+        ).toEqual(want.images());
+        expect(
+          got.rows.map((r) => r.loaded),
+          "every image loaded",
+        ).toEqual(want.rows.map(() => true));
+        expect(agRgb(got.root), "the theme's background").toEqual(agHex(want.bg));
+        if (id.endsWith("midnight")) expect(agRgb(got.header), "midnight's header").toEqual(agHex("#16181D"));
+        const fills = want.fills();
+        const pixels = await agShoot(grid);
+        got.rows.forEach((r, i) => {
+          const f = fills[i] ?? "";
+          expect(agRgb(r.fill), `row ${r.id} is filled with ${f}`).toEqual(agHex(f));
+          const [cx, cy] = r.cell as [number, number];
+          const [tx, ty] = r.tail as [number, number];
+          expect(agNear(pixels(cx, cy)[0] ?? [], agHex(f), 3), `a pixel of row ${r.id} is ${f}`).toBe(true);
+          expect(
+            agNear(pixels(tx, ty)[0] ?? [], agHex(f), 3),
+            `row ${r.id}'s fill reaches the grid's edge`,
+          ).toBe(true);
+          expect(contrast(agCss(agRgb(r.ink)), f), `row ${r.id}'s text`).toBeGreaterThanOrEqual(4.5);
+        });
+        // the images' own pixels: with them hidden, each image's box changes (over 10%, as the other grids' logos)
+        await grid.evaluate((el) => {
+          for (const i of el.querySelectorAll("img[data-sdv-id]"))
+            (i as HTMLElement).style.visibility = "hidden";
+        });
+        const without = await agShoot(grid);
+        const changed = got.rows.map((r) => {
+          const [x, y, w, h] = r.box as [number, number, number, number];
+          const a = pixels(x, y, w, h);
+          const b = without(x, y, w, h);
+          return a.filter((p, i) => !agNear(p, b[i] ?? [], 8)).length / a.length;
+        });
+        console.log(
+          `${id}: image boxes changed ${Math.min(...changed).toFixed(2)} to ${Math.max(...changed).toFixed(2)}`,
+        );
+        changed.forEach((c, i) => expect(c, `image ${i} paints its box`).toBeGreaterThan(0.1));
+        await grid.evaluate((el) => {
+          for (const i of el.querySelectorAll("img[data-sdv-id]")) (i as HTMLElement).style.visibility = "";
+        });
+        // AG Grid's hover and selected overlays: a hovered row, a selected one (the class AG Grid puts on it) and a
+        // selected, hovered one paint exactly the opaque shades gridOptions set on the row (its accent tint would not),
+        // each the fill moved away from the text colour, so the text reads at least as well
+        const row = (i: number) => grid.locator(`.ag-row[row-index="${i}"]`);
+        const spot = async (i: number) => {
+          const r = got.rows[i];
+          const [x, y] = r?.cell as [number, number];
+          return (await agShoot(grid))(x, y)[0] ?? [];
+        };
+        const check = (px: number[], i: number, shade: string, what: string) => {
+          const r = got.rows[i];
+          const f = fills[i] ?? "";
+          const ink = onColor(f);
+          const want = mix(f, ink === "#000000" ? "#ffffff" : "#000000", shade === "hover" ? 0.08 : 0.16);
+          expect(shade === "hover" ? r?.hover : r?.selected, `${what}: the row's shade`).toBe(want);
+          expect(agNear(px, agHex(want), 3), `${what}: ${agCss(px)} is the shade ${want} of ${f}`).toBe(true);
+          expect(
+            contrast(agCss(agRgb(r?.ink ?? "")), want),
+            `${what}: text on the shade`,
+          ).toBeGreaterThanOrEqual(Math.max(4.5, contrast(ink, f) - 0.01));
+        };
+        await row(0).locator('.ag-cell[col-id="wins"]').hover();
+        check(await spot(0), 0, "hover", `hovered row ${want.rows[0]}`);
+        await row(1).evaluate((r) => r.classList.add("ag-row-selected"));
+        await page.mouse.move(0, 0);
+        check(await spot(1), 1, "selected", `selected row ${want.rows[1]}`);
+        await row(1).locator('.ag-cell[col-id="wins"]').hover();
+        check(await spot(1), 1, "selected", `selected, hovered row ${want.rows[1]}`);
+        await row(1).evaluate((r) => r.classList.remove("ag-row-selected"));
+        await page.mouse.move(0, 0);
+        if (SHOTS !== undefined)
+          await figure
+            .locator(".sdv-live-output")
+            .screenshot({ path: join(SHOTS, `${id.replace(/\//g, "_")}.png`) });
+        expect(errors).toEqual([]);
+      } finally {
+        await page.close();
+      }
+    },
+  );
+
+  // The 11,778-play grid is virtualised: only the rows in view (and AG Grid's buffer) are in the page, each with its own
+  // play's logos; scrolling far down brings exactly the plays at those positions of the sort; a filter and the pinned
+  // column work on all the rows, not only the drawn ones.
+  test("sdvtables/ag-grid/nfl-plays-2024: 11,778 rows, only those in view drawn; scrolling, sorting, filtering and the pinned column", async () => {
+    const id = "sdvtables/ag-grid/nfl-plays-2024";
+    const entry = EXAMPLES.find((e) => e.id === id);
+    if (entry === undefined) throw new Error(`${id} is not in the registry`);
+    await loadLeague("nfl");
+    const plays = await nflPlays2024();
+    // the example's sort, worked out here: EPA high to low, ties in file order (AG Grid's sort is stable)
+    const sorted = plays.map((p, i) => [p, i] as const).sort((a, b) => b[0].epa - a[0].epa || a[1] - b[1]);
+    const page = await browser.newPage();
+    try {
+      const errors: string[] = [];
+      page.on("console", (m) => void (m.type() === "error" && errors.push(m.text())));
+      page.on("pageerror", (e) => void errors.push(e.message));
+      await page.goto(`${base}/gallery/${pagePath(entry)}/`);
+      const figure = page.locator(`figure[data-example="${id}"]`);
+      await figure.scrollIntoViewIfNeeded();
+      const grid = figure.locator(".sdv-live-output .ag-root-wrapper");
+      await grid.locator("img[data-sdv-id]").first().waitFor({ timeout: 30_000 });
+      await page.waitForLoadState("networkidle");
+      expect(await figure.locator(".sdv-live-static").count(), "the static copy is replaced").toBe(0);
+      const drawn = () =>
+        grid.evaluate((el) =>
+          [...el.querySelectorAll<HTMLElement>(".ag-row[row-id]")]
+            .map((r) => ({
+              index: Number(r.getAttribute("row-index")),
+              id: r.getAttribute("row-id") ?? "",
+              pinned: r
+                .querySelector('.ag-grid-pinned-left-cells .ag-cell[col-id="posteam"] img')
+                ?.getAttribute("data-sdv-id"),
+              defence: r.querySelector('.ag-cell[col-id="defteam"] img')?.getAttribute("data-sdv-id"),
+              epa: r.querySelector('.ag-cell[col-id="epa"]')?.textContent ?? "",
+            }))
+            .sort((a, b) => a.index - b.index),
+        );
+      const api = <T>(f: string, arg?: unknown) =>
+        figure.locator('.sdv-live-output [role="figure"]').evaluate(
+          (el, [fn, a]) => {
+            const g = (el as HTMLElement & { sdvAgGrid: Record<string, (x?: unknown) => unknown> }).sdvAgGrid;
+            return g[fn as string]?.(a) as T;
+          },
+          [f, arg] as const,
+        );
+      expect(await api<number>("getDisplayedRowCount"), "every play is in the grid").toBe(11_778);
+      const check = async (where: string) => {
+        const rows = await drawn();
+        expect(rows.length, `${where}: only the rows in view are drawn`).toBeLessThan(80);
+        expect(rows.length, `${where}: the rows in view are drawn`).toBeGreaterThan(10);
+        // the rows drawn are a run of the sort, each its own play, its own teams' logos (offence pinned left)
+        const first = rows[0]?.index ?? -1;
+        expect(
+          rows.map((r) => r.index),
+          where,
+        ).toEqual(rows.map((_, k) => first + k));
+        for (const r of rows) {
+          const p = sorted[r.index]?.[0];
+          expect(r.id, `${where}: row ${r.index}`).toBe(p?.play);
+          expect(r.pinned, `${where}: ${r.id}'s offence logo, pinned left`).toBe(
+            resolveSync(p?.posteam, "nfl"),
+          );
+          expect(r.defence, `${where}: ${r.id}'s defence logo`).toBe(resolveSync(p?.defteam, "nfl"));
+        }
+        return rows;
+      };
+      const top = await check("on load");
+      expect(top[0]?.index).toBe(0);
+      expect(top[0]?.epa, "the highest EPA first, in sdvtables' format").toMatch(/^\+\d+\.\d\d$/);
+      // scroll two thirds of the way down: the rows there are drawn, the first ones are gone
+      await api("ensureIndexVisible", 8000);
+      await page.waitForFunction(
+        (sel) => [...document.querySelectorAll(sel)].some((r) => r.getAttribute("row-index") === "8000"),
+        `figure[data-example="${id}"] .ag-row[row-id]`,
+      );
+      await page.waitForLoadState("networkidle");
+      const far = await check("scrolled to row 8000");
+      expect(
+        far.some((r) => r.index === 0),
+        "the first rows left the page",
+      ).toBe(false);
+      // a filter on the offence keeps Kansas City's plays only, over all 11,778 rows
+      await api("setFilterModel", { posteam: { filterType: "text", type: "equals", filter: "KC" } });
+      expect(await api<number>("getDisplayedRowCount")).toBe(plays.filter((p) => p.posteam === "KC").length);
+      await api("setFilterModel", null);
+      expect(errors).toEqual([]);
+    } finally {
+      await page.close();
+    }
+  });
 
   // A drawing that fails (here plotly.js never arrives) shows the alert over the static copy, leaves nothing drawn,
   // and drops the note that plotly.js draws the figure here.

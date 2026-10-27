@@ -61,6 +61,7 @@ const VALUE_LIBS: Readonly<Record<string, string>> = {
   "lightweight-charts": "Lightweight Charts",
   g2: "G2",
   "ant-design-charts": "Ant Design Charts",
+  "ag-grid": "AG Grid",
 };
 
 /**
