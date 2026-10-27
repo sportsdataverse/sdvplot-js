@@ -2,7 +2,7 @@
  * The MUI X Charts adapter (`@mui/x-charts` 9, the MIT community package): team colours for a chart's `colors` (a
  * palette that follows MUI's light and dark mode) or a series' `colorGetter` (a colour per data point), and team logos
  * and player headshots through MUI's own slots: a scatter's `marker`, a line's `mark` and an axis' `axisTickLabel`.
- * Pure: MUI is never imported (the slot props here are structural, read from @mui/x-charts 9.15 and checked against
+ * Pure: MUI is never imported (the slot props here are structural, read from `@mui/x-charts` 9.15 and checked against
  * its own types); React's `createElement` builds the SVG `<image>` each slot returns, so the logos also render on the
  * server. Call after `loadLeague(league)` / `preloadAll()`. `sdvplot/testing`'s `drawnMarks(container)` reads back
  * what the slots drew.
@@ -496,7 +496,7 @@ function anchored(x: number, y: number, w: number, h: number, style: MuiTickLabe
  * formatted value, so a `valueFormatter` must keep it a team (abbreviation, name or id).
  *
  * Give it to the team axis alone, as a prop of the composition API's `<ChartsXAxis>` / `<ChartsYAxis>`: a chart's
- * `slots` reach every axis (a value axis' label "12" would resolve as team id 12), and in @mui/x-charts 9.15 the
+ * `slots` reach every axis (a value axis' label "12" would resolve as team id 12), and in `@mui/x-charts` 9.15 the
  * `slots` of an axis in the `xAxis` prop are dropped by `BarChart` and the other single-component charts.
  *
  * @example
