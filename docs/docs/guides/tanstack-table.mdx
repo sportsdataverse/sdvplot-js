@@ -1,0 +1,108 @@
+---
+title: TanStack Table
+sidebar_position: 13.35
+---
+
+[TanStack Table](https://tanstack.com/table) is a headless table library: it sorts, filters, groups and pages your rows,
+and you write the `<table>` markup and its CSS yourself, in React, Svelte, Vue, Solid, Angular or plain JavaScript.
+`@sportsdataverse/sdvtables/tanstack-table` turns an sdvtables spec into TanStack Table v9 options, so the same spec that
+renders a static HTML table also drives a TanStack table, with its labels, number formats, sort, logos and headshots.
+
+The subpath never imports TanStack Table at runtime: it uses `@tanstack/table-core`'s types only, and it draws nothing
+itself, so it loads on a server and in any framework. `@tanstack/table-core` is an optional peer, 9.3.1 or later; these
+examples run 9.3.1, with `@tanstack/react-table` 9.3.1 in React and `@tanstack/svelte-table` 9.3.1 in Svelte 5. Both
+adapters install table-core themselves; the package's type declarations name table-core's types, so TypeScript needs it
+resolvable from your project (with pnpm, add it as a dependency of your own).
+
+## A spec as table options
+
+`tanstackTable(spec, rows, { features, render })` returns `options` and `columnStyle`. Pass `options` to React's
+`useTable` or Svelte's `createTable`, alone or spread with your own options (`initialState`, pagination and the rest).
+`features` is your table's own `tableFeatures({ ... })`, passed through unchanged: TanStack Table v9 only sorts when you
+register `rowSortingFeature` and `sortedRowModel: createSortedRowModel()`, and the columns' types follow the features
+you pass. `tanstackTable` is synchronous, so first `await prepare(spec)` from `@sportsdataverse/sdvtables/html`, which
+loads the leagues the logo columns need. The logos are worked out once, from the rows you pass, so build the options
+again when the rows change, and keep them stable between renders: at module scope, or in a memo.
+
+Each spec column becomes one TanStack column, its id the spec's key and its header the label the HTML table gives it
+(with a `scaleNote`'s suffix). `num`, `int`, `pct` and `rank` cells are the HTML table's own text: grouped thousands,
+fixed decimals, a forced sign, U+2212 minus signs, ordinals, and a `scaleNote`'s divisor and decimals. A blank or
+unparseable value in a number column is missing: an empty cell, never "NaN" or 0. `columnStyle` gives each column's
+alignment and the spec's `width`, for its header and cells.
+
+Sorting is sdvtables' own, through each column's `sortFn`: a column's `compare` if it has one, else numbers for the
+numeric kinds and text otherwise, with missing values last whether you sort ascending or descending (`sortUndefined:
+"last"`), as in the interactive HTML table. A spec column with `sortable: false` cannot be sorted. TanStack sorts a
+number column descending on its first click, then ascending.
+
+With the spec's `rowKey`, `getRowId` gives each row that value, so TanStack keeps a row's id when the table re-sorts or
+the rows change; `tanstackTable` throws when two rows share a `rowKey` value or a row's value is blank, since TanStack
+would treat the two rows as one. Without a `rowKey`, TanStack numbers the rows itself.
+
+## Logos, headshots and ranks
+
+TanStack Table draws nothing, so a cell that is more than text comes to your `render` function as plain data, a
+`CellPart`: a `logo`, `wordmark` or `headshot` image (its `src`, `alt`, `height` and the team or player `id`, and the
+team's name after it with `includeName`), or a rank's number and its superscript suffix. `render` returns whatever your
+framework draws: a React element, or, in Svelte, `renderComponent(CellPart, { part })`. Without `render`, those cells are
+their text. The team can be an abbreviation, a name or a numeric id, as a number or as a string. A team with no image in
+the archive, or one that is not found, keeps its text and warns once, as the HTML table does; so does a player with no
+headshot. A headshot's `alt` is empty: it is decorative, as the player's name belongs in a column of its own.
+
+## In React
+
+This component draws a TanStack table from `tanstackTable`'s options: the headers are buttons that sort, each `th` says
+how its column is sorted (`aria-sort`), and `renderPart` draws the images and superscript ranks. The table wears the
+spec's sdvtables theme: the theme's stylesheet, scoped to its class, styles the `th.sdvt-label` and `td.sdvt-cell` it
+writes, as it does the HTML table's. The examples use this file as it is, and the tests render it.
+
+<Snippet file="tanstack-table/SdvTable.tsx" />
+
+The sample AFC standings, sorted by wins to start. Click a header to sort by it; New England's blank net EPA stays last
+both ways.
+
+<Live id="sdvtables/tanstack-table/afc-standings-react" />
+
+## In Svelte
+
+The same table in Svelte 5, through `@tanstack/svelte-table`'s `createTable` and `FlexRender`, with a small component
+for the images and ranks.
+
+<Snippet file="svelte/TanstackStandings.svelte" />
+
+<Snippet file="svelte/CellPart.svelte" />
+
+This one is the 2023-24 NBA Pacific Division on the dark `midnight` theme, keyed by stats.nba.com's numeric team id,
+which resolves to each team's logo. It starts sorted by win percentage.
+
+<Live id="sdvtables/tanstack-table/pacific-nba-svelte" />
+
+The themes name their fonts but do not load them: put the `<link>` that `fontsLinkFor(spec)` returns in the page's
+`<head>`, as the React example does.
+
+## From the v8 recipe
+
+Before v9, the sdvtables README had a recipe for `@tanstack/react-table` 8: a `toTanStackColumns` function that read
+each cell's markup back from `toElement()`. TanStack Table v9 changed its API, so the recipe does not run on v9, and
+`tanstackTable` replaces it. In v9, `useTable` replaces `useReactTable`; features and row models are registered in
+`tableFeatures` (`rowSortingFeature` and `createSortedRowModel()` where v8 took `getSortedRowModel()`, and the core row
+model needs no option); a column's `sortingFn` is now `sortFn`; and `ColumnDef` takes your features' type as its first
+parameter. The new helper also needs no DOM, so the columns can be built on a server, and its cells are the spec's own
+text and images rather than copied markup.
+
+## What is not mapped
+
+The cell kinds that draw in HTML or SVG (pills, bars, sparklines, gauges, icons, team colour cells and the rest) show
+their plain value, with one warning per kind; render those tables with `renderHTML` or `<SdvTable>` instead, or with a
+data grid ([MUI X Data Grid](mui-x-data-grid.mdx) or [AG Grid](ag-grid.mdx)) for team-coloured rows. Decorations
+(titles, source notes, spotlights, legends) are the page's to add around the table; a `scaleNote` scales its columns and
+labels, but its note is yours to place. Filtering, pagination and the other TanStack features work as usual: register
+them in your `tableFeatures`.
+
+## Testing and server rendering
+
+`tanstackTable` returns plain values and functions and touches no DOM, so building the options on a server is safe.
+Each image `renderPart` draws carries `data-sdv-id` (the team or player id) and `data-sdv-kind`
+(`logo`, `wordmark` or `headshot`), so a test can read back which images a table drew and in which rows.
+
+In the gallery: [TanStack Table](/gallery/sdvtables/#tanstack-table).
