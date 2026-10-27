@@ -4,10 +4,8 @@
  * `VictoryThemeDefinition`). Call after `loadLeague(league)` / `preloadAll()`. The logos are components, `<LogoPoint>`
  * (a scatter's `dataComponent`) and `<LogoTick>` (an axis' `tickLabelComponent`), in `sdvplot/react`.
  */
-import { colorList } from "./_web.js";
-import { hex6 } from "./contrast.js";
+import { colorPalette } from "./_web.js";
 import { InputError } from "./errors.js";
-import { teamPalette } from "./team-palette.js";
 import type { IdSystem, League, SeasonInput, Which } from "./types.js";
 export { embedSources } from "./_web.js"; // public: build `<LogoPoint embed>` / `<LogoTick embed>` with it
 
@@ -51,17 +49,7 @@ export function teamColorPalette(
   teams: readonly unknown[],
   o: VictoryColorOptions = {},
 ): string[] {
-  const fallback = o.fallback ?? "#808080";
-  const co = {
-    ...(o.season === undefined ? {} : { season: o.season }),
-    ...(o.idSystem === undefined ? {} : { idSystem: o.idSystem }),
-  };
-  const main = colorList(league, teams, { ...co, ...(o.which === undefined ? {} : { which: o.which }) });
-  const bg = o.background === undefined ? undefined : hex6(o.background);
-  if (bg === undefined) return main.map((c) => c ?? fallback);
-  const other = colorList(league, teams, { ...co, which: o.which === "secondary" ? "primary" : "secondary" });
-  const colors = main.map((c) => hex6(c ?? fallback, { dropAlpha: true }));
-  return teamPalette(colors, other, bg, teams.map(String));
+  return colorPalette(league, teams, o);
 }
 
 /** `teamTheme` options: the teams, in the order the chart draws them, and an optional theme to build on. */
