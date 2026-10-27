@@ -28,8 +28,9 @@ colour. `teamColorsSync` is the same call once the league is loaded.
 
 ## One colour per team on a chart
 
-The team colours of Recharts, Victory, Chart.js, Svelte, TanStack, G2, MUI, Unovis and MapLibre's route lines (and,
-through Recharts, shadcn and Mosaic) come from one shared palette, with the same rule as the Python package. Each
+The team colours of Recharts, Victory, Chart.js, Svelte, TanStack, G2, MUI, Unovis, uPlot, nivo and MapLibre's route
+lines (and, through Recharts, shadcn and Mosaic) come from one shared palette, with the same rule as the Python
+package. Each
 value is resolved to its team and takes the team's `which` colour, else its other colour, else `fallback`. With
 `background`, every colour keeps 3:1 contrast against it and stays CIE76 ΔE 20 from the teams before it, worked out
 over the distinct teams in order of first appearance:
