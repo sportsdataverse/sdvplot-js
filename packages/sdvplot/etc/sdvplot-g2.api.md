@@ -59,9 +59,10 @@ export interface G2ColorOptions {
 }
 
 // @public
-export interface G2ColorScale {
-    domain: string[];
+export interface G2ColorScale<T = unknown> {
+    domain: T[];
     range: string[];
+    type: "ordinal";
 }
 
 // Warning: (ae-forgotten-export) The symbol "Shared" needs to be exported by the entry point g2.d.ts
@@ -133,7 +134,7 @@ export type Row = Record<string, unknown>;
 export function teamColorPalette(league: League, teams: readonly unknown[], o?: G2ColorOptions): string[];
 
 // @public
-export function teamColorScale(league: League, teams: readonly unknown[], o?: G2ColorOptions): G2ColorScale;
+export function teamColorScale<T>(league: League, teams: readonly T[], o?: G2ColorOptions): G2ColorScale<T>;
 
 // @public
 export function wordmarkMark(rows: readonly Row[], o: G2MarkOptions): G2ImageMark;
