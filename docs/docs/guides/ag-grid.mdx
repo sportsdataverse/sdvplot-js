@@ -75,6 +75,13 @@ The grid below is the sample AFC standings on the `sdv` theme, in plain JavaScri
 
 <Live id="sdvtables/ag-grid/afc-standings-team-rows" />
 
+On a striped theme such as `savant`, AG Grid paints every other row in the stripe colour; a team row's own fill covers
+it, so the stripe shows only on rows whose team is not found. These grids also turn on AG Grid Community's row
+selection (`rowSelection: { mode: "singleRow", enableClickSelection: true }`): click a row, and it keeps a shade
+of its team's colour. This one is the 2025-26 NHL Atlantic Division.
+
+<Live id="sdvtables/ag-grid/atlantic-nhl-savant" />
+
 ## Headshots
 
 `headshot` columns draw ESPN player headshots from the cell's ESPN athlete id, or from an nflverse gsis id with

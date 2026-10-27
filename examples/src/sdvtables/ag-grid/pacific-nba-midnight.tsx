@@ -57,7 +57,15 @@ const options = gridOptions(spec, rows, {
 // the drawer passes onGridReady, to hand the grid to the render test
 function Pacific(props: Pick<AgGridReactProps<Row>, "onGridReady">) {
   useEffect(() => document.head.insertAdjacentHTML("beforeend", fontsLinkFor(spec)), []);
-  return <AgGridReact<Row> {...options} {...props} domLayout="autoHeight" />;
+  // click a row to select it (AG Grid Community's row selection): it keeps a shade of its team's colour
+  return (
+    <AgGridReact<Row>
+      {...options}
+      {...props}
+      domLayout="autoHeight"
+      rowSelection={{ mode: "singleRow", checkboxes: false, enableClickSelection: true }}
+    />
+  );
 }
 
 export const browser = {

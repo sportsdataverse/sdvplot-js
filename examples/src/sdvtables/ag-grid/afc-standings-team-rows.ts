@@ -42,6 +42,8 @@ export const browser = {
       }),
       domLayout: "autoHeight",
       initialState: { sort: { sortModel: [{ colId: "wins", sort: "desc" }] } },
+      // click a row to select it (AG Grid Community's row selection): it keeps a shade of its team's colour
+      rowSelection: { mode: "singleRow", checkboxes: false, enableClickSelection: true },
     });
   },
   width: 600,

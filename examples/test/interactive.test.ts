@@ -21,7 +21,14 @@ import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { pagePath } from "../scripts/pages.js";
 import { abs } from "../sources.js";
 import { BROWSER } from "../src/browser.gen.js";
-import { AFC_WEEKS_2024, NBA_STANDINGS, NFL_TEAM_EPA_2024, STANDINGS, nflPlays2024 } from "../src/data.js";
+import {
+  AFC_WEEKS_2024,
+  NBA_STANDINGS,
+  NFL_TEAM_EPA_2024,
+  NHL_STANDINGS,
+  STANDINGS,
+  nflPlays2024,
+} from "../src/data.js";
 import { EXAMPLES } from "../src/registry.gen.js";
 import { MUI_PROXY_STYLE } from "./run.js";
 
@@ -1363,6 +1370,8 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
         images: () => (string | undefined)[];
         fills: () => (string | undefined)[];
         bg: string;
+        /** The theme stripes odd rows: the team fill must cover the stripe there. */
+        stripe?: string;
       }
     >
   > = {
@@ -1394,6 +1403,21 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
       },
       bg: "#0c0d10",
     },
+    "sdvtables/ag-grid/atlantic-nhl-savant": {
+      rows: NHL_STANDINGS.map((s) => s.team),
+      field: "team",
+      images: () => NHL_STANDINGS.map((s) => resolveSync(s.team, "nhl")),
+      fills: () => {
+        const pal = agPalette(
+          "nhl",
+          NHL_STANDINGS.map((s) => s.team),
+          { background: "#FFFFFF" },
+        );
+        return pal.map((c) => solid(`${c}66`, "#FFFFFF"));
+      },
+      bg: "#ffffff",
+      stripe: "#f4f4f4", // savant's odd-row stripe
+    },
   };
   // a computed colour as [r, g, b]: rgb(r, g, b), or color(srgb r g b) in 0-1
   const agRgb = (s: string) => {
@@ -1423,7 +1447,7 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
       const entry = EXAMPLES.find((e) => e.id === id);
       const want = AG_GRIDS[id];
       if (entry === undefined || want === undefined) throw new Error(`${id} has no registry entry`);
-      await Promise.all([loadLeague("nfl"), loadLeague("nba")]);
+      await Promise.all([loadLeague("nfl"), loadLeague("nba"), loadLeague("nhl")]);
       const page = await browser.newPage();
       try {
         const errors: string[] = [];
@@ -1464,6 +1488,7 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
                 ink: getComputedStyle(r).color,
                 hover: r.style.getPropertyValue("--ag-row-hover-color"),
                 selected: r.style.getPropertyValue("--ag-selected-row-background-color"),
+                odd: r.classList.contains("ag-row-odd"),
               };
             });
           const viewport = el.querySelector(".ag-grid-viewport") as HTMLElement;
@@ -1516,6 +1541,19 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
           ).toBe(true);
           expect(contrast(agCss(agRgb(r.ink)), f), `row ${r.id}'s text`).toBeGreaterThanOrEqual(4.5);
         });
+        if (want.stripe !== undefined) {
+          // a striped theme: AG Grid's odd rows carry its stripe colour, and each odd team row's painted pixel above is
+          // its team fill, not the stripe (checked against both: the fill is the expected one, and it is not the stripe)
+          const odd = got.rows.filter((r) => r.odd);
+          expect(odd.length, "AG Grid striped the odd rows").toBe(Math.floor(got.rows.length / 2));
+          for (const r of odd) {
+            const [cx, cy] = r.cell as [number, number];
+            expect(
+              agNear(pixels(cx, cy)[0] ?? [], agHex(want.stripe), 3),
+              `odd row ${r.id} shows its team fill, not the stripe ${want.stripe}`,
+            ).toBe(false);
+          }
+        }
         // the images' own pixels: with them hidden, each image's box changes (over 10%, as the other grids' logos)
         await grid.evaluate((el) => {
           for (const i of el.querySelectorAll("img[data-sdv-id]"))
@@ -1559,13 +1597,32 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
         };
         await row(0).locator('.ag-cell[col-id="wins"]').hover();
         check(await spot(0), 0, "hover", `hovered row ${want.rows[0]}`);
-        await row(1).evaluate((r) => r.classList.add("ag-row-selected"));
+        // a real selection: the example turns on AG Grid Community's row selection, and the test selects through the
+        // grid's own API (the drawer leaves it on the box), so AG Grid itself marks the row selected
+        const select = (rowId: string, on: boolean) =>
+          figure.locator('.sdv-live-output [role="figure"]').evaluate(
+            (el, [k, v]) => {
+              type Node = { setSelected: (s: boolean) => void };
+              const api = (el as HTMLElement & { sdvAgGrid: { getRowNode: (k: string) => Node | undefined } })
+                .sdvAgGrid;
+              const node = api.getRowNode(k as string);
+              if (node === undefined) throw new Error(`no row ${String(k)}`);
+              node.setSelected(v as boolean);
+            },
+            [rowId, on] as const,
+          );
+        const second = want.rows[1] ?? "";
+        await select(second, true);
         await page.mouse.move(0, 0);
-        check(await spot(1), 1, "selected", `selected row ${want.rows[1]}`);
+        expect(await row(1).getAttribute("class"), "AG Grid marks the row selected").toMatch(
+          /\bag-row-selected\b/,
+        );
+        check(await spot(1), 1, "selected", `selected row ${second}`);
         await row(1).locator('.ag-cell[col-id="wins"]').hover();
-        check(await spot(1), 1, "selected", `selected, hovered row ${want.rows[1]}`);
-        await row(1).evaluate((r) => r.classList.remove("ag-row-selected"));
+        check(await spot(1), 1, "selected", `selected, hovered row ${second}`);
+        await select(second, false);
         await page.mouse.move(0, 0);
+        expect(await row(1).getAttribute("class")).not.toMatch(/\bag-row-selected\b/);
         if (SHOTS !== undefined)
           await figure
             .locator(".sdv-live-output")
