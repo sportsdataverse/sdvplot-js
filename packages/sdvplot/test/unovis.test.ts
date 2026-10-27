@@ -192,6 +192,10 @@ describe("logoIcons / headshotIcons", () => {
     });
     expect(gsis.domain).toEqual(["00-0033873"]);
     expect(symbols(gsis.svgDefs)[0]?.href).toBe(headshotUrl("00-0033873", "nfl", { idSystem: "gsis" }));
+    // the node icon accessor by gsis id: the one symbol, its URL the gsis headshot; a gsis id with no headshot, none
+    expect(gsis("00-0033873")).toBe(`#${symbols(gsis.svgDefs)[0]?.id}`);
+    expect(gsis(" 00-0033873 ")).toBe(gsis("00-0033873"));
+    expect(gsis("00-9999999")).toBeUndefined();
     expect(w).toHaveLength(1);
     expect(w[0]).toMatch(/no headshot: 00-9999999/);
   });
