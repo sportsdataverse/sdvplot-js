@@ -18,6 +18,8 @@
     "render:export-png": "tsx scripts/export-png.ts"
   },
   "devDependencies": {
+    "@ant-design/plots": "2.6.8",
+    "@antv/g2": "5.4.8",
     "@deck.gl/core": "9.4.0",
     "@deck.gl/layers": "9.4.0",
     "@emotion/react": "11.14.0",

@@ -26,7 +26,9 @@
     "cytoscape",
     "threejs",
     "react-three-fiber",
-    "lightweight-charts"
+    "lightweight-charts",
+    "g2",
+    "ant-design-charts"
   ],
   "homepage": "https://plot.sportsdataverse.org",
   "bugs": "https://github.com/sportsdataverse/sdvplot-js/issues",
@@ -137,9 +139,15 @@
       "types": "./dist/lightweight-charts.d.ts",
       "import": "./dist/lightweight-charts.js"
     },
+    "./g2": {
+      "types": "./dist/g2.d.ts",
+      "import": "./dist/g2.js"
+    },
     "./package.json": "./package.json"
   },
   "peerDependencies": {
+    "@antv/component": ">=2.1.12",
+    "@antv/g2": ">=5.4.8",
     "@deck.gl/core": ">=9.4.0",
     "@deck.gl/layers": ">=9.4.0",
     "@mui/x-charts": ">=9.15.0",
@@ -164,6 +172,12 @@
     "victory": ">=37.3.6"
   },
   "peerDependenciesMeta": {
+    "@antv/component": {
+      "optional": true
+    },
+    "@antv/g2": {
+      "optional": true
+    },
     "@deck.gl/core": {
       "optional": true
     },
@@ -249,6 +263,8 @@
     "provenance": true
   },
   "devDependencies": {
+    "@antv/component": "2.1.12",
+    "@antv/g2": "5.4.8",
     "@deck.gl/core": "9.4.0",
     "@deck.gl/layers": "9.4.0",
     "@emotion/react": "11.14.0",

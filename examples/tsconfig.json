@@ -42,7 +42,8 @@
       "@sportsdataverse/sdvplot/deckgl": ["../packages/sdvplot/src/deckgl.ts"],
       "@sportsdataverse/sdvplot/cytoscape": ["../packages/sdvplot/src/cytoscape.ts"],
       "@sportsdataverse/sdvplot/three": ["../packages/sdvplot/src/three/index.ts"],
-      "@sportsdataverse/sdvplot/lightweight-charts": ["../packages/sdvplot/src/lightweight-charts.ts"]
+      "@sportsdataverse/sdvplot/lightweight-charts": ["../packages/sdvplot/src/lightweight-charts.ts"],
+      "@sportsdataverse/sdvplot/g2": ["../packages/sdvplot/src/g2.ts"]
     }
   },
   "include": [
