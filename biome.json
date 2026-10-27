@@ -10,6 +10,7 @@
       "packages/sdvtables/data/**",
       "fixtures/**",
       "notebooks/vendor/**",
+      "examples/src/vendor/shadcn/chart.tsx",
       "**/*.api.md",
       "docs/build/**",
       "docs/.docusaurus/**",
