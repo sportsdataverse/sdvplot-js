@@ -20,7 +20,10 @@ const rows = TEAMS.flatMap((team) => {
   const season = AFC_WEEKS_2024.find((s) => s.team === team);
   if (season === undefined) throw new Error(`no 2024 weeks for ${team}`);
   let total = 0;
-  return season.margins.map((m, i) => ({ team, week: i + 1, diff: (total += m ?? 0) }));
+  return season.margins.map((m, i) => {
+    total += m ?? 0;
+    return { team, week: i + 1, diff: total };
+  });
 });
 // each line in its team's colour, keyed by the team value the `z` channel reads
 const color = teamColorScale("nfl", TEAMS);

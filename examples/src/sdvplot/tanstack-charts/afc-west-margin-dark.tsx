@@ -19,7 +19,10 @@ const rows = TEAMS.flatMap((team) => {
   const season = AFC_WEEKS_2024.find((s) => s.team === team);
   if (season === undefined) throw new Error(`no 2024 weeks for ${team}`);
   let total = 0;
-  return season.margins.map((m, i) => ({ team, week: i + 1, diff: (total += m ?? 0) }));
+  return season.margins.map((m, i) => {
+    total += m ?? 0;
+    return { team, week: i + 1, diff: total };
+  });
 });
 // the card's background: every team colour keeps 3:1 contrast on it (the Raiders' black and the Broncos' navy
 // would not), and the four stay distinct
