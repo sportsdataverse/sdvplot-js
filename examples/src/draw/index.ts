@@ -63,6 +63,10 @@ async function drawWith(el: HTMLElement, s: BrowserSpec): Promise<() => void> {
       return (await import(/* webpackChunkName: "draw-ag-grid" */ "./ag-grid.js")).default(el, s);
     case "ag-grid-react":
       return (await import(/* webpackChunkName: "draw-ag-grid-react" */ "./ag-grid-react.js")).default(el, s);
+    case "unovis":
+      return (await import(/* webpackChunkName: "draw-unovis" */ "./unovis.js")).default(el, s);
+    case "unovis-react":
+      return (await import(/* webpackChunkName: "draw-unovis-react" */ "./unovis-react.js")).default(el, s);
   }
 }
 
