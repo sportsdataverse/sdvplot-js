@@ -388,33 +388,41 @@ const rows = await getTeamRows();
 <canvas bind:this={canvas}></canvas>
 ```
 
-In React, [react-chartjs-2](https://react-chartjs-2.js.org) (5.3.1 or later) takes the same pieces as props:
+In React, [react-chartjs-2](https://react-chartjs-2.js.org) (tested with react-chartjs-2 5.3.1) takes the same pieces as
+props. They build `<img>` elements, which need a DOM, and a client component still renders once on the server (Next.js):
+build them after mount, in an effect, as here, or load the chart component with `next/dynamic` and `{ ssr: false }`.
 
 ```tsx
-import { Chart as ChartJS, registerables } from "chart.js";
+import { type ChartData, Chart as ChartJS, registerables } from "chart.js";
+import { useEffect, useState } from "react";
 import { Chart } from "react-chartjs-2";
 import { logoPoints, pointImages } from "@sportsdataverse/sdvplot/chartjs";
 
 ChartJS.register(...registerables); // global, once: Chart.js's controllers and scales; sdvplot's plugins stay per chart
 
-// after `await loadLeague("nfl")`, in the browser
+// after `await loadLeague("nfl")`
 export function TeamScatter({ rows }: { rows: { team: string; pf: number; pa: number }[] }) {
-  const data = {
-    datasets: [
-      {
-        label: "teams", // react-chartjs-2 updates a dataset in place by its label: new rows bring new logos
-        data: rows.map((r) => ({ x: r.pf, y: r.pa })),
-        ...logoPoints(rows.map((r) => r.team), { league: "nfl", radius: 14 }),
-      },
-    ],
-  };
-  return <Chart type="scatter" data={data} plugins={[pointImages]} />;
+  const [data, setData] = useState<ChartData<"scatter"> | null>(null);
+  useEffect(() => {
+    // in the browser only: the point styles are <img> elements
+    setData({
+      datasets: [
+        {
+          label: "teams", // react-chartjs-2 updates a dataset in place by its label: new rows bring new logos
+          data: rows.map((r) => ({ x: r.pf, y: r.pa })),
+          ...logoPoints(rows.map((r) => r.team), { league: "nfl", radius: 14 }),
+        },
+      ],
+    });
+  }, [rows]);
+  return data === null ? null : <Chart type="scatter" data={data} plugins={[pointImages]} />;
 }
 ```
 
 react-chartjs-2 reads `plugins` only when it creates the chart. `pointImages` and `axisLogos` read the chart's data on
 every update, so new rows or labels are drawn; `logoWatermarks(teams)` and `surface(league)` keep what they were built
-with, so give `<Chart>` a `key` that changes with them (`key={teams.join()}`) to build a new chart. See the
+with, so give `<Chart>` a `key` that changes with them (`key={teams.join()}`) to build a new chart (react-chartjs-2's `redraw` is
+not the same: it rebuilds on every render). See the
 [react-chartjs-2 guide](https://plot.sportsdataverse.org/docs/guides/react-chartjs-2).
 
 The line charts below draw Super Bowl LIX (Kansas City at Philadelphia, 2025-02-09). `wp` is ESPN's win probability

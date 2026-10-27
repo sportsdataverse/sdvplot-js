@@ -68,8 +68,8 @@ const config = (o: Pick<AxisLogoOptions, "loadImage"> = {}): ChartProps<"bar"> =
       },
     },
   },
-  // the team axis' labels painted as each team's logo, 32 px tall, their text blanked (`variant: "dark"` would take a
-  // team's logo for dark backgrounds where it has one)
+  // the team axis' labels painted as each team's logo, 32 px tall, their text blanked. These are the default
+  // (light-background) marks on purpose: the dark variants (`variant: "dark"`) have no offline fixture for the gate
   plugins: [backdrop, axisLogos("x", { league: "nfl", size: 32, ...o })],
 });
 // In the browser: <Chart {...config()} /> on a 640 x 360 canvas.

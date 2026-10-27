@@ -64,6 +64,8 @@ const config = (division: Division, o: Pick<PointOptions, "loadImage"> = {}): Ch
   };
 };
 
+// Client-only: config() builds <img> point styles while rendering, which needs a DOM (in Next.js, build them in a
+// useEffect or load this component with next/dynamic and { ssr: false }).
 function AfcScatter(): ReactElement {
   const [division, setDivision] = useState<Division>("West");
   return (
