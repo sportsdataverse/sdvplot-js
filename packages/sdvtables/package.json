@@ -14,7 +14,8 @@
     "team-logos",
     "mui",
     "mui-x-data-grid",
-    "ag-grid"
+    "ag-grid",
+    "tanstack-table"
   ],
   "homepage": "https://plot.sportsdataverse.org",
   "bugs": "https://github.com/sportsdataverse/sdvplot-js/issues",
@@ -44,6 +45,10 @@
     "./aggrid": {
       "types": "./dist/aggrid.d.ts",
       "import": "./dist/aggrid.js"
+    },
+    "./tanstack-table": {
+      "types": "./dist/tanstack-table.d.ts",
+      "import": "./dist/tanstack-table.js"
     },
     "./export": {
       "types": "./dist/export.d.ts",
