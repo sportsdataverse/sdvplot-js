@@ -2426,7 +2426,8 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
         });
         let painted = 0;
         for (const l of got.links) {
-          const c = hex(l.color);
+          // the expected team's colour, not the attribute read back: a link painted in another team's colour fails
+          const c = hex(colorOf(l.key.split(">")[2] as string));
           const seen = l.points.map((p) => {
             const [a] = shown(p.x, p.y);
             const [b] = under(p.x, p.y);

@@ -55,7 +55,7 @@ install for you, so add the ones for the subpaths you import:
 | `@sportsdataverse/sdvplot/g2` | nothing (draw with `@antv/g2` >= 5.4.8, or with Ant Design Charts, `@ant-design/plots`, whose configs are G2 specs; tested with 2.6.8; `axisLogos` needs `@antv/component` >= 2.1.12) |
 | `@sportsdataverse/sdvplot/tanstack` | nothing (draw with `@tanstack/charts` >= 1.1.0, through its React, Svelte or DOM `Chart`, SVG renderer) |
 | `@sportsdataverse/sdvplot/maplibre` | nothing at runtime (draw with `maplibre-gl` >= 6.14.0; deck.gl layers on the map with `@deck.gl/mapbox` >= 9.4.0; see the [MapLibre guide](https://plot.sportsdataverse.org/guides/maplibre)); its type declarations name `maplibre-gl`'s types, so TypeScript needs it installed |
-| `@sportsdataverse/sdvplot/unovis` | nothing (draw with `@unovis/ts` >= 1.7.1, or `@unovis/react` in React; guide: [Unovis](https://plot.sportsdataverse.org/guides/unovis)) |
+| `@sportsdataverse/sdvplot/unovis` | nothing (draw with `@unovis/ts` >= 1.7.1, or `@unovis/react` in React; its type declarations name no Unovis type, so TypeScript needs neither installed; guide: [Unovis](https://plot.sportsdataverse.org/guides/unovis)) |
 | `@sportsdataverse/sdvplot/lightweight-charts` | nothing to import it; `lightweight-charts` >= 5.2.1 to draw (Apache-2.0 with TradingView's attribution: `withAttribution` keeps its logo on the chart and `attributionNotice` puts its notice on the page) |
 | `@sportsdataverse/sdvplot/plot` | `@observablehq/plot` >= 0.6.16 and `@sportsdataverse/sporty` |
 | `@sportsdataverse/sdvplot/d3` | `d3` >= 7 and `@sportsdataverse/sporty` |
