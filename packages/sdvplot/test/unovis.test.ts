@@ -111,6 +111,14 @@ describe("teamColorScale / teamColorPalette", () => {
     expect(dark("PHI")).toBe(dark(21));
     expect(dark(21)).not.toBe(plain);
   });
+
+  test("teamColorPalette resolves aliases as teamColorScale does: on a background, 'KC' and 12 are one team, one colour", () => {
+    const o = { background: "#111827" };
+    const pal = teamColorPalette("nfl", ["KC", 12, "PHI"], o);
+    const scale = teamColorScale("nfl", ["KC", 12, "PHI"], o);
+    expect(pal[0]).toBe(pal[1]);
+    expect(pal).toEqual([scale("KC"), scale(12), scale("PHI")]);
+  });
 });
 
 describe("logoIcons / headshotIcons", () => {
