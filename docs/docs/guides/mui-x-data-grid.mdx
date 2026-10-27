@@ -28,11 +28,19 @@ to them as usual.
 Each spec column becomes one `GridColDef`, with the label and alignment the HTML table gives it. A `width` in px becomes
 MUI's numeric width; a width in other units (a percentage, say) is left to MUI, with one warning. `num`, `int`, `pct`
 and `rank` columns keep sdvtables' formats through `valueFormatter` (grouped thousands, fixed decimals, a forced sign,
-U+2212 minus signs, ordinals) and sort and filter as numbers. `sortable` and `filterable` pass through, and a column's
-`subheader` becomes its header tooltip. A missing value shows as an empty cell, never "NaN".
+U+2212 minus signs, ordinals with a superscript suffix) and filter as numbers. A `scaleNote` divides its `num` and `int`
+columns and suffixes their labels exactly as in the HTML table. `sortable` and `filterable` pass through, and a column's
+`subheader` becomes its header tooltip. A blank or unparseable value in a number column is missing: an empty cell, never
+"NaN" or 0.
+
+Sorting is sdvtables' own, through MUI's `getSortComparator`: a column's `compare` if it has one, else numbers for the
+numeric kinds and text otherwise, with missing values last whether you sort ascending or descending, as in the
+interactive HTML table. (MUI's own number sort would put them first when ascending.)
 
 `getRowId` reads the spec's `rowKey` when it has one, and otherwise numbers the rows in the order you passed them; set a
-`rowKey` when the rows change after the props are built.
+`rowKey` when the rows change after the props are built. MUI needs a unique id per row, so `dataGridProps` throws when two
+rows share a `rowKey` value, when a row's `rowKey` value is blank, or, with no `rowKey`, when the same row object appears
+twice.
 
 ## Logos and team-coloured rows
 
@@ -45,7 +53,9 @@ warns once, as the HTML table does. `rowHeight` grows so the tallest image fits 
 theme's background, the same `teamColorPalette` that `@sportsdataverse/sdvplot/mui` gives MUI X Charts, so a team keeps
 3:1 contrast against the grid and stays distinct from the teams before it. Each colour is laid over the background at
 `alpha` (0.4 by default, as the `teamColorBg` column), and the row's text turns black or white, whichever reads better on
-that fill. `teamColorBg` and `teamColorBar` columns colour a single cell the same way, through MUI's `cellClassName`.
+that fill. A hovered or selected team row keeps a slightly deeper shade of its fill, its text worked out again, rather
+than MUI's grey. `teamColorBg` and `teamColorBar` columns colour a single cell the same way, through MUI's
+`cellClassName`.
 
 The grid below is the sample AFC standings on the `sdv` theme, sorted by wins.
 
@@ -54,9 +64,10 @@ The grid below is the sample AFC standings on the `sdv` theme, sorted by wins.
 ## Headshots
 
 `headshot` columns draw ESPN player headshots from the cell's ESPN athlete id, or from an nflverse gsis id with
-`idSystem: "gsis"` (`prepare` loads the gsis map). An id with no headshot keeps the id as text and warns once. This
+`idSystem: "gsis"` (`prepare` loads the gsis map). An id with no headshot keeps the id as text and warns once. A
+headshot has an empty `alt`: it is decorative, as the player's name belongs in a column of its own beside it. This
 leaderboard is on the `booktabs` theme, with each quarterback's team as a `teamColorBar` cell, sorted by net EPA per
-play; New England's value is blank in the sample data, so MUI sorts it last.
+play; New England's value is blank in the sample data, so it sorts last.
 
 <Live id="sdvtables/mui-x-data-grid/afc-quarterbacks-headshots" />
 
@@ -83,7 +94,8 @@ The themes name their fonts but do not load them: put the `<link>` that `fontsLi
 
 The cell kinds that draw in HTML or SVG (pills, bars, sparklines, gauges, icons and the rest) show their plain value in
 the grid, with one warning per kind; render those tables with `renderHTML` or `<SdvTable>` instead. Decorations
-(titles, source notes, spotlights, legends) are the page's to add around the grid. Logos are plain `<img>` tags, so the
+(titles, source notes, spotlights, legends) are the page's to add around the grid; a `scaleNote` scales its columns and
+labels, but its note is yours to place. Logos are plain `<img>` tags, so the
 grid's own CSV export and print keep the text, not the images.
 
 ## Testing and server rendering
