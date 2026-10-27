@@ -97,7 +97,9 @@ this reason.
 `@unovis/ts` 1.7.1 depends on, among others, all of d3, `three` ^0.135, `leaflet` 1.7.1, `maplibre-gl` ^6.7, `elkjs`
 and `@emotion/css`, for its globe, map and graph-layout components. A package manager installs all of them. `three`
 0.135 is older than the `three` sdvplot's Three.js layer asks for (0.186.1 or later), so a project that uses both
-installs two copies side by side; they do not meet at runtime. What reaches the browser depends on what you import.
+installs two copies side by side; they do not meet at runtime. Its `maplibre-gl` range (^6.7) takes the copy
+sdvplot's MapLibre layer asks for (6.14.0 or later), so one copy serves both: this repository's lockfile holds only
+6.14.0. What reaches the browser depends on what you import.
 Unovis marks only its stylesheet entry as having side effects, so a bundler keeps just the components a page names:
 import them by name (`import { Graph, SingleContainer } from "@unovis/ts"`), never the whole namespace. This site's
 two Unovis drawers import `SingleContainer`, `Graph` and `Sankey` (and their React wrappers), and their library chunks
