@@ -70,7 +70,8 @@ export type MuiColorPalette = (mode: "light" | "dark") => string[];
  * Team colours as a chart's `colors`, MUI's palette callback: MUI calls it with the theme's mode, so under a dark
  * `ThemeProvider` every series takes its team colour readable on the dark background (3:1 contrast, distinct from the
  * others), and under a light one readable on white. Series i takes `teams[i]`'s colour: give the series in the same
- * order. Each mode's palette is worked out once, when MUI first asks for it.
+ * order. Each mode's palette is worked out once, when MUI first asks for it, so build it once (module scope or
+ * `useMemo`): a new one on every render works the palettes out again.
  *
  * @example
  * ```tsx

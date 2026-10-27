@@ -393,6 +393,11 @@ describe("logoTickLabel: an axis' tick label slot (the composition API)", () => 
       />,
     );
     expect(images(container)).toHaveLength(0);
+    // positive control: the chart did render its team axis, as MUI's own text labels
+    const labels = [...container.querySelectorAll("text")].filter((t) =>
+      (t.getAttribute("class") ?? "").includes("MuiChartsAxis-tickLabel"),
+    );
+    expect(labels.map((t) => t.textContent)).toEqual(expect.arrayContaining(TEAMS));
   });
 });
 
@@ -448,6 +453,17 @@ describe("team colours", () => {
         expect(out).toEqual(rechartsPalette(league, teams, { background: bg })); // the shared palette, no copy
       }
     }
+  });
+
+  test("numeric ESPN team ids give the same colours as the abbreviations", () => {
+    const abbr = ["KC", "DEN", "LV", "KC"];
+    const ids = abbr.map((t) => Number(ID(t)));
+    for (const mode of ["light", "dark"] as const)
+      expect(teamColors("nfl", ids)(mode)).toEqual(teamColors("nfl", abbr)(mode));
+    const a = teamColorGetter("nfl", abbr, { background: "#121212" });
+    const b = teamColorGetter("nfl", ids, { background: "#121212" });
+    expect(abbr.map((_, i) => b({ dataIndex: i }))).toEqual(abbr.map((_, i) => a({ dataIndex: i })));
+    expect(new Set(abbr.map((_, i) => b({ dataIndex: i }))).size).toBe(3); // three teams, three colours
   });
 
   test("custom backgrounds; each call returns a fresh array MUI may keep", () => {
