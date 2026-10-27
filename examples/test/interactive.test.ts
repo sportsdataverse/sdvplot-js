@@ -78,6 +78,8 @@ const DRAWN: Readonly<Record<string, string>> = {
   g2: ".sdv-live-output canvas",
   "ant-design-charts": ".sdv-live-output canvas",
   "ag-grid": ".sdv-live-output .ag-root-wrapper .ag-row[row-id]",
+  // a TanStack Table, drawn by Svelte: its logo cells
+  "tanstack-table": ".sdv-live-output table img[data-sdv-id]",
   maplibre: ".sdv-live-output canvas.maplibregl-canvas",
   // a node or a flow Unovis drew (both drawers, @unovis/ts and @unovis/react, sit in sdvplot/unovis)
   unovis: ".sdv-live-output svg :is(g[class*=g-node], path[class*=visible])",
@@ -2183,6 +2185,190 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
           // the palette did its work: PHI's midnight green does not read on the dark map, so it is not what is drawn
           expect(colorOf("PHI", src)).not.toBe(teamColorsSync("nfl", ["PHI"])[0]);
         }
+        expect(errors).toEqual([]);
+      } finally {
+        await page.close();
+      }
+    },
+  );
+
+  // TanStack Table v9 examples (sdvtables/tanstack-table): the React one re-runs live, the Svelte one is a browser
+  // upgrade. Each table shows exactly the example's rows (by TanStack's row id, the spec's rowKey) in its starting sort;
+  // each row's logo is its own team's (by id, the NBA's from stats.nba.com's numeric TeamID); hiding the logos changes
+  // each logo's box (real image pixels); and a click on a number header sorts by it, descending then ascending.
+  const tsByWins = [...STANDINGS].sort((a, b) => b.wins - a.wins); // stable: LV before NE on 4-4
+  const tsByPct = [...NBA_STANDINGS].sort(
+    (a, b) => b.wins / (b.wins + b.losses) - a.wins / (a.wins + a.losses),
+  ); // stable: the Kings before the Warriors
+  const netEpa = (dir: 1 | -1) => [
+    ...STANDINGS.filter((s) => s.net_epa !== null)
+      .sort((a, b) => dir * ((a.net_epa ?? 0) - (b.net_epa ?? 0)))
+      .map((s) => s.team),
+    "NE", // New England's net EPA is blank: last both ways
+  ];
+  const TABLES: Readonly<
+    Record<
+      string,
+      {
+        rows: readonly string[];
+        images: () => (string | undefined)[];
+        league: "nfl" | "nba";
+        /** A header to click, and the row ids after one click (descending) and two (ascending). */
+        sort: { th: string; desc: readonly string[]; asc: readonly string[] };
+        bg: string;
+      }
+    >
+  > = {
+    "sdvtables/tanstack-table/afc-standings-react": {
+      rows: tsByWins.map((s) => s.team),
+      images: () => tsByWins.map((s) => resolveSync(s.team, "nfl")),
+      league: "nfl",
+      sort: { th: "Net EPA/play", desc: netEpa(-1), asc: netEpa(1) },
+      bg: "#FFFFFF",
+    },
+    "sdvtables/tanstack-table/pacific-nba-svelte": {
+      rows: tsByPct.map((s) => String(s.team_id)),
+      images: () => tsByPct.map((s) => resolveSync(s.team_id, "nba")),
+      league: "nba",
+      sort: {
+        th: "L",
+        desc: [...NBA_STANDINGS].sort((a, b) => b.losses - a.losses).map((s) => String(s.team_id)),
+        asc: [...NBA_STANDINGS].sort((a, b) => a.losses - b.losses).map((s) => String(s.team_id)),
+      },
+      bg: "#0C0D10",
+    },
+  };
+  test("every TanStack Table example has its render check", () => {
+    expect(
+      EXAMPLES.filter((e) => e.id.startsWith("sdvtables/tanstack-table/"))
+        .map((e) => e.id)
+        .sort(),
+    ).toEqual(Object.keys(TABLES).sort());
+  });
+  test.each(Object.keys(TABLES))(
+    "%s draws live: the example's rows, each logo in its own row, real logo pixels, sorting by a click",
+    async (id) => {
+      const entry = EXAMPLES.find((e) => e.id === id);
+      const want = TABLES[id];
+      if (entry === undefined || want === undefined)
+        throw new Error(`${id} has no registry entry or no expectations`);
+      await Promise.all([loadLeague("nfl"), loadLeague("nba")]);
+      const page = await browser.newPage();
+      try {
+        const errors: string[] = [];
+        page.on("console", (m) => void (m.type() === "error" && errors.push(m.text())));
+        page.on("pageerror", (e) => void errors.push(e.message));
+        await page.goto(`${base}/gallery/${pagePath(entry)}/`);
+        const figure = page.locator(`figure[data-example="${id}"]`);
+        await figure.scrollIntoViewIfNeeded();
+        const table = figure.locator(".sdv-live-output table");
+        await table.locator("img[data-sdv-id]").first().waitFor({ timeout: 30_000 });
+        await page.waitForLoadState("networkidle"); // the logos
+        await page.addStyleTag({ content: ".navbar { display: none !important; }" });
+        expect(await figure.locator(".sdv-live-static").count(), "the static copy is replaced").toBe(0);
+        expect(await figure.locator(".sdv-live-error").count(), "no error alert").toBe(0);
+        const read = () =>
+          table.evaluate((el) => {
+            const box = el.getBoundingClientRect();
+            return {
+              rows: [...el.querySelectorAll("tbody tr")].map((r) => {
+                const img = r.querySelector("img[data-sdv-id]");
+                const ib = img?.getBoundingClientRect();
+                return {
+                  id: r.getAttribute("data-row-id"),
+                  image: img?.getAttribute("data-sdv-id") ?? null,
+                  src: img?.getAttribute("src") ?? null,
+                  loaded: img instanceof HTMLImageElement && img.complete && img.naturalWidth > 0,
+                  box:
+                    ib === undefined
+                      ? null
+                      : [ib.x - box.left, ib.y - box.top, ib.width, ib.height].map(Math.round),
+                };
+              }),
+              images: el.querySelectorAll("img[data-sdv-id]").length,
+              bg: getComputedStyle(el.parentElement as Element).backgroundColor,
+            };
+          });
+        const got = await read();
+        expect(
+          got.rows.map((r) => r.id),
+          "exactly the example's rows, in its order",
+        ).toEqual(want.rows);
+        expect(got.images, "one logo per row, no more").toBe(want.rows.length);
+        expect(
+          got.rows.map((r) => r.image),
+          "each row's logo is its own team's",
+        ).toEqual(want.images());
+        // and its image is that team's logo: the URL sdvplot gives for the expected id, not only the id it is stamped with
+        expect(
+          got.rows.map((r) => r.src),
+          "each row draws its own team's logo URL",
+        ).toEqual(
+          want
+            .images()
+            .map((id) => logoUrlSync(id as string, want.league, { markType: "logo", idSystem: "team_id" })),
+        );
+        expect(
+          got.rows.map((r) => r.loaded),
+          "every logo loaded",
+        ).toEqual(want.rows.map(() => true));
+        // the sdvtables theme's background, from its scoped stylesheet, on the table's wrapper
+        const hex = (s: string) => [1, 3, 5].map((i) => Number.parseInt(s.slice(i, i + 2), 16));
+        expect((got.bg.match(/\d+/g) ?? []).slice(0, 3).map(Number), "the theme's background").toEqual(
+          hex(want.bg),
+        );
+        const shoot = async () => {
+          const shot = await loadImage(await table.screenshot());
+          const ctx = createCanvas(shot.width, shot.height).getContext("2d");
+          ctx.drawImage(shot, 0, 0);
+          return (x: number, y: number, w: number, h: number) => {
+            const d = ctx.getImageData(Math.round(x), Math.round(y), Math.max(1, w), Math.max(1, h)).data;
+            return Array.from(
+              { length: d.length / 4 },
+              (_, i) => [d[4 * i], d[4 * i + 1], d[4 * i + 2]] as number[],
+            );
+          };
+        };
+        const near = (a: number[], b: number[], d: number) =>
+          [0, 1, 2].every((c) => Math.abs((a[c] ?? 0) - (b[c] ?? 0)) <= d);
+        // the logos' own pixels: with them hidden, each logo's box changes (over 10%, as the grids' logos)
+        const pixels = await shoot();
+        await table.evaluate((el) => {
+          for (const i of el.querySelectorAll("img[data-sdv-id]"))
+            (i as HTMLElement).style.visibility = "hidden";
+        });
+        const without = await shoot();
+        const changed = got.rows.map((r) => {
+          const [x, y, w, h] = r.box as [number, number, number, number];
+          const a = pixels(x, y, w, h);
+          const b = without(x, y, w, h);
+          return a.filter((p, i) => !near(p, b[i] ?? [], 8)).length / a.length;
+        });
+        console.log(
+          `${id}: logo boxes changed ${Math.min(...changed).toFixed(2)} to ${Math.max(...changed).toFixed(2)}`,
+        );
+        changed.forEach((c, i) => expect(c, `logo ${i} paints its box`).toBeGreaterThan(0.1));
+        await table.evaluate((el) => {
+          for (const i of el.querySelectorAll("img[data-sdv-id]")) (i as HTMLElement).style.visibility = "";
+        });
+        // a click on a number header: TanStack sorts it descending first, then ascending; missing values stay last
+        const th = table.locator("th", { hasText: new RegExp(`^${want.sort.th}( [▲▼])?$`) });
+        await th.locator("button").click();
+        expect(await th.getAttribute("aria-sort")).toBe("descending");
+        expect(
+          (await read()).rows.map((r) => r.id),
+          `sorted by ${want.sort.th}, descending`,
+        ).toEqual(want.sort.desc);
+        await th.locator("button").click();
+        expect(await th.getAttribute("aria-sort")).toBe("ascending");
+        expect(
+          (await read()).rows.map((r) => r.id),
+          `sorted by ${want.sort.th}, ascending`,
+        ).toEqual(want.sort.asc);
+        if (SHOTS !== undefined)
+          await figure
+            .locator(".sdv-live-output")
+            .screenshot({ path: join(SHOTS, `${id.replace(/\//g, "_")}.png`) });
         expect(errors).toEqual([]);
       } finally {
         await page.close();

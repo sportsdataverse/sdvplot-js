@@ -9,6 +9,7 @@ export default defineConfig({
     export: "src/export/index.ts",
     mui: "src/mui.ts",
     aggrid: "src/aggrid.ts",
+    "tanstack-table": "src/tanstack-table.ts",
   },
   external: [
     "@sportsdataverse/sdvplot",
@@ -16,6 +17,7 @@ export default defineConfig({
     "@sportsdataverse/sdvplot/mui",
     "@sportsdataverse/sdvplot/tanstack",
     "ag-grid-community",
+    "@tanstack/table-core",
     "react",
     "react/jsx-runtime",
     "react-dom",
