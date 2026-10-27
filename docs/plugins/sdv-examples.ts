@@ -69,6 +69,14 @@ export default function sdvExamples(_context: LoadContext): Plugin {
               use: { loader: "svelte-loader", options: { compilerOptions: { css: "injected" } } },
             },
             { test: /\.svelte\.js$/, use: "svelte-loader" },
+            // @tanstack/svelte-table 9 and its @tanstack/svelte-store import their own modules without extensions
+            // ("./createTable.svelte" for createTable.svelte.js), which webpack refuses in an ESM package unless
+            // resolution is not fully specified
+            {
+              test: /\.js$/,
+              include: /[\\/]@tanstack[\\/]svelte-(table|store)[\\/]/,
+              resolve: { fullySpecified: false },
+            },
             // A page holding <Live id> is compiled from examples/out/<id>.json too: a warm cache must see it change.
             {
               test: /\.mdx?$/,
