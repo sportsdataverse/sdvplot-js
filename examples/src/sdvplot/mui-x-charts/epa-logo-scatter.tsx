@@ -29,7 +29,7 @@ export default (
     margin={{ top: 16, right: 24 }}
     xAxis={[{ label: "offence: EPA per play", valueFormatter: perPlay }]}
     // a defence wants negative EPA: the best defences sit at the top
-    yAxis={[{ label: "defence: EPA per play allowed", reverse: true, valueFormatter: perPlay, width: 56 }]}
+    yAxis={[{ label: "defence: EPA per play allowed", reverse: true, valueFormatter: perPlay, width: 72 }]}
     // markerSize is the logo's half-height in px: 24 px logos
     series={[
       {
