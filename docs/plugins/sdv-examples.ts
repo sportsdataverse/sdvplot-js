@@ -23,6 +23,7 @@ const CHART_LIBS = [
   "ant-design-charts",
   "ag-grid",
   "ag-grid-react",
+  "maplibre",
 ] as const;
 /**
  * Vega's self-contained build (its d3 inside). The module build imports the d3-* packages Observable Plot imports,

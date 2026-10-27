@@ -209,4 +209,31 @@ export type BrowserSpec =
       readonly width: number;
       readonly height?: number;
       readonly label: string;
+    }
+  /**
+   * `mount` is the example's own MapLibre GL JS code: it builds a map in `el` (sized `width` x `height`) with the
+   * module it is handed, adds its sources and layers once the style has loaded, and resolves to the map, and any deck.gl
+   * overlay it added with that overlay's layers (the render test projects and samples them, and hides layers through
+   * the overlay's public `setProps`). `deck` loads deck.gl's MapLibre overlay and layers, for an example that draws
+   * deck.gl layers over the map.
+   */
+  | {
+      readonly lib: "maplibre";
+      readonly mount: (
+        libs: { readonly maplibregl: typeof import("maplibre-gl"); readonly deck: () => Promise<DeckOnMap> },
+        el: HTMLElement,
+      ) => Promise<{
+        readonly map: import("maplibre-gl").Map;
+        readonly overlay?: object;
+        readonly layers?: readonly object[];
+      }>;
+      readonly width: number;
+      readonly height: number;
+      readonly label: string;
     };
+/** What `deck()` hands a MapLibre example: deck.gl's overlay for MapLibre and the layers sdvplot/deckgl builds props for. */
+export interface DeckOnMap {
+  readonly MapboxOverlay: typeof import("@deck.gl/mapbox").MapboxOverlay;
+  readonly ArcLayer: typeof import("@deck.gl/layers").ArcLayer;
+  readonly IconLayer: typeof import("@deck.gl/layers").IconLayer;
+}

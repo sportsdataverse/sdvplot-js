@@ -59,6 +59,28 @@ of `nfl_games_2024_reg.csv` with KC or PHI as the home or away team (id, week, t
   `31e1ab9c114e5ec99082e6db0cadb5a9a3bc05a515ae621fc60c6c88322ecf8c`. `examples/src/plays.ts` turns the columns back
   into rows (`defteam` is the game's other team), and `examples/src/data.ts` `nflPlays2024()` loads them on demand.
 
+## NFL stadiums and airports
+
+Written by `uv run tools/sample-data/nfl_venues.py --stadiums ... --games ... --airports ...` from local checkouts
+(nothing downloaded), 2026-10-27:
+
+- `nfl_stadiums_2024.csv` (`NFL_STADIUMS_2024`, 1,659 bytes, sha256 `b1a6a216…1260`): each team's 2024 home stadium
+  and its coordinates.
+  - The stadium is the `stadium_id` of most of the team's 2024 regular-season home games, joined by id, not name,
+    in nflverse `games.csv`, read from nflverse/nfldata `data/games.csv` at 20cdb994b1. The script asserts that
+    file's 272 games of 2024 equal `nfl_games_2024_reg.csv`.
+  - The stadium's row comes from sportsdataverse/nfl-data `nfl/stadiums/stadiums.csv` at main 8c8305af
+    (sportsdataverse/nfl-data#85). That file is a verbatim copy of nfelo's greerreNFL/Stadiums `data/stadiums.csv`
+    at upstream commit 3e97318781f198973e1414189d6324249657f562: 51,180 bytes, sha256
+    `c73bc82fdcb5abe9018227a61bfe91a562d7bf1f10214ee34f1a480d5bcd519c`, which the script asserts. Columns kept:
+    `team`, `stadium_id`, `stadium_name`, `lat`, `lon`, values as served (Houston's stadium is still named
+    "Reliant Stadium" there).
+  - Upstream declares no licence. The owner approved its use (2026-10-27), and the guide credits nfelo (greerreNFL).
+- `nfl_airports.csv` (`NFL_AIRPORTS`, 760 bytes, sha256 `0e19429b…182b`): each team's home airport, every row of
+  nflverse/nfldata `data/airports.csv` (sha256 `677cb0e9…d6f7`, last changed de2c0016d5 of 2020-07-13; read at
+  20cdb994b1). Columns kept: `team`, `airport`, `latitude`, `longitude`, values as served. The MapLibre road-trip
+  and arc examples fly teams airport to airport.
+
 ## Captures from sportsdataverse-py
 
 Written by `uv run tools/sample-data/sdv_py_captures.py` from fixtures committed in sportsdataverse-py

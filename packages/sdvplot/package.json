@@ -29,7 +29,9 @@
     "lightweight-charts",
     "g2",
     "ant-design-charts",
-    "tanstack-charts"
+    "tanstack-charts",
+    "maplibre",
+    "maps"
   ],
   "homepage": "https://plot.sportsdataverse.org",
   "bugs": "https://github.com/sportsdataverse/sdvplot-js/issues",
@@ -148,6 +150,10 @@
       "types": "./dist/tanstack.d.ts",
       "import": "./dist/tanstack.js"
     },
+    "./maplibre": {
+      "types": "./dist/maplibre.d.ts",
+      "import": "./dist/maplibre.js"
+    },
     "./package.json": "./package.json"
   },
   "peerDependencies": {
@@ -155,6 +161,7 @@
     "@antv/g2": ">=5.4.8",
     "@deck.gl/core": ">=9.4.0",
     "@deck.gl/layers": ">=9.4.0",
+    "@deck.gl/mapbox": ">=9.4.0",
     "@mui/x-charts": ">=9.15.0",
     "@nivo/bump": ">=0.99",
     "@nivo/chord": ">=0.99",
@@ -170,6 +177,7 @@
     "d3": ">=7",
     "layerchart": ">=2.5.1",
     "lightweight-charts": ">=5.2.1",
+    "maplibre-gl": ">=6.14.0",
     "react": ">=18",
     "recharts": ">=3.8",
     "svelte": ">=5.57",
@@ -188,6 +196,9 @@
       "optional": true
     },
     "@deck.gl/layers": {
+      "optional": true
+    },
+    "@deck.gl/mapbox": {
       "optional": true
     },
     "@mui/x-charts": {
@@ -235,6 +246,9 @@
     "lightweight-charts": {
       "optional": true
     },
+    "maplibre-gl": {
+      "optional": true
+    },
     "react": {
       "optional": true
     },
@@ -276,6 +290,7 @@
     "@antv/g2": "5.4.8",
     "@deck.gl/core": "9.4.0",
     "@deck.gl/layers": "9.4.0",
+    "@deck.gl/mapbox": "9.4.0",
     "@emotion/react": "11.14.0",
     "@emotion/styled": "11.14.1",
     "@mui/material": "9.5.0",
@@ -312,6 +327,7 @@
     "layerchart": "2.5.1",
     "lightweight-charts": "5.2.1",
     "linkedom": "^0.18",
+    "maplibre-gl": "6.14.0",
     "react": "^19.3.0",
     "react-chartjs-2": "5.3.1",
     "react-dom": "^19.3.0",

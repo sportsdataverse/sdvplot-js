@@ -9,6 +9,8 @@ import {
   NBA_LEAGUE_SQUARE_2026,
   NBA_SHOTS,
   NBA_STANDINGS,
+  NFL_AIRPORTS,
+  NFL_STADIUMS_2024,
   NFL_TEAM_EPA_2024,
   NHL_SHOTS,
   NHL_STANDINGS,
@@ -402,6 +404,34 @@ test("nflPlays2024() is the committed play-by-play: weeks 1 to 6, each play once
     expect(p.week).toBe(Number(g?.week));
     expect(Number.isFinite(p.epa), p.play).toBe(true);
   }
+});
+
+test("NFL_STADIUMS_2024 is the stadium fixture, one home stadium per 2024 team, unchanged", () => {
+  expect(NFL_STADIUMS_2024).toEqual(
+    csv("fixtures/examples/nfl_stadiums_2024.csv").map((r) => ({
+      team: r.team,
+      stadium_id: r.stadium_id,
+      stadium: r.stadium_name,
+      lon: Number(r.lon),
+      lat: Number(r.lat),
+    })),
+  );
+  const games = csv("fixtures/examples/nfl_games_2024_reg.csv");
+  expect(NFL_STADIUMS_2024.map((s) => s.team).sort()).toEqual(
+    [...new Set(games.map((g) => g.home_team))].sort(),
+  );
+});
+
+test("NFL_AIRPORTS is nfldata airports.csv, unchanged: one home airport per 2024 team", () => {
+  expect(NFL_AIRPORTS).toEqual(
+    csv("fixtures/examples/nfl_airports.csv").map((r) => ({
+      team: r.team,
+      airport: r.airport,
+      lon: Number(r.longitude),
+      lat: Number(r.latitude),
+    })),
+  );
+  expect(NFL_AIRPORTS.map((a) => a.team)).toEqual(NFL_STADIUMS_2024.map((s) => s.team));
 });
 
 test("AFC_WEEKS_2024 is each STANDINGS team's weekly margin and points from the games, the bye a gap", () => {
