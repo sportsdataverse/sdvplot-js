@@ -1,5 +1,7 @@
 """Writes fixtures/perspective/oracle.json: sdvplot's (Python) perspective_sdv_config on real frames, for the parity test
-of sdvplot-js's ./perspective (packages/sdvplot/test/perspective-parity.test.ts).
+of sdvplot-js's ./perspective (packages/sdvplot/test/perspective-parity.test.ts), and table_theme_spec on a few registry
+themes, for sdvtables' tableThemeSpec (packages/sdvtables/test/table-theme-spec.test.ts, which also runs the theme
+cases with the spec sdvtables resolves).
 
 Run from this repo with the Python package's checkout beside it, in an environment of its own built offline from uv's
 cache (the parity point is perspective-python 5.5.1, the floor of both packages):
@@ -13,6 +15,7 @@ opens raises. Never hand-edit the output; a parity failure is a port bug (or a f
 
 from __future__ import annotations
 
+import dataclasses
 import json
 import socket
 import subprocess
@@ -37,6 +40,7 @@ import perspective  # noqa: E402
 import polars as pl  # noqa: E402
 import sdvplot  # noqa: E402
 from sdvplot import _index  # noqa: E402
+from sdvplot import table_theme_spec  # noqa: E402
 from sdvplot.perspective import perspective_sdv_config  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -171,7 +175,57 @@ CASES: list[tuple[str, pl.DataFrame, dict]] = [
     # no rows: Python keeps the frame's columns (number formats, no palette); rows of objects carry none without a schema
     ("datagrid no rows", epa.head(0), {"team_col": "team", "league": "nfl"}),
     ("y bar no rows", epa.head(0), {"team_col": "team", "league": "nfl", "plugin": "Y Bar"}),
+    # a registry theme: the grid's font (plugin_config) and each number column's sign colours; datagolf's numeric face
+    # is its body face (no per-column font), nfl-next-gen-stats's is not (Roboto Mono); every registry theme has a body
+    # face, so the no-body-font branch has no registry case. A chart takes none of it.
+    ("datagrid theme light", epa, {"team_col": "team", "league": "nfl", "theme": "datagolf"}),
+    ("datagrid theme dark", epa, {"team_col": "team", "league": "nfl", "theme": "datagolf", "mode": "dark"}),
+    (
+        "datagrid theme numeric font",
+        epa,
+        {"team_col": "team", "league": "nfl", "theme": "nfl-next-gen-stats"},
+    ),
+    (
+        "datagrid theme numeric font dark",
+        epa,
+        {"team_col": "team", "league": "nfl", "theme": "nfl-next-gen-stats", "mode": "dark"},
+    ),
+    ("y bar theme", epa, {"team_col": "team", "league": "nfl", "plugin": "Y Bar", "theme": "datagolf"}),
+    (
+        "datagrid theme numeric team ids",
+        nba,
+        {"team_col": "team_id", "league": "nba", "theme": "datagolf"},
+    ),
+    (
+        "datagrid theme logo link and no format",
+        logos,
+        {
+            "team_col": "team",
+            "league": "nfl",
+            "theme": "ft-markets-data",
+            "logo_col": "team_logo",
+            "formats": {"plays": None},
+        },
+    ),
 ]
+# table_theme_spec, every field: native and derived dark modes, numeric faces of their own, a light-only theme, a
+# journal, striped themes with nested structure (heatColumns)
+SPECS = [
+    ("datagolf", "light"),
+    ("datagolf", "dark"),
+    ("nfl-next-gen-stats", "light"),
+    ("nfl-next-gen-stats", "dark"),
+    ("barrons-markets", "dark"),
+    ("ft-markets-data", "light"),
+    ("nejm", "light"),
+    ("dunks-and-threes", "dark"),
+    ("evanmiya", "light"),
+]
+
+
+def spec_dict(name: str, mode: str) -> dict:
+    """table_theme_spec as JSON: the dataclass's fields in order."""
+    return dataclasses.asdict(table_theme_spec(name, mode))  # type: ignore[arg-type]
 
 
 def ptype(dtype: pl.DataType) -> str:
@@ -190,16 +244,18 @@ for name, frame, kw in CASES:
     with warnings.catch_warnings(record=True) as rec:
         warnings.simplefilter("always")
         config = perspective_sdv_config(frame, **kw)
-    cases.append(
-        {
-            "name": name,
-            "options": kw,
-            "schema": {c: ptype(d) for c, d in frame.schema.items()},
-            "rows": frame.to_dicts(),
-            "config": config,
-            "warnings": [str(w.message) for w in rec],
-        }
-    )
+    case = {
+        "name": name,
+        "options": kw,
+        "schema": {c: ptype(d) for c, d in frame.schema.items()},
+        "rows": frame.to_dicts(),
+        "config": config,
+        "warnings": [str(w.message) for w in rec],
+    }
+    if "theme" in kw:  # the spec the config read, for a parity test that cannot resolve a theme itself
+        case["theme_spec"] = spec_dict(kw["theme"], kw.get("mode", "light"))
+    cases.append(case)
+specs = [{"name": n, "mode": m, "spec": spec_dict(n, m)} for n, m in SPECS]
 
 PY = ROOT.parent / "sdvplot"
 git = lambda *a: subprocess.run(
@@ -211,15 +267,21 @@ meta = {
         "log", "-1", "--format=%H", "--", "src/sdvplot/perspective.py"
     ),
     "sdvplot_version": sdvplot.__version__,
+    "table_themes_py_commit": git(
+        "log", "-1", "--format=%H", "--", "src/sdvplot/_table_themes.py"
+    ),
+    "table_themes_json_commit": git(
+        "log", "-1", "--format=%H", "--", "src/sdvplot/data/table_themes.json"
+    ),
     "perspective_python": perspective.__version__,
     "index_version": _index.index_version(),
 }
 OUT.mkdir(parents=True, exist_ok=True)
 (OUT / "oracle.json").write_text(
-    json.dumps({"meta": meta, "cases": cases}, indent=1, ensure_ascii=False) + "\n",
+    json.dumps({"meta": meta, "cases": cases, "table_theme_specs": specs}, indent=1, ensure_ascii=False) + "\n",
     encoding="utf-8",
     newline="\n",  # LF on every platform: the parity test pins these bytes
 )
 print(
-    f"wrote {len(cases)} cases; sdvplot {meta['sdvplot_commit'][:8]}, index {meta['index_version']}"
+    f"wrote {len(cases)} cases and {len(specs)} specs; sdvplot {meta['sdvplot_commit'][:8]}, index {meta['index_version']}"
 )

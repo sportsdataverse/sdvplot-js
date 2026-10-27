@@ -1,6 +1,6 @@
 /**
- * Perspective 5.5 (`@perspective-dev/viewer`, with the `-datagrid` and `-charts` plugins): team colours, number formats
- * and a logo column for a `<perspective-viewer>`, the JavaScript side of sdvplot's Python `sdvplot.perspective`. Both
+ * Perspective 5.5 (`@perspective-dev/viewer`, with the `-datagrid` and `-charts` plugins): team colours, number formats,
+ * a registry table theme's fonts and sign colours, and a logo column for a `<perspective-viewer>`, the JavaScript side of sdvplot's Python `sdvplot.perspective`. Both
  * functions return plain data: a viewer config (the argument of `viewer.restore()`) and rows with a logo URL column.
  * Given the same rows and options, `perspectiveConfig` returns what Python's `perspective_sdv_config` returns
  * (fixtures/perspective/oracle.json holds the Python answers; packages/sdvplot/test/perspective-parity.test.ts compares).
@@ -33,14 +33,34 @@ export type PerspectiveColumnConfig = {
   number_format?: PerspectiveNumberFormat;
   /** The Datagrid shows a URL column as links. */
   link?: true;
+  /** The Datagrid's number colours (a registry theme's): `linear-gradient(to right, <neg> 0%, <pos> 100%)`. */
+  fg_color?: string;
+  /** The Datagrid's font for a number column: a registry theme's numeric face, when it is not the body face. */
+  font_family?: string;
 };
+/** The Datagrid's own settings: a registry theme's body face and size. */
+export type PerspectivePluginConfig = { font_family: string; font_size: number };
 /** What `perspectiveConfig` returns: pass it to `viewer.restore()`, with your own view keys merged in. */
 export type PerspectiveConfig = {
   plugin: string;
   /** Perspective's own theme: "Pro Light" or "Pro Dark" (load `@perspective-dev/viewer/dist/css/pro.css` / `pro-dark.css`). */
   theme: "Pro Light" | "Pro Dark";
+  /** The Datagrid with a registry `theme` only. */
+  plugin_config?: PerspectivePluginConfig;
   columns_config: Record<string, PerspectiveColumnConfig>;
 };
+/**
+ * The parts of a registry table theme `perspectiveConfig` reads. A `TableThemeSpec` (sdvtables'
+ * `tableThemeSpec(name, mode)`, Python's `table_theme_spec`) is one; sdvplot does not ship the registry itself.
+ */
+export interface PerspectiveTheme {
+  /** `body`: the grid's face. `numeric`: the number columns' face, when it is not `body`. */
+  readonly fonts: { readonly body?: string; readonly numeric?: string };
+  /** `body`: the grid's font size in px. */
+  readonly sizes: { readonly body: number };
+  /** The number colours: `neg` (low) to `pos` (high). */
+  readonly palette: { readonly neg: string; readonly pos: string };
+}
 
 /** `perspectiveConfig` options. */
 export interface PerspectiveConfigOptions {
@@ -52,6 +72,14 @@ export interface PerspectiveConfigOptions {
   plugin?: string;
   /** "light" (default) or "dark": the Perspective theme, "Pro Light" or "Pro Dark". */
   mode?: "light" | "dark";
+  /**
+   * A registry table theme, resolved in the same `mode`: `tableThemeSpec(name, mode)` from `@sportsdataverse/sdvtables`.
+   * The Datagrid takes its body face and size (`plugin_config`), its sign colours on every number column (`fg_color`)
+   * and, when the numeric face is not the body face, that face on the number columns. Perspective takes each face as
+   * one family name, so the page loads the font (Google Fonts) or the browser draws its default. A chart takes none of
+   * it. The spec does not say its mode: one resolved in the other mode gives that mode's colours.
+   */
+  theme?: PerspectiveTheme;
   /** A logo URL column (`perspectiveLogoColumn`) to show as links on the Datagrid, which draws no images. */
   logoCol?: string;
   /** The colour the teams must read against. Default: the Perspective theme's (#ffffff Pro Light, #242526 Pro Dark). */
@@ -255,10 +283,23 @@ export function perspectiveConfig(
       `no team colors on the Datagrid: the team column ${quote(teamCol)} is numeric, and team colors need a string or categorical team column (Perspective fills only text cells)`,
     );
   }
+  const theme = grid ? o.theme : undefined; // a chart takes no fonts from a config
+  if (theme !== undefined) {
+    const { body, numeric: face } = theme.fonts;
+    const sign = `linear-gradient(to right, ${theme.palette.neg} 0%, ${theme.palette.pos} 100%)`;
+    for (const c of numeric) {
+      columns[c]!.fg_color = sign;
+      if (face && face !== body) columns[c]!.font_family = face;
+    }
+  }
   if (grid && logoCol !== undefined) columns[logoCol] = { link: true };
+  const body = theme?.fonts.body;
   return {
     plugin: o.plugin ?? "Datagrid",
     theme: pro,
+    ...(theme !== undefined && body
+      ? { plugin_config: { font_family: body, font_size: theme.sizes.body } }
+      : {}),
     columns_config: Object.fromEntries(Object.entries(columns).filter(([, v]) => Object.keys(v).length > 0)),
   };
 }

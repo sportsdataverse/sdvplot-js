@@ -238,3 +238,48 @@ describe("colours", () => {
     );
   });
 });
+
+describe("a registry theme", () => {
+  // datagolf's light spec, the fields perspectiveConfig reads (sdvtables' tableThemeSpec("datagolf"); the parity test and
+  // packages/sdvtables/test/table-theme-spec.test.ts check the whole registry path against Python)
+  const DATAGOLF = {
+    fonts: { body: "Fira Sans", numeric: "Fira Sans" },
+    sizes: { body: 12 },
+    palette: { neg: "#a62a23", pos: "#2b6b4e" },
+  };
+  const SIGN = "linear-gradient(to right, #a62a23 0%, #2b6b4e 100%)";
+
+  test("the Datagrid takes the body face and size, and the sign colours on every number column, not the team's", () => {
+    const plain = perspectiveConfig(EPA, { teamCol: "team", league: "nfl" });
+    const themed = perspectiveConfig(EPA, { teamCol: "team", league: "nfl", theme: DATAGOLF });
+    expect(Object.keys(themed)).toEqual(["plugin", "theme", "plugin_config", "columns_config"]);
+    expect(themed.plugin_config).toEqual({ font_family: "Fira Sans", font_size: 12 });
+    expect(themed.columns_config.team).toEqual(plain.columns_config.team);
+    for (const c of ["espn", "plays", "epa_per_play"]) {
+      expect(themed.columns_config[c]).toEqual({ ...plain.columns_config[c], fg_color: SIGN });
+      // the numeric face is the body face: no font of its own on the column
+      expect(themed.columns_config[c]).not.toHaveProperty("font_family");
+    }
+  });
+
+  test("a numeric face of its own goes on the number columns; no body face, no plugin_config", () => {
+    const mono = { ...DATAGOLF, fonts: { body: "Roboto", numeric: "Roboto Mono" } };
+    const cfg = perspectiveConfig(EPA, { teamCol: "team", league: "nfl", theme: mono });
+    expect(cfg.columns_config.plays).toMatchObject({ fg_color: SIGN, font_family: "Roboto Mono" });
+    expect(cfg.columns_config.team).not.toHaveProperty("font_family");
+    const faceless = perspectiveConfig(EPA, {
+      teamCol: "team",
+      league: "nfl",
+      theme: { ...DATAGOLF, fonts: { numeric: "Roboto Mono" } },
+    });
+    expect(faceless).not.toHaveProperty("plugin_config");
+    expect(faceless.columns_config.plays).toMatchObject({ fg_color: SIGN, font_family: "Roboto Mono" });
+  });
+
+  test("a chart takes none of it", () => {
+    for (const plugin of ["Y Bar", "X/Y Scatter"])
+      expect(perspectiveConfig(EPA, { teamCol: "team", league: "nfl", plugin, theme: DATAGOLF })).toEqual(
+        perspectiveConfig(EPA, { teamCol: "team", league: "nfl", plugin }),
+      );
+  });
+});
