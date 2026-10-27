@@ -74,6 +74,7 @@ install for you, so add the ones for the subpaths you import:
 | `@sportsdataverse/sporty/d3` | `d3` >= 7 |
 | `@sportsdataverse/sdvtables`, `/html` | `@sportsdataverse/sdvplot` (a required peer; npm 7+ and pnpm install it for you) |
 | `@sportsdataverse/sdvtables/react` | `react` >= 18 |
+| `@sportsdataverse/sdvtables/mui` | `react` >= 18 (draw with `@mui/x-data-grid` >= 9.15.0, the MIT package, and its own peers, `@mui/material` and emotion) |
 | `@sportsdataverse/sdvtables/export` | `playwright` >= 1.45 |
 
 `/plot`, `/d3`, `/shots` and `/chartjs/surface` need `@sportsdataverse/sporty` whether or not you draw a surface:

@@ -4,15 +4,15 @@ import { type Server, createServer } from "node:http";
 import type { AddressInfo } from "node:net";
 import { extname, join, normalize } from "node:path";
 import { createCanvas, loadImage } from "@napi-rs/canvas";
-import { loadLeague, logoUrlSync, resolveSync } from "@sportsdataverse/sdvplot";
-import { teamColors } from "@sportsdataverse/sdvplot/mui";
+import { contrast, loadLeague, logoUrlSync, resolveSync, solid } from "@sportsdataverse/sdvplot";
+import { teamColorPalette, teamColors } from "@sportsdataverse/sdvplot/mui";
 import { teamColorPalette as rechartsPalette } from "@sportsdataverse/sdvplot/recharts";
 import { type Browser, chromium } from "playwright";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { pagePath } from "../scripts/pages.js";
 import { abs } from "../sources.js";
 import { BROWSER } from "../src/browser.gen.js";
-import { AFC_WEEKS_2024, NFL_TEAM_EPA_2024 } from "../src/data.js";
+import { AFC_WEEKS_2024, NBA_STANDINGS, NFL_TEAM_EPA_2024, STANDINGS } from "../src/data.js";
 import { EXAMPLES } from "../src/registry.gen.js";
 import { MUI_PROXY_STYLE } from "./run.js";
 
@@ -1098,6 +1098,236 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
           `${id}: logo boxes changed ${Math.min(...changed).toFixed(2)} to ${Math.max(...changed).toFixed(2)}`,
         );
         changed.forEach((c, i) => expect.soft(c, `${teams[i]}'s logo paints its box`).toBeGreaterThan(0.1));
+        if (SHOTS !== undefined)
+          await figure
+            .locator(".sdv-live-output")
+            .screenshot({ path: join(SHOTS, `${id.replace(/\//g, "_")}.png`) });
+        expect(errors).toEqual([]);
+      } finally {
+        await page.close();
+      }
+    },
+  );
+
+  // MUI X Data Grid examples (sdvtables/mui) are React examples too, re-run live by the docs. The grid shows exactly the
+  // example's rows, in its sort order; each row's image is its own team's or player's (by id); hiding the images changes
+  // each image's box (real logo pixels); and a team-coloured row paints the fill dataGridProps worked out from the
+  // palette, under text that reads on it. The dark example's grid paints midnight's background and header.
+  const byWins = [...STANDINGS].sort((a, b) => b.wins - a.wins);
+  const byEpa = [...STANDINGS].sort(
+    (a, b) => (b.net_epa ?? Number.NEGATIVE_INFINITY) - (a.net_epa ?? Number.NEGATIVE_INFINITY),
+  );
+  const GRIDS: Readonly<
+    Record<
+      string,
+      {
+        rows: readonly string[];
+        field: string;
+        images: () => (string | undefined)[];
+        fills?: () => (string | undefined)[];
+      }
+    >
+  > = {
+    "sdvtables/mui-x-data-grid/afc-standings-team-rows": {
+      rows: byWins.map((s) => s.team),
+      field: "team",
+      images: () => byWins.map((s) => resolveSync(s.team, "nfl")),
+      fills: () => {
+        // the palette is worked out over the rows as passed (STANDINGS order), laid over sdv's white at 0.4
+        const pal = teamColorPalette(
+          "nfl",
+          STANDINGS.map((s) => s.team),
+          { background: "#FFFFFF" },
+        );
+        const of = new Map(STANDINGS.map((s, i) => [s.team, solid(`${pal[i]}66`, "#FFFFFF")]));
+        return byWins.map((s) => of.get(s.team));
+      },
+    },
+    "sdvtables/mui-x-data-grid/afc-quarterbacks-headshots": {
+      rows: byEpa.map((s) => s.qb_espn_id),
+      field: "qb_espn_id",
+      images: () => byEpa.map((s) => s.qb_espn_id),
+    },
+    "sdvtables/mui-x-data-grid/pacific-nba-midnight": {
+      rows: NBA_STANDINGS.map((s) => String(s.team_id)),
+      field: "team_id",
+      // stats.nba.com's numeric TeamID, resolved to the ESPN id the logo is stored under
+      images: () => NBA_STANDINGS.map((s) => resolveSync(s.team_id, "nba")),
+      fills: () => {
+        const ids = NBA_STANDINGS.map((s) => resolveSync(s.team_id, "nba"));
+        const pal = teamColorPalette("nba", ids, { background: "#0C0D10", idSystem: "team_id" });
+        return pal.map((c) => solid(`${c}4d`, "#0C0D10"));
+      },
+    },
+  };
+  test.each(EXAMPLES.filter((e) => e.id.startsWith("sdvtables/mui-x-data-grid/")).map((e) => e.id))(
+    "%s re-runs live: the example's rows, each image in its own row, real image pixels and team fills",
+    async (id) => {
+      const entry = EXAMPLES.find((e) => e.id === id);
+      const want = GRIDS[id];
+      if (entry === undefined || want === undefined)
+        throw new Error(`${id} has no registry entry or no expectations`);
+      await Promise.all([loadLeague("nfl"), loadLeague("nba")]);
+      const page = await browser.newPage();
+      try {
+        const errors: string[] = [];
+        page.on("console", (m) => void (m.type() === "error" && errors.push(m.text())));
+        page.on("pageerror", (e) => void errors.push(e.message));
+        await page.goto(`${base}/gallery/${pagePath(entry)}/`);
+        const figure = page.locator(`figure[data-example="${id}"]`);
+        await figure.scrollIntoViewIfNeeded();
+        const grid = figure.locator(".sdv-live-output .MuiDataGrid-root");
+        await grid.locator("img[data-sdv-id]").first().waitFor({ timeout: 30_000 });
+        await page.waitForLoadState("networkidle"); // the images
+        await page.addStyleTag({ content: ".navbar { display: none !important; }" });
+        expect(await figure.locator(".sdv-live-static").count(), "the static copy is replaced").toBe(0);
+        expect(await figure.locator(".sdv-live-error").count(), "no error alert").toBe(0);
+        const got = await grid.evaluate((el, field) => {
+          const box = el.getBoundingClientRect();
+          const rows = [...el.querySelectorAll(".MuiDataGrid-row")].map((r) => {
+            const img = r.querySelector(`.MuiDataGrid-cell[data-field="${field}"] img[data-sdv-id]`);
+            const ib = img?.getBoundingClientRect();
+            const rb = r.getBoundingClientRect();
+            const text = r.querySelector(".MuiDataGrid-cell:last-child") as HTMLElement | null;
+            return {
+              id: r.getAttribute("data-id"),
+              image: img?.getAttribute("data-sdv-id") ?? null,
+              loaded: img instanceof HTMLImageElement && img.complete && img.naturalWidth > 0,
+              box:
+                ib === undefined
+                  ? null
+                  : [ib.x - box.left, ib.y - box.top, ib.width, ib.height].map(Math.round),
+              // a spot of the row clear of text: 3 px in from its visible right end, mid-height
+              spot: [Math.min(rb.right, box.right) - box.left - 4, rb.top - box.top + rb.height / 2].map(
+                Math.round,
+              ),
+              fill: getComputedStyle(r).backgroundColor,
+              ink: text === null ? "" : getComputedStyle(text).color,
+            };
+          });
+          const head = el.querySelector(".MuiDataGrid-columnHeader");
+          const scroller = el.querySelector(".MuiDataGrid-virtualScroller");
+          return {
+            rows,
+            overflow: scroller === null ? -1 : scroller.scrollWidth - scroller.clientWidth,
+            images: el.querySelectorAll("img[data-sdv-id]").length,
+            root: getComputedStyle(el).backgroundColor,
+            header: head === null ? "" : getComputedStyle(head).backgroundColor,
+          };
+        }, want.field);
+        // a computed colour: rgb(r, g, b), or color(srgb r g b) in 0-1 (what Chromium gives a color-mix)
+        const rgb = (s: string) => {
+          const n = (s.match(/[\d.]+/g) ?? []).map(Number);
+          return (s.startsWith("color(srgb") ? n.map((v) => Math.round(v * 255)) : n).slice(0, 3);
+        };
+        const hex = (s: string) => [1, 3, 5].map((i) => Number.parseInt(s.slice(i, i + 2), 16));
+        const near = (a: number[], b: number[], d: number) =>
+          [0, 1, 2].every((c) => Math.abs((a[c] ?? 0) - (b[c] ?? 0)) <= d);
+        expect(
+          got.rows.map((r) => r.id),
+          "exactly the example's rows, in its order",
+        ).toEqual(want.rows);
+        expect(got.images, "one image per row, no more").toBe(want.rows.length);
+        expect(got.overflow, "the columns fit the docs column: no horizontal scroll").toBe(0);
+        expect(
+          got.rows.map((r) => r.image),
+          "each row's image is its own team's or player's",
+        ).toEqual(want.images());
+        expect(
+          got.rows.map((r) => r.loaded),
+          "every image loaded",
+        ).toEqual(want.rows.map(() => true));
+        const shoot = async () => {
+          const shot = await loadImage(await grid.screenshot());
+          const ctx = createCanvas(shot.width, shot.height).getContext("2d");
+          ctx.drawImage(shot, 0, 0);
+          return (x: number, y: number, w: number, h: number) => {
+            const d = ctx.getImageData(Math.round(x), Math.round(y), Math.max(1, w), Math.max(1, h)).data;
+            return Array.from(
+              { length: d.length / 4 },
+              (_, i) => [d[4 * i], d[4 * i + 1], d[4 * i + 2]] as number[],
+            );
+          };
+        };
+        const pixels = await shoot();
+        if (want.fills !== undefined) {
+          const fills = want.fills();
+          got.rows.forEach((r, i) => {
+            const f = fills[i] ?? "";
+            expect(rgb(r.fill), `row ${r.id} is filled with ${f}`).toEqual(hex(f));
+            const [x, y] = r.spot as [number, number];
+            expect(near(pixels(x, y, 1, 1)[0] ?? [], hex(f), 3), `a pixel of row ${r.id} is ${f}`).toBe(true);
+            expect(
+              contrast(
+                `#${rgb(r.ink)
+                  .map((c) => c.toString(16).padStart(2, "0"))
+                  .join("")}`,
+                f,
+              ),
+            ).toBeGreaterThanOrEqual(4.5);
+          });
+        }
+        if (id.endsWith("midnight")) {
+          expect(rgb(got.root), "midnight's background").toEqual(hex("#0C0D10"));
+          expect(rgb(got.header), "midnight's header").toEqual(hex("#16181D"));
+        }
+        // the images' own pixels: with them hidden, each image's box changes (over 10%, as the chart libraries' logos)
+        await grid.evaluate((el) => {
+          for (const i of el.querySelectorAll("img[data-sdv-id]"))
+            (i as HTMLElement).style.visibility = "hidden";
+        });
+        const without = await shoot();
+        const changed = got.rows.map((r) => {
+          const [x, y, w, h] = r.box as [number, number, number, number];
+          const a = pixels(x, y, w, h);
+          const b = without(x, y, w, h);
+          return a.filter((p, i) => !near(p, b[i] ?? [], 8)).length / a.length;
+        });
+        console.log(
+          `${id}: image boxes changed ${Math.min(...changed).toFixed(2)} to ${Math.max(...changed).toFixed(2)}`,
+        );
+        changed.forEach((c, i) => expect(c, `image ${i} paints its box`).toBeGreaterThan(0.1));
+        await grid.evaluate((el) => {
+          for (const i of el.querySelectorAll("img[data-sdv-id]")) (i as HTMLElement).style.visibility = "";
+        });
+        if (want.fills !== undefined) {
+          // MUI's own :hover and .Mui-selected rules must not replace a team fill: a hovered row and a selected row (the
+          // class MUI puts on it) keep a shade of their fill, within 36 per channel (the shade moves at most 14% toward
+          // its text colour; MUI's own grey sat 57 to 82 away before the fix), with text at 4.5:1 or better
+          const fills = want.fills();
+          const state = async (i: number) =>
+            grid
+              .locator(".MuiDataGrid-row")
+              .nth(i)
+              .evaluate((r) => {
+                const cell = r.querySelector(".MuiDataGrid-cell:last-child") as HTMLElement;
+                return { fill: getComputedStyle(r).backgroundColor, ink: getComputedStyle(cell).color };
+              });
+          const check = (s: { fill: string; ink: string }, f: string, what: string) => {
+            expect(near(rgb(s.fill), hex(f), 36), `${what}: ${s.fill} keeps a shade of ${f}`).toBe(true);
+            const css = (c: string) =>
+              `#${rgb(c)
+                .map((v) => v.toString(16).padStart(2, "0"))
+                .join("")}`;
+            expect(contrast(css(s.ink), css(s.fill)), `${what}: text on the fill`).toBeGreaterThanOrEqual(
+              4.5,
+            );
+          };
+          await grid.locator(".MuiDataGrid-row").nth(0).hover();
+          check(await state(0), fills[0] ?? "", `hovered row ${want.rows[0]}`);
+          await grid
+            .locator(".MuiDataGrid-row")
+            .nth(1)
+            .evaluate((r) => r.classList.add("Mui-selected"));
+          check(await state(1), fills[1] ?? "", `selected row ${want.rows[1]}`);
+          await grid.locator(".MuiDataGrid-row").nth(1).hover();
+          check(await state(1), fills[1] ?? "", `selected, hovered row ${want.rows[1]}`);
+          await grid
+            .locator(".MuiDataGrid-row")
+            .nth(1)
+            .evaluate((r) => r.classList.remove("Mui-selected"));
+          await page.mouse.move(0, 0);
+        }
         if (SHOTS !== undefined)
           await figure
             .locator(".sdv-live-output")

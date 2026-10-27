@@ -102,7 +102,7 @@ function checkKeys<Row>(spec: TableSpec<Row>, rows: readonly Row[]): void {
         );
   }
 }
-function alignOf<Row>(col: ColumnSpec<Row>): "left" | "center" | "right" {
+export function alignOf<Row>(col: ColumnSpec<Row>): "left" | "center" | "right" {
   if (col.align) return col.align;
   switch (col.kind) {
     case "num":
