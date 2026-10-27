@@ -222,6 +222,9 @@ importers:
 
   packages/sdvplot:
     devDependencies:
+      '@antv/component':
+        specifier: 2.1.12
+        version: 2.1.12
       '@antv/g2':
         specifier: 5.4.8
         version: 5.4.8

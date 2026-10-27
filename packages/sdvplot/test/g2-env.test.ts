@@ -76,7 +76,7 @@ test("./g2 is pure: no import of @antv/*, static or dynamic (Review Focus 1)", (
   for (const f of files) expect(readFileSync(f, "utf8")).not.toMatch(/import\(\s*["']@ant(v|-design)\//);
 });
 
-test("the subpath is exported, with @antv/g2 an optional peer whose floor is the tested version", () => {
+test("the subpath is exported, with @antv/g2 and @antv/component optional peers whose floors are the tested versions", () => {
   const pkg = JSON.parse(readFileSync(resolve(SRC, "../package.json"), "utf8"));
   const examples = JSON.parse(readFileSync(resolve(SRC, "../../../examples/package.json"), "utf8"));
   expect(pkg.exports["./g2"]).toEqual({ types: "./dist/g2.d.ts", import: "./dist/g2.js" });
@@ -88,4 +88,9 @@ test("the subpath is exported, with @antv/g2 an optional peer whose floor is the
   expect(examples.devDependencies["@antv/g2"]).toBe("5.4.8");
   expect(examples.devDependencies["@ant-design/plots"]).toBe("2.6.8");
   expect(pkg.peerDependencies["@ant-design/plots"]).toBeUndefined();
+  // axisLogos is laid out for @antv/component 2.1.12's HTML labels (G2 5.4.8 allows ^2.1.9): a peer, so a package
+  // manager warns on an older one, and the version every test ran on
+  expect(pkg.peerDependencies["@antv/component"]).toBe(">=2.1.12");
+  expect(pkg.peerDependenciesMeta["@antv/component"]).toEqual({ optional: true });
+  expect(pkg.devDependencies["@antv/component"]).toBe("2.1.12");
 });

@@ -135,6 +135,7 @@
     "./package.json": "./package.json"
   },
   "peerDependencies": {
+    "@antv/component": ">=2.1.12",
     "@antv/g2": ">=5.4.8",
     "@deck.gl/core": ">=9.4.0",
     "@deck.gl/layers": ">=9.4.0",
@@ -159,6 +160,9 @@
     "victory": ">=37.3.6"
   },
   "peerDependenciesMeta": {
+    "@antv/component": {
+      "optional": true
+    },
     "@antv/g2": {
       "optional": true
     },
@@ -244,6 +248,7 @@
     "provenance": true
   },
   "devDependencies": {
+    "@antv/component": "2.1.12",
     "@antv/g2": "5.4.8",
     "@deck.gl/core": "9.4.0",
     "@deck.gl/layers": "9.4.0",

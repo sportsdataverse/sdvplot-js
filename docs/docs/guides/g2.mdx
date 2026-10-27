@@ -8,16 +8,18 @@ sidebar_position: 7.98
 (`@ant-design/plots`, which `@ant-design/charts` re-exports) is its React layer: `<Scatter>`, `<Column>`, `<Line>`
 and the rest take a config that becomes a G2 spec. `@sportsdataverse/sdvplot/g2` builds the spec pieces both need:
 team colours as a G2 colour scale, team logos, wordmarks and headshots as G2 `image` marks, and logos as a band axis'
-labels. It never imports G2 (install `@antv/g2` 5.4.8 or later beside it, an optional peer; the examples here run Ant
-Design Charts 2.6.8), so every piece can be built anywhere, a server included; only the chart's `render()` needs a
-browser. It is synchronous: load the league first (`loadLeague`). The charts below are drawn by G2 in your browser.
+labels. It never imports G2 (install `@antv/g2` 5.4.8 or later beside it, an optional peer, and for `axisLogos`
+`@antv/component` 2.1.12 or later; the examples here run Ant Design Charts 2.6.8), so every piece can be built
+anywhere, a server included; only the chart's `render()` needs a browser. It is synchronous: load the league first (`loadLeague`). The charts below are drawn by G2 in your browser.
 
 BizCharts, the older React layer, draws with G2 4, whose spec is different; it is not supported.
 
 ## Team colours
 
-`teamColorScale(league, teams)` returns G2's `scale.color` for those teams, `{ domain, range }`: the domain is the
-team values as your data holds them (strings, each once, in order) and the range their colours. Encode the team field
+`teamColorScale(league, teams)` returns G2's `scale.color` for those teams, `{ type: "ordinal", domain, range }`: the
+domain is the team values exactly as your data holds them (each once, in order) and the range their colours. G2 matches
+the domain to the data by exact value, so pass a numeric team column (ESPN ids, say) as numbers: `"12"` would never
+match `12`, and G2 would colour the unmatched teams by position instead. Encode the team field
 as the mark's colour (`encode: { color: "team" }`, or `colorField: "team"` in Ant Design Charts) and give the scale
 as `scale: { color }`: each team draws in its own colour, and the legend lists them in this order. `teamColorPalette`
 returns the colours alone, for anything that takes them by position.
@@ -70,10 +72,13 @@ wide, so they never overlap) and draw the labels at full opacity (G2's theme fad
 
 Three limits come with HTML labels, and all are G2's:
 
-- Where G2 puts an HTML label changed in a patch release of its axis package, `@antv/component`: up to 2.1.11 it
+- `axisLogos` needs `@antv/component` 2.1.12 or later, G2's axis package (an optional peer of sdvplot, so a package
+  manager warns about an older one). Where G2 puts an HTML label changed in that patch release: up to 2.1.11 it
   centred each label's box on its tick, and from 2.1.12 (2026-09-21) it puts the box's left edge there. `axisLogos`
   is laid out for 2.1.12, which G2 5.4.8 installs now; under a lockfile that still holds 2.1.11, each logo sits half
   a column to the left, and updating `@antv/component` puts it back.
+- Each label's box is one band wide. A wordmark (`markType: "wordmark"`) wider than its band overflows the box into
+  its neighbours' bands; give fewer teams the axis, or a smaller `size`.
 
 - G2 lays an HTML label out one band wide along a horizontal axis only. On a vertical axis (a bar chart, or a column
   chart under `coordinate: { transform: [{ type: "transpose" }] }`) it has no width to centre in. There, draw the

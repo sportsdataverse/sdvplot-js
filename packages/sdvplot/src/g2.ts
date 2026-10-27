@@ -298,8 +298,8 @@ const escapeHtml = (s: string): string => s.replace(/[&<>"']/g, (c) => `&#${c.ch
 
 /**
  * Team logos as a horizontal band axis' labels (a column chart's `axis.x`), through G2's `labelRender`: each label is
- * HTML, the logo `size` px tall and centred on its tick (laid out for `@antv/component` 2.1.12, the axis G2 5.4.8
- * installs). A category with no logo keeps its text and warns once. G2
+ * HTML, the logo `size` px tall and centred on its tick. Needs `@antv/component` 2.1.12 or later (G2's axis package,
+ * an optional peer): 2.1.11 and earlier lay an HTML label out differently, and each logo would sit half a band left. A category with no logo keeps its text and warns once. G2
  * lays an HTML label out one band wide along a horizontal axis only; for a vertical axis (a bar chart's, or under
  * `transpose`) draw a `logoMark` at the axis' position instead. HTML labels are page elements over the chart, not
  * pixels on its canvas: a `toDataURL` export leaves them out.
