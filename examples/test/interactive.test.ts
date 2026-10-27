@@ -2688,6 +2688,91 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
     }
   });
 
+  type Box = { x0: number; x1: number; y0: number; y1: number };
+  /**
+   * A Perspective bar chart split by team, checked by its WebGL pixels: each palette colour's pixels are boxed (the
+   * legend's columns left out); the theme's background fills most of the canvas; pixels per unit come from all the
+   * bars, and each team's bar of at least 8 px must be its own value tall at that scale (within 3 px), in its own
+   * colour; the bars stand on one zero line; and left to right they are the teams in sorted order.
+   */
+  async function checkTeamBars(
+    canvas: ReturnType<Page["locator"]>,
+    o: {
+      sorted: readonly string[];
+      palette: readonly string[];
+      value: ReadonlyMap<string, number>;
+      background: string;
+      minChecked: number;
+    },
+  ): Promise<void> {
+    const { sorted, palette, value } = o;
+    const bg = channels(o.background).join(",");
+    const bars = async () => {
+      const shot = await loadImage(await canvas.screenshot());
+      const ctx = createCanvas(shot.width, shot.height).getContext("2d");
+      ctx.drawImage(shot, 0, 0);
+      const d = ctx.getImageData(0, 0, shot.width, shot.height).data;
+      const index = new Map(palette.map((h, i) => [channels(h).join(","), i]));
+      const rgb = (x: number, y: number) => [0, 1, 2].map((c) => d[(y * shot.width + x) * 4 + c] as number);
+      const box = new Map<number, Box>();
+      let background = 0;
+      for (let x = 0; x < shot.width; x++) {
+        const here = new Map<number, number[]>();
+        for (let y = 0; y < shot.height; y++) {
+          const px = rgb(x, y).join(",");
+          const i = index.get(px);
+          if (i !== undefined) here.set(i, [...(here.get(i) ?? []), y]);
+          else if (px === bg) background++;
+        }
+        if (here.size > 2) continue; // a legend column: a swatch of each team, stacked
+        for (const [i, ys] of here) {
+          const b = box.get(i) ?? { x0: x, x1: x, y0: Number.POSITIVE_INFINITY, y1: -1 };
+          box.set(i, { x0: b.x0, x1: x, y0: Math.min(b.y0, ...ys), y1: Math.max(b.y1, ...ys) });
+        }
+      }
+      return { box, background, area: shot.width * shot.height };
+    };
+    await expect
+      .poll(async () => (await bars()).box.size, { timeout: 30_000 })
+      .toBeGreaterThanOrEqual(o.minChecked);
+    const { box, background, area } = await bars();
+    expect(background / area, `the theme's background ${o.background}`).toBeGreaterThan(0.5);
+    const height = (b: Box) => b.y1 - b.y0 + 1;
+    // the scale, pixels per unit, from all the bars; then each team's bar is as tall as its own value at that scale
+    const drawnTeams = sorted.filter((_, i) => box.has(i));
+    let px = 0;
+    let total = 0;
+    for (const t of drawnTeams) {
+      px += height(box.get(sorted.indexOf(t)) as Box);
+      total += Math.abs(value.get(t) ?? 0);
+    }
+    const k = px / total;
+    const tops: number[] = [];
+    const bottoms: number[] = [];
+    let checked = 0;
+    for (const [i, t] of sorted.entries()) {
+      const v = value.get(t) ?? 0;
+      if (Math.abs(v) * k < 8) continue; // a bar a few pixels tall is not measured
+      const b = box.get(i);
+      expect(b, `${t}'s bar is drawn in ${palette[i]}`).toBeDefined();
+      if (b === undefined) continue;
+      expect(
+        Math.abs(height(b) - Math.abs(v) * k),
+        `${t}'s bar is ${height(b)} px for ${v.toFixed(3)} (${(Math.abs(v) * k).toFixed(1)} px)`,
+      ).toBeLessThanOrEqual(3);
+      if (v > 0) bottoms.push(b.y1);
+      else tops.push(b.y0);
+      checked++;
+    }
+    expect(checked, "teams measured").toBeGreaterThanOrEqual(o.minChecked);
+    // the bars stand on one zero line, positive above it and negative below
+    expect(Math.max(...bottoms) - Math.min(...bottoms)).toBeLessThanOrEqual(1);
+    expect(Math.max(...tops) - Math.min(...tops)).toBeLessThanOrEqual(1);
+    expect(Math.abs(Math.min(...tops) - Math.max(...bottoms))).toBeLessThanOrEqual(3);
+    // and left to right in the axis' order: the teams sorted
+    const byX = [...box.entries()].sort((a, b) => a[1].x0 - b[1].x0).map(([i]) => sorted[i]);
+    expect(byX).toEqual(drawnTeams);
+  }
   test("sdvplot/perspective/nfl-epa-split-bars-dark: local files only; each team's bar is drawn in its colour on Pro Dark, at its place on the axis, as tall as its EPA per play", async () => {
     const id = "sdvplot/perspective/nfl-epa-split-bars-dark";
     await loadLeague("nfl");
@@ -2699,71 +2784,7 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
       const figure = await openPerspective(page, id);
       const canvas = figure.locator("perspective-viewer canvas.webgl-canvas");
       await canvas.waitFor({ timeout: 30_000 });
-      type Box = { x0: number; x1: number; y0: number; y1: number };
-      /** Per palette colour (by index): its pixels' bounding box in the plot, the legend's columns left out. */
-      const bars = async () => {
-        const shot = await loadImage(await canvas.screenshot());
-        const ctx = createCanvas(shot.width, shot.height).getContext("2d");
-        ctx.drawImage(shot, 0, 0);
-        const d = ctx.getImageData(0, 0, shot.width, shot.height).data;
-        const index = new Map(palette.map((h, i) => [channels(h).join(","), i]));
-        const rgb = (x: number, y: number) => [0, 1, 2].map((c) => d[(y * shot.width + x) * 4 + c] as number);
-        const box = new Map<number, Box>();
-        let background = 0;
-        for (let x = 0; x < shot.width; x++) {
-          const here = new Map<number, number[]>();
-          for (let y = 0; y < shot.height; y++) {
-            const px = rgb(x, y);
-            const i = index.get(px.join(","));
-            if (i !== undefined) here.set(i, [...(here.get(i) ?? []), y]);
-            else if (px.join(",") === "36,37,38") background++; // #242526
-          }
-          if (here.size > 2) continue; // a legend column: a swatch of each team, stacked
-          for (const [i, ys] of here) {
-            const b = box.get(i) ?? { x0: x, x1: x, y0: Number.POSITIVE_INFINITY, y1: -1 };
-            box.set(i, { x0: b.x0, x1: x, y0: Math.min(b.y0, ...ys), y1: Math.max(b.y1, ...ys) });
-          }
-        }
-        return { box, background, area: shot.width * shot.height };
-      };
-      await expect.poll(async () => (await bars()).box.size, { timeout: 30_000 }).toBeGreaterThanOrEqual(30);
-      const { box, background, area } = await bars();
-      expect(background / area, "Pro Dark's background").toBeGreaterThan(0.5);
-      const height = (b: Box) => b.y1 - b.y0 + 1;
-      // the scale, pixels per EPA, from all the bars; then each team's bar is as tall as its own value at that scale
-      const drawnTeams = sorted.filter((_, i) => box.has(i));
-      let px = 0;
-      let epa = 0;
-      for (const t of drawnTeams) {
-        px += height(box.get(sorted.indexOf(t)) as Box);
-        epa += Math.abs(value.get(t) ?? 0);
-      }
-      const k = px / epa;
-      const tops: number[] = [];
-      const bottoms: number[] = [];
-      let checked = 0;
-      for (const [i, t] of sorted.entries()) {
-        const v = value.get(t) ?? 0;
-        if (Math.abs(v) * k < 8) continue; // a bar a few pixels tall (the Jets' +0.001) is not measured
-        const b = box.get(i);
-        expect(b, `${t}'s bar is drawn in ${palette[i]}`).toBeDefined();
-        if (b === undefined) continue;
-        expect(
-          Math.abs(height(b) - Math.abs(v) * k),
-          `${t}'s bar is ${height(b)} px for ${v.toFixed(3)} (${(Math.abs(v) * k).toFixed(1)} px)`,
-        ).toBeLessThanOrEqual(3);
-        if (v > 0) bottoms.push(b.y1);
-        else tops.push(b.y0);
-        checked++;
-      }
-      expect(checked, "teams measured").toBeGreaterThanOrEqual(28);
-      // the bars stand on one zero line, positive above it and negative below
-      expect(Math.max(...bottoms) - Math.min(...bottoms)).toBeLessThanOrEqual(1);
-      expect(Math.max(...tops) - Math.min(...tops)).toBeLessThanOrEqual(1);
-      expect(Math.abs(Math.min(...tops) - Math.max(...bottoms))).toBeLessThanOrEqual(3);
-      // and left to right in the axis' order: the teams sorted
-      const byX = [...box.entries()].sort((a, b) => a[1].x0 - b[1].x0).map(([i]) => sorted[i]);
-      expect(byX).toEqual(drawnTeams);
+      await checkTeamBars(canvas, { sorted, palette, value, background: "#242526", minChecked: 28 });
       servedLocally(asked);
       if (SHOTS !== undefined)
         await figure
@@ -2775,8 +2796,9 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
     }
   });
 
-  test("sdvplot/perspective/nfl-plays-streaming: local files only; each week's batch lands whole, the table growing to each running total and ending at every play; the bars sum each offence's EPA", async () => {
+  test("sdvplot/perspective/nfl-plays-streaming: local files only; every week's batch lands whole, the table growing to each running total and ending at every play; each offence's bar is its EPA total, in its colour", async () => {
     const id = "sdvplot/perspective/nfl-plays-streaming";
+    await loadLeague("nfl");
     const plays = await nflPlays2024();
     const weeks = [...new Set(plays.map((p) => p.week))].sort((a, b) => a - b);
     let total = 0;
@@ -2786,29 +2808,33 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
     });
     const epaBy = new Map<string, number>();
     for (const p of plays) epaBy.set(p.posteam, (epaBy.get(p.posteam) ?? 0) + p.epa);
+    const sorted = [...epaBy.keys()].sort();
+    const palette = rechartsPalette("nfl", sorted, { background: "#ffffff" }); // Pro Light's background
     const { page, asked, errors, close } = await localOnly();
+    type Sized = { sdvSizes: number[] };
+    // before the page runs: the drawer hands each table the example makes to this hook, and waits for it, before the
+    // example gets the table, so every update is heard, however slowly Perspective started
+    await page.addInitScript(() => {
+      type View = { on_update: (cb: () => void) => Promise<unknown> };
+      type T = { size: () => Promise<number>; view: () => Promise<View> };
+      const w = window as unknown as Sized & { sdvPerspectiveTable: (t: T) => Promise<void> };
+      w.sdvSizes = [];
+      w.sdvPerspectiveTable = async (table) => {
+        w.sdvSizes.push(await table.size());
+        // a view of the table hears each update (the table handle has no on_update of its own)
+        const view = await table.view();
+        await view.on_update(async () => void w.sdvSizes.push(await table.size()));
+      };
+    });
     try {
       const figure = await openPerspective(page, id);
       const viewer = figure.locator("perspective-viewer");
-      type Sized = HTMLElement & { sdvSizes?: number[] };
-      // every update the table takes, recorded as the table's own size after it
-      await viewer.evaluate(async (v) => {
-        type View = { on_update: (cb: () => void) => Promise<unknown> };
-        type T = { size: () => Promise<number>; view: () => Promise<View> };
-        const el = v as Sized & { getTable: () => Promise<T> };
-        const table = await el.getTable();
-        el.sdvSizes = [await table.size()];
-        // a view of the table hears each update (the viewer's handle of the table has no on_update of its own)
-        const view = await table.view();
-        await view.on_update(async () => void el.sdvSizes?.push(await table.size()));
-      });
-      const sizes = () => viewer.evaluate((v) => [...((v as Sized).sdvSizes ?? [])]);
+      const sizes = () => page.evaluate(() => [...(window as unknown as Sized).sdvSizes]);
       await expect.poll(async () => (await sizes()).at(-1), { timeout: 30_000 }).toBe(plays.length);
-      const seen = [...new Set(await sizes())].filter((n) => n > 0);
+      const seen = [...new Set(await sizes())];
       console.log(`${id}: sizes ${seen.join(", ")} (running totals ${running.join(", ")})`);
-      // each size is a running total (a batch never lands in part), in order, and most batches were seen landing
-      expect(seen).toEqual(running.slice(running.length - seen.length));
-      expect(seen.length, "batches seen landing").toBeGreaterThanOrEqual(4);
+      // the empty table, then every batch whole, in order: each size a running total and none missed
+      expect(seen).toEqual([0, ...running]);
       expect(running.at(-1)).toBe(11_778);
       // the view the bars draw: each offence's EPA, summed over all its plays
       const sums = await viewer.evaluate(async (v) => {
@@ -2824,13 +2850,16 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
         });
         return out;
       });
-      expect(Object.keys(sums).sort()).toEqual([...epaBy.keys()].sort());
+      expect(Object.keys(sums).sort()).toEqual(sorted);
       for (const [team, want] of epaBy) expect(Math.abs((sums[team] ?? 0) - want), team).toBeLessThan(1e-6);
-      expect(
-        await figure.locator("perspective-viewer canvas.webgl-canvas").count(),
-        "the bars are drawn",
-      ).toBe(1);
+      // drawn: each offence's bar in its own colour, as tall as its EPA total
+      const canvas = figure.locator("perspective-viewer canvas.webgl-canvas");
+      await checkTeamBars(canvas, { sorted, palette, value: epaBy, background: "#ffffff", minChecked: 24 });
       servedLocally(asked);
+      if (SHOTS !== undefined)
+        await figure
+          .locator(".sdv-live-output")
+          .screenshot({ path: join(SHOTS, `${id.replace(/\//g, "_")}.png`) });
       expect(errors).toEqual([]);
     } finally {
       await close();
