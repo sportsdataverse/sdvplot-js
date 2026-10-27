@@ -24,6 +24,7 @@ const CHART_LIBS = [
   "ag-grid",
   "ag-grid-react",
   "maplibre",
+  "mosaic",
 ] as const;
 /**
  * Vega's self-contained build (its d3 inside). The module build imports the d3-* packages Observable Plot imports,

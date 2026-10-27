@@ -230,6 +230,21 @@ export type BrowserSpec =
       readonly width: number;
       readonly height: number;
       readonly label: string;
+    }
+  /**
+   * Mosaic linked views (`@uwdata/vgplot`) over DuckDB-WASM. The drawer starts DuckDB-WASM from the package's own
+   * files (examples/snippets/mosaic/duckdb.ts) and connects Mosaic's coordinator to it; `mount` is the example's own
+   * code: handed vgplot and the database, it loads its tables and resolves to the views and the selection that links
+   * them (the render test brushes it). The box is at most `width` px wide.
+   */
+  | {
+      readonly lib: "mosaic";
+      readonly mount: (libs: {
+        readonly vg: typeof import("@uwdata/vgplot");
+        readonly db: import("@duckdb/duckdb-wasm").AsyncDuckDB;
+      }) => Promise<{ readonly view: HTMLElement; readonly brush: import("@uwdata/vgplot").Selection }>;
+      readonly width: number;
+      readonly label: string;
     };
 /** What `deck()` hands a MapLibre example: deck.gl's overlay for MapLibre and the layers sdvplot/deckgl builds props for. */
 export interface DeckOnMap {
