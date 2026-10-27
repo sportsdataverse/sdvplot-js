@@ -247,6 +247,21 @@ export type BrowserSpec =
       }) => Promise<{ readonly view: HTMLElement; readonly brush: import("@uwdata/vgplot").Selection }>;
       readonly width: number;
       readonly label: string;
+    }
+  /**
+   * A `<perspective-viewer>` (Perspective 5.5, with the Datagrid and charts plugins). The drawer starts Perspective
+   * from the packages' own files (examples/snippets/perspective/start.ts) and puts a viewer in a box `height` px tall;
+   * `mount` is the example's own code: handed the worker and the viewer, it loads its table and restores its config
+   * (sdvplot/perspective's), and may keep updating the table; it resolves to what stops that, if anything.
+   */
+  | {
+      readonly lib: "perspective";
+      readonly mount: (libs: {
+        readonly worker: import("@perspective-dev/client").Client;
+        readonly viewer: import("@perspective-dev/viewer").HTMLPerspectiveViewerElement;
+      }) => Promise<(() => void) | undefined>;
+      readonly height: number;
+      readonly label: string;
     };
 /** What `deck()` hands a MapLibre example: deck.gl's overlay for MapLibre and the layers sdvplot/deckgl builds props for. */
 export interface DeckOnMap {

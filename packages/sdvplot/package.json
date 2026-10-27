@@ -32,7 +32,8 @@
     "tanstack-charts",
     "maplibre",
     "maps",
-    "unovis"
+    "unovis",
+    "perspective"
   ],
   "homepage": "https://plot.sportsdataverse.org",
   "bugs": "https://github.com/sportsdataverse/sdvplot-js/issues",
@@ -159,6 +160,10 @@
       "types": "./dist/unovis.d.ts",
       "import": "./dist/unovis.js"
     },
+    "./perspective": {
+      "types": "./dist/perspective.d.ts",
+      "import": "./dist/perspective.js"
+    },
     "./package.json": "./package.json"
   },
   "peerDependencies": {
@@ -173,6 +178,7 @@
     "@nivo/core": ">=0.99",
     "@nivo/swarmplot": ">=0.99",
     "@observablehq/plot": ">=0.6.16",
+    "@perspective-dev/viewer": ">=5.5.1",
     "@react-three/fiber": ">=9.8.1",
     "@resvg/resvg-js": ">=2.6",
     "@sportsdataverse/sporty": "workspace:^0",
@@ -223,6 +229,9 @@
       "optional": true
     },
     "@observablehq/plot": {
+      "optional": true
+    },
+    "@perspective-dev/viewer": {
       "optional": true
     },
     "@react-three/fiber": {
@@ -311,6 +320,9 @@
     "@nivo/core": "0.99.0",
     "@nivo/swarmplot": "0.99.0",
     "@observablehq/plot": "^0.6.17",
+    "@perspective-dev/client": "5.5.1",
+    "@perspective-dev/server": "5.5.1",
+    "@perspective-dev/viewer": "5.5.1",
     "@react-three/fiber": "9.8.1",
     "@react-three/test-renderer": "9.1.1",
     "@resvg/resvg-js": "^2.6.2",

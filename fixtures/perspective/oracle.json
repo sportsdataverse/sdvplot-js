@@ -1,0 +1,2918 @@
+{
+ "meta": {
+  "sdvplot_commit": "fc6c77add684a9698319c12f31e0548ae3bbc263",
+  "perspective_py_commit": "519695e2ee4b968b76bd7f2e167116e8ab81ec8a",
+  "sdvplot_version": "0.1.1",
+  "perspective_python": "5.5.1",
+  "index_version": "0aeef853ec2b"
+ },
+ "cases": [
+  {
+   "name": "datagrid light",
+   "options": {
+    "team_col": "team",
+    "league": "nfl"
+   },
+   "schema": {
+    "team": "string",
+    "plays": "integer",
+    "epa_per_play": "float",
+    "def_epa_per_play": "float"
+   },
+   "rows": [
+    {
+     "team": "BAL",
+     "plays": 1091,
+     "epa_per_play": 0.1973075142071494,
+     "def_epa_per_play": -0.01809329170383586
+    },
+    {
+     "team": "BUF",
+     "plays": 1065,
+     "epa_per_play": 0.18687425633802818,
+     "def_epa_per_play": -0.0031065497716894976
+    },
+    {
+     "team": "DET",
+     "plays": 1125,
+     "epa_per_play": 0.15521151466666666,
+     "def_epa_per_play": -0.045118736890524376
+    },
+    {
+     "team": "WAS",
+     "plays": 1142,
+     "epa_per_play": 0.13941898861646235,
+     "def_epa_per_play": 0.04316543802423113
+    },
+    {
+     "team": "TB",
+     "plays": 1128,
+     "epa_per_play": 0.13204109929078015,
+     "def_epa_per_play": 0.016552372282608696
+    },
+    {
+     "team": "PHI",
+     "plays": 1129,
+     "epa_per_play": 0.11059268379096546,
+     "def_epa_per_play": -0.08551938246628131
+    },
+    {
+     "team": "CIN",
+     "plays": 1121,
+     "epa_per_play": 0.10641586262265834,
+     "def_epa_per_play": 0.05469574553571428
+    },
+    {
+     "team": "GB",
+     "plays": 1071,
+     "epa_per_play": 0.08039756022408964,
+     "def_epa_per_play": -0.06768193482309125
+    },
+    {
+     "team": "KC",
+     "plays": 1124,
+     "epa_per_play": 0.06882989234875446,
+     "def_epa_per_play": 0.005753912231559291
+    },
+    {
+     "team": "ARI",
+     "plays": 1087,
+     "epa_per_play": 0.06790171573137074,
+     "def_epa_per_play": 0.05063307196261683
+    },
+    {
+     "team": "SF",
+     "plays": 1064,
+     "epa_per_play": 0.060653246240601505,
+     "def_epa_per_play": 0.051679759276879164
+    },
+    {
+     "team": "LAC",
+     "plays": 1044,
+     "epa_per_play": 0.045015692528735635,
+     "def_epa_per_play": -0.055508027726432534
+    },
+    {
+     "team": "ATL",
+     "plays": 1127,
+     "epa_per_play": 0.04094521739130435,
+     "def_epa_per_play": 0.04434347766636281
+    },
+    {
+     "team": "MIN",
+     "plays": 1090,
+     "epa_per_play": 0.03697167798165138,
+     "def_epa_per_play": -0.08892758666666667
+    },
+    {
+     "team": "LA",
+     "plays": 1074,
+     "epa_per_play": 0.03389467877094972,
+     "def_epa_per_play": 0.0496864036199095
+    },
+    {
+     "team": "DEN",
+     "plays": 1083,
+     "epa_per_play": 0.009665256694367498,
+     "def_epa_per_play": -0.09817395888013998
+    },
+    {
+     "team": "NYJ",
+     "plays": 1063,
+     "epa_per_play": 0.00079420884289746,
+     "def_epa_per_play": 0.04588688751107175
+    },
+    {
+     "team": "SEA",
+     "plays": 1083,
+     "epa_per_play": -0.015515602954755311,
+     "def_epa_per_play": -0.01821089964157706
+    },
+    {
+     "team": "JAX",
+     "plays": 1025,
+     "epa_per_play": -0.021526078048780487,
+     "def_epa_per_play": 0.1270993804255319
+    },
+    {
+     "team": "PIT",
+     "plays": 1110,
+     "epa_per_play": -0.028511586486486485,
+     "def_epa_per_play": -0.02094945614035088
+    },
+    {
+     "team": "HOU",
+     "plays": 1093,
+     "epa_per_play": -0.039517823421774935,
+     "def_epa_per_play": -0.054001859245630175
+    },
+    {
+     "team": "MIA",
+     "plays": 1128,
+     "epa_per_play": -0.04019005496453901,
+     "def_epa_per_play": -0.021265579198473283
+    },
+    {
+     "team": "CAR",
+     "plays": 1026,
+     "epa_per_play": -0.04087427192982456,
+     "def_epa_per_play": 0.1544453020920502
+    },
+    {
+     "team": "IND",
+     "plays": 1075,
+     "epa_per_play": -0.047262845581395346,
+     "def_epa_per_play": 0.006128741000877963
+    },
+    {
+     "team": "NO",
+     "plays": 1080,
+     "epa_per_play": -0.058756264814814815,
+     "def_epa_per_play": 0.035566412629757786
+    },
+    {
+     "team": "CHI",
+     "plays": 1119,
+     "epa_per_play": -0.07460389633601429,
+     "def_epa_per_play": -0.0011727630331753555
+    },
+    {
+     "team": "NE",
+     "plays": 1082,
+     "epa_per_play": -0.07891574768946395,
+     "def_epa_per_play": 0.08302175858951175
+    },
+    {
+     "team": "DAL",
+     "plays": 1158,
+     "epa_per_play": -0.08977916753022452,
+     "def_epa_per_play": 0.06770862234533703
+    },
+    {
+     "team": "NYG",
+     "plays": 1103,
+     "epa_per_play": -0.09175358839528558,
+     "def_epa_per_play": 0.07050022532588454
+    },
+    {
+     "team": "TEN",
+     "plays": 1088,
+     "epa_per_play": -0.10142502022058823,
+     "def_epa_per_play": 0.04975268552253116
+    },
+    {
+     "team": "LV",
+     "plays": 1108,
+     "epa_per_play": -0.1314928203971119,
+     "def_epa_per_play": 0.014218293738489872
+    },
+    {
+     "team": "CLE",
+     "plays": 1176,
+     "epa_per_play": -0.17549994982993197,
+     "def_epa_per_play": 0.01726238725023787
+    }
+   ],
+   "config": {
+    "plugin": "Datagrid",
+    "theme": "Pro Light",
+    "columns_config": {
+     "team": {
+      "bg_mode": "series",
+      "bg_color": "linear-gradient(to right, #241773, #c60c30, #8d9296, #5a1414, #b85149, #53575f, #ff4a41, #203731, #bf880e, #97233f, #a71600, #006fce, #000000, #6d2482, #0043aa, #004c6e, #00472c, #59a222, #0d6f7f, #1e2d00, #32202f, #dc751d, #0085ca, #003876, #82703f, #e64100, #000940, #002244, #492e5b, #6d92b8, #2d0000, #311d00)"
+     },
+     "plays": {
+      "number_format": {
+       "useGrouping": false,
+       "maximumFractionDigits": 0
+      }
+     },
+     "epa_per_play": {
+      "number_format": {
+       "minimumFractionDigits": 3,
+       "maximumFractionDigits": 3
+      }
+     },
+     "def_epa_per_play": {
+      "number_format": {
+       "minimumFractionDigits": 3,
+       "maximumFractionDigits": 3
+      }
+     }
+    }
+   },
+   "warnings": []
+  },
+  {
+   "name": "datagrid dark",
+   "options": {
+    "team_col": "team",
+    "league": "nfl",
+    "mode": "dark"
+   },
+   "schema": {
+    "team": "string",
+    "plays": "integer",
+    "epa_per_play": "float",
+    "def_epa_per_play": "float"
+   },
+   "rows": [
+    {
+     "team": "BAL",
+     "plays": 1091,
+     "epa_per_play": 0.1973075142071494,
+     "def_epa_per_play": -0.01809329170383586
+    },
+    {
+     "team": "BUF",
+     "plays": 1065,
+     "epa_per_play": 0.18687425633802818,
+     "def_epa_per_play": -0.0031065497716894976
+    },
+    {
+     "team": "DET",
+     "plays": 1125,
+     "epa_per_play": 0.15521151466666666,
+     "def_epa_per_play": -0.045118736890524376
+    },
+    {
+     "team": "WAS",
+     "plays": 1142,
+     "epa_per_play": 0.13941898861646235,
+     "def_epa_per_play": 0.04316543802423113
+    },
+    {
+     "team": "TB",
+     "plays": 1128,
+     "epa_per_play": 0.13204109929078015,
+     "def_epa_per_play": 0.016552372282608696
+    },
+    {
+     "team": "PHI",
+     "plays": 1129,
+     "epa_per_play": 0.11059268379096546,
+     "def_epa_per_play": -0.08551938246628131
+    },
+    {
+     "team": "CIN",
+     "plays": 1121,
+     "epa_per_play": 0.10641586262265834,
+     "def_epa_per_play": 0.05469574553571428
+    },
+    {
+     "team": "GB",
+     "plays": 1071,
+     "epa_per_play": 0.08039756022408964,
+     "def_epa_per_play": -0.06768193482309125
+    },
+    {
+     "team": "KC",
+     "plays": 1124,
+     "epa_per_play": 0.06882989234875446,
+     "def_epa_per_play": 0.005753912231559291
+    },
+    {
+     "team": "ARI",
+     "plays": 1087,
+     "epa_per_play": 0.06790171573137074,
+     "def_epa_per_play": 0.05063307196261683
+    },
+    {
+     "team": "SF",
+     "plays": 1064,
+     "epa_per_play": 0.060653246240601505,
+     "def_epa_per_play": 0.051679759276879164
+    },
+    {
+     "team": "LAC",
+     "plays": 1044,
+     "epa_per_play": 0.045015692528735635,
+     "def_epa_per_play": -0.055508027726432534
+    },
+    {
+     "team": "ATL",
+     "plays": 1127,
+     "epa_per_play": 0.04094521739130435,
+     "def_epa_per_play": 0.04434347766636281
+    },
+    {
+     "team": "MIN",
+     "plays": 1090,
+     "epa_per_play": 0.03697167798165138,
+     "def_epa_per_play": -0.08892758666666667
+    },
+    {
+     "team": "LA",
+     "plays": 1074,
+     "epa_per_play": 0.03389467877094972,
+     "def_epa_per_play": 0.0496864036199095
+    },
+    {
+     "team": "DEN",
+     "plays": 1083,
+     "epa_per_play": 0.009665256694367498,
+     "def_epa_per_play": -0.09817395888013998
+    },
+    {
+     "team": "NYJ",
+     "plays": 1063,
+     "epa_per_play": 0.00079420884289746,
+     "def_epa_per_play": 0.04588688751107175
+    },
+    {
+     "team": "SEA",
+     "plays": 1083,
+     "epa_per_play": -0.015515602954755311,
+     "def_epa_per_play": -0.01821089964157706
+    },
+    {
+     "team": "JAX",
+     "plays": 1025,
+     "epa_per_play": -0.021526078048780487,
+     "def_epa_per_play": 0.1270993804255319
+    },
+    {
+     "team": "PIT",
+     "plays": 1110,
+     "epa_per_play": -0.028511586486486485,
+     "def_epa_per_play": -0.02094945614035088
+    },
+    {
+     "team": "HOU",
+     "plays": 1093,
+     "epa_per_play": -0.039517823421774935,
+     "def_epa_per_play": -0.054001859245630175
+    },
+    {
+     "team": "MIA",
+     "plays": 1128,
+     "epa_per_play": -0.04019005496453901,
+     "def_epa_per_play": -0.021265579198473283
+    },
+    {
+     "team": "CAR",
+     "plays": 1026,
+     "epa_per_play": -0.04087427192982456,
+     "def_epa_per_play": 0.1544453020920502
+    },
+    {
+     "team": "IND",
+     "plays": 1075,
+     "epa_per_play": -0.047262845581395346,
+     "def_epa_per_play": 0.006128741000877963
+    },
+    {
+     "team": "NO",
+     "plays": 1080,
+     "epa_per_play": -0.058756264814814815,
+     "def_epa_per_play": 0.035566412629757786
+    },
+    {
+     "team": "CHI",
+     "plays": 1119,
+     "epa_per_play": -0.07460389633601429,
+     "def_epa_per_play": -0.0011727630331753555
+    },
+    {
+     "team": "NE",
+     "plays": 1082,
+     "epa_per_play": -0.07891574768946395,
+     "def_epa_per_play": 0.08302175858951175
+    },
+    {
+     "team": "DAL",
+     "plays": 1158,
+     "epa_per_play": -0.08977916753022452,
+     "def_epa_per_play": 0.06770862234533703
+    },
+    {
+     "team": "NYG",
+     "plays": 1103,
+     "epa_per_play": -0.09175358839528558,
+     "def_epa_per_play": 0.07050022532588454
+    },
+    {
+     "team": "TEN",
+     "plays": 1088,
+     "epa_per_play": -0.10142502022058823,
+     "def_epa_per_play": 0.04975268552253116
+    },
+    {
+     "team": "LV",
+     "plays": 1108,
+     "epa_per_play": -0.1314928203971119,
+     "def_epa_per_play": 0.014218293738489872
+    },
+    {
+     "team": "CLE",
+     "plays": 1176,
+     "epa_per_play": -0.17549994982993197,
+     "def_epa_per_play": 0.01726238725023787
+    }
+   ],
+   "config": {
+    "plugin": "Datagrid",
+    "theme": "Pro Dark",
+    "columns_config": {
+     "team": {
+      "bg_mode": "series",
+      "bg_color": "linear-gradient(to right, #9e7c0c, #4c70af, #759dc8, #d3744b, #cc3053, #6f9f96, #ff7500, #ffb612, #e31837, #b15a6f, #ca4533, #759dfc, #737373, #9055ba, #006ddd, #00799d, #2d7e5f, #69be28, #00aec6, #6b7512, #007c80, #00aa9c, #009ae5, #886ba0, #d3bc8d, #e64100, #ac4c8f, #b0b7bc, #7a54db, #57c7ff, #9d6c46, #ff001f)"
+     },
+     "plays": {
+      "number_format": {
+       "useGrouping": false,
+       "maximumFractionDigits": 0
+      }
+     },
+     "epa_per_play": {
+      "number_format": {
+       "minimumFractionDigits": 3,
+       "maximumFractionDigits": 3
+      }
+     },
+     "def_epa_per_play": {
+      "number_format": {
+       "minimumFractionDigits": 3,
+       "maximumFractionDigits": 3
+      }
+     }
+    }
+   },
+   "warnings": []
+  },
+  {
+   "name": "y bar light",
+   "options": {
+    "team_col": "team",
+    "league": "nfl",
+    "plugin": "Y Bar"
+   },
+   "schema": {
+    "team": "string",
+    "plays": "integer",
+    "epa_per_play": "float",
+    "def_epa_per_play": "float"
+   },
+   "rows": [
+    {
+     "team": "BAL",
+     "plays": 1091,
+     "epa_per_play": 0.1973075142071494,
+     "def_epa_per_play": -0.01809329170383586
+    },
+    {
+     "team": "BUF",
+     "plays": 1065,
+     "epa_per_play": 0.18687425633802818,
+     "def_epa_per_play": -0.0031065497716894976
+    },
+    {
+     "team": "DET",
+     "plays": 1125,
+     "epa_per_play": 0.15521151466666666,
+     "def_epa_per_play": -0.045118736890524376
+    },
+    {
+     "team": "WAS",
+     "plays": 1142,
+     "epa_per_play": 0.13941898861646235,
+     "def_epa_per_play": 0.04316543802423113
+    },
+    {
+     "team": "TB",
+     "plays": 1128,
+     "epa_per_play": 0.13204109929078015,
+     "def_epa_per_play": 0.016552372282608696
+    },
+    {
+     "team": "PHI",
+     "plays": 1129,
+     "epa_per_play": 0.11059268379096546,
+     "def_epa_per_play": -0.08551938246628131
+    },
+    {
+     "team": "CIN",
+     "plays": 1121,
+     "epa_per_play": 0.10641586262265834,
+     "def_epa_per_play": 0.05469574553571428
+    },
+    {
+     "team": "GB",
+     "plays": 1071,
+     "epa_per_play": 0.08039756022408964,
+     "def_epa_per_play": -0.06768193482309125
+    },
+    {
+     "team": "KC",
+     "plays": 1124,
+     "epa_per_play": 0.06882989234875446,
+     "def_epa_per_play": 0.005753912231559291
+    },
+    {
+     "team": "ARI",
+     "plays": 1087,
+     "epa_per_play": 0.06790171573137074,
+     "def_epa_per_play": 0.05063307196261683
+    },
+    {
+     "team": "SF",
+     "plays": 1064,
+     "epa_per_play": 0.060653246240601505,
+     "def_epa_per_play": 0.051679759276879164
+    },
+    {
+     "team": "LAC",
+     "plays": 1044,
+     "epa_per_play": 0.045015692528735635,
+     "def_epa_per_play": -0.055508027726432534
+    },
+    {
+     "team": "ATL",
+     "plays": 1127,
+     "epa_per_play": 0.04094521739130435,
+     "def_epa_per_play": 0.04434347766636281
+    },
+    {
+     "team": "MIN",
+     "plays": 1090,
+     "epa_per_play": 0.03697167798165138,
+     "def_epa_per_play": -0.08892758666666667
+    },
+    {
+     "team": "LA",
+     "plays": 1074,
+     "epa_per_play": 0.03389467877094972,
+     "def_epa_per_play": 0.0496864036199095
+    },
+    {
+     "team": "DEN",
+     "plays": 1083,
+     "epa_per_play": 0.009665256694367498,
+     "def_epa_per_play": -0.09817395888013998
+    },
+    {
+     "team": "NYJ",
+     "plays": 1063,
+     "epa_per_play": 0.00079420884289746,
+     "def_epa_per_play": 0.04588688751107175
+    },
+    {
+     "team": "SEA",
+     "plays": 1083,
+     "epa_per_play": -0.015515602954755311,
+     "def_epa_per_play": -0.01821089964157706
+    },
+    {
+     "team": "JAX",
+     "plays": 1025,
+     "epa_per_play": -0.021526078048780487,
+     "def_epa_per_play": 0.1270993804255319
+    },
+    {
+     "team": "PIT",
+     "plays": 1110,
+     "epa_per_play": -0.028511586486486485,
+     "def_epa_per_play": -0.02094945614035088
+    },
+    {
+     "team": "HOU",
+     "plays": 1093,
+     "epa_per_play": -0.039517823421774935,
+     "def_epa_per_play": -0.054001859245630175
+    },
+    {
+     "team": "MIA",
+     "plays": 1128,
+     "epa_per_play": -0.04019005496453901,
+     "def_epa_per_play": -0.021265579198473283
+    },
+    {
+     "team": "CAR",
+     "plays": 1026,
+     "epa_per_play": -0.04087427192982456,
+     "def_epa_per_play": 0.1544453020920502
+    },
+    {
+     "team": "IND",
+     "plays": 1075,
+     "epa_per_play": -0.047262845581395346,
+     "def_epa_per_play": 0.006128741000877963
+    },
+    {
+     "team": "NO",
+     "plays": 1080,
+     "epa_per_play": -0.058756264814814815,
+     "def_epa_per_play": 0.035566412629757786
+    },
+    {
+     "team": "CHI",
+     "plays": 1119,
+     "epa_per_play": -0.07460389633601429,
+     "def_epa_per_play": -0.0011727630331753555
+    },
+    {
+     "team": "NE",
+     "plays": 1082,
+     "epa_per_play": -0.07891574768946395,
+     "def_epa_per_play": 0.08302175858951175
+    },
+    {
+     "team": "DAL",
+     "plays": 1158,
+     "epa_per_play": -0.08977916753022452,
+     "def_epa_per_play": 0.06770862234533703
+    },
+    {
+     "team": "NYG",
+     "plays": 1103,
+     "epa_per_play": -0.09175358839528558,
+     "def_epa_per_play": 0.07050022532588454
+    },
+    {
+     "team": "TEN",
+     "plays": 1088,
+     "epa_per_play": -0.10142502022058823,
+     "def_epa_per_play": 0.04975268552253116
+    },
+    {
+     "team": "LV",
+     "plays": 1108,
+     "epa_per_play": -0.1314928203971119,
+     "def_epa_per_play": 0.014218293738489872
+    },
+    {
+     "team": "CLE",
+     "plays": 1176,
+     "epa_per_play": -0.17549994982993197,
+     "def_epa_per_play": 0.01726238725023787
+    }
+   ],
+   "config": {
+    "plugin": "Y Bar",
+    "theme": "Pro Light",
+    "columns_config": {
+     "team": {
+      "palette": "linear-gradient(to right, #241773, #c60c30, #8d9296, #5a1414, #b85149, #53575f, #ff4a41, #203731, #bf880e, #97233f, #a71600, #006fce, #000000, #6d2482, #0043aa, #004c6e, #00472c, #59a222, #0d6f7f, #1e2d00, #32202f, #dc751d, #0085ca, #003876, #82703f, #e64100, #000940, #002244, #492e5b, #6d92b8, #2d0000, #311d00)"
+     },
+     "plays": {
+      "number_format": {
+       "useGrouping": false,
+       "maximumFractionDigits": 0
+      },
+      "palette": "linear-gradient(to right, #97233f, #000000, #241773, #c60c30, #0085ca, #e64100, #ff4a41, #311d00, #002244, #004c6e, #8d9296, #203731, #32202f, #003876, #0d6f7f, #bf880e, #0043aa, #006fce, #2d0000, #dc751d, #6d2482, #000940, #82703f, #492e5b, #00472c, #53575f, #1e2d00, #59a222, #a71600, #b85149, #6d92b8, #5a1414)"
+     },
+     "epa_per_play": {
+      "number_format": {
+       "minimumFractionDigits": 3,
+       "maximumFractionDigits": 3
+      },
+      "palette": "linear-gradient(to right, #97233f, #000000, #241773, #c60c30, #0085ca, #e64100, #ff4a41, #311d00, #002244, #004c6e, #8d9296, #203731, #32202f, #003876, #0d6f7f, #bf880e, #0043aa, #006fce, #2d0000, #dc751d, #6d2482, #000940, #82703f, #492e5b, #00472c, #53575f, #1e2d00, #59a222, #a71600, #b85149, #6d92b8, #5a1414)"
+     },
+     "def_epa_per_play": {
+      "number_format": {
+       "minimumFractionDigits": 3,
+       "maximumFractionDigits": 3
+      },
+      "palette": "linear-gradient(to right, #97233f, #000000, #241773, #c60c30, #0085ca, #e64100, #ff4a41, #311d00, #002244, #004c6e, #8d9296, #203731, #32202f, #003876, #0d6f7f, #bf880e, #0043aa, #006fce, #2d0000, #dc751d, #6d2482, #000940, #82703f, #492e5b, #00472c, #53575f, #1e2d00, #59a222, #a71600, #b85149, #6d92b8, #5a1414)"
+     }
+    }
+   },
+   "warnings": []
+  },
+  {
+   "name": "y bar dark",
+   "options": {
+    "team_col": "team",
+    "league": "nfl",
+    "plugin": "Y Bar",
+    "mode": "dark"
+   },
+   "schema": {
+    "team": "string",
+    "plays": "integer",
+    "epa_per_play": "float",
+    "def_epa_per_play": "float"
+   },
+   "rows": [
+    {
+     "team": "BAL",
+     "plays": 1091,
+     "epa_per_play": 0.1973075142071494,
+     "def_epa_per_play": -0.01809329170383586
+    },
+    {
+     "team": "BUF",
+     "plays": 1065,
+     "epa_per_play": 0.18687425633802818,
+     "def_epa_per_play": -0.0031065497716894976
+    },
+    {
+     "team": "DET",
+     "plays": 1125,
+     "epa_per_play": 0.15521151466666666,
+     "def_epa_per_play": -0.045118736890524376
+    },
+    {
+     "team": "WAS",
+     "plays": 1142,
+     "epa_per_play": 0.13941898861646235,
+     "def_epa_per_play": 0.04316543802423113
+    },
+    {
+     "team": "TB",
+     "plays": 1128,
+     "epa_per_play": 0.13204109929078015,
+     "def_epa_per_play": 0.016552372282608696
+    },
+    {
+     "team": "PHI",
+     "plays": 1129,
+     "epa_per_play": 0.11059268379096546,
+     "def_epa_per_play": -0.08551938246628131
+    },
+    {
+     "team": "CIN",
+     "plays": 1121,
+     "epa_per_play": 0.10641586262265834,
+     "def_epa_per_play": 0.05469574553571428
+    },
+    {
+     "team": "GB",
+     "plays": 1071,
+     "epa_per_play": 0.08039756022408964,
+     "def_epa_per_play": -0.06768193482309125
+    },
+    {
+     "team": "KC",
+     "plays": 1124,
+     "epa_per_play": 0.06882989234875446,
+     "def_epa_per_play": 0.005753912231559291
+    },
+    {
+     "team": "ARI",
+     "plays": 1087,
+     "epa_per_play": 0.06790171573137074,
+     "def_epa_per_play": 0.05063307196261683
+    },
+    {
+     "team": "SF",
+     "plays": 1064,
+     "epa_per_play": 0.060653246240601505,
+     "def_epa_per_play": 0.051679759276879164
+    },
+    {
+     "team": "LAC",
+     "plays": 1044,
+     "epa_per_play": 0.045015692528735635,
+     "def_epa_per_play": -0.055508027726432534
+    },
+    {
+     "team": "ATL",
+     "plays": 1127,
+     "epa_per_play": 0.04094521739130435,
+     "def_epa_per_play": 0.04434347766636281
+    },
+    {
+     "team": "MIN",
+     "plays": 1090,
+     "epa_per_play": 0.03697167798165138,
+     "def_epa_per_play": -0.08892758666666667
+    },
+    {
+     "team": "LA",
+     "plays": 1074,
+     "epa_per_play": 0.03389467877094972,
+     "def_epa_per_play": 0.0496864036199095
+    },
+    {
+     "team": "DEN",
+     "plays": 1083,
+     "epa_per_play": 0.009665256694367498,
+     "def_epa_per_play": -0.09817395888013998
+    },
+    {
+     "team": "NYJ",
+     "plays": 1063,
+     "epa_per_play": 0.00079420884289746,
+     "def_epa_per_play": 0.04588688751107175
+    },
+    {
+     "team": "SEA",
+     "plays": 1083,
+     "epa_per_play": -0.015515602954755311,
+     "def_epa_per_play": -0.01821089964157706
+    },
+    {
+     "team": "JAX",
+     "plays": 1025,
+     "epa_per_play": -0.021526078048780487,
+     "def_epa_per_play": 0.1270993804255319
+    },
+    {
+     "team": "PIT",
+     "plays": 1110,
+     "epa_per_play": -0.028511586486486485,
+     "def_epa_per_play": -0.02094945614035088
+    },
+    {
+     "team": "HOU",
+     "plays": 1093,
+     "epa_per_play": -0.039517823421774935,
+     "def_epa_per_play": -0.054001859245630175
+    },
+    {
+     "team": "MIA",
+     "plays": 1128,
+     "epa_per_play": -0.04019005496453901,
+     "def_epa_per_play": -0.021265579198473283
+    },
+    {
+     "team": "CAR",
+     "plays": 1026,
+     "epa_per_play": -0.04087427192982456,
+     "def_epa_per_play": 0.1544453020920502
+    },
+    {
+     "team": "IND",
+     "plays": 1075,
+     "epa_per_play": -0.047262845581395346,
+     "def_epa_per_play": 0.006128741000877963
+    },
+    {
+     "team": "NO",
+     "plays": 1080,
+     "epa_per_play": -0.058756264814814815,
+     "def_epa_per_play": 0.035566412629757786
+    },
+    {
+     "team": "CHI",
+     "plays": 1119,
+     "epa_per_play": -0.07460389633601429,
+     "def_epa_per_play": -0.0011727630331753555
+    },
+    {
+     "team": "NE",
+     "plays": 1082,
+     "epa_per_play": -0.07891574768946395,
+     "def_epa_per_play": 0.08302175858951175
+    },
+    {
+     "team": "DAL",
+     "plays": 1158,
+     "epa_per_play": -0.08977916753022452,
+     "def_epa_per_play": 0.06770862234533703
+    },
+    {
+     "team": "NYG",
+     "plays": 1103,
+     "epa_per_play": -0.09175358839528558,
+     "def_epa_per_play": 0.07050022532588454
+    },
+    {
+     "team": "TEN",
+     "plays": 1088,
+     "epa_per_play": -0.10142502022058823,
+     "def_epa_per_play": 0.04975268552253116
+    },
+    {
+     "team": "LV",
+     "plays": 1108,
+     "epa_per_play": -0.1314928203971119,
+     "def_epa_per_play": 0.014218293738489872
+    },
+    {
+     "team": "CLE",
+     "plays": 1176,
+     "epa_per_play": -0.17549994982993197,
+     "def_epa_per_play": 0.01726238725023787
+    }
+   ],
+   "config": {
+    "plugin": "Y Bar",
+    "theme": "Pro Dark",
+    "columns_config": {
+     "team": {
+      "palette": "linear-gradient(to right, #9e7c0c, #4c70af, #759dc8, #d3744b, #cc3053, #6f9f96, #ff7500, #ffb612, #e31837, #b15a6f, #ca4533, #759dfc, #737373, #9055ba, #006ddd, #00799d, #2d7e5f, #69be28, #00aec6, #6b7512, #007c80, #00aa9c, #009ae5, #886ba0, #d3bc8d, #e64100, #ac4c8f, #b0b7bc, #7a54db, #57c7ff, #9d6c46, #ff001f)"
+     },
+     "plays": {
+      "number_format": {
+       "useGrouping": false,
+       "maximumFractionDigits": 0
+      },
+      "palette": "linear-gradient(to right, #b15a6f, #737373, #9e7c0c, #4c70af, #009ae5, #e64100, #ff7500, #ff001f, #b0b7bc, #00799d, #759dc8, #ffb612, #007c80, #886ba0, #00aec6, #e31837, #006ddd, #759dfc, #9d6c46, #00aa9c, #9055ba, #ac4c8f, #d3bc8d, #7a54db, #2d7e5f, #6f9f96, #6b7512, #69be28, #ca4533, #cc3053, #57c7ff, #d3744b)"
+     },
+     "epa_per_play": {
+      "number_format": {
+       "minimumFractionDigits": 3,
+       "maximumFractionDigits": 3
+      },
+      "palette": "linear-gradient(to right, #b15a6f, #737373, #9e7c0c, #4c70af, #009ae5, #e64100, #ff7500, #ff001f, #b0b7bc, #00799d, #759dc8, #ffb612, #007c80, #886ba0, #00aec6, #e31837, #006ddd, #759dfc, #9d6c46, #00aa9c, #9055ba, #ac4c8f, #d3bc8d, #7a54db, #2d7e5f, #6f9f96, #6b7512, #69be28, #ca4533, #cc3053, #57c7ff, #d3744b)"
+     },
+     "def_epa_per_play": {
+      "number_format": {
+       "minimumFractionDigits": 3,
+       "maximumFractionDigits": 3
+      },
+      "palette": "linear-gradient(to right, #b15a6f, #737373, #9e7c0c, #4c70af, #009ae5, #e64100, #ff7500, #ff001f, #b0b7bc, #00799d, #759dc8, #ffb612, #007c80, #886ba0, #00aec6, #e31837, #006ddd, #759dfc, #9d6c46, #00aa9c, #9055ba, #ac4c8f, #d3bc8d, #7a54db, #2d7e5f, #6f9f96, #6b7512, #69be28, #ca4533, #cc3053, #57c7ff, #d3744b)"
+     }
+    }
+   },
+   "warnings": []
+  },
+  {
+   "name": "y line dark",
+   "options": {
+    "team_col": "team",
+    "league": "nfl",
+    "plugin": "Y Line",
+    "mode": "dark"
+   },
+   "schema": {
+    "team": "string",
+    "plays": "integer",
+    "epa_per_play": "float",
+    "def_epa_per_play": "float"
+   },
+   "rows": [
+    {
+     "team": "BAL",
+     "plays": 1091,
+     "epa_per_play": 0.1973075142071494,
+     "def_epa_per_play": -0.01809329170383586
+    },
+    {
+     "team": "BUF",
+     "plays": 1065,
+     "epa_per_play": 0.18687425633802818,
+     "def_epa_per_play": -0.0031065497716894976
+    },
+    {
+     "team": "DET",
+     "plays": 1125,
+     "epa_per_play": 0.15521151466666666,
+     "def_epa_per_play": -0.045118736890524376
+    },
+    {
+     "team": "WAS",
+     "plays": 1142,
+     "epa_per_play": 0.13941898861646235,
+     "def_epa_per_play": 0.04316543802423113
+    },
+    {
+     "team": "TB",
+     "plays": 1128,
+     "epa_per_play": 0.13204109929078015,
+     "def_epa_per_play": 0.016552372282608696
+    },
+    {
+     "team": "PHI",
+     "plays": 1129,
+     "epa_per_play": 0.11059268379096546,
+     "def_epa_per_play": -0.08551938246628131
+    },
+    {
+     "team": "CIN",
+     "plays": 1121,
+     "epa_per_play": 0.10641586262265834,
+     "def_epa_per_play": 0.05469574553571428
+    },
+    {
+     "team": "GB",
+     "plays": 1071,
+     "epa_per_play": 0.08039756022408964,
+     "def_epa_per_play": -0.06768193482309125
+    },
+    {
+     "team": "KC",
+     "plays": 1124,
+     "epa_per_play": 0.06882989234875446,
+     "def_epa_per_play": 0.005753912231559291
+    },
+    {
+     "team": "ARI",
+     "plays": 1087,
+     "epa_per_play": 0.06790171573137074,
+     "def_epa_per_play": 0.05063307196261683
+    },
+    {
+     "team": "SF",
+     "plays": 1064,
+     "epa_per_play": 0.060653246240601505,
+     "def_epa_per_play": 0.051679759276879164
+    },
+    {
+     "team": "LAC",
+     "plays": 1044,
+     "epa_per_play": 0.045015692528735635,
+     "def_epa_per_play": -0.055508027726432534
+    },
+    {
+     "team": "ATL",
+     "plays": 1127,
+     "epa_per_play": 0.04094521739130435,
+     "def_epa_per_play": 0.04434347766636281
+    },
+    {
+     "team": "MIN",
+     "plays": 1090,
+     "epa_per_play": 0.03697167798165138,
+     "def_epa_per_play": -0.08892758666666667
+    },
+    {
+     "team": "LA",
+     "plays": 1074,
+     "epa_per_play": 0.03389467877094972,
+     "def_epa_per_play": 0.0496864036199095
+    },
+    {
+     "team": "DEN",
+     "plays": 1083,
+     "epa_per_play": 0.009665256694367498,
+     "def_epa_per_play": -0.09817395888013998
+    },
+    {
+     "team": "NYJ",
+     "plays": 1063,
+     "epa_per_play": 0.00079420884289746,
+     "def_epa_per_play": 0.04588688751107175
+    },
+    {
+     "team": "SEA",
+     "plays": 1083,
+     "epa_per_play": -0.015515602954755311,
+     "def_epa_per_play": -0.01821089964157706
+    },
+    {
+     "team": "JAX",
+     "plays": 1025,
+     "epa_per_play": -0.021526078048780487,
+     "def_epa_per_play": 0.1270993804255319
+    },
+    {
+     "team": "PIT",
+     "plays": 1110,
+     "epa_per_play": -0.028511586486486485,
+     "def_epa_per_play": -0.02094945614035088
+    },
+    {
+     "team": "HOU",
+     "plays": 1093,
+     "epa_per_play": -0.039517823421774935,
+     "def_epa_per_play": -0.054001859245630175
+    },
+    {
+     "team": "MIA",
+     "plays": 1128,
+     "epa_per_play": -0.04019005496453901,
+     "def_epa_per_play": -0.021265579198473283
+    },
+    {
+     "team": "CAR",
+     "plays": 1026,
+     "epa_per_play": -0.04087427192982456,
+     "def_epa_per_play": 0.1544453020920502
+    },
+    {
+     "team": "IND",
+     "plays": 1075,
+     "epa_per_play": -0.047262845581395346,
+     "def_epa_per_play": 0.006128741000877963
+    },
+    {
+     "team": "NO",
+     "plays": 1080,
+     "epa_per_play": -0.058756264814814815,
+     "def_epa_per_play": 0.035566412629757786
+    },
+    {
+     "team": "CHI",
+     "plays": 1119,
+     "epa_per_play": -0.07460389633601429,
+     "def_epa_per_play": -0.0011727630331753555
+    },
+    {
+     "team": "NE",
+     "plays": 1082,
+     "epa_per_play": -0.07891574768946395,
+     "def_epa_per_play": 0.08302175858951175
+    },
+    {
+     "team": "DAL",
+     "plays": 1158,
+     "epa_per_play": -0.08977916753022452,
+     "def_epa_per_play": 0.06770862234533703
+    },
+    {
+     "team": "NYG",
+     "plays": 1103,
+     "epa_per_play": -0.09175358839528558,
+     "def_epa_per_play": 0.07050022532588454
+    },
+    {
+     "team": "TEN",
+     "plays": 1088,
+     "epa_per_play": -0.10142502022058823,
+     "def_epa_per_play": 0.04975268552253116
+    },
+    {
+     "team": "LV",
+     "plays": 1108,
+     "epa_per_play": -0.1314928203971119,
+     "def_epa_per_play": 0.014218293738489872
+    },
+    {
+     "team": "CLE",
+     "plays": 1176,
+     "epa_per_play": -0.17549994982993197,
+     "def_epa_per_play": 0.01726238725023787
+    }
+   ],
+   "config": {
+    "plugin": "Y Line",
+    "theme": "Pro Dark",
+    "columns_config": {
+     "team": {
+      "palette": "linear-gradient(to right, #9e7c0c, #4c70af, #759dc8, #d3744b, #cc3053, #6f9f96, #ff7500, #ffb612, #e31837, #b15a6f, #ca4533, #759dfc, #737373, #9055ba, #006ddd, #00799d, #2d7e5f, #69be28, #00aec6, #6b7512, #007c80, #00aa9c, #009ae5, #886ba0, #d3bc8d, #e64100, #ac4c8f, #b0b7bc, #7a54db, #57c7ff, #9d6c46, #ff001f)"
+     },
+     "plays": {
+      "number_format": {
+       "useGrouping": false,
+       "maximumFractionDigits": 0
+      },
+      "palette": "linear-gradient(to right, #b15a6f, #737373, #9e7c0c, #4c70af, #009ae5, #e64100, #ff7500, #ff001f, #b0b7bc, #00799d, #759dc8, #ffb612, #007c80, #886ba0, #00aec6, #e31837, #006ddd, #759dfc, #9d6c46, #00aa9c, #9055ba, #ac4c8f, #d3bc8d, #7a54db, #2d7e5f, #6f9f96, #6b7512, #69be28, #ca4533, #cc3053, #57c7ff, #d3744b)"
+     },
+     "epa_per_play": {
+      "number_format": {
+       "minimumFractionDigits": 3,
+       "maximumFractionDigits": 3
+      },
+      "palette": "linear-gradient(to right, #b15a6f, #737373, #9e7c0c, #4c70af, #009ae5, #e64100, #ff7500, #ff001f, #b0b7bc, #00799d, #759dc8, #ffb612, #007c80, #886ba0, #00aec6, #e31837, #006ddd, #759dfc, #9d6c46, #00aa9c, #9055ba, #ac4c8f, #d3bc8d, #7a54db, #2d7e5f, #6f9f96, #6b7512, #69be28, #ca4533, #cc3053, #57c7ff, #d3744b)"
+     },
+     "def_epa_per_play": {
+      "number_format": {
+       "minimumFractionDigits": 3,
+       "maximumFractionDigits": 3
+      },
+      "palette": "linear-gradient(to right, #b15a6f, #737373, #9e7c0c, #4c70af, #009ae5, #e64100, #ff7500, #ff001f, #b0b7bc, #00799d, #759dc8, #ffb612, #007c80, #886ba0, #00aec6, #e31837, #006ddd, #759dfc, #9d6c46, #00aa9c, #9055ba, #ac4c8f, #d3bc8d, #7a54db, #2d7e5f, #6f9f96, #6b7512, #69be28, #ca4533, #cc3053, #57c7ff, #d3744b)"
+     }
+    }
+   },
+   "warnings": []
+  },
+  {
+   "name": "scatter light",
+   "options": {
+    "team_col": "team",
+    "league": "nfl",
+    "plugin": "X/Y Scatter"
+   },
+   "schema": {
+    "team": "string",
+    "plays": "integer",
+    "epa_per_play": "float",
+    "def_epa_per_play": "float"
+   },
+   "rows": [
+    {
+     "team": "BAL",
+     "plays": 1091,
+     "epa_per_play": 0.1973075142071494,
+     "def_epa_per_play": -0.01809329170383586
+    },
+    {
+     "team": "BUF",
+     "plays": 1065,
+     "epa_per_play": 0.18687425633802818,
+     "def_epa_per_play": -0.0031065497716894976
+    },
+    {
+     "team": "DET",
+     "plays": 1125,
+     "epa_per_play": 0.15521151466666666,
+     "def_epa_per_play": -0.045118736890524376
+    },
+    {
+     "team": "WAS",
+     "plays": 1142,
+     "epa_per_play": 0.13941898861646235,
+     "def_epa_per_play": 0.04316543802423113
+    },
+    {
+     "team": "TB",
+     "plays": 1128,
+     "epa_per_play": 0.13204109929078015,
+     "def_epa_per_play": 0.016552372282608696
+    },
+    {
+     "team": "PHI",
+     "plays": 1129,
+     "epa_per_play": 0.11059268379096546,
+     "def_epa_per_play": -0.08551938246628131
+    },
+    {
+     "team": "CIN",
+     "plays": 1121,
+     "epa_per_play": 0.10641586262265834,
+     "def_epa_per_play": 0.05469574553571428
+    },
+    {
+     "team": "GB",
+     "plays": 1071,
+     "epa_per_play": 0.08039756022408964,
+     "def_epa_per_play": -0.06768193482309125
+    },
+    {
+     "team": "KC",
+     "plays": 1124,
+     "epa_per_play": 0.06882989234875446,
+     "def_epa_per_play": 0.005753912231559291
+    },
+    {
+     "team": "ARI",
+     "plays": 1087,
+     "epa_per_play": 0.06790171573137074,
+     "def_epa_per_play": 0.05063307196261683
+    },
+    {
+     "team": "SF",
+     "plays": 1064,
+     "epa_per_play": 0.060653246240601505,
+     "def_epa_per_play": 0.051679759276879164
+    },
+    {
+     "team": "LAC",
+     "plays": 1044,
+     "epa_per_play": 0.045015692528735635,
+     "def_epa_per_play": -0.055508027726432534
+    },
+    {
+     "team": "ATL",
+     "plays": 1127,
+     "epa_per_play": 0.04094521739130435,
+     "def_epa_per_play": 0.04434347766636281
+    },
+    {
+     "team": "MIN",
+     "plays": 1090,
+     "epa_per_play": 0.03697167798165138,
+     "def_epa_per_play": -0.08892758666666667
+    },
+    {
+     "team": "LA",
+     "plays": 1074,
+     "epa_per_play": 0.03389467877094972,
+     "def_epa_per_play": 0.0496864036199095
+    },
+    {
+     "team": "DEN",
+     "plays": 1083,
+     "epa_per_play": 0.009665256694367498,
+     "def_epa_per_play": -0.09817395888013998
+    },
+    {
+     "team": "NYJ",
+     "plays": 1063,
+     "epa_per_play": 0.00079420884289746,
+     "def_epa_per_play": 0.04588688751107175
+    },
+    {
+     "team": "SEA",
+     "plays": 1083,
+     "epa_per_play": -0.015515602954755311,
+     "def_epa_per_play": -0.01821089964157706
+    },
+    {
+     "team": "JAX",
+     "plays": 1025,
+     "epa_per_play": -0.021526078048780487,
+     "def_epa_per_play": 0.1270993804255319
+    },
+    {
+     "team": "PIT",
+     "plays": 1110,
+     "epa_per_play": -0.028511586486486485,
+     "def_epa_per_play": -0.02094945614035088
+    },
+    {
+     "team": "HOU",
+     "plays": 1093,
+     "epa_per_play": -0.039517823421774935,
+     "def_epa_per_play": -0.054001859245630175
+    },
+    {
+     "team": "MIA",
+     "plays": 1128,
+     "epa_per_play": -0.04019005496453901,
+     "def_epa_per_play": -0.021265579198473283
+    },
+    {
+     "team": "CAR",
+     "plays": 1026,
+     "epa_per_play": -0.04087427192982456,
+     "def_epa_per_play": 0.1544453020920502
+    },
+    {
+     "team": "IND",
+     "plays": 1075,
+     "epa_per_play": -0.047262845581395346,
+     "def_epa_per_play": 0.006128741000877963
+    },
+    {
+     "team": "NO",
+     "plays": 1080,
+     "epa_per_play": -0.058756264814814815,
+     "def_epa_per_play": 0.035566412629757786
+    },
+    {
+     "team": "CHI",
+     "plays": 1119,
+     "epa_per_play": -0.07460389633601429,
+     "def_epa_per_play": -0.0011727630331753555
+    },
+    {
+     "team": "NE",
+     "plays": 1082,
+     "epa_per_play": -0.07891574768946395,
+     "def_epa_per_play": 0.08302175858951175
+    },
+    {
+     "team": "DAL",
+     "plays": 1158,
+     "epa_per_play": -0.08977916753022452,
+     "def_epa_per_play": 0.06770862234533703
+    },
+    {
+     "team": "NYG",
+     "plays": 1103,
+     "epa_per_play": -0.09175358839528558,
+     "def_epa_per_play": 0.07050022532588454
+    },
+    {
+     "team": "TEN",
+     "plays": 1088,
+     "epa_per_play": -0.10142502022058823,
+     "def_epa_per_play": 0.04975268552253116
+    },
+    {
+     "team": "LV",
+     "plays": 1108,
+     "epa_per_play": -0.1314928203971119,
+     "def_epa_per_play": 0.014218293738489872
+    },
+    {
+     "team": "CLE",
+     "plays": 1176,
+     "epa_per_play": -0.17549994982993197,
+     "def_epa_per_play": 0.01726238725023787
+    }
+   ],
+   "config": {
+    "plugin": "X/Y Scatter",
+    "theme": "Pro Light",
+    "columns_config": {
+     "team": {
+      "palette": "linear-gradient(to right, #241773, #c60c30, #8d9296, #5a1414, #b85149, #53575f, #ff4a41, #203731, #bf880e, #97233f, #a71600, #006fce, #000000, #6d2482, #0043aa, #004c6e, #00472c, #59a222, #0d6f7f, #1e2d00, #32202f, #dc751d, #0085ca, #003876, #82703f, #e64100, #000940, #002244, #492e5b, #6d92b8, #2d0000, #311d00)"
+     },
+     "plays": {
+      "number_format": {
+       "useGrouping": false,
+       "maximumFractionDigits": 0
+      },
+      "palette": "linear-gradient(to right, #97233f, #000000, #241773, #c60c30, #0085ca, #e64100, #ff4a41, #311d00, #002244, #004c6e, #8d9296, #203731, #32202f, #003876, #0d6f7f, #bf880e, #0043aa, #006fce, #2d0000, #dc751d, #6d2482, #000940, #82703f, #492e5b, #00472c, #53575f, #1e2d00, #59a222, #a71600, #b85149, #6d92b8, #5a1414)"
+     },
+     "epa_per_play": {
+      "number_format": {
+       "minimumFractionDigits": 3,
+       "maximumFractionDigits": 3
+      },
+      "palette": "linear-gradient(to right, #97233f, #000000, #241773, #c60c30, #0085ca, #e64100, #ff4a41, #311d00, #002244, #004c6e, #8d9296, #203731, #32202f, #003876, #0d6f7f, #bf880e, #0043aa, #006fce, #2d0000, #dc751d, #6d2482, #000940, #82703f, #492e5b, #00472c, #53575f, #1e2d00, #59a222, #a71600, #b85149, #6d92b8, #5a1414)"
+     },
+     "def_epa_per_play": {
+      "number_format": {
+       "minimumFractionDigits": 3,
+       "maximumFractionDigits": 3
+      },
+      "palette": "linear-gradient(to right, #97233f, #000000, #241773, #c60c30, #0085ca, #e64100, #ff4a41, #311d00, #002244, #004c6e, #8d9296, #203731, #32202f, #003876, #0d6f7f, #bf880e, #0043aa, #006fce, #2d0000, #dc751d, #6d2482, #000940, #82703f, #492e5b, #00472c, #53575f, #1e2d00, #59a222, #a71600, #b85149, #6d92b8, #5a1414)"
+     }
+    }
+   },
+   "warnings": []
+  },
+  {
+   "name": "scatter dark",
+   "options": {
+    "team_col": "team",
+    "league": "nfl",
+    "plugin": "X/Y Scatter",
+    "mode": "dark"
+   },
+   "schema": {
+    "team": "string",
+    "plays": "integer",
+    "epa_per_play": "float",
+    "def_epa_per_play": "float"
+   },
+   "rows": [
+    {
+     "team": "BAL",
+     "plays": 1091,
+     "epa_per_play": 0.1973075142071494,
+     "def_epa_per_play": -0.01809329170383586
+    },
+    {
+     "team": "BUF",
+     "plays": 1065,
+     "epa_per_play": 0.18687425633802818,
+     "def_epa_per_play": -0.0031065497716894976
+    },
+    {
+     "team": "DET",
+     "plays": 1125,
+     "epa_per_play": 0.15521151466666666,
+     "def_epa_per_play": -0.045118736890524376
+    },
+    {
+     "team": "WAS",
+     "plays": 1142,
+     "epa_per_play": 0.13941898861646235,
+     "def_epa_per_play": 0.04316543802423113
+    },
+    {
+     "team": "TB",
+     "plays": 1128,
+     "epa_per_play": 0.13204109929078015,
+     "def_epa_per_play": 0.016552372282608696
+    },
+    {
+     "team": "PHI",
+     "plays": 1129,
+     "epa_per_play": 0.11059268379096546,
+     "def_epa_per_play": -0.08551938246628131
+    },
+    {
+     "team": "CIN",
+     "plays": 1121,
+     "epa_per_play": 0.10641586262265834,
+     "def_epa_per_play": 0.05469574553571428
+    },
+    {
+     "team": "GB",
+     "plays": 1071,
+     "epa_per_play": 0.08039756022408964,
+     "def_epa_per_play": -0.06768193482309125
+    },
+    {
+     "team": "KC",
+     "plays": 1124,
+     "epa_per_play": 0.06882989234875446,
+     "def_epa_per_play": 0.005753912231559291
+    },
+    {
+     "team": "ARI",
+     "plays": 1087,
+     "epa_per_play": 0.06790171573137074,
+     "def_epa_per_play": 0.05063307196261683
+    },
+    {
+     "team": "SF",
+     "plays": 1064,
+     "epa_per_play": 0.060653246240601505,
+     "def_epa_per_play": 0.051679759276879164
+    },
+    {
+     "team": "LAC",
+     "plays": 1044,
+     "epa_per_play": 0.045015692528735635,
+     "def_epa_per_play": -0.055508027726432534
+    },
+    {
+     "team": "ATL",
+     "plays": 1127,
+     "epa_per_play": 0.04094521739130435,
+     "def_epa_per_play": 0.04434347766636281
+    },
+    {
+     "team": "MIN",
+     "plays": 1090,
+     "epa_per_play": 0.03697167798165138,
+     "def_epa_per_play": -0.08892758666666667
+    },
+    {
+     "team": "LA",
+     "plays": 1074,
+     "epa_per_play": 0.03389467877094972,
+     "def_epa_per_play": 0.0496864036199095
+    },
+    {
+     "team": "DEN",
+     "plays": 1083,
+     "epa_per_play": 0.009665256694367498,
+     "def_epa_per_play": -0.09817395888013998
+    },
+    {
+     "team": "NYJ",
+     "plays": 1063,
+     "epa_per_play": 0.00079420884289746,
+     "def_epa_per_play": 0.04588688751107175
+    },
+    {
+     "team": "SEA",
+     "plays": 1083,
+     "epa_per_play": -0.015515602954755311,
+     "def_epa_per_play": -0.01821089964157706
+    },
+    {
+     "team": "JAX",
+     "plays": 1025,
+     "epa_per_play": -0.021526078048780487,
+     "def_epa_per_play": 0.1270993804255319
+    },
+    {
+     "team": "PIT",
+     "plays": 1110,
+     "epa_per_play": -0.028511586486486485,
+     "def_epa_per_play": -0.02094945614035088
+    },
+    {
+     "team": "HOU",
+     "plays": 1093,
+     "epa_per_play": -0.039517823421774935,
+     "def_epa_per_play": -0.054001859245630175
+    },
+    {
+     "team": "MIA",
+     "plays": 1128,
+     "epa_per_play": -0.04019005496453901,
+     "def_epa_per_play": -0.021265579198473283
+    },
+    {
+     "team": "CAR",
+     "plays": 1026,
+     "epa_per_play": -0.04087427192982456,
+     "def_epa_per_play": 0.1544453020920502
+    },
+    {
+     "team": "IND",
+     "plays": 1075,
+     "epa_per_play": -0.047262845581395346,
+     "def_epa_per_play": 0.006128741000877963
+    },
+    {
+     "team": "NO",
+     "plays": 1080,
+     "epa_per_play": -0.058756264814814815,
+     "def_epa_per_play": 0.035566412629757786
+    },
+    {
+     "team": "CHI",
+     "plays": 1119,
+     "epa_per_play": -0.07460389633601429,
+     "def_epa_per_play": -0.0011727630331753555
+    },
+    {
+     "team": "NE",
+     "plays": 1082,
+     "epa_per_play": -0.07891574768946395,
+     "def_epa_per_play": 0.08302175858951175
+    },
+    {
+     "team": "DAL",
+     "plays": 1158,
+     "epa_per_play": -0.08977916753022452,
+     "def_epa_per_play": 0.06770862234533703
+    },
+    {
+     "team": "NYG",
+     "plays": 1103,
+     "epa_per_play": -0.09175358839528558,
+     "def_epa_per_play": 0.07050022532588454
+    },
+    {
+     "team": "TEN",
+     "plays": 1088,
+     "epa_per_play": -0.10142502022058823,
+     "def_epa_per_play": 0.04975268552253116
+    },
+    {
+     "team": "LV",
+     "plays": 1108,
+     "epa_per_play": -0.1314928203971119,
+     "def_epa_per_play": 0.014218293738489872
+    },
+    {
+     "team": "CLE",
+     "plays": 1176,
+     "epa_per_play": -0.17549994982993197,
+     "def_epa_per_play": 0.01726238725023787
+    }
+   ],
+   "config": {
+    "plugin": "X/Y Scatter",
+    "theme": "Pro Dark",
+    "columns_config": {
+     "team": {
+      "palette": "linear-gradient(to right, #9e7c0c, #4c70af, #759dc8, #d3744b, #cc3053, #6f9f96, #ff7500, #ffb612, #e31837, #b15a6f, #ca4533, #759dfc, #737373, #9055ba, #006ddd, #00799d, #2d7e5f, #69be28, #00aec6, #6b7512, #007c80, #00aa9c, #009ae5, #886ba0, #d3bc8d, #e64100, #ac4c8f, #b0b7bc, #7a54db, #57c7ff, #9d6c46, #ff001f)"
+     },
+     "plays": {
+      "number_format": {
+       "useGrouping": false,
+       "maximumFractionDigits": 0
+      },
+      "palette": "linear-gradient(to right, #b15a6f, #737373, #9e7c0c, #4c70af, #009ae5, #e64100, #ff7500, #ff001f, #b0b7bc, #00799d, #759dc8, #ffb612, #007c80, #886ba0, #00aec6, #e31837, #006ddd, #759dfc, #9d6c46, #00aa9c, #9055ba, #ac4c8f, #d3bc8d, #7a54db, #2d7e5f, #6f9f96, #6b7512, #69be28, #ca4533, #cc3053, #57c7ff, #d3744b)"
+     },
+     "epa_per_play": {
+      "number_format": {
+       "minimumFractionDigits": 3,
+       "maximumFractionDigits": 3
+      },
+      "palette": "linear-gradient(to right, #b15a6f, #737373, #9e7c0c, #4c70af, #009ae5, #e64100, #ff7500, #ff001f, #b0b7bc, #00799d, #759dc8, #ffb612, #007c80, #886ba0, #00aec6, #e31837, #006ddd, #759dfc, #9d6c46, #00aa9c, #9055ba, #ac4c8f, #d3bc8d, #7a54db, #2d7e5f, #6f9f96, #6b7512, #69be28, #ca4533, #cc3053, #57c7ff, #d3744b)"
+     },
+     "def_epa_per_play": {
+      "number_format": {
+       "minimumFractionDigits": 3,
+       "maximumFractionDigits": 3
+      },
+      "palette": "linear-gradient(to right, #b15a6f, #737373, #9e7c0c, #4c70af, #009ae5, #e64100, #ff7500, #ff001f, #b0b7bc, #00799d, #759dc8, #ffb612, #007c80, #886ba0, #00aec6, #e31837, #006ddd, #759dfc, #9d6c46, #00aa9c, #9055ba, #ac4c8f, #d3bc8d, #7a54db, #2d7e5f, #6f9f96, #6b7512, #69be28, #ca4533, #cc3053, #57c7ff, #d3744b)"
+     }
+    }
+   },
+   "warnings": []
+  },
+  {
+   "name": "datagrid numeric team ids",
+   "options": {
+    "team_col": "team_id",
+    "league": "nba"
+   },
+   "schema": {
+    "team_id": "integer",
+    "wins": "integer",
+    "win_pct": "float"
+   },
+   "rows": [
+    {
+     "team_id": 1610612746,
+     "wins": 51,
+     "win_pct": 62.2
+    },
+    {
+     "team_id": 1610612756,
+     "wins": 49,
+     "win_pct": 59.8
+    },
+    {
+     "team_id": 1610612747,
+     "wins": 47,
+     "win_pct": 57.3
+    },
+    {
+     "team_id": 1610612758,
+     "wins": 46,
+     "win_pct": 56.10000000000001
+    },
+    {
+     "team_id": 1610612744,
+     "wins": 46,
+     "win_pct": 56.10000000000001
+    }
+   ],
+   "config": {
+    "plugin": "Datagrid",
+    "theme": "Pro Light",
+    "columns_config": {
+     "wins": {
+      "number_format": {
+       "useGrouping": false,
+       "maximumFractionDigits": 0
+      }
+     },
+     "win_pct": {
+      "number_format": {
+       "minimumFractionDigits": 1,
+       "maximumFractionDigits": 1
+      }
+     }
+    }
+   },
+   "warnings": [
+    "no team colors on the Datagrid: the team column 'team_id' is numeric, and team colors need a string or categorical team column (Perspective fills only text cells)"
+   ]
+  },
+  {
+   "name": "y bar numeric team ids",
+   "options": {
+    "team_col": "team_id",
+    "league": "nba",
+    "plugin": "Y Bar"
+   },
+   "schema": {
+    "team_id": "integer",
+    "wins": "integer",
+    "win_pct": "float"
+   },
+   "rows": [
+    {
+     "team_id": 1610612746,
+     "wins": 51,
+     "win_pct": 62.2
+    },
+    {
+     "team_id": 1610612756,
+     "wins": 49,
+     "win_pct": 59.8
+    },
+    {
+     "team_id": 1610612747,
+     "wins": 47,
+     "win_pct": 57.3
+    },
+    {
+     "team_id": 1610612758,
+     "wins": 46,
+     "win_pct": 56.10000000000001
+    },
+    {
+     "team_id": 1610612744,
+     "wins": 46,
+     "win_pct": 56.10000000000001
+    }
+   ],
+   "config": {
+    "plugin": "Y Bar",
+    "theme": "Pro Light",
+    "columns_config": {
+     "wins": {
+      "number_format": {
+       "useGrouping": false,
+       "maximumFractionDigits": 0
+      },
+      "palette": "linear-gradient(to right, #1d428a, #12173f, #552583, #e56020, #6a7a82)"
+     },
+     "win_pct": {
+      "number_format": {
+       "minimumFractionDigits": 1,
+       "maximumFractionDigits": 1
+      },
+      "palette": "linear-gradient(to right, #1d428a, #12173f, #552583, #e56020, #6a7a82)"
+     }
+    }
+   },
+   "warnings": []
+  },
+  {
+   "name": "datagrid null team",
+   "options": {
+    "team_col": "team",
+    "league": "nfl"
+   },
+   "schema": {
+    "team": "string",
+    "plays": "integer",
+    "epa_per_play": "float",
+    "def_epa_per_play": "float"
+   },
+   "rows": [
+    {
+     "team": null,
+     "plays": 1091,
+     "epa_per_play": 0.1973075142071494,
+     "def_epa_per_play": -0.01809329170383586
+    },
+    {
+     "team": "BUF",
+     "plays": 1065,
+     "epa_per_play": 0.18687425633802818,
+     "def_epa_per_play": -0.0031065497716894976
+    },
+    {
+     "team": "DET",
+     "plays": 1125,
+     "epa_per_play": 0.15521151466666666,
+     "def_epa_per_play": -0.045118736890524376
+    },
+    {
+     "team": "WAS",
+     "plays": 1142,
+     "epa_per_play": 0.13941898861646235,
+     "def_epa_per_play": 0.04316543802423113
+    }
+   ],
+   "config": {
+    "plugin": "Datagrid",
+    "theme": "Pro Light",
+    "columns_config": {
+     "team": {
+      "bg_mode": "series",
+      "bg_color": "linear-gradient(to right, #00338d, #0076b6, #5a1414)"
+     },
+     "plays": {
+      "number_format": {
+       "useGrouping": false,
+       "maximumFractionDigits": 0
+      }
+     },
+     "epa_per_play": {
+      "number_format": {
+       "minimumFractionDigits": 3,
+       "maximumFractionDigits": 3
+      }
+     },
+     "def_epa_per_play": {
+      "number_format": {
+       "minimumFractionDigits": 3,
+       "maximumFractionDigits": 3
+      }
+     }
+    }
+   },
+   "warnings": []
+  },
+  {
+   "name": "y bar null team",
+   "options": {
+    "team_col": "team",
+    "league": "nfl",
+    "plugin": "Y Bar"
+   },
+   "schema": {
+    "team": "string",
+    "plays": "integer",
+    "epa_per_play": "float",
+    "def_epa_per_play": "float"
+   },
+   "rows": [
+    {
+     "team": null,
+     "plays": 1091,
+     "epa_per_play": 0.1973075142071494,
+     "def_epa_per_play": -0.01809329170383586
+    },
+    {
+     "team": "BUF",
+     "plays": 1065,
+     "epa_per_play": 0.18687425633802818,
+     "def_epa_per_play": -0.0031065497716894976
+    },
+    {
+     "team": "DET",
+     "plays": 1125,
+     "epa_per_play": 0.15521151466666666,
+     "def_epa_per_play": -0.045118736890524376
+    },
+    {
+     "team": "WAS",
+     "plays": 1142,
+     "epa_per_play": 0.13941898861646235,
+     "def_epa_per_play": 0.04316543802423113
+    }
+   ],
+   "config": {
+    "plugin": "Y Bar",
+    "theme": "Pro Light",
+    "columns_config": {
+     "team": {
+      "palette": "linear-gradient(to right, #00338d, #0076b6, #5a1414)"
+     },
+     "plays": {
+      "number_format": {
+       "useGrouping": false,
+       "maximumFractionDigits": 0
+      },
+      "palette": "linear-gradient(to right, #808080, #00338d, #0076b6, #5a1414)"
+     },
+     "epa_per_play": {
+      "number_format": {
+       "minimumFractionDigits": 3,
+       "maximumFractionDigits": 3
+      },
+      "palette": "linear-gradient(to right, #808080, #00338d, #0076b6, #5a1414)"
+     },
+     "def_epa_per_play": {
+      "number_format": {
+       "minimumFractionDigits": 3,
+       "maximumFractionDigits": 3
+      },
+      "palette": "linear-gradient(to right, #808080, #00338d, #0076b6, #5a1414)"
+     }
+    }
+   },
+   "warnings": []
+  },
+  {
+   "name": "scatter null team dark",
+   "options": {
+    "team_col": "team",
+    "league": "nfl",
+    "plugin": "X/Y Scatter",
+    "mode": "dark"
+   },
+   "schema": {
+    "team": "string",
+    "plays": "integer",
+    "epa_per_play": "float",
+    "def_epa_per_play": "float"
+   },
+   "rows": [
+    {
+     "team": null,
+     "plays": 1091,
+     "epa_per_play": 0.1973075142071494,
+     "def_epa_per_play": -0.01809329170383586
+    },
+    {
+     "team": "BUF",
+     "plays": 1065,
+     "epa_per_play": 0.18687425633802818,
+     "def_epa_per_play": -0.0031065497716894976
+    },
+    {
+     "team": "DET",
+     "plays": 1125,
+     "epa_per_play": 0.15521151466666666,
+     "def_epa_per_play": -0.045118736890524376
+    },
+    {
+     "team": "WAS",
+     "plays": 1142,
+     "epa_per_play": 0.13941898861646235,
+     "def_epa_per_play": 0.04316543802423113
+    }
+   ],
+   "config": {
+    "plugin": "X/Y Scatter",
+    "theme": "Pro Dark",
+    "columns_config": {
+     "team": {
+      "palette": "linear-gradient(to right, #4c70af, #b0b7bc, #ffb612)"
+     },
+     "plays": {
+      "number_format": {
+       "useGrouping": false,
+       "maximumFractionDigits": 0
+      },
+      "palette": "linear-gradient(to right, #808080, #4c70af, #b0b7bc, #ffb612)"
+     },
+     "epa_per_play": {
+      "number_format": {
+       "minimumFractionDigits": 3,
+       "maximumFractionDigits": 3
+      },
+      "palette": "linear-gradient(to right, #808080, #4c70af, #b0b7bc, #ffb612)"
+     },
+     "def_epa_per_play": {
+      "number_format": {
+       "minimumFractionDigits": 3,
+       "maximumFractionDigits": 3
+      },
+      "palette": "linear-gradient(to right, #808080, #4c70af, #b0b7bc, #ffb612)"
+     }
+    }
+   },
+   "warnings": []
+  },
+  {
+   "name": "datagrid unresolved",
+   "options": {
+    "team_col": "team",
+    "league": "nfl"
+   },
+   "schema": {
+    "team": "string",
+    "plays": "integer",
+    "epa_per_play": "float",
+    "def_epa_per_play": "float"
+   },
+   "rows": [
+    {
+     "team": "BAL",
+     "plays": 1091,
+     "epa_per_play": 0.1973075142071494,
+     "def_epa_per_play": -0.01809329170383586
+    },
+    {
+     "team": "BUF",
+     "plays": 1065,
+     "epa_per_play": 0.18687425633802818,
+     "def_epa_per_play": -0.0031065497716894976
+    },
+    {
+     "team": "DET",
+     "plays": 1125,
+     "epa_per_play": 0.15521151466666666,
+     "def_epa_per_play": -0.045118736890524376
+    },
+    {
+     "team": "XFL",
+     "plays": 1,
+     "epa_per_play": null,
+     "def_epa_per_play": null
+    },
+    {
+     "team": "USFL",
+     "plays": 2,
+     "epa_per_play": null,
+     "def_epa_per_play": null
+    }
+   ],
+   "config": {
+    "plugin": "Datagrid",
+    "theme": "Pro Light",
+    "columns_config": {
+     "team": {
+      "bg_mode": "series",
+      "bg_color": "linear-gradient(to right, #241773, #c60c30, #0076b6, #808080, #808080)"
+     },
+     "plays": {
+      "number_format": {
+       "useGrouping": false,
+       "maximumFractionDigits": 0
+      }
+     },
+     "epa_per_play": {
+      "number_format": {
+       "minimumFractionDigits": 3,
+       "maximumFractionDigits": 3
+      }
+     },
+     "def_epa_per_play": {
+      "number_format": {
+       "minimumFractionDigits": 3,
+       "maximumFractionDigits": 3
+      }
+     }
+    }
+   },
+   "warnings": [
+    "2 value(s) did not resolve to a nfl team: 'USFL' (unknown), 'XFL' (unknown). Use sdvplot.suggest() for candidates, or strict=True to raise."
+   ]
+  },
+  {
+   "name": "y bar unresolved",
+   "options": {
+    "team_col": "team",
+    "league": "nfl",
+    "plugin": "Y Bar"
+   },
+   "schema": {
+    "team": "string",
+    "plays": "integer",
+    "epa_per_play": "float",
+    "def_epa_per_play": "float"
+   },
+   "rows": [
+    {
+     "team": "BAL",
+     "plays": 1091,
+     "epa_per_play": 0.1973075142071494,
+     "def_epa_per_play": -0.01809329170383586
+    },
+    {
+     "team": "BUF",
+     "plays": 1065,
+     "epa_per_play": 0.18687425633802818,
+     "def_epa_per_play": -0.0031065497716894976
+    },
+    {
+     "team": "DET",
+     "plays": 1125,
+     "epa_per_play": 0.15521151466666666,
+     "def_epa_per_play": -0.045118736890524376
+    },
+    {
+     "team": "XFL",
+     "plays": 1,
+     "epa_per_play": null,
+     "def_epa_per_play": null
+    },
+    {
+     "team": "USFL",
+     "plays": 2,
+     "epa_per_play": null,
+     "def_epa_per_play": null
+    }
+   ],
+   "config": {
+    "plugin": "Y Bar",
+    "theme": "Pro Light",
+    "columns_config": {
+     "team": {
+      "palette": "linear-gradient(to right, #241773, #c60c30, #0076b6, #808080, #808080)"
+     },
+     "plays": {
+      "number_format": {
+       "useGrouping": false,
+       "maximumFractionDigits": 0
+      },
+      "palette": "linear-gradient(to right, #241773, #c60c30, #0076b6, #808080, #808080)"
+     },
+     "epa_per_play": {
+      "number_format": {
+       "minimumFractionDigits": 3,
+       "maximumFractionDigits": 3
+      },
+      "palette": "linear-gradient(to right, #241773, #c60c30, #0076b6, #808080, #808080)"
+     },
+     "def_epa_per_play": {
+      "number_format": {
+       "minimumFractionDigits": 3,
+       "maximumFractionDigits": 3
+      },
+      "palette": "linear-gradient(to right, #241773, #c60c30, #0076b6, #808080, #808080)"
+     }
+    }
+   },
+   "warnings": [
+    "2 value(s) did not resolve to a nfl team: 'USFL' (unknown), 'XFL' (unknown). Use sdvplot.suggest() for candidates, or strict=True to raise."
+   ]
+  },
+  {
+   "name": "y bar codepoint order",
+   "options": {
+    "team_col": "team",
+    "league": "cfb",
+    "plugin": "Y Bar"
+   },
+   "schema": {
+    "team": "string",
+    "wins": "integer"
+   },
+   "rows": [
+    {
+     "team": "Utah",
+     "wins": 5
+    },
+    {
+     "team": "Louisiana",
+     "wins": 10
+    },
+    {
+     "team": "Texas",
+     "wins": 13
+    },
+    {
+     "team": "LSU",
+     "wins": 9
+    },
+    {
+     "team": "UCF",
+     "wins": 4
+    },
+    {
+     "team": "TCU",
+     "wins": 9
+    }
+   ],
+   "config": {
+    "plugin": "Y Bar",
+    "theme": "Pro Light",
+    "columns_config": {
+     "team": {
+      "palette": "linear-gradient(to right, #c84500, #ce181e, #af5c37, #461d76, #000000, #8c8c8c)"
+     },
+     "wins": {
+      "number_format": {
+       "useGrouping": false,
+       "maximumFractionDigits": 0
+      },
+      "palette": "linear-gradient(to right, #461d76, #ce181e, #8c8c8c, #af5c37, #000000, #c84500)"
+     }
+    }
+   },
+   "warnings": []
+  },
+  {
+   "name": "datagrid formats and background",
+   "options": {
+    "team_col": "team",
+    "league": "nfl",
+    "background": "#14171c",
+    "formats": {
+     "epa_per_play": {
+      "minimumFractionDigits": 2,
+      "maximumFractionDigits": 2
+     },
+     "plays": null
+    }
+   },
+   "schema": {
+    "team": "string",
+    "plays": "integer",
+    "epa_per_play": "float",
+    "def_epa_per_play": "float"
+   },
+   "rows": [
+    {
+     "team": "BAL",
+     "plays": 1091,
+     "epa_per_play": 0.1973075142071494,
+     "def_epa_per_play": -0.01809329170383586
+    },
+    {
+     "team": "BUF",
+     "plays": 1065,
+     "epa_per_play": 0.18687425633802818,
+     "def_epa_per_play": -0.0031065497716894976
+    },
+    {
+     "team": "DET",
+     "plays": 1125,
+     "epa_per_play": 0.15521151466666666,
+     "def_epa_per_play": -0.045118736890524376
+    },
+    {
+     "team": "WAS",
+     "plays": 1142,
+     "epa_per_play": 0.13941898861646235,
+     "def_epa_per_play": 0.04316543802423113
+    },
+    {
+     "team": "TB",
+     "plays": 1128,
+     "epa_per_play": 0.13204109929078015,
+     "def_epa_per_play": 0.016552372282608696
+    },
+    {
+     "team": "PHI",
+     "plays": 1129,
+     "epa_per_play": 0.11059268379096546,
+     "def_epa_per_play": -0.08551938246628131
+    },
+    {
+     "team": "CIN",
+     "plays": 1121,
+     "epa_per_play": 0.10641586262265834,
+     "def_epa_per_play": 0.05469574553571428
+    },
+    {
+     "team": "GB",
+     "plays": 1071,
+     "epa_per_play": 0.08039756022408964,
+     "def_epa_per_play": -0.06768193482309125
+    },
+    {
+     "team": "KC",
+     "plays": 1124,
+     "epa_per_play": 0.06882989234875446,
+     "def_epa_per_play": 0.005753912231559291
+    },
+    {
+     "team": "ARI",
+     "plays": 1087,
+     "epa_per_play": 0.06790171573137074,
+     "def_epa_per_play": 0.05063307196261683
+    },
+    {
+     "team": "SF",
+     "plays": 1064,
+     "epa_per_play": 0.060653246240601505,
+     "def_epa_per_play": 0.051679759276879164
+    },
+    {
+     "team": "LAC",
+     "plays": 1044,
+     "epa_per_play": 0.045015692528735635,
+     "def_epa_per_play": -0.055508027726432534
+    },
+    {
+     "team": "ATL",
+     "plays": 1127,
+     "epa_per_play": 0.04094521739130435,
+     "def_epa_per_play": 0.04434347766636281
+    },
+    {
+     "team": "MIN",
+     "plays": 1090,
+     "epa_per_play": 0.03697167798165138,
+     "def_epa_per_play": -0.08892758666666667
+    },
+    {
+     "team": "LA",
+     "plays": 1074,
+     "epa_per_play": 0.03389467877094972,
+     "def_epa_per_play": 0.0496864036199095
+    },
+    {
+     "team": "DEN",
+     "plays": 1083,
+     "epa_per_play": 0.009665256694367498,
+     "def_epa_per_play": -0.09817395888013998
+    },
+    {
+     "team": "NYJ",
+     "plays": 1063,
+     "epa_per_play": 0.00079420884289746,
+     "def_epa_per_play": 0.04588688751107175
+    },
+    {
+     "team": "SEA",
+     "plays": 1083,
+     "epa_per_play": -0.015515602954755311,
+     "def_epa_per_play": -0.01821089964157706
+    },
+    {
+     "team": "JAX",
+     "plays": 1025,
+     "epa_per_play": -0.021526078048780487,
+     "def_epa_per_play": 0.1270993804255319
+    },
+    {
+     "team": "PIT",
+     "plays": 1110,
+     "epa_per_play": -0.028511586486486485,
+     "def_epa_per_play": -0.02094945614035088
+    },
+    {
+     "team": "HOU",
+     "plays": 1093,
+     "epa_per_play": -0.039517823421774935,
+     "def_epa_per_play": -0.054001859245630175
+    },
+    {
+     "team": "MIA",
+     "plays": 1128,
+     "epa_per_play": -0.04019005496453901,
+     "def_epa_per_play": -0.021265579198473283
+    },
+    {
+     "team": "CAR",
+     "plays": 1026,
+     "epa_per_play": -0.04087427192982456,
+     "def_epa_per_play": 0.1544453020920502
+    },
+    {
+     "team": "IND",
+     "plays": 1075,
+     "epa_per_play": -0.047262845581395346,
+     "def_epa_per_play": 0.006128741000877963
+    },
+    {
+     "team": "NO",
+     "plays": 1080,
+     "epa_per_play": -0.058756264814814815,
+     "def_epa_per_play": 0.035566412629757786
+    },
+    {
+     "team": "CHI",
+     "plays": 1119,
+     "epa_per_play": -0.07460389633601429,
+     "def_epa_per_play": -0.0011727630331753555
+    },
+    {
+     "team": "NE",
+     "plays": 1082,
+     "epa_per_play": -0.07891574768946395,
+     "def_epa_per_play": 0.08302175858951175
+    },
+    {
+     "team": "DAL",
+     "plays": 1158,
+     "epa_per_play": -0.08977916753022452,
+     "def_epa_per_play": 0.06770862234533703
+    },
+    {
+     "team": "NYG",
+     "plays": 1103,
+     "epa_per_play": -0.09175358839528558,
+     "def_epa_per_play": 0.07050022532588454
+    },
+    {
+     "team": "TEN",
+     "plays": 1088,
+     "epa_per_play": -0.10142502022058823,
+     "def_epa_per_play": 0.04975268552253116
+    },
+    {
+     "team": "LV",
+     "plays": 1108,
+     "epa_per_play": -0.1314928203971119,
+     "def_epa_per_play": 0.014218293738489872
+    },
+    {
+     "team": "CLE",
+     "plays": 1176,
+     "epa_per_play": -0.17549994982993197,
+     "def_epa_per_play": 0.01726238725023787
+    }
+   ],
+   "config": {
+    "plugin": "Datagrid",
+    "theme": "Pro Light",
+    "columns_config": {
+     "team": {
+      "bg_mode": "series",
+      "bg_color": "linear-gradient(to right, #9e7c0c, #4066aa, #7690bd, #9b521a, #c61f49, #6d9381, #ff7500, #ffb612, #e31837, #a7445c, #bd3a2a, #0092ff, #666666, #854baf, #0061cd, #006d98, #7a704f, #69be28, #009eb9, #606b03, #287177, #009a92, #0092dd, #7e6196, #d3bc8d, #e64100, #9c8498, #b0b7bc, #807ad6, #81c0ff, #49774a, #ff001f)"
+     },
+     "epa_per_play": {
+      "number_format": {
+       "minimumFractionDigits": 2,
+       "maximumFractionDigits": 2
+      }
+     },
+     "def_epa_per_play": {
+      "number_format": {
+       "minimumFractionDigits": 3,
+       "maximumFractionDigits": 3
+      }
+     }
+    }
+   },
+   "warnings": []
+  },
+  {
+   "name": "datagrid logo link",
+   "options": {
+    "team_col": "team",
+    "league": "nfl",
+    "logo_col": "team_logo"
+   },
+   "schema": {
+    "team": "string",
+    "plays": "integer",
+    "epa_per_play": "float",
+    "def_epa_per_play": "float",
+    "team_logo": "string"
+   },
+   "rows": [
+    {
+     "team": "BAL",
+     "plays": 1091,
+     "epa_per_play": 0.1973075142071494,
+     "def_epa_per_play": -0.01809329170383586,
+     "team_logo": null
+    },
+    {
+     "team": "BUF",
+     "plays": 1065,
+     "epa_per_play": 0.18687425633802818,
+     "def_epa_per_play": -0.0031065497716894976,
+     "team_logo": null
+    },
+    {
+     "team": "DET",
+     "plays": 1125,
+     "epa_per_play": 0.15521151466666666,
+     "def_epa_per_play": -0.045118736890524376,
+     "team_logo": null
+    }
+   ],
+   "config": {
+    "plugin": "Datagrid",
+    "theme": "Pro Light",
+    "columns_config": {
+     "team": {
+      "bg_mode": "series",
+      "bg_color": "linear-gradient(to right, #241773, #c60c30, #0076b6)"
+     },
+     "plays": {
+      "number_format": {
+       "useGrouping": false,
+       "maximumFractionDigits": 0
+      }
+     },
+     "epa_per_play": {
+      "number_format": {
+       "minimumFractionDigits": 3,
+       "maximumFractionDigits": 3
+      }
+     },
+     "def_epa_per_play": {
+      "number_format": {
+       "minimumFractionDigits": 3,
+       "maximumFractionDigits": 3
+      }
+     },
+     "team_logo": {
+      "link": true
+     }
+    }
+   },
+   "warnings": []
+  },
+  {
+   "name": "y bar logo column",
+   "options": {
+    "team_col": "team",
+    "league": "nfl",
+    "logo_col": "team_logo",
+    "plugin": "Y Bar"
+   },
+   "schema": {
+    "team": "string",
+    "plays": "integer",
+    "epa_per_play": "float",
+    "def_epa_per_play": "float",
+    "team_logo": "string"
+   },
+   "rows": [
+    {
+     "team": "BAL",
+     "plays": 1091,
+     "epa_per_play": 0.1973075142071494,
+     "def_epa_per_play": -0.01809329170383586,
+     "team_logo": null
+    },
+    {
+     "team": "BUF",
+     "plays": 1065,
+     "epa_per_play": 0.18687425633802818,
+     "def_epa_per_play": -0.0031065497716894976,
+     "team_logo": null
+    },
+    {
+     "team": "DET",
+     "plays": 1125,
+     "epa_per_play": 0.15521151466666666,
+     "def_epa_per_play": -0.045118736890524376,
+     "team_logo": null
+    }
+   ],
+   "config": {
+    "plugin": "Y Bar",
+    "theme": "Pro Light",
+    "columns_config": {
+     "team": {
+      "palette": "linear-gradient(to right, #241773, #c60c30, #0076b6)"
+     },
+     "plays": {
+      "number_format": {
+       "useGrouping": false,
+       "maximumFractionDigits": 0
+      },
+      "palette": "linear-gradient(to right, #241773, #c60c30, #0076b6)"
+     },
+     "epa_per_play": {
+      "number_format": {
+       "minimumFractionDigits": 3,
+       "maximumFractionDigits": 3
+      },
+      "palette": "linear-gradient(to right, #241773, #c60c30, #0076b6)"
+     },
+     "def_epa_per_play": {
+      "number_format": {
+       "minimumFractionDigits": 3,
+       "maximumFractionDigits": 3
+      },
+      "palette": "linear-gradient(to right, #241773, #c60c30, #0076b6)"
+     }
+    }
+   },
+   "warnings": []
+  },
+  {
+   "name": "datagrid season",
+   "options": {
+    "team_col": "team",
+    "league": "nfl",
+    "season": 2024
+   },
+   "schema": {
+    "team": "string",
+    "plays": "integer",
+    "epa_per_play": "float",
+    "def_epa_per_play": "float"
+   },
+   "rows": [
+    {
+     "team": "BAL",
+     "plays": 1091,
+     "epa_per_play": 0.1973075142071494,
+     "def_epa_per_play": -0.01809329170383586
+    },
+    {
+     "team": "BUF",
+     "plays": 1065,
+     "epa_per_play": 0.18687425633802818,
+     "def_epa_per_play": -0.0031065497716894976
+    },
+    {
+     "team": "DET",
+     "plays": 1125,
+     "epa_per_play": 0.15521151466666666,
+     "def_epa_per_play": -0.045118736890524376
+    },
+    {
+     "team": "WAS",
+     "plays": 1142,
+     "epa_per_play": 0.13941898861646235,
+     "def_epa_per_play": 0.04316543802423113
+    },
+    {
+     "team": "TB",
+     "plays": 1128,
+     "epa_per_play": 0.13204109929078015,
+     "def_epa_per_play": 0.016552372282608696
+    },
+    {
+     "team": "PHI",
+     "plays": 1129,
+     "epa_per_play": 0.11059268379096546,
+     "def_epa_per_play": -0.08551938246628131
+    },
+    {
+     "team": "CIN",
+     "plays": 1121,
+     "epa_per_play": 0.10641586262265834,
+     "def_epa_per_play": 0.05469574553571428
+    },
+    {
+     "team": "GB",
+     "plays": 1071,
+     "epa_per_play": 0.08039756022408964,
+     "def_epa_per_play": -0.06768193482309125
+    },
+    {
+     "team": "KC",
+     "plays": 1124,
+     "epa_per_play": 0.06882989234875446,
+     "def_epa_per_play": 0.005753912231559291
+    },
+    {
+     "team": "ARI",
+     "plays": 1087,
+     "epa_per_play": 0.06790171573137074,
+     "def_epa_per_play": 0.05063307196261683
+    },
+    {
+     "team": "SF",
+     "plays": 1064,
+     "epa_per_play": 0.060653246240601505,
+     "def_epa_per_play": 0.051679759276879164
+    },
+    {
+     "team": "LAC",
+     "plays": 1044,
+     "epa_per_play": 0.045015692528735635,
+     "def_epa_per_play": -0.055508027726432534
+    },
+    {
+     "team": "ATL",
+     "plays": 1127,
+     "epa_per_play": 0.04094521739130435,
+     "def_epa_per_play": 0.04434347766636281
+    },
+    {
+     "team": "MIN",
+     "plays": 1090,
+     "epa_per_play": 0.03697167798165138,
+     "def_epa_per_play": -0.08892758666666667
+    },
+    {
+     "team": "LA",
+     "plays": 1074,
+     "epa_per_play": 0.03389467877094972,
+     "def_epa_per_play": 0.0496864036199095
+    },
+    {
+     "team": "DEN",
+     "plays": 1083,
+     "epa_per_play": 0.009665256694367498,
+     "def_epa_per_play": -0.09817395888013998
+    },
+    {
+     "team": "NYJ",
+     "plays": 1063,
+     "epa_per_play": 0.00079420884289746,
+     "def_epa_per_play": 0.04588688751107175
+    },
+    {
+     "team": "SEA",
+     "plays": 1083,
+     "epa_per_play": -0.015515602954755311,
+     "def_epa_per_play": -0.01821089964157706
+    },
+    {
+     "team": "JAX",
+     "plays": 1025,
+     "epa_per_play": -0.021526078048780487,
+     "def_epa_per_play": 0.1270993804255319
+    },
+    {
+     "team": "PIT",
+     "plays": 1110,
+     "epa_per_play": -0.028511586486486485,
+     "def_epa_per_play": -0.02094945614035088
+    },
+    {
+     "team": "HOU",
+     "plays": 1093,
+     "epa_per_play": -0.039517823421774935,
+     "def_epa_per_play": -0.054001859245630175
+    },
+    {
+     "team": "MIA",
+     "plays": 1128,
+     "epa_per_play": -0.04019005496453901,
+     "def_epa_per_play": -0.021265579198473283
+    },
+    {
+     "team": "CAR",
+     "plays": 1026,
+     "epa_per_play": -0.04087427192982456,
+     "def_epa_per_play": 0.1544453020920502
+    },
+    {
+     "team": "IND",
+     "plays": 1075,
+     "epa_per_play": -0.047262845581395346,
+     "def_epa_per_play": 0.006128741000877963
+    },
+    {
+     "team": "NO",
+     "plays": 1080,
+     "epa_per_play": -0.058756264814814815,
+     "def_epa_per_play": 0.035566412629757786
+    },
+    {
+     "team": "CHI",
+     "plays": 1119,
+     "epa_per_play": -0.07460389633601429,
+     "def_epa_per_play": -0.0011727630331753555
+    },
+    {
+     "team": "NE",
+     "plays": 1082,
+     "epa_per_play": -0.07891574768946395,
+     "def_epa_per_play": 0.08302175858951175
+    },
+    {
+     "team": "DAL",
+     "plays": 1158,
+     "epa_per_play": -0.08977916753022452,
+     "def_epa_per_play": 0.06770862234533703
+    },
+    {
+     "team": "NYG",
+     "plays": 1103,
+     "epa_per_play": -0.09175358839528558,
+     "def_epa_per_play": 0.07050022532588454
+    },
+    {
+     "team": "TEN",
+     "plays": 1088,
+     "epa_per_play": -0.10142502022058823,
+     "def_epa_per_play": 0.04975268552253116
+    },
+    {
+     "team": "LV",
+     "plays": 1108,
+     "epa_per_play": -0.1314928203971119,
+     "def_epa_per_play": 0.014218293738489872
+    },
+    {
+     "team": "CLE",
+     "plays": 1176,
+     "epa_per_play": -0.17549994982993197,
+     "def_epa_per_play": 0.01726238725023787
+    }
+   ],
+   "config": {
+    "plugin": "Datagrid",
+    "theme": "Pro Light",
+    "columns_config": {
+     "team": {
+      "bg_mode": "series",
+      "bg_color": "linear-gradient(to right, #241773, #c60c30, #8d9296, #5a1414, #b85149, #53575f, #ff4a41, #203731, #bf880e, #97233f, #a71600, #006fce, #000000, #6d2482, #0043aa, #004c6e, #00472c, #59a222, #0d6f7f, #1e2d00, #32202f, #dc751d, #0085ca, #003876, #82703f, #e64100, #000940, #002244, #492e5b, #6d92b8, #2d0000, #311d00)"
+     },
+     "plays": {
+      "number_format": {
+       "useGrouping": false,
+       "maximumFractionDigits": 0
+      }
+     },
+     "epa_per_play": {
+      "number_format": {
+       "minimumFractionDigits": 3,
+       "maximumFractionDigits": 3
+      }
+     },
+     "def_epa_per_play": {
+      "number_format": {
+       "minimumFractionDigits": 3,
+       "maximumFractionDigits": 3
+      }
+     }
+    }
+   },
+   "warnings": []
+  },
+  {
+   "name": "datagrid no rows",
+   "options": {
+    "team_col": "team",
+    "league": "nfl"
+   },
+   "schema": {
+    "team": "string",
+    "plays": "integer",
+    "epa_per_play": "float",
+    "def_epa_per_play": "float"
+   },
+   "rows": [],
+   "config": {
+    "plugin": "Datagrid",
+    "theme": "Pro Light",
+    "columns_config": {
+     "plays": {
+      "number_format": {
+       "useGrouping": false,
+       "maximumFractionDigits": 0
+      }
+     },
+     "epa_per_play": {
+      "number_format": {
+       "minimumFractionDigits": 3,
+       "maximumFractionDigits": 3
+      }
+     },
+     "def_epa_per_play": {
+      "number_format": {
+       "minimumFractionDigits": 3,
+       "maximumFractionDigits": 3
+      }
+     }
+    }
+   },
+   "warnings": []
+  },
+  {
+   "name": "y bar no rows",
+   "options": {
+    "team_col": "team",
+    "league": "nfl",
+    "plugin": "Y Bar"
+   },
+   "schema": {
+    "team": "string",
+    "plays": "integer",
+    "epa_per_play": "float",
+    "def_epa_per_play": "float"
+   },
+   "rows": [],
+   "config": {
+    "plugin": "Y Bar",
+    "theme": "Pro Light",
+    "columns_config": {
+     "plays": {
+      "number_format": {
+       "useGrouping": false,
+       "maximumFractionDigits": 0
+      }
+     },
+     "epa_per_play": {
+      "number_format": {
+       "minimumFractionDigits": 3,
+       "maximumFractionDigits": 3
+      }
+     },
+     "def_epa_per_play": {
+      "number_format": {
+       "minimumFractionDigits": 3,
+       "maximumFractionDigits": 3
+      }
+     }
+    }
+   },
+   "warnings": []
+  }
+ ]
+}

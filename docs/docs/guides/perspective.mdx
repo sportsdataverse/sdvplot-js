@@ -1,0 +1,140 @@
+---
+title: Perspective
+sidebar_position: 7.997
+---
+
+[Perspective](https://perspective-dev.github.io/) (Apache-2.0) is a data grid and chart viewer whose engine is
+WebAssembly: a table lives in a Web Worker, a `<perspective-viewer>` element queries it, and the user can group, split,
+filter and re-plot it in the page. Its npm packages were renamed: the `@finos/perspective` line stopped at 3.8.0, and
+the project now publishes `@perspective-dev/client` (the engine's client), `@perspective-dev/server` (the engine),
+`@perspective-dev/viewer` (the element), `@perspective-dev/viewer-datagrid` (the grid) and
+`@perspective-dev/viewer-charts` (the charts: "Y Bar", "X Bar", "Y Line", "X/Y Scatter" and the rest). In 5.x
+`viewer-charts`, a WebGL plugin, replaced `@perspective-dev/viewer-d3fc`, whose line stopped at 4.4.1.
+
+`@sportsdataverse/sdvplot/perspective` builds what a viewer takes, as plain data: `perspectiveConfig(rows, options)`
+returns a viewer config (the argument of `viewer.restore()`) that colours each team by its own colours and formats the
+number columns, and `perspectiveLogoColumn(rows, teamCol, options)` adds a column of logo URLs. It never imports
+Perspective, not even its types, so it runs anywhere, a server included. It is synchronous: load the league first
+(`loadLeague`). It is tested on Perspective 5.5.1, the floor of its optional peer `@perspective-dev/viewer`.
+
+## The same config as Python
+
+sdvplot for Python has the same pair in `sdvplot.perspective`: `perspective_sdv_config` and `perspective_logo_column`.
+Given the same rows and options, `perspectiveConfig` returns the same dictionary, key for key and colour for colour, so
+a viewer set up from a notebook and one set up from a web page look alike. A test holds the two together: the Python function
+was run on real frames (the grid, split bars and lines, a scatter, light and dark, numeric team ids, a missing team,
+teams that do not resolve, number formats, a logo column, no rows), its answers are committed as a fixture, and the
+test checks that the JavaScript output equals each one, with the same warnings. The test does not run Python: when
+either side changes, the fixture is written again from the Python package. The options are the Python keyword arguments in JavaScript's spelling:
+
+| Python | JavaScript |
+| --- | --- |
+| `perspective_sdv_config(frame, team_col=, league=, ...)` | `perspectiveConfig(rows, { teamCol, league, ... })` |
+| `plugin`, `mode`, `background`, `formats`, `season`, `strict` | the same names |
+| `logo_col`, `id_system` | `logoCol`, `idSystem` |
+| `perspective_logo_column(frame, team_col, league=, name=, ...)` | `perspectiveLogoColumn(rows, teamCol, { league, name, ... })` |
+| the frame's column types | `schema`, or worked out from the rows |
+
+Python reads each column's type from the frame. Rows of plain objects carry no types, so `perspectiveConfig` works them
+out as Perspective does when it loads the rows: numbers, and strings that read as numbers ("12", "1.5"), make a number
+column, an integer one when every value is a whole number. That matters for team ids: ESPN ids held as strings are
+numbers to Perspective, so they get no grid fill, as numbers do. When you create the table from a schema of your own
+(an empty table you stream into, say), pass the same `schema`. Python's `theme` option (a table theme's fonts and sign
+colours on the grid) has no JavaScript counterpart yet: the table themes live in sdvtables.
+
+## Team colours in the Datagrid
+
+On the Datagrid (`plugin` "Datagrid", the default) the team column's cells are filled, each team in its colour, and
+Perspective picks a readable text colour on each. Perspective takes a palette, not a colour per team: the grid hands
+the palette's colours to the values in the order it first draws them, so `perspectiveConfig` lists them in the rows'
+order. Keep the grid in that order (no `sort`) and to about one row per team; in a long grid, scrolling to a team the
+grid has not drawn yet shifts the later colours. A missing team takes no colour. Only a text team column is filled:
+Perspective fills no number column, so numeric team ids get none, with one warning.
+
+Every number column also gets a `number_format` (Intl.NumberFormat options): 3 decimals for a float such as EPA, 1 for a
+float whose name says it is a percentage (`pct`, `percent`), and an integer as typed (2024, not 2,024). `formats`
+replaces a column's format, or drops it with `null`.
+
+The Datagrid draws no images, so a logo column is shown as links: add it with `perspectiveLogoColumn`, which puts each
+team's logo URL right after the team column (null, with one warning for each reason, for a team that does not resolve
+or has no logo), and name it in `logoCol`.
+
+<Live id="sdvplot/perspective/nfl-offense-datagrid" />
+
+## Team colours in a chart, and dark mode
+
+For a chart, merge your own view into the config: split a bar, line or area chart by the team (`group_by` and
+`split_by` the team column) and each team's series takes its colour from the value column's `palette`. Perspective
+sorts the split values (by code unit, so upper case first, and numbers as numbers), and the palette is in that order; a
+missing team splits into a series of its own that comes first and takes grey. For an "X/Y Scatter", put the team
+column in the Color slot (the third of `columns`): its points take their colours from the team column's palette, in
+the order Perspective meets the teams, the rows' order. (A scatter's `split_by` draws a panel per team instead.)
+
+`mode: "dark"` picks Perspective's "Pro Dark" theme, and the colours are made for its background, `#242526`: a team
+colour under 3:1 contrast against it is swapped for the team's other colour or lifted until it reads, and the teams'
+colours stay apart (CIE76 ΔE 20): the same palette as sdvplot's Python integration and the deck.gl adapter. (Some
+other adapters' `teamColorPalette` differ for a team named two ways or a value that names no team.) `background` sets another colour to
+read against.
+
+<Live id="sdvplot/perspective/nfl-epa-split-bars-dark" />
+
+## Streaming
+
+A Perspective table takes updates: `table.update(rows)` adds rows (or, with an `index` column, replaces the rows with
+the same key), and every view of the table redraws. The example below replays the first six weeks of the 2024 season
+into an empty table, one week of plays at a time, and the bars of each offence's total EPA grow as each batch lands. The
+config is built once, from all the plays and the table's own schema, so each team's colour is fixed before its first
+play arrives. Restore the config once the table has rows: Perspective 5.5 drops a `columns_config` restored onto an
+empty table (checked: `viewer.save()` then has none), so the colours and number formats would be lost. The example
+sends the first week, restores the config, and then streams the rest.
+
+<Live id="sdvplot/perspective/nfl-plays-streaming" />
+
+## WebAssembly from your own files
+
+Perspective's engine and its viewer are WebAssembly modules. To serve them from your own site rather than a CDN, name
+each file with `new URL(…, import.meta.url)`, which webpack 5, Rspack and Vite copy into your build and hand you
+the URL of: the engine (`perspective-server.wasm`, 2.4 MB) goes to `init_server`, and the viewer's module
+(`perspective-viewer.wasm`, 1.6 MB, which also serves the client) to the viewer's `init_client`. Both ship already
+compressed (they unpack themselves in the browser), so brotli or gzip on your server saves about 1%. The engine runs in a
+Web Worker the client starts from an inline script, so there is no worker file to serve. The function below starts it
+all, and it is what draws the examples on this page, which ask nothing of any other site:
+
+<Snippet file="perspective/start.ts" />
+
+With webpack 5 or Rspack (which this site builds with), two more steps are needed; esbuild needed neither (checked with
+esbuild 0.27), and Vite pre-bundles dependencies with esbuild, so it should not need them either (not tried here).
+
+- The viewer and the charts plugin load their WebAssembly glue code with `import(url)` of a URL they make in the
+  browser, and the bundler turns every `import()` into a lookup among its own modules, which fails with "Cannot find
+  module 'blob:…'". Mark those calls `/* webpackIgnore: true */` so the browser does the import: this site runs a
+  three-line loader over the two builds (`node_modules/@perspective-dev/viewer/dist/esm/` and
+  `node_modules/@perspective-dev/viewer-charts/dist/esm/`) that adds the comment to each `import(` of an expression.
+  Webpack 5 alone could instead switch off its parsing of `import()` for those files (`parser: { import: false }`);
+  Rspack has no such switch (that webpack-only switch was not tried here).
+- The Datagrid and charts plugins of 5.5 import two modules of the viewer's TypeScript source,
+  `@perspective-dev/viewer/src/ts/column-format.js` and `@perspective-dev/viewer/src/ts/extensions.js` (no such
+  JavaScript files exist; the sources are `.ts`), and the bundler does not compile TypeScript from `node_modules`.
+  Everything the plugins take from them is exported by the viewer's own build, so alias both requests to that build's
+  file, the one `require.resolve("@perspective-dev/viewer")` gives (in `resolve.alias`, with a trailing `$` on each key
+  for an exact match). Aliasing them to the package name does nothing: the resolver skips an alias whose target the
+  request already starts with.
+
+The plugins' type declarations reach into the same source, which is why the function above imports them by file: a
+strict TypeScript project would otherwise type-check the viewer's source.
+
+Install the five packages at one version. `@perspective-dev/client` asks for `@perspective-dev/server` with a caret
+range, so without the server pinned beside it a package manager can install a newer engine than the client.
+
+Server rendering: `@sportsdataverse/sdvplot/perspective` imports nothing at run time, so a server component or a
+server-side load function can build the config and the rows and pass them to the page. Perspective itself needs the
+browser (custom elements, Web Workers), so import it lazily from client code, after the page has loaded, as the
+examples do; a module that imports it at the top of a server-rendered page fails on the server.
+
+## What installing it brings
+
+The five packages are Apache-2.0. The viewer and the client depend on `pro_self_extracting_wasm` (Apache-2.0, from the
+Prospective Company, the company behind Perspective; "pro" is its name, not a paid tier): in the browser it is a small
+decompressor for the WebAssembly modules. Its command-line half, used to build those modules and never bundled into a
+page, brings `http-server`, `zx`, and two packages under the Mozilla Public License 2.0 (`leb128` and `buffer-pipe`).
+The grid draws with `regular-table` and the viewer lays out with `regular-layout`, both Apache-2.0.
