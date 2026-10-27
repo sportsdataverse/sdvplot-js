@@ -841,3 +841,13 @@ export const STATCAST_PITCHES_2024_06_15: readonly StatcastPitchRow[] = [
   { game_pk: 747187, game_date: "2024-06-15", game_year: 2024, home_team: "AZ", away_team: "CWS", inning_topbot: "Bot", at_bat_number: 53, pitch_number: 4, pitcher: 607200, player_name: "McCarthy, Jake", pitch_type: "FC", pitch_name: "Cutter", description: "ball", release_speed: 91.6, release_pos_x: -1.53, release_pos_y: 53.77, release_pos_z: 5.84, vx0: 2.9434850814518523, vy0: -133.54173153484638, vz0: -0.7179261074946621, ax: 1.949413624852793, ay: 26.753517229762412, az: -25.752524518214752, plate_x: -0.19622069907517772, plate_z: 3.712795036768778 },
   { game_pk: 745329, game_date: "2024-06-15", game_year: 2024, home_team: "SF", away_team: "LAA", inning_topbot: "Bot", at_bat_number: 44, pitch_number: 1, pitcher: 663776, player_name: "Estrada, Thairo", pitch_type: "CH", pitch_name: "Changeup", description: "ball", release_speed: 84.3, release_pos_x: 0.96, release_pos_y: 54.22, release_pos_z: 6.04, vx0: -2.1805685046231296, vy0: -122.73410786593527, vz0: -1.8302134728473274, ax: 12.70295393901442, ay: 23.98776491174587, az: -21.933696468878406, plate_x: 1.0618124785017298, plate_z: 3.37036600484147 },
 ];
+
+export type { NflPlay2024 } from "./plays.js";
+/**
+ * The 11,778 rush and pass plays of weeks 1 to 6 of the 2024 NFL regular season, from nflverse's
+ * `pbp/play_by_play_2024.parquet` (the release asset NFL_TEAM_EPA_2024 is built from), as
+ * tools/sample-data/nfl_plays_2024.py wrote them to fixtures/examples/nfl_plays_2024_wk1_6.json. Loaded on demand: the
+ * file is half a megabyte, so only a page that shows the plays fetches it.
+ */
+export const nflPlays2024 = async (): Promise<readonly import("./plays.js").NflPlay2024[]> =>
+  (await import("./plays.js")).NFL_PLAYS_2024;

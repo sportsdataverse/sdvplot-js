@@ -52,6 +52,7 @@ export const SOURCES: Readonly<Record<string, string>> = {
   "@sportsdataverse/sdvtables/html": "packages/sdvtables/src/html/index.ts",
   "@sportsdataverse/sdvtables/react": "packages/sdvtables/src/react/index.tsx",
   "@sportsdataverse/sdvtables/mui": "packages/sdvtables/src/mui.ts",
+  "@sportsdataverse/sdvtables/aggrid": "packages/sdvtables/src/aggrid.ts",
   "@sportsdataverse/sdvtables/export": "packages/sdvtables/src/export/index.ts",
   "@sportsdataverse/examples/data": "examples/src/data.ts",
 };

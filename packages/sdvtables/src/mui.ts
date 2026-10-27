@@ -8,26 +8,37 @@
  */
 import {
   type IdSystem,
-  InputError,
   type League,
   type SeasonInput,
   type Which,
-  checkAlpha,
-  headshotUrl,
   hex6,
-  logoUrlSync,
   mix,
   onColor,
-  resolveSync,
-  solid,
-  warn,
 } from "@sportsdataverse/sdvplot";
 import { teamColorPalette } from "@sportsdataverse/sdvplot/mui";
 import { Fragment, type ReactElement, createElement } from "react";
-import { NUMERIC_KINDS, comparatorFor, withMissingLast } from "./engine.js";
-import { TableSpecError } from "./errors.js";
-import { formatNumber, isBlank, ordinal, scaledNumber, toNumber } from "./format.js";
-import { scaleNoteOf } from "./html/decorations.js";
+import {
+  type Fill,
+  type GridName,
+  cell,
+  checkHeight,
+  formatterFor,
+  headshotUrls,
+  logoMarks,
+  missingLast,
+  opaque,
+  pxWidth,
+  rankParts,
+  rowIds,
+  scaleNotes,
+  teamColorOf,
+  teamRowFills,
+  tint,
+  unmapped,
+  value,
+} from "./_grid.js";
+import { NUMERIC_KINDS } from "./engine.js";
+import { toNumber } from "./format.js";
 import { alignOf, labelOf } from "./html/parts.js";
 import type { Align, ColumnSpec, TableSpec } from "./spec.js";
 import { teamNameSync } from "./team-name.js";
@@ -121,67 +132,14 @@ export interface DataGridPropsOptions<Row> {
 const MUI_ROW_HEIGHT = 52;
 const DENSITY = { compact: "compact", comfortable: "standard", social: "comfortable" } as const;
 const FACTOR = { compact: 0.7, standard: 1, comfortable: 1.3 } as const;
-const SUPPORTED = new Set<string>([
-  "text",
-  "num",
-  "int",
-  "pct",
-  "rank",
-  "logo",
-  "wordmark",
-  "headshot",
-  "teamColorBg",
-  "teamColorBar",
-]);
-
-const cell = (v: unknown): string => (isBlank(v) ? "" : String(v).trim());
-const value = (row: unknown, key: string): unknown => (row as Record<string, unknown>)[key];
-const fillClass = (fill: string): string => `sdvt-fill-${fill.slice(1)}`;
-const opaque = (t: ThemeTokens): string => (t.bg === "transparent" ? "#ffffff" : hex6(t.bg));
-const alphaHex = (a: number): string =>
-  Math.round(checkAlpha(a) * 255)
-    .toString(16)
-    .padStart(2, "0");
-/** `fill` over `bg` at `alpha`, opaque, with its readable text colour. */
-const tint = (color: string, alpha: number, bg: string): { fill: string; ink: string } => {
-  const fill = solid(`${hex6(color, { dropAlpha: true })}${alphaHex(alpha)}`, bg);
-  return { fill, ink: onColor(fill) };
+const MUI: GridName = {
+  fn: "dataGridProps",
+  ns: "mui",
+  grid: "MUI X Data Grid",
+  short: "MUI",
+  built: "props",
 };
-
-/** Each distinct cell value of `key` (trimmed text) -> its team id, by ONE resolveSync over the rows (one warning). */
-function teamIds(
-  rows: readonly unknown[],
-  key: string,
-  league: League,
-  o: { season?: SeasonInput | undefined; idSystem?: IdSystem | undefined; strict?: boolean | undefined },
-): Map<string, string> {
-  const raw = [...new Set(rows.map((r) => cell(value(r, key))).filter((v) => v !== ""))];
-  const ids = resolveSync(raw, league, {
-    ...(o.season === undefined ? {} : { season: o.season }),
-    ...(o.idSystem === undefined ? {} : { idSystem: o.idSystem }),
-    strict: o.strict ?? false,
-  });
-  const out = new Map<string, string>();
-  raw.forEach((v, i) => {
-    const id = ids[i];
-    if (id !== undefined) out.set(v, id);
-  });
-  return out;
-}
-/** Each team id -> its palette colour for `bg` (sdvplot/mui's `teamColorPalette`, not a fork of it). */
-function palette(
-  league: League,
-  ids: readonly string[],
-  which: Which | undefined,
-  bg: string,
-): Map<string, string> {
-  const colors = teamColorPalette(league, ids, {
-    idSystem: "team_id",
-    background: bg,
-    ...(which === undefined ? {} : { which }),
-  });
-  return new Map(ids.map((id, i) => [id, colors[i] ?? "#808080"]));
-}
+const fillClass = (fill: string): string => `sdvt-fill-${fill.slice(1)}`;
 
 function image(src: string, alt: string, height: number, id: string, kind: string): ReactElement {
   return createElement("img", {
@@ -193,12 +151,6 @@ function image(src: string, alt: string, height: number, id: string, kind: strin
     "data-sdv-kind": kind,
   });
 }
-function checkHeight(h: number, kind: string): number {
-  if (!(Number.isFinite(h) && h >= 1))
-    throw new TableSpecError(`${kind} height must be a number of pixels >= 1, got ${String(h)}`);
-  return h;
-}
-
 /**
  * An sdvtables spec as MUI X Data Grid props: `<DataGrid rows={rows} {...dataGridProps(spec, rows)} />`.
  *
@@ -245,29 +197,18 @@ export function dataGridProps<Row>(
   const theme = resolveTheme(spec.theme);
   const t = theme.tokens;
   const bg = opaque(t);
-  const fills = new Map<string, { fill: string; ink: string }>(); // class -> colours, written into sx
+  const fills = new Map<string, Fill>(); // class -> colours, written into sx
   const bars = new Map<string, { width: number; color: string }>();
   let tallest = 0;
-  // scaleNote, as the HTML table applies it: num/int cells divided (with its decimals), the label suffixed; last wins
-  const scaled = new Map<string, { divisor: number; decimals: number }>();
-  const labelSuffix = new Map<string, string>();
-  for (const d of spec.decorations) {
-    if (d.type !== "scaleNote") continue;
-    const { suffix } = scaleNoteOf(d);
-    for (const k of d.columns as readonly string[]) {
-      scaled.set(k, { divisor: d.divisor, decimals: d.decimals });
-      if (d.where !== "sourceNote") labelSuffix.set(k, ` ${suffix}`);
-    }
-  }
+  const { scaled, labelSuffix } = scaleNotes(spec);
 
   const columns = spec.columns.map((col): SdvGridColDef<Row> => {
     const align = alignOf(col);
-    const compare = comparatorFor(col, rows);
+    const sortBy = missingLast(col, rows);
     const def: SdvGridColDef<Row> = {
       field: col.key,
       headerName: labelOf(col) + (labelSuffix.get(col.key) ?? ""),
-      getSortComparator: (dir) =>
-        dir === "asc" || dir === "desc" ? withMissingLast(compare, dir) : undefined,
+      getSortComparator: (dir) => (dir === "asc" || dir === "desc" ? sortBy(dir) : undefined),
       align,
       headerAlign: align,
       ...(col.subheader === undefined ? {} : { description: col.subheader }),
@@ -277,85 +218,36 @@ export function dataGridProps<Row>(
         ? { type: "number" as const, valueGetter: (v: never) => toNumber(v) }
         : {}),
     };
-    if (col.width !== undefined) {
-      const m = /^\s*(\d+(?:\.\d+)?)px\s*$/.exec(col.width);
-      if (m) def.width = Number(m[1]);
-      else
-        warn(
-          `sdvtables:mui:width:${col.key}`,
-          `dataGridProps: column "${col.key}" width ${JSON.stringify(col.width)} is not in px; MUI X Data Grid widths are px numbers, so MUI's default is kept`,
-        );
-    }
-    return { ...def, ...kindProps(col) };
+    const width = pxWidth(col, MUI);
+    if (width !== undefined) def.width = width;
+    const format = formatterFor(col, scaled);
+    return { ...def, ...(format === undefined ? {} : { valueFormatter: format }), ...kindProps(col) };
   });
 
   function kindProps(col: ColumnSpec<Row>): Partial<SdvGridColDef<Row>> {
     switch (col.kind) {
       case "text":
-        return {};
-      case "num": {
-        const sc = scaled.get(col.key);
-        if (sc) return { valueFormatter: numberFormat((n) => scaledNumber(n, sc)) };
-        return {
-          valueFormatter: numberFormat((n) =>
-            formatNumber(n, {
-              ...(col.digits === undefined ? {} : { digits: col.digits }),
-              big: col.big ?? false,
-              prefix: col.prefix ?? "",
-              suffix: col.suffix ?? "",
-              forceSign: col.forceSign ?? false,
-            }),
-          ),
-        };
-      }
-      case "int": {
-        const sc = scaled.get(col.key);
-        return {
-          valueFormatter: numberFormat((n) =>
-            sc ? scaledNumber(n, sc) : formatNumber(n, { digits: 0, big: true }),
-          ),
-        };
-      }
+      case "num":
+      case "int":
       case "pct":
-        return {
-          valueFormatter: numberFormat(
-            (n) => `${formatNumber(col.scale ? n * 100 : n, { digits: col.digits })}%`,
-          ),
-        };
+        return {};
       case "rank":
-        return {
-          valueFormatter: numberFormat(ordinal),
-          ...(col.superscript
-            ? {
-                // the HTML table's superscript suffix: 1<sup>st</sup>
-                renderCell: ({ value: v }: GridCellParamsLike<Row>) => {
-                  const n = toNumber(v);
-                  if (n === null) return "";
-                  const num = String(Math.trunc(n));
-                  const sup = createElement(
-                    "sup",
-                    { style: { fontSize: col.suffixSize } },
-                    ordinal(n).slice(num.length),
-                  );
-                  return createElement(Fragment, null, num, sup);
-                },
-              }
-            : {}),
-        };
+        return col.superscript
+          ? {
+              // the HTML table's superscript suffix: 1<sup>st</sup>
+              renderCell: ({ value: v }: GridCellParamsLike<Row>) => {
+                const r = rankParts(v);
+                if (r === null) return "";
+                const sup = createElement("sup", { style: { fontSize: col.suffixSize } }, r.suffix);
+                return createElement(Fragment, null, r.num, sup);
+              },
+            }
+          : {};
       case "logo":
       case "wordmark": {
         const h = checkHeight(col.height, col.kind);
         tallest = Math.max(tallest, h);
-        const marks = new Map<string, { id: string; url: string }>();
-        for (const [v, id] of teamIds(rows, col.key, col.league, col)) {
-          const url = logoUrlSync(id, col.league, {
-            ...(col.season === undefined ? {} : { season: col.season }),
-            ...(col.variant === undefined ? {} : { variant: col.variant }),
-            markType: col.kind,
-            idSystem: "team_id",
-          }); // undefined: no mark archived, and sdvplot warned once
-          if (url !== undefined) marks.set(v, { id, url });
-        }
+        const marks = logoMarks(col, rows);
         const includeName = col.kind === "logo" && col.includeName;
         const kind = col.kind;
         return {
@@ -379,17 +271,7 @@ export function dataGridProps<Row>(
       case "headshot": {
         const h = checkHeight(col.height, "headshot");
         tallest = Math.max(tallest, h);
-        const urls = new Map<string, string>();
-        for (const v of new Set(rows.map((r) => cell(value(r, col.key))))) {
-          if (v === "") continue;
-          const url = headshotUrl(v, col.league, { idSystem: col.idSystem });
-          if (url === undefined)
-            warn(
-              `sdvtables:mui:headshot:${col.league}:${v}`,
-              `dataGridProps: no ${col.league} headshot for player ${JSON.stringify(v)}: the cell keeps the id`,
-            );
-          else urls.set(v, url);
-        }
+        const urls = headshotUrls(col, rows, MUI);
         return {
           display: "flex",
           renderCell: ({ value: raw }) => {
@@ -402,11 +284,9 @@ export function dataGridProps<Row>(
       }
       case "teamColorBg":
       case "teamColorBar": {
-        const ids = teamIds(rows, col.key, col.league, col);
-        const colors = palette(col.league, [...new Set(ids.values())], col.which, bg);
+        const colorOf = teamColorOf(col, rows, bg, teamColorPalette);
         const classOf = (raw: unknown): string => {
-          const id = ids.get(cell(raw));
-          const color = (id === undefined ? undefined : colors.get(id)) ?? col.naColor;
+          const color = colorOf(raw);
           if (col.kind === "teamColorBar") {
             const c = hex6(color, { dropAlpha: true });
             const name = `sdvt-bar-${col.barWidth}-${c.slice(1)}`;
@@ -422,79 +302,29 @@ export function dataGridProps<Row>(
         return { cellClassName: ({ value: raw }) => classOf(raw) };
       }
       default:
-        warn(
-          `sdvtables:mui:kind:${col.kind}`,
-          `dataGridProps: MUI X Data Grid cells for "${col.kind}" columns are not mapped yet; they show the plain value`,
-        );
+        unmapped(col.kind, MUI);
         return {};
     }
   }
 
   // team rows: each row's class by its team's fill
   const rowFill = new Map<string, string>();
-  if (o.teamRows) {
-    const tr = o.teamRows;
-    const alpha = tr.alpha ?? 0.4;
-    const ids = teamIds(rows, tr.key, tr.league, tr);
-    const colors = palette(tr.league, [...new Set(ids.values())], tr.which, bg);
-    for (const [v, id] of ids) {
-      const color = colors.get(id);
-      if (color === undefined) continue;
-      const f = tint(color, alpha, bg);
+  if (o.teamRows)
+    for (const [v, f] of teamRowFills(rows, o.teamRows, bg, teamColorPalette)) {
       fills.set(fillClass(f.fill), f);
       rowFill.set(v, fillClass(f.fill));
     }
-  }
   const striped = t.stripe !== "transparent";
   const getRowClassName = ({ row, indexRelativeToCurrentPage }: GridRowClassParamsLike<Row>): string => {
     const team = o.teamRows === undefined ? undefined : rowFill.get(cell(value(row, o.teamRows.key)));
     return team ?? (striped && indexRelativeToCurrentPage % 2 === 1 ? "sdvt-stripe" : "");
   };
 
-  const key = spec.rowKey;
-  const keyOf = (row: Row, i: number | string): string => {
-    const v = value(row, key as string);
-    if (isBlank(v))
-      throw new InputError(
-        `dataGridProps: row ${i} has no value for rowKey "${String(key)}" (${String(v)}); MUI X Data Grid needs an id for every row`,
-      );
-    return String(v);
-  };
-  // every row's id, checked once: first wins for a row object; a repeat would give MUI one id twice and it drops a row
-  const index = new Map<Row, string>();
-  const seen = new Map<string, number>();
-  rows.forEach((r, i) => {
-    const id = key === undefined ? String(index.has(r) ? index.get(r) : i) : keyOf(r, i);
-    const j = seen.get(id);
-    if (j !== undefined)
-      throw new InputError(
-        key === undefined
-          ? `dataGridProps: rows ${j} and ${i} are the same object, so MUI X Data Grid would give them one id and drop one; copy the row or set the spec's rowKey`
-          : `dataGridProps: rows ${j} and ${i} have the same rowKey "${String(key)}" value "${id}"; MUI X Data Grid needs a unique id per row`,
-      );
-    seen.set(id, i);
-    if (!index.has(r)) index.set(r, id);
-  });
-  const getRowId = (row: Row): string => {
-    const known = index.get(row);
-    if (known !== undefined) return known;
-    if (key !== undefined) return keyOf(row, "(not in rows)");
-    throw new TableSpecError(
-      "dataGridProps: a row the props were not built from has no id; set the spec's rowKey, or build the props from the rows you pass the grid",
-    );
-  };
-
+  const getRowId = rowIds(rows, spec.rowKey, MUI);
   const density = DENSITY[spec.theme.density];
   const rowHeight = Math.max(MUI_ROW_HEIGHT, Math.ceil((tallest + 8) / FACTOR[density]));
   return { columns, getRowId, getRowClassName, sx: themeSx(t, fills, bars), density, rowHeight };
 }
-
-const numberFormat =
-  (f: (n: number) => string) =>
-  (v: never): string => {
-    const n = toNumber(v);
-    return n === null ? "" : f(n);
-  };
 
 /** The theme's tokens as MUI X Data Grid styles: its CSS variables (on `&&`, so they beat MUI's own) and header rules. */
 function themeSx(

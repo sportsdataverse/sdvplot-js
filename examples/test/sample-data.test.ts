@@ -19,6 +19,7 @@ import {
   SUPER_BOWL_LIX_WP,
   WC2018_FINAL_FRANCE_PASSES,
   WC2018_FINAL_FRANCE_RECIPIENTS,
+  nflPlays2024,
 } from "../src/data.js";
 import { EXAMPLES } from "../src/registry.gen.js";
 
@@ -384,6 +385,23 @@ test("KC_PHI_GAMES_2024 is every 2024 regular-season game with KC or PHI, unchan
       })),
   );
   expect(KC_PHI_GAMES_2024).toHaveLength(34);
+});
+
+test("nflPlays2024() is the committed play-by-play: weeks 1 to 6, each play once, in exactly the games of those weeks", async () => {
+  const plays = await nflPlays2024();
+  expect(plays).toHaveLength(11_778);
+  expect(new Set(plays.map((p) => p.play)).size).toBe(plays.length);
+  // its games are every 2024 games.csv game of weeks 1 to 6 (92), and each play's two teams are its game's
+  const games = csv("fixtures/examples/nfl_games_2024_reg.csv").filter((g) => Number(g.week) <= 6);
+  expect(games).toHaveLength(92);
+  expect([...new Set(plays.map((p) => p.game_id))].sort()).toEqual(games.map((g) => g.game_id).sort());
+  const byId = new Map(games.map((g) => [g.game_id, g]));
+  for (const p of plays) {
+    const g = byId.get(p.game_id);
+    expect([g?.away_team, g?.home_team].sort(), p.play).toEqual([p.posteam, p.defteam].sort());
+    expect(p.week).toBe(Number(g?.week));
+    expect(Number.isFinite(p.epa), p.play).toBe(true);
+  }
 });
 
 test("AFC_WEEKS_2024 is each STANDINGS team's weekly margin and points from the games, the bye a gap", () => {
