@@ -31,7 +31,8 @@ sdvtables' HTML.
 you pass a base theme, `theme`. Hand them to `createGrid(element, options)` in plain JavaScript, or spread them onto
 `<AgGridReact>` in React, next to your own options (`domLayout`, `initialState`, `pagination` and the rest). It is
 synchronous, so first `await prepare(spec)` from `@sportsdataverse/sdvtables/html`, which loads the leagues the logo and
-team colour columns need. The images and colours are worked out once, from the rows you pass, so build the options again
+team colour columns need. `prepare` reads only the spec, so when `teamRows` names a league no column uses (a plain text
+team column, say), also `await loadLeague(league)` from `@sportsdataverse/sdvplot` first. The images and colours are worked out once, from the rows you pass, so build the options again
 when the rows change.
 
 Each spec column becomes one column definition, with the label and alignment the HTML table gives it. A `width` in px

@@ -428,7 +428,7 @@ react-chartjs-2 reads `plugins` only when it creates the chart. `pointImages` an
 every update, so new rows or labels are drawn; `logoWatermarks(teams)` and `surface(league)` keep what they were built
 with, so give `<Chart>` a `key` that changes with them (`key={teams.join()}`) to build a new chart (react-chartjs-2's `redraw` is
 not the same: it rebuilds on every render). See the
-[react-chartjs-2 guide](https://plot.sportsdataverse.org/docs/guides/react-chartjs-2).
+[react-chartjs-2 guide](https://plot.sportsdataverse.org/guides/react-chartjs-2).
 
 The line charts below draw Super Bowl LIX (Kansas City at Philadelphia, 2025-02-09). `wp` is ESPN's win probability
 for Philadelphia, the home team, after each of the game's 186 plays, against minutes played:
@@ -615,7 +615,7 @@ theme (pass it as a `VictoryChart`'s `theme`) whose group, stack, pie and legend
 and `teamColorPalette(league, teams)` is the same colours as a list. `sdvplot/react` adds `<LogoPoint>` (a
 `VictoryScatter`'s `dataComponent`: each point drawn as its team's logo, twice the scatter's `size` tall) and
 `<LogoTick>` (a `VictoryAxis`' `tickLabelComponent`: each team label drawn as its logo, `size` px tall). The guide is
-[Victory](https://plot.sportsdataverse.org/docs/guides/victory).
+[Victory](https://plot.sportsdataverse.org/guides/victory).
 
 React Native: these target Victory on the web, and none of them has been tried in React Native. `victory-native` 41
 and later is a different library from `victory`, drawn with Skia, with no theme object and no `dataComponent`, so
