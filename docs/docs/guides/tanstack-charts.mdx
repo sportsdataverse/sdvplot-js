@@ -33,28 +33,10 @@ CSS: give the container its `background` and `color`, and pass that background t
 ## Logos as pattern-filled dots
 
 TanStack Charts has no image mark: its scene is made of groups, rules, lines, areas, dots, rectangles and labels.
-sdvplot draws each logo as a TanStack `dot` filled with an SVG `<pattern>` that holds the logo image:
-
-```tsx
-import { defineChart, dot } from "@tanstack/charts";
-import { Chart } from "@tanstack/charts/react";
-import { scaleLinear } from "@tanstack/charts/scales/linear";
-import { renderChartSvg } from "@tanstack/charts/svg";
-import { logoDots, withPatterns } from "@sportsdataverse/sdvplot/tanstack";
-
-const logos = logoDots(rows, { x: "pf", y: "pa", team: "team", league: "nfl", size: 28 });
-
-<Chart
-  definition={defineChart({
-    marks: logos.map((d) => dot(d.data, d.options)),
-    scales: { x: { scale: scaleLinear }, y: { scale: scaleLinear } },
-  })}
-  renderSvg={withPatterns(renderChartSvg, logos)}
-  ariaLabel="Points for and against"
-  width={640}
-  height={480}
-/>;
-```
+sdvplot draws each logo as a TanStack `dot` filled with an SVG `<pattern>` that holds the logo image. Two pieces
+do it: `logoDots(rows, o)` gives the dots, which you map to marks with TanStack's own `dot` (`marks:
+logos.map((d) => dot(d.data, d.options))`), and `withPatterns(renderChartSvg, logos)` is the chart's `renderSvg`. The
+examples below show both in full.
 
 - `logoDots(rows, { x, y, team, league })` returns one entry per logo: the rows that draw it (each whole row, with
   `sdv_` fields added) and the `dot` options. TanStack paints a dot mark's `fill` once for the whole mark, so each
