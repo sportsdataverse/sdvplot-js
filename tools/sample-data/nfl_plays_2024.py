@@ -19,6 +19,7 @@ Run: `uv run tools/sample-data/nfl_plays_2024.py` (downloads the release asset),
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import tempfile
 import urllib.request
@@ -29,6 +30,19 @@ import polars as pl
 PBP_URL = "https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2024.parquet"
 OUT = Path(__file__).resolve().parents[2] / "fixtures" / "examples"
 WEEKS = 6
+# The release asset the fixture was written from (fixtures/examples/README.md records the same hash). A newer upload of
+# play_by_play_2024.parquet would change the plays: the script stops rather than write them under the old provenance.
+PBP_SHA256 = "3fd2896bc0b911b615142d2f1fabae54a4bbba5ab7b73b28187b118ef8af6a3b"
+
+
+def check_sha256(path: Path, expected: str = PBP_SHA256) -> None:
+    """Stop unless the file at `path` is the release asset the fixture's provenance records."""
+    digest = hashlib.sha256(path.read_bytes()).hexdigest()
+    if digest != expected:
+        raise SystemExit(
+            f"{path}: sha256 {digest} is not the recorded play_by_play_2024.parquet {expected};"
+            " update PBP_SHA256 and fixtures/examples/README.md only for a deliberate new capture"
+        )
 
 
 def main() -> None:
@@ -44,6 +58,7 @@ def main() -> None:
         if pbp_path is None:
             pbp_path = Path(tmp) / "play_by_play_2024.parquet"
             urllib.request.urlretrieve(PBP_URL, pbp_path)
+        check_sha256(pbp_path)
         plays = pl.read_parquet(
             pbp_path,
             columns=[
