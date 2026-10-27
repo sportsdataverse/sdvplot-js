@@ -4,14 +4,16 @@ import { type Server, createServer } from "node:http";
 import type { AddressInfo } from "node:net";
 import { extname, join, normalize } from "node:path";
 import { createCanvas, loadImage } from "@napi-rs/canvas";
-import { loadLeague } from "@sportsdataverse/sdvplot";
+import { loadLeague, resolveSync } from "@sportsdataverse/sdvplot";
 import { teamColors } from "@sportsdataverse/sdvplot/mui";
 import { type Browser, chromium } from "playwright";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { pagePath } from "../scripts/pages.js";
 import { abs } from "../sources.js";
 import { BROWSER } from "../src/browser.gen.js";
+import { NFL_TEAM_EPA_2024 } from "../src/data.js";
 import { EXAMPLES } from "../src/registry.gen.js";
+import { MUI_PROXY_STYLE } from "./run.js";
 
 /**
  * Real Chromium on the BUILT docs site (`pnpm docs:build` first): every browser upgrade's gallery page draws its
@@ -640,10 +642,11 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
   // each line must show the colour MUI wrote on the mark, and the dark example's lines must be the dark-mode palette.
   // Tabbing into the chart and pressing an arrow key must show MUI's own focus mark (why the gate lets MUI's keyboard
   // layer set outline:none).
-  const MUI_LOGOS: Readonly<Record<string, number>> = {
-    "sdvplot/mui-x-charts/epa-logo-scatter": 32,
-    "sdvplot/mui-x-charts/afc-wins-logo-ticks": 8,
-    "sdvplot/mui-x-charts/afc-west-margin-dark": 4,
+  /** The teams each example draws a logo for, in the order MUI draws them (points, ticks, series). */
+  const MUI_LOGOS: Readonly<Record<string, readonly string[]>> = {
+    "sdvplot/mui-x-charts/epa-logo-scatter": NFL_TEAM_EPA_2024.map((t) => t.team),
+    "sdvplot/mui-x-charts/afc-wins-logo-ticks": ["KC", "BUF", "LAC", "DEN", "MIA", "LV", "NYJ", "NE"],
+    "sdvplot/mui-x-charts/afc-west-margin-dark": ["KC", "LAC", "DEN", "LV"],
   };
   test.each(EXAMPLES.filter((e) => e.id.startsWith("sdvplot/mui-x-charts/")).map((e) => e.id))(
     "%s re-runs live: real logo, bar and line pixels, and MUI's keyboard focus mark",
@@ -667,7 +670,9 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
         const got = await svg.evaluate((el) => {
           const box = el.getBoundingClientRect();
           const at = (x: number, y: number) => [x - box.left, y - box.top];
-          const logos = [...el.querySelectorAll("image[data-sdv-id]")].map((i) => {
+          const images = [...el.querySelectorAll("image[data-sdv-id]")];
+          const ids = images.map((i) => i.getAttribute("data-sdv-id"));
+          const logos = images.map((i) => {
             const r = i.getBoundingClientRect();
             return [...at(r.x, r.y), r.width, r.height].map(Math.round) as [number, number, number, number];
           });
@@ -688,7 +693,7 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
             });
             return { want: path.getAttribute("stroke") ?? "", points };
           });
-          return { logos, bars, lines };
+          return { ids, logos, bars, lines };
         });
         const shoot = async () => {
           const shot = await loadImage(await svg.screenshot());
@@ -706,7 +711,11 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
         const near = (a: number[], b: number[], d: number) =>
           [0, 1, 2].every((c) => Math.abs((a[c] ?? 0) - (b[c] ?? 0)) <= d);
         const pixels = await shoot();
-        expect(got.logos.length, "every team's logo is drawn").toBe(MUI_LOGOS[id]);
+        // each team's own logo, in MUI's order: 32 copies of one logo cannot pass
+        await loadLeague("nfl");
+        expect(got.ids, "every team's logo is drawn").toEqual(
+          (MUI_LOGOS[id] ?? []).map((t) => resolveSync(t, "nfl")),
+        );
         for (const m of [...got.bars, ...got.lines]) {
           expect(m.want, "MUI wrote a hex colour on the mark").toMatch(/^#[0-9a-f]{6}$/i);
           const painted = m.points.some(([x, y]) =>
@@ -741,12 +750,52 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
         await svg.evaluate((el) => {
           for (const i of el.querySelectorAll("image[data-sdv-id]")) i.removeAttribute("visibility");
         });
-        // keyboard: focus MUI's layer, step to an item, and MUI draws its focus rect (stroke 2, no fill)
-        const focusRect = 'rect[fill="none"][stroke-width="2"]';
-        expect(await svg.locator(focusRect).count()).toBe(0);
-        await figure.locator('.sdv-live-output [role="none"][tabindex="0"]').first().focus();
+        // keyboard: focus MUI's own keyboard layer (its exact style, the one the gate exempts), step to an item, and MUI
+        // draws its focus mark there: the scatter's MuiScatterChart-focusedMark; for bars and lines (FocusedBar and
+        // FocusedLineMark carry no class in 9.15) the rect MUI's code draws, 3 px round a bar or 12 px on a line's point
+        const proxy = await figure.evaluate((f, style) => {
+          const re = new RegExp(`^${style}$`);
+          const hits = [...f.querySelectorAll('.sdv-live-output div[role="none"][tabindex]')].filter((d) =>
+            re.test(d.getAttribute("style") ?? ""),
+          );
+          for (const d of hits) d.setAttribute("data-sdv-test", "mui-proxy");
+          return hits.length;
+        }, MUI_PROXY_STYLE);
+        expect(proxy, "one MUI keyboard layer").toBe(1);
+        const kind = id.endsWith("scatter") ? "scatter" : id.endsWith("ticks") ? "bar" : "line";
+        const focusMark = (el: Element, k: string): boolean => {
+          if (k === "scatter") return el.querySelector(".MuiScatterChart-focusedMark") !== null;
+          const rects = [...el.querySelectorAll('rect[fill="none"][stroke-width="2"]')] as SVGRectElement[];
+          const n = (r: Element, a: string) => Number(r.getAttribute(a));
+          if (k === "bar") {
+            const bars = [...el.querySelectorAll("rect.MuiBarChart-element")];
+            return rects.some((f) =>
+              bars.some((b) =>
+                [
+                  [n(f, "x") + 3, n(b, "x")],
+                  [n(f, "y") + 3, n(b, "y")],
+                  [n(f, "width") - 6, n(b, "width")],
+                  [n(f, "height") - 6, n(b, "height")],
+                ].every(([a, c]) => Math.abs((a as number) - (c as number)) < 0.5),
+              ),
+            );
+          }
+          const paths = [...el.querySelectorAll("path.MuiLineChart-line")] as SVGPathElement[];
+          return rects.some((f) => {
+            if (n(f, "width") !== 12 || n(f, "height") !== 12) return false;
+            const [cx, cy] = [n(f, "x") + 6, n(f, "y") + 6];
+            return paths.some((p) => {
+              const len = p.getTotalLength();
+              return Array.from({ length: 401 }, (_, i) => p.getPointAtLength((i / 400) * len)).some(
+                (q) => Math.hypot(q.x - cx, q.y - cy) < 1.5,
+              );
+            });
+          });
+        };
+        expect(await svg.evaluate(focusMark, kind), "no focus mark before the keyboard").toBe(false);
+        await figure.locator('[data-sdv-test="mui-proxy"]').focus();
         await page.keyboard.press("ArrowRight");
-        await svg.locator(focusRect).first().waitFor({ timeout: 5_000 });
+        await expect.poll(() => svg.evaluate(focusMark, kind), { timeout: 5_000 }).toBe(true);
         if (SHOTS !== undefined)
           await figure
             .locator(".sdv-live-output")

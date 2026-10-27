@@ -296,12 +296,33 @@ function drewMark(markup: string): boolean {
 }
 
 /**
- * MUI X Charts' keyboard layer (ChartsAccessibilityProxy): the full-size focus target and its screen-reader announcers
- * set outline:none because MUI draws its own focus mark on the focused item instead (a rect round the point or bar);
- * interactive.test.ts tabs into each MUI example in Chromium and checks that mark shows. Only these tags are exempt.
+ * MUI X Charts' keyboard layer (ChartsAccessibilityProxy, @mui/x-charts 9.15): a full-size focus target whose inline
+ * style is MUI's `fullSizeLayerStyle` (outline:none among it), holding the two hidden voiceover texts and the two
+ * screen-reader announcers MUI's effect adds (each `width:100%;height:100%;outline:none`). MUI draws its own focus mark
+ * on the focused point or bar instead of the ring; interactive.test.ts focuses this layer in Chromium and checks the mark.
+ * Exempt is that block alone, matched by its exact styles, as React writes them on the server (`border-width:0;...`) or
+ * jsdom serializes them (`border-width: 0px; ...`). Any other outline:none, inside or beside it, is still reported.
  */
-export const MUI_KEYBOARD_PROXY =
-  /<div role="none" tabindex="(?:0|-1)" style="[^"]*"|<div role="img" aria-hidden="true" aria-labelledby="voiceover-[^"]*" style="[^"]*"/g;
+const css = (decls: string): string =>
+  decls
+    .split(";")
+    .map((d) => {
+      const [k, v] = d.split(":") as [string, string];
+      return `${k}: ?${v === "0" ? "0(?:px)?" : v}`;
+    })
+    .join("; ?");
+/** `fullSizeLayerStyle` of @mui/x-charts 9.15's ChartsAccessibilityProxy, property by property, as a regex source. */
+export const MUI_PROXY_STYLE = `${css(
+  "border-width:0;width:100%;height:100%;overflow:hidden;position:absolute;inset:0;padding:0;outline:none;pointer-events:none",
+)};?`;
+const VOICEOVER = '<div id="voiceover-[A-Za-z0-9_-]+" style="display: ?none;?">[^<]*</div>';
+const ANNOUNCER = `<div (?:tabindex="0" )?role="img" aria-hidden="(?:true|false)" aria-labelledby="voiceover-[A-Za-z0-9_-]+" style="${css(
+  "width:100%;height:100%;outline:none",
+)};?"></div>`;
+export const MUI_KEYBOARD_PROXY = new RegExp(
+  `<div role="none" tabindex="(?:0|-1)" style="${MUI_PROXY_STYLE}">(?:${VOICEOVER}|${ANNOUNCER})*</div>`,
+  "g",
+);
 
 /** The gate's notion of "rendered something": a throw is not the only failure; blank output is one too. */
 export function problems(entry: ExampleEntry, r: RunResult): string[] {
