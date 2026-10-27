@@ -424,3 +424,39 @@ describe("teamColors", () => {
     }
   });
 });
+
+describe("teamColors: the shared palette's rule, as Python's", () => {
+  // biome-ignore format: the 32 teams, one line
+  const NFL = ["ARI", "ATL", "BAL", "BUF", "CAR", "CHI", "CIN", "CLE", "DAL", "DEN", "DET", "GB", "HOU", "IND", "JAX", "KC", "LAC", "LA", "LV", "MIA", "MIN", "NE", "NO", "NYG", "NYJ", "PHI", "PIT", "SEA", "SF", "TB", "TEN", "WSH"];
+  const colours = (teams: readonly unknown[], background: string, draw: readonly unknown[] = teams) => {
+    const get = teamColors({ league: "nfl", teams, background });
+    return draw.map((id) => get({ id }));
+  };
+
+  test("with a background, an unresolved team takes the fallback and no palette slot: the other teams keep theirs", () => {
+    for (const background of ["#ffffff", "#181a1b", "#000000"]) {
+      const got = colours(["XFL", ...NFL, "USFL"], background);
+      expect(got.slice(1, -1)).toEqual(colours(NFL, background));
+      expect([got[0], got.at(-1)]).toEqual(["#808080", "#808080"]);
+    }
+  });
+
+  test("with a background, aliases of one team take one palette slot: the teams after them keep their colours", () => {
+    for (const background of ["#ffffff", "#181a1b", "#000000"]) {
+      const named = ["KC", 12, "Kansas City Chiefs", "LA", "Los Angeles Rams", ...NFL];
+      const got = colours(named, background);
+      expect(got.slice(5)).toEqual(colours(["KC", "LA", ...NFL], background, NFL));
+      expect(got.slice(0, 5)).toEqual([got[0], got[0], got[0], got[3], got[3]]);
+    }
+  });
+
+  test("a team with no `which` colour takes its other colour, not the fallback", async () => {
+    await loadLeague("cfb");
+    const primary = teamColorsSync("cfb", "Towson Tigers");
+    expect(teamColors({ league: "cfb", which: "secondary" })({ id: "Towson Tigers" })).toBe(primary);
+    const o = { league: "cfb", teams: ["Towson Tigers"], background: "#ffffff" } as const;
+    expect(teamColors({ ...o, which: "secondary" })({ id: "Towson Tigers" })).toBe(
+      teamColors(o)({ id: "Towson Tigers" }),
+    );
+  });
+});

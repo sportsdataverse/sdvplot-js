@@ -72,9 +72,9 @@ the order Perspective meets the teams, the rows' order. (A scatter's `split_by` 
 
 `mode: "dark"` picks Perspective's "Pro Dark" theme, and the colours are made for its background, `#242526`: a team
 colour under 3:1 contrast against it is swapped for the team's other colour or lifted until it reads, and the teams'
-colours stay apart (CIE76 ΔE 20): the same palette as sdvplot's Python integration and the deck.gl adapter. (Some
-other adapters' `teamColorPalette` differ for a team named two ways or a value that names no team.) `background` sets another colour to
-read against.
+colours stay apart (CIE76 ΔE 20). It is the team palette every sdvplot adapter shares, the same as the Python
+package's ([Team colours](./colors.mdx#one-colour-per-team-on-a-chart)): a team named two ways keeps one colour, and a
+value that names no team is grey without moving any team's colour. `background` sets another colour to read against.
 
 <Live id="sdvplot/perspective/nfl-epa-split-bars-dark" />
 

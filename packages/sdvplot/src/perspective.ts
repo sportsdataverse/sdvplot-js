@@ -1,4 +1,3 @@
-import { teamColorsSync } from "./colors.js";
 /**
  * Perspective 5.5 (`@perspective-dev/viewer`, with the `-datagrid` and `-charts` plugins): team colours, number formats
  * and a logo column for a `<perspective-viewer>`, the JavaScript side of sdvplot's Python `sdvplot.perspective`. Both
@@ -7,12 +6,12 @@ import { teamColorsSync } from "./colors.js";
  * (fixtures/perspective/oracle.json holds the Python answers; packages/sdvplot/test/perspective-parity.test.ts compares).
  * Pure: Perspective is never imported, not even its types. Call after `loadLeague(league)` / `preloadAll()`.
  */
+import { colorPalette } from "./_web.js";
 import { hex6 } from "./contrast.js";
 import { InputError, warn } from "./errors.js";
 import { normSeason } from "./normalize.js";
 import { placeSync } from "./placement.js";
-import { type Value, resolveSync } from "./resolve.js";
-import { teamPalette } from "./team-palette.js";
+import type { Value } from "./resolve.js";
 import type { IdSystem, League, SeasonInput, Variant } from "./types.js";
 
 /** A row: column name to value, as `perspective.table(rows)` takes them. */
@@ -151,47 +150,13 @@ function teamOrders(values: readonly unknown[], numeric: boolean, col: string): 
   return [first, sorted];
 }
 
-/**
- * One colour per team value, in the given order: the shared team palette on `background` (3:1 against it, ΔE 20 apart)
- * over the distinct resolved teams. A value that does not resolve (one warning, from the resolver) takes the fallback
- * grey and stays out of the palette, so it never moves a real team's colour; two values naming one team share its
- * colour. Python's `perspective._palette`, line for line.
- */
-function palette(
-  values: readonly unknown[],
-  o: { league: League; season: number | null; background: string; idSystem: IdSystem; strict: boolean },
-): string[] {
-  const ids =
-    values.length === 0
-      ? []
-      : resolveSync(values as readonly Value[], o.league, {
-          season: o.season,
-          idSystem: o.idSystem,
-          strict: o.strict,
-        });
-  const known = [...new Set(ids.filter((i) => i !== undefined))];
-  if (known.length === 0) return ids.map(() => FALLBACK);
-  const co = { season: o.season, idSystem: "team_id" as const };
-  const main = teamColorsSync(o.league, known, co);
-  const other = teamColorsSync(o.league, known, { ...co, which: "secondary" });
-  const colors = main.map((m, i) => hex6(m || other[i] || FALLBACK, { dropAlpha: true }));
-  const pal = teamPalette(
-    colors,
-    other.map((c) => c ?? null),
-    o.background,
-    known,
-  );
-  const byId = new Map(known.map((id, i) => [id, pal[i] as string]));
-  return ids.map((id) => (id === undefined ? FALLBACK : (byId.get(id) as string)));
-}
-
 const gradient = (colors: readonly string[]): string => `linear-gradient(to right, ${colors.join(", ")})`;
 
 /**
  * A Perspective viewer config that colours each team by its own colours, for the Datagrid or a chart: the argument of
  * `viewer.restore()`, as Python's `perspective_sdv_config` builds it (same keys, same colours, same order).
  *
- * The colours are the shared team palette (as the deck.gl adapter uses), taken over the teams in sorted order: each
+ * The colours are the shared team palette (every adapter's, and Python's), taken over the teams in sorted order: each
  * team's colour, made 3:1 against the background and ΔE 20 from every earlier team's, so a team keeps one colour
  * whatever the rows' order. Perspective takes a palette, not a colour per value, so each palette lists those colours in
  * the order Perspective hands colours out (checked in Chromium on Perspective 5.5.1):
@@ -259,12 +224,13 @@ export function perspectiveConfig(
   const grid = (o.plugin ?? "Datagrid") === "Datagrid";
   const values = rows.map((r) => r[teamCol]);
   const [first, ascending] = teamOrders(values, !text, teamCol);
-  const pal = palette(ascending, {
-    league: o.league,
-    season,
+  // the shared team palette every adapter uses (Python's perspective._palette): unresolved values grey, out of it
+  const pal = colorPalette(o.league, ascending, {
+    ...(season === null ? {} : { season }),
     background: bg,
     idSystem: o.idSystem ?? "auto",
     strict: o.strict ?? false,
+    fallback: FALLBACK,
   });
   const color = new Map(ascending.map((v, i) => [v, pal[i] as string]));
   // a null split series comes first: palette entry 0

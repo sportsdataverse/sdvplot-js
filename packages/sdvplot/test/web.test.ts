@@ -5,6 +5,7 @@ import {
   axisLetter,
   axisPlacements,
   colorList,
+  colorPalette,
   column,
   embedSources,
   imageSource,
@@ -12,7 +13,7 @@ import {
   place,
   seasons,
 } from "../src/_web.js";
-import { DownloadError, InputError } from "../src/errors.js";
+import { DownloadError, InputError, resetWarnings, setWarningHandler } from "../src/errors.js";
 import { HEADSHOT_ASPECT, teamColorsSync } from "../src/index.js";
 
 test("aspect: the manifest's width/height, HEADSHOT_ASPECT for a headshot", () => {
@@ -108,4 +109,67 @@ test("embedSources raises DownloadError (url + status) on a non-ok answer", asyn
 
 test("colorList resolves every team in one pass, matching teamColorsSync", () => {
   expect(colorList("nfl", ["KC", "BUF"])).toEqual(teamColorsSync("nfl", ["KC", "BUF"]));
+});
+
+// The current 32 NFL teams, in the league's alphabetical order of abbreviation.
+const NFL =
+  "ARI ATL BAL BUF CAR CHI CIN CLE DAL DEN DET GB HOU IND JAX KC LAC LA LV MIA MIN NE NO NYG NYJ PHI PIT SEA SF TB TEN WSH".split(
+    " ",
+  );
+function quietly<T>(f: () => T): { out: T; seen: string[] } {
+  const seen: string[] = [];
+  resetWarnings();
+  setWarningHandler((m) => seen.push(m));
+  try {
+    return { out: f(), seen };
+  } finally {
+    setWarningHandler(null);
+  }
+}
+
+test("colorPalette on a background: aliases of one team share its colour, and the other teams keep theirs", () => {
+  for (const background of ["#ffffff", "#181a1b"]) {
+    const [kc, id, name, buf] = colorPalette("nfl", ["KC", 12, "Kansas City Chiefs", "BUF"], { background });
+    expect([id, name]).toEqual([kc, kc]);
+    expect([kc, buf]).toEqual(colorPalette("nfl", ["KC", "BUF"], { background }));
+  }
+  // Task 7's case: the Rams named twice took two colours (#003594, #a68800)
+  const [la, rams, sf] = colorPalette("nfl", ["LA", "Los Angeles Rams", "SF"], { background: "#ffffff" });
+  expect(rams).toBe(la);
+  expect([la, sf]).toEqual(colorPalette("nfl", ["LA", "SF"], { background: "#ffffff" }));
+});
+
+test("colorPalette on a background: an unresolved value is the fallback, takes no palette slot, and warns once", () => {
+  for (const background of ["#ffffff", "#181a1b", "#000000"]) {
+    const { out, seen } = quietly(() => colorPalette("nfl", ["XFL", ...NFL, "USFL"], { background }));
+    expect(out.slice(1, -1)).toEqual(colorPalette("nfl", NFL, { background }));
+    expect([out[0], out.at(-1)]).toEqual(["#808080", "#808080"]);
+    expect(seen).toHaveLength(1);
+    expect(seen[0]).toMatch(/'XFL'.*'USFL'/);
+  }
+  const fb = colorPalette("nfl", ["ZZZ", "KC", "YYY"], { background: "#ffffff", fallback: "#123456" });
+  expect(fb).toEqual(["#123456", colorPalette("nfl", ["KC"], { background: "#ffffff" })[0], "#123456"]);
+});
+
+test("colorPalette with no background: each value's own colour (unchanged for teams that resolve)", () => {
+  expect(colorPalette("nfl", NFL)).toEqual(teamColorsSync("nfl", NFL));
+  expect(colorPalette("nfl", NFL, { which: "secondary" })).toEqual(
+    teamColorsSync("nfl", NFL, { which: "secondary" }),
+  );
+  expect(colorPalette("nfl", ["KC", 12, "XFL"], { fallback: "#123456" })).toEqual([
+    teamColorsSync("nfl", "KC"),
+    teamColorsSync("nfl", "KC"),
+    "#123456",
+  ]);
+});
+
+test("colorPalette: a team with no `which` colour takes its other colour, as Python's palette does", () => {
+  // Towson (cfb 119) has a primary colour and no secondary
+  const primary = teamColorsSync("cfb", "119", { idSystem: "team_id" });
+  expect(primary).toMatch(/^#/);
+  expect(teamColorsSync("cfb", "119", { idSystem: "team_id", which: "secondary" })).toBeUndefined();
+  expect(colorPalette("cfb", ["Towson Tigers"], { which: "secondary" })).toEqual([primary]);
+  expect(colorPalette("cfb", ["Towson Tigers"], { which: "secondary", background: "#ffffff" })).toEqual(
+    colorPalette("cfb", ["Towson Tigers"], { background: "#ffffff" }),
+  );
 });
