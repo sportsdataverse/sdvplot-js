@@ -55,7 +55,9 @@ On a dark basemap, pass its background as `background`: every team colour then k
 stays apart from the other teams' colours, through the palette every sdvplot adapter shares. The contrast is measured
 against the basemap's land colour, its `background` layer, not its water, which on OpenFreeMap's dark style is a
 little lighter and on its light style a little darker. At low zoom the dark style also lays a shaded-relief raster
-(`ne2_shaded`) over the land, so land there is not exactly `#0c0c0c` either.
+(`ne2_shaded`) over the land, so land there is not exactly `#0c0c0c` either. The guarantee covers teams that resolve: a
+team that does not takes `fallback` as given, outside the palette. The default grey, `#808080`, keeps 3:1 on both
+OpenFreeMap basemaps; if you set your own `fallback`, pick one that contrasts with your background.
 
 The road trips below fly airport to airport: each team's home airport comes from nflverse's
 [nfldata](https://github.com/nflverse/nfldata) `airports.csv`. The same rows feed `passArcLayer` for arcs instead
