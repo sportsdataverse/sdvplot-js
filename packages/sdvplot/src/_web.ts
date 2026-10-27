@@ -4,7 +4,7 @@ import { hex6 } from "./contrast.js";
 import { DownloadError, InputError } from "./errors.js";
 import { HEADSHOT_ASPECT } from "./headshots.js";
 import { type Kind, type PlaceOptions, type Placement, placeSync as place } from "./placement.js";
-import type { Value } from "./resolve.js";
+import { type Value, resolveSync } from "./resolve.js";
 import { teamPalette } from "./team-palette.js";
 import type { IdSystem, League, MarkType, SeasonInput, Variant, Which } from "./types.js";
 
@@ -175,7 +175,15 @@ export function colorList(
   return teamColorsSync(league, teams as readonly Value[], o).map((c) => c ?? null);
 }
 
-/** The body of the recharts / victory / svelte `teamColorPalette`: one colour per team, readable on `background`. */
+/**
+ * The shared team palette behind every adapter's `teamColorPalette`: one colour per entry of `teams`, in order. Each
+ * value is resolved to its team (one warning for the values that do not resolve) and takes that team's `which`
+ * colour, else its other colour, else `fallback`. With `background`, the colours are the shared palette
+ * (`teamPalette`: 3:1 against it, ΔE 20 apart) over the distinct resolved teams in order of first appearance, so
+ * aliases of one team ("KC", 12, "Kansas City Chiefs") share one colour, and a value that does not resolve takes
+ * `fallback` with no palette slot, so it never moves a real team's colour. Python's `perspective._palette` and
+ * `pydeck._end_colors`.
+ */
 export function colorPalette(
   league: League,
   teams: readonly unknown[],
@@ -188,25 +196,27 @@ export function colorPalette(
   } = {},
 ): string[] {
   const fallback = o.fallback ?? "#808080";
-  const co = {
-    ...(o.season === undefined ? {} : { season: o.season }),
+  const season = o.season === undefined ? {} : { season: o.season };
+  const ids = resolveSync(teams as readonly Value[], league, {
+    ...season,
     ...(o.idSystem === undefined ? {} : { idSystem: o.idSystem }),
-  };
-  const main = colorList(league, teams, { ...co, ...(o.which === undefined ? {} : { which: o.which }) });
+  });
+  const known = [...new Set(ids.filter((id) => id !== undefined))];
+  const which = o.which ?? "primary";
+  const co = { ...season, idSystem: "team_id" as const };
+  const main = colorList(league, known, { ...co, which });
+  const other = colorList(league, known, { ...co, which: which === "primary" ? "secondary" : "primary" });
+  const colors = main.map((c, i) => c ?? other[i] ?? fallback);
   const bg = o.background === undefined ? undefined : hex6(o.background);
-  if (bg === undefined) return main.map((c) => c ?? fallback);
-  const other = colorList(league, teams, { ...co, which: o.which === "secondary" ? "primary" : "secondary" });
-  const colors = main.map((c) => hex6(c ?? fallback, { dropAlpha: true }));
-  // The distinct-colour rule is between teams, not entries: a repeated team takes its first entry's colour.
-  // ponytail: dedupes on the value as given, so "KC" and "Kansas City" still count as two teams.
-  const keys = teams.map(String);
-  const first = [...new Map(keys.map((k, i) => [k, i] as const).reverse()).values()].sort((a, b) => a - b);
-  const palette = teamPalette(
-    first.map((i) => colors[i]!),
-    first.map((i) => other[i]),
-    bg,
-    first.map((i) => keys[i]!),
-  );
-  const byKey = new Map(first.map((i, j) => [keys[i]!, palette[j]!]));
-  return keys.map((k) => byKey.get(k)!);
+  const palette =
+    bg === undefined
+      ? colors
+      : teamPalette(
+          colors.map((c) => hex6(c, { dropAlpha: true })),
+          other,
+          bg,
+          known,
+        );
+  const byId = new Map(known.map((id, j) => [id, palette[j]!]));
+  return ids.map((id) => (id === undefined ? fallback : byId.get(id)!));
 }

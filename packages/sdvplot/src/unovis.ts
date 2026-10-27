@@ -55,9 +55,7 @@ export function teamColorPalette(
   teams: readonly unknown[],
   o: UnovisColorOptions = {},
 ): string[] {
-  // through the scale, so aliases of one team (12 and "KC") get one colour here too
-  const scale = teamColorScale(league, teams, o);
-  return teams.map((t) => scale(t));
+  return colorPalette(league, teams, o);
 }
 
 /** A value's key as the data holds it: 12 and "12" are two keys, each kept. */
