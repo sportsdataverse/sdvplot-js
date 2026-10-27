@@ -1882,7 +1882,24 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
               wait();
             }),
         );
-        await page.waitForLoadState("networkidle"); // the logos
+        await page.waitForLoadState("networkidle"); // MapLibre's logos are in already: mount awaits addLogoImages
+        const deck = id.endsWith("deckgl-arcs-dark");
+        // deck.gl's IconLayer fetches its logos itself, after the map has loaded: "networkidle" above has long been
+        // reached by then and waits for nothing. Wait for each overlay layer's public `isLoaded` (its icons fetched
+        // and packed), up to 30 s; the frame below then has the logos in it.
+        if (deck)
+          expect(
+            await box.evaluate(async (el) => {
+              const layers = (el as HTMLElement & { sdvDeckLayers: readonly { isLoaded: boolean }[] })
+                .sdvDeckLayers;
+              for (const end = Date.now() + 30_000; Date.now() < end; ) {
+                if (layers.every((l) => l.isLoaded)) return true;
+                await new Promise((r) => setTimeout(r, 50));
+              }
+              return false;
+            }),
+            "deck.gl's layers have loaded their logos",
+          ).toBe(true);
         // a fresh frame, after deck.gl's own (it draws on the frame after the map's)
         const settle = () =>
           box.evaluate(
@@ -1948,7 +1965,6 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
           expect.soft(y, `${spec.logos[i]?.team} on the map`).toBeGreaterThan(0);
           expect.soft(y, `${spec.logos[i]?.team} on the map`).toBeLessThan(size[1] as number);
         });
-        const deck = id.endsWith("deckgl-arcs-dark");
         if (!deck) {
           // what the map itself drew under each venue: that team's logo feature (two teams share SoFi and MetLife)
           const teamsAt = await box.evaluate(
