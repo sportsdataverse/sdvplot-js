@@ -42,7 +42,7 @@ export interface PerspectiveConfigOptions {
     season?: SeasonInput;
     strict?: boolean;
     teamCol: string;
-    theme?: PerspectiveTheme;
+    theme?: PerspectiveTheme | ((mode: "light" | "dark") => PerspectiveTheme);
 }
 
 // @public

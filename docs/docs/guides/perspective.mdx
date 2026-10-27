@@ -34,7 +34,7 @@ either side changes, the fixture is written again from the Python package. The o
 | `logo_col`, `id_system` | `logoCol`, `idSystem` |
 | `perspective_logo_column(frame, team_col, league=, name=, ...)` | `perspectiveLogoColumn(rows, teamCol, { league, name, ... })` |
 | the frame's column types | `schema`, or worked out from the rows |
-| `theme="datagolf"` | `theme: tableThemeSpec("datagolf", mode)`, from `@sportsdataverse/sdvtables` |
+| `theme="datagolf"` | `theme: (m) => tableThemeSpec("datagolf", m)`, from `@sportsdataverse/sdvtables` |
 
 Python reads each column's type from the frame. Rows of plain objects carry no types, so `perspectiveConfig` works them
 out as Perspective does when it loads the rows: numbers, and strings that read as numbers ("12", "1.5"), make a number
@@ -66,10 +66,13 @@ or has no logo), and name it in `logoCol`.
 `theme` takes one of the 122 surveyed table themes of the [table theme registry](./table-theme-registry.mdx), the
 same file the Python package reads. sdvplot does not ship the registry; sdvtables does, and its `tableThemeSpec(name,
 mode)` resolves a theme as Python's `table_theme_spec` does: the fonts and sizes, the palette with every missing colour
-taken from the shared defaults, and the structure. Resolve it in the same `mode` you give `perspectiveConfig`: the
-spec does not record its mode, so one resolved in the other mode brings that mode's colours. `tableThemeSpec` raises a
-`TableSpecError` for an unknown name (suggesting close ones), for "espn", "fivethirtyeight" or "pff" (reactablefmtr
-ports: the `fmtr-espn` theme, or "espn-site" for the surveyed site), and for `mode: "dark"` on a light-only theme.
+taken from the shared defaults, and the structure. Give `theme` a function of the mode that returns the spec:
+`perspectiveConfig` calls it with its own `mode`, on every plugin, so the colours always match the mode and a
+light-only theme in dark mode throws, as Python's `theme=` does. A spec object works too, but it does not record its
+mode, so resolve it in the same `mode`; anything else (a theme name, say) is an `InputError`. `tableThemeSpec` raises a
+`TableSpecError` for an unknown name (suggesting close ones; the suggestions can differ from Python's), for "espn",
+"fivethirtyeight" or "pff" (reactablefmtr ports: the `fmtr-espn` theme, or "espn-site" for the surveyed site), and for
+`mode: "dark"` on a light-only theme.
 
 On the Datagrid the theme sets the grid's font and size (`plugin_config`), gives every number column the theme's sign
 colours (`fg_color`: `linear-gradient(to right, <neg> 0%, <pos> 100%)`, the theme's `neg` and `pos` colours, as
@@ -77,7 +80,8 @@ Python sets them) and, when the theme has a numeric face of its own (DM Mono in 
 Roboto Mono in "nfl-next-gen-stats"), puts that face on the number columns. The team column keeps its team fill.
 Perspective takes each face as one family name, with no fallback, so load the font on the page (Google Fonts) or the
 browser draws its default. A chart takes no fonts from a config, so on any other plugin the theme adds nothing. Any
-object with the same `fonts`, `sizes` and `palette` fields does as well (the type is `PerspectiveTheme`), and the
+object with the same `fonts`, `sizes` and `palette` fields does as well (the type is `PerspectiveTheme`; Perspective
+reads only `#hex` and `rgb()` colours in `fg_color`, so a named or `hsl()` colour leaves the default), and the
 parity test above covers the theme too: Python's answers with "datagolf" light and dark, "nfl-next-gen-stats" and
 "ft-markets-data" equal what `perspectiveConfig` gives with sdvtables' spec.
 

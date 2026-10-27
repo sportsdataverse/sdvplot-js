@@ -68,16 +68,54 @@ describe("perspectiveConfig with tableThemeSpec equals perspective_sdv_config wi
       resetWarnings();
       setWarningHandler((m) => warned.push(m));
       const mode = (c.options.mode ?? "light") as "light" | "dark";
-      const o = Object.fromEntries(
-        Object.entries(c.options).map(([k, v]) => [
-          names[k] ?? k,
-          k === "theme" ? tableThemeSpec(v as string, mode) : v,
-        ]),
-      ) as unknown as PerspectiveConfigOptions;
-      const got = perspectiveConfig(c.rows, { ...o, schema: c.schema });
-      expect(JSON.stringify(got)).toBe(JSON.stringify(c.config));
-      expect(warned).toHaveLength(c.warnings.length);
+      // the spec object resolved in the mode, and the function form perspectiveConfig calls with its own mode
+      for (const form of ["spec", "function"]) {
+        const o = Object.fromEntries(
+          Object.entries(c.options).map(([k, v]) => [
+            names[k] ?? k,
+            k !== "theme"
+              ? v
+              : form === "spec"
+                ? tableThemeSpec(v as string, mode)
+                : (m: "light" | "dark") => tableThemeSpec(v as string, m),
+          ]),
+        ) as unknown as PerspectiveConfigOptions;
+        warned.length = 0;
+        resetWarnings();
+        const got = perspectiveConfig(c.rows, { ...o, schema: c.schema });
+        expect(JSON.stringify(got), form).toBe(JSON.stringify(c.config));
+        expect(warned, form).toHaveLength(c.warnings.length);
+      }
     });
+});
+
+describe("a theme function is resolved in the call's mode, on every plugin", () => {
+  const rows = [{ team: "KC", epa: 0.1 }];
+  test("a light-only theme in dark mode throws, on the Datagrid and on a chart (Python raises for theme= too)", () => {
+    for (const plugin of ["Datagrid", "Y Bar"])
+      expect(() =>
+        perspectiveConfig(rows, {
+          teamCol: "team",
+          league: "nfl",
+          plugin,
+          mode: "dark",
+          theme: (m) => tableThemeSpec("nejm", m),
+        }),
+      ).toThrow(TableSpecError);
+  });
+  test("the dark call gets the dark sign colours", () => {
+    const dark = tableThemeSpec("datagolf", "dark").palette;
+    const cfg = perspectiveConfig(rows, {
+      teamCol: "team",
+      league: "nfl",
+      mode: "dark",
+      theme: (m) => tableThemeSpec("datagolf", m),
+    });
+    expect(cfg.columns_config.epa?.fg_color).toBe(
+      `linear-gradient(to right, ${dark.neg} 0%, ${dark.pos} 100%)`,
+    );
+    expect(dark.neg).not.toBe(tableThemeSpec("datagolf", "light").palette.neg);
+  });
 });
 
 describe("tableThemeSpec errors and copies", () => {

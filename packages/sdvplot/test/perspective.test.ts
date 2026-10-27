@@ -276,6 +276,30 @@ describe("a registry theme", () => {
     expect(faceless.columns_config.plays).toMatchObject({ fg_color: SIGN, font_family: "Roboto Mono" });
   });
 
+  test("a function of the mode is called once with the call's mode, on every plugin", () => {
+    for (const plugin of ["Datagrid", "Y Bar"])
+      for (const mode of ["light", "dark"] as const) {
+        const seen: string[] = [];
+        const theme = (m: "light" | "dark") => {
+          seen.push(m);
+          return DATAGOLF;
+        };
+        const cfg = perspectiveConfig(EPA, { teamCol: "team", league: "nfl", plugin, mode, theme });
+        expect(seen).toEqual([mode]);
+        expect(cfg).toEqual(
+          perspectiveConfig(EPA, { teamCol: "team", league: "nfl", plugin, mode, theme: DATAGOLF }),
+        );
+      }
+  });
+
+  test("a theme name, null or a spec-less object is an InputError, on every plugin", () => {
+    for (const plugin of ["Datagrid", "Y Bar"])
+      for (const bad of ["datagolf", null, { fonts: {} }, () => "datagolf"])
+        expect(() =>
+          perspectiveConfig(EPA, { teamCol: "team", league: "nfl", plugin, theme: bad as never }),
+        ).toThrow(/theme must be a table theme spec or a function of the mode.*tableThemeSpec/);
+  });
+
   test("a chart takes none of it", () => {
     for (const plugin of ["Y Bar", "X/Y Scatter"])
       expect(perspectiveConfig(EPA, { teamCol: "team", league: "nfl", plugin, theme: DATAGOLF })).toEqual(
