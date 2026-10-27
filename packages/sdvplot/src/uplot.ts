@@ -10,14 +10,13 @@ import {
   aspect,
   checkAlpha,
   checkHeight,
-  colorList,
+  colorPalette,
   markPlacements,
 } from "./_web.js";
 import type { DrawnMark } from "./_web.js";
 import { hex6 } from "./contrast.js";
 import { InputError, UnsupportedTargetError, warn } from "./errors.js";
 import type { Placement } from "./placement.js";
-import { teamPalette } from "./team-palette.js";
 import type { IdSystem, League, SeasonInput, Which } from "./types.js";
 export type { DrawnMark, MarkOptions, Row } from "./_web.js";
 
@@ -219,19 +218,14 @@ export function withTeamSeries<F extends object>(opts: F, rows: readonly Row[], 
   const teams = rows.map((r) => r[o.team]);
   if (rows.length > 0 && !rows.some((r) => o.team in r))
     throw new InputError(`team column ${JSON.stringify(o.team)} is not in rows`);
-  const co = {
+  // the shared palette (over the resolved teams), as #rrggbb for the fill's rgba
+  const strokes = colorPalette(o.league, teams, {
     ...(o.season === undefined ? {} : { season: o.season }),
     ...(o.idSystem === undefined ? {} : { idSystem: o.idSystem }),
-  };
-  const fallback = o.fallback ?? "#808080";
-  const main = colorList(o.league, teams, { ...co, ...(o.which === undefined ? {} : { which: o.which }) });
-  const bg = o.background === undefined ? undefined : hex6(o.background);
-  const other =
-    bg === undefined
-      ? []
-      : colorList(o.league, teams, { ...co, which: o.which === "secondary" ? "primary" : "secondary" });
-  const colors = main.map((c) => hex6(c ?? fallback, { dropAlpha: true }));
-  const strokes = bg === undefined ? colors : teamPalette(colors, other, bg, teams.map(String));
+    ...(o.which === undefined ? {} : { which: o.which }),
+    ...(o.fallback === undefined ? {} : { fallback: o.fallback }),
+    ...(o.background === undefined ? {} : { background: o.background }),
+  }).map((c) => hex6(c, { dropAlpha: true }));
   const out = series.map((s: unknown, i) => {
     const stroke = strokes[i - 1];
     if (stroke === undefined) return s;

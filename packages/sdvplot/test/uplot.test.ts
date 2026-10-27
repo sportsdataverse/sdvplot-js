@@ -333,3 +333,49 @@ describe("withTeamSeries", () => {
     for (const c of [lal, gs]) expect(contrast(c, "#181a1b")).toBeGreaterThanOrEqual(3);
   });
 });
+
+describe("withTeamSeries: the shared palette's rule, as Python's", () => {
+  // biome-ignore format: the 32 teams, one line
+  const NFL = ["ARI", "ATL", "BAL", "BUF", "CAR", "CHI", "CIN", "CLE", "DAL", "DEN", "DET", "GB", "HOU", "IND", "JAX", "KC", "LAC", "LA", "LV", "MIA", "MIN", "NE", "NO", "NYG", "NYJ", "PHI", "PIT", "SEA", "SF", "TB", "TEN", "WSH"];
+  const strokes = (
+    teams: readonly unknown[],
+    o: { background?: string; which?: "secondary"; league?: "cfb" } = {},
+  ) =>
+    withTeamSeries(
+      { series: [{}, ...teams.map(() => ({}))] },
+      teams.map((team) => ({ team })),
+      { team: "team", league: o.league ?? "nfl", ...o },
+    )
+      .series.slice(1)
+      .map((s) => (s as { stroke: string }).stroke);
+
+  test("with a background, an unresolved team takes the fallback and no palette slot: the other teams keep theirs", () => {
+    for (const background of ["#ffffff", "#181a1b", "#000000"]) {
+      const got = strokes(["XFL", ...NFL, "USFL"], { background });
+      expect(got.slice(1, -1)).toEqual(strokes(NFL, { background }));
+      expect([got[0], got.at(-1)]).toEqual(["#808080", "#808080"]);
+    }
+  });
+
+  test("with a background, aliases of one team share its colour (series of one team are one team)", () => {
+    for (const background of ["#ffffff", "#181a1b"]) {
+      const [kc, id, name, buf] = strokes(["KC", 12, "Kansas City Chiefs", "BUF"], { background });
+      expect([id, name]).toEqual([kc, kc]);
+      expect([kc, buf]).toEqual(strokes(["KC", "BUF"], { background }));
+      const [la, rams, sf] = strokes(["LA", "Los Angeles Rams", "SF"], { background });
+      expect(rams).toBe(la);
+      expect([la, sf]).toEqual(strokes(["LA", "SF"], { background }));
+    }
+  });
+
+  test("a team with no `which` colour takes its other colour, not the fallback", async () => {
+    await loadLeague("cfb");
+    const primary = teamColorsSync("cfb", "Towson Tigers");
+    for (const background of [undefined, "#ffffff"]) {
+      const o = { league: "cfb", which: "secondary", ...(background ? { background } : {}) } as const;
+      expect(strokes(["Towson Tigers"], o)).toEqual(
+        background ? strokes(["Towson Tigers"], { league: "cfb", background }) : [primary],
+      );
+    }
+  });
+});

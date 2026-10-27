@@ -6,12 +6,19 @@
  * ready-made chart is a component, `<LogoBump>` in `sdvplot/react`.
  */
 import { type ReactElement, createElement } from "react";
-import { type Row, aspect, checkAlpha, checkHeight, colorList, imageSource, place, seasons } from "./_web.js";
-import { hex6 } from "./contrast.js";
+import {
+  type Row,
+  aspect,
+  checkAlpha,
+  checkHeight,
+  colorPalette,
+  imageSource,
+  place,
+  seasons,
+} from "./_web.js";
 import { InputError, UnsupportedTargetError, warn } from "./errors.js";
 import { type Placement, placedName } from "./placement.js";
 import { type Value, resolveSync } from "./resolve.js";
-import { teamPalette } from "./team-palette.js";
 import type { IdSystem, League, MarkType, SeasonInput, Variant, Which } from "./types.js";
 export type { Row } from "./_web.js";
 export { embedSources } from "./_web.js"; // public: build `embed` with it, as for the other adapters
@@ -358,27 +365,15 @@ export function teamColors(o: NivoColorOptions): (datum: object) => string {
     const r = d as Row;
     return r[by] ?? (r.data !== null && typeof r.data === "object" ? (r.data as Row)[by] : undefined);
   };
-  if (o.background === undefined) {
-    const which = o.which === undefined ? {} : { which: o.which };
-    return (d) => colorList(o.league, [read(d)], { ...co, ...which })[0] ?? fallback;
-  }
+  const po = { ...co, ...(o.which === undefined ? {} : { which: o.which }), fallback };
+  if (o.background === undefined) return (d) => colorPalette(o.league, [read(d)], po)[0] as string;
   if (o.teams === undefined)
     throw new InputError(
       "teamColors: background needs teams, every team the chart draws (the palette keeps them apart)",
     );
-  const bg = hex6(o.background);
   const teams = o.teams;
-  const main = colorList(o.league, teams, { ...co, ...(o.which === undefined ? {} : { which: o.which }) });
-  const other = colorList(o.league, teams, {
-    ...co,
-    which: o.which === "secondary" ? "primary" : "secondary",
-  });
-  const palette = teamPalette(
-    main.map((c) => hex6(c ?? fallback, { dropAlpha: true })),
-    other,
-    bg,
-    teams.map(String),
-  );
+  // the shared palette, over the resolved teams: an alias or an unresolved value takes no slot of its own
+  const palette = colorPalette(o.league, teams, { ...po, background: o.background });
   const ids = resolveSync(teams as readonly Value[], o.league, co);
   const byId = new Map<string, string>();
   ids.forEach((id, i) => {
