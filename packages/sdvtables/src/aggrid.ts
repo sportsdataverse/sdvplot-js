@@ -225,7 +225,12 @@ export function gridOptions<Row>(
       colId: col.key,
       field: col.key as unknown as NonNullable<ColDef<Row>["field"]>,
       headerName: labelOf(col) + (labelSuffix.get(col.key) ?? ""),
-      // AG Grid negates a comparator's result for a descending sort: negate here too, so missing values stay last
+      // AG Grid's docs (colDef.d.ts: `isDescending` is "not to be used for inverting the return value") assume a
+      // comparator that orders ascending, which the grid then reverses (RowNodeSorter: `descending ? -result : result`).
+      // Ours is not that: withMissingLast(cmp, "desc") already orders descending AND puts missing values last, and
+      // reversing it would put them first. So it is negated here, and the grid's own negation undoes that: the final
+      // order is exactly withMissingLast's, both ways. Do not drop the negation: test/dom/aggrid.test.ts "sorting" sorts
+      // a real grid both ways and fails without it (a blank value goes first when descending).
       comparator: (a, b, _na, _nb, desc) => {
         const r = sortBy(desc ? "desc" : "asc")(a, b);
         return desc ? -r : r;
