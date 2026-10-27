@@ -46,10 +46,13 @@ export const browser = {
     viewer: import("@perspective-dev/viewer").HTMLPerspectiveViewerElement;
   }) => {
     const table = await worker.table(schema, { index: "play" });
+    // the first week before the config: Perspective 5.5 drops a columns_config restored onto an empty table (the
+    // team colours and number formats would be lost)
+    await table.update((batches[0] ?? []).map((p) => ({ ...p })));
     await viewer.load(worker);
     await viewer.restore({ table: await table.get_name(), ...config });
-    // a week's plays every 0.8 s, as a live feed would send them: the bars grow as each batch lands
-    let next = 0;
+    // then a week's plays every 0.8 s, as a live feed would send them: the bars grow as each batch lands
+    let next = 1;
     const timer = setInterval(() => {
       const batch = batches[next++];
       if (batch === undefined) return clearInterval(timer);

@@ -84,7 +84,9 @@ A Perspective table takes updates: `table.update(rows)` adds rows (or, with an `
 the same key), and every view of the table redraws. The example below replays the first six weeks of the 2024 season
 into an empty table, one week of plays at a time, and the bars of each offence's total EPA grow as each batch lands. The
 config is built once, from all the plays and the table's own schema, so each team's colour is fixed before its first
-play arrives.
+play arrives. Restore the config once the table has rows: Perspective 5.5 drops a `columns_config` restored onto an
+empty table (checked: `viewer.save()` then has none), so the colours and number formats would be lost. The example
+sends the first week, restores the config, and then streams the rest.
 
 <Live id="sdvplot/perspective/nfl-plays-streaming" />
 
