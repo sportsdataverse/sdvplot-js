@@ -31,6 +31,7 @@ export default defineConfig({
     three: "src/three/index.ts",
     "lightweight-charts": "src/lightweight-charts.ts",
     g2: "src/g2.ts",
+    tanstack: "src/tanstack.ts",
   },
   external: [
     "react",

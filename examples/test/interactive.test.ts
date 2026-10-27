@@ -4,14 +4,15 @@ import { type Server, createServer } from "node:http";
 import type { AddressInfo } from "node:net";
 import { extname, join, normalize } from "node:path";
 import { createCanvas, loadImage } from "@napi-rs/canvas";
-import { contrast, loadLeague, resolveSync, solid } from "@sportsdataverse/sdvplot";
+import { contrast, loadLeague, logoUrlSync, resolveSync, solid } from "@sportsdataverse/sdvplot";
 import { teamColorPalette, teamColors } from "@sportsdataverse/sdvplot/mui";
+import { teamColorPalette as rechartsPalette } from "@sportsdataverse/sdvplot/recharts";
 import { type Browser, chromium } from "playwright";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { pagePath } from "../scripts/pages.js";
 import { abs } from "../sources.js";
 import { BROWSER } from "../src/browser.gen.js";
-import { NBA_STANDINGS, NFL_TEAM_EPA_2024, STANDINGS } from "../src/data.js";
+import { AFC_WEEKS_2024, NBA_STANDINGS, NFL_TEAM_EPA_2024, STANDINGS } from "../src/data.js";
 import { EXAMPLES } from "../src/registry.gen.js";
 import { MUI_PROXY_STYLE } from "./run.js";
 
@@ -902,6 +903,201 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
         await figure.locator('[data-sdv-test="mui-proxy"]').focus();
         await page.keyboard.press("ArrowRight");
         await expect.poll(() => svg.evaluate(focusMark, kind), { timeout: 5_000 }).toBe(true);
+        if (SHOTS !== undefined)
+          await figure
+            .locator(".sdv-live-output")
+            .screenshot({ path: join(SHOTS, `${id.replace(/\//g, "_")}.png`) });
+        expect(errors).toEqual([]);
+      } finally {
+        await page.close();
+      }
+    },
+  );
+
+  // TanStack Charts examples are React examples (no browser upgrade): the docs re-run each live. TanStack has no image
+  // mark: each logo is a dot filled with an SVG pattern of it, written into the chart's own svg by withPatterns. Every
+  // expectation comes from outside the dots: each team's centre from its data through the chart's own axes (two tick
+  // rules give each axis' data-to-pixel line), and each line found by TanStack's series key (`margin:string:2:KC`, the
+  // examples' line mark being "margin"), not by order. Then the logos' own pixels (hiding the dots' fill changes each logo box round that expected centre) and
+  // points along each line in its team's colour, the dark palette on the dark card.
+  const lastDiff = (team: string) => {
+    const s = AFC_WEEKS_2024.find((w) => w.team === team);
+    if (s === undefined) throw new Error(`no 2024 weeks for ${team}`);
+    return s.margins.reduce<number>((a, m) => a + (m ?? 0), 0);
+  };
+  /** Each example's teams (in mark order), logo variant, and where each team's logo belongs in data units. */
+  const TANSTACK: Readonly<
+    Record<
+      string,
+      { teams: readonly string[]; variant: "default" | "dark"; at: (team: string) => [x: number, y: number] }
+    >
+  > = {
+    "sdvplot/tanstack-charts/epa-logo-scatter": {
+      teams: NFL_TEAM_EPA_2024.map((t) => t.team),
+      variant: "default",
+      at: (team) => {
+        const t = NFL_TEAM_EPA_2024.find((r) => r.team === team);
+        if (t === undefined) throw new Error(`no EPA row for ${team}`);
+        return [t.off_epa / t.off_plays, t.def_epa / t.def_plays];
+      },
+    },
+    "sdvplot/tanstack-charts/afc-east-margin-lines": {
+      teams: ["BUF", "MIA", "NYJ", "NE"],
+      variant: "default",
+      at: (team) => [18, lastDiff(team)],
+    },
+    "sdvplot/tanstack-charts/afc-west-margin-dark": {
+      teams: ["KC", "LAC", "DEN", "LV"],
+      variant: "dark",
+      at: (team) => [18, lastDiff(team)],
+    },
+  };
+  test.each(EXAMPLES.filter((e) => e.id.startsWith("sdvplot/tanstack-charts/")).map((e) => e.id))(
+    "%s re-runs live: each team's logo where its data puts it, real logo and line pixels",
+    async (id) => {
+      const entry = EXAMPLES.find((e) => e.id === id);
+      const spec = TANSTACK[id];
+      if (entry === undefined || spec === undefined) throw new Error(`${id} is not in the registry`);
+      const { teams, variant, at } = spec;
+      const page = await browser.newPage();
+      try {
+        const errors: string[] = [];
+        page.on("console", (m) => void (m.type() === "error" && errors.push(m.text())));
+        page.on("pageerror", (e) => void errors.push(e.message));
+        await page.goto(`${base}/gallery/${pagePath(entry)}/`);
+        const figure = page.locator(`figure[data-example="${id}"]`);
+        await figure.scrollIntoViewIfNeeded();
+        const svg = figure.locator(".sdv-live-output svg.ts-chart");
+        await svg.locator("pattern image").first().waitFor({ state: "attached", timeout: 30_000 });
+        await page.waitForLoadState("networkidle"); // the logos
+        await page.addStyleTag({ content: ".navbar { display: none !important; }" });
+        expect(await figure.locator(".sdv-live-static").count(), "the static copy is replaced").toBe(0);
+        expect(await figure.locator(".sdv-live-error").count(), "no error alert").toBe(0);
+        const got = await svg.evaluate((el, ts) => {
+          const box = el.getBoundingClientRect();
+          const m = (el as SVGSVGElement).getScreenCTM() as DOMMatrix;
+          // svg user units -> px from the svg's top left (what its screenshot is indexed by)
+          const toBox = (x: number, y: number) => [
+            m.a * x + m.c * y + m.e - box.left,
+            m.b * x + m.d * y + m.f - box.top,
+          ];
+          // the axes' tick rules: [value, px] along each axis, keyed by TanStack as x-tick-rule:number:<value>
+          const ticks = (axis: "x" | "y") =>
+            [...el.querySelectorAll(`line[data-ts-key^="${axis}-tick-rule:number:"]`)].map((l) => [
+              Number((l.getAttribute("data-ts-key") ?? "").split(":").at(-1)),
+              Number(l.getAttribute(`${axis}1`)),
+            ]);
+          // every dot filled with a pattern sdvplot wrote (its <defs data-ts-key="sdv-patterns">)
+          const dots = [...el.querySelectorAll("circle")].flatMap((c) => {
+            const pid = /^url\(#(.+)\)$/.exec(c.getAttribute("fill") ?? "")?.[1];
+            const image =
+              pid === undefined
+                ? null
+                : el.querySelector(`defs[data-ts-key="sdv-patterns"] > pattern[id="${pid}"] > image`);
+            if (!image) return [];
+            const n = (e: Element, a: string) => Number(e.getAttribute(a));
+            return [
+              {
+                href: image.getAttribute("href") ?? "",
+                cx: n(c, "cx"),
+                cy: n(c, "cy"),
+                // the logo's size: its share of the dot's 2r box, in user units
+                w: n(image, "width") * 2 * n(c, "r"),
+                h: n(image, "height") * 2 * n(c, "r"),
+              },
+            ];
+          });
+          // each team's line by TanStack's series key, so a line in another team's colour cannot pass
+          const lines = Object.fromEntries(
+            ts.flatMap((team) => {
+              const path = el.querySelector(
+                `g[data-ts-key="margin:string:${team.length}:${team}"] path`,
+              ) as SVGPathElement | null;
+              if (path === null) return [];
+              const len = path.getTotalLength();
+              const points = [0.15, 0.3, 0.45, 0.6, 0.75].map((f) => {
+                const p = path.getPointAtLength(f * len);
+                return toBox(p.x, p.y);
+              });
+              return [[team, { stroke: path.getAttribute("stroke") ?? "", points }]];
+            }),
+          ) as Record<string, { stroke: string; points: number[][] }>;
+          return { xt: ticks("x"), yt: ticks("y"), dots, lines, scale: [m.a, m.d], origin: toBox(0, 0) };
+        }, teams);
+        const shoot = async () => {
+          const shot = await loadImage(await svg.screenshot());
+          const ctx = createCanvas(shot.width, shot.height).getContext("2d");
+          ctx.drawImage(shot, 0, 0);
+          return (x: number, y: number, w: number, h: number) => {
+            const d = ctx.getImageData(Math.round(x), Math.round(y), Math.max(1, w), Math.max(1, h)).data;
+            return Array.from(
+              { length: d.length / 4 },
+              (_, i) => [d[4 * i], d[4 * i + 1], d[4 * i + 2]] as number[],
+            );
+          };
+        };
+        const hex = (s: string) => [1, 3, 5].map((i) => Number.parseInt(s.slice(i, i + 2), 16));
+        const near = (a: number[], b: number[], d: number) =>
+          [0, 1, 2].every((c) => Math.abs((a[c] ?? 0) - (b[c] ?? 0)) <= d);
+        /** An axis' data-to-pixel line, through its first and last tick rule. */
+        const axisMap = (t: number[][]) => {
+          expect(t.length, "the axis has tick rules").toBeGreaterThanOrEqual(2);
+          const [v0, p0] = t[0] as [number, number];
+          const [v1, p1] = t.at(-1) as [number, number];
+          return (v: number) => p0 + ((v - v0) * (p1 - p0)) / (v1 - v0);
+        };
+        const [px, py] = [axisMap(got.xt), axisMap(got.yt)];
+        await loadLeague("nfl");
+        // each team's own logo, in mark order: 32 copies of one logo cannot pass
+        expect(
+          got.dots.map((d) => d.href),
+          "every team's logo is drawn",
+        ).toEqual(teams.map((t) => logoUrlSync(t, "nfl", { variant })));
+        // and each sits where its team's data puts it on the chart's own axes; its logo box, round that centre
+        const [sx, sy] = got.scale as [number, number];
+        const [ox, oy] = got.origin as [number, number];
+        const boxes = teams.map((team, i) => {
+          const d = got.dots[i];
+          const [x, y] = at(team);
+          expect.soft(d?.cx ?? Number.NaN, `${team}'s logo x`).toBeCloseTo(px(x), 0);
+          expect.soft(d?.cy ?? Number.NaN, `${team}'s logo y`).toBeCloseTo(py(y), 0);
+          const [w, h] = [(d?.w ?? 0) * sx, (d?.h ?? 0) * sy];
+          return [ox + px(x) * sx - w / 2, oy + py(y) * sy - h / 2, w, h].map(Math.round) as [
+            number,
+            number,
+            number,
+            number,
+          ];
+        });
+        const pixels = await shoot();
+        if (!id.endsWith("scatter")) {
+          // each team's line is its colour in the shared team palette (for the dark card, the palette on #111827),
+          // taken from the recharts adapter: independent of the tanstack module under test
+          const want = rechartsPalette("nfl", teams, variant === "dark" ? { background: "#111827" } : {});
+          if (variant === "dark") expect(want).not.toEqual(rechartsPalette("nfl", teams));
+          teams.forEach((team, i) => {
+            const line = got.lines[team];
+            expect.soft(line?.stroke.toLowerCase(), `${team}'s line colour`).toBe(want[i]?.toLowerCase());
+            const painted = (line?.points ?? []).some(([x, y]) =>
+              pixels((x as number) - 2, (y as number) - 2, 5, 5).some((p) => near(p, hex(want[i] ?? ""), 24)),
+            );
+            expect.soft(painted, `a pixel of ${team}'s line is ${want[i]}`).toBe(true);
+          });
+        }
+        // the logos' own pixels: with the dots' fill hidden, each logo box changes (over 10%, the bar MUI's logos meet)
+        await svg.evaluate((el) => {
+          for (const c of el.querySelectorAll('circle[fill^="url("]')) c.setAttribute("fill-opacity", "0");
+        });
+        const without = await shoot();
+        const changed = boxes.map(([x, y, w, h]) => {
+          const a = pixels(x, y, w, h);
+          const b = without(x, y, w, h);
+          return a.filter((p, i) => !near(p, b[i] ?? [], 8)).length / a.length;
+        });
+        console.log(
+          `${id}: logo boxes changed ${Math.min(...changed).toFixed(2)} to ${Math.max(...changed).toFixed(2)}`,
+        );
+        changed.forEach((c, i) => expect.soft(c, `${teams[i]}'s logo paints its box`).toBeGreaterThan(0.1));
         if (SHOTS !== undefined)
           await figure
             .locator(".sdv-live-output")
