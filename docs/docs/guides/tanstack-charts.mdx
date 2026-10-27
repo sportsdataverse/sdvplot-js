@@ -50,8 +50,9 @@ examples below show both in full.
 - `wordmarkDots` draws wordmarks at their own width, and `headshotDots(rows, { x, y, player, league })` ESPN headshots
   by player id (`idSystem: "gsis"` for nflverse ids, after `loadGsis()`). `size` is in px; a fraction such as `0.1` is
   refused with an `InputError`. `alpha` sets the fill opacity.
-- A row whose team has no logo (or whose player has no headshot), or with no `x` or `y`, is left out with one
-  warning; nothing draws a broken image.
+- A row whose team has no logo (or whose gsis player id has no headshot), or with no `x` or `y`, is left out with
+  one warning; nothing draws a broken image. ESPN headshot URLs are built from the player id without checking that
+  ESPN has a photo for it: an id with none keeps its dot, unpainted, and no warning is given.
 
 <Live id="sdvplot/tanstack-charts/epa-logo-scatter" />
 

@@ -302,8 +302,9 @@ export function wordmarkDots<R extends object, X extends keyof R & string, Y ext
   return imageDots(rows, "wordmark", o);
 }
 /**
- * ESPN player headshots as TanStack `dot` marks, from the row's `player` field; an id with no headshot draws
- * nothing and warns once. `idSystem: "gsis"` needs `loadGsis()` first. As `logoDots` otherwise.
+ * ESPN player headshots as TanStack `dot` marks, from the row's `player` field. A gsis id with no headshot draws
+ * nothing and warns once; an ESPN id's URL is built without checking the image exists, so an id ESPN has no photo
+ * for keeps its dot, unpainted, with no warning. `idSystem: "gsis"` needs `loadGsis()` first. As `logoDots` otherwise.
  *
  * @example
  * ```ts
