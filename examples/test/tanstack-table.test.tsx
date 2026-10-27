@@ -143,3 +143,48 @@ test("React: a click on a header sorts, descending then ascending for a number, 
     "NE",
   ]);
 });
+
+test("React: headshot, wordmark and plain-rank cells on booktabs match renderHTML's (src, alt, text, no superscript)", async () => {
+  const spec = defineTable<Standing>()
+    .columns((c) => [
+      c.headshot("qb_espn_id", { league: "nfl", label: "", height: 40 }),
+      c.wordmark("team", { league: "nfl", height: 20 }),
+      c.text("qb"),
+      c.rank("srs_rank", { superscript: false }),
+    ])
+    .theme("booktabs")
+    .rowKey("team")
+    .build();
+  await prepare(spec);
+  const { host } = await react(spec, STANDINGS);
+  const got = bodyRows(host);
+  const html = htmlTable(spec, STANDINGS);
+  expect(Array.from(host.querySelectorAll("th")).map((th) => th.textContent?.trim())).toEqual(
+    spec.columns.map((c) => html.label(c.key)),
+  );
+  let wordmarks = 0;
+  for (const [i, s] of STANDINGS.entries()) {
+    for (const k of ["qb_espn_id", "team", "qb", "srs_rank"]) {
+      const mine = got[i]?.cell.get(k);
+      const theirs = html.cell(i, k);
+      expect(mine?.textContent, `${s.team} ${k} text`).toBe(theirs.textContent);
+      // the same image, or none, as the HTML table draws
+      expect(mine?.querySelector("img")?.getAttribute("src"), `${s.team} ${k} src`).toBe(
+        theirs.querySelector("img")?.getAttribute("src"),
+      );
+    }
+    const mark = got[i]?.cell.get("team")?.querySelector("img");
+    if (mark) wordmarks++;
+    expect(mark?.getAttribute("alt"), `${s.team} wordmark alt`).toBe(
+      html.cell(i, "team").querySelector("img")?.getAttribute("alt"),
+    );
+    // a headshot is decorative here, as in ./mui and ./aggrid (the name is in the row); the HTML table's alt is the id
+    const shot = html.cell(i, "qb_espn_id").querySelector("img");
+    expect(shot?.getAttribute("alt"), `${s.team} HTML headshot alt`).toBe(s.qb_espn_id);
+    expect(got[i]?.cell.get("qb_espn_id")?.querySelector("img")?.getAttribute("alt")).toBe("");
+    // superscript off: the plain ordinal, no <sup>, in both
+    expect(got[i]?.cell.get("srs_rank")?.querySelector("sup")).toBeNull();
+    expect(html.cell(i, "srs_rank").querySelector("sup")).toBeNull();
+  }
+  expect(wordmarks, "some wordmarks are drawn, so their src and alt are compared").toBeGreaterThan(0);
+});
