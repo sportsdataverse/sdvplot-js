@@ -13,7 +13,11 @@ let database: ReturnType<typeof startDuckDB> | undefined;
  * stays on the box as `sdvBrush`, for the render test.
  */
 const draw: Draw<"mosaic"> = async (el, s) => {
-  database ??= startDuckDB();
+  // a failed start is not cached: the next mount on the page tries again
+  database ??= startDuckDB().catch((e: unknown) => {
+    database = undefined;
+    throw e;
+  });
   const db = await database;
   vg.coordinator().databaseConnector(new vg.DuckDBWASMConnector({ duckdb: db }));
   const box = figureBox(el, s.label, "figure");
