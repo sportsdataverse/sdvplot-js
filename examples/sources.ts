@@ -30,6 +30,7 @@ export const SOURCES: Readonly<Record<string, string>> = {
   "@sportsdataverse/sdvplot/recharts": "packages/sdvplot/src/recharts.ts",
   "@sportsdataverse/sdvplot/shadcn": "packages/sdvplot/src/shadcn.ts",
   "@sportsdataverse/sdvplot/mui": "packages/sdvplot/src/mui.ts",
+  "@sportsdataverse/sdvplot/tanstack": "packages/sdvplot/src/tanstack.ts",
   "@sportsdataverse/sdvplot/uplot": "packages/sdvplot/src/uplot.ts",
   "@sportsdataverse/sdvplot/svelte": "packages/sdvplot/src/svelte/index.ts",
   "@sportsdataverse/sdvplot/nivo": "packages/sdvplot/src/nivo.ts",

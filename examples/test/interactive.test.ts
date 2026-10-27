@@ -4,8 +4,9 @@ import { type Server, createServer } from "node:http";
 import type { AddressInfo } from "node:net";
 import { extname, join, normalize } from "node:path";
 import { createCanvas, loadImage } from "@napi-rs/canvas";
-import { loadLeague, resolveSync } from "@sportsdataverse/sdvplot";
+import { loadLeague, logoUrlSync, resolveSync } from "@sportsdataverse/sdvplot";
 import { teamColors } from "@sportsdataverse/sdvplot/mui";
+import { teamColorScale } from "@sportsdataverse/sdvplot/tanstack";
 import { type Browser, chromium } from "playwright";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { pagePath } from "../scripts/pages.js";
@@ -902,6 +903,138 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
         await figure.locator('[data-sdv-test="mui-proxy"]').focus();
         await page.keyboard.press("ArrowRight");
         await expect.poll(() => svg.evaluate(focusMark, kind), { timeout: 5_000 }).toBe(true);
+        if (SHOTS !== undefined)
+          await figure
+            .locator(".sdv-live-output")
+            .screenshot({ path: join(SHOTS, `${id.replace(/\//g, "_")}.png`) });
+        expect(errors).toEqual([]);
+      } finally {
+        await page.close();
+      }
+    },
+  );
+
+  // TanStack Charts examples are React examples (no browser upgrade): the docs re-run each live. TanStack has no image
+  // mark: each logo is a dot filled with an SVG pattern of it, written into the chart's own svg by withPatterns. Check
+  // the pattern of each dot names its team's logo (exact count and order), the logo's own pixels (hiding the dots'
+  // fill changes each logo box), and that points along each line show its team colour, the dark palette on the dark card.
+  /** The teams each example draws a logo for, in TanStack's mark order, and the logo variant. */
+  const TANSTACK_LOGOS: Readonly<
+    Record<string, readonly [teams: readonly string[], variant: "default" | "dark"]>
+  > = {
+    "sdvplot/tanstack-charts/epa-logo-scatter": [NFL_TEAM_EPA_2024.map((t) => t.team), "default"],
+    "sdvplot/tanstack-charts/afc-east-margin-lines": [["BUF", "MIA", "NYJ", "NE"], "default"],
+    "sdvplot/tanstack-charts/afc-west-margin-dark": [["KC", "LAC", "DEN", "LV"], "dark"],
+  };
+  test.each(EXAMPLES.filter((e) => e.id.startsWith("sdvplot/tanstack-charts/")).map((e) => e.id))(
+    "%s re-runs live: each dot's pattern is its team's logo, real logo and line pixels",
+    async (id) => {
+      const entry = EXAMPLES.find((e) => e.id === id);
+      if (entry === undefined) throw new Error(`${id} is not in the registry`);
+      const [teams, variant] = TANSTACK_LOGOS[id] ?? [[], "default"];
+      const page = await browser.newPage();
+      try {
+        const errors: string[] = [];
+        page.on("console", (m) => void (m.type() === "error" && errors.push(m.text())));
+        page.on("pageerror", (e) => void errors.push(e.message));
+        await page.goto(`${base}/gallery/${pagePath(entry)}/`);
+        const figure = page.locator(`figure[data-example="${id}"]`);
+        await figure.scrollIntoViewIfNeeded();
+        const svg = figure.locator(".sdv-live-output svg.ts-chart");
+        await svg.locator("pattern image").first().waitFor({ state: "attached", timeout: 30_000 });
+        await page.waitForLoadState("networkidle"); // the logos
+        await page.addStyleTag({ content: ".navbar { display: none !important; }" });
+        expect(await figure.locator(".sdv-live-static").count(), "the static copy is replaced").toBe(0);
+        expect(await figure.locator(".sdv-live-error").count(), "no error alert").toBe(0);
+        const got = await svg.evaluate((el) => {
+          const box = el.getBoundingClientRect();
+          const at = (x: number, y: number) => [x - box.left, y - box.top];
+          // every dot filled with a pattern sdvplot wrote (its <defs data-ts-key="sdv-patterns">)
+          const dots = [...el.querySelectorAll("circle")].flatMap((c) => {
+            const id = /^url\(#(.+)\)$/.exec(c.getAttribute("fill") ?? "")?.[1];
+            const pattern =
+              id === undefined
+                ? null
+                : el.querySelector(`defs[data-ts-key="sdv-patterns"] > pattern[id="${id}"]`);
+            const image = pattern?.querySelector("image");
+            if (!image) return [];
+            const r = c.getBoundingClientRect();
+            const n = (a: string) => Number(image.getAttribute(a));
+            // the logo's own box inside the dot's bounding box (the pattern's fractions of it)
+            const [x, y] = at(r.x + n("x") * r.width, r.y + n("y") * r.height) as [number, number];
+            return [
+              {
+                href: image.getAttribute("href") ?? "",
+                box: [x, y, n("width") * r.width, n("height") * r.height].map(Math.round),
+              },
+            ];
+          });
+          const lines = [...el.querySelectorAll("g.ts-chart__line path")].map((m) => {
+            const path = m as SVGPathElement;
+            const ctm = path.getScreenCTM() as DOMMatrix;
+            const len = path.getTotalLength();
+            const points = [0.15, 0.3, 0.45, 0.6, 0.75].map((f) => {
+              const p = path.getPointAtLength(f * len);
+              return at(ctm.a * p.x + ctm.c * p.y + ctm.e, ctm.b * p.x + ctm.d * p.y + ctm.f);
+            });
+            return { want: path.getAttribute("stroke") ?? "", points };
+          });
+          return { dots, lines };
+        });
+        const shoot = async () => {
+          const shot = await loadImage(await svg.screenshot());
+          const ctx = createCanvas(shot.width, shot.height).getContext("2d");
+          ctx.drawImage(shot, 0, 0);
+          return (x: number, y: number, w: number, h: number) => {
+            const d = ctx.getImageData(Math.round(x), Math.round(y), Math.max(1, w), Math.max(1, h)).data;
+            return Array.from(
+              { length: d.length / 4 },
+              (_, i) => [d[4 * i], d[4 * i + 1], d[4 * i + 2]] as number[],
+            );
+          };
+        };
+        const hex = (s: string) => [1, 3, 5].map((i) => Number.parseInt(s.slice(i, i + 2), 16));
+        const near = (a: number[], b: number[], d: number) =>
+          [0, 1, 2].every((c) => Math.abs((a[c] ?? 0) - (b[c] ?? 0)) <= d);
+        // each team's own logo, in mark order: 32 copies of one logo cannot pass
+        await loadLeague("nfl");
+        expect(
+          got.dots.map((d) => d.href),
+          "every team's logo is drawn",
+        ).toEqual(teams.map((t) => logoUrlSync(t, "nfl", { variant })));
+        const pixels = await shoot();
+        for (const m of got.lines) {
+          expect(m.want, "TanStack wrote a hex colour on the line").toMatch(/^#[0-9a-f]{6}$/i);
+          const painted = m.points.some(([x, y]) =>
+            pixels((x as number) - 2, (y as number) - 2, 5, 5).some((p) => near(p, hex(m.want), 24)),
+          );
+          expect(painted, `a pixel of the line is ${m.want}`).toBe(true);
+        }
+        if (!id.endsWith("scatter")) {
+          // the lines are teamColorScale's colours (for the dark card, its palette on #111827), in the teams' order
+          expect(got.lines.length, "a line per team").toBe(4);
+          const want = teamColorScale(
+            "nfl",
+            teams,
+            variant === "dark" ? { background: "#111827" } : {},
+          ).range;
+          expect(got.lines.map((l) => l.want.toLowerCase())).toEqual(want.map((c) => c.toLowerCase()));
+          if (variant === "dark") expect(want).not.toEqual(teamColorScale("nfl", teams).range);
+        }
+        // the logos' own pixels: with the dots' fill hidden, each logo box changes (over 10%, the bar MUI's logos meet)
+        await svg.evaluate((el) => {
+          for (const c of el.querySelectorAll('circle[fill^="url("]')) c.setAttribute("fill-opacity", "0");
+        });
+        const without = await shoot();
+        const changed = got.dots.map(({ box: [x, y, w, h] }) => {
+          const a = pixels(x as number, y as number, w as number, h as number);
+          const b = without(x as number, y as number, w as number, h as number);
+          return a.filter((p, i) => !near(p, b[i] ?? [], 8)).length / a.length;
+        });
+        console.log(
+          `${id}: logo boxes changed ${Math.min(...changed).toFixed(2)} to ${Math.max(...changed).toFixed(2)}`,
+        );
+        changed.forEach((c, i) => expect(c, `logo ${i} paints its box`).toBeGreaterThan(0.1));
         if (SHOTS !== undefined)
           await figure
             .locator(".sdv-live-output")
