@@ -75,6 +75,17 @@ export type BrowserSpec =
       readonly height: number;
       readonly label: string;
     }
+  /**
+   * A react-chartjs-2 chart (`<Chart type data options plugins>`), mounted in a React root at the example's size.
+   * `chart` builds fresh elements per chart (Chart.js keeps state on what it is given).
+   */
+  | {
+      readonly lib: "react-chartjs-2";
+      readonly chart: () => ReactElement;
+      readonly width: number;
+      readonly height: number;
+      readonly label: string;
+    }
   /** `opts` builds fresh uPlot options per chart; `data` is uPlot's columns (x first, then one array per series). */
   | {
       readonly lib: "uplot";

@@ -31,9 +31,12 @@ with. The Plotly, Vega-Lite and ECharts adapters import nothing from their libra
 - `@sportsdataverse/sdvplot/shots`: shot-chart numbers, bins and FG% against a league (`binShots`, `cellsVsLeague`,
   `fgPctByDistance`, `signaturePoints`) and the `diffScale` colours; it imports no Plot or d3.
 - `@sportsdataverse/sdvplot/plotly`, `/vega`, `/echarts`: spec adapters for Plotly, Vega-Lite and ECharts.
-- `@sportsdataverse/sdvplot/chartjs` and `/chartjs/surface`: Chart.js colours, image plugins and surfaces.
+- `@sportsdataverse/sdvplot/chartjs` and `/chartjs/surface`: Chart.js colours, image plugins and surfaces (in React,
+  through react-chartjs-2).
 - `@sportsdataverse/sdvplot/g2`: G2 5 spec pieces (a team colour scale, logos as image marks, logos on a band axis),
   for G2 and for Ant Design Charts configs (see [G2 and Ant Design Charts](guides/g2.mdx)).
+- `@sportsdataverse/sdvplot/recharts` and `/shadcn`: Recharts render props (logos as ticks and points, team colours),
+  and `teamChartConfig`, shadcn/ui's chart config for teams (see [shadcn/ui charts](guides/shadcn.mdx)).
 - `@sportsdataverse/sdvplot/interact`: linked figures and tables over one selection store (`brushFilter`,
   `linkSelection`, `linkCursor`, `nearestHover`, `tooltip`, `highlight`); see
   [Linked figures and tables](examples/linked.mdx).

@@ -57,11 +57,12 @@ install for you, so add the ones for the subpaths you import:
 | `@sportsdataverse/sdvplot/plot` | `@observablehq/plot` >= 0.6.16 and `@sportsdataverse/sporty` |
 | `@sportsdataverse/sdvplot/d3` | `d3` >= 7 and `@sportsdataverse/sporty` |
 | `@sportsdataverse/sdvplot/shots` | `@sportsdataverse/sporty` |
-| `@sportsdataverse/sdvplot/chartjs` | `chart.js` >= 4.4 |
+| `@sportsdataverse/sdvplot/chartjs` | `chart.js` >= 4.4 (in React, pass its pieces to `react-chartjs-2` >= 5.3.1) |
 | `@sportsdataverse/sdvplot/chartjs/surface` | `chart.js` >= 4.4 and `@sportsdataverse/sporty` |
 | `@sportsdataverse/sdvplot/interact` | `d3` >= 7 |
 | `@sportsdataverse/sdvplot/react` | `react` >= 18 (`<SurfaceBackdrop>` also loads `recharts` >= 3.8 and `@sportsdataverse/sporty`, `<LogoBump>` loads `@nivo/bump` >= 0.99, when they render; `<LogoTick>` loads `victory` >= 37.3.6 to draw a label as text) |
 | `@sportsdataverse/sdvplot/recharts` | `react` >= 18 (draw with `recharts` >= 3.8) |
+| `@sportsdataverse/sdvplot/shadcn` | `react` >= 18 (draw with shadcn/ui's copy-paste `chart.tsx` and `recharts` >= 3.8; shadcn is not a package) |
 | `@sportsdataverse/sdvplot/svelte` | `svelte` >= 5.57 and `layerchart` >= 2.5.1 (`@sportsdataverse/sporty` too for `SurfaceBackdrop`) |
 | `@sportsdataverse/sdvplot/nivo` | `react` >= 18 (draw with `@nivo/core` and `@nivo/bump`, `@nivo/swarmplot` or `@nivo/chord`, >= 0.99) |
 | `@sportsdataverse/sdvplot/victory` | nothing (draw with `victory` >= 37.3.6) |

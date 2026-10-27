@@ -16,6 +16,7 @@
     "chartjs",
     "react",
     "recharts",
+    "shadcn",
     "uplot",
     "nivo",
     "victory",
@@ -95,6 +96,10 @@
     "./recharts": {
       "types": "./dist/recharts.d.ts",
       "import": "./dist/recharts.js"
+    },
+    "./shadcn": {
+      "types": "./dist/shadcn.d.ts",
+      "import": "./dist/shadcn.js"
     },
     "./uplot": {
       "types": "./dist/uplot.d.ts",
@@ -283,6 +288,7 @@
     "lightweight-charts": "5.2.1",
     "linkedom": "^0.18",
     "react": "^19.3.0",
+    "react-chartjs-2": "5.3.1",
     "react-dom": "^19.3.0",
     "react-is": "^19.3.0",
     "recharts": "3.10.1",

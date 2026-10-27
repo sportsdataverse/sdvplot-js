@@ -35,8 +35,9 @@ yarn add @sportsdataverse/sdvplot
 ESM only, Node >= 20.18.1. The core and the `bins`, `testing`, `plotly`, `vega`, `echarts`, `uplot`, `victory`,
 `cytoscape`, `lightweight-charts` and `g2` subpaths need no peer. The others use optional peers, which npm and pnpm do not
 install for you, so add the ones for the subpaths you import: `react` >= 18 for `/react` (with `victory` >= 37.3.6
-for `<LogoPoint>` and `<LogoTick>`), `/recharts` (with `recharts` >= 3.8 to draw) and `/nivo` (with `@nivo/core` and
-the chart's `@nivo/*` package >= 0.99 to draw; `<LogoBump>` loads `@nivo/bump`), `@observablehq/plot` >= 0.6.16 for
+for `<LogoPoint>` and `<LogoTick>`), `/recharts` and `/shadcn` (with `recharts` >= 3.8 to draw; `/shadcn` configures
+shadcn/ui's copy-paste `chart.tsx`, which is not a package) and `/nivo` (with `@nivo/core` and the chart's `@nivo/*`
+package >= 0.99 to draw; `<LogoBump>` loads `@nivo/bump`), `@observablehq/plot` >= 0.6.16 for
 `/plot`, `d3` >= 7 for `/d3` and `/interact`, `chart.js` >= 4.4 for `/chartjs` and `/chartjs/surface`, `svelte` >=
 5.57 and `layerchart` >= 2.5.1 for `/svelte`, `@sportsdataverse/sporty` for `/deckgl` (draw its props with
 `@deck.gl/core` and `@deck.gl/layers` >= 9.4) and for `/three` (draw its buffers with `three` >= 0.186.1; `/react`'s
@@ -123,7 +124,7 @@ The backgrounds default to `#ffffff` (light) and `#181a1b` (dark); pass `theme: 
 | `@sportsdataverse/sdvplot/d3` | `appendLogos`, `appendWordmarks`, `appendHeadshots` (circular faces: `clip`, `ring`, `placeholder`), `teamColorScale`, `appendSurface`, shot-chart `appendLegend` and `appendSignature` (needs `d3` and `@sportsdataverse/sporty` installed to import) |
 | `@sportsdataverse/sdvplot/bins` | Dependency-free x/y binning for any data: `hexbin` and `hexagonPath` (a d3-hexbin port), `squarebin` and `squarePath`, `binner` (hexagons, squares, or equal-area squares from one options object), `cellPath`, `cellPoints` |
 | `@sportsdataverse/sdvplot/shots` | Shot-chart data and colour, no Plot or d3: the `./bins` binners, `diffScale`, `binShots`, `leagueIndex`, `cellsVsLeague`, `cellsVsDistance`, `shrunkDiff`, `LEAGUE_PRIOR_ATTEMPTS`, `sizeCells`, `statsByZone`, `fgPctByDistance`, `vsLeague`, `statsBySide`, `signaturePoints` (needs `@sportsdataverse/sporty` installed to import; `./bins` has the binners without it) |
-| `@sportsdataverse/sdvplot/chartjs` | Chart.js 4: `logoPoints`, `wordmarkPoints`, `headshotPoints`, `pointImages`, `axisLogos`, `logoWatermarks`, `teamColor`/`teamFill` (optional peer `chart.js` >= 4.4; no sporty needed) |
+| `@sportsdataverse/sdvplot/chartjs` | Chart.js 4: `logoPoints`, `wordmarkPoints`, `headshotPoints`, `pointImages`, `axisLogos`, `logoWatermarks`, `teamColor`/`teamFill`, `teamColorPalette` (with `background`: 3:1 contrast and distinct colours for dark mode); works as is through react-chartjs-2 (optional peer `chart.js` >= 4.4; no sporty needed) |
 | `@sportsdataverse/sdvplot/chartjs/surface` | Chart.js 4 court, field or rink background: `surface` (needs `@sportsdataverse/sporty` installed to import; optional peer `chart.js` >= 4.4) |
 | `@sportsdataverse/sdvplot/export` | Node only: `toPNG` (SVG to PNG; optional peer `@resvg/resvg-js`), `socialCard` (fixed-ratio framing, `gt_social_crop`), `svgSize`, `parseAspect`, `parseGravity`, `checkColor`, `canvasFor`, `offsetFor`, `peerMissing` |
 | `@sportsdataverse/sdvplot/interact` | Linked figures over a selection store: `brushFilter` (a d3-brush overlay behind the marks writes the brushed ids and region; on a figure with a Plot `tip`, the press that starts a brush also pins the tip showing at that moment), `highlight`, `linkSelection` (one figure or one sdvtables table per call: hover and selection both ways, and a brush filters a linked table; a Plot `tip` hovers through `hover: { id }`), `linkCursor` (the store's `cursor`, one shared hover value such as a shot distance, drawn and emitted through each figure's own scale as a rule, a band or a ring around the hoop; unrelated to sdvtables' keyboard `TableCursor`), `nearestHover` (the nearest mark of a d3 or other non-Plot figure within a radius writes `hover`), `tooltip` (an in-SVG tooltip box for non-Plot figures), `hasDom` (optional peer `d3`; inert without a DOM) |
@@ -132,6 +133,7 @@ The backgrounds default to `#ffffff` (light) and `#181a1b` (dark); pass `theme: 
 | `@sportsdataverse/sdvplot/vega` | `withLogos`, `withWordmarks`, `withHeadshots`, `logoLayer`, `withAxisLogos`, `teamColorScale`, `embedSources` (no runtime dependency) |
 | `@sportsdataverse/sdvplot/echarts` | `withLogos`, `withWordmarks`, `withHeadshots`, `withAxisLogos`, `teamColorPalette`, `embedSources` (no runtime dependency) |
 | `@sportsdataverse/sdvplot/recharts` | Recharts render props: `logoDot`, `headshotDot` (a series' `dot` / `shape`), `logoTick` (an axis' `tick`), `teamColorPalette` (with `background`: 3:1 contrast for dark mode), `embedSources` (React >= 18; never imports recharts, an optional peer >= 3.8) |
+| `@sportsdataverse/sdvplot/shadcn` | `teamChartConfig`: shadcn/ui's `ChartConfig` for teams, with CSS-safe `keys`, `theme` light and dark colours (3:1 on shadcn's backgrounds) and team logos as the legend and tooltip `icon` (React >= 18; shadcn's `chart.tsx` is copied into your app, not installed) |
 | `@sportsdataverse/sdvplot/uplot` | `withTeamSeries` (series strokes and fills in team colours; with `background`, 3:1 contrast for dark mode), `logoPlugin` (a uPlot plugin painting team logos on the canvas at data points; rows can follow live data) (no runtime dependency; draw with `uplot` >= 1.6.31, an optional peer) |
 | `@sportsdataverse/sdvplot/svelte` | Svelte 5 components for LayerChart charts: `LogoMark` (team logos or wordmarks at data points), `HeadshotMark`, `SurfaceBackdrop` (a team-painted court, field or rink in the chart's units), plus `teamColorPalette` (with `background`, 3:1 contrast for dark mode and distinct teams) and `embedSources` (optional peers `svelte` >= 5.57 and `layerchart` >= 2.5.1, loaded when a component renders; `SurfaceBackdrop` also needs `@sportsdataverse/sporty`) |
 | `@sportsdataverse/sdvplot/nivo` | `teamColors` (a chart's `colors`; with `background` and `teams`: 3:1 contrast and distinct colours for dark mode), `logoLayer` (a custom layer of logos over a Bump, SwarmPlot or Chord), `logoNode` (logos as a SwarmPlot's or Bump's nodes), `embedSources` (React >= 18; never imports nivo, optional peers >= 0.99) |
@@ -388,6 +390,43 @@ const rows = await getTeamRows();
 
 <canvas bind:this={canvas}></canvas>
 ```
+
+In React, [react-chartjs-2](https://react-chartjs-2.js.org) (tested with react-chartjs-2 5.3.1) takes the same pieces as
+props. They build `<img>` elements, which need a DOM, and a client component still renders once on the server (Next.js):
+build them after mount, in an effect, as here, or load the chart component with `next/dynamic` and `{ ssr: false }`.
+
+```tsx
+import { type ChartData, Chart as ChartJS, registerables } from "chart.js";
+import { useEffect, useState } from "react";
+import { Chart } from "react-chartjs-2";
+import { logoPoints, pointImages } from "@sportsdataverse/sdvplot/chartjs";
+
+ChartJS.register(...registerables); // global, once: Chart.js's controllers and scales; sdvplot's plugins stay per chart
+
+// after `await loadLeague("nfl")`
+export function TeamScatter({ rows }: { rows: { team: string; pf: number; pa: number }[] }) {
+  const [data, setData] = useState<ChartData<"scatter"> | null>(null);
+  useEffect(() => {
+    // in the browser only: the point styles are <img> elements
+    setData({
+      datasets: [
+        {
+          label: "teams", // react-chartjs-2 updates a dataset in place by its label: new rows bring new logos
+          data: rows.map((r) => ({ x: r.pf, y: r.pa })),
+          ...logoPoints(rows.map((r) => r.team), { league: "nfl", radius: 14 }),
+        },
+      ],
+    });
+  }, [rows]);
+  return data === null ? null : <Chart type="scatter" data={data} plugins={[pointImages]} />;
+}
+```
+
+react-chartjs-2 reads `plugins` only when it creates the chart. `pointImages` and `axisLogos` read the chart's data on
+every update, so new rows or labels are drawn; `logoWatermarks(teams)` and `surface(league)` keep what they were built
+with, so give `<Chart>` a `key` that changes with them (`key={teams.join()}`) to build a new chart (react-chartjs-2's `redraw` is
+not the same: it rebuilds on every render). See the
+[react-chartjs-2 guide](https://plot.sportsdataverse.org/docs/guides/react-chartjs-2).
 
 The line charts below draw Super Bowl LIX (Kansas City at Philadelphia, 2025-02-09). `wp` is ESPN's win probability
 for Philadelphia, the home team, after each of the game's 186 plays, against minutes played:
