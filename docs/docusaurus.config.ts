@@ -166,6 +166,7 @@ const config: Config = {
           `${sdvplot}/src/shadcn.ts`,
           `${sdvplot}/src/mui.ts`,
           `${sdvplot}/src/tanstack.ts`,
+          `${sdvplot}/src/maplibre.ts`,
           `${sdvplot}/src/unovis.ts`,
           `${sdvplot}/src/uplot.ts`,
           `${sdvplot}/src/nivo.ts`,

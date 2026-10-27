@@ -23,6 +23,7 @@ const CHART_LIBS = [
   "ant-design-charts",
   "ag-grid",
   "ag-grid-react",
+  "maplibre",
   "unovis",
   "unovis-react",
 ] as const;

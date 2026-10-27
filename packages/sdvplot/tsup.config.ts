@@ -32,6 +32,7 @@ export default defineConfig({
     "lightweight-charts": "src/lightweight-charts.ts",
     g2: "src/g2.ts",
     tanstack: "src/tanstack.ts",
+    maplibre: "src/maplibre.ts",
     unovis: "src/unovis.ts",
   },
   external: [

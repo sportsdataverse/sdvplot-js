@@ -62,6 +62,7 @@ const VALUE_LIBS: Readonly<Record<string, string>> = {
   g2: "G2",
   "ant-design-charts": "Ant Design Charts",
   "ag-grid": "AG Grid",
+  maplibre: "MapLibre GL JS",
   unovis: "Unovis",
 };
 

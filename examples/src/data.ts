@@ -937,3 +937,94 @@ export type { NflPlay2024 } from "./plays.js";
  */
 export const nflPlays2024 = async (): Promise<readonly import("./plays.js").NflPlay2024[]> =>
   (await import("./plays.js")).NFL_PLAYS_2024;
+/**
+ * Each team's 2024 home stadium (fixtures/examples/nfl_stadiums_2024.csv): the `stadium_id` of most of its 2024
+ * regular-season home games in nflverse `games.csv`, and that stadium's name and coordinates from nfl-data's
+ * `nfl/stadiums/stadiums.csv`, a copy of nfelo's greerreNFL/Stadiums. The Rams and Chargers share SoFi Stadium, the
+ * Giants and Jets MetLife Stadium.
+ */
+export type NflStadium = {
+  readonly team: string;
+  readonly stadium_id: string;
+  readonly stadium: string;
+  readonly lon: number;
+  readonly lat: number;
+};
+// biome-ignore format: one stadium per line
+export const NFL_STADIUMS_2024: readonly NflStadium[] = [
+  { team: "ARI", stadium_id: "PHO00", stadium: "State Farm Stadium", lon: -112.2625948, lat: 33.5277555 },
+  { team: "ATL", stadium_id: "ATL97", stadium: "Mercedes-Benz Stadium", lon: -84.4008484, lat: 33.7555052 },
+  { team: "BAL", stadium_id: "BAL00", stadium: "M&T Bank Stadium", lon: -76.6227221, lat: 39.277958 },
+  { team: "BUF", stadium_id: "BUF00", stadium: "Highmark Stadium", lon: -78.786954, lat: 42.7737531 },
+  { team: "CAR", stadium_id: "CAR00", stadium: "Bank of America Stadium", lon: -80.8528376, lat: 35.2258152 },
+  { team: "CHI", stadium_id: "CHI98", stadium: "Soldier Field", lon: -87.6167762, lat: 41.8624598 },
+  { team: "CIN", stadium_id: "CIN00", stadium: "Paycor Stadium", lon: -84.5160435, lat: 39.0954306 },
+  { team: "CLE", stadium_id: "CLE00", stadium: "Huntington Bank Field", lon: -81.699586, lat: 41.5060371 },
+  { team: "DAL", stadium_id: "DAL00", stadium: "AT&T Stadium", lon: -97.0928461, lat: 32.7479723 },
+  { team: "DEN", stadium_id: "DEN00", stadium: "Empower Field at Mile High", lon: -105.0201065, lat: 39.7439402 },
+  { team: "DET", stadium_id: "DET00", stadium: "Ford Field", lon: -83.0456783, lat: 42.3401334 },
+  { team: "GB", stadium_id: "GNB00", stadium: "Lambeau Field", lon: -88.0621617, lat: 44.5014769 },
+  { team: "HOU", stadium_id: "HOU00", stadium: "Reliant Stadium", lon: -95.41082, lat: 29.6849239 },
+  { team: "IND", stadium_id: "IND00", stadium: "Lucas Oil Stadium", lon: -86.1638068, lat: 39.7602037 },
+  { team: "JAX", stadium_id: "JAX00", stadium: "EverBank Stadium", lon: -81.6373486, lat: 30.3239164 },
+  { team: "KC", stadium_id: "KAN00", stadium: "GEHA Field at Arrowhead Stadium", lon: -94.4839962, lat: 39.0489275 },
+  { team: "LA", stadium_id: "LAX01", stadium: "SoFi Stadium", lon: -118.3390307, lat: 33.953485 },
+  { team: "LAC", stadium_id: "LAX01", stadium: "SoFi Stadium", lon: -118.3390307, lat: 33.953485 },
+  { team: "LV", stadium_id: "VEG00", stadium: "Allegiant Stadium", lon: -115.1833441, lat: 36.0908515 },
+  { team: "MIA", stadium_id: "MIA00", stadium: "Hard Rock Stadium", lon: -80.2388423, lat: 25.9579623 },
+  { team: "MIN", stadium_id: "MIN01", stadium: "U.S. Bank Stadium", lon: -93.2574111, lat: 44.9736273 },
+  { team: "NE", stadium_id: "BOS00", stadium: "Gillette Stadium", lon: -71.2643321, lat: 42.0909217 },
+  { team: "NO", stadium_id: "NOR00", stadium: "Caesars Superdome", lon: -90.0810779, lat: 29.9511425 },
+  { team: "NYG", stadium_id: "NYC01", stadium: "MetLife Stadium", lon: -74.074342406, lat: 40.813507465 },
+  { team: "NYJ", stadium_id: "NYC01", stadium: "MetLife Stadium", lon: -74.074342406, lat: 40.813507465 },
+  { team: "PHI", stadium_id: "PHI00", stadium: "Lincoln Financial Field", lon: -75.1674645, lat: 39.9007914 },
+  { team: "PIT", stadium_id: "PIT00", stadium: "Acrisure Stadium", lon: -80.0157692, lat: 40.4467883 },
+  { team: "SEA", stadium_id: "SEA00", stadium: "Lumen Field", lon: -122.3316259, lat: 47.5951513 },
+  { team: "SF", stadium_id: "SFO01", stadium: "Levi's Stadium", lon: -121.9698094, lat: 37.4031837 },
+  { team: "TB", stadium_id: "TAM00", stadium: "Raymond James Stadium", lon: -82.503356, lat: 27.9759691 },
+  { team: "TEN", stadium_id: "NAS00", stadium: "Nissan Stadium", lon: -86.7712938, lat: 36.1664774 },
+  { team: "WAS", stadium_id: "WAS00", stadium: "Northwest Stadium", lon: -76.8645083, lat: 38.907703 },
+];
+/** Each team's home airport, from nflverse nfldata `data/airports.csv` (fixtures/examples/nfl_airports.csv). */
+export type NflAirport = {
+  readonly team: string;
+  /** The airport's IATA code. */
+  readonly airport: string;
+  readonly lon: number;
+  readonly lat: number;
+};
+// biome-ignore format: one airport per line
+export const NFL_AIRPORTS: readonly NflAirport[] = [
+  { team: "ARI", airport: "PHX", lon: -112.008, lat: 33.434 },
+  { team: "ATL", airport: "ATL", lon: -84.427, lat: 33.64 },
+  { team: "BAL", airport: "BWI", lon: -76.668, lat: 39.175 },
+  { team: "BUF", airport: "BUF", lon: -78.732, lat: 42.94 },
+  { team: "CAR", airport: "CLT", lon: -80.943, lat: 35.214 },
+  { team: "CHI", airport: "ORD", lon: -87.904, lat: 41.979 },
+  { team: "CIN", airport: "CVG", lon: -84.662, lat: 39.046 },
+  { team: "CLE", airport: "CLE", lon: -81.85, lat: 41.412 },
+  { team: "DAL", airport: "DFW", lon: -97.037, lat: 32.896 },
+  { team: "DEN", airport: "DEN", lon: -104.667, lat: 39.858 },
+  { team: "DET", airport: "DTW", lon: -83.353, lat: 42.212 },
+  { team: "GB", airport: "GRB", lon: -88.129, lat: 44.485 },
+  { team: "HOU", airport: "IAH", lon: -95.34, lat: 29.98 },
+  { team: "IND", airport: "IND", lon: -86.294, lat: 39.717 },
+  { team: "JAX", airport: "JAX", lon: -81.688, lat: 30.494 },
+  { team: "KC", airport: "MCI", lon: -94.714, lat: 39.297 },
+  { team: "LA", airport: "LAX", lon: -118.408, lat: 33.942 },
+  { team: "LAC", airport: "LAX", lon: -118.408, lat: 33.942 },
+  { team: "LV", airport: "LAS", lon: -115.152, lat: 36.08 },
+  { team: "MIA", airport: "MIA", lon: -80.291, lat: 25.793 },
+  { team: "MIN", airport: "MSP", lon: -93.217, lat: 44.88 },
+  { team: "NE", airport: "PVD", lon: -71.428, lat: 41.724 },
+  { team: "NO", airport: "MSY", lon: -90.258, lat: 29.993 },
+  { team: "NYG", airport: "EWR", lon: -74.169, lat: 40.692 },
+  { team: "NYJ", airport: "EWR", lon: -74.169, lat: 40.692 },
+  { team: "PHI", airport: "PHL", lon: -75.241, lat: 39.872 },
+  { team: "PIT", airport: "PIT", lon: -80.233, lat: 40.491 },
+  { team: "SEA", airport: "SEA", lon: -122.309, lat: 47.449 },
+  { team: "SF", airport: "SFO", lon: -122.375, lat: 37.619 },
+  { team: "TB", airport: "TPA", lon: -82.533, lat: 27.975 },
+  { team: "TEN", airport: "BNA", lon: -86.678, lat: 36.124 },
+  { team: "WAS", airport: "DCA", lon: -77.037, lat: 38.852 },
+];
