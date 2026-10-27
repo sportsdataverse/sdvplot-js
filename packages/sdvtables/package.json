@@ -11,7 +11,9 @@
     "html-tables",
     "gt",
     "great-tables",
-    "team-logos"
+    "team-logos",
+    "mui",
+    "mui-x-data-grid"
   ],
   "homepage": "https://plot.sportsdataverse.org",
   "bugs": "https://github.com/sportsdataverse/sdvplot-js/issues",
@@ -33,6 +35,10 @@
     "./react": {
       "types": "./dist/react.d.ts",
       "import": "./dist/react.js"
+    },
+    "./mui": {
+      "types": "./dist/mui.d.ts",
+      "import": "./dist/mui.js"
     },
     "./export": {
       "types": "./dist/export.d.ts",
