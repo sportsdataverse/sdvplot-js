@@ -63,12 +63,16 @@
   "peerDependencies": {
     "@mui/x-data-grid": ">=9.15.0",
     "@sportsdataverse/sdvplot": "workspace:^0",
+    "@tanstack/table-core": ">=9.3.1",
     "ag-grid-community": ">=36.2.0",
     "playwright": ">=1.45",
     "react": ">=18"
   },
   "peerDependenciesMeta": {
     "@mui/x-data-grid": {
+      "optional": true
+    },
+    "@tanstack/table-core": {
       "optional": true
     },
     "ag-grid-community": {
@@ -89,6 +93,8 @@
     "@mui/x-data-grid": "9.15.0",
     "@observablehq/plot": "^0.6.17",
     "@sportsdataverse/sdvplot": "workspace:^",
+    "@tanstack/react-table": "9.3.1",
+    "@tanstack/table-core": "9.3.1",
     "@testing-library/react": "^16.3.3",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
