@@ -197,5 +197,16 @@ export function colorPalette(
   if (bg === undefined) return main.map((c) => c ?? fallback);
   const other = colorList(league, teams, { ...co, which: o.which === "secondary" ? "primary" : "secondary" });
   const colors = main.map((c) => hex6(c ?? fallback, { dropAlpha: true }));
-  return teamPalette(colors, other, bg, teams.map(String));
+  // The distinct-colour rule is between teams, not entries: a repeated team takes its first entry's colour.
+  // ponytail: dedupes on the value as given, so "KC" and "Kansas City" still count as two teams.
+  const keys = teams.map(String);
+  const first = [...new Map(keys.map((k, i) => [k, i] as const).reverse()).values()].sort((a, b) => a - b);
+  const palette = teamPalette(
+    first.map((i) => colors[i]!),
+    first.map((i) => other[i]),
+    bg,
+    first.map((i) => keys[i]!),
+  );
+  const byKey = new Map(first.map((i, j) => [keys[i]!, palette[j]!]));
+  return keys.map((k) => byKey.get(k)!);
 }

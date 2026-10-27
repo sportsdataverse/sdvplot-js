@@ -227,6 +227,12 @@ describe("team colours", () => {
     expect(c).toEqual(rechartsPalette("nfl", teams, { background }));
     expect(teamColorPalette("nfl", ["KC", "XXX"])).toEqual([teamColorsSync("nfl", "KC"), "#808080"]);
   });
+  test("dark mode: a repeated team keeps one colour (the distinct-colour rule is between teams, not entries)", () => {
+    const background = "#181a1b";
+    const c = teamColorPalette("nfl", ["KC", "LAC", "KC"], { background });
+    expect(c[2]).toBe(c[0]);
+    expect(c.slice(0, 2)).toEqual(teamColorPalette("nfl", ["KC", "LAC"], { background }));
+  });
 });
 
 describe("axisLogos", () => {
