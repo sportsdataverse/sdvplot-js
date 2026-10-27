@@ -2453,8 +2453,14 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
           const seen = l.points.map((p) => {
             const [a] = shown(p.x, p.y);
             const [b] = under(p.x, p.y);
-            const blend = c.map((v, i) => l.alpha * v + (1 - l.alpha) * ((b ?? [])[i] ?? 0));
-            return { a, b, blend, ok: near(a ?? [], blend, 14) };
+            // one, two or three layers of this team's colour: half-transparent flows of one team stack where they
+            // overlap (two PHI flows read 0.75 PHI on CI), and that is still this team's colour, not another's
+            const blends = [1, 2, 3].map((k) => {
+              const w = 1 - (1 - l.alpha) ** k;
+              return c.map((v, i) => w * v + (1 - w) * ((b ?? [])[i] ?? 0));
+            });
+            const blend = blends[0];
+            return { a, b, blend, ok: blends.some((x) => near(a ?? [], x, 14)) };
           });
           if (seen.some((s) => s.ok)) painted += 1;
           else
