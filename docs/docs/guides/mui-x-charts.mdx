@@ -1,0 +1,99 @@
+---
+title: MUI X Charts
+sidebar_position: 7.57
+---
+
+[MUI X Charts](https://mui.com/x/react-charts/) (`@mui/x-charts`, the MIT community package) draws React charts as SVG,
+styled by Material UI's theme. `@sportsdataverse/sdvplot/mui` gives them team colours and puts team logos and player
+headshots where MUI draws its own marks, through the slots MUI provides for that: a scatter's `marker`, a line's `mark`
+and an axis' `axisTickLabel`. The subpath never imports MUI: its slots are plain function components that return an
+SVG `<image>`, and its types only match MUI's shapes (checked against MUI's own types). `@mui/x-charts` is an optional
+peer, 9.15.0 or later; these examples run 9.15.0 with `@mui/material` 9.5.0. MUI's own peers (`@mui/material`,
+`@mui/system`, `@emotion/react` and `@emotion/styled`) are your app's, as for any MUI chart. Like every sdvplot logo
+helper, the slots are synchronous, so load the league first (`loadLeague`). Each chart below is drawn by MUI in your
+browser.
+
+## Logos as scatter points
+
+`logoMarker({ league, teams })` is a scatter's `marker` slot: `<ScatterChart slots={{ marker }}>`. MUI hands the slot
+each point's series id, its index in the series' data and its position, so `teams[i]` is the team of point i. Pass the
+teams in the same order as the points; for several series, pass a list per series id, `teams: { west: [...], east:
+[...] }`. Each logo is centred on its point and twice the series' `markerSize` tall, in px, so set `markerSize` on the
+series (12 gives 24 px logos). MUI's tooltip, its highlight (the logo grows 1.2 times, as MUI's own marker does) and its
+fade (0.3 opacity while another series is highlighted) keep working, and `alpha` sets the logos' opacity. A slot is a
+component, so build it once, at module scope or with `useMemo`: a new one on every render remounts the points.
+
+The chart below has all 32 NFL teams' 2024 offence and defence EPA per play, each point its team's logo. The y axis is
+reversed, so the best defences are at the top.
+
+<Live id="sdvplot/mui-x-charts/epa-logo-scatter" />
+
+`headshotMarker({ league, players })` does the same with ESPN player headshots: `players[i]` is the ESPN athlete id of
+point i (or an nflverse gsis id with `idSystem: "gsis"`, after `loadGsis()`).
+
+## Logos at the end of each line
+
+`logoMark({ league })` is a line's `mark` slot: `<LineChart slots={{ mark }}>`. Each mark is drawn as its series' team
+logo, `size` px tall (24 by default) and centred where MUI puts the mark. The series' `id` is its team, or give `teams`,
+a map from series id to team. Which points get a mark is the series' own `showMark`: a function such as `({ index }) =>
+index === 17` keeps one mark, so one logo, at the end of each line. A logo at the right edge of the plot overflows it by
+half its width; leave room with the chart's `margin`.
+
+## Team colours, light and dark
+
+`teamColors(league, teams)` is a chart's `colors`, in the form MUI calls with the theme's mode: under a dark
+`ThemeProvider` each series takes its team colour for MUI's dark background (#121212), and under a light one its colour
+for white. Series i takes `teams[i]`'s colour, so give the series in the same order. Every colour keeps 3:1 contrast
+against its background: a team colour that falls short, such as Denver's navy or the Raiders' black on #121212, gives
+way to the team's other colour, or is lightened until it reads. Each colour also aims to stay distinct from the earlier
+teams' (CIE76 ΔE 20), as in the other adapters. For other backgrounds, pass them as hex: `background: { light, dark }`.
+`which`, `season` and `idSystem` work as they do in `teamColorPalette`, which returns the colours for one background as
+a plain list (for a series' `color`, say).
+
+This chart sits in a dark `ThemeProvider` (`createTheme({ palette: { mode: "dark" } })`): MUI draws its axes and text
+for the dark theme, `teamColors` gives the lines their dark-mode colours, and `logoMark` ends each line in its logo.
+
+<Live id="sdvplot/mui-x-charts/afc-west-margin-dark" />
+
+`teamColorGetter(league, teams)` is a series' `colorGetter`, a colour per data point: bar or point i takes `teams[i]`'s
+colour. A team that repeats keeps one colour. It takes `background` too, but MUI hands a `colorGetter` no theme mode, so
+pass the background yourself.
+
+## Logos on an axis
+
+`logoTickLabel({ league })` is an axis' `axisTickLabel` slot, for a band axis whose values are teams. Each logo sits
+where MUI would put the label: centred under its band on a bottom axis, left of it on a left axis. It is `size` px tall
+(24 by default), so give the axis room: an x axis' `height` or a y axis' `width`. The slot reads the label MUI hands it,
+the axis' formatted value, so a `valueFormatter` must keep the label a team (an abbreviation, a name or an id). A label
+that resolves to no logo keeps its text, and warns once.
+
+Give the slot to the team axis alone, through MUI's composition API: `<ChartsContainer>` with `<BarPlot />`, and
+`<ChartsXAxis axisId="teams" slots={{ axisTickLabel }} />` for the team axis. A chart's own `slots` reach every axis,
+and a value axis' label such as "12" would then resolve as team id 12. In @mui/x-charts 9.15, `BarChart` and the other
+one-component charts also drop the `slots` you give an axis inside its `xAxis` entry, so the logos never show there
+(sdvplot's tests pin this, so a fixed MUI shows up). The composition API leaves out the keyboard focus mark that
+`BarChart` draws; add `<FocusedBar />` back, as this chart does.
+
+<Live id="sdvplot/mui-x-charts/afc-wins-logo-ticks" />
+
+## Why slots
+
+MUI also exposes its scales to a chart's children (`useXScale`, `useYScale`, `useDrawingArea`), and a child component
+could draw logos with them. Slots are simpler here: MUI hands each one the position it has already worked out, so the
+logo lands exactly on MUI's own mark, keeps its tooltip, highlight and fade, and renders on the server with the rest of
+the chart. A child that reads the hooks would have to load MUI from sdvplot, and would draw nothing on the server.
+
+## Missing logos, testing and server rendering
+
+A team or player with no image in the archive draws nothing where its mark would be, and warns once, as in every sdvplot
+adapter. Each image carries the `data-sdv-*` attributes that `drawnMarks(container)` from `@sportsdataverse/sdvplot/testing`
+reads back, so a test can check which logos a chart drew, where, and how tall.
+
+MUI's charts are client components. The slots are functions, so they cannot be passed from a server component to a
+client one: build them in the client component, once the league has loaded. A client component still renders once on
+the server, and with a fixed `width` and `height` MUI draws the chart there, logos included, as plain `<image>` tags.
+
+MUI's keyboard navigation stays on: tab into a chart and press an arrow key, and MUI draws its focus mark round the
+focused point or bar.
+
+In the gallery: [MUI X Charts](/gallery/sdvplot/#mui-x-charts).
