@@ -92,6 +92,9 @@
   --muted-foreground: oklch(0.556 0 0);
   --border: oklch(0.922 0 0);
   color: var(--foreground);
+  /* the container's own text-xs (the rules below style its descendants) */
+  font-size: 0.75rem;
+  line-height: 1rem;
 }
 .dark [data-slot="chart"] {
   --background: oklch(0.145 0 0);

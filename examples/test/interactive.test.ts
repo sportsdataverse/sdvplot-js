@@ -484,8 +484,14 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
         const figure = page.locator(`figure[data-example="${id}"]`);
         await figure.scrollIntoViewIfNeeded();
         const chart = figure.locator(".sdv-live-output [data-slot='chart']");
-        await chart.locator(".recharts-layer").first().waitFor({ timeout: 30_000 });
+        // a mark, not any layer: a horizontal reference line is a zero-height box, which Playwright calls hidden
+        await chart
+          .locator(".recharts-line-curve, .recharts-bar-rectangle path")
+          .first()
+          .waitFor({ timeout: 30_000 });
         await page.waitForLoadState("networkidle"); // the logos
+        // the sticky navbar would sit over the top of the chart in its screenshot, and over the pixels sampled there
+        await page.addStyleTag({ content: ".navbar { display: none !important; }" });
         expect(await figure.locator(".sdv-live-static").count(), "the static copy is replaced").toBe(0);
         expect(await figure.locator(".sdv-live-error").count(), "no error alert").toBe(0);
         const got = await chart.evaluate((el) => {
