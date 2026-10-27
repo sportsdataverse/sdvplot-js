@@ -1019,7 +1019,11 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
             header: head === null ? "" : getComputedStyle(head).backgroundColor,
           };
         }, want.field);
-        const rgb = (s: string) => (s.match(/\d+/g) ?? []).slice(0, 3).map(Number);
+        // a computed colour: rgb(r, g, b), or color(srgb r g b) in 0-1 (what Chromium gives a color-mix)
+        const rgb = (s: string) => {
+          const n = (s.match(/[\d.]+/g) ?? []).map(Number);
+          return (s.startsWith("color(srgb") ? n.map((v) => Math.round(v * 255)) : n).slice(0, 3);
+        };
         const hex = (s: string) => [1, 3, 5].map((i) => Number.parseInt(s.slice(i, i + 2), 16));
         const near = (a: number[], b: number[], d: number) =>
           [0, 1, 2].every((c) => Math.abs((a[c] ?? 0) - (b[c] ?? 0)) <= d);
@@ -1090,6 +1094,44 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
         await grid.evaluate((el) => {
           for (const i of el.querySelectorAll("img[data-sdv-id]")) (i as HTMLElement).style.visibility = "";
         });
+        if (want.fills !== undefined) {
+          // MUI's own :hover and .Mui-selected rules must not replace a team fill: a hovered row and a selected row (the
+          // class MUI puts on it) keep a shade of their fill, within 36 per channel (the shade moves at most 14% toward
+          // its text colour; MUI's own grey sat 57 to 82 away before the fix), with text at 4.5:1 or better
+          const fills = want.fills();
+          const state = async (i: number) =>
+            grid
+              .locator(".MuiDataGrid-row")
+              .nth(i)
+              .evaluate((r) => {
+                const cell = r.querySelector(".MuiDataGrid-cell:last-child") as HTMLElement;
+                return { fill: getComputedStyle(r).backgroundColor, ink: getComputedStyle(cell).color };
+              });
+          const check = (s: { fill: string; ink: string }, f: string, what: string) => {
+            expect(near(rgb(s.fill), hex(f), 36), `${what}: ${s.fill} keeps a shade of ${f}`).toBe(true);
+            const css = (c: string) =>
+              `#${rgb(c)
+                .map((v) => v.toString(16).padStart(2, "0"))
+                .join("")}`;
+            expect(contrast(css(s.ink), css(s.fill)), `${what}: text on the fill`).toBeGreaterThanOrEqual(
+              4.5,
+            );
+          };
+          await grid.locator(".MuiDataGrid-row").nth(0).hover();
+          check(await state(0), fills[0] ?? "", `hovered row ${want.rows[0]}`);
+          await grid
+            .locator(".MuiDataGrid-row")
+            .nth(1)
+            .evaluate((r) => r.classList.add("Mui-selected"));
+          check(await state(1), fills[1] ?? "", `selected row ${want.rows[1]}`);
+          await grid.locator(".MuiDataGrid-row").nth(1).hover();
+          check(await state(1), fills[1] ?? "", `selected, hovered row ${want.rows[1]}`);
+          await grid
+            .locator(".MuiDataGrid-row")
+            .nth(1)
+            .evaluate((r) => r.classList.remove("Mui-selected"));
+          await page.mouse.move(0, 0);
+        }
         if (SHOTS !== undefined)
           await figure
             .locator(".sdv-live-output")
