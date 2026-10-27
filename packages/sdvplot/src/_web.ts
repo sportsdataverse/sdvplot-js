@@ -193,6 +193,8 @@ export function colorPalette(
     idSystem?: IdSystem;
     fallback?: string;
     background?: string;
+    /** Throw UnresolvedTeamError for a value that does not resolve, instead of warning. Default false. */
+    strict?: boolean;
   } = {},
 ): string[] {
   const fallback = o.fallback ?? "#808080";
@@ -200,6 +202,7 @@ export function colorPalette(
   const ids = resolveSync(teams as readonly Value[], league, {
     ...season,
     ...(o.idSystem === undefined ? {} : { idSystem: o.idSystem }),
+    ...(o.strict === undefined ? {} : { strict: o.strict }),
   });
   const known = [...new Set(ids.filter((id) => id !== undefined))];
   const which = o.which ?? "primary";
