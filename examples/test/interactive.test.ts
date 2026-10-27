@@ -85,6 +85,8 @@ const DRAWN: Readonly<Record<string, string>> = {
   unovis: ".sdv-live-output svg :is(g[class*=g-node], path[class*=visible])",
   // the team bars: Mosaic has queried DuckDB-WASM and Observable Plot has drawn them
   mosaic: ".sdv-live-output .plot svg g[aria-label=bar] rect",
+  // what Perspective drew: a Datagrid cell or a chart's WebGL canvas (Playwright's CSS sees into shadow roots)
+  perspective: ".sdv-live-output perspective-viewer :is(regular-table tbody td, canvas.webgl-canvas)",
 };
 
 /** OpenFreeMap's credit, as its TileJSON gave it on 2026-10-27. */
@@ -2555,6 +2557,328 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
       expect(errors).toEqual([]);
     } finally {
       await context.close();
+    }
+  });
+
+  // Perspective (sdvplot/perspective): the engine and the viewer are WebAssembly served from the docs' own files, and
+  // nothing leaves the docs server. Every expectation is worked out here from the shared data, with the colours from
+  // the Recharts adapter's palette (the shared palette by another path: every team here resolves, none repeats), and
+  // checked against what Perspective painted: the grid's computed cell fills and screenshot pixels, the chart's WebGL
+  // pixels, and the streamed table's own size and aggregates.
+  /** A fresh context whose every request is recorded and any request off the docs server is aborted. */
+  async function localOnly(): Promise<{
+    page: Page;
+    asked: string[];
+    errors: string[];
+    close: () => Promise<void>;
+  }> {
+    const context = await browser.newContext();
+    const asked: string[] = [];
+    await context.route("**/*", (r) => {
+      const url = r.request().url();
+      // the docs' own analytics script (docusaurus.config.ts, on every page) is answered here with an empty script
+      if (url.startsWith("https://plausible.io/js/"))
+        return r.fulfill({ contentType: "text/javascript", body: "" });
+      asked.push(url);
+      return new URL(url).origin === base ? r.continue() : r.abort();
+    });
+    const page = await context.newPage();
+    const errors: string[] = [];
+    page.on("console", (m) => void (m.type() === "error" && errors.push(m.text())));
+    page.on("pageerror", (e) => void errors.push(e.message));
+    return { page, asked, errors, close: () => context.close() };
+  }
+  /** The engine's and the viewer's WebAssembly came from the docs server, and nothing was asked of anyone else. */
+  function servedLocally(asked: readonly string[]): void {
+    expect(asked.filter((u) => new URL(u).origin !== base)).toEqual([]);
+    expect(asked.filter((u) => /\.wasm$/.test(u)).length, "both modules, from the docs server").toBe(2);
+  }
+  async function openPerspective(page: Page, id: string) {
+    const entry = EXAMPLES.find((e) => e.id === id);
+    if (entry === undefined) throw new Error(`${id} is not in the registry`);
+    await page.goto(`${base}/gallery/${pagePath(entry)}/`);
+    const figure = page.locator(`figure[data-example="${id}"]`);
+    await figure.scrollIntoViewIfNeeded();
+    await figure.locator("perspective-viewer").waitFor({ timeout: 60_000 });
+    // an element screenshot scrolls it to the window's top edge, under the docs' sticky navbar: hide the navbar, so a
+    // screenshot is of the chart alone
+    await page.addStyleTag({ content: ".navbar { display: none !important; }" });
+    return figure;
+  }
+  const rgbHex = (css: string) =>
+    `#${(css.match(/\d+/g) ?? [])
+      .slice(0, 3)
+      .map((v) => Number(v).toString(16).padStart(2, "0"))
+      .join("")}`;
+  const channels = (h: string) => [1, 3, 5].map((i) => Number.parseInt(h.slice(i, i + 2), 16));
+  const offence = NFL_TEAM_EPA_2024.map((t) => ({
+    team: t.team,
+    plays: t.off_plays,
+    epa: t.off_epa / t.off_plays,
+  }));
+
+  test("sdvplot/perspective/nfl-offense-datagrid: local files only; each team's cell is filled with its colour, computed and painted, in the rows' order; EPA to 3 decimals; logos as links", async () => {
+    const id = "sdvplot/perspective/nfl-offense-datagrid";
+    await loadLeague("nfl");
+    const order = [...offence].sort((a, b) => b.epa - a.epa);
+    const sorted = order.map((r) => r.team).sort();
+    const palette = rechartsPalette("nfl", sorted, { background: "#ffffff" }); // Pro Light's background
+    const colorOf = new Map(sorted.map((t, i) => [t, palette[i] ?? ""]));
+    const { page, asked, errors, close } = await localOnly();
+    try {
+      const figure = await openPerspective(page, id);
+      const viewer = figure.locator("perspective-viewer");
+      /** The grid's drawn rows: each cell's text, the team cell's computed fill and the logo link. */
+      const drawn = () =>
+        viewer.evaluate((v) => {
+          const grid = v.querySelector("perspective-viewer-datagrid");
+          const table =
+            grid?.querySelector("regular-table") ?? grid?.shadowRoot?.querySelector("regular-table");
+          const head = [...(table?.querySelectorAll("thead tr:last-child th") ?? [])].map(
+            (c) => c.textContent,
+          );
+          return [...(table?.querySelectorAll("tbody tr") ?? [])].map((tr) => {
+            const td = [...tr.querySelectorAll("td")];
+            const at = (name: string) => td[head.indexOf(name)];
+            return {
+              team: at("team")?.textContent ?? "",
+              plays: at("plays")?.textContent ?? "",
+              epa: at("epa_per_play")?.textContent ?? "",
+              fill: getComputedStyle(at("team") ?? tr).backgroundColor,
+              href: at("team_logo")?.querySelector("a")?.getAttribute("href") ?? null,
+            };
+          });
+        });
+      await expect.poll(async () => (await drawn()).length, { timeout: 30_000 }).toBeGreaterThan(10);
+      const seen = new Map<string, Awaited<ReturnType<typeof drawn>>[number]>();
+      // the first screen, then the grid scrolled to its end: every team drawn once
+      for (const end of [false, true]) {
+        if (end)
+          await viewer.evaluate((v) => {
+            const grid = v.querySelector("perspective-viewer-datagrid");
+            const table = (grid?.querySelector("regular-table") ??
+              grid?.shadowRoot?.querySelector("regular-table")) as HTMLElement;
+            table.scrollTop = table.scrollHeight;
+          });
+        const first = (await drawn()).length;
+        await expect
+          .poll(async () => (await drawn()).at(-1)?.team, { timeout: 15_000 })
+          .toBe(end ? order.at(-1)?.team : order[first - 1]?.team);
+        for (const r of await drawn()) seen.set(r.team, r);
+      }
+      expect([...seen.keys()].sort(), "every team's row").toEqual(sorted);
+      for (const t of order) {
+        const r = seen.get(t.team);
+        expect(rgbHex(r?.fill ?? ""), `${t.team}'s cell is filled with its colour`).toBe(colorOf.get(t.team));
+        // plays as typed, EPA per play to 3 decimals, and the logo's URL as a link
+        expect([r?.plays, r?.epa]).toEqual([String(t.plays), t.epa.toFixed(3)]);
+        expect(r?.href).toBe(logoUrlSync(t.team, "nfl"));
+      }
+      // painted: a pixel inside each drawn team cell, in its padding left of the text, is the cell's colour
+      const cells = viewer.locator("perspective-viewer-datagrid regular-table tbody tr td:first-of-type");
+      let painted = 0;
+      for (let i = 0; i < (await cells.count()); i++) {
+        const cell = cells.nth(i);
+        if (!(await cell.isVisible())) continue;
+        const team = (await cell.textContent()) ?? "";
+        const shot = await loadImage(await cell.screenshot());
+        const ctx = createCanvas(shot.width, shot.height).getContext("2d");
+        ctx.drawImage(shot, 0, 0);
+        const px = ctx.getImageData(2, Math.floor(shot.height / 2), 1, 1).data;
+        const want = channels(colorOf.get(team) ?? "");
+        expect(
+          [0, 1, 2].map((c) => Math.abs((px[c] as number) - (want[c] as number)) <= 2),
+          `${team}'s cell is painted ${colorOf.get(team)} (got ${[...px.slice(0, 3)]})`,
+        ).toEqual([true, true, true]);
+        painted++;
+      }
+      expect(painted, "team cells sampled").toBeGreaterThan(10);
+      servedLocally(asked);
+      if (SHOTS !== undefined)
+        await figure
+          .locator(".sdv-live-output")
+          .screenshot({ path: join(SHOTS, `${id.replace(/\//g, "_")}.png`) });
+      expect(errors).toEqual([]);
+    } finally {
+      await close();
+    }
+  });
+
+  type Box = { x0: number; x1: number; y0: number; y1: number };
+  /**
+   * A Perspective bar chart split by team, checked by its WebGL pixels: each palette colour's pixels are boxed (the
+   * legend's columns left out); the theme's background fills most of the canvas; pixels per unit come from all the
+   * bars, and each team's bar of at least 8 px must be its own value tall at that scale (within 3 px), in its own
+   * colour; the bars stand on one zero line; and left to right they are the teams in sorted order.
+   */
+  async function checkTeamBars(
+    canvas: ReturnType<Page["locator"]>,
+    o: {
+      sorted: readonly string[];
+      palette: readonly string[];
+      value: ReadonlyMap<string, number>;
+      background: string;
+      minChecked: number;
+    },
+  ): Promise<void> {
+    const { sorted, palette, value } = o;
+    const bg = channels(o.background).join(",");
+    const bars = async () => {
+      const shot = await loadImage(await canvas.screenshot());
+      const ctx = createCanvas(shot.width, shot.height).getContext("2d");
+      ctx.drawImage(shot, 0, 0);
+      const d = ctx.getImageData(0, 0, shot.width, shot.height).data;
+      const index = new Map(palette.map((h, i) => [channels(h).join(","), i]));
+      const rgb = (x: number, y: number) => [0, 1, 2].map((c) => d[(y * shot.width + x) * 4 + c] as number);
+      const box = new Map<number, Box>();
+      let background = 0;
+      for (let x = 0; x < shot.width; x++) {
+        const here = new Map<number, number[]>();
+        for (let y = 0; y < shot.height; y++) {
+          const px = rgb(x, y).join(",");
+          const i = index.get(px);
+          if (i !== undefined) here.set(i, [...(here.get(i) ?? []), y]);
+          else if (px === bg) background++;
+        }
+        if (here.size > 2) continue; // a legend column: a swatch of each team, stacked
+        for (const [i, ys] of here) {
+          const b = box.get(i) ?? { x0: x, x1: x, y0: Number.POSITIVE_INFINITY, y1: -1 };
+          box.set(i, { x0: b.x0, x1: x, y0: Math.min(b.y0, ...ys), y1: Math.max(b.y1, ...ys) });
+        }
+      }
+      return { box, background, area: shot.width * shot.height };
+    };
+    await expect
+      .poll(async () => (await bars()).box.size, { timeout: 30_000 })
+      .toBeGreaterThanOrEqual(o.minChecked);
+    const { box, background, area } = await bars();
+    expect(background / area, `the theme's background ${o.background}`).toBeGreaterThan(0.5);
+    const height = (b: Box) => b.y1 - b.y0 + 1;
+    // the scale, pixels per unit, from all the bars; then each team's bar is as tall as its own value at that scale
+    const drawnTeams = sorted.filter((_, i) => box.has(i));
+    let px = 0;
+    let total = 0;
+    for (const t of drawnTeams) {
+      px += height(box.get(sorted.indexOf(t)) as Box);
+      total += Math.abs(value.get(t) ?? 0);
+    }
+    const k = px / total;
+    const tops: number[] = [];
+    const bottoms: number[] = [];
+    let checked = 0;
+    for (const [i, t] of sorted.entries()) {
+      const v = value.get(t) ?? 0;
+      if (Math.abs(v) * k < 8) continue; // a bar a few pixels tall is not measured
+      const b = box.get(i);
+      expect(b, `${t}'s bar is drawn in ${palette[i]}`).toBeDefined();
+      if (b === undefined) continue;
+      expect(
+        Math.abs(height(b) - Math.abs(v) * k),
+        `${t}'s bar is ${height(b)} px for ${v.toFixed(3)} (${(Math.abs(v) * k).toFixed(1)} px)`,
+      ).toBeLessThanOrEqual(3);
+      if (v > 0) bottoms.push(b.y1);
+      else tops.push(b.y0);
+      checked++;
+    }
+    expect(checked, "teams measured").toBeGreaterThanOrEqual(o.minChecked);
+    // the bars stand on one zero line, positive above it and negative below
+    expect(Math.max(...bottoms) - Math.min(...bottoms)).toBeLessThanOrEqual(1);
+    expect(Math.max(...tops) - Math.min(...tops)).toBeLessThanOrEqual(1);
+    expect(Math.abs(Math.min(...tops) - Math.max(...bottoms))).toBeLessThanOrEqual(3);
+    // and left to right in the axis' order: the teams sorted
+    const byX = [...box.entries()].sort((a, b) => a[1].x0 - b[1].x0).map(([i]) => sorted[i]);
+    expect(byX).toEqual(drawnTeams);
+  }
+  test("sdvplot/perspective/nfl-epa-split-bars-dark: local files only; each team's bar is drawn in its colour on Pro Dark, at its place on the axis, as tall as its EPA per play", async () => {
+    const id = "sdvplot/perspective/nfl-epa-split-bars-dark";
+    await loadLeague("nfl");
+    const sorted = offence.map((r) => r.team).sort();
+    const palette = rechartsPalette("nfl", sorted, { background: "#242526" }); // Pro Dark's background
+    const value = new Map(offence.map((r) => [r.team, r.epa]));
+    const { page, asked, errors, close } = await localOnly();
+    try {
+      const figure = await openPerspective(page, id);
+      const canvas = figure.locator("perspective-viewer canvas.webgl-canvas");
+      await canvas.waitFor({ timeout: 30_000 });
+      await checkTeamBars(canvas, { sorted, palette, value, background: "#242526", minChecked: 28 });
+      servedLocally(asked);
+      if (SHOTS !== undefined)
+        await figure
+          .locator(".sdv-live-output")
+          .screenshot({ path: join(SHOTS, `${id.replace(/\//g, "_")}.png`) });
+      expect(errors).toEqual([]);
+    } finally {
+      await close();
+    }
+  });
+
+  test("sdvplot/perspective/nfl-plays-streaming: local files only; every week's batch lands whole, the table growing to each running total and ending at every play; each offence's bar is its EPA total, in its colour", async () => {
+    const id = "sdvplot/perspective/nfl-plays-streaming";
+    await loadLeague("nfl");
+    const plays = await nflPlays2024();
+    const weeks = [...new Set(plays.map((p) => p.week))].sort((a, b) => a - b);
+    let total = 0;
+    const running = weeks.map((w) => {
+      total += plays.filter((p) => p.week === w).length;
+      return total;
+    });
+    const epaBy = new Map<string, number>();
+    for (const p of plays) epaBy.set(p.posteam, (epaBy.get(p.posteam) ?? 0) + p.epa);
+    const sorted = [...epaBy.keys()].sort();
+    const palette = rechartsPalette("nfl", sorted, { background: "#ffffff" }); // Pro Light's background
+    const { page, asked, errors, close } = await localOnly();
+    type Sized = { sdvSizes: number[] };
+    // before the page runs: the drawer hands each table the example makes to this hook, and waits for it, before the
+    // example gets the table, so every update is heard, however slowly Perspective started
+    await page.addInitScript(() => {
+      type View = { on_update: (cb: () => void) => Promise<unknown> };
+      type T = { size: () => Promise<number>; view: () => Promise<View> };
+      const w = window as unknown as Sized & { sdvPerspectiveTable: (t: T) => Promise<void> };
+      w.sdvSizes = [];
+      w.sdvPerspectiveTable = async (table) => {
+        w.sdvSizes.push(await table.size());
+        // a view of the table hears each update (the table handle has no on_update of its own)
+        const view = await table.view();
+        await view.on_update(async () => void w.sdvSizes.push(await table.size()));
+      };
+    });
+    try {
+      const figure = await openPerspective(page, id);
+      const viewer = figure.locator("perspective-viewer");
+      const sizes = () => page.evaluate(() => [...(window as unknown as Sized).sdvSizes]);
+      await expect.poll(async () => (await sizes()).at(-1), { timeout: 30_000 }).toBe(plays.length);
+      const seen = [...new Set(await sizes())];
+      console.log(`${id}: sizes ${seen.join(", ")} (running totals ${running.join(", ")})`);
+      // the empty table, then every batch whole, in order: each size a running total and none missed
+      expect(seen).toEqual([0, ...running]);
+      expect(running.at(-1)).toBe(11_778);
+      // the view the bars draw: each offence's EPA, summed over all its plays
+      const sums = await viewer.evaluate(async (v) => {
+        type View = { to_columns: () => Promise<Record<string, unknown[]>> };
+        const view = await (v as HTMLElement & { getView: () => Promise<View> }).getView();
+        const cols = await view.to_columns();
+        // a row per offence (its group path), and in it the offence's own split column holds its EPA total
+        const paths = (cols.__ROW_PATH__ ?? []) as unknown[][];
+        const out: Record<string, number> = {};
+        paths.forEach((path, i) => {
+          const team = path.length === 1 ? String(path[0]) : undefined;
+          if (team !== undefined) out[team] = (cols[`${team}|epa`]?.[i] as number | undefined) ?? Number.NaN;
+        });
+        return out;
+      });
+      expect(Object.keys(sums).sort()).toEqual(sorted);
+      for (const [team, want] of epaBy) expect(Math.abs((sums[team] ?? 0) - want), team).toBeLessThan(1e-6);
+      // drawn: each offence's bar in its own colour, as tall as its EPA total
+      const canvas = figure.locator("perspective-viewer canvas.webgl-canvas");
+      await checkTeamBars(canvas, { sorted, palette, value: epaBy, background: "#ffffff", minChecked: 24 });
+      servedLocally(asked);
+      if (SHOTS !== undefined)
+        await figure
+          .locator(".sdv-live-output")
+          .screenshot({ path: join(SHOTS, `${id.replace(/\//g, "_")}.png`) });
+      expect(errors).toEqual([]);
+    } finally {
+      await close();
     }
   });
 

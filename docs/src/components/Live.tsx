@@ -65,6 +65,7 @@ const VALUE_LIBS: Readonly<Record<string, string>> = {
   maplibre: "MapLibre GL JS",
   unovis: "Unovis",
   mosaic: "Mosaic (with DuckDB-WASM)",
+  perspective: "Perspective",
 };
 
 /**

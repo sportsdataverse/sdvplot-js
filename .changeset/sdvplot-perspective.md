@@ -1,0 +1,5 @@
+---
+"@sportsdataverse/sdvplot": minor
+---
+
+New subpath `@sportsdataverse/sdvplot/perspective` for Perspective 5.5 (`@perspective-dev/viewer` with its Datagrid and charts plugins), the JavaScript side of sdvplot (Python)'s `sdvplot.perspective`. `perspectiveConfig(rows, { teamCol, league, plugin, mode, logoCol, background, formats, season, idSystem, strict, schema })` returns the argument of `viewer.restore()`: the Datagrid's team cells filled in each team's colour (in the order the grid draws them), a split chart's series and a scatter's Color slot coloured by team, Pro Light or Pro Dark with every colour 3:1 on its background, and number formats; given the same rows it returns what Python's `perspective_sdv_config` returns (a parity test holds them together). `perspectiveLogoColumn(rows, teamCol, { league })` adds a logo URL column after the team column, shown as links on the Datagrid. It never imports Perspective, not even its types; `@perspective-dev/viewer` >= 5.5.1 is an optional peer.

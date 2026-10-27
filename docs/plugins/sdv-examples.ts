@@ -27,6 +27,7 @@ const CHART_LIBS = [
   "unovis",
   "unovis-react",
   "mosaic",
+  "perspective",
 ] as const;
 /**
  * Vega's self-contained build (its d3 inside). The module build imports the d3-* packages Observable Plot imports,
@@ -34,6 +35,8 @@ const CHART_LIBS = [
  * (brotli) with it. The file is UMD in a "type": "module" package, so it is parsed as auto, not as ESM.
  */
 const VEGA = join(dirname(createRequire(abs("examples/package.json")).resolve("vega")), "vega.min.js");
+/** The file `@perspective-dev/viewer` resolves to: its own build. */
+const PERSPECTIVE_VIEWER = createRequire(abs("examples/package.json")).resolve("@perspective-dev/viewer");
 
 /**
  * Bundles the examples (and the package SOURCE they import, exactly as the gate runs them) into the client build;
@@ -58,6 +61,13 @@ export default function sdvExamples(_context: LoadContext): Plugin {
             react: dir("react"), // one React: the docs' own
             "react-dom": dir("react-dom"),
             vega$: VEGA,
+            // Perspective 5.5's Datagrid and charts plugins import two modules of the viewer's TypeScript source
+            // ("@perspective-dev/viewer/src/ts/column-format.js", ".../extensions.js"), which webpack does not compile
+            // from node_modules. Everything they take from them is exported by the viewer's own build: point both
+            // there, by its file (an alias to "@perspective-dev/viewer" itself is skipped: the request starts with it).
+            // Any webpack 5 app drawing with these plugins needs the same two aliases (esbuild compiles the source).
+            "@perspective-dev/viewer/src/ts/column-format.js$": PERSPECTIVE_VIEWER,
+            "@perspective-dev/viewer/src/ts/extensions.js$": PERSPECTIVE_VIEWER,
           },
           // Package and example sources import "./x.js" for "./x.ts" (NodeNext); webpack needs telling.
           extensionAlias: { ".js": [".ts", ".tsx", ".js"] },
@@ -69,6 +79,14 @@ export default function sdvExamples(_context: LoadContext): Plugin {
             // ("@unovis/ts/components/graph"), which webpack's ESM resolution refuses unless a request may omit the
             // file's extension. Any webpack 5 app drawing with @unovis/react needs the same rule.
             { test: /[\\/]node_modules[\\/]@unovis[\\/]/, resolve: { fullySpecified: false } },
+            // Perspective 5.5's viewer and charts plugin load their WebAssembly glue with `import(url)` of a blob URL
+            // they make at run time. A bundler turns each into a lookup among its own modules, which fails ("Cannot
+            // find module 'blob:…'"): plugins/import-url-loader.cjs marks those imports webpackIgnore. Any webpack 5 or
+            // Rspack app drawing with these packages needs the same.
+            {
+              test: /[\\/]@perspective-dev[\\/]viewer(-charts)?[\\/]dist[\\/]esm[\\/][^\\/]+\.js$/,
+              use: [{ loader: abs("docs/plugins/import-url-loader.cjs") }],
+            },
             // sdvplot/svelte's components, the Svelte snippets the svelte examples draw, and LayerChart's own .svelte files
             // and .svelte.js rune modules. Svelte 5 reads a component's TypeScript itself; its CSS is injected.
             {

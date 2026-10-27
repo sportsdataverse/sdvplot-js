@@ -34,6 +34,7 @@ export default defineConfig({
     tanstack: "src/tanstack.ts",
     maplibre: "src/maplibre.ts",
     unovis: "src/unovis.ts",
+    perspective: "src/perspective.ts",
   },
   external: [
     "react",
