@@ -151,6 +151,21 @@ export interface RouteLines {
 export type LogoImageMap = Pick<MapLibreMap, "loadImage" | "addImage" | "hasImage">;
 
 const real = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v);
+/**
+ * A longitude or latitude as a number: a finite number, or a string that reads as one ("-94.7", as a CSV gives it).
+ * Anything else (missing, blank, not a number, infinite) is null: the row is left out.
+ */
+function coord(v: unknown): number | null {
+  const n = typeof v === "number" ? v : typeof v === "string" && v.trim() !== "" ? Number(v) : Number.NaN;
+  return Number.isFinite(n) ? n : null;
+}
+/** One warning for the rows left out for a coordinate, naming their teams. */
+function skippedRows(key: string, what: string, teams: readonly Value[]): void {
+  if (teams.length === 0) return;
+  const shown =
+    teams.slice(0, 10).map(String).join(", ") + (teams.length > 10 ? ` and ${teams.length - 10} more` : "");
+  warn(`${key}:${shown}`, `skipped ${teams.length} ${what} with a missing coordinate: ${shown}`);
+}
 function checkPx(name: string, v: unknown): number {
   if (!real(v) || v < 1) throw new InputError(`${name} is in px, 1 or more, got ${String(v)}`);
   return v;
@@ -160,8 +175,9 @@ function checkPx(name: string, v: unknown): number {
  * Each row's team logo at its (longitude, latitude), as a GeoJSON source and a MapLibre `symbol` layer: one point
  * feature per row (its `id` is the row's index; `team`, `icon`, `url` and `index` are its properties), and a layer
  * drawing `icon-image: ["get", "icon"]`, every logo shown even where two overlap. A team with no logo (or one that
- * does not resolve) is left out with one warning; so is a row with a missing coordinate. Team values may be numbers
- * or strings (ESPN ids, abbreviations, names). The map needs the logos as images first:
+ * does not resolve) is left out with one warning; so is a row with a missing, non-numeric or infinite coordinate (a
+ * numeric string such as "-94.7" is read as its number). Team values may be numbers or strings (ESPN ids,
+ * abbreviations, names). The map needs the logos as images first:
  * `await addLogoImages(map, logos)`, then `map.addSource(logos.id, logos.source)` and `map.addLayer(logos.layer)`.
  *
  * @example
@@ -187,15 +203,27 @@ export function logoSymbols(rows: readonly Row[], o: LogoSymbolOptions): LogoSym
   const opacity = checkAlpha(o.alpha ?? 1);
   const id = o.id ?? "sdvplot-logos";
   const images = new Map<string, LogoImage>();
-  const features = markPlacements(rows, "logo", o).map((p): Feature<PointGeometry, LogoProperties> => {
+  // placeSync leaves out a null or NaN coordinate; a value that is not a number, or not finite, is left out here
+  const placed = markPlacements(rows, "logo", o);
+  const at = placed.map((p) => [coord(p.x), coord(p.y)] as const);
+  skippedRows(
+    `maplibre:logos:${o.league}:missing`,
+    "logo(s)",
+    placed.filter((_, k) => at[k]?.includes(null)).map((p) => p.id),
+  );
+  const features = placed.flatMap((p, k): Feature<PointGeometry, LogoProperties>[] => {
+    const [lon, lat] = at[k] as readonly [number | null, number | null];
+    if (lon === null || lat === null) return [];
     const icon = `${contentId("sdv-logo", p.url)}-${size}`;
     if (!images.has(icon)) images.set(icon, { id: icon, url: p.url, height: size });
-    return {
-      type: "Feature",
-      id: p.index,
-      geometry: { type: "Point", coordinates: [Number(p.x), Number(p.y)] },
-      properties: { team: p.id, icon, url: p.url, index: p.index },
-    };
+    return [
+      {
+        type: "Feature",
+        id: p.index,
+        geometry: { type: "Point", coordinates: [lon, lat] },
+        properties: { team: p.id, icon, url: p.url, index: p.index },
+      },
+    ];
   });
   return {
     id,
@@ -218,8 +246,9 @@ export function logoSymbols(rows: readonly Row[], o: LogoSymbolOptions): LogoSym
 /**
  * Loads each logo of `logoSymbols` sets into the map's images, once: `map.loadImage(url)`, then
  * `map.addImage(id, image, { pixelRatio })`, the pixel ratio making the image draw `size` px tall at icon size 1 (and
- * stay sharp on a high-density screen). An image the map already has is skipped, so calling it again (another layer,
- * or after a style change re-adds the layers) adds nothing twice. A logo that fails to load is left undrawn with one
+ * stay sharp on a high-density screen). An image the map already has is skipped, so calling it again adds nothing
+ * twice. `map.setStyle` drops the map's images, sources and layers: on the map's `style.load` event, call it again
+ * (it adds back only what the new style lacks) and re-add the source and layer. A logo that fails to load is left undrawn with one
  * warning. Resolves when every image is in. Call it before adding the layers that draw them.
  *
  * @example
@@ -269,8 +298,8 @@ const label = (t: unknown): string =>
  * Team-coloured travel legs as a GeoJSON source and a MapLibre `line` layer: one straight line per row from (x, y) to
  * (xend, yend) in longitude and latitude, in the team's colour (`line-color: ["get", "color"]`). Each team keeps one
  * colour, from the shared team palette; with `background` the colours read on the basemap (dark mode) and stay
- * distinct. A team that does not resolve takes `fallback`; a row with a missing coordinate is left out with one
- * warning. The feature id is the row's index. The same rows feed `./deckgl`'s `passArcLayer` for arcs instead.
+ * distinct. A team that does not resolve takes `fallback`. A coordinate may be a number or a numeric string, as for
+ * `logoSymbols`; a row with a missing, non-numeric or infinite one is left out with one warning. The feature id is the row's index. The same rows feed `./deckgl`'s `passArcLayer` for arcs instead.
  *
  * @example
  * ```ts
@@ -293,21 +322,14 @@ export function routeLines(rows: readonly Row[], o: RouteLineOptions): RouteLine
     column(rows, c, ["x", "y", "xend", "yend"][k] as string),
   );
   const teams = column(rows, o.team, "team");
-  const keep: number[] = [];
-  const missing: Value[] = [];
-  rows.forEach((_, i) => {
-    if (cols.every((c) => real(c[i]))) keep.push(i);
-    else missing.push(teams[i] as Value);
-  });
-  if (missing.length > 0) {
-    const shown =
-      missing.slice(0, 10).map(String).join(", ") +
-      (missing.length > 10 ? ` and ${missing.length - 10} more` : "");
-    warn(
-      `maplibre:routes:${o.league}:missing:${shown}`,
-      `skipped ${missing.length} route leg(s) with a missing coordinate: ${shown}`,
-    );
-  }
+  // each row's four coordinates as numbers (a numeric string is read as one), or null
+  const at = rows.map((_, i) => cols.map((c) => coord(c[i])));
+  const keep = rows.flatMap((_, i) => (at[i]?.includes(null) ? [] : [i]));
+  skippedRows(
+    `maplibre:routes:${o.league}:missing`,
+    "route leg(s)",
+    rows.flatMap((_, i) => (at[i]?.includes(null) ? [teams[i] as Value] : [])),
+  );
   const kept = keep.map((i) => teams[i] as Value);
   const ro = {
     ...(o.season === undefined ? {} : { season: o.season }),
@@ -328,7 +350,7 @@ export function routeLines(rows: readonly Row[], o: RouteLineOptions): RouteLine
   const colorOf = new Map(known.map((k, j) => [k, palette[j] as string]));
   const fallback = o.fallback ?? "#808080";
   const features = keep.map((i, j): Feature<LineGeometry, RouteProperties> => {
-    const c = cols.map((col) => col[i] as number);
+    const c = at[i] as number[];
     return {
       type: "Feature",
       id: i,

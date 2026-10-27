@@ -158,6 +158,32 @@ describe("logoSymbols", () => {
     expect(w[0]).toMatch(/no logo archived: DEL/);
   });
 
+  test("coordinates given as numeric strings (as a CSV reads) draw where their numbers do; a non-numeric or infinite one is left out with one warning", () => {
+    const asText = ["KC", "BUF"].map((t) => ({ team: t, lon: String(AT(t)[0]), lat: ` ${AT(t)[1]} ` }));
+    expect(logoSymbols(asText, BASE)).toEqual(
+      logoSymbols(
+        ["KC", "BUF"].map((t) => venue(t, t)),
+        BASE,
+      ),
+    );
+    let s: LogoSymbols | undefined;
+    const w = warnings(() => {
+      s = logoSymbols(
+        [
+          venue("KC", "KC"),
+          { team: "BUF", lon: "west", lat: "42.77" },
+          { team: "PHI", lon: "-75.17", lat: "Infinity" },
+          { team: "DEN", lon: "", lat: "39.74" },
+        ],
+        BASE,
+      );
+    });
+    expect(drawnMarks(s as LogoSymbols)).toEqual([[ID("KC"), ...AT("KC"), 32, URL_OF("KC")]]);
+    expect(s?.images).toHaveLength(1); // no image for a logo that is not drawn
+    expect(w).toHaveLength(1);
+    expect(w[0]).toContain("skipped 3 logo(s) with a missing coordinate");
+  });
+
   test("size and alpha are checked", () => {
     expect(() => logoSymbols([], { ...BASE, size: 0.1 })).toThrow(InputError);
     expect(() => logoSymbols([], { ...BASE, alpha: 2 })).toThrow(InputError);
@@ -196,6 +222,18 @@ describe("addLogoImages", () => {
     expect([...images.keys()]).toEqual(a.images.map((im) => im.id));
     expect([...images.values()].map((v) => v.pixelRatio)).toEqual([500 / 40, 500 / 40]);
     expect(loads).toEqual([URL_OF("KC"), URL_OF("BUF")]);
+  });
+
+  test("after a style reload drops the map's images, calling it again adds each logo back once", async () => {
+    const a = logoSymbols([venue("KC", "KC"), venue("BUF", "BUF")], BASE);
+    const { map, images, loads } = fakeMap();
+    await addLogoImages(map, a);
+    await addLogoImages(map, a); // the same style: nothing new
+    expect(images.size).toBe(2);
+    images.clear(); // map.setStyle(...): the new style has none of them
+    await addLogoImages(map, a); // what a style.load handler does
+    expect([...images.keys()]).toEqual(a.images.map((im) => im.id));
+    expect(loads).toEqual([URL_OF("KC"), URL_OF("BUF"), URL_OF("KC"), URL_OF("BUF")]);
   });
 
   test("two calls racing for the same logo add it once", async () => {
@@ -325,6 +363,29 @@ describe("routeLines", () => {
     expect(w).toHaveLength(2);
     expect(w.filter((m) => /missing coordinate: PHI/.test(m))).toHaveLength(1);
     expect(w.filter((m) => /ZZZ/.test(m))).toHaveLength(1);
+  });
+
+  test("coordinates given as numeric strings draw where their numbers do; a non-numeric or infinite one is left out with one warning", () => {
+    const numeric = legs((t) => t);
+    const asText = numeric.map((l) => ({
+      ...l,
+      x0: String(l.x0),
+      y0: String(l.y0),
+      x1: ` ${l.x1}`,
+      y1: String(l.y1),
+    }));
+    expect(routeLines(asText, RO)).toEqual(routeLines(numeric, RO));
+    const bad = asText.map((l, i) =>
+      i === 1 ? { ...l, x1: "east" } : i === 2 ? { ...l, y0: "-Infinity" } : l,
+    );
+    let r: ReturnType<typeof routeLines> | undefined;
+    const w = warnings(() => {
+      r = routeLines(bad, RO);
+    });
+    expect(r?.source.data.features.map((f) => f.id)).toEqual([0, 3]);
+    expect(r?.source.data.features[1]?.geometry.coordinates).toEqual([AT("PHI"), AT("TB")]);
+    expect(w).toHaveLength(1);
+    expect(w[0]).toContain("skipped 2 route leg(s) with a missing coordinate: PHI, KC");
   });
 
   test("width and alpha are checked", () => {
