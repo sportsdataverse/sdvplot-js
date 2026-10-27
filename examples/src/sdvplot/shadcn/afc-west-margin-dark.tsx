@@ -51,7 +51,7 @@ export default (
             <ChartTooltipContent labelFormatter={(_, payload) => `Week ${payload[0]?.payload.week}`} />
           }
         />
-        <ChartLegend content={<ChartLegendContent />} />
+        <ChartLegend content={<ChartLegendContent />} itemSorter={null} />
         {keys.map((key) => (
           <Line
             key={key}
