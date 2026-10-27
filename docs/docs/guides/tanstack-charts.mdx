@@ -92,8 +92,10 @@ The limits:
 ## Svelte and the DOM
 
 Nothing is React-specific: the pieces are plain values. In Svelte, `<Chart definition={...} renderSvg={withPatterns(renderChartSvg, logos)} ariaLabel="..." />`
-from `@tanstack/charts/svelte`; without a framework, `mountChart(el, { definition, renderSvg, ariaLabel })` from
-`@tanstack/charts/dom`.
+from `@tanstack/charts/svelte`; without a framework, `mountChart(el, { definition, renderSvg, ariaLabel, idPrefix })` from
+`@tanstack/charts/dom`. The React and Svelte `<Chart>` make an `idPrefix` of their own when you give none, but
+`mountChart` does not: when several charts share a page, give each a unique `idPrefix`, or their pattern ids collide
+and one chart can show another's logos.
 
 ## Reading back what was drawn
 
