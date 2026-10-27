@@ -1,9 +1,11 @@
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
+import { ScatterChart } from "@mui/x-charts/ScatterChart";
 import * as Plot from "@observablehq/plot";
 import { MANIFEST_URL, fetchManifest, loadLeague } from "@sportsdataverse/sdvplot";
 import { logos } from "@sportsdataverse/sdvplot/plot";
 import { createElement } from "react";
+import { renderToString } from "react-dom/server";
 import { expect, test } from "vitest";
 import { abs } from "../sources.js";
 import type { ExampleEntry } from "../src/contract.js";
@@ -43,6 +45,38 @@ test("Review Focus 1: a throw fails the gate; a blank figure or no output is a p
   expect(problems(blank, await runExample(blank, out(undefined)))).toContain("rendered nothing");
   for (const empty of ["", [], {}])
     expect(problems(blank, await runExample(blank, out(empty)))).toContain("rendered nothing");
+});
+
+test("outline:none fails the gate, except on MUI X Charts' keyboard layer, which draws its own focus mark", async () => {
+  const chart = createElement(ScatterChart, {
+    width: 300,
+    height: 200,
+    skipAnimation: true,
+    series: [{ data: [{ x: 1, y: 2 }] }],
+  });
+  const r = await runExample(entry("t/mui"), out(chart));
+  // MUI's proxy and the announcers its effect adds (jsdom ran the effect) are there, and exempt
+  expect(r.markup.match(/outline: none/g)?.length).toBe(3);
+  expect(r.markup).toContain('aria-labelledby="voiceover-');
+  expect(problems(entry("t/mui"), r)).toEqual([]);
+  // the server's spelling of the same proxy (no effect ran: no announcers) is exempt too
+  const ssr = renderToString(chart);
+  expect(ssr).toMatch(/outline:none/);
+  expect(problems(entry("t/mui"), { ...r, markup: ssr })).toEqual([]);
+  const flagged = (extra: string, at: "after" | "inside" = "after") => {
+    const markup =
+      at === "after"
+        ? `${r.markup}${extra}`
+        : r.markup.replace(/(<div role="none" tabindex="0" style="[^"]*">)/, `$1${extra}`);
+    expect(markup).not.toBe(r.markup);
+    return problems(entry("t/mui"), { ...r, markup });
+  };
+  const OUTLINE = "removes the focus outline (outline: none)";
+  // beside MUI's proxy: another element, or a div shaped like the proxy but not MUI's exact style, is reported
+  expect(flagged('<button style="outline: none">x</button>')).toContain(OUTLINE);
+  expect(flagged('<div role="none" tabindex="0" style="outline:none">x</div>')).toContain(OUTLINE);
+  // inside it: anything but MUI's own voiceover texts and announcers is reported
+  expect(flagged('<p style="outline:none">y</p>', "inside")).toContain(OUTLINE);
 });
 
 // Review Focus 2 (a table prerenders to renderHTML's string byte for byte) needs sdvtables/html: Phase 4.
