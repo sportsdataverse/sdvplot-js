@@ -10,6 +10,26 @@ vi.mock("@sportsdataverse/sporty", () => {
     code: "ERR_MODULE_NOT_FOUND",
   });
 });
+// three and react-three-fiber are stand-ins, not the real packages: <Surface3D> loads them alongside sporty, and a
+// real import that fails under load (a vitest worker dying, seen once on CI) loses the race with the wrong error.
+vi.mock("three", () => {
+  class BufferAttribute {
+    constructor(
+      readonly array: ArrayLike<number>,
+      readonly itemSize: number,
+    ) {}
+  }
+  class BufferGeometry {
+    setAttribute(): void {}
+    setIndex(): void {}
+    computeBoundingSphere(): void {}
+    dispose(): void {}
+  }
+  return { BufferAttribute, BufferGeometry, DoubleSide: 2 };
+});
+vi.mock("@react-three/fiber", () => ({
+  useThree: <T,>(pick: (s: { invalidate: () => void }) => T): T => pick({ invalidate: () => {} }),
+}));
 afterEach(cleanup);
 configure({ asyncUtilTimeout: 15_000 });
 vi.setConfig({ testTimeout: 20_000 });
@@ -42,4 +62,24 @@ test("without sporty, ./react imports and <Surface3D> throws a clear install err
   expect(e.message).toMatch(
     /Surface3D needs the optional peer @sportsdataverse\/sporty.*pnpm add @sportsdataverse\/sporty/,
   );
+});
+
+test("without sporty, <Trajectory> still draws its mesh", async () => {
+  const { Trajectory } = await import("../../src/react/index.js");
+  const onError = vi.fn();
+  vi.spyOn(console, "error").mockImplementation(() => {}); // react-dom does not know <mesh>, and says so
+  const { container } = render(
+    <Catch onError={onError}>
+      <Trajectory
+        points={[
+          [0, 50, 6],
+          [0, 17 / 12, 2],
+        ]}
+        radius={0.121}
+        color="#003087"
+      />
+    </Catch>,
+  );
+  await waitFor(() => expect(container.querySelector("mesh > meshbasicmaterial")).not.toBeNull());
+  expect(onError).not.toHaveBeenCalled();
 });
