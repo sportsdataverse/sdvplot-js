@@ -1880,7 +1880,7 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
               wait();
             }),
         );
-        await page.waitForLoadState("networkidle"); // the logos
+        await page.waitForLoadState("networkidle"); // MapLibre's logos are in already: mount awaits addLogoImages
         const deck = id.endsWith("deckgl-arcs-dark");
         // deck.gl's IconLayer fetches its logos itself, after the map has loaded: "networkidle" above has long been
         // reached by then and waits for nothing. Wait for each overlay layer's public `isLoaded` (its icons fetched
