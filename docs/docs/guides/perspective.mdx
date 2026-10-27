@@ -21,10 +21,11 @@ Perspective, not even its types, so it runs anywhere, a server included. It is s
 
 sdvplot for Python has the same pair in `sdvplot.perspective`: `perspective_sdv_config` and `perspective_logo_column`.
 Given the same rows and options, `perspectiveConfig` returns the same dictionary, key for key and colour for colour, so
-a viewer set up from a notebook and one set up from a web page look alike. A test holds the two together: it runs the
-Python function on real frames (the grid, split bars and lines, a scatter, light and dark, numeric team ids, a missing
-team, teams that do not resolve, number formats, a logo column) and checks that the JavaScript output equals each
-answer, with the same warnings. The options are the Python keyword arguments in JavaScript's spelling:
+a viewer set up from a notebook and one set up from a web page look alike. A test holds the two together: the Python function
+was run on real frames (the grid, split bars and lines, a scatter, light and dark, numeric team ids, a missing team,
+teams that do not resolve, number formats, a logo column, no rows), its answers are committed as a fixture, and the
+test checks that the JavaScript output equals each one, with the same warnings. The test does not run Python: when
+either side changes, the fixture is written again from the Python package. The options are the Python keyword arguments in JavaScript's spelling:
 
 | Python | JavaScript |
 | --- | --- |
@@ -71,7 +72,8 @@ the order Perspective meets the teams, the rows' order. (A scatter's `split_by` 
 
 `mode: "dark"` picks Perspective's "Pro Dark" theme, and the colours are made for its background, `#242526`: a team
 colour under 3:1 contrast against it is swapped for the team's other colour or lifted until it reads, and the teams'
-colours stay apart (CIE76 ΔE 20), the shared palette every sdvplot adapter uses. `background` sets another colour to
+colours stay apart (CIE76 ΔE 20): the same palette as sdvplot's Python integration and the deck.gl adapter. (Some
+other adapters' `teamColorPalette` differ for a team named two ways or a value that names no team.) `background` sets another colour to
 read against.
 
 <Live id="sdvplot/perspective/nfl-epa-split-bars-dark" />
