@@ -8,14 +8,13 @@
  * given `loadImage`, which in Node is `@napi-rs/canvas`'s.
  */
 import type { Chart, Plugin, PointStyle, Scale, Tick } from "chart.js";
-import { colorList } from "./_web.js";
+import { colorPalette } from "./_web.js";
 import { teamColorsSync } from "./colors.js";
 import { contrast, hex6, onColor } from "./contrast.js";
 import { InputError, UnsupportedTargetError, warn } from "./errors.js";
 import type { EspnHeadshotLeague } from "./headshots.js";
 import { type Kind, type PlaceOptions, checkAlpha, placeSync } from "./placement.js";
 import type { Value } from "./resolve.js";
-import { teamPalette } from "./team-palette.js";
 import type { HeadshotIdSystem, IdSystem, League, SeasonInput, Variant, Which } from "./types.js";
 
 export interface PointOptions {
@@ -392,17 +391,7 @@ export function teamColorPalette(
   teams: readonly unknown[],
   o: ChartjsColorOptions = {},
 ): string[] {
-  const fallback = o.fallback ?? "#808080";
-  const co = {
-    ...(o.season === undefined ? {} : { season: o.season }),
-    ...(o.idSystem === undefined ? {} : { idSystem: o.idSystem }),
-  };
-  const main = colorList(league, teams, { ...co, ...(o.which === undefined ? {} : { which: o.which }) });
-  const bg = o.background === undefined ? undefined : hex6(o.background);
-  if (bg === undefined) return main.map((c) => c ?? fallback);
-  const other = colorList(league, teams, { ...co, which: o.which === "secondary" ? "primary" : "secondary" });
-  const colors = main.map((c) => hex6(c ?? fallback, { dropAlpha: true }));
-  return teamPalette(colors, other, bg, teams.map(String));
+  return colorPalette(league, teams, o);
 }
 /** `teamColor` at 0.2 opacity by default: the fill under a radar or area dataset. */
 export function teamFill<T extends Value | readonly Value[]>(
