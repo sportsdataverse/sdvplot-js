@@ -165,6 +165,7 @@
     "@resvg/resvg-js": ">=2.6",
     "@sportsdataverse/sporty": "workspace:^0",
     "@tanstack/charts": ">=1.1.0",
+    "@unovis/ts": ">=1.7.1",
     "chart.js": ">=4.4",
     "cytoscape": ">=3.34.3",
     "d3": ">=7",
@@ -218,6 +219,9 @@
       "optional": true
     },
     "@tanstack/charts": {
+      "optional": true
+    },
+    "@unovis/ts": {
       "optional": true
     },
     "chart.js": {
@@ -304,6 +308,7 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@types/three": "0.186.0",
+    "@unovis/ts": "1.7.1",
     "chart.js": "4.5.1",
     "cytoscape": "3.34.3",
     "d3": "^7.9.0",
