@@ -233,12 +233,16 @@ describe("teamColorPalette / teamColorScale", () => {
     for (const o of [{}, { background: "#141414" }]) {
       expect(teamColorPalette("nfl", AFC_WEST, o)).toEqual(rechartsPalette("nfl", AFC_WEST, o));
       expect(teamColorScale("nfl", AFC_WEST, o)).toEqual({
+        type: "ordinal",
         domain: AFC_WEST,
         range: teamColorPalette("nfl", AFC_WEST, o),
       });
     }
-    // each team once, as the data holds it (a string), in order
-    expect(teamColorScale("nfl", ["KC", "LV", "KC", 12]).domain).toEqual(["KC", "LV", "12"]);
+    // each team once, exactly as the data holds it (a number stays a number: G2 matches by exact value), in order;
+    // 12 and "12" are one team, the first kept
+    const mixed = teamColorScale("nfl", ["KC", "LV", "KC", 12, "12"]);
+    expect(mixed.domain).toEqual(["KC", "LV", 12]);
+    expect(mixed.range).toEqual(teamColorPalette("nfl", ["KC", "LV", "12"]));
     const w = warnings(() => {
       expect(teamColorScale("nfl", ["XXX"], { fallback: "#123456" }).range).toEqual(["#123456"]);
     });

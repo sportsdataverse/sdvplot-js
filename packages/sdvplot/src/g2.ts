@@ -65,16 +65,19 @@ export function teamColorPalette(
 }
 
 /** A G2 `scale.color`: an ordinal scale from each team value to its colour. */
-export interface G2ColorScale {
-  /** The team values, as the data holds them (strings), each once and in order. */
-  domain: string[];
+export interface G2ColorScale<T = unknown> {
+  /** Ordinal: a numeric team column (ESPN ids, say) keeps one colour per id, never a gradient. */
+  type: "ordinal";
+  /** The team values exactly as the data holds them (numbers stay numbers), each once and in order. */
+  domain: T[];
   /** Their colours, in the same order. */
   range: string[];
 }
 /**
- * Team colours as a G2 `scale.color` (`{ domain, range }`): the mark's `encode.color` field holds the team values, and
- * each draws in its own colour; the legend lists the teams in this order. With `background` the colours read on it
- * (dark mode). Pass the teams as the data holds them: the domain is matched to the data by value.
+ * Team colours as a G2 `scale.color` (`{ type: "ordinal", domain, range }`): the mark's `encode.color` field holds the
+ * team values, and each draws in its own colour; the legend lists the teams in this order. With `background` the
+ * colours read on it (dark mode). Pass the teams as the data holds them: G2 matches the domain to the data by exact
+ * value, so a numeric id stays a number here (12, not "12"); a value given twice (also 12 and "12") is kept once.
  *
  * @example
  * ```ts
@@ -86,13 +89,14 @@ export interface G2ColorScale {
  * teamColorScale("nfl", ["KC", "LAC", "DEN", "LV"]);
  * ```
  */
-export function teamColorScale(
+export function teamColorScale<T>(
   league: League,
-  teams: readonly unknown[],
+  teams: readonly T[],
   o: G2ColorOptions = {},
-): G2ColorScale {
-  const domain = [...new Set(teams.map(String))];
-  return { domain, range: colorPalette(league, domain, o) };
+): G2ColorScale<T> {
+  const seen = new Map<string, T>(); // keyed by String(v): the first of 12 and "12" wins
+  for (const t of teams) if (!seen.has(String(t))) seen.set(String(t), t);
+  return { type: "ordinal", domain: [...seen.values()], range: colorPalette(league, [...seen.keys()], o) };
 }
 
 interface Shared {

@@ -151,3 +151,20 @@ test("a vertical team axis (transpose): the guide's logoMark at each bar's base 
     expect(y).toBeCloseTo(bar?.center[1] ?? 0, 1);
   }
 });
+
+test("teamColorScale on a numeric team column (ESPN ids): each column draws in its own team's colour, whatever the row order", async () => {
+  // G2 matches an ordinal domain by exact value: a domain of "12" never matches the number 12, and G2 then colours the
+  // unmatched values by position. Rows in an order other than the domain's show it.
+  const ids = WEST.map((r) => Number(ID(r.team)));
+  const color = teamColorScale("nfl", ids);
+  const rows = [...WEST].reverse().map((r) => ({ id: Number(ID(r.team)), wins: r.wins }));
+  const { find } = await draw({
+    type: "interval",
+    data: rows,
+    encode: { x: "id", y: "wins", color: "id" },
+    scale: { color },
+  });
+  const want = rows.map((r) => color.range[ids.indexOf(r.id)]);
+  expect(new Set(want).size).toBe(4);
+  expect(ofMark(find, "interval").map((b) => b.style.fill)).toEqual(want);
+});
