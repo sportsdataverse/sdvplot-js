@@ -1,0 +1,120 @@
+---
+title: TanStack Charts
+sidebar_position: 7.99
+---
+
+[TanStack Charts](https://tanstack.com/charts) is a grammar of graphics for TypeScript: marks (`dot`, `lineY`, `barY`,
+...) read your rows through channels, `defineChart` puts them over shared scales, and a renderer draws the resulting
+keyed scene, as SVG by default, with thin adapters for React (`@tanstack/charts/react`), Svelte
+(`@tanstack/charts/svelte`), the plain DOM (`mountChart` from `@tanstack/charts/dom`) and more.
+`@sportsdataverse/sdvplot/tanstack` builds the pieces a chart of teams needs: team colours as the chart's `color`
+option, and team logos, wordmarks and headshots as `dot` marks filled with their image. It never imports TanStack
+Charts (install `@tanstack/charts` 1.1.0 or later beside it, an optional peer); you hand it TanStack's `dot` and
+`renderChartSvg`. Every piece can be built anywhere, a server included. It is synchronous: load the league first
+(`loadLeague`). The charts below are React examples, drawn by TanStack in your browser.
+
+## Team colours
+
+`teamColorScale(league, teams)` returns TanStack's `color` option for those teams, `{ domain, range }`: the domain is
+the team values exactly as your data holds them (each once, in order) and the range their colours. Put the team field
+on a mark's `z` (or `color`) channel and give the chart `color: teamColorScale(...)`: each team draws in its own
+colour, and a `colorLegend` lists them in this order (spread the scale and add `legend: colorLegend(...)`). TanStack
+matches a value by its type as well as its value, so `12` and `"12"` are two keys: pass a numeric team column (ESPN
+ids, say) as numbers. `teamColorPalette` returns the colours alone, for anything that takes them by position, such as a
+`theme.palette`.
+
+Pass `background` (a hex colour) for a dark chart: a team colour under 3:1 contrast against it is swapped for the
+team's other colour or lifted until it reads, and the colours are kept apart from each other. TanStack's default
+theme paints no background (it is transparent) and draws axes and text in `currentColor`, so dark mode is the card's
+CSS: give the container its `background` and `color`, and pass that background to `teamColorScale`.
+
+<Live id="sdvplot/tanstack-charts/afc-east-margin-lines" />
+
+## Logos as pattern-filled dots
+
+TanStack Charts has no image mark: its scene is made of groups, rules, lines, areas, dots, rectangles and labels.
+sdvplot draws each logo as a TanStack `dot` filled with an SVG `<pattern>` that holds the logo image:
+
+```tsx
+import { defineChart, dot } from "@tanstack/charts";
+import { Chart } from "@tanstack/charts/react";
+import { scaleLinear } from "@tanstack/charts/scales/linear";
+import { renderChartSvg } from "@tanstack/charts/svg";
+import { logoDots, withPatterns } from "@sportsdataverse/sdvplot/tanstack";
+
+const logos = logoDots(rows, { x: "pf", y: "pa", team: "team", league: "nfl", size: 28 });
+
+<Chart
+  definition={defineChart({
+    marks: logos.map((d) => dot(d.data, d.options)),
+    scales: { x: { scale: scaleLinear }, y: { scale: scaleLinear } },
+  })}
+  renderSvg={withPatterns(renderChartSvg, logos)}
+  ariaLabel="Points for and against"
+  width={640}
+  height={480}
+/>;
+```
+
+- `logoDots(rows, { x, y, team, league })` returns one entry per logo: the rows that draw it (each whole row, with
+  `sdv_` fields added) and the `dot` options. TanStack paints a dot mark's `fill` once for the whole mark, so each
+  logo gets its own mark, `fill: "url(#<its pattern>)"`. Each row's logo is `size` px tall (default 24), centred on
+  the row's `x` and `y` fields read through the chart's own scales, so it sits exactly where a point of that row
+  would. The dot's radius is the half-diagonal of the logo's box, so the circle never cuts the logo.
+- `withPatterns(renderChartSvg, logos, ...more)` is the chart's `renderSvg`, TanStack's public hook for its SVG
+  serializer (the React and Svelte `<Chart>` and `mountChart` all take it). It writes each pattern into the chart's
+  own SVG, in a `<defs>` of its own, scoped by the chart's `idPrefix` as TanStack scopes its gradients. Build it once
+  per set of dots (a module constant, or `useMemo`).
+- `wordmarkDots` draws wordmarks at their own width, and `headshotDots(rows, { x, y, player, league })` ESPN headshots
+  by player id (`idSystem: "gsis"` for nflverse ids, after `loadGsis()`). `size` is in px; a fraction such as `0.1` is
+  refused with an `InputError`. `alpha` sets the fill opacity.
+- A row whose team has no logo (or whose player has no headshot), or with no `x` or `y`, is left out with one
+  warning; nothing draws a broken image.
+
+<Live id="sdvplot/tanstack-charts/epa-logo-scatter" />
+
+Because each logo is an ordinary TanStack dot, it keeps what TanStack gives a dot: the tooltip (`defineChart(spec, {
+tooltip })`), pointer and keyboard focus, and keyed updates (each dot's key is its row's index, and its mark id comes
+from its image, so new data moves the logos in place). The patterns are part of the SVG markup, so a server render
+(`renderToString` of the React `<Chart>`) already has the logos, and `serializeChartSvg` / `downloadChartSvg` export
+them with the chart. For a raster export (`renderChartImage`), embed the images first: a browser does not load an
+external image inside an SVG drawn to a canvas, so pass `embed: await embedSources(urls)`.
+
+On a line chart, give `logoDots` only each team's last row, and each line ends in its logo. This one is dark: the
+card is `#111827` with a light `color`, the lines take `teamColorScale(..., { background: "#111827" })`, and the logos
+are the leagues' `variant: "dark"` versions.
+
+<Live id="sdvplot/tanstack-charts/afc-west-margin-dark" />
+
+### Why patterns, and the limits
+
+TanStack offers three ways to put an image on a chart, and the pattern is the one that keeps the chart's own marks:
+
+- A custom renderer or layer renderer (`createMark` with a `ChartLayerRenderer`) could draw `<image>` elements, but
+  it has to implement mounting, server markup, focus painting and composition with the default renderer, and calling
+  `createMark` would make sdvplot import TanStack at runtime.
+- A DOM overlay positioned from the rendered scene (`onRender`) works only in the browser after a render, is missing
+  from the server markup and the SVG export, and has to be kept in step with every update.
+- A pattern-filled dot is a TanStack mark like any other, and the pattern travels in the SVG through TanStack's own
+  serializer hook.
+
+The limits:
+
+- **SVG renderer only.** The Canvas renderer (`@tanstack/charts/canvas`) resolves a `url(#...)` fill only to a
+  declared gradient and leaves any other unpainted, so the logo dots draw nothing there.
+- Each logo is a circle as large as the logo box's diagonal: neighbouring logos' circles overlap before the logos do,
+  and the larger circle is also the dot's hit area for focus and the tooltip.
+- A chart that draws the same images twice (say a scatter and end logos of the same teams) needs `id` on one of the
+  sets: TanStack wants each mark id once.
+
+## Svelte and the DOM
+
+Nothing is React-specific: the pieces are plain values. In Svelte, `<Chart definition={...} renderSvg={withPatterns(renderChartSvg, logos)} ariaLabel="..." />`
+from `@tanstack/charts/svelte`; without a framework, `mountChart(el, { definition, renderSvg, ariaLabel })` from
+`@tanstack/charts/dom`.
+
+## Reading back what was drawn
+
+`drawnMarks(...sets)` lists every image of the given dot sets as `[id, x, y, height in px, url]`: the resolved team
+(or player) id, the row's own `x` and `y` values, the height and the image URL. Tests use it to check the logos
+without a browser.
