@@ -2210,6 +2210,7 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
       {
         rows: readonly string[];
         images: () => (string | undefined)[];
+        league: "nfl" | "nba";
         /** A header to click, and the row ids after one click (descending) and two (ascending). */
         sort: { th: string; desc: readonly string[]; asc: readonly string[] };
         bg: string;
@@ -2219,12 +2220,14 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
     "sdvtables/tanstack-table/afc-standings-react": {
       rows: tsByWins.map((s) => s.team),
       images: () => tsByWins.map((s) => resolveSync(s.team, "nfl")),
+      league: "nfl",
       sort: { th: "Net EPA/play", desc: netEpa(-1), asc: netEpa(1) },
       bg: "#FFFFFF",
     },
     "sdvtables/tanstack-table/pacific-nba-svelte": {
       rows: tsByPct.map((s) => String(s.team_id)),
       images: () => tsByPct.map((s) => resolveSync(s.team_id, "nba")),
+      league: "nba",
       sort: {
         th: "L",
         desc: [...NBA_STANDINGS].sort((a, b) => b.losses - a.losses).map((s) => String(s.team_id)),
@@ -2272,6 +2275,7 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
                 return {
                   id: r.getAttribute("data-row-id"),
                   image: img?.getAttribute("data-sdv-id") ?? null,
+                  src: img?.getAttribute("src") ?? null,
                   loaded: img instanceof HTMLImageElement && img.complete && img.naturalWidth > 0,
                   box:
                     ib === undefined
@@ -2293,6 +2297,15 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
           got.rows.map((r) => r.image),
           "each row's logo is its own team's",
         ).toEqual(want.images());
+        // and its image is that team's logo: the URL sdvplot gives for the expected id, not only the id it is stamped with
+        expect(
+          got.rows.map((r) => r.src),
+          "each row draws its own team's logo URL",
+        ).toEqual(
+          want
+            .images()
+            .map((id) => logoUrlSync(id as string, want.league, { markType: "logo", idSystem: "team_id" })),
+        );
         expect(
           got.rows.map((r) => r.loaded),
           "every logo loaded",
