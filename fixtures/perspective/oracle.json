@@ -2834,6 +2834,85 @@
     }
    },
    "warnings": []
+  },
+  {
+   "name": "datagrid no rows",
+   "options": {
+    "team_col": "team",
+    "league": "nfl"
+   },
+   "schema": {
+    "team": "string",
+    "plays": "integer",
+    "epa_per_play": "float",
+    "def_epa_per_play": "float"
+   },
+   "rows": [],
+   "config": {
+    "plugin": "Datagrid",
+    "theme": "Pro Light",
+    "columns_config": {
+     "plays": {
+      "number_format": {
+       "useGrouping": false,
+       "maximumFractionDigits": 0
+      }
+     },
+     "epa_per_play": {
+      "number_format": {
+       "minimumFractionDigits": 3,
+       "maximumFractionDigits": 3
+      }
+     },
+     "def_epa_per_play": {
+      "number_format": {
+       "minimumFractionDigits": 3,
+       "maximumFractionDigits": 3
+      }
+     }
+    }
+   },
+   "warnings": []
+  },
+  {
+   "name": "y bar no rows",
+   "options": {
+    "team_col": "team",
+    "league": "nfl",
+    "plugin": "Y Bar"
+   },
+   "schema": {
+    "team": "string",
+    "plays": "integer",
+    "epa_per_play": "float",
+    "def_epa_per_play": "float"
+   },
+   "rows": [],
+   "config": {
+    "plugin": "Y Bar",
+    "theme": "Pro Light",
+    "columns_config": {
+     "plays": {
+      "number_format": {
+       "useGrouping": false,
+       "maximumFractionDigits": 0
+      }
+     },
+     "epa_per_play": {
+      "number_format": {
+       "minimumFractionDigits": 3,
+       "maximumFractionDigits": 3
+      }
+     },
+     "def_epa_per_play": {
+      "number_format": {
+       "minimumFractionDigits": 3,
+       "maximumFractionDigits": 3
+      }
+     }
+    }
+   },
+   "warnings": []
   }
  ]
 }

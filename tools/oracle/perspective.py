@@ -168,6 +168,9 @@ CASES: list[tuple[str, pl.DataFrame, dict]] = [
         },
     ),
     ("datagrid season", epa, {"team_col": "team", "league": "nfl", "season": 2024}),
+    # no rows: Python keeps the frame's columns (number formats, no palette); rows of objects carry none without a schema
+    ("datagrid no rows", epa.head(0), {"team_col": "team", "league": "nfl"}),
+    ("y bar no rows", epa.head(0), {"team_col": "team", "league": "nfl", "plugin": "Y Bar"}),
 ]
 
 

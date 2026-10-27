@@ -208,7 +208,9 @@ const gradient = (colors: readonly string[]): string => `linear-gradient(to righ
  * Every number column also gets a `number_format` (Intl.NumberFormat options): 3 decimals for a float, 1 for a float
  * named as a percentage (`pct`, `percent`), and an integer plain (2024, not 2,024). `formats` overrides them.
  *
- * @param rows - the rows the viewer shows (what `perspective.table(rows)` loads).
+ * @param rows - the rows the viewer shows (what `perspective.table(rows)` loads). With no rows and no `schema` no column is
+ *   known: the config has `plugin` and `theme` and an empty `columns_config`, without an error (pass the table's
+ *   `schema` for its number formats, as Python's empty frame keeps its columns).
  * @returns `plugin`, `theme` and `columns_config`; merge your own `group_by`, `split_by`, `columns` and the rest in.
  * @throws InputError for a column the rows do not have (`teamCol`, `logoCol` or a `formats` key), a team column that
  *   mixes numbers and strings, an unknown `mode`, or a season outside the league's. UnresolvedTeamError with
@@ -246,7 +248,9 @@ export function perspectiveConfig(
     throw new InputError(`mode must be 'light' or 'dark', not ${quote(String(mode))}`);
   const schema = o.schema ?? inferSchema(rows);
   const { teamCol, logoCol } = o;
-  checkColumns(schema, [teamCol, logoCol, ...Object.keys(o.formats ?? {})]);
+  // no rows and no schema: no column is known, so none is missing (Python's empty frame still has its columns)
+  if (o.schema !== undefined || rows.length > 0)
+    checkColumns(schema, [teamCol, logoCol, ...Object.keys(o.formats ?? {})]);
   const [pro, proBg] = PRO[mode];
   const bg = o.background === undefined ? proBg : hex6(o.background);
   const season = normSeason(o.season, o.league);

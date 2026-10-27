@@ -21,9 +21,10 @@ failure is a port bug, or a difference between the two packages to report.
     values that name no NFL team ("XFL", "USFL"), and the best three with an empty `team_logo` column (a logo URL column
     needs the logo manifest, a network file, so it holds no URLs);
   - Python's own codepoint-order test frame of six college teams ("LSU" sorts before "Louisiana").
-- **Cases (19):** the Datagrid, "Y Bar", "Y Line" and "X/Y Scatter"; light and dark; numeric team ids on the grid (one
+- **Cases (21):** the Datagrid, "Y Bar", "Y Line" and "X/Y Scatter"; light and dark; numeric team ids on the grid (one
   warning) and on bars; a null team on the grid, bars and a dark scatter; unresolved teams; formats (one replaced, one
-  dropped) with a background; a logo column on the grid (a link) and on bars (none); a season.
+  dropped) with a background; a logo column on the grid (a link) and on bars (none); a season; no rows (the NFL frame's columns, as
+  Python keeps them: number formats and no palette) on the grid and on bars.
 - **Each case:** the options (Python's keyword arguments), the frame's schema as Perspective types, the rows, the
   config and the warnings' messages.
 
