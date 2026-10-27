@@ -19,16 +19,23 @@ returns `{ id, source, layer, images }`. The source is GeoJSON with one point pe
 index and whose properties are the resolved team, the logo's URL and the map image it draws. The layer is a `symbol`
 layer whose `icon-image` reads that property; every logo is shown, even where two overlap. `size` is the logo's height
 on screen in pixels (32 by default) and `alpha` its opacity. Team values can be abbreviations, names or ids, and
-numbers as well as strings: a column of numeric ESPN ids draws the same logos as the abbreviations.
+numbers as well as strings: a column of numeric ESPN ids draws the same logos as the abbreviations. Longitudes and
+latitudes may be numbers or numeric strings, as a CSV reads them (`routeLines` reads them the same way).
 
 A symbol layer draws images the map already holds, so the logos go in first. `addLogoImages(map, logos)` loads each
 distinct logo once through the map (`loadImage`), adds it (`addImage`) at the pixel ratio that draws it `size` pixels
-tall (sharp on a high-density screen too), and skips any image the map already has, so calling it again after a
-style change adds nothing twice. Await it, then add the source and the layer (`map.addSource(logos.id,
-logos.source)` and `map.addLayer(logos.layer)`), all after the map's `load` event.
+tall (sharp on a high-density screen too), and skips any image the map already has, so calling it twice adds
+nothing twice. Await it, then add the source and the layer (`map.addSource(logos.id, logos.source)` and
+`map.addLayer(logos.layer)`), all after the map's `load` event.
+
+Switching the basemap with `map.setStyle` (light to dark, say) drops every image, source and layer you added. Listen
+for the map's `style.load` event, which fires each time a style finishes loading, and in it do the same three steps
+again: await `addLogoImages`, then add the source and the layer. Because it skips images the map already has, the
+repeat call is safe whether the new style kept them or not, and it loads only what is missing. `routeLines` needs the
+same: re-add its source and layer on `style.load`.
 
 A team with no archived logo, or one that does not resolve, is left out with one warning, and so is a row with a
-missing coordinate; a logo that fails to load is left undrawn with one warning. Each team's 2024 home stadium below
+missing, non-numeric or infinite coordinate; a logo that fails to load is left undrawn with one warning. Each team's 2024 home stadium below
 comes from nfelo's stadium table ([greerreNFL/Stadiums](https://github.com/greerreNFL/Stadiums), with thanks;
 copied into sportsdataverse/nfl-data), joined to the season's games by nflverse's `stadium_id`. Two pairs of teams share a stadium, so one logo of each pair sits on the
 other.
@@ -47,7 +54,8 @@ coordinate is left out with one warning. Add the lines before the logos, so the 
 On a dark basemap, pass its background as `background`: every team colour then keeps 3:1 contrast against it and
 stays apart from the other teams' colours, through the palette every sdvplot adapter shares. The contrast is measured
 against the basemap's land colour, its `background` layer, not its water, which on OpenFreeMap's dark style is a
-little lighter and on its light style a little darker.
+little lighter and on its light style a little darker. At low zoom the dark style also lays a shaded-relief raster
+(`ne2_shaded`) over the land, so land there is not exactly `#0c0c0c` either.
 
 The road trips below fly airport to airport: each team's home airport comes from nflverse's
 [nfldata](https://github.com/nflverse/nfldata) `airports.csv`. The same rows feed `passArcLayer` for arcs instead
