@@ -165,6 +165,7 @@ const config: Config = {
           `${sdvplot}/src/recharts.ts`,
           `${sdvplot}/src/shadcn.ts`,
           `${sdvplot}/src/mui.ts`,
+          `${sdvplot}/src/tanstack.ts`,
           `${sdvplot}/src/uplot.ts`,
           `${sdvplot}/src/nivo.ts`,
           `${sdvplot}/src/victory.ts`,

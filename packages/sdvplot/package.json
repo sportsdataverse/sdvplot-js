@@ -28,7 +28,8 @@
     "react-three-fiber",
     "lightweight-charts",
     "g2",
-    "ant-design-charts"
+    "ant-design-charts",
+    "tanstack-charts"
   ],
   "homepage": "https://plot.sportsdataverse.org",
   "bugs": "https://github.com/sportsdataverse/sdvplot-js/issues",
@@ -143,6 +144,10 @@
       "types": "./dist/g2.d.ts",
       "import": "./dist/g2.js"
     },
+    "./tanstack": {
+      "types": "./dist/tanstack.d.ts",
+      "import": "./dist/tanstack.js"
+    },
     "./package.json": "./package.json"
   },
   "peerDependencies": {
@@ -159,6 +164,7 @@
     "@react-three/fiber": ">=9.8.1",
     "@resvg/resvg-js": ">=2.6",
     "@sportsdataverse/sporty": "workspace:^0",
+    "@tanstack/charts": ">=1.1.0",
     "chart.js": ">=4.4",
     "cytoscape": ">=3.34.3",
     "d3": ">=7",
@@ -209,6 +215,9 @@
       "optional": true
     },
     "@sportsdataverse/sporty": {
+      "optional": true
+    },
+    "@tanstack/charts": {
       "optional": true
     },
     "chart.js": {
@@ -284,6 +293,7 @@
     "@sportsdataverse/sporty": "workspace:^",
     "@sveltejs/package": "2.5.8",
     "@sveltejs/vite-plugin-svelte": "4.0.4",
+    "@tanstack/charts": "1.1.0",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
