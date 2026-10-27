@@ -59,6 +59,8 @@ async function drawWith(el: HTMLElement, s: BrowserSpec): Promise<() => void> {
       return (
         await import(/* webpackChunkName: "draw-ant-design-charts" */ "./ant-design-charts.js")
       ).default(el, s);
+    case "maplibre":
+      return (await import(/* webpackChunkName: "draw-maplibre" */ "./maplibre.js")).default(el, s);
   }
 }
 

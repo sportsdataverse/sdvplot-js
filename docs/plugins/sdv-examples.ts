@@ -21,6 +21,7 @@ const CHART_LIBS = [
   "lightweight-charts",
   "g2",
   "ant-design-charts",
+  "maplibre",
 ] as const;
 /**
  * Vega's self-contained build (its d3 inside). The module build imports the d3-* packages Observable Plot imports,

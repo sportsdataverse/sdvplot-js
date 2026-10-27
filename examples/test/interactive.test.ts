@@ -4,15 +4,30 @@ import { type Server, createServer } from "node:http";
 import type { AddressInfo } from "node:net";
 import { extname, join, normalize } from "node:path";
 import { createCanvas, loadImage } from "@napi-rs/canvas";
-import { contrast, loadLeague, logoUrlSync, resolveSync, solid } from "@sportsdataverse/sdvplot";
+import {
+  contrast,
+  loadLeague,
+  logoUrlSync,
+  resolveSync,
+  solid,
+  teamColorsSync,
+} from "@sportsdataverse/sdvplot";
 import { teamColorPalette, teamColors } from "@sportsdataverse/sdvplot/mui";
 import { teamColorPalette as rechartsPalette } from "@sportsdataverse/sdvplot/recharts";
-import { type Browser, chromium } from "playwright";
+import { type Browser, type Page, chromium } from "playwright";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { pagePath } from "../scripts/pages.js";
 import { abs } from "../sources.js";
 import { BROWSER } from "../src/browser.gen.js";
-import { AFC_WEEKS_2024, NBA_STANDINGS, NFL_TEAM_EPA_2024, STANDINGS } from "../src/data.js";
+import {
+  AFC_WEEKS_2024,
+  KC_PHI_GAMES_2024,
+  NBA_STANDINGS,
+  NFL_AIRPORTS,
+  NFL_STADIUMS_2024,
+  NFL_TEAM_EPA_2024,
+  STANDINGS,
+} from "../src/data.js";
 import { EXAMPLES } from "../src/registry.gen.js";
 import { MUI_PROXY_STYLE } from "./run.js";
 
@@ -28,6 +43,7 @@ const SHOTS = process.env.SDV_RENDER_SHOTS;
 const TYPES: Readonly<Record<string, string>> = {
   ".html": "text/html",
   ".js": "text/javascript",
+  ".mjs": "text/javascript",
   ".css": "text/css",
   ".svg": "image/svg+xml",
   ".png": "image/png",
@@ -51,7 +67,52 @@ const DRAWN: Readonly<Record<string, string>> = {
   "lightweight-charts": ".sdv-live-output .tv-lightweight-charts canvas",
   g2: ".sdv-live-output canvas",
   "ant-design-charts": ".sdv-live-output canvas",
+  maplibre: ".sdv-live-output canvas.maplibregl-canvas",
 };
+
+/** OpenFreeMap's credit, as its TileJSON gave it on 2026-10-27. */
+const OPENFREEMAP_CREDIT =
+  '<a href="https://openfreemap.org" target="_blank">OpenFreeMap</a> <a href="https://www.openmaptiles.org/" target="_blank">&copy; OpenMapTiles</a> Data from <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>';
+/**
+ * Answers every request to OpenFreeMap here, so a MapLibre page never reaches the tile provider. Each style is a
+ * stand-in with that style's own background colour (positron #f2f3f0, dark #0c0c0c, read 2026-10-27) and one empty
+ * GeoJSON source carrying OpenFreeMap's credit, drawn by a layer so MapLibre shows the credit. It has no tiles: a
+ * tile is fetched by MapLibre's worker, which a page route may not see. Anything else asked of OpenFreeMap is aborted.
+ * Resolves to the URLs asked for.
+ */
+async function stubOpenFreeMap(page: Page): Promise<string[]> {
+  const asked: string[] = [];
+  await page.route("https://tiles.openfreemap.org/**", (r) => {
+    const url = r.request().url();
+    asked.push(url);
+    const style = /\/styles\/(positron|dark)$/.exec(url)?.[1];
+    if (style === undefined) return r.abort();
+    return r.fulfill({
+      status: 200,
+      contentType: "application/json",
+      headers: { "access-control-allow-origin": "*" },
+      body: JSON.stringify({
+        version: 8,
+        sources: {
+          openmaptiles: {
+            type: "geojson",
+            data: { type: "FeatureCollection", features: [] },
+            attribution: OPENFREEMAP_CREDIT,
+          },
+        },
+        layers: [
+          {
+            id: "background",
+            type: "background",
+            paint: { "background-color": style === "dark" ? "#0c0c0c" : "#f2f3f0" },
+          },
+          { id: "water", type: "fill", source: "openmaptiles", paint: { "fill-color": "#888888" } },
+        ],
+      }),
+    });
+  });
+  return asked;
+}
 
 describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the built docs", () => {
   let server: Server;
@@ -87,6 +148,7 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
       const errors: string[] = [];
       page.on("console", (m) => void (m.type() === "error" && errors.push(m.text())));
       page.on("pageerror", (e) => void errors.push(e.message));
+      await stubOpenFreeMap(page); // a MapLibre basemap never reaches the network
       await page.goto(`${base}/gallery/${pagePath(entry)}/`);
       const figure = page.locator(`figure[data-example="${id}"]`);
       await figure.scrollIntoViewIfNeeded();
@@ -1332,6 +1394,255 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
           await figure
             .locator(".sdv-live-output")
             .screenshot({ path: join(SHOTS, `${id.replace(/\//g, "_")}.png`) });
+        expect(errors).toEqual([]);
+      } finally {
+        await page.close();
+      }
+    },
+  );
+
+  // MapLibre GL JS examples (sdvplot/maplibre). The basemap never reaches the network: OpenFreeMap's styles, TileJSON
+  // and tiles are answered here (`stubOpenFreeMap`), a stand-in style with the style's own background colour, one
+  // vector source carrying OpenFreeMap's credit and empty tiles. On it: each team's logo sits at its own stadium or
+  // airport, projected through the map (`map.project`) and read back from the map (`queryRenderedFeatures`), and
+  // hiding the logo layer changes each logo's box (real logo pixels); each route leg is found by its feature id at its
+  // midpoint and painted in its team's colour there; the deck.gl overlay's logos and arcs paint; the credit shows.
+  const STADIUM_IDS = new Set(EXAMPLES.filter((e) => e.id.startsWith("sdvplot/maplibre/")).map((e) => e.id));
+  const airportOf = (team: string) =>
+    NFL_AIRPORTS.find((a) => a.team === team) as (typeof NFL_AIRPORTS)[number];
+  // the road trips the two route examples draw, worked out here from the games and airports, in row order
+  const TRIPS = KC_PHI_GAMES_2024.filter((g) => g.away_team === "KC" || g.away_team === "PHI").map((g) => ({
+    team: g.away_team,
+    from: [airportOf(g.away_team).lon, airportOf(g.away_team).lat] as [number, number],
+    to: [airportOf(g.home_team).lon, airportOf(g.home_team).lat] as [number, number],
+  }));
+  const MAPS: Readonly<
+    Record<
+      string,
+      { style: "positron" | "dark"; logos: readonly { team: string; at: [number, number] }[]; px: number }
+    >
+  > = {
+    "sdvplot/maplibre/nfl-stadiums": {
+      style: "positron",
+      logos: NFL_STADIUMS_2024.map((s) => ({ team: s.team, at: [s.lon, s.lat] })),
+      px: 34,
+    },
+    "sdvplot/maplibre/road-trips": {
+      style: "positron",
+      logos: ["KC", "PHI"].map((t) => ({ team: t, at: [airportOf(t).lon, airportOf(t).lat] })),
+      px: 40,
+    },
+    "sdvplot/maplibre/deckgl-arcs-dark": {
+      style: "dark",
+      logos: ["KC", "PHI"].map((t) => ({ team: t, at: [airportOf(t).lon, airportOf(t).lat] })),
+      px: 40,
+    },
+  };
+
+  test("every MapLibre example has its render check", () => {
+    expect([...STADIUM_IDS].sort()).toEqual(Object.keys(MAPS).sort());
+  });
+
+  test.each(Object.keys(MAPS))(
+    "%s re-runs live on a local basemap: logos at their venues, real logo pixels, route colours by feature id",
+    async (id) => {
+      const entry = EXAMPLES.find((e) => e.id === id);
+      const spec = MAPS[id];
+      if (entry === undefined || spec === undefined) throw new Error(`${id} is not in the registry`);
+      const page = await browser.newPage();
+      try {
+        const errors: string[] = [];
+        page.on("console", (m) => void (m.type() === "error" && errors.push(m.text())));
+        page.on("pageerror", (e) => void errors.push(e.message));
+        const asked = await stubOpenFreeMap(page);
+        await page.goto(`${base}/gallery/${pagePath(entry)}/`);
+        const figure = page.locator(`figure[data-example="${id}"]`);
+        await figure.scrollIntoViewIfNeeded();
+        await figure.locator(".sdv-live-output canvas.maplibregl-canvas").waitFor({ timeout: 30_000 });
+        await page.addStyleTag({ content: ".navbar { display: none !important; }" });
+        const box = figure.locator('.sdv-live-output [role="figure"]').first();
+        // the mount has resolved (the map is on the box) and the map has drawn everything it has
+        await box.evaluate(
+          (el) =>
+            new Promise<void>((done) => {
+              const wait = () => {
+                const map = (el as HTMLElement & { sdvMap?: { loaded(): boolean } }).sdvMap;
+                if (map?.loaded()) done();
+                else setTimeout(wait, 50);
+              };
+              wait();
+            }),
+        );
+        await page.waitForLoadState("networkidle"); // the logos
+        // a fresh frame, after deck.gl's own (it draws on the frame after the map's)
+        const settle = () =>
+          box.evaluate(
+            (el) =>
+              new Promise<void>((done) => {
+                const map = (
+                  el as HTMLElement & {
+                    sdvMap: { triggerRepaint(): void; once(t: string, f: () => void): void };
+                  }
+                ).sdvMap;
+                map.once("idle", () => requestAnimationFrame(() => requestAnimationFrame(() => done())));
+                map.triggerRepaint();
+              }),
+          );
+        await settle();
+        expect(await figure.locator(".sdv-live-static").count(), "the static copy is replaced").toBe(0);
+        expect(await figure.locator(".sdv-live-error").count(), "no error alert").toBe(0);
+        // the basemap the example asked for, answered here: no tile request left the machine
+        expect(asked, `only OpenFreeMap's ${spec.style} style was asked for`).toEqual([
+          `https://tiles.openfreemap.org/styles/${spec.style}`,
+        ]);
+        // OpenFreeMap's credit, shown by MapLibre from the style's source
+        const credit = await box.locator(".maplibregl-ctrl-attrib-inner").innerText();
+        expect(credit).toContain("OpenFreeMap");
+        expect(credit).toContain("OpenStreetMap");
+
+        await loadLeague("nfl");
+        const project = (pts: readonly (readonly [number, number])[]) =>
+          box.evaluate(
+            (el, ps) =>
+              ps.map((p) => {
+                const q = (
+                  el as HTMLElement & { sdvMap: { project(p: unknown): { x: number; y: number } } }
+                ).sdvMap.project(p);
+                return [q.x, q.y] as [number, number];
+              }),
+            pts as [number, number][],
+          );
+        const size = await box.evaluate((el) => [el.clientWidth, el.clientHeight]);
+        const shoot = async () => {
+          const shot = await loadImage(await box.screenshot());
+          const ctx = createCanvas(shot.width, shot.height).getContext("2d");
+          ctx.drawImage(shot, 0, 0);
+          return (x: number, y: number, w: number, h: number) => {
+            const d = ctx.getImageData(Math.round(x), Math.round(y), Math.max(1, w), Math.max(1, h)).data;
+            return Array.from(
+              { length: d.length / 4 },
+              (_, i) => [d[4 * i], d[4 * i + 1], d[4 * i + 2]] as number[],
+            );
+          };
+        };
+        const near = (a: number[], b: number[], d: number) =>
+          [0, 1, 2].every((c) => Math.abs((a[c] ?? 0) - (b[c] ?? 0)) <= d);
+        const hex = (s: string) => [1, 3, 5].map((i) => Number.parseInt(s.slice(i, i + 2), 16));
+
+        const at = await project(spec.logos.map((l) => l.at));
+        at.forEach(([x, y], i) => {
+          expect.soft(x, `${spec.logos[i]?.team} on the map`).toBeGreaterThan(0);
+          expect.soft(x, `${spec.logos[i]?.team} on the map`).toBeLessThan(size[0] as number);
+          expect.soft(y, `${spec.logos[i]?.team} on the map`).toBeGreaterThan(0);
+          expect.soft(y, `${spec.logos[i]?.team} on the map`).toBeLessThan(size[1] as number);
+        });
+        const deck = id.endsWith("deckgl-arcs-dark");
+        if (!deck) {
+          // what the map itself drew under each venue: that team's logo feature (two teams share SoFi and MetLife)
+          const teamsAt = await box.evaluate(
+            (el, pts) =>
+              pts.map((p) =>
+                (
+                  el as HTMLElement & {
+                    sdvMap: {
+                      queryRenderedFeatures(p: unknown, o: object): { properties: { team: string } }[];
+                    };
+                  }
+                ).sdvMap
+                  .queryRenderedFeatures(p, { layers: ["sdvplot-logos"] })
+                  .map((f) => f.properties.team),
+              ),
+            at,
+          );
+          spec.logos.forEach((l, i) =>
+            expect.soft(teamsAt[i], `${l.team}'s logo is at its venue`).toContain(resolveSync(l.team, "nfl")),
+          );
+        }
+        // real logo pixels: with the logos hidden, the middle of each logo's box changes
+        const half = Math.round(spec.px / 3);
+        const boxes = at.map(([x, y]) => [x - half, y - half, 2 * half, 2 * half] as const);
+        const pixels = await shoot();
+        if (SHOTS !== undefined) await box.screenshot({ path: join(SHOTS, `${id.replace(/\//g, "_")}.png`) });
+        await box.evaluate((el, isDeck) => {
+          const host = el as HTMLElement & {
+            sdvMap: { setLayoutProperty(l: string, p: string, v: string): void };
+            sdvDeck?: { _props: { layers: { id: string }[] }; setProps(p: object): void };
+          };
+          // MapboxOverlay keeps its layers in `_props` (it has no public getter): drop the logos, keep the arcs
+          if (isDeck && host.sdvDeck)
+            host.sdvDeck.setProps({
+              layers: host.sdvDeck._props.layers.filter((l) => l.id !== "sdvplot-logos"),
+            });
+          else host.sdvMap.setLayoutProperty("sdvplot-logos", "visibility", "none");
+        }, deck);
+        await settle();
+        const without = await shoot();
+        const changed = boxes.map(([x, y, w, h]) => {
+          const a = pixels(x, y, w, h);
+          const b = without(x, y, w, h);
+          return a.filter((p, i) => !near(p, b[i] ?? [], 8)).length / a.length;
+        });
+        console.log(
+          `${id}: logo boxes changed ${Math.min(...changed).toFixed(2)} to ${Math.max(...changed).toFixed(2)}`,
+        );
+        changed.forEach((c, i) =>
+          expect.soft(c, `${spec.logos[i]?.team}'s logo paints its box`).toBeGreaterThan(0.1),
+        );
+
+        if (id.endsWith("road-trips")) {
+          // each leg by its feature id, at the middle of its line (a straight line on the flat map): the map has that
+          // feature there, and the pixel is the colour of the leg drawn on top there, its team's primary colour
+          const ends = await project(TRIPS.flatMap((t) => [t.from, t.to]));
+          const homes = at;
+          let checked = 0;
+          for (const [i, trip] of TRIPS.entries()) {
+            const [a, b] = [ends[2 * i] as [number, number], ends[2 * i + 1] as [number, number]];
+            const mid: [number, number] = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+            if (homes.some(([x, y]) => Math.hypot(x - mid[0], y - mid[1]) < spec.px)) continue; // under a home logo
+            const ids = await box.evaluate(
+              (el, m) =>
+                (
+                  el as HTMLElement & {
+                    sdvMap: { queryRenderedFeatures(p: unknown, o: object): { id: number }[] };
+                  }
+                ).sdvMap
+                  .queryRenderedFeatures(
+                    [
+                      [m[0] - 1, m[1] - 1],
+                      [m[0] + 1, m[1] + 1],
+                    ],
+                    { layers: ["sdvplot-routes"] },
+                  )
+                  .map((f) => f.id),
+              mid,
+            );
+            expect.soft(ids, `leg ${i} (${trip.team}) is drawn at its middle`).toContain(i);
+            const top = TRIPS[ids[0] ?? i] ?? trip;
+            const want = teamColorsSync("nfl", [top.team])[0] as string;
+            const painted = without(mid[0] - 1, mid[1] - 1, 3, 3).some((p) => near(p, hex(want), 24));
+            expect.soft(painted, `leg ${i}: a pixel at its middle is ${top.team}'s ${want}`).toBe(true);
+            checked++;
+          }
+          expect(checked, "most legs are checked").toBeGreaterThanOrEqual(12);
+          // and the two teams' colours differ, so a leg in the other team's colour fails
+          expect(teamColorsSync("nfl", ["KC"])[0]).not.toBe(teamColorsSync("nfl", ["PHI"])[0]);
+        }
+        if (deck) {
+          // the arcs paint: removing them changes the map
+          await box.evaluate((el) => {
+            const d = (el as HTMLElement & { sdvDeck: { setProps(p: object): void } }).sdvDeck;
+            d.setProps({ layers: [] });
+          });
+          await settle();
+          const bare = await shoot();
+          const all = without(0, 0, size[0] as number, size[1] as number);
+          const none = bare(0, 0, size[0] as number, size[1] as number);
+          const arcPx = all.filter((p, i) => !near(p, none[i] ?? [], 8)).length;
+          expect(arcPx, "the arcs paint").toBeGreaterThan(2000);
+          // and the dark basemap's background is what is left where nothing is drawn (the bottom left corner)
+          const corner = bare(4, (size[1] as number) - 5, 1, 1)[0] ?? [];
+          expect(near(corner, hex("#0c0c0c"), 2), `the dark basemap, got ${corner}`).toBe(true);
+        }
         expect(errors).toEqual([]);
       } finally {
         await page.close();
