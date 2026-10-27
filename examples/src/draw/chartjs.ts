@@ -5,7 +5,7 @@ import type { Draw } from "./index.js";
 Chart.register(...registerables);
 // The PNG's font (Source Sans 3, SIL Open Font License, examples/fonts), so the labels match it. Loaded with this
 // chunk, before the first chart: Chart.js measures text as it lays out and does not redraw when a font arrives.
-const sourceSans = new FontFace("Source Sans 3", `url("${font}")`).load().then((f) => {
+export const sourceSans = new FontFace("Source Sans 3", `url("${font}")`).load().then((f) => {
   document.fonts.add(f);
   Chart.defaults.font.family = "Source Sans 3";
 });
