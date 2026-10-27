@@ -15,6 +15,7 @@
     rowSortingFeature,
     tableFeatures,
   } from "@tanstack/svelte-table";
+  import { untrack } from "svelte";
   import CellPart from "./CellPart.svelte";
 
   type Row = Record<string, unknown>;
@@ -27,9 +28,12 @@
   const props: Props = $props();
 
   const features = tableFeatures({ rowSortingFeature, sortedRowModel: createSortedRowModel() });
-  // built once: the columns, the rows and their ids; CellPart draws a logo or a superscript rank
-  const sdv = tanstackTable(props.spec, props.rows, { features, render: (part) => renderComponent(CellPart, { part }) });
-  const table = createTable({ ...sdv.options, initialState: { sorting: props.sorting ?? [] } });
+  // built once, from the props as first passed (untrack says so): the columns, the rows and their ids; CellPart
+  // draws a logo or a superscript rank. Mount the component again for other rows.
+  const sdv = untrack(() =>
+    tanstackTable(props.spec, props.rows, { features, render: (part) => renderComponent(CellPart, { part }) }),
+  );
+  const table = createTable({ ...sdv.options, initialState: { sorting: untrack(() => props.sorting) ?? [] } });
   const ARROW = { asc: " ▲", desc: " ▼" } as const;
   const ARIA = { asc: "ascending", desc: "descending" } as const;
 </script>
