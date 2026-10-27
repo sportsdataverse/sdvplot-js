@@ -36,6 +36,7 @@ export const SOURCES: Readonly<Record<string, string>> = {
   "@sportsdataverse/sdvplot/cytoscape": "packages/sdvplot/src/cytoscape.ts",
   "@sportsdataverse/sdvplot/three": "packages/sdvplot/src/three/index.ts",
   "@sportsdataverse/sdvplot/lightweight-charts": "packages/sdvplot/src/lightweight-charts.ts",
+  "@sportsdataverse/sdvplot/g2": "packages/sdvplot/src/g2.ts",
   "@sportsdataverse/sdvplot/export": "packages/sdvplot/src/export/index.ts",
   "@sportsdataverse/sdvplot/interact": "packages/sdvplot/src/interact/index.ts",
   "@sportsdataverse/sporty": "packages/sporty/src/index.ts",

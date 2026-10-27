@@ -48,6 +48,12 @@ async function drawWith(el: HTMLElement, s: BrowserSpec): Promise<() => void> {
       return (
         await import(/* webpackChunkName: "draw-lightweight-charts" */ "./lightweight-charts.js")
       ).default(el, s);
+    case "g2":
+      return (await import(/* webpackChunkName: "draw-g2" */ "./g2.js")).default(el, s);
+    case "ant-design-charts":
+      return (
+        await import(/* webpackChunkName: "draw-ant-design-charts" */ "./ant-design-charts.js")
+      ).default(el, s);
   }
 }
 

@@ -42,6 +42,8 @@ const DRAWN: Readonly<Record<string, string>> = {
   cytoscape: ".sdv-live-output canvas",
   three: ".sdv-live-output canvas",
   "lightweight-charts": ".sdv-live-output .tv-lightweight-charts canvas",
+  g2: ".sdv-live-output canvas",
+  "ant-design-charts": ".sdv-live-output canvas",
 };
 
 describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the built docs", () => {
@@ -402,6 +404,109 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
         expect(await notices.textContent(), "TradingView's notice, verbatim").toBe(
           "TradingView Lightweight Charts™\nCopyright (с) 2025 TradingView, Inc. https://www.tradingview.com/",
         );
+      }
+      // G2, and Ant Design Charts (G2 underneath), on G2's canvas renderer. Where G2 put each mark is read from its scene
+      // graph, then the canvas is sampled there: hiding sdvplot's image elements must change the pixels of each logo's
+      // box (the logo painted it), a column's centre is its team colour, and each line holds its colour at its middle
+      // point. Axis logos are G2 HTML labels: each <img> loads and sits centred under its column.
+      if (lib === "g2" || lib === "ant-design-charts") {
+        const got = await figure.evaluate(async (f) => {
+          type GNode = {
+            markType?: string;
+            style: Record<string, unknown> & { visibility?: string };
+            getBounds(): { center: number[]; halfExtents: number[] };
+            __data__?: { points?: number[][] };
+          };
+          const box = f.querySelector(".sdv-live-output [role='img']") as
+            | (HTMLElement & {
+                sdvG2?: { getContext(): { canvas?: { document: { querySelectorAll(s: string): GNode[] } } } };
+              })
+            | null;
+          const doc = box?.sdvG2?.getContext().canvas?.document;
+          const canvas = box?.querySelector("canvas");
+          if (doc === undefined || canvas == null) return { error: "no G2 chart on the figure" };
+          const frame = () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+          const marks = (type: string) => doc.querySelectorAll(".element").filter((e) => e.markType === type);
+          for (let t = 0; t < 100 && marks("image").length + marks("interval").length === 0; t++)
+            await frame();
+          await new Promise((r) => setTimeout(r, 1500)); // G2's enter animations, and the logos loading
+          const ratio = canvas.width / canvas.clientWidth;
+          const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+          // the pixels of the box of half-sides (rx, ry) CSS px centred on (x, y), as [r, g, b, a]
+          const read = (x: number, y: number, rx: number, ry = rx): number[][] => {
+            const [x0, y0, w, h] = [x - rx, y - ry, 2 * rx, 2 * ry].map((v) =>
+              Math.max(1, Math.round(v * ratio)),
+            );
+            const d = ctx.getImageData(x0 as number, y0 as number, w as number, h as number).data;
+            return Array.from({ length: d.length / 4 }, (_, i) => Array.from(d.slice(4 * i, 4 * i + 4)));
+          };
+          const rgb = (c: unknown) => [1, 3, 5].map((i) => Number.parseInt(String(c).slice(i, i + 2), 16));
+          const near = (a: readonly number[], b: readonly number[], tol = 24) =>
+            b.every((v, i) => Math.abs((a[i] ?? 0) - v) <= tol);
+          const images = marks("image");
+          const boxes = images.map((i) => {
+            const { center, halfExtents } = i.getBounds();
+            return [
+              center[0],
+              center[1],
+              0.6 * (halfExtents[0] ?? 0),
+              0.6 * (halfExtents[1] ?? 0),
+            ] as number[];
+          });
+          const before = boxes.map(([x, y, rx, ry]) => read(x ?? 0, y ?? 0, rx ?? 0, ry));
+          for (const i of images) i.style.visibility = "hidden";
+          await frame();
+          const changed = boxes.map(([x, y, rx, ry], k) => {
+            const after = read(x ?? 0, y ?? 0, rx ?? 0, ry);
+            return after.filter((p, j) => !near(p, before[k]?.[j] ?? [], 8)).length / after.length;
+          });
+          for (const i of images) i.style.visibility = "visible"; // back, for the screenshot
+          await frame();
+          const columns = marks("interval").map((b) => {
+            const [x = 0, y = 0] = b.getBounds().center;
+            return { color: String(b.style.fill), match: near(read(x, y, 1)[0] ?? [], rgb(b.style.fill), 4) };
+          });
+          // a mark's points are in the plot area's frame: an image's bounds centre less its point is that frame's origin
+          const [img] = images;
+          const [ix = 0, iy = 0] = img?.__data__?.points?.[0] ?? [];
+          const [cx = 0, cy = 0] = img?.getBounds().center ?? [];
+          const lines = (img === undefined ? [] : marks("line")).map((l) => {
+            const pts = l.__data__?.points ?? [];
+            const [x = 0, y = 0] = pts[Math.floor(pts.length / 2)] ?? [];
+            const want = rgb(l.style.stroke);
+            const px = read(x + cx - ix, y + cy - iy, 3);
+            return {
+              color: String(l.style.stroke),
+              match: px.some((p) => (p[3] ?? 0) > 200 && near(p, want)),
+            };
+          });
+          // the axis logos, page elements over the canvas: loaded, each centred over its own column
+          const left = canvas.getBoundingClientRect().left;
+          const centres = marks("interval").map((b) => left + (b.getBounds().center[0] ?? 0));
+          const axis = Array.from(
+            f.querySelectorAll<HTMLImageElement>(".sdv-live-output img[data-sdv-id]"),
+          ).map((img) => {
+            const r = img.getBoundingClientRect();
+            const x = r.left + r.width / 2;
+            return {
+              id: img.dataset.sdvId,
+              loaded: img.complete && img.naturalWidth > 0,
+              off: Math.min(...centres.map((c) => Math.abs(c - x))),
+            };
+          });
+          return { images: images.length, changed, columns, lines, axis };
+        });
+        if ("error" in got) throw new Error(got.error);
+        // the axis example draws its logos as labels; every other one as image marks
+        if (id.endsWith("axis-logos")) expect(got.axis.length, "axis logos").toBeGreaterThan(0);
+        else expect(got.images, "sdvplot's logo marks").toBeGreaterThan(0);
+        for (const c of got.changed) expect(c, "the logo painted its box").toBeGreaterThan(0.2);
+        for (const c of got.columns) expect(c.match, `a ${c.color} column's centre is its colour`).toBe(true);
+        for (const l of got.lines) expect(l.match, `a pixel of the ${l.color} line is its colour`).toBe(true);
+        for (const a of got.axis) {
+          expect(a.loaded, `${a.id}'s axis logo loaded`).toBe(true);
+          expect(a.off, `${a.id}'s axis logo is centred over its column`).toBeLessThan(1.5);
+        }
       }
       // ECharts draws the server's SVG, tag for tag: init() alone already leaves an <svg>, and a series that drew nothing
       // would still leave its axes

@@ -18,6 +18,8 @@ const CHART_LIBS = [
   "cytoscape",
   "three",
   "lightweight-charts",
+  "g2",
+  "ant-design-charts",
 ] as const;
 /**
  * Vega's self-contained build (its d3 inside). The module build imports the d3-* packages Observable Plot imports,

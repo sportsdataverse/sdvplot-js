@@ -155,4 +155,26 @@ export type BrowserSpec =
         readonly primitives: readonly (readonly object[])[];
       };
       readonly label: string;
+    }
+  /**
+   * A G2 5 spec, drawn by `new Chart({ container, width, height })` and `chart.options(spec())` on G2's canvas
+   * renderer. `spec` builds a fresh spec per chart (G2 keeps what it is given).
+   */
+  | {
+      readonly lib: "g2";
+      readonly spec: () => object;
+      readonly width: number;
+      readonly height: number;
+      readonly label: string;
+    }
+  /**
+   * An Ant Design Charts element (`<Scatter {...config} />`, `<Line>`, ...), mounted in a React root at the example's
+   * width: its config is a G2 spec underneath. `chart` builds a fresh element per chart.
+   */
+  | {
+      readonly lib: "ant-design-charts";
+      readonly chart: () => ReactElement;
+      readonly width: number;
+      readonly height: number;
+      readonly label: string;
     };
