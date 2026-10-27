@@ -101,7 +101,7 @@ export type BrowserSpec =
    */
   | {
       readonly lib: "svelte";
-      readonly component: "BumpChart" | "QbHeadshots" | "CourtShots";
+      readonly component: "BumpChart" | "QbHeadshots" | "CourtShots" | "TanstackStandings";
       readonly props: Readonly<Record<string, unknown>>;
       readonly label: string;
     }
