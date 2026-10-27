@@ -152,6 +152,7 @@
     "@react-three/fiber": ">=9.8.1",
     "@resvg/resvg-js": ">=2.6",
     "@sportsdataverse/sporty": "workspace:^0",
+    "@tanstack/charts": ">=1.1.0",
     "chart.js": ">=4.4",
     "cytoscape": ">=3.34.3",
     "d3": ">=7",
@@ -199,6 +200,9 @@
       "optional": true
     },
     "@sportsdataverse/sporty": {
+      "optional": true
+    },
+    "@tanstack/charts": {
       "optional": true
     },
     "chart.js": {
@@ -269,6 +273,7 @@
     "@sportsdataverse/sporty": "workspace:^",
     "@sveltejs/package": "2.5.8",
     "@sveltejs/vite-plugin-svelte": "4.0.4",
+    "@tanstack/charts": "1.1.0",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
