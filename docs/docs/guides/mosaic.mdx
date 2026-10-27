@@ -1,0 +1,75 @@
+---
+title: Mosaic (experimental)
+sidebar_position: 7.98
+---
+
+:::caution Experimental
+This is a recipe, not an sdvplot subpath: there is no `@sportsdataverse/sdvplot/mosaic`, and nothing here is a stable
+API. Mosaic is pre-1.0 and releases about weekly, and the DuckDB-WASM build it depends on is a development build (see
+[what to know before you rely on it](#what-to-know-before-you-rely-on-it)).
+:::
+
+[Mosaic](https://idl.uw.edu/mosaic/) links views of one dataset through a database. Each chart, table or input is a
+client that asks for exactly the rows or aggregates it draws, as SQL, and a brush in one view becomes a filter in the
+queries of the others. In the browser the database is [DuckDB-WASM](https://duckdb.org/docs/api/wasm/overview), so a
+crossfilter over hundreds of thousands of plays never ships them all to the chart. `vgplot` (`@uwdata/vgplot`, 0.33.0
+or later, BSD-3-Clause) is Mosaic's grammar of graphics: Observable Plot marks over Mosaic queries, plus inputs such as
+a table. sdvplot gives it team colours through the shared palette every adapter uses.
+
+## Linked views of a season's plays
+
+Drag across the EPA histogram below. The brush is a Mosaic selection (`Selection.intersect()` with `intervalX`), and
+the bar chart and the table take it as `filterBy`: each brush move re-queries DuckDB for the plays per offence and the
+plays in range. The bars are coloured by `colorDomain` (the 32 offences) and `colorRange` (sdvplot's
+`teamColorPalette` for those teams, on the views' white background, so every colour reads at 3:1 and stays distinct).
+Any adapter's `teamColorPalette` gives the same colours; the example takes the Recharts one.
+
+<Live id="sdvplot/mosaic/nfl-plays-epa-crossfilter" />
+
+## Starting DuckDB-WASM from your own files
+
+Mosaic's `coordinator()` talks to a REST server on `localhost:3000` until you give it a database, and its own
+`wasmConnector()` with no database loads DuckDB's worker and WebAssembly module from jsDelivr. To keep everything on your
+own site, start DuckDB-WASM yourself from the package's files and connect the coordinator to it before any view queries:
+`coordinator().databaseConnector(new DuckDBWASMConnector({ duckdb: db }))`. The function below (webpack 5, Vite or
+Rspack) names the worker and the module with `new URL(…, import.meta.url)`, so the bundler copies them into your build.
+Install `@duckdb/duckdb-wasm` beside vgplot at the exact version Mosaic pins (1.33.1-dev57.0 for Mosaic 0.33), so there
+is one copy.
+
+<Snippet file="mosaic/duckdb.ts" />
+
+The module is the size to plan for: `duckdb-eh.wasm` is 35.9 MB (5.5 MB brotli at quality 11, 8.1 MB gzip; what a reader downloads depends on what your host compresses with), and the
+browser compiles it before the first query. Load it only on pages that use it, start it once per page, and share it.
+
+## Parquet in the browser
+
+`vg.loadParquet("plays", url)` runs `read_parquet`, and in the DuckDB-WASM build Mosaic 0.33 pins (DuckDB 1.5.4) the
+Parquet reader is not built in: the first `read_parquet` fetches it from DuckDB's extension site,
+`https://extensions.duckdb.org/v1.5.4/wasm_eh/parquet.duckdb_extension.wasm` (about 0.5 MB). DuckDB loads it on its
+own; nothing in your code asks for it. That is fine if your site may call extensions.duckdb.org. If it may not, DuckDB's
+documentation describes hosting the file yourself, at the same path under a folder of your site, and running
+`SET custom_extension_repository = 'https://your.site/duckdb-extensions'` first (not tried here: this site does not host
+the extension). The file must match the DuckDB version exactly, so it changes with every DuckDB-WASM upgrade. The example above avoids both: it hands DuckDB the plays as CSV
+(`registerFileText` and `loadCSV`), which DuckDB reads with its core reader, so the page asks nothing of any other site.
+
+## Reading an SDV release
+
+SportsDataverse publishes its datasets as Parquet files on GitHub releases
+(`https://github.com/sportsdataverse/sportsdataverse-data/releases/download/<tag>/<file>.parquet`). A browser cannot
+read those URLs directly: GitHub's release download answers with a redirect to `release-assets.githubusercontent.com`,
+and neither response sends `Access-Control-Allow-Origin` (checked 2026-10-27), so the browser blocks the read. Serve the
+file from somewhere that sends CORS headers (your own site, an object store with CORS set, or a small proxy) and read it
+from there: fetch it and `registerFileBuffer`, or for a large file `registerFileURL` with the HTTP protocol, which DuckDB-WASM
+documents as reading only the byte ranges it needs (the example does neither: it reads no Parquet). Then `loadParquet` as above, with the Parquet reader allowed from
+extensions.duckdb.org or hosted yourself. In Python or R, read the same release with the sportsdataverse loaders.
+
+## What to know before you rely on it
+
+- **A development build of DuckDB-WASM.** `@uwdata/mosaic-core` 0.33.0 depends on `@duckdb/duckdb-wasm`
+  `1.33.1-dev57.0` exactly. That is a development build, published under npm's `latest` tag; the last stable release
+  is 1.32.0 (2025-12-16). A library that depended on Mosaic would ship that development build to its users.
+- **Weekly, pre-1.0 releases.** Mosaic went from 0.33.0 (2026-10-13) to 0.34.2 (2026-10-27) in two weeks. Pin vgplot
+  exactly and expect API changes between minor versions (`wasmConnector` is already marked deprecated in vgplot).
+- **Size and start-up.** 35.9 MB of WebAssembly to compile before the first view draws.
+
+The [chart libraries](chart-libraries.mdx) page lists the integrations with a stable subpath.
