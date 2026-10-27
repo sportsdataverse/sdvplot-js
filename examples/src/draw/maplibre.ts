@@ -19,7 +19,7 @@ async function deck(): Promise<DeckOnMap> {
 /**
  * MapLibre GL JS, drawn by the example's own `mount` into a box of the example's size. The box is a `figure`, not an
  * `img`: the map is a control (drag, scroll, keyboard) and its attribution holds links. The map stays on the box as
- * `sdvMap`, and a deck.gl overlay as `sdvDeck`, for the render test.
+ * `sdvMap`, and a deck.gl overlay as `sdvDeck` with its layers as `sdvDeckLayers`, for the render test.
  */
 const draw: Draw<"maplibre"> = async (el, s) => {
   const box = figureBox(el, s.label, "figure");
@@ -29,8 +29,8 @@ const draw: Draw<"maplibre"> = async (el, s) => {
     height: `${s.height}px`,
     maxWidth: "100%",
   });
-  const { map, overlay } = await s.mount({ maplibregl, deck }, box);
-  Object.assign(box, { sdvMap: map, sdvDeck: overlay });
+  const { map, overlay, layers } = await s.mount({ maplibregl, deck }, box);
+  Object.assign(box, { sdvMap: map, sdvDeck: overlay, sdvDeckLayers: layers });
   return () => {
     map.remove();
     box.remove();

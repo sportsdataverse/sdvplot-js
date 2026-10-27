@@ -1776,12 +1776,13 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
     }
   });
 
-  // MapLibre GL JS examples (sdvplot/maplibre). The basemap never reaches the network: OpenFreeMap's styles, TileJSON
-  // and tiles are answered here (`stubOpenFreeMap`), a stand-in style with the style's own background colour, one
-  // vector source carrying OpenFreeMap's credit and empty tiles. On it: each team's logo sits at its own stadium or
-  // airport, projected through the map (`map.project`) and read back from the map (`queryRenderedFeatures`), and
-  // hiding the logo layer changes each logo's box (real logo pixels); each route leg is found by its feature id at its
-  // midpoint and painted in its team's colour there; the deck.gl overlay's logos and arcs paint; the credit shows.
+  // MapLibre GL JS examples (sdvplot/maplibre). The basemap never reaches the network: every OpenFreeMap request is
+  // answered here (`stubOpenFreeMap`), a stand-in style with the style's own background colour and an empty source
+  // carrying OpenFreeMap's credit, no tiles. On it: each team's logo sits at its own stadium or airport, projected
+  // through the map (`map.project`) and read back from the map (`queryRenderedFeatures`); hiding the logos changes each
+  // logo's box (real logo pixels), and the pixels there are that team's logo image, not another's; each route leg is
+  // found by its feature id at its midpoint and painted in its team's colour there; each deck.gl arc, drawn alone,
+  // leaves home in its team's source colour and lands in its target colour; the credit shows.
   const STADIUM_IDS = new Set(EXAMPLES.filter((e) => e.id.startsWith("sdvplot/maplibre/")).map((e) => e.id));
   const airportOf = (team: string) =>
     NFL_AIRPORTS.find((a) => a.team === team) as (typeof NFL_AIRPORTS)[number];
@@ -1812,6 +1813,28 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
       logos: ["KC", "PHI"].map((t) => ({ team: t, at: [airportOf(t).lon, airportOf(t).lat] })),
       px: 40,
     },
+  };
+
+  /** Every NFL team's logo image in a variant, fetched once per run from the URL sdvplot gives: what a drawn logo is compared with. */
+  const LOGO_IMAGES = new Map<string, Promise<Map<string, Awaited<ReturnType<typeof loadImage>>>>>();
+  const logoImages = (variant: "default" | "dark") => {
+    const cached = LOGO_IMAGES.get(variant);
+    if (cached !== undefined) return cached;
+    const load = (async () => {
+      await loadLeague("nfl");
+      const teams = NFL_STADIUMS_2024.map((s) => s.team);
+      const images = await Promise.all(
+        teams.map(async (t) => {
+          const url = logoUrlSync(t, "nfl", { variant }) as string;
+          const res = await fetch(url);
+          if (!res.ok) throw new Error(`${url} answered ${res.status}`);
+          return [t, await loadImage(Buffer.from(await res.arrayBuffer()))] as const;
+        }),
+      );
+      return new Map(images);
+    })();
+    LOGO_IMAGES.set(variant, load);
+    return load;
   };
 
   test("every MapLibre example has its render check", () => {
@@ -1888,17 +1911,20 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
             pts as [number, number][],
           );
         const size = await box.evaluate((el) => [el.clientWidth, el.clientHeight]);
+        // a screenshot of the map: its pixels in a box, and its canvas
         const shoot = async () => {
           const shot = await loadImage(await box.screenshot());
-          const ctx = createCanvas(shot.width, shot.height).getContext("2d");
+          const canvas = createCanvas(shot.width, shot.height);
+          const ctx = canvas.getContext("2d");
           ctx.drawImage(shot, 0, 0);
-          return (x: number, y: number, w: number, h: number) => {
+          const read = (x: number, y: number, w: number, h: number) => {
             const d = ctx.getImageData(Math.round(x), Math.round(y), Math.max(1, w), Math.max(1, h)).data;
             return Array.from(
               { length: d.length / 4 },
               (_, i) => [d[4 * i], d[4 * i + 1], d[4 * i + 2]] as number[],
             );
           };
+          return Object.assign(read, { canvas });
         };
         const near = (a: number[], b: number[], d: number) =>
           [0, 1, 2].every((c) => Math.abs((a[c] ?? 0) - (b[c] ?? 0)) <= d);
@@ -1941,12 +1967,13 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
         await box.evaluate((el, isDeck) => {
           const host = el as HTMLElement & {
             sdvMap: { setLayoutProperty(l: string, p: string, v: string): void };
-            sdvDeck?: { _props: { layers: { id: string }[] }; setProps(p: object): void };
+            sdvDeck?: { setProps(p: object): void };
+            sdvDeckLayers?: readonly { id: string }[];
           };
-          // MapboxOverlay keeps its layers in `_props` (it has no public getter): drop the logos, keep the arcs
+          // the overlay's own layers, as the example built them: drop the logos, keep the arcs
           if (isDeck && host.sdvDeck)
             host.sdvDeck.setProps({
-              layers: host.sdvDeck._props.layers.filter((l) => l.id !== "sdvplot-logos"),
+              layers: (host.sdvDeckLayers ?? []).filter((l) => l.id !== "sdvplot-logos"),
             });
           else host.sdvMap.setLayoutProperty("sdvplot-logos", "visibility", "none");
         }, deck);
@@ -1962,6 +1989,76 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
         );
         changed.forEach((c, i) =>
           expect.soft(c, `${spec.logos[i]?.team}'s logo paints its box`).toBeGreaterThan(0.1),
+        );
+        // and which logo: each logo's box, `px` tall at its image's aspect round the projected venue, against the logo
+        // image of every team the example draws, laid over what the map shows there without the logos. The nearest must
+        // be the venue's own team (either of two teams sharing a stadium), so a logo drawn under another team's image id
+        // fails. A logo another venue's logo overlaps (BAL under WAS at this zoom) is not compared: what shows there is
+        // partly the other logo.
+        const variant = spec.style === "dark" ? "dark" : "default";
+        const all = await logoImages(variant);
+        const templates = new Map(spec.logos.map((l) => [l.team, all.get(l.team)] as const));
+        let identified = 0;
+        spec.logos.forEach((l, i) => {
+          const [cx, cy] = at[i] as [number, number];
+          const own = templates.get(l.team);
+          if (own === undefined) throw new Error(`no logo image for ${l.team}`);
+          const w = Math.round((spec.px * own.width) / own.height);
+          const overlapped = spec.logos.some(
+            (o, j) =>
+              (o.at[0] !== l.at[0] || o.at[1] !== l.at[1]) &&
+              Math.abs((at[j]?.[0] ?? 0) - cx) < w &&
+              Math.abs((at[j]?.[1] ?? 0) - cy) < spec.px,
+          );
+          if (overlapped) return;
+          identified++;
+          const [x0, y0] = [Math.round(cx - w / 2), Math.round(cy - spec.px / 2)];
+          // compared at a quarter of the size, and over offsets of up to 2 px: the logo's own colours decide, not where
+          // MapLibre or deck.gl rounded its edge to
+          const S = 4;
+          const [sw, sh] = [Math.ceil(w / S), Math.ceil(spec.px / S)];
+          const shrink = (draw: (g: ReturnType<ReturnType<typeof createCanvas>["getContext"]>) => void) => {
+            const full = createCanvas(w, spec.px).getContext("2d");
+            draw(full);
+            const g = createCanvas(sw, sh).getContext("2d");
+            g.drawImage(full.canvas, 0, 0, w, spec.px, 0, 0, sw, sh);
+            return g.getImageData(0, 0, sw, sh).data;
+          };
+          const drawn = shrink((g) => g.drawImage(pixels.canvas, x0, y0, w, spec.px, 0, 0, w, spec.px));
+          const distance = (img: Awaited<ReturnType<typeof loadImage>>) => {
+            let best = Number.POSITIVE_INFINITY;
+            for (let dx = -2; dx <= 2; dx++)
+              for (let dy = -2; dy <= 2; dy++) {
+                const d = shrink((g) => {
+                  g.drawImage(without.canvas, x0, y0, w, spec.px, 0, 0, w, spec.px);
+                  g.drawImage(img, dx, dy, w, spec.px);
+                });
+                let sum = 0;
+                for (let k = 0; k < d.length; k += 4)
+                  for (let ch = 0; ch < 3; ch++) sum += Math.abs((drawn[k + ch] ?? 0) - (d[k + ch] ?? 0));
+                best = Math.min(best, sum / (d.length / 4));
+              }
+            return best;
+          };
+          const ranked = [...templates]
+            .map(([t, img]) => [t, distance(img as Awaited<ReturnType<typeof loadImage>>)] as const)
+            .sort((a, b) => a[1] - b[1]);
+          const sameVenue = spec.logos
+            .filter((o) => o.at[0] === l.at[0] && o.at[1] === l.at[1])
+            .map((o) => o.team);
+          expect
+            .soft(
+              sameVenue,
+              `the logo drawn at ${l.team}'s venue looks like ${ranked[0]?.[0]}'s (${ranked
+                .slice(0, 3)
+                .map(([t, d]) => `${t} ${d.toFixed(1)}`)
+                .join(", ")})`,
+            )
+            .toContain(ranked[0]?.[0]);
+        });
+        console.log(`${id}: ${identified} of ${spec.logos.length} logos identified by their pixels`);
+        expect(identified, "the logos are identified").toBeGreaterThanOrEqual(
+          Math.min(spec.logos.length, 16),
         );
 
         if (id.endsWith("road-trips")) {
@@ -2017,6 +2114,63 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
           // and the dark basemap's background is what is left where nothing is drawn (the bottom left corner)
           const corner = bare(4, (size[1] as number) - 5, 1, 1)[0] ?? [];
           expect(near(corner, hex("#0c0c0c"), 2), `the dark basemap, got ${corner}`).toBe(true);
+          // each arc alone (the example's own layer, cloned with that one row, through the overlay's setProps): where it
+          // leaves its home airport it is its team's source colour, where it lands its target colour, both from the
+          // shared palette on the dark background (worked out here through the recharts adapter, not ./deckgl)
+          const src = rechartsPalette("nfl", ["KC", "PHI"], { background: "#0c0c0c" });
+          const tgt = rechartsPalette("nfl", ["KC", "PHI"], { background: "#0c0c0c", which: "secondary" });
+          const colorOf = (team: string, end: string[]) => end[team === "KC" ? 0 : 1] as string;
+          const ends = await project(TRIPS.flatMap((t) => [t.from, t.to]));
+          const bg = hex("#0c0c0c");
+          const far = (p: number[]) =>
+            Math.max(...[0, 1, 2].map((c) => Math.abs((p[c] ?? 0) - (bg[c] ?? 0))));
+          let checked = 0;
+          for (const [i, trip] of TRIPS.entries()) {
+            await box.evaluate((el, k) => {
+              const host = el as HTMLElement & {
+                sdvDeck: { setProps(p: object): void };
+                sdvDeckLayers: readonly {
+                  id: string;
+                  props: { data: readonly unknown[] };
+                  clone(p: object): unknown;
+                }[];
+              };
+              const arcs = host.sdvDeckLayers.find((l) => l.id === "sdvplot-arcs");
+              if (arcs === undefined) throw new Error("no arc layer");
+              host.sdvDeck.setProps({ layers: [arcs.clone({ data: [arcs.props.data[k]] })] });
+            }, i);
+            await settle();
+            const one = await shoot();
+            // the arc's most saturated pixel within 8 px of an end (its own colour, not an edge blended into the map)
+            const endColor = ([x, y]: [number, number]) => {
+              const near8 = one(x - 8, y - 8, 17, 17).filter((p, k) => {
+                const q = bare(x - 8, y - 8, 17, 17)[k] ?? [];
+                return !near(p, q, 8);
+              });
+              return near8.sort((a, b) => far(b) - far(a))[0];
+            };
+            const [home, host] = [ends[2 * i] as [number, number], ends[2 * i + 1] as [number, number]];
+            if (Math.hypot(home[0] - host[0], home[1] - host[1]) < 40) continue; // too short to tell its ends apart
+            const [atHome, atHost] = [endColor(home), endColor(host)];
+            const [wantHome, wantHost] = [colorOf(trip.team, src), colorOf(trip.team, tgt)];
+            expect
+              .soft(
+                atHome !== undefined && near(atHome, hex(wantHome), 40),
+                `arc ${i} (${trip.team}) leaves home in ${wantHome}, got ${atHome}`,
+              )
+              .toBe(true);
+            expect
+              .soft(
+                atHost !== undefined && near(atHost, hex(wantHost), 40),
+                `arc ${i} (${trip.team}) lands in ${wantHost}, got ${atHost}`,
+              )
+              .toBe(true);
+            checked++;
+          }
+          console.log(`${id}: ${checked} of ${TRIPS.length} arcs checked at both ends`);
+          expect(checked, "most arcs are checked").toBeGreaterThanOrEqual(12);
+          // the palette did its work: PHI's midnight green does not read on the dark map, so it is not what is drawn
+          expect(colorOf("PHI", src)).not.toBe(teamColorsSync("nfl", ["PHI"])[0]);
         }
         expect(errors).toEqual([]);
       } finally {

@@ -74,9 +74,10 @@ export const browser = {
     });
     await map.once("load");
     // deck.gl draws over the map, in its longitude and latitude, as a MapLibre control
-    const overlay = new MapboxOverlay({ layers: [new ArcLayer(arcs), new IconLayer(homes)] });
+    const layers = [new ArcLayer(arcs), new IconLayer(homes)];
+    const overlay = new MapboxOverlay({ layers });
     map.addControl(overlay);
-    return { map, overlay };
+    return { map, overlay, layers };
   },
   width: 720,
   height: 420,
