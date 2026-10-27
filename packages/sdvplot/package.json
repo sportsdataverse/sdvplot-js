@@ -136,6 +136,7 @@
   "peerDependencies": {
     "@deck.gl/core": ">=9.4.0",
     "@deck.gl/layers": ">=9.4.0",
+    "@mui/x-charts": ">=9.15.0",
     "@nivo/bump": ">=0.99",
     "@nivo/chord": ">=0.99",
     "@nivo/core": ">=0.99",
@@ -161,6 +162,9 @@
       "optional": true
     },
     "@deck.gl/layers": {
+      "optional": true
+    },
+    "@mui/x-charts": {
       "optional": true
     },
     "@nivo/bump": {
@@ -241,6 +245,11 @@
   "devDependencies": {
     "@deck.gl/core": "9.4.0",
     "@deck.gl/layers": "9.4.0",
+    "@emotion/react": "11.14.0",
+    "@emotion/styled": "11.14.1",
+    "@mui/material": "9.5.0",
+    "@mui/system": "9.5.0",
+    "@mui/x-charts": "9.15.0",
     "@napi-rs/canvas": "^1.0.10",
     "@nivo/bump": "0.99.0",
     "@nivo/chord": "0.99.0",
