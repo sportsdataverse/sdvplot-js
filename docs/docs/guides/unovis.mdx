@@ -1,0 +1,120 @@
+---
+title: Unovis
+sidebar_position: 7.995
+---
+
+[Unovis](https://unovis.dev) (Apache-2.0) is a modular set of chart components from F5: graphs, Sankey diagrams, chord
+diagrams, maps and XY charts. `@unovis/ts` is the library itself, framework-free, and `@unovis/react` wraps it for
+React (`VisSingleContainer`, `VisGraph`, `VisSankey`, ...). A component reads your data through accessors, functions of
+each datum, so a node's fill is `nodeFill: (n) => ...` and a flow's colour `linkColor: (l) => ...`.
+`@sportsdataverse/sdvplot/unovis` builds those accessors' answers for teams: team colours, and logos and headshots for
+a Graph's nodes. It never imports Unovis (install `@unovis/ts` 1.7.1 or later beside it, an optional peer, and
+`@unovis/react` for React); every piece is a plain value or function, built anywhere, a server included. It is
+synchronous: load the league first (`loadLeague`).
+
+## Team colours
+
+`teamColorScale(league, teams)` returns a function: call it with the team value a datum holds and it answers that
+team's colour, so a Sankey's flows take `linkColor: (l) => color(l.team)`, a Graph's links `linkStroke` and its nodes
+`nodeFill` or `nodeStroke` the same way. Give it every team the chart draws, so the colours are worked out together.
+Its `domain` keeps the values exactly as you gave them, numbers as numbers, each once (`12` and `"12"` are both kept),
+and its `range` holds their colours. The colours belong to the resolved team, so `12`, `"12"` and `"KC"` all answer the
+Chiefs' red, whichever your data holds. A value that names none of its teams answers `fallback` (grey by default), with
+one warning.
+
+Pass `background` (a hex colour) for a chart on a dark card: a team colour under 3:1 contrast against it is swapped for
+the team's other colour or lifted until it reads, and the teams' colours are kept apart (CIE76 ΔE 20). The Eagles'
+midnight green, for one, does not read on `#111827` and is replaced. `teamColorPalette` returns the same colours as a
+list, for anything that takes colours by position, such as an XY component's `color` with one `y` accessor per team.
+
+<Live id="sdvplot/unovis/super-bowl-drives-sankey" />
+
+## Logos and headshots in a Graph
+
+A Unovis Graph draws a node's icon from its `nodeIcon` accessor. A text answer is drawn as text; an answer that
+starts with `#` is drawn as an SVG `<use>` of that id, `nodeIconSize` px square, from the container's `svgDefs`.
+`logoIcons(league, teams)` uses that: it returns a function for `nodeIcon` that answers `#` and the id of a `<symbol>`
+holding the team's logo, and its `svgDefs` holds those symbols, for the container (`svgDefs` on `SingleContainer` or
+`VisSingleContainer`). Each symbol keeps its image's own aspect, so the logo fits the icon's square uncut, and the node's
+shape (its `nodeFill` and `nodeStroke`) shows round it. Every value naming a team finds its logo, as for colours; the
+`variant` option picks another logo, such as `"dark"` for a dark card. `headshotIcons(league, players)` does the same
+for ESPN athlete ids, numbers or strings, or nflverse gsis ids with `idSystem: "gsis"` (after `loadGsis()`). The symbol
+ids are a function of the image, so two charts on a page can share them; to put logos and headshots in one chart, give
+the container both sets' `svgDefs`, joined.
+
+A team with no logo archived has no icon (the accessor answers nothing, and Unovis draws an empty icon), and sdvplot
+warns once. A gsis id with no headshot does the same. An ESPN id's headshot URL is built without asking ESPN whether
+the photo exists, so an id ESPN has no photo for keeps an empty icon, with no warning.
+
+<Live id="sdvplot/unovis/chiefs-passing-network" />
+
+The passing network above is drawn with `@unovis/react`: the example hands its config and data to a
+`VisSingleContainer` holding a `VisGraph`. The chart below is drawn with `@unovis/ts`, the same config passed to
+`new Graph(...)` inside `new SingleContainer(element, ...)`.
+
+<Live id="sdvplot/unovis/chiefs-2024-results-dark" />
+
+## Sankey diagrams take colours, not logos
+
+A Sankey's `nodeIcon` is written into an SVG text element, so it can only be a character or a few (Unovis's own
+examples use an icon font). There is no image path in a Sankey's types or its drawing code, and sdvplot does not reach
+into its internals to add one: a Sankey takes team colours for its nodes and flows, and team names as its labels.
+
+## Dark mode
+
+Unovis colours its own labels, outlines and empty links with CSS variables (`--vis-graph-node-label-text-color`,
+`--vis-sankey-node-label-color`, ...), and switches them to their dark values on a page whose `html` has
+`data-theme="dark"` (Docusaurus' dark mode), or whose `html` or `body` has the class `theme-dark` or `dark-theme`. A
+chart on a dark card of its own, whatever the page's mode, sets the variables on the card: the light name and its
+`--vis-dark-` twin, since Unovis reads the twin in a dark page. The team colours come from `teamColorScale` with the
+card's `background`, and the logos from `logoIcons` with `variant: "dark"`.
+
+## Svelte 5
+
+`@unovis/svelte` 1.7.1 declares Svelte 4 (`svelte ^4.0.0`) as its peer, and this site runs Svelte 5, so it is not used
+here. In Svelte 5, draw with `@unovis/ts` directly: in an action or an `$effect`, create a `SingleContainer` on the
+element with your component (`new Graph(config)`, `new Sankey(config)`), call its `setData` when the data changes and
+its `destroy` when the element goes. The sdvplot pieces are the same plain values and functions as above.
+
+## TypeScript and bundlers
+
+`@unovis/react` 1.7.1 imports each `@unovis/ts` component by its folder (`@unovis/ts/components/graph`), and
+`@unovis/ts` has no `exports` map to say which file that is. Node's own ES module loader refuses such a folder import,
+so `@unovis/react` cannot be imported by plain Node (a server render or a test runner that hands `node_modules` to
+Node); import it where a bundler resolves it. webpack 5 refuses `@unovis/react`'s folder imports as well (it
+resolves an ES module package's imports strictly), until a rule turns `resolve.fullySpecified` off for
+`node_modules/@unovis`; this site's docs build has that rule. `@unovis/ts`'s own imports name their files in full, so
+webpack and Node take it as it is.
+
+Unovis 1.7.1's type declarations re-export folders without file extensions (`export * from './components'`), which
+TypeScript follows only with `"moduleResolution": "bundler"` (or the older `"node"`). Under `"node16"` or
+`"nodenext"`, `@unovis/ts` resolves but exports no types, so `import { Graph } from "@unovis/ts"` fails to type-check.
+A bundled app (Vite, webpack, Next.js) can use bundler resolution. sdvplot's own declarations name no Unovis type, so
+`@sportsdataverse/sdvplot/unovis` types check under either. The examples on this site hand Unovis plain configs for
+this reason.
+
+## What installing Unovis brings
+
+`@unovis/ts` 1.7.1 depends on, among others, all of d3, `three` ^0.135, `leaflet` 1.7.1, `maplibre-gl` ^6.7, `elkjs`
+and `@emotion/css`, for its globe, map and graph-layout components. A package manager installs all of them. `three`
+0.135 is older than the `three` sdvplot's Three.js layer asks for (0.186.1 or later), so a project that uses both
+installs two copies side by side; they do not meet at runtime. Its `maplibre-gl` range (^6.7) takes the copy
+sdvplot's MapLibre layer asks for (6.14.0 or later), so one copy serves both: this repository's lockfile holds only
+6.14.0. What reaches the browser depends on what you import.
+Unovis marks only its stylesheet entry as having side effects, so a bundler keeps just the components a page names:
+import them by name (`import { Graph, SingleContainer } from "@unovis/ts"`), never the whole namespace. This site's
+two Unovis drawers import `SingleContainer`, `Graph` and `Sankey` (and their React wrappers), and their library chunks
+hold no Three.js, Leaflet, MapLibre or ELK code. The Graph loads its layout code (`d3-force`, dagre, ELK) on demand,
+only for the layout it is given.
+
+## API
+
+- `teamColorScale(league, teams, o?)`: a team colour function, with `domain` and `range`. Options: `which`
+  ("primary" or "secondary"), `season`, `idSystem`, `fallback`, `background`.
+- `teamColorPalette(league, teams, o?)`: the colours as a list, the same options.
+- `logoIcons(league, teams, o?)`: a `nodeIcon` function, with `domain`, `range` (the `#` ids) and `svgDefs`. Options:
+  `season`, `variant`, `idSystem`.
+- `headshotIcons(league, players, o?)`: the same for player ids. Option: `idSystem` ("espn" or "gsis").
+
+See the [API reference](/api/sdvplot/) for every option. The drive and target data are ESPN's, from the Super Bowl LIX
+game summary; the 2024 results are nflverse's schedules.

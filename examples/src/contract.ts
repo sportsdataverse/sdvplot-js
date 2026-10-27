@@ -230,10 +230,30 @@ export type BrowserSpec =
       readonly width: number;
       readonly height: number;
       readonly label: string;
-    };
+    }
+  | UnovisSpec<"unovis">
+  | UnovisSpec<"unovis-react">;
 /** What `deck()` hands a MapLibre example: deck.gl's overlay for MapLibre and the layers sdvplot/deckgl builds props for. */
 export interface DeckOnMap {
   readonly MapboxOverlay: typeof import("@deck.gl/mapbox").MapboxOverlay;
   readonly ArcLayer: typeof import("@deck.gl/layers").ArcLayer;
   readonly IconLayer: typeof import("@deck.gl/layers").IconLayer;
+}
+/**
+ * A Unovis component in a single container: with `@unovis/ts` (`new SingleContainer(el, { component: new
+ * Graph(config()), svgDefs }, data())`, "unovis") or `@unovis/react` (`<VisSingleContainer svgDefs data><VisGraph
+ * {...config()} /></VisSingleContainer>`, "unovis-react"). `config` and `data` build fresh objects per chart (Unovis
+ * keeps state on what it is given). `style` is CSS for the chart's box: a card's background and Unovis's `--vis-*`
+ * variables. Unovis's own types need TypeScript's bundler resolution, so the example hands the drawer plain objects.
+ */
+export interface UnovisSpec<L extends "unovis" | "unovis-react"> {
+  readonly lib: L;
+  readonly component: "Graph" | "Sankey";
+  readonly config: () => object;
+  readonly data: () => { readonly nodes: readonly object[]; readonly links?: readonly object[] };
+  readonly svgDefs?: string;
+  readonly style?: Readonly<Record<string, string>>;
+  readonly width: number;
+  readonly height: number;
+  readonly label: string;
 }
