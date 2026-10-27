@@ -16,6 +16,7 @@
     "chartjs",
     "react",
     "recharts",
+    "shadcn",
     "uplot",
     "nivo",
     "victory",
@@ -93,6 +94,10 @@
     "./recharts": {
       "types": "./dist/recharts.d.ts",
       "import": "./dist/recharts.js"
+    },
+    "./shadcn": {
+      "types": "./dist/shadcn.d.ts",
+      "import": "./dist/shadcn.js"
     },
     "./uplot": {
       "types": "./dist/uplot.d.ts",

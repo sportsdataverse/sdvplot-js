@@ -1,0 +1,88 @@
+---
+title: shadcn/ui charts
+sidebar_position: 7.55
+---
+
+[shadcn/ui's charts](https://ui.shadcn.com/charts) are [Recharts](recharts.mdx) charts inside a component you copy
+into your app, `chart.tsx` (`npx shadcn add chart`): `<ChartContainer config>` around the chart, and
+`<ChartLegendContent>` and `<ChartTooltipContent>` for its legend and tooltip. The `config` (shadcn's `ChartConfig`)
+names each series: its label, its colour (one, or one per theme) and an optional icon. `teamChartConfig(league, teams)`
+from `@sportsdataverse/sdvplot/shadcn` builds that config for teams: each team's name as its label, its colours for
+shadcn's light and dark themes, and its logo as its icon, so the legend and tooltip show logos where shadcn draws a
+colour swatch. Draw the series themselves with Recharts and [`sdvplot/recharts`](recharts.mdx) (`logoTick` for logos on
+an axis, `logoDot` for logos as points). shadcn is not a package, so there is nothing to install beside sdvplot but
+recharts (an optional peer, 3.8 or later; these examples run recharts 3.10.1 and shadcn's `chart.tsx` as of
+2026-10-26): the subpath imports neither, and its types only match shadcn's shape. It is
+synchronous, so load the league first (`loadLeague`). Each chart below is drawn by Recharts in your browser, through
+shadcn's own `chart.tsx`.
+
+## Keys, and the colour variables
+
+`<ChartContainer>` writes each config key into CSS as a custom property, `--color-<key>`, and a series takes its colour
+from it: `stroke` or `fill` set to `var(--color-<key>)`. A team name such as "Trail Blazers" (a space) or an id such as
+"1610612757.0" (a dot) is not a valid property name, so `teamChartConfig` returns the keys with the config, `{ config,
+keys }`, where `keys[i]` is the key of `teams[i]`. A key is the team value as given, with its accents dropped
+("Montréal" gives "montreal"), lower-cased, and each run of anything other than letters and digits turned into one
+dash, with the dashes at either end removed: "Trail Blazers" gives `trail-blazers`. Letters of other scripts stay, as CSS
+allows them. A value with nothing left becomes `team`. A key already taken gets `-2`, then `-3`, and so on, in the order
+of `teams`, so the same `teams` in the same order always get the same keys. Pass each team once, and read its key
+from `keys[i]` rather than working it out again. Use `keys[i]` for that team's series `dataKey`, and its colour
+is `var(--color-<keys[i]>)`.
+
+The chart below has one line per team, with each team's key as the line's `dataKey`. The legend and the tooltip find
+each team's config entry by that `dataKey`, and draw its logo and name. Recharts' `<Legend>` (shadcn's `<ChartLegend>`)
+sorts its items by name unless told otherwise; pass `itemSorter={null}`, as this chart does, to keep the series order.
+
+<Live id="sdvplot/shadcn/afc-west-wins-trend" />
+
+## Light and dark colours
+
+Each entry has a `theme` rather than a single `color`: `theme.light` is the team's colour on a light chart and
+`theme.dark` its colour on a dark one. They come from `teamColorPalette` in `sdvplot/recharts`, given each theme's
+background. By default the backgrounds are those of shadcn's neutral theme, the one `shadcn init` sets up: #ffffff
+(`oklch(1 0 0)`, its page and its card) for light, and #171717 for dark (`oklch(0.205 0 0)`, its dark card). A colour
+that reads on that card also reads on the darker page behind it, #0a0a0a. Every colour keeps 3:1 contrast against its
+background. A team colour that falls short (Denver's navy and the Raiders' black on the dark card) gives way to the
+team's other colour, or is lightened until it reads. Each colour also aims to stay distinct from the earlier teams'
+(CIE76 ΔE 20), as in the other adapters. For a different theme, pass its backgrounds as hex: `background: { light,
+dark }`. `which`, `season` and `idSystem` work as they do in `teamColorPalette`.
+
+shadcn writes `theme.light` under the chart and `theme.dark` under any element with the `dark` class above it, its
+dark mode. This chart sits inside a `class="dark"` box on the dark card colour:
+
+<Live id="sdvplot/shadcn/afc-west-margin-dark" />
+
+## Logos in the legend and the tooltip
+
+`icon` is a component that draws the team's logo as an `<img>`: 16 px tall by default, or `iconSize`. Its `alt` is
+empty, because shadcn puts the team's name beside it. `<ChartLegendContent>` and `<ChartTooltipContent>` draw it in
+place of their colour swatch. A team with no logo in the archive gets no `icon`, so shadcn draws its swatch, and the
+call warns once. `icon: false` leaves out every logo. The same logo at the same size is the same component on every
+call, so building the config inside a component's render is safe: React keeps the image rather than remounting it.
+Wrap the call in `useMemo` only to skip the palette work on each render.
+
+A bar chart has one series, with one row per team, so the tooltip cannot find the team by `dataKey`. Give each row a
+column holding its team's key (`key: keys[i]`) and pass that column's name as `<ChartTooltipContent nameKey="key">`.
+The tooltip then shows the hovered bar's logo and team name. Each row's `fill: var(--color-<key>)` colours its bar, as
+in shadcn's own bar charts. `logoTick` from `sdvplot/recharts` puts the logos on the axis.
+
+<Live id="sdvplot/shadcn/afc-west-points-bars" />
+
+## Server rendering (Next.js)
+
+`chart.tsx` begins with `"use client"`: shadcn's chart components are client components. `teamChartConfig` touches no
+DOM and runs in Node, but it is synchronous: the league must be loaded (`await loadLeague(league)`) before it is called,
+as for every sdvplot logo helper. The config cannot be passed from a server component to a client one, because its
+icons are functions. Build it in the client component, once the league has loaded: for example, an effect that awaits
+`loadLeague` and then sets state, or React's `use()` on a promise created once at module level, inside a `<Suspense>`.
+A client component still renders once on the server, and the icons render there as plain `<img>` tags.
+
+## On this site
+
+This site has no Tailwind. The examples use shadcn's `chart.tsx` as shadcn ships it (`examples/src/vendor/shadcn`,
+MIT; only its `cn` import changed). The site adds a small stylesheet for the few utility classes its legend and tooltip
+use, with shadcn's neutral theme colours. In an app that has Tailwind and shadcn's theme, none of that is needed.
+Without either, the chart still draws: its series take their colours from `--color-<key>`, which shadcn writes
+itself. Only the legend and tooltip lose their layout.
+
+In the gallery: [shadcn/ui](/gallery/sdvplot/#shadcn).

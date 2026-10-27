@@ -3,6 +3,7 @@ import { existsSync, mkdirSync, readFileSync, statSync } from "node:fs";
 import { type Server, createServer } from "node:http";
 import type { AddressInfo } from "node:net";
 import { extname, join, normalize } from "node:path";
+import { createCanvas, loadImage } from "@napi-rs/canvas";
 import { type Browser, chromium } from "playwright";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { pagePath } from "../scripts/pages.js";
@@ -515,6 +516,122 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
       await page.close();
     }
   });
+
+  // shadcn/ui charts are React examples (no browser upgrade): the docs re-run each live through the vendored chart.tsx.
+  // Sample real mark pixels: points along each line and each bar's centre must show the colour Chromium resolves for
+  // the mark's var(--color-<key>), and that colour must be the chart's own <style> value for the theme it sits in
+  // (its `.dark` block under a .dark ancestor). Each logo (legend <img>, axis <image>) is loaded and paints its box.
+  test.each(EXAMPLES.filter((e) => e.id.startsWith("sdvplot/shadcn/")).map((e) => e.id))(
+    "%s re-runs live and paints its theme's team colours",
+    async (id) => {
+      const entry = EXAMPLES.find((e) => e.id === id);
+      if (entry === undefined) throw new Error(`${id} is not in the registry`);
+      const page = await browser.newPage();
+      try {
+        const errors: string[] = [];
+        page.on("console", (m) => void (m.type() === "error" && errors.push(m.text())));
+        page.on("pageerror", (e) => void errors.push(e.message));
+        await page.goto(`${base}/gallery/${pagePath(entry)}/`);
+        const figure = page.locator(`figure[data-example="${id}"]`);
+        await figure.scrollIntoViewIfNeeded();
+        const chart = figure.locator(".sdv-live-output [data-slot='chart']");
+        // a mark, not any layer: a horizontal reference line is a zero-height box, which Playwright calls hidden
+        await chart
+          .locator(".recharts-line-curve, .recharts-bar-rectangle path")
+          .first()
+          .waitFor({ timeout: 30_000 });
+        await page.waitForLoadState("networkidle"); // the logos
+        // the sticky navbar would sit over the top of the chart in its screenshot, and over the pixels sampled there
+        await page.addStyleTag({ content: ".navbar { display: none !important; }" });
+        expect(await figure.locator(".sdv-live-static").count(), "the static copy is replaced").toBe(0);
+        expect(await figure.locator(".sdv-live-error").count(), "no error alert").toBe(0);
+        const got = await chart.evaluate((el) => {
+          const box = el.getBoundingClientRect();
+          const dark = el.closest(".dark") !== null;
+          const css = el.querySelector("style")?.textContent ?? "";
+          const block = css.split("}").find((b) => b.trim().startsWith(dark ? ".dark" : "[data-chart")) ?? "";
+          const theme = Object.fromEntries(
+            [...block.matchAll(/--color-([^:]+):\s*([^;]+);/g)].map((m) => [m[1], (m[2] ?? "").trim()]),
+          );
+          const at = (x: number, y: number) => [x - box.left, y - box.top];
+          const marks = [...el.querySelectorAll(".recharts-line-curve, .recharts-bar-rectangle path")].map(
+            (m) => {
+              const line = m.classList.contains("recharts-line-curve");
+              const paint = line ? "stroke" : "fill";
+              const key = /var\(--color-(.+)\)/.exec(m.getAttribute(paint) ?? "")?.[1] ?? "";
+              const path = m as SVGPathElement;
+              let points: number[][];
+              if (line) {
+                const ctm = path.getScreenCTM() as DOMMatrix;
+                const len = path.getTotalLength();
+                points = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9].map((f) => {
+                  const p = path.getPointAtLength(f * len);
+                  return at(ctm.a * p.x + ctm.c * p.y + ctm.e, ctm.b * p.x + ctm.d * p.y + ctm.f);
+                });
+              } else {
+                const r = m.getBoundingClientRect();
+                points = [at(r.x + r.width / 2, r.y + r.height / 2)];
+              }
+              return { key, want: theme[key] ?? "", resolved: getComputedStyle(m)[paint], points };
+            },
+          );
+          const logos = [...el.querySelectorAll("img, image")].map((i) => {
+            const r = i.getBoundingClientRect();
+            return {
+              loaded: !(i instanceof HTMLImageElement) || (i.complete && i.naturalWidth > 0),
+              box: [...at(r.x, r.y), r.width, r.height].map(Math.round) as [number, number, number, number],
+            };
+          });
+          const bg = getComputedStyle(el.closest(".dark") ?? el).backgroundColor;
+          return { dark, marks, logos, bg };
+        });
+        const shot = await loadImage(await chart.screenshot());
+        const ctx = createCanvas(shot.width, shot.height).getContext("2d");
+        ctx.drawImage(shot, 0, 0);
+        const rgb = (s: string) => (s.match(/[\d.]+/g) ?? []).slice(0, 3).map(Number);
+        const hex = (s: string) => [1, 3, 5].map((i) => Number.parseInt(s.slice(i, i + 2), 16));
+        const near = (a: number[], b: number[], d: number) =>
+          [0, 1, 2].every((c) => Math.abs((a[c] ?? 0) - (b[c] ?? 0)) <= d);
+        /** The pixels of the w x h box at (x, y), as [r, g, b]. */
+        const pixels = (x: number, y: number, w: number, h: number) => {
+          const d = ctx.getImageData(Math.round(x), Math.round(y), Math.max(1, w), Math.max(1, h)).data;
+          return Array.from(
+            { length: d.length / 4 },
+            (_, i) => [d[4 * i], d[4 * i + 1], d[4 * i + 2]] as number[],
+          );
+        };
+        expect(got.marks.length, "the chart has lines or bars").toBeGreaterThan(0);
+        for (const m of got.marks) {
+          expect(m.want, `--color-${m.key} is in the chart's ${got.dark ? "dark" : "light"} block`).toMatch(
+            /^#/,
+          );
+          expect(rgb(m.resolved), `var(--color-${m.key}) resolves to the theme's colour`).toEqual(
+            hex(m.want),
+          );
+          const painted = m.points.some(([x, y]) =>
+            pixels((x as number) - 2, (y as number) - 2, 5, 5).some((p) => near(p, hex(m.want), 24)),
+          );
+          expect(painted, `a pixel of the ${m.key} mark is ${m.want}`).toBe(true);
+        }
+        // every shadcn example charts the four AFC West teams, so each draws at least one logo per team
+        expect(got.logos.length, "a logo per team in the legend or on the axis").toBeGreaterThanOrEqual(4);
+        for (const { loaded, box } of got.logos) {
+          expect(loaded, "the logo loaded").toBe(true);
+          const [x, y, w, h] = box;
+          const px = pixels(x, y, w, h);
+          const inked = px.filter((p) => !near(p, rgb(got.bg), 40)).length / px.length;
+          expect(inked, "the logo paints its box").toBeGreaterThan(0.1);
+        }
+        if (SHOTS !== undefined)
+          await figure
+            .locator(".sdv-live-output")
+            .screenshot({ path: join(SHOTS, `${id.replace(/\//g, "_")}.png`) });
+        expect(errors).toEqual([]);
+      } finally {
+        await page.close();
+      }
+    },
+  );
 
   // A drawing that fails (here plotly.js never arrives) shows the alert over the static copy, leaves nothing drawn,
   // and drops the note that plotly.js draws the figure here.

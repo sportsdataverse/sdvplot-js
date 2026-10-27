@@ -99,9 +99,13 @@ export function generate(): readonly ExampleEntry[] {
     mkdirSync(dirname(join(EX, f.path)), { recursive: true });
     writeFileSync(join(EX, f.path), f.text);
   }
-  // draw/ is the docs' browser renderer for BrowserSpec, not an example
+  // draw/ is the docs' browser renderer for BrowserSpec, vendor/ third-party code examples import: not examples
   const skip = (rel: string): boolean =>
-    rel === "contract.ts" || rel === "data.ts" || rel === "draw" || rel.endsWith(".gen.ts");
+    rel === "contract.ts" ||
+    rel === "data.ts" ||
+    rel === "draw" ||
+    rel === "vendor" ||
+    rel.endsWith(".gen.ts");
   const entries = walk(join(EX, "src"), skip).map(entryOf);
   const dup = entries.find((e, i) => entries.findIndex((o) => o.id === e.id) !== i);
   if (dup) throw new Error(`two examples share the id ${dup.id}`);
