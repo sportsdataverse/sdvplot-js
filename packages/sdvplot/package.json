@@ -29,7 +29,9 @@
     "lightweight-charts",
     "g2",
     "ant-design-charts",
-    "tanstack-charts"
+    "tanstack-charts",
+    "maplibre",
+    "maps"
   ],
   "homepage": "https://plot.sportsdataverse.org",
   "bugs": "https://github.com/sportsdataverse/sdvplot-js/issues",
@@ -147,6 +149,10 @@
     "./tanstack": {
       "types": "./dist/tanstack.d.ts",
       "import": "./dist/tanstack.js"
+    },
+    "./maplibre": {
+      "types": "./dist/maplibre.d.ts",
+      "import": "./dist/maplibre.js"
     },
     "./package.json": "./package.json"
   },
