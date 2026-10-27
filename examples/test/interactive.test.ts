@@ -58,6 +58,7 @@ const TYPES: Readonly<Record<string, string>> = {
   ".png": "image/png",
   ".ttf": "font/ttf",
   ".json": "application/json",
+  ".wasm": "application/wasm",
 };
 
 /** What the library leaves in the figure once it has drawn, by the folder the example lives in. */
@@ -80,6 +81,8 @@ const DRAWN: Readonly<Record<string, string>> = {
   maplibre: ".sdv-live-output canvas.maplibregl-canvas",
   // a node or a flow Unovis drew (both drawers, @unovis/ts and @unovis/react, sit in sdvplot/unovis)
   unovis: ".sdv-live-output svg :is(g[class*=g-node], path[class*=visible])",
+  // the team bars: Mosaic has queried DuckDB-WASM and Observable Plot has drawn them
+  mosaic: ".sdv-live-output .plot svg g[aria-label=bar] rect",
 };
 
 /** OpenFreeMap's credit, as its TileJSON gave it on 2026-10-27. */
@@ -2184,6 +2187,174 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
       }
     },
   );
+
+  // Mosaic: DuckDB-WASM runs in the page from the site's own files, and nothing leaves the docs server (this check
+  // caught DuckDB fetching its Parquet reader from extensions.duckdb.org: the example now hands DuckDB CSV). Brushing
+  // the EPA histogram (a real drag) filters the team bars and the table to exactly the plays a plain filter of
+  // nflPlays2024() gives for the brushed range, and every bar is drawn at its count, in its team's palette colour.
+  test("sdvplot/mosaic/nfl-plays-epa-crossfilter: local files only; the brush filters the bars and the table to the plays in its range; team-coloured bars", async () => {
+    const id = "sdvplot/mosaic/nfl-plays-epa-crossfilter";
+    const entry = EXAMPLES.find((e) => e.id === id);
+    if (entry === undefined) throw new Error(`${id} is not in the registry`);
+    await loadLeague("nfl");
+    const plays = await nflPlays2024();
+    const teams = [...new Set(plays.map((p) => p.posteam))].sort();
+    const palette = rechartsPalette("nfl", teams, { background: "#ffffff" });
+    const colorOf = new Map(teams.map((t, i) => [t, palette[i] ?? ""]));
+    const countBy = (rows: readonly { posteam: string }[]) => {
+      const n = new Map<string, number>();
+      for (const p of rows) n.set(p.posteam, (n.get(p.posteam) ?? 0) + 1);
+      return Object.fromEntries([...n].sort(([a], [b]) => (a < b ? -1 : 1)));
+    };
+    // every request of the context, the worker's included (DuckDB's worker fetches the WebAssembly module itself).
+    // The docs' own analytics script (docusaurus.config.ts, on every page) is answered here with an empty script.
+    const context = await browser.newContext();
+    const asked: string[] = [];
+    await context.route("**/*", (r) => {
+      const url = r.request().url();
+      if (url.startsWith("https://plausible.io/js/"))
+        return r.fulfill({ contentType: "text/javascript", body: "" });
+      asked.push(url);
+      return new URL(url).origin === base ? r.continue() : r.abort();
+    });
+    const page = await context.newPage();
+    try {
+      const errors: string[] = [];
+      page.on("console", (m) => void (m.type() === "error" && errors.push(m.text())));
+      page.on("pageerror", (e) => void errors.push(e.message));
+      const started = Date.now();
+      await page.goto(`${base}/gallery/${pagePath(entry)}/`);
+      const figure = page.locator(`figure[data-example="${id}"]`);
+      await figure.scrollIntoViewIfNeeded();
+      const views = figure.locator(".sdv-live-output .plot svg");
+      const hist = views.nth(0);
+      const bars = views.nth(1);
+      await bars.locator("g[aria-label=bar] rect").first().waitFor({ timeout: 60_000 });
+      console.log(`${id}: drawn ${Date.now() - started} ms after navigation`);
+      // the drawn bars: each rect's team (where the y scale puts it), its geometry and fill, and the width a bar of
+      // 0..n plays would have on the x scale
+      const drawn = () =>
+        bars.evaluate((svg) => {
+          type Scale = {
+            domain: unknown[];
+            range: number[];
+            bandwidth?: number;
+            apply: (v: unknown) => number;
+          };
+          const s = svg as unknown as { scale: (n: string) => Scale };
+          const [x, y] = [s.scale("x"), s.scale("y")];
+          const x0 = x.apply(0);
+          const widths = Array.from(
+            { length: Math.ceil(Number(x.domain[1])) + 1 },
+            (_, n) => x.apply(n) - x0,
+          );
+          return [...svg.querySelectorAll("g[aria-label=bar] rect")].map((r) => {
+            const top = Number(r.getAttribute("y"));
+            const team = y.domain.find(
+              (t) => top >= y.apply(t) - 0.5 && top < y.apply(t) + (y.bandwidth ?? 0),
+            );
+            const width = Number(r.getAttribute("width"));
+            return {
+              team: String(team),
+              x: Number(r.getAttribute("x")),
+              y: top,
+              width,
+              height: Number(r.getAttribute("height")),
+              fill: r.getAttribute("fill") ?? "",
+              // the count the bar is drawn for: the n whose bar is exactly this wide (Plot does not round x)
+              count: widths.findIndex((w) => Math.abs(w - width) < 1e-6),
+            };
+          });
+        });
+      const counts = (rows: Awaited<ReturnType<typeof drawn>>) =>
+        Object.fromEntries(rows.map((r) => [r.team, r.count] as const).sort(([a], [b]) => (a < b ? -1 : 1)));
+      const tableIds = () =>
+        figure
+          .locator(".sdv-live-output table tbody tr")
+          .evaluateAll((trs) => trs.map((tr) => tr.querySelector("td")?.textContent ?? ""));
+      const hex = (s: string) => [1, 3, 5].map((i) => Number.parseInt(s.slice(i, i + 2), 16));
+      /** Every bar's fill is its team's palette colour; each at least `min` px wide is painted so at its middle. */
+      const colours = async (rows: Awaited<ReturnType<typeof drawn>>, min: number) => {
+        const shot = await loadImage(await bars.screenshot());
+        const ctx = createCanvas(shot.width, shot.height).getContext("2d");
+        ctx.drawImage(shot, 0, 0);
+        let checked = 0;
+        for (const r of rows) {
+          const want = colorOf.get(r.team) ?? "";
+          expect(r.fill, `${r.team}'s bar is its palette colour`).toBe(want);
+          if (r.width < min) continue;
+          const px = ctx.getImageData(
+            Math.round(r.x + r.width / 2),
+            Math.round(r.y + r.height / 2),
+            1,
+            1,
+          ).data;
+          const rgb = hex(want);
+          expect(
+            [0, 1, 2].map((c) => Math.abs((px[c] as number) - (rgb[c] as number)) <= 2),
+            `${r.team}'s bar is painted ${want} at its middle (got ${[...px.slice(0, 3)]})`,
+          ).toEqual([true, true, true]);
+          checked++;
+        }
+        return checked;
+      };
+
+      // before brushing: a bar per offence, each drawn at that team's number of plays
+      await expect.poll(async () => counts(await drawn()), { timeout: 15_000 }).toEqual(countBy(plays));
+      expect(await colours(await drawn(), 4), "all 32 bars sampled").toBe(32);
+
+      // brush the histogram with the mouse, from EPA 4.5 to the end of its x axis
+      const box = await hist.boundingBox();
+      if (box === null) throw new Error("no histogram");
+      const ends = await hist.evaluate((svg) => {
+        type Scale = { range: number[]; apply: (v: number) => number };
+        const s = svg as unknown as { scale: (n: string) => Scale };
+        const [x, y] = [s.scale("x"), s.scale("y")];
+        return {
+          from: x.apply(4.5),
+          to: Math.max(...x.range) - 1,
+          mid: ((y.range[0] ?? 0) + (y.range[1] ?? 0)) / 2,
+        };
+      });
+      await page.mouse.move(box.x + ends.from, box.y + ends.mid);
+      await page.mouse.down();
+      await page.mouse.move(box.x + ends.to, box.y + ends.mid, { steps: 8 });
+      await page.mouse.up();
+      const brushed = await figure.locator('.sdv-live-output [role="figure"]').evaluate((el) => {
+        const b = (el as HTMLElement & { sdvBrush: { value: unknown; predicate: (c: null) => unknown } })
+          .sdvBrush;
+        return { value: b.value as number[], sql: String(b.predicate(null)) };
+      });
+      const [lo, hi] = brushed.value as [number, number];
+      expect(brushed.sql, "the brush filters plays by EPA, ends included").toMatch(/"epa" BETWEEN/);
+      expect(Math.abs(lo - 4.5), "the brush starts where the mouse went down").toBeLessThan(0.2);
+      const inBrush = plays.filter((p) => p.epa >= lo && p.epa <= hi);
+      console.log(`${id}: brushed EPA ${lo.toFixed(3)} to ${hi.toFixed(3)}, ${inBrush.length} plays`);
+      expect(inBrush.length, "some plays, fewer than the table's first batch of 100").toBeGreaterThan(5);
+      expect(inBrush.length).toBeLessThan(100);
+      // the bars and the table now hold exactly the brushed plays
+      await expect.poll(async () => counts(await drawn()), { timeout: 15_000 }).toEqual(countBy(inBrush));
+      await expect
+        .poll(async () => (await tableIds()).sort(), { timeout: 15_000 })
+        .toEqual(inBrush.map((p) => p.play).sort());
+      expect(await colours(await drawn(), 4), "brushed bars wide enough to sample").toBeGreaterThan(0);
+
+      // nothing left the docs server: the page and DuckDB's worker and WebAssembly module all came from it
+      expect(asked.filter((u) => new URL(u).origin !== base)).toEqual([]);
+      for (const want of [/\/[0-9a-f]{16}\.wasm$/, /\/[0-9a-f]{16}\.js$/])
+        expect(
+          asked.some((u) => want.test(u)),
+          `asked for ${want}`,
+        ).toBe(true);
+      if (SHOTS !== undefined)
+        await figure
+          .locator(".sdv-live-output")
+          .screenshot({ path: join(SHOTS, `${id.replace(/\//g, "_")}_brushed.png`) });
+      expect(errors).toEqual([]);
+    } finally {
+      await context.close();
+    }
+  });
 
   // A drawing that fails (here plotly.js never arrives) shows the alert over the static copy, leaves nothing drawn,
   // and drops the note that plotly.js draws the figure here.

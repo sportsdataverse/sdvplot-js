@@ -64,6 +64,7 @@ const VALUE_LIBS: Readonly<Record<string, string>> = {
   "ag-grid": "AG Grid",
   maplibre: "MapLibre GL JS",
   unovis: "Unovis",
+  mosaic: "Mosaic (with DuckDB-WASM)",
 };
 
 /**

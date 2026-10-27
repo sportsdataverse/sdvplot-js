@@ -69,6 +69,8 @@ async function drawWith(el: HTMLElement, s: BrowserSpec): Promise<() => void> {
       return (await import(/* webpackChunkName: "draw-unovis" */ "./unovis.js")).default(el, s);
     case "unovis-react":
       return (await import(/* webpackChunkName: "draw-unovis-react" */ "./unovis-react.js")).default(el, s);
+    case "mosaic":
+      return (await import(/* webpackChunkName: "draw-mosaic" */ "./mosaic.js")).default(el, s);
   }
 }
 
