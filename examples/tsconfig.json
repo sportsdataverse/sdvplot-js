@@ -25,6 +25,7 @@
       "@sportsdataverse/sdvplot/tanstack": ["../packages/sdvplot/src/tanstack.ts"],
       "@sportsdataverse/sdvplot/maplibre": ["../packages/sdvplot/src/maplibre.ts"],
       "@sportsdataverse/sdvplot/unovis": ["../packages/sdvplot/src/unovis.ts"],
+      "@sportsdataverse/sdvplot/perspective": ["../packages/sdvplot/src/perspective.ts"],
       "@sportsdataverse/sdvplot/export": ["../packages/sdvplot/src/export/index.ts"],
       "@sportsdataverse/sdvplot/interact": ["../packages/sdvplot/src/interact/index.ts"],
       "@sportsdataverse/sporty": ["../packages/sporty/src/index.ts"],
