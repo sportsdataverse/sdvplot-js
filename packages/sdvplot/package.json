@@ -17,6 +17,8 @@
     "react",
     "recharts",
     "shadcn",
+    "mui",
+    "mui-x-charts",
     "uplot",
     "nivo",
     "victory",
@@ -98,6 +100,10 @@
     "./shadcn": {
       "types": "./dist/shadcn.d.ts",
       "import": "./dist/shadcn.js"
+    },
+    "./mui": {
+      "types": "./dist/mui.d.ts",
+      "import": "./dist/mui.js"
     },
     "./uplot": {
       "types": "./dist/uplot.d.ts",
