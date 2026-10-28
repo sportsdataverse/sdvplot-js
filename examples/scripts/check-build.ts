@@ -18,7 +18,15 @@ for (const r of readRows(abs("examples/out"))) {
   const { document } = parseHTML(readFileSync(join(build, "gallery", pagePath(r), "index.html"), "utf8"));
   const shown = document.querySelector(`figure[data-example="${r.id}"] .sdv-live-static`)?.innerHTML;
   checked++;
-  if (shown !== dom(r.markup)) differ.push(r.id);
+  const want = dom(r.markup);
+  if (shown === want) continue;
+  // where the two first part, so a CI log says what differs and not only which example
+  let at = 0;
+  while (at < want.length && shown?.[at] === want[at]) at++;
+  const near = (s: string | undefined) => JSON.stringify(s?.slice(Math.max(0, at - 80), at + 160) ?? null);
+  differ.push(
+    `${r.id} (first differs at ${at} of ${want.length}):\n  page:        ${near(shown)}\n  prerendered: ${near(want)}`,
+  );
 }
 console.log(`check-build: ${checked} inline outputs compared with their pages; ${differ.length} differ`);
 if (differ.length > 0) {
