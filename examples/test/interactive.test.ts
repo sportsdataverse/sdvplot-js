@@ -2823,12 +2823,22 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
             const want = signColour(v);
             const other = v > 0 ? neg : pos;
             const got = [...px.slice(ink, ink + 3)];
-            // within 32 of its sign's colour and a third as far from it as from the other's: glyph antialiasing moves
-            // the inkiest pixel by up to ~10 per channel (Linux CI drew #c82d2d as 202,54,54), while the grid's default
-            // dark text, or the other sign's colour, is over 60 away from either sign's colour on some channel
+            // an antialiased glyph pixel is the text colour blended over the padding: bg + a * (colour - bg) on all
+            // three channels with one a. Thin strokes may cover no pixel whole (Linux CI drew #327835 as 89,146,91,
+            // an 81% blend), so the check is that the inkiest pixel is such a blend of its sign's colour (one a for
+            // every channel, at least 40% ink) and fits it better than the other sign's; the grid's default dark text
+            // or the other sign's colour fits no single a
+            const blend = (c: number[]) => {
+              const d = [0, 1, 2].map((ch) => (bg[ch] as number) - (c[ch] as number));
+              const p = [0, 1, 2].map((ch) => (bg[ch] as number) - (px[ink + ch] as number));
+              const a =
+                (p[0]! * d[0]! + p[1]! * d[1]! + p[2]! * d[2]!) / (d[0]! ** 2 + d[1]! ** 2 + d[2]! ** 2);
+              return { a, off: Math.max(...[0, 1, 2].map((ch) => Math.abs(p[ch]! - a * d[ch]!))) };
+            };
+            const fit = blend(channels(want));
             expect(
-              dist(ink, channels(want)) <= 32 && 3 * dist(ink, channels(want)) < dist(ink, channels(other)),
-              `${team} ${col} (${v}) is painted ${want} (inkiest pixel ${got})`,
+              fit.a >= 0.4 && fit.off <= 12 && fit.off < blend(channels(other)).off,
+              `${team} ${col} (${v}) is painted ${want} (inkiest pixel ${got}: ${Math.round(fit.a * 100)}% ink, ${fit.off.toFixed(1)} off)`,
             ).toBe(true);
             signs[v > 0 ? "pos" : "neg"]++;
           }
