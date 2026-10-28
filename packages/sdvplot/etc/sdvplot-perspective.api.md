@@ -11,12 +11,15 @@ export type PerspectiveColumnConfig = {
     palette?: string;
     number_format?: PerspectiveNumberFormat;
     link?: true;
+    fg_color?: string;
+    font_family?: string;
 };
 
 // @public
 export type PerspectiveConfig = {
     plugin: string;
     theme: "Pro Light" | "Pro Dark";
+    plugin_config?: PerspectivePluginConfig;
     columns_config: Record<string, PerspectiveColumnConfig>;
 };
 
@@ -39,6 +42,7 @@ export interface PerspectiveConfigOptions {
     season?: SeasonInput;
     strict?: boolean;
     teamCol: string;
+    theme?: PerspectiveTheme | ((mode: "light" | "dark") => PerspectiveTheme);
 }
 
 // @public
@@ -61,10 +65,31 @@ export type PerspectiveNumberFormat = {
 };
 
 // @public
+export type PerspectivePluginConfig = {
+    font_family: string;
+    font_size: number;
+};
+
+// @public
 export type PerspectiveRow = Readonly<Record<string, unknown>>;
 
 // @public
 export type PerspectiveSchema = Readonly<Record<string, PerspectiveType>>;
+
+// @public
+export interface PerspectiveTheme {
+    readonly fonts: {
+        readonly body?: string;
+        readonly numeric?: string;
+    };
+    readonly palette: {
+        readonly neg: string;
+        readonly pos: string;
+    };
+    readonly sizes: {
+        readonly body: number;
+    };
+}
 
 // @public
 export type PerspectiveType = "integer" | "float" | "string" | "boolean" | "date" | "datetime";

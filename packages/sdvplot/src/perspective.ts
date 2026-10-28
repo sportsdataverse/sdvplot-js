@@ -1,6 +1,6 @@
 /**
- * Perspective 5.5 (`@perspective-dev/viewer`, with the `-datagrid` and `-charts` plugins): team colours, number formats
- * and a logo column for a `<perspective-viewer>`, the JavaScript side of sdvplot's Python `sdvplot.perspective`. Both
+ * Perspective 5.5 (`@perspective-dev/viewer`, with the `-datagrid` and `-charts` plugins): team colours, number formats,
+ * a registry table theme's fonts and sign colours, and a logo column for a `<perspective-viewer>`, the JavaScript side of sdvplot's Python `sdvplot.perspective`. Both
  * functions return plain data: a viewer config (the argument of `viewer.restore()`) and rows with a logo URL column.
  * Given the same rows and options, `perspectiveConfig` returns what Python's `perspective_sdv_config` returns
  * (fixtures/perspective/oracle.json holds the Python answers; packages/sdvplot/test/perspective-parity.test.ts compares).
@@ -33,14 +33,34 @@ export type PerspectiveColumnConfig = {
   number_format?: PerspectiveNumberFormat;
   /** The Datagrid shows a URL column as links. */
   link?: true;
+  /** The Datagrid's number colours (a registry theme's): `linear-gradient(to right, <neg> 0%, <pos> 100%)`. */
+  fg_color?: string;
+  /** The Datagrid's font for a number column: a registry theme's numeric face, when it is not the body face. */
+  font_family?: string;
 };
+/** The Datagrid's own settings: a registry theme's body face and size. */
+export type PerspectivePluginConfig = { font_family: string; font_size: number };
 /** What `perspectiveConfig` returns: pass it to `viewer.restore()`, with your own view keys merged in. */
 export type PerspectiveConfig = {
   plugin: string;
   /** Perspective's own theme: "Pro Light" or "Pro Dark" (load `@perspective-dev/viewer/dist/css/pro.css` / `pro-dark.css`). */
   theme: "Pro Light" | "Pro Dark";
+  /** The Datagrid with a registry `theme` only. */
+  plugin_config?: PerspectivePluginConfig;
   columns_config: Record<string, PerspectiveColumnConfig>;
 };
+/**
+ * The parts of a registry table theme `perspectiveConfig` reads. A `TableThemeSpec` (sdvtables'
+ * `tableThemeSpec(name, mode)`, Python's `table_theme_spec`) is one; sdvplot does not ship the registry itself.
+ */
+export interface PerspectiveTheme {
+  /** `body`: the grid's face. `numeric`: the number columns' face, when it is not `body`. */
+  readonly fonts: { readonly body?: string; readonly numeric?: string };
+  /** `body`: the grid's font size in px. */
+  readonly sizes: { readonly body: number };
+  /** The number colours: `neg` (low) to `pos` (high). */
+  readonly palette: { readonly neg: string; readonly pos: string };
+}
 
 /** `perspectiveConfig` options. */
 export interface PerspectiveConfigOptions {
@@ -52,6 +72,16 @@ export interface PerspectiveConfigOptions {
   plugin?: string;
   /** "light" (default) or "dark": the Perspective theme, "Pro Light" or "Pro Dark". */
   mode?: "light" | "dark";
+  /**
+   * A registry table theme: best as a function of the mode, `(m) => tableThemeSpec(name, m)` from
+   * `@sportsdataverse/sdvtables`, called with this call's `mode` on every plugin (so a light-only theme in dark mode
+   * throws, as in Python). A spec object works too; it does not say its mode, so resolve it in the same `mode`.
+   * The Datagrid takes its body face and size (`plugin_config`), its sign colours on every number column (`fg_color`;
+   * Perspective reads only `#hex` and `rgb()` colours there) and, when the numeric face is not the body face, that face
+   * on the number columns. Perspective takes each face as one family name, so the page loads the font (Google Fonts)
+   * or the browser draws its default. A chart takes none of it.
+   */
+  theme?: PerspectiveTheme | ((mode: "light" | "dark") => PerspectiveTheme);
   /** A logo URL column (`perspectiveLogoColumn`) to show as links on the Datagrid, which draws no images. */
   logoCol?: string;
   /** The colour the teams must read against. Default: the Perspective theme's (#ffffff Pro Light, #242526 Pro Dark). */
@@ -122,6 +152,19 @@ function inferSchema(rows: readonly PerspectiveRow[]): Record<string, Perspectiv
 
 const isNumber = (t: PerspectiveType | undefined): boolean => t === "integer" || t === "float";
 const quote = (s: string): string => `'${s}'`;
+const isObj = (v: unknown): v is Record<string, unknown> => typeof v === "object" && v !== null;
+const isFace = (v: unknown): boolean => v === undefined || typeof v === "string";
+/** A given theme (or what its function returned) must have every field perspectiveConfig reads. */
+const isTheme = (t: unknown): t is PerspectiveTheme =>
+  isObj(t) &&
+  isObj(t.fonts) &&
+  isFace(t.fonts.body) &&
+  isFace(t.fonts.numeric) &&
+  isObj(t.sizes) &&
+  typeof t.sizes.body === "number" &&
+  isObj(t.palette) &&
+  typeof t.palette.neg === "string" &&
+  typeof t.palette.pos === "string";
 
 function checkColumns(schema: PerspectiveSchema, cols: readonly (string | undefined)[]): void {
   const names = Object.keys(schema);
@@ -178,8 +221,9 @@ const gradient = (colors: readonly string[]): string => `linear-gradient(to righ
  *   `schema` for its number formats, as Python's empty frame keeps its columns).
  * @returns `plugin`, `theme` and `columns_config`; merge your own `group_by`, `split_by`, `columns` and the rest in.
  * @throws InputError for a column the rows do not have (`teamCol`, `logoCol` or a `formats` key), a team column that
- *   mixes numbers and strings, an unknown `mode`, or a season outside the league's. UnresolvedTeamError with
- *   `strict: true`.
+ *   mixes numbers and strings, an unknown `mode`, a `theme` that is not a spec (or a function returning one), or a
+ *   season outside the league's. UnresolvedTeamError with `strict: true`. A `theme` function's own errors pass through
+ *   (sdvtables' TableSpecError for a light-only theme in dark mode).
  *
  * @example
  * ```ts
@@ -211,6 +255,12 @@ export function perspectiveConfig(
   const mode = o.mode ?? "light";
   if (mode !== "light" && mode !== "dark")
     throw new InputError(`mode must be 'light' or 'dark', not ${quote(String(mode))}`);
+  // resolved before the plugin is known, as Python resolves theme= on every plugin (a light-only theme in dark throws)
+  const resolved = typeof o.theme === "function" ? o.theme(mode) : o.theme;
+  if (o.theme !== undefined && !isTheme(resolved))
+    throw new InputError(
+      `theme must be a table theme spec or a function of the mode, not ${quote(String(resolved))}: pass (m) => tableThemeSpec(name, m) from @sportsdataverse/sdvtables`,
+    );
   const schema = o.schema ?? inferSchema(rows);
   const { teamCol, logoCol } = o;
   // no rows and no schema: no column is known, so none is missing (Python's empty frame still has its columns)
@@ -255,10 +305,23 @@ export function perspectiveConfig(
       `no team colors on the Datagrid: the team column ${quote(teamCol)} is numeric, and team colors need a string or categorical team column (Perspective fills only text cells)`,
     );
   }
+  const theme = grid ? resolved : undefined; // a chart takes no fonts from a config
+  if (theme !== undefined) {
+    const { body, numeric: face } = theme.fonts;
+    const sign = `linear-gradient(to right, ${theme.palette.neg} 0%, ${theme.palette.pos} 100%)`;
+    for (const c of numeric) {
+      columns[c]!.fg_color = sign;
+      if (face && face !== body) columns[c]!.font_family = face;
+    }
+  }
   if (grid && logoCol !== undefined) columns[logoCol] = { link: true };
+  const gridFace = theme?.fonts.body;
   return {
     plugin: o.plugin ?? "Datagrid",
     theme: pro,
+    ...(theme !== undefined && gridFace
+      ? { plugin_config: { font_family: gridFace, font_size: theme.sizes.body } }
+      : {}),
     columns_config: Object.fromEntries(Object.entries(columns).filter(([, v]) => Object.keys(v).length > 0)),
   };
 }

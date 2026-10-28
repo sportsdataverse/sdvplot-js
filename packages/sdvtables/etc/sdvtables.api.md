@@ -1059,6 +1059,42 @@ export interface TableState<Row> {
     readonly sort: Sort | null;
 }
 
+// @public
+export type TableThemePaletteKey = "page" | "bg" | "text" | "muted" | "accent" | "rule" | "hline" | "labelBg" | "labelColor" | "stripe" | "summaryBg" | "link" | "pos" | "neg" | "posBg" | "negBg" | "heatLow" | "heatMid" | "heatHigh";
+
+// @public
+export interface TableThemeSpec {
+    readonly category: string;
+    readonly darkPolicy: string;
+    readonly fonts: {
+        readonly title: string;
+        readonly titleWeight: number;
+        readonly label: string;
+        readonly labelWeight: number;
+        readonly body: string;
+        readonly bodyWeight: number;
+        readonly numeric: string;
+        readonly subtitle: string;
+        readonly subtitleItalic: boolean;
+    };
+    readonly id: string;
+    readonly palette: Readonly<Record<TableThemePaletteKey, string>>;
+    readonly sizes: {
+        readonly title: number;
+        readonly subtitle: number;
+        readonly label: number;
+        readonly body: number;
+        readonly source: number;
+        readonly padY: number;
+        readonly padX: number;
+    };
+    readonly source: string;
+    readonly structure: Readonly<Record<string, unknown>>;
+}
+
+// @public
+export function tableThemeSpec(name: string, mode?: "light" | "dark"): TableThemeSpec;
+
 // @public (undocumented)
 export interface TeamOpts {
     // (undocumented)

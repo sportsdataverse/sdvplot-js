@@ -17,6 +17,7 @@ interface RegistrySpec {
   readonly category: string;
   readonly darkPolicy: string;
   readonly fonts: Readonly<Record<string, string | number | boolean | undefined>>;
+  readonly sizes: TableThemeSpec["sizes"];
   readonly light: Palette;
   readonly dark: Palette | null;
   readonly structure: Readonly<Record<string, unknown>>;
@@ -68,7 +69,9 @@ function palette(spec: RegistrySpec, mode: "light" | "dark"): Record<string, str
 
 /** Substitute `{key}` from the palette; a key the palette lacks becomes mid-grey, never a literal `{key}`. */
 const sub = (css: unknown, p: Record<string, string>): string =>
-  typeof css === "string" && css ? css.replace(/\{(\w+)\}/g, (_, k: string) => p[k] ?? "#888888") : "none";
+  typeof css === "string" && css
+    ? css.replace(/\{(\w+)\}/g, (_, k: string) => (Object.hasOwn(p, k) && p[k]) || "#888888")
+    : "none";
 
 function fontsOf(spec: RegistrySpec): GoogleFont[] {
   const f = spec.fonts;
@@ -174,6 +177,153 @@ export function registryTheme(ref: ThemeRef): Theme {
     ...(st.stripe === true ? { stripe: p.stripe as string } : {}),
   };
   return { name: ref.name, tokens, fonts: fontsOf(spec), rules: () => "" };
+}
+
+// Levenshtein distance, for the unknown-theme suggestions
+function editDistance(a: string, b: string): number {
+  let prev = Array.from({ length: b.length + 1 }, (_, j) => j);
+  for (let i = 1; i <= a.length; i++) {
+    const cur = [i];
+    for (let j = 1; j <= b.length; j++)
+      cur[j] = Math.min(
+        (prev[j] ?? 0) + 1,
+        (cur[j - 1] ?? 0) + 1,
+        (prev[j - 1] ?? 0) + (a[i - 1] === b[j - 1] ? 0 : 1),
+      );
+    prev = cur;
+  }
+  return prev[b.length] ?? 0;
+}
+/** Up to 3 names within edit distance max(2, length/3), closest first (ties by name): the unknown-theme suggestions. */
+export function closeMatches(name: string, names: readonly string[]): string[] {
+  const lim = Math.max(2, Math.floor(name.length / 3));
+  return names
+    .map((n) => [n, editDistance(name.toLowerCase(), n.toLowerCase())] as const)
+    .filter(([, d]) => d <= lim)
+    .sort((x, y) => x[1] - y[1] || x[0].localeCompare(y[0]))
+    .slice(0, 3)
+    .map(([n]) => n);
+}
+
+/** The keys of a resolved registry palette: each a `#rrggbb` colour. */
+export type TableThemePaletteKey =
+  | "page"
+  | "bg"
+  | "text"
+  | "muted"
+  | "accent"
+  | "rule"
+  | "hline"
+  | "labelBg"
+  | "labelColor"
+  | "stripe"
+  | "summaryBg"
+  | "link"
+  | "pos"
+  | "neg"
+  | "posBg"
+  | "negBg"
+  | "heatLow"
+  | "heatMid"
+  | "heatHigh";
+
+/**
+ * One registry theme resolved in one mode, as Python's `table_theme_spec` returns it (its `TableThemeSpec`, with
+ * `dark_policy` as `darkPolicy`): the surveyed fonts and sizes, the palette complete (a key the theme omits takes the
+ * shared default), and the structure with every `{key}` in its border strings taken from the palette.
+ */
+export interface TableThemeSpec {
+  /** The registry id, e.g. "datagolf". */
+  readonly id: string;
+  /** The surveyed source's name, e.g. "DataGolf". */
+  readonly source: string;
+  /** "journal", "library", "finance", "news", "sports", "gov" or "periodical". */
+  readonly category: string;
+  /** The faces (Google Fonts families) and their weights. */
+  readonly fonts: {
+    readonly title: string;
+    readonly titleWeight: number;
+    readonly label: string;
+    readonly labelWeight: number;
+    readonly body: string;
+    readonly bodyWeight: number;
+    readonly numeric: string;
+    readonly subtitle: string;
+    readonly subtitleItalic: boolean;
+  };
+  /** Font sizes and cell padding, in px. */
+  readonly sizes: {
+    readonly title: number;
+    readonly subtitle: number;
+    readonly label: number;
+    readonly body: number;
+    readonly source: number;
+    readonly padY: number;
+    readonly padX: number;
+  };
+  /** The mode's colours, complete: a key the theme omits takes the shared default. */
+  readonly palette: Readonly<Record<TableThemePaletteKey, string>>;
+  /** Rules, borders, stripes, heat and the rest, as the registry has them, border strings substituted. */
+  readonly structure: Readonly<Record<string, unknown>>;
+  /** "native" (the site has a dark mode), "derived" (sdv's own dark palette) or "none" (light only). */
+  readonly darkPolicy: string;
+}
+
+// reactablefmtr's own themes: sdvtables' fmtr-<name>, not registry ids (the surveyed sites are <name>-site)
+const FMTR_PORTS: readonly string[] = ["espn", "fivethirtyeight", "pff"];
+
+/**
+ * Resolve a surveyed registry theme (e.g. `datagolf`, `wikipedia`, `nejm`) to its fonts, sizes, palette and structure,
+ * as Python's `table_theme_spec` does. Pass it, resolved in the same `mode`, as `perspectiveConfig`'s `theme`
+ * (`@sportsdataverse/sdvplot/perspective`).
+ *
+ * @param name - the theme id, as `listTableThemes()` lists it. "espn", "fivethirtyeight" and "pff" are reactablefmtr
+ *   ports (the `fmtr-espn` theme and so on), not registry ids; the surveyed look of those sites is "espn-site" and so on.
+ * @param mode - "light" (default) or "dark".
+ * @returns a new spec on every call: changing one changes no other.
+ * @throws TableSpecError for an unknown `mode`, an unknown name (with up to 3 close matches), a reactablefmtr name, or
+ *   "dark" on a light-only theme (naming three dark-capable themes in its category).
+ *
+ * @example
+ * ```ts
+ * import { tableThemeSpec } from "@sportsdataverse/sdvtables";
+ *
+ * const spec = tableThemeSpec("datagolf", "dark");
+ * [spec.palette.bg, spec.fonts.body, spec.sizes.body];
+ * ```
+ */
+export function tableThemeSpec(name: string, mode: "light" | "dark" = "light"): TableThemeSpec {
+  if (mode !== "light" && mode !== "dark")
+    throw new TableSpecError(`mode must be "light" or "dark", not "${String(mode)}"`);
+  const s = Object.hasOwn(SPECS, name) ? SPECS[name] : undefined;
+  if (!s) {
+    if (FMTR_PORTS.includes(name))
+      throw new TableSpecError(
+        `"${name}" is a reactablefmtr port, not a registry theme: use the "fmtr-${name}" theme, or "${name}-site" for the surveyed site look`,
+      );
+    const close = closeMatches(name, Object.keys(SPECS));
+    const hint = close.length ? `; did you mean ${close.map((c) => `"${c}"`).join(", ")}?` : "";
+    throw new TableSpecError(`unknown table theme "${name}"${hint} (see listTableThemes())`);
+  }
+  if (mode === "dark" && (s.darkPolicy === "none" || !s.dark))
+    throw new TableSpecError(`theme "${name}" is light-only; ${darkAdvice(s.category)}`);
+  const p = palette(s, mode);
+  return {
+    id: name,
+    source: s.source,
+    category: s.category,
+    fonts: structuredClone(s.fonts) as TableThemeSpec["fonts"],
+    sizes: structuredClone(s.sizes),
+    palette: p as Record<TableThemePaletteKey, string>,
+    // every `{key}` sits in a border string; the rest (heatColumns ...) is copied, so the registry stays as loaded
+    structure: Object.fromEntries(
+      Object.entries(s.structure).map(([k, v]) => [
+        k,
+        typeof v === "string" ? sub(v, p) : structuredClone(v),
+      ]),
+    ),
+    darkPolicy: s.darkPolicy,
+  };
 }
 
 /** List registry themes, optionally only those usable in `mode` (non-`none` darkPolicy for dark) or in a `category`. */

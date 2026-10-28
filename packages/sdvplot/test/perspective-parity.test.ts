@@ -12,7 +12,9 @@ import "./_fixtures.js";
  * Parity with sdvplot (Python): fixtures/perspective/oracle.json holds `perspective_sdv_config`'s answers on real
  * frames (tools/oracle/perspective.py; provenance in fixtures/perspective/README.md). The JavaScript config must equal
  * each one, key order included (what `JSON.stringify` writes), with the rows' types given as the frame's schema and
- * worked out from the rows alike, and warn as often.
+ * worked out from the rows alike, and warn as often. A case with a registry `theme` carries the spec Python read
+ * (`theme_spec`, `table_theme_spec(theme, mode)`): sdvplot cannot resolve a theme itself (sdvtables' `tableThemeSpec`
+ * does, and packages/sdvtables/test/table-theme-spec.test.ts runs these cases with it), so the spec is passed as is.
  */
 const FILE = resolve(dirname(fileURLToPath(import.meta.url)), "../../../fixtures/perspective/oracle.json");
 const text = readFileSync(FILE, "utf8");
@@ -23,6 +25,7 @@ type Case = {
   rows: Record<string, unknown>[];
   config: unknown;
   warnings: string[];
+  theme_spec?: NonNullable<PerspectiveConfigOptions["theme"]>;
 };
 const oracle = JSON.parse(text) as { meta: Record<string, string>; cases: Case[] };
 
@@ -30,7 +33,7 @@ const oracle = JSON.parse(text) as { meta: Record<string, string>; cases: Case[]
 function options(c: Case): PerspectiveConfigOptions {
   const names: Record<string, string> = { team_col: "teamCol", logo_col: "logoCol", id_system: "idSystem" };
   return Object.fromEntries(
-    Object.entries(c.options).map(([k, v]) => [names[k] ?? k, v]),
+    Object.entries(c.options).map(([k, v]) => [names[k] ?? k, k === "theme" ? c.theme_spec : v]),
   ) as unknown as PerspectiveConfigOptions;
 }
 
@@ -39,7 +42,7 @@ afterEach(() => setWarningHandler(null));
 describe("perspectiveConfig equals Python's perspective_sdv_config", () => {
   test("the fixture is the recorded one, from sdvplot's perspective.py of 519695e2 on perspective-python 5.5.1", () => {
     expect(createHash("sha256").update(readFileSync(FILE)).digest("hex")).toBe(
-      "77d1328407ea67dc2bbf906b3a498b31d2482af2d136a106757508a017754e54",
+      "198eb78458d168d7ac44ac7f1c7ba7791cc3771965822a3b5f70d4bfef05033b",
     );
     expect(oracle.meta).toMatchObject({
       perspective_py_commit: "519695e2ee4b968b76bd7f2e167116e8ab81ec8a",
@@ -61,6 +64,13 @@ describe("perspectiveConfig equals Python's perspective_sdv_config", () => {
       has((c) => c.schema?.[o(c, "team_col") as string] === "integer" && o(c, "plugin") === "Y Bar"),
     ).toBe(true);
     expect(has((c) => c.rows.some((r) => r[o(c, "team_col") as string] === null))).toBe(true);
+    // a registry theme on the grid, light and dark, with a numeric face of its own, and on a chart (which takes none)
+    for (const mode of [undefined, "dark"])
+      expect(
+        has((c) => o(c, "theme") !== undefined && o(c, "plugin") === undefined && o(c, "mode") === mode),
+      ).toBe(true);
+    expect(has((c) => JSON.stringify(c.config).includes('"font_family":"Roboto Mono"'))).toBe(true);
+    expect(has((c) => o(c, "theme") !== undefined && o(c, "plugin") === "Y Bar")).toBe(true);
   });
 
   for (const c of oracle.cases)
