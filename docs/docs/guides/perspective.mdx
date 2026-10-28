@@ -24,7 +24,10 @@ Given the same rows and options, `perspectiveConfig` returns the same dictionary
 a viewer set up from a notebook and one set up from a web page look alike. A test holds the two together: the Python function
 was run on real frames (the grid, split bars and lines, a scatter, light and dark, numeric team ids, a missing team,
 teams that do not resolve, number formats, a logo column, no rows, a table theme), its answers are committed as a fixture, and the
-test checks that the JavaScript output equals each one, with the same warnings. The test does not run Python: when
+test checks that the JavaScript output equals each one, with the same warnings. The logo column is held the same way:
+`perspective_logo_column`'s URLs on real frames (string and numeric team ids, a missing team, teams that do not resolve
+or have no logo, the "dark" variant, relocated franchises by season) equal `perspectiveLogoColumn`'s, although Python
+reads the logo manifest and JavaScript the index bundled in this package. The test does not run Python: when
 either side changes, the fixture is written again from the Python package. The options are the Python keyword arguments in JavaScript's spelling:
 
 | Python | JavaScript |
@@ -84,6 +87,14 @@ object with the same `fonts`, `sizes` and `palette` fields does as well (the typ
 reads only `#hex` and `rgb()` colours in `fg_color`, so a named or `hsl()` colour leaves the default), and the
 parity test above covers the theme too: Python's answers with "datagolf" light and dark, "nfl-next-gen-stats" and
 "ft-markets-data" equal what `perspectiveConfig` gives with sdvtables' spec.
+
+Perspective 5.5 paints a positive number in the gradient's last colour and a negative one in its first, so the
+theme's `pos` and `neg` (a zero keeps the grid's text colour). The example below, in "nfl-next-gen-stats", is checked in
+Chromium: every number is painted in its sign's colour and set in the numeric face, the rest of the grid in the body
+face, and each team's cell keeps its colour. The page loads no font file, so your browser may draw Roboto and Roboto
+Mono with its own fallback; the colours do not depend on it.
+
+<Live id="sdvplot/perspective/nfl-offense-datagrid-themed" />
 
 ## Team colours in a chart, and dark mode
 
