@@ -1,7 +1,8 @@
 """Writes fixtures/perspective/oracle.json: sdvplot's (Python) perspective_sdv_config on real frames, for the parity test
 of sdvplot-js's ./perspective (packages/sdvplot/test/perspective-parity.test.ts), and table_theme_spec on a few registry
 themes, for sdvtables' tableThemeSpec (packages/sdvtables/test/table-theme-spec.test.ts, which also runs the theme
-cases with the spec sdvtables resolves).
+cases with the spec sdvtables resolves), and perspective_logo_column on real frames, for perspectiveLogoColumn (the
+same parity test).
 
 Run from this repo with the Python package's checkout beside it, in an environment of its own built offline from uv's
 cache (the parity point is perspective-python 5.5.1, the floor of both packages):
@@ -9,13 +10,17 @@ cache (the parity point is perspective-python 5.5.1, the floor of both packages)
     UV_PROJECT_ENVIRONMENT=<scratch>/pyenv uv run --project ../sdvplot --extra perspective --offline --frozen \
         python tools/oracle/perspective.py
 
-It reads only committed fixtures of this repo and sdvplot's shipped index, and refuses the network: any socket it
-opens raises. Never hand-edit the output; a parity failure is a port bug (or a finding to report).
+with SDVPLOT_CACHE_DIR set to a scratch copy of a cache holding the logo manifest (`manifest/marks.csv` and its
+`.meta.json`; never the user's own cache) and SDVPLOT_CACHE_TTL large enough that the copy counts as fresh.
+
+It reads only committed fixtures of this repo, sdvplot's shipped index and that cached manifest, and refuses the
+network: any socket it opens raises (so a manifest refresh fails the run instead of downloading). Never hand-edit the output; a parity failure is a port bug (or a finding to report).
 """
 
 from __future__ import annotations
 
 import dataclasses
+import hashlib
 import json
 import socket
 import subprocess
@@ -39,9 +44,9 @@ socket.create_connection = _no_network  # type: ignore[assignment]
 import perspective  # noqa: E402
 import polars as pl  # noqa: E402
 import sdvplot  # noqa: E402
-from sdvplot import _index  # noqa: E402
+from sdvplot import _cache, _index  # noqa: E402
 from sdvplot import table_theme_spec  # noqa: E402
-from sdvplot.perspective import perspective_sdv_config  # noqa: E402
+from sdvplot.perspective import perspective_logo_column, perspective_sdv_config  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 EX = ROOT / "fixtures" / "examples"
@@ -90,7 +95,7 @@ cfb = pl.DataFrame(
         "wins": [5, 10, 13, 9, 4, 9],
     }
 )
-# a logo URL column (no URLs: perspective_logo_column needs the logo manifest, a network file)
+# a logo URL column with no URLs: these config cases only show the column as links (LOGO_CASES below fill one)
 logos = epa.head(3).with_columns(pl.lit(None, dtype=pl.String).alias("team_logo"))
 
 TWO = {"minimumFractionDigits": 2, "maximumFractionDigits": 2}
@@ -222,6 +227,24 @@ SPECS = [
     ("evanmiya", "light"),
 ]
 
+# perspective_logo_column, from the cached logo manifest: the NFL frame (string codes), the NBA one (numeric
+# stats.nba.com ids), unresolved and null teams, the "dark" variant, a custom name, and a season for every team on the
+# codes of relocated franchises (Oakland/Las Vegas Raiders, San Diego/Los Angeles Chargers, St. Louis/Los Angeles Rams)
+reloc = pl.DataFrame({"team": ["OAK", "LV", "SD", "LAC", "STL", "LA"]})
+# NCAA women's hockey: Minnesota, Delaware (in the index, with no archived logo: the other warning), an unknown code
+whockey = pl.DataFrame({"team": ["MINN", "DEL", "ZZZ", "DEL"]})
+LOGO_CASES: list[tuple[str, pl.DataFrame, str, dict]] = [
+    ("nfl teams", epa, "team", {"league": "nfl"}),
+    ("numeric team ids", nba, "team_id", {"league": "nba"}),
+    ("unresolved", unresolved, "team", {"league": "nfl"}),
+    ("null team", nulls, "team", {"league": "nfl"}),
+    ("variant dark", epa, "team", {"league": "nfl", "variant": "dark"}),
+    ("custom name", epa.head(3), "team", {"league": "nfl", "name": "logo"}),
+    ("relocations season 2015", reloc, "team", {"league": "nfl", "season": 2015}),
+    ("relocations season 2024", reloc, "team", {"league": "nfl", "season": 2024}),
+    ("no archived logo", whockey, "team", {"league": "ncaa_whockey", "variant": "dark"}),
+]
+
 
 def spec_dict(name: str, mode: str) -> dict:
     """table_theme_spec as JSON: the dataclass's fields in order."""
@@ -256,6 +279,22 @@ for name, frame, kw in CASES:
         case["theme_spec"] = spec_dict(kw["theme"], kw.get("mode", "light"))
     cases.append(case)
 specs = [{"name": n, "mode": m, "spec": spec_dict(n, m)} for n, m in SPECS]
+logo_columns = []
+for name, frame, team_col, kw in LOGO_CASES:
+    with warnings.catch_warnings(record=True) as rec:
+        warnings.simplefilter("always")
+        out = perspective_logo_column(frame, team_col, **kw)
+    logo_columns.append(
+        {
+            "name": name,
+            "team_col": team_col,
+            "options": kw,
+            "rows": frame.to_dicts(),
+            "result": out.to_dicts(),
+            "warnings": [str(w.message) for w in rec],
+        }
+    )
+manifest = _cache.read_meta("manifest/marks.csv") or {}
 
 PY = ROOT.parent / "sdvplot"
 git = lambda *a: subprocess.run(
@@ -275,13 +314,16 @@ meta = {
     ),
     "perspective_python": perspective.__version__,
     "index_version": _index.index_version(),
+    "manifest_etag": manifest.get("etag"),
+    "manifest_last_modified": manifest.get("last_modified"),
+    "manifest_sha256": hashlib.sha256(_cache.cache_path("manifest/marks.csv").read_bytes()).hexdigest(),
 }
 OUT.mkdir(parents=True, exist_ok=True)
 (OUT / "oracle.json").write_text(
-    json.dumps({"meta": meta, "cases": cases, "table_theme_specs": specs}, indent=1, ensure_ascii=False) + "\n",
+    json.dumps({"meta": meta, "cases": cases, "table_theme_specs": specs, "logo_columns": logo_columns}, indent=1, ensure_ascii=False) + "\n",
     encoding="utf-8",
     newline="\n",  # LF on every platform: the parity test pins these bytes
 )
 print(
-    f"wrote {len(cases)} cases and {len(specs)} specs; sdvplot {meta['sdvplot_commit'][:8]}, index {meta['index_version']}"
+    f"wrote {len(cases)} cases, {len(specs)} specs and {len(logo_columns)} logo columns; sdvplot {meta['sdvplot_commit'][:8]}, index {meta['index_version']}"
 )

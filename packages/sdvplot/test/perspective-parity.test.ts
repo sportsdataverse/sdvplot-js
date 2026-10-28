@@ -5,7 +5,12 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, test } from "vitest";
 import { resetWarnings, setWarningHandler } from "../src/errors.js";
-import { type PerspectiveConfigOptions, perspectiveConfig } from "../src/perspective.js";
+import {
+  type PerspectiveConfigOptions,
+  type PerspectiveLogoOptions,
+  perspectiveConfig,
+  perspectiveLogoColumn,
+} from "../src/perspective.js";
 import "./_fixtures.js";
 
 /**
@@ -15,6 +20,8 @@ import "./_fixtures.js";
  * worked out from the rows alike, and warn as often. A case with a registry `theme` carries the spec Python read
  * (`theme_spec`, `table_theme_spec(theme, mode)`): sdvplot cannot resolve a theme itself (sdvtables' `tableThemeSpec`
  * does, and packages/sdvtables/test/table-theme-spec.test.ts runs these cases with it), so the spec is passed as is.
+ * `logo_columns` holds `perspective_logo_column`'s answers, read from the logo manifest; `perspectiveLogoColumn` reads
+ * this package's bundled index instead, and must give the same rows (column order and nulls included) and warn as often.
  */
 const FILE = resolve(dirname(fileURLToPath(import.meta.url)), "../../../fixtures/perspective/oracle.json");
 const text = readFileSync(FILE, "utf8");
@@ -27,7 +34,15 @@ type Case = {
   warnings: string[];
   theme_spec?: NonNullable<PerspectiveConfigOptions["theme"]>;
 };
-const oracle = JSON.parse(text) as { meta: Record<string, string>; cases: Case[] };
+type LogoCase = {
+  name: string;
+  team_col: string;
+  options: Record<string, unknown>;
+  rows: Record<string, unknown>[];
+  result: Record<string, unknown>[];
+  warnings: string[];
+};
+const oracle = JSON.parse(text) as { meta: Record<string, string>; cases: Case[]; logo_columns: LogoCase[] };
 
 /** Python's keyword arguments, in JavaScript's names. */
 function options(c: Case): PerspectiveConfigOptions {
@@ -42,7 +57,7 @@ afterEach(() => setWarningHandler(null));
 describe("perspectiveConfig equals Python's perspective_sdv_config", () => {
   test("the fixture is the recorded one, from sdvplot's perspective.py of 519695e2 on perspective-python 5.5.1", () => {
     expect(createHash("sha256").update(readFileSync(FILE)).digest("hex")).toBe(
-      "198eb78458d168d7ac44ac7f1c7ba7791cc3771965822a3b5f70d4bfef05033b",
+      "6844c52bcdab5b7e358c41c763f47dc6f4a7abdb4f68ff68f4faf483eafe8f92",
     );
     expect(oracle.meta).toMatchObject({
       perspective_py_commit: "519695e2ee4b968b76bd7f2e167116e8ab81ec8a",
@@ -92,4 +107,37 @@ describe("perspectiveConfig equals Python's perspective_sdv_config", () => {
         const own = c.warnings.filter((w) => w.startsWith("no team colors"));
         expect(warned.filter((w) => w.startsWith("no team colors"))).toEqual(own);
       });
+});
+
+describe("perspectiveLogoColumn equals Python's perspective_logo_column", () => {
+  test("the logo columns cover string and numeric teams, unresolved and null ones, a team with no logo, a variant, a name and seasons", () => {
+    expect(oracle.meta).toMatchObject({
+      manifest_etag: '"2b13d9cab12913e507f4b72d702562a7"',
+      manifest_last_modified: "Thu, 01 Oct 2026 07:44:07 GMT",
+    });
+    const cases = oracle.logo_columns;
+    const has = (f: (c: LogoCase) => boolean) => cases.some(f);
+    expect(has((c) => typeof c.rows[0]?.[c.team_col] === "number")).toBe(true);
+    expect(has((c) => c.rows.some((r) => r[c.team_col] === null))).toBe(true);
+    expect(has((c) => c.warnings.some((w) => /did not resolve/.test(w)))).toBe(true);
+    expect(has((c) => c.warnings.some((w) => /no logo archived/.test(w)))).toBe(true);
+    expect(has((c) => c.options.variant === "dark")).toBe(true);
+    expect(has((c) => c.options.name !== undefined)).toBe(true);
+    expect(cases.filter((c) => c.options.season !== undefined)).toHaveLength(2);
+  });
+
+  for (const c of oracle.logo_columns)
+    test(c.name, () => {
+      const warned: string[] = [];
+      resetWarnings();
+      setWarningHandler((m) => warned.push(m));
+      const names: Record<string, string> = { id_system: "idSystem" };
+      const o = Object.fromEntries(
+        Object.entries(c.options).map(([k, v]) => [names[k] ?? k, v]),
+      ) as unknown as PerspectiveLogoOptions;
+      const got = perspectiveLogoColumn(c.rows, c.team_col, o);
+      expect(got).toEqual(c.result);
+      expect(JSON.stringify(got)).toBe(JSON.stringify(c.result));
+      expect(warned).toHaveLength(c.warnings.length);
+    });
 });
