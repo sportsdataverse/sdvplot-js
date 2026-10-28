@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, test } from "vitest";
+import { INDEX_VERSION } from "../src/data/index.js";
 import { resetWarnings, setWarningHandler } from "../src/errors.js";
 import {
   type PerspectiveConfigOptions,
@@ -114,7 +115,13 @@ describe("perspectiveLogoColumn equals Python's perspective_logo_column", () => 
     expect(oracle.meta).toMatchObject({
       manifest_etag: '"2b13d9cab12913e507f4b72d702562a7"',
       manifest_last_modified: "Thu, 01 Oct 2026 07:44:07 GMT",
+      manifest_sha256: "39579c5515acb75547ce4c30da58478c26b3d9336af7bf66c6582d96df571da8",
     });
+    // both snapshots pinned: a rebuilt index can move a URL (a rebrand) without any port change, so re-run the oracle
+    expect(
+      INDEX_VERSION,
+      "the bundled index changed: re-run tools/oracle/perspective.py, then update this pin",
+    ).toBe("1c025b69f8cf");
     const cases = oracle.logo_columns;
     const has = (f: (c: LogoCase) => boolean) => cases.some(f);
     expect(has((c) => typeof c.rows[0]?.[c.team_col] === "number")).toBe(true);
@@ -138,6 +145,19 @@ describe("perspectiveLogoColumn equals Python's perspective_logo_column", () => 
       const got = perspectiveLogoColumn(c.rows, c.team_col, o);
       expect(got).toEqual(c.result);
       expect(JSON.stringify(got)).toBe(JSON.stringify(c.result));
-      expect(warned).toHaveLength(c.warnings.length);
+      // the wording differs between the two packages; the reason, the count and the teams named must not
+      expect(warned.map(gist).sort(byReason)).toEqual(c.warnings.map(gist).sort(byReason));
     });
 });
+
+/** A warning's reason, its count and the team codes it names, whatever the wording around them. */
+function gist(w: string): { reason: string; n: number; codes: string[] } {
+  const reason = /did not resolve/.test(w) ? "unresolved" : /no logo/.test(w) ? "no logo" : w;
+  const list = w.slice(w.indexOf(": ") + 2).split(/\.\s/)[0] ?? "";
+  const codes = list
+    .split(", ")
+    .map((x) => x.replace(/\s*\(.*\)$/, "").replace(/^'|'$/g, ""))
+    .sort();
+  return { reason, n: Number(/\d+/.exec(w)?.[0]), codes };
+}
+const byReason = (a: { reason: string }, b: { reason: string }): number => a.reason.localeCompare(b.reason);

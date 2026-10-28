@@ -17,8 +17,8 @@ warn as often (the same parity test). Python reads the logo manifest; JavaScript
 - **Written by** `tools/oracle/perspective.py`, run with the Python package's checkout beside this repo, in an
   environment of its own built from uv's cache with no download:
   `UV_PROJECT_ENVIRONMENT=<scratch>/pyenv uv run --project ../sdvplot --extra perspective --offline --frozen python tools/oracle/perspective.py`,
-  with `SDVPLOT_CACHE_DIR` pointing at a scratch copy of a cached logo manifest (`manifest/marks.csv`, its
-  `.meta.json` and the `.sdvplot-cache` marker, copied from a user cache, which is left untouched) and
+  with `SDVPLOT_CACHE_DIR` pointing at a scratch copy of a cached logo manifest (`manifest/marks.csv` and its
+  `.meta.json`, copied from a user cache, which is left untouched) and
   `SDVPLOT_CACHE_TTL=36500`, so the copy counts as fresh. The script refuses the network (any socket it opens raises),
   so a manifest refresh would fail the run rather than download. The sdvplot checkout is only read and run.
 - **Logo manifest (Python side):** etag `"2b13d9cab12913e507f4b72d702562a7"`, last modified Thu, 01 Oct 2026

@@ -2765,10 +2765,17 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
               }),
             };
           });
-          return { gridFace: table ? getComputedStyle(table).fontFamily : "", rows };
+          return {
+            gridFace: table ? getComputedStyle(table).fontFamily : "",
+            gridSize: table ? getComputedStyle(table).fontSize : "",
+            rows,
+          };
         }, NUMBERS);
       await expect.poll(async () => (await drawn()).rows.length, { timeout: 30_000 }).toBeGreaterThan(10);
       expect(firstFace((await drawn()).gridFace), "the grid's face is the theme's body face").toBe(body);
+      expect((await drawn()).gridSize, "the grid's size is the theme's body size").toBe(
+        `${spec.sizes.body}px`,
+      );
       const seen = new Map<string, Awaited<ReturnType<typeof drawn>>["rows"][number]>();
       const signs = { neg: 0, pos: 0 };
       // the first screen, then the grid scrolled to its end: every team drawn once

@@ -90,9 +90,11 @@ parity test above covers the theme too: Python's answers with "datagolf" light a
 
 Perspective 5.5 paints a positive number in the gradient's last colour and a negative one in its first, so the
 theme's `pos` and `neg` (a zero keeps the grid's text colour). The example below, in "nfl-next-gen-stats", is checked in
-Chromium: every number is painted in its sign's colour and set in the numeric face, the rest of the grid in the body
-face, and each team's cell keeps its colour. The page loads no font file, so your browser may draw Roboto and Roboto
-Mono with its own fallback; the colours do not depend on it.
+Chromium: every number is painted in its sign's colour and given the numeric face, the rest of the grid the body face
+and size, and each team's cell keeps its colour. The page loads no font file, so the check is of the faces the cells
+are given, not the glyphs drawn: your browser may draw Roboto and Roboto Mono with its own fallback, and the colours do
+not depend on it. The colour follows the sign only, not whether a number is good: a defence's EPA allowed is green when
+it is positive, and a count such as plays is green on every row.
 
 <Live id="sdvplot/perspective/nfl-offense-datagrid-themed" />
 
