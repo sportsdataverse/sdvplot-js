@@ -12,7 +12,7 @@ the theme cases with the spec sdvtables resolves; the sdvplot parity test passes
 
 And it holds `perspective_logo_column`'s answers (`logo_columns`): the rows with their logo URL column, and the
 warnings. sdvplot-js's `perspectiveLogoColumn` must return the same rows exactly (column order and nulls included) and
-warn as often (the same parity test). Python reads the logo manifest; JavaScript reads its bundled index.
+the same warnings by reason, count and teams named (the same parity test). Python reads the logo manifest; JavaScript reads its bundled index.
 
 - **Written by** `tools/oracle/perspective.py`, run with the Python package's checkout beside this repo, in an
   environment of its own built from uv's cache with no download:
@@ -54,7 +54,8 @@ warn as often (the same parity test). Python reads the logo manifest; JavaScript
   "SD", "LAC", "STL", "LA") with `season=2015` and with `season=2024` (each code's URL differs between the two), and
   NCAA women's hockey "MINN", "DEL" (in the index, no archived logo), "ZZZ" and "DEL" again with `variant="dark"` (two
   warnings: one per reason). Python's and JavaScript's warning texts differ in wording (`'DEL'` against `: DEL`), so
-  only their number is compared.
+  the test compares what each warning says rather than its text: its reason (did not resolve, or no logo archived),
+  its count and the team codes it names.
 - **Specs (9):** "datagolf" light and dark (native), "nfl-next-gen-stats" light and dark, "barrons-markets" dark
   (derived), "ft-markets-data" (light-only), "nejm" (a journal), "dunks-and-threes" dark and "evanmiya" (striped, with
   nested `heatColumns`).

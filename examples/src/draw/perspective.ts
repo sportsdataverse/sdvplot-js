@@ -48,8 +48,9 @@ const draw: Draw<"perspective"> = async (el, s) => {
   const stop = await s.mount({ worker: watched(worker), viewer });
   Object.assign(box, { sdvViewer: viewer });
   return () => {
-    stop?.();
-    void viewer.delete();
+    // the viewer's view depends on the example's table, and Perspective refuses to delete a table a view still
+    // reads: the viewer goes first, then the example's own cleanup (its table.delete())
+    void viewer.delete().then(() => stop?.());
     box.remove();
   };
 };

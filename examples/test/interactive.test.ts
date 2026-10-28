@@ -2823,8 +2823,11 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
             const want = signColour(v);
             const other = v > 0 ? neg : pos;
             const got = [...px.slice(ink, ink + 3)];
+            // within 32 of its sign's colour and a third as far from it as from the other's: glyph antialiasing moves
+            // the inkiest pixel by up to ~10 per channel (Linux CI drew #c82d2d as 202,54,54), while the grid's default
+            // dark text, or the other sign's colour, is over 60 away from either sign's colour on some channel
             expect(
-              dist(ink, channels(want)) <= 8 && dist(ink, channels(want)) < dist(ink, channels(other)),
+              dist(ink, channels(want)) <= 32 && 3 * dist(ink, channels(want)) < dist(ink, channels(other)),
               `${team} ${col} (${v}) is painted ${want} (inkiest pixel ${got})`,
             ).toBe(true);
             signs[v > 0 ? "pos" : "neg"]++;
