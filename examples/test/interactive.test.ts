@@ -18,6 +18,7 @@ import {
 import { teamColorPalette, teamColors } from "@sportsdataverse/sdvplot/mui";
 import { teamColorPalette as rechartsPalette } from "@sportsdataverse/sdvplot/recharts";
 import { teamColorPalette as agPalette } from "@sportsdataverse/sdvplot/tanstack";
+import { tableThemeSpec } from "@sportsdataverse/sdvtables";
 import { type Browser, type Page, chromium } from "playwright";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { pagePath } from "../scripts/pages.js";
@@ -2693,6 +2694,151 @@ describe.skipIf(process.env.SDV_RENDER_TESTS !== "1")("browser upgrades on the b
         painted++;
       }
       expect(painted, "team cells sampled").toBeGreaterThan(10);
+      servedLocally(asked);
+      if (SHOTS !== undefined)
+        await figure
+          .locator(".sdv-live-output")
+          .screenshot({ path: join(SHOTS, `${id.replace(/\//g, "_")}.png`) });
+      expect(errors).toEqual([]);
+    } finally {
+      await close();
+    }
+  });
+
+  test("sdvplot/perspective/nfl-offense-datagrid-themed: local files only; each number painted in the theme's sign colour (its gradient's ends), in its numeric face; the grid in the body face; each team's cell keeps its colour", async () => {
+    const id = "sdvplot/perspective/nfl-offense-datagrid-themed";
+    // expected from the registry, not from the config under test: Perspective 5.5.1 paints a positive number in the
+    // fg_color gradient's last stop and a negative one in its first (viewer-datagrid's restore.ts end_records and
+    // numeric.ts), so with the theme's neg-to-pos gradient, neg and pos themselves
+    const spec = tableThemeSpec("nfl-next-gen-stats", "light");
+    const { neg, pos } = spec.palette;
+    const { body, numeric } = spec.fonts;
+    expect(numeric, "a numeric face of its own, so the number columns carry one").not.toBe(body);
+    await loadLeague("nfl");
+    const order = [...offence].sort((a, b) => b.epa - a.epa);
+    const sorted = order.map((r) => r.team).sort();
+    const palette = rechartsPalette("nfl", sorted, { background: "#ffffff" }); // Pro Light's background
+    const colorOf = new Map(sorted.map((t, i) => [t, palette[i] ?? ""]));
+    const byTeam = new Map(NFL_TEAM_EPA_2024.map((t) => [t.team, t]));
+    const value = (team: string, col: string): number => {
+      const t = byTeam.get(team);
+      if (t === undefined) throw new Error(`no row for ${team}`);
+      return col === "plays"
+        ? t.off_plays
+        : col === "epa_per_play"
+          ? t.off_epa / t.off_plays
+          : t.def_epa / t.def_plays;
+    };
+    const signColour = (v: number) => (v > 0 ? pos : neg);
+    const NUMBERS = ["plays", "epa_per_play", "def_epa_per_play"] as const;
+    /** A CSS font-family list's first family, unquoted. */
+    const firstFace = (css: string) => (css.split(",")[0] ?? "").trim().replace(/^["']|["']$/g, "");
+    const { page, asked, errors, close } = await localOnly();
+    try {
+      const figure = await openPerspective(page, id);
+      const viewer = figure.locator("perspective-viewer");
+      /** The grid's font, and its drawn rows: the team cell's fill and face, each number cell's colour and face. */
+      const drawn = () =>
+        viewer.evaluate((v, numbers) => {
+          const grid = v.querySelector("perspective-viewer-datagrid");
+          const table =
+            grid?.querySelector("regular-table") ?? grid?.shadowRoot?.querySelector("regular-table");
+          const head = [...(table?.querySelectorAll("thead tr:last-child th") ?? [])].map(
+            (c) => c.textContent,
+          );
+          const rows = [...(table?.querySelectorAll("tbody tr") ?? [])].map((tr) => {
+            const td = [...tr.querySelectorAll("td")];
+            const at = (name: string) => td[head.indexOf(name)];
+            const team = at("team");
+            return {
+              team: team?.textContent ?? "",
+              fill: getComputedStyle(team ?? tr).backgroundColor,
+              teamFace: getComputedStyle(team ?? tr).fontFamily,
+              numbers: numbers.map((n) => {
+                const cell = at(n);
+                return {
+                  col: n,
+                  text: cell?.textContent ?? "",
+                  color: cell ? getComputedStyle(cell).color : "",
+                  face: cell ? getComputedStyle(cell).fontFamily : "",
+                };
+              }),
+            };
+          });
+          return { gridFace: table ? getComputedStyle(table).fontFamily : "", rows };
+        }, NUMBERS);
+      await expect.poll(async () => (await drawn()).rows.length, { timeout: 30_000 }).toBeGreaterThan(10);
+      expect(firstFace((await drawn()).gridFace), "the grid's face is the theme's body face").toBe(body);
+      const seen = new Map<string, Awaited<ReturnType<typeof drawn>>["rows"][number]>();
+      const signs = { neg: 0, pos: 0 };
+      // the first screen, then the grid scrolled to its end: every team drawn once
+      for (const end of [false, true]) {
+        if (end)
+          await viewer.evaluate((v) => {
+            const grid = v.querySelector("perspective-viewer-datagrid");
+            const table = (grid?.querySelector("regular-table") ??
+              grid?.shadowRoot?.querySelector("regular-table")) as HTMLElement;
+            table.scrollTop = table.scrollHeight;
+          });
+        const first = (await drawn()).rows.length;
+        await expect
+          .poll(async () => (await drawn()).rows.at(-1)?.team, { timeout: 15_000 })
+          .toBe(end ? order.at(-1)?.team : order[first - 1]?.team);
+        for (const r of (await drawn()).rows) seen.set(r.team, r);
+        // painted: each visible number cell's inkiest pixel (the one farthest from the cell's padding) is its sign's
+        // colour, and nearer it than the other sign's
+        const rows = viewer.locator("perspective-viewer-datagrid regular-table tbody tr");
+        for (let i = 0; i < (await rows.count()); i++) {
+          const tr = rows.nth(i);
+          const team = (await tr.locator("td").first().textContent()) ?? "";
+          for (const [j, col] of NUMBERS.entries()) {
+            const cell = tr.locator("td").nth(j + 1);
+            // only a cell the grid shows whole: below the header, above the table's bottom edge
+            const whole = await cell.evaluate((td) => {
+              const table = td.closest("regular-table");
+              const head = table?.querySelector("thead")?.getBoundingClientRect();
+              const t = table?.getBoundingClientRect();
+              const c = td.getBoundingClientRect();
+              return t !== undefined && head !== undefined && c.top >= head.bottom && c.bottom <= t.bottom;
+            });
+            if (!whole) continue;
+            const shot = await loadImage(await cell.screenshot());
+            const ctx = createCanvas(shot.width, shot.height).getContext("2d");
+            ctx.drawImage(shot, 0, 0);
+            // 3 px in from each edge: the cell's box can take in an edge of the team cell's fill beside it
+            const px = ctx.getImageData(3, 3, shot.width - 6, shot.height - 6).data;
+            const bg = [...px.slice(0, 3)]; // the cell's padding (a number is right-aligned)
+            const dist = (k: number, c: number[]) =>
+              Math.max(...[0, 1, 2].map((ch) => Math.abs((px[k + ch] as number) - (c[ch] as number))));
+            let ink = 0;
+            for (let k = 0; k < px.length; k += 4) if (dist(k, bg) > dist(ink, bg)) ink = k;
+            const v = value(team, col);
+            const want = signColour(v);
+            const other = v > 0 ? neg : pos;
+            const got = [...px.slice(ink, ink + 3)];
+            expect(
+              dist(ink, channels(want)) <= 8 && dist(ink, channels(want)) < dist(ink, channels(other)),
+              `${team} ${col} (${v}) is painted ${want} (inkiest pixel ${got})`,
+            ).toBe(true);
+            signs[v > 0 ? "pos" : "neg"]++;
+          }
+        }
+      }
+      expect(signs.neg, "negative numbers painted").toBeGreaterThan(5);
+      expect(signs.pos, "positive numbers painted").toBeGreaterThan(5);
+      expect([...seen.keys()].sort(), "every team's row").toEqual(sorted);
+      for (const t of order) {
+        const r = seen.get(t.team);
+        expect(rgbHex(r?.fill ?? ""), `${t.team}'s cell is filled with its colour`).toBe(colorOf.get(t.team));
+        expect(firstFace(r?.teamFace ?? ""), `${t.team}'s cell is in the body face`).toBe(body);
+        for (const n of r?.numbers ?? []) {
+          const v = value(t.team, n.col);
+          expect(rgbHex(n.color), `${t.team} ${n.col} (${n.text}) is coloured by its sign`).toBe(
+            signColour(v),
+          );
+          expect(firstFace(n.face), `${t.team} ${n.col} is in the numeric face`).toBe(numeric);
+        }
+      }
       servedLocally(asked);
       if (SHOTS !== undefined)
         await figure
