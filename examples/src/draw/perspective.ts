@@ -48,8 +48,13 @@ const draw: Draw<"perspective"> = async (el, s) => {
   const stop = await s.mount({ worker: watched(worker), viewer });
   Object.assign(box, { sdvViewer: viewer });
   return () => {
-    stop?.();
-    void viewer.delete();
+    // the viewer's view depends on the example's table, and Perspective refuses to delete a table a view still
+    // reads: the viewer goes first, then the example's own cleanup (its table.delete()), which runs even when the
+    // viewer's deletion fails; a failure is logged, not left unhandled
+    void viewer
+      .delete()
+      .finally(() => stop?.())
+      .catch((e: unknown) => console.warn("sdvplot examples: Perspective teardown failed", e));
     box.remove();
   };
 };

@@ -6,7 +6,10 @@
   "table_themes_py_commit": "6c5d2050c071549df5937aefde868917dd2e6a4a",
   "table_themes_json_commit": "6c5d2050c071549df5937aefde868917dd2e6a4a",
   "perspective_python": "5.5.1",
-  "index_version": "0aeef853ec2b"
+  "index_version": "0aeef853ec2b",
+  "manifest_etag": "\"2b13d9cab12913e507f4b72d702562a7\"",
+  "manifest_last_modified": "Thu, 01 Oct 2026 07:44:07 GMT",
+  "manifest_sha256": "39579c5515acb75547ce4c30da58478c26b3d9336af7bf66c6582d96df571da8"
  },
  "cases": [
   {
@@ -5564,6 +5567,1281 @@
     },
     "dark_policy": "native"
    }
+  }
+ ],
+ "logo_columns": [
+  {
+   "name": "nfl teams",
+   "team_col": "team",
+   "options": {
+    "league": "nfl"
+   },
+   "rows": [
+    {
+     "team": "BAL",
+     "plays": 1091,
+     "epa_per_play": 0.1973075142071494,
+     "def_epa_per_play": -0.01809329170383586
+    },
+    {
+     "team": "BUF",
+     "plays": 1065,
+     "epa_per_play": 0.18687425633802818,
+     "def_epa_per_play": -0.0031065497716894976
+    },
+    {
+     "team": "DET",
+     "plays": 1125,
+     "epa_per_play": 0.15521151466666666,
+     "def_epa_per_play": -0.045118736890524376
+    },
+    {
+     "team": "WAS",
+     "plays": 1142,
+     "epa_per_play": 0.13941898861646235,
+     "def_epa_per_play": 0.04316543802423113
+    },
+    {
+     "team": "TB",
+     "plays": 1128,
+     "epa_per_play": 0.13204109929078015,
+     "def_epa_per_play": 0.016552372282608696
+    },
+    {
+     "team": "PHI",
+     "plays": 1129,
+     "epa_per_play": 0.11059268379096546,
+     "def_epa_per_play": -0.08551938246628131
+    },
+    {
+     "team": "CIN",
+     "plays": 1121,
+     "epa_per_play": 0.10641586262265834,
+     "def_epa_per_play": 0.05469574553571428
+    },
+    {
+     "team": "GB",
+     "plays": 1071,
+     "epa_per_play": 0.08039756022408964,
+     "def_epa_per_play": -0.06768193482309125
+    },
+    {
+     "team": "KC",
+     "plays": 1124,
+     "epa_per_play": 0.06882989234875446,
+     "def_epa_per_play": 0.005753912231559291
+    },
+    {
+     "team": "ARI",
+     "plays": 1087,
+     "epa_per_play": 0.06790171573137074,
+     "def_epa_per_play": 0.05063307196261683
+    },
+    {
+     "team": "SF",
+     "plays": 1064,
+     "epa_per_play": 0.060653246240601505,
+     "def_epa_per_play": 0.051679759276879164
+    },
+    {
+     "team": "LAC",
+     "plays": 1044,
+     "epa_per_play": 0.045015692528735635,
+     "def_epa_per_play": -0.055508027726432534
+    },
+    {
+     "team": "ATL",
+     "plays": 1127,
+     "epa_per_play": 0.04094521739130435,
+     "def_epa_per_play": 0.04434347766636281
+    },
+    {
+     "team": "MIN",
+     "plays": 1090,
+     "epa_per_play": 0.03697167798165138,
+     "def_epa_per_play": -0.08892758666666667
+    },
+    {
+     "team": "LA",
+     "plays": 1074,
+     "epa_per_play": 0.03389467877094972,
+     "def_epa_per_play": 0.0496864036199095
+    },
+    {
+     "team": "DEN",
+     "plays": 1083,
+     "epa_per_play": 0.009665256694367498,
+     "def_epa_per_play": -0.09817395888013998
+    },
+    {
+     "team": "NYJ",
+     "plays": 1063,
+     "epa_per_play": 0.00079420884289746,
+     "def_epa_per_play": 0.04588688751107175
+    },
+    {
+     "team": "SEA",
+     "plays": 1083,
+     "epa_per_play": -0.015515602954755311,
+     "def_epa_per_play": -0.01821089964157706
+    },
+    {
+     "team": "JAX",
+     "plays": 1025,
+     "epa_per_play": -0.021526078048780487,
+     "def_epa_per_play": 0.1270993804255319
+    },
+    {
+     "team": "PIT",
+     "plays": 1110,
+     "epa_per_play": -0.028511586486486485,
+     "def_epa_per_play": -0.02094945614035088
+    },
+    {
+     "team": "HOU",
+     "plays": 1093,
+     "epa_per_play": -0.039517823421774935,
+     "def_epa_per_play": -0.054001859245630175
+    },
+    {
+     "team": "MIA",
+     "plays": 1128,
+     "epa_per_play": -0.04019005496453901,
+     "def_epa_per_play": -0.021265579198473283
+    },
+    {
+     "team": "CAR",
+     "plays": 1026,
+     "epa_per_play": -0.04087427192982456,
+     "def_epa_per_play": 0.1544453020920502
+    },
+    {
+     "team": "IND",
+     "plays": 1075,
+     "epa_per_play": -0.047262845581395346,
+     "def_epa_per_play": 0.006128741000877963
+    },
+    {
+     "team": "NO",
+     "plays": 1080,
+     "epa_per_play": -0.058756264814814815,
+     "def_epa_per_play": 0.035566412629757786
+    },
+    {
+     "team": "CHI",
+     "plays": 1119,
+     "epa_per_play": -0.07460389633601429,
+     "def_epa_per_play": -0.0011727630331753555
+    },
+    {
+     "team": "NE",
+     "plays": 1082,
+     "epa_per_play": -0.07891574768946395,
+     "def_epa_per_play": 0.08302175858951175
+    },
+    {
+     "team": "DAL",
+     "plays": 1158,
+     "epa_per_play": -0.08977916753022452,
+     "def_epa_per_play": 0.06770862234533703
+    },
+    {
+     "team": "NYG",
+     "plays": 1103,
+     "epa_per_play": -0.09175358839528558,
+     "def_epa_per_play": 0.07050022532588454
+    },
+    {
+     "team": "TEN",
+     "plays": 1088,
+     "epa_per_play": -0.10142502022058823,
+     "def_epa_per_play": 0.04975268552253116
+    },
+    {
+     "team": "LV",
+     "plays": 1108,
+     "epa_per_play": -0.1314928203971119,
+     "def_epa_per_play": 0.014218293738489872
+    },
+    {
+     "team": "CLE",
+     "plays": 1176,
+     "epa_per_play": -0.17549994982993197,
+     "def_epa_per_play": 0.01726238725023787
+    }
+   ],
+   "result": [
+    {
+     "team": "BAL",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/67/67796023c172c9aeab5bcdac9204823d3590097246ad1cb92971134b5f26dcc0.png",
+     "plays": 1091,
+     "epa_per_play": 0.1973075142071494,
+     "def_epa_per_play": -0.01809329170383586
+    },
+    {
+     "team": "BUF",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/79/79b71e2f536ee29f9d23834e89828883af2d95bf6968cbd07a505444229cdd20.png",
+     "plays": 1065,
+     "epa_per_play": 0.18687425633802818,
+     "def_epa_per_play": -0.0031065497716894976
+    },
+    {
+     "team": "DET",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/97/9776b567ebab0bd3640165e915d948d8e736e35967dfc19ce62b967cfe7b4eb1.png",
+     "plays": 1125,
+     "epa_per_play": 0.15521151466666666,
+     "def_epa_per_play": -0.045118736890524376
+    },
+    {
+     "team": "WAS",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/2f/2f67805ef9e385a4c67adb0a9320706bd481a52e3aa0e0faea995dad2b501112.png",
+     "plays": 1142,
+     "epa_per_play": 0.13941898861646235,
+     "def_epa_per_play": 0.04316543802423113
+    },
+    {
+     "team": "TB",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/bc/bcc5d267024650938c9f35558077fe00a31913b89c61768d4ebb63d1ea31fbfd.png",
+     "plays": 1128,
+     "epa_per_play": 0.13204109929078015,
+     "def_epa_per_play": 0.016552372282608696
+    },
+    {
+     "team": "PHI",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/28/2875f50f8b756ed5ea3866105b4683f5c603aa542e2c7f7870287e1d3d006100.png",
+     "plays": 1129,
+     "epa_per_play": 0.11059268379096546,
+     "def_epa_per_play": -0.08551938246628131
+    },
+    {
+     "team": "CIN",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/8e/8e549c0ecac92453140370b2aef3e4a140139b50d16e92507532e8ee49930d4e.png",
+     "plays": 1121,
+     "epa_per_play": 0.10641586262265834,
+     "def_epa_per_play": 0.05469574553571428
+    },
+    {
+     "team": "GB",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/7e/7ea8154cdbff5db84d248f235c1f1c78a1a8b4cb8c14335b5886ec10ee20b00e.png",
+     "plays": 1071,
+     "epa_per_play": 0.08039756022408964,
+     "def_epa_per_play": -0.06768193482309125
+    },
+    {
+     "team": "KC",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/3d/3d77958dc6373768919bb2681cbe1b143f56c07a1f013460def665a5026a7f3d.png",
+     "plays": 1124,
+     "epa_per_play": 0.06882989234875446,
+     "def_epa_per_play": 0.005753912231559291
+    },
+    {
+     "team": "ARI",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/f8/f870b58b43585a5b7717d578dd433b0b1e0c462d64ef4bea2aeb8c03f4ae7854.png",
+     "plays": 1087,
+     "epa_per_play": 0.06790171573137074,
+     "def_epa_per_play": 0.05063307196261683
+    },
+    {
+     "team": "SF",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/82/82ae812f6c15718ce5abdd402863e8b4553fa9971e4baa5d45ff585c52948a45.png",
+     "plays": 1064,
+     "epa_per_play": 0.060653246240601505,
+     "def_epa_per_play": 0.051679759276879164
+    },
+    {
+     "team": "LAC",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/54/5400f85bd93129c056717a771da57a97225e15f39c0022107ce89ef993f15bb0.png",
+     "plays": 1044,
+     "epa_per_play": 0.045015692528735635,
+     "def_epa_per_play": -0.055508027726432534
+    },
+    {
+     "team": "ATL",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/fe/fe566e9da6f7986b2bac321571bd751247ff93af15c51ae555486fb1bee90c91.png",
+     "plays": 1127,
+     "epa_per_play": 0.04094521739130435,
+     "def_epa_per_play": 0.04434347766636281
+    },
+    {
+     "team": "MIN",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/72/72759956b149bc1c9496ea6ebb9a6ae34093dfed371cc6abb425c13f14f53448.png",
+     "plays": 1090,
+     "epa_per_play": 0.03697167798165138,
+     "def_epa_per_play": -0.08892758666666667
+    },
+    {
+     "team": "LA",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/e2/e289b738a5e1259cccea921bee02eec881d35b4241761a8c4e12fe5964cab75c.png",
+     "plays": 1074,
+     "epa_per_play": 0.03389467877094972,
+     "def_epa_per_play": 0.0496864036199095
+    },
+    {
+     "team": "DEN",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/c9/c98bec2be32e27b19f79f5da86ac6ef133c78d75ab78aadb28ef36696c3213e8.png",
+     "plays": 1083,
+     "epa_per_play": 0.009665256694367498,
+     "def_epa_per_play": -0.09817395888013998
+    },
+    {
+     "team": "NYJ",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/5d/5de8d029f3602c97ffe02bd636eb2630e55d019d1a37cf819d3b9e39a219487b.png",
+     "plays": 1063,
+     "epa_per_play": 0.00079420884289746,
+     "def_epa_per_play": 0.04588688751107175
+    },
+    {
+     "team": "SEA",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/25/2546b1d4fe5cf6c2d75cda53d3fb56bbc4dd43c6b00200586dab5a85df8fa492.png",
+     "plays": 1083,
+     "epa_per_play": -0.015515602954755311,
+     "def_epa_per_play": -0.01821089964157706
+    },
+    {
+     "team": "JAX",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/15/15cb9a1c77ebfaea885d0d3a34f33dabc4e6a00eb7d5462148fceed641d49397.png",
+     "plays": 1025,
+     "epa_per_play": -0.021526078048780487,
+     "def_epa_per_play": 0.1270993804255319
+    },
+    {
+     "team": "PIT",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/80/806bcb72e75ed184a99bea34df458e6cd87145fc9a863945f3356b01122aeb6f.png",
+     "plays": 1110,
+     "epa_per_play": -0.028511586486486485,
+     "def_epa_per_play": -0.02094945614035088
+    },
+    {
+     "team": "HOU",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/54/54b0fe559761860e4953851c197d995b2f9c0c4e278164edda7b608ffd64f39b.png",
+     "plays": 1093,
+     "epa_per_play": -0.039517823421774935,
+     "def_epa_per_play": -0.054001859245630175
+    },
+    {
+     "team": "MIA",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/b9/b9631269a82abda39bd748afc82390679ca67bfc167bc3581665e237407de8e0.png",
+     "plays": 1128,
+     "epa_per_play": -0.04019005496453901,
+     "def_epa_per_play": -0.021265579198473283
+    },
+    {
+     "team": "CAR",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/2c/2cebc1bbdcfd89f28c1578b397f440d229d93fa9a30bfa1193cc286482c82298.png",
+     "plays": 1026,
+     "epa_per_play": -0.04087427192982456,
+     "def_epa_per_play": 0.1544453020920502
+    },
+    {
+     "team": "IND",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/f1/f1f5222a876f810956aa8d4e75d4e6b47bcb3a6d11f876642b674010233c8a97.png",
+     "plays": 1075,
+     "epa_per_play": -0.047262845581395346,
+     "def_epa_per_play": 0.006128741000877963
+    },
+    {
+     "team": "NO",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/68/68ddfdf1d7ee8317f1af083a0c6d59142a11e8af4dad73c3c50bbafc338e0a94.png",
+     "plays": 1080,
+     "epa_per_play": -0.058756264814814815,
+     "def_epa_per_play": 0.035566412629757786
+    },
+    {
+     "team": "CHI",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/fd/fd7b5a207b9ad443f950b384d43dba6cb367c5737ad50a51a15e3893fa31753b.png",
+     "plays": 1119,
+     "epa_per_play": -0.07460389633601429,
+     "def_epa_per_play": -0.0011727630331753555
+    },
+    {
+     "team": "NE",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/da/dac19aa9a573dcf9075e2422bee3e35a4955b9ab494bb3191ab3bacfd3609729.png",
+     "plays": 1082,
+     "epa_per_play": -0.07891574768946395,
+     "def_epa_per_play": 0.08302175858951175
+    },
+    {
+     "team": "DAL",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/f4/f4ea9a2ec7d7d500f08db94c8c6f1b23f75361ffe39c4d4b480a684a511ce61e.png",
+     "plays": 1158,
+     "epa_per_play": -0.08977916753022452,
+     "def_epa_per_play": 0.06770862234533703
+    },
+    {
+     "team": "NYG",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/62/62e361850e7ba3a50dfd09cbb38429e994d1c23b0f999c74421f10e37c7067e7.png",
+     "plays": 1103,
+     "epa_per_play": -0.09175358839528558,
+     "def_epa_per_play": 0.07050022532588454
+    },
+    {
+     "team": "TEN",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/27/27cf283fca5b2e9e1c5e995a465a54223424c157d2013b603a6491f99333cf45.png",
+     "plays": 1088,
+     "epa_per_play": -0.10142502022058823,
+     "def_epa_per_play": 0.04975268552253116
+    },
+    {
+     "team": "LV",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/25/25fbb03e972ae872fa024026b73c7b63ef9f23c2f2c51f87d1614d800dcee6e7.png",
+     "plays": 1108,
+     "epa_per_play": -0.1314928203971119,
+     "def_epa_per_play": 0.014218293738489872
+    },
+    {
+     "team": "CLE",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/9b/9b286fc4286dc39b1b5a6a08aab042b456ba5fdce99e45e49a4d1e2672411fa2.png",
+     "plays": 1176,
+     "epa_per_play": -0.17549994982993197,
+     "def_epa_per_play": 0.01726238725023787
+    }
+   ],
+   "warnings": []
+  },
+  {
+   "name": "numeric team ids",
+   "team_col": "team_id",
+   "options": {
+    "league": "nba"
+   },
+   "rows": [
+    {
+     "team_id": 1610612746,
+     "wins": 51,
+     "win_pct": 62.2
+    },
+    {
+     "team_id": 1610612756,
+     "wins": 49,
+     "win_pct": 59.8
+    },
+    {
+     "team_id": 1610612747,
+     "wins": 47,
+     "win_pct": 57.3
+    },
+    {
+     "team_id": 1610612758,
+     "wins": 46,
+     "win_pct": 56.10000000000001
+    },
+    {
+     "team_id": 1610612744,
+     "wins": 46,
+     "win_pct": 56.10000000000001
+    }
+   ],
+   "result": [
+    {
+     "team_id": 1610612746,
+     "team_id_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/d4/d43253c0630f0d3d3a4c3c50ce92c9dbe8d5bf21e3bfd5326920c9487b26dbec.png",
+     "wins": 51,
+     "win_pct": 62.2
+    },
+    {
+     "team_id": 1610612756,
+     "team_id_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/5f/5f8932efdb7595069610b11ec2f417d78a9213691c2ba21e2bd491c172397ead.png",
+     "wins": 49,
+     "win_pct": 59.8
+    },
+    {
+     "team_id": 1610612747,
+     "team_id_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/82/82fda3df51058c5aad8a52123868f43959017be0c39c886e9aefbb77e6c69c89.png",
+     "wins": 47,
+     "win_pct": 57.3
+    },
+    {
+     "team_id": 1610612758,
+     "team_id_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/38/38728eaaf98d73d00363ee570601d64a4caa7fe2590fb0df5afb1b9129d6e20b.png",
+     "wins": 46,
+     "win_pct": 56.10000000000001
+    },
+    {
+     "team_id": 1610612744,
+     "team_id_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/b6/b623681ece167224ad4f51aef1ffa5a6f9e072af1cf1d6a6c158fd796e8d33ab.png",
+     "wins": 46,
+     "win_pct": 56.10000000000001
+    }
+   ],
+   "warnings": []
+  },
+  {
+   "name": "unresolved",
+   "team_col": "team",
+   "options": {
+    "league": "nfl"
+   },
+   "rows": [
+    {
+     "team": "BAL",
+     "plays": 1091,
+     "epa_per_play": 0.1973075142071494,
+     "def_epa_per_play": -0.01809329170383586
+    },
+    {
+     "team": "BUF",
+     "plays": 1065,
+     "epa_per_play": 0.18687425633802818,
+     "def_epa_per_play": -0.0031065497716894976
+    },
+    {
+     "team": "DET",
+     "plays": 1125,
+     "epa_per_play": 0.15521151466666666,
+     "def_epa_per_play": -0.045118736890524376
+    },
+    {
+     "team": "XFL",
+     "plays": 1,
+     "epa_per_play": null,
+     "def_epa_per_play": null
+    },
+    {
+     "team": "USFL",
+     "plays": 2,
+     "epa_per_play": null,
+     "def_epa_per_play": null
+    }
+   ],
+   "result": [
+    {
+     "team": "BAL",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/67/67796023c172c9aeab5bcdac9204823d3590097246ad1cb92971134b5f26dcc0.png",
+     "plays": 1091,
+     "epa_per_play": 0.1973075142071494,
+     "def_epa_per_play": -0.01809329170383586
+    },
+    {
+     "team": "BUF",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/79/79b71e2f536ee29f9d23834e89828883af2d95bf6968cbd07a505444229cdd20.png",
+     "plays": 1065,
+     "epa_per_play": 0.18687425633802818,
+     "def_epa_per_play": -0.0031065497716894976
+    },
+    {
+     "team": "DET",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/97/9776b567ebab0bd3640165e915d948d8e736e35967dfc19ce62b967cfe7b4eb1.png",
+     "plays": 1125,
+     "epa_per_play": 0.15521151466666666,
+     "def_epa_per_play": -0.045118736890524376
+    },
+    {
+     "team": "XFL",
+     "team_logo": null,
+     "plays": 1,
+     "epa_per_play": null,
+     "def_epa_per_play": null
+    },
+    {
+     "team": "USFL",
+     "team_logo": null,
+     "plays": 2,
+     "epa_per_play": null,
+     "def_epa_per_play": null
+    }
+   ],
+   "warnings": [
+    "2 value(s) did not resolve to a nfl team: 'XFL' (unknown), 'USFL' (unknown). Use sdvplot.suggest() for candidates, or strict=True to raise."
+   ]
+  },
+  {
+   "name": "null team",
+   "team_col": "team",
+   "options": {
+    "league": "nfl"
+   },
+   "rows": [
+    {
+     "team": null,
+     "plays": 1091,
+     "epa_per_play": 0.1973075142071494,
+     "def_epa_per_play": -0.01809329170383586
+    },
+    {
+     "team": "BUF",
+     "plays": 1065,
+     "epa_per_play": 0.18687425633802818,
+     "def_epa_per_play": -0.0031065497716894976
+    },
+    {
+     "team": "DET",
+     "plays": 1125,
+     "epa_per_play": 0.15521151466666666,
+     "def_epa_per_play": -0.045118736890524376
+    },
+    {
+     "team": "WAS",
+     "plays": 1142,
+     "epa_per_play": 0.13941898861646235,
+     "def_epa_per_play": 0.04316543802423113
+    }
+   ],
+   "result": [
+    {
+     "team": null,
+     "team_logo": null,
+     "plays": 1091,
+     "epa_per_play": 0.1973075142071494,
+     "def_epa_per_play": -0.01809329170383586
+    },
+    {
+     "team": "BUF",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/79/79b71e2f536ee29f9d23834e89828883af2d95bf6968cbd07a505444229cdd20.png",
+     "plays": 1065,
+     "epa_per_play": 0.18687425633802818,
+     "def_epa_per_play": -0.0031065497716894976
+    },
+    {
+     "team": "DET",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/97/9776b567ebab0bd3640165e915d948d8e736e35967dfc19ce62b967cfe7b4eb1.png",
+     "plays": 1125,
+     "epa_per_play": 0.15521151466666666,
+     "def_epa_per_play": -0.045118736890524376
+    },
+    {
+     "team": "WAS",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/2f/2f67805ef9e385a4c67adb0a9320706bd481a52e3aa0e0faea995dad2b501112.png",
+     "plays": 1142,
+     "epa_per_play": 0.13941898861646235,
+     "def_epa_per_play": 0.04316543802423113
+    }
+   ],
+   "warnings": []
+  },
+  {
+   "name": "variant dark",
+   "team_col": "team",
+   "options": {
+    "league": "nfl",
+    "variant": "dark"
+   },
+   "rows": [
+    {
+     "team": "BAL",
+     "plays": 1091,
+     "epa_per_play": 0.1973075142071494,
+     "def_epa_per_play": -0.01809329170383586
+    },
+    {
+     "team": "BUF",
+     "plays": 1065,
+     "epa_per_play": 0.18687425633802818,
+     "def_epa_per_play": -0.0031065497716894976
+    },
+    {
+     "team": "DET",
+     "plays": 1125,
+     "epa_per_play": 0.15521151466666666,
+     "def_epa_per_play": -0.045118736890524376
+    },
+    {
+     "team": "WAS",
+     "plays": 1142,
+     "epa_per_play": 0.13941898861646235,
+     "def_epa_per_play": 0.04316543802423113
+    },
+    {
+     "team": "TB",
+     "plays": 1128,
+     "epa_per_play": 0.13204109929078015,
+     "def_epa_per_play": 0.016552372282608696
+    },
+    {
+     "team": "PHI",
+     "plays": 1129,
+     "epa_per_play": 0.11059268379096546,
+     "def_epa_per_play": -0.08551938246628131
+    },
+    {
+     "team": "CIN",
+     "plays": 1121,
+     "epa_per_play": 0.10641586262265834,
+     "def_epa_per_play": 0.05469574553571428
+    },
+    {
+     "team": "GB",
+     "plays": 1071,
+     "epa_per_play": 0.08039756022408964,
+     "def_epa_per_play": -0.06768193482309125
+    },
+    {
+     "team": "KC",
+     "plays": 1124,
+     "epa_per_play": 0.06882989234875446,
+     "def_epa_per_play": 0.005753912231559291
+    },
+    {
+     "team": "ARI",
+     "plays": 1087,
+     "epa_per_play": 0.06790171573137074,
+     "def_epa_per_play": 0.05063307196261683
+    },
+    {
+     "team": "SF",
+     "plays": 1064,
+     "epa_per_play": 0.060653246240601505,
+     "def_epa_per_play": 0.051679759276879164
+    },
+    {
+     "team": "LAC",
+     "plays": 1044,
+     "epa_per_play": 0.045015692528735635,
+     "def_epa_per_play": -0.055508027726432534
+    },
+    {
+     "team": "ATL",
+     "plays": 1127,
+     "epa_per_play": 0.04094521739130435,
+     "def_epa_per_play": 0.04434347766636281
+    },
+    {
+     "team": "MIN",
+     "plays": 1090,
+     "epa_per_play": 0.03697167798165138,
+     "def_epa_per_play": -0.08892758666666667
+    },
+    {
+     "team": "LA",
+     "plays": 1074,
+     "epa_per_play": 0.03389467877094972,
+     "def_epa_per_play": 0.0496864036199095
+    },
+    {
+     "team": "DEN",
+     "plays": 1083,
+     "epa_per_play": 0.009665256694367498,
+     "def_epa_per_play": -0.09817395888013998
+    },
+    {
+     "team": "NYJ",
+     "plays": 1063,
+     "epa_per_play": 0.00079420884289746,
+     "def_epa_per_play": 0.04588688751107175
+    },
+    {
+     "team": "SEA",
+     "plays": 1083,
+     "epa_per_play": -0.015515602954755311,
+     "def_epa_per_play": -0.01821089964157706
+    },
+    {
+     "team": "JAX",
+     "plays": 1025,
+     "epa_per_play": -0.021526078048780487,
+     "def_epa_per_play": 0.1270993804255319
+    },
+    {
+     "team": "PIT",
+     "plays": 1110,
+     "epa_per_play": -0.028511586486486485,
+     "def_epa_per_play": -0.02094945614035088
+    },
+    {
+     "team": "HOU",
+     "plays": 1093,
+     "epa_per_play": -0.039517823421774935,
+     "def_epa_per_play": -0.054001859245630175
+    },
+    {
+     "team": "MIA",
+     "plays": 1128,
+     "epa_per_play": -0.04019005496453901,
+     "def_epa_per_play": -0.021265579198473283
+    },
+    {
+     "team": "CAR",
+     "plays": 1026,
+     "epa_per_play": -0.04087427192982456,
+     "def_epa_per_play": 0.1544453020920502
+    },
+    {
+     "team": "IND",
+     "plays": 1075,
+     "epa_per_play": -0.047262845581395346,
+     "def_epa_per_play": 0.006128741000877963
+    },
+    {
+     "team": "NO",
+     "plays": 1080,
+     "epa_per_play": -0.058756264814814815,
+     "def_epa_per_play": 0.035566412629757786
+    },
+    {
+     "team": "CHI",
+     "plays": 1119,
+     "epa_per_play": -0.07460389633601429,
+     "def_epa_per_play": -0.0011727630331753555
+    },
+    {
+     "team": "NE",
+     "plays": 1082,
+     "epa_per_play": -0.07891574768946395,
+     "def_epa_per_play": 0.08302175858951175
+    },
+    {
+     "team": "DAL",
+     "plays": 1158,
+     "epa_per_play": -0.08977916753022452,
+     "def_epa_per_play": 0.06770862234533703
+    },
+    {
+     "team": "NYG",
+     "plays": 1103,
+     "epa_per_play": -0.09175358839528558,
+     "def_epa_per_play": 0.07050022532588454
+    },
+    {
+     "team": "TEN",
+     "plays": 1088,
+     "epa_per_play": -0.10142502022058823,
+     "def_epa_per_play": 0.04975268552253116
+    },
+    {
+     "team": "LV",
+     "plays": 1108,
+     "epa_per_play": -0.1314928203971119,
+     "def_epa_per_play": 0.014218293738489872
+    },
+    {
+     "team": "CLE",
+     "plays": 1176,
+     "epa_per_play": -0.17549994982993197,
+     "def_epa_per_play": 0.01726238725023787
+    }
+   ],
+   "result": [
+    {
+     "team": "BAL",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/67/67796023c172c9aeab5bcdac9204823d3590097246ad1cb92971134b5f26dcc0.png",
+     "plays": 1091,
+     "epa_per_play": 0.1973075142071494,
+     "def_epa_per_play": -0.01809329170383586
+    },
+    {
+     "team": "BUF",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/79/79b71e2f536ee29f9d23834e89828883af2d95bf6968cbd07a505444229cdd20.png",
+     "plays": 1065,
+     "epa_per_play": 0.18687425633802818,
+     "def_epa_per_play": -0.0031065497716894976
+    },
+    {
+     "team": "DET",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/97/9776b567ebab0bd3640165e915d948d8e736e35967dfc19ce62b967cfe7b4eb1.png",
+     "plays": 1125,
+     "epa_per_play": 0.15521151466666666,
+     "def_epa_per_play": -0.045118736890524376
+    },
+    {
+     "team": "WAS",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/2f/2f67805ef9e385a4c67adb0a9320706bd481a52e3aa0e0faea995dad2b501112.png",
+     "plays": 1142,
+     "epa_per_play": 0.13941898861646235,
+     "def_epa_per_play": 0.04316543802423113
+    },
+    {
+     "team": "TB",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/bc/bcc5d267024650938c9f35558077fe00a31913b89c61768d4ebb63d1ea31fbfd.png",
+     "plays": 1128,
+     "epa_per_play": 0.13204109929078015,
+     "def_epa_per_play": 0.016552372282608696
+    },
+    {
+     "team": "PHI",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/28/2875f50f8b756ed5ea3866105b4683f5c603aa542e2c7f7870287e1d3d006100.png",
+     "plays": 1129,
+     "epa_per_play": 0.11059268379096546,
+     "def_epa_per_play": -0.08551938246628131
+    },
+    {
+     "team": "CIN",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/8e/8e549c0ecac92453140370b2aef3e4a140139b50d16e92507532e8ee49930d4e.png",
+     "plays": 1121,
+     "epa_per_play": 0.10641586262265834,
+     "def_epa_per_play": 0.05469574553571428
+    },
+    {
+     "team": "GB",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/d1/d1eda281e4c4ff5bcb45a9186bbc906bc62262d4c30ac26950951e5f983319b7.png",
+     "plays": 1071,
+     "epa_per_play": 0.08039756022408964,
+     "def_epa_per_play": -0.06768193482309125
+    },
+    {
+     "team": "KC",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/3d/3d77958dc6373768919bb2681cbe1b143f56c07a1f013460def665a5026a7f3d.png",
+     "plays": 1124,
+     "epa_per_play": 0.06882989234875446,
+     "def_epa_per_play": 0.005753912231559291
+    },
+    {
+     "team": "ARI",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/f8/f870b58b43585a5b7717d578dd433b0b1e0c462d64ef4bea2aeb8c03f4ae7854.png",
+     "plays": 1087,
+     "epa_per_play": 0.06790171573137074,
+     "def_epa_per_play": 0.05063307196261683
+    },
+    {
+     "team": "SF",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/82/82ae812f6c15718ce5abdd402863e8b4553fa9971e4baa5d45ff585c52948a45.png",
+     "plays": 1064,
+     "epa_per_play": 0.060653246240601505,
+     "def_epa_per_play": 0.051679759276879164
+    },
+    {
+     "team": "LAC",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/54/5400f85bd93129c056717a771da57a97225e15f39c0022107ce89ef993f15bb0.png",
+     "plays": 1044,
+     "epa_per_play": 0.045015692528735635,
+     "def_epa_per_play": -0.055508027726432534
+    },
+    {
+     "team": "ATL",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/fe/fe566e9da6f7986b2bac321571bd751247ff93af15c51ae555486fb1bee90c91.png",
+     "plays": 1127,
+     "epa_per_play": 0.04094521739130435,
+     "def_epa_per_play": 0.04434347766636281
+    },
+    {
+     "team": "MIN",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/ad/ad12c95cdc282ff5f1ab1aa1005accc4ddd7d456e3b00c116a67478df1f5a600.png",
+     "plays": 1090,
+     "epa_per_play": 0.03697167798165138,
+     "def_epa_per_play": -0.08892758666666667
+    },
+    {
+     "team": "LA",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/bc/bcab950eb0446f08fbde39df8910db2cb6849708d68157d45b0ada7242124945.png",
+     "plays": 1074,
+     "epa_per_play": 0.03389467877094972,
+     "def_epa_per_play": 0.0496864036199095
+    },
+    {
+     "team": "DEN",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/6e/6e7fd6ff89d3fa7f4ad4c914a49d71248144be3a86ee252dba4231db8c3897aa.png",
+     "plays": 1083,
+     "epa_per_play": 0.009665256694367498,
+     "def_epa_per_play": -0.09817395888013998
+    },
+    {
+     "team": "NYJ",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/c2/c2ab581364eeb44d43d8a0826ca3560285a8025b23d07955084878db65fbaec8.png",
+     "plays": 1063,
+     "epa_per_play": 0.00079420884289746,
+     "def_epa_per_play": 0.04588688751107175
+    },
+    {
+     "team": "SEA",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/25/2546b1d4fe5cf6c2d75cda53d3fb56bbc4dd43c6b00200586dab5a85df8fa492.png",
+     "plays": 1083,
+     "epa_per_play": -0.015515602954755311,
+     "def_epa_per_play": -0.01821089964157706
+    },
+    {
+     "team": "JAX",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/15/15cb9a1c77ebfaea885d0d3a34f33dabc4e6a00eb7d5462148fceed641d49397.png",
+     "plays": 1025,
+     "epa_per_play": -0.021526078048780487,
+     "def_epa_per_play": 0.1270993804255319
+    },
+    {
+     "team": "PIT",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/80/806bcb72e75ed184a99bea34df458e6cd87145fc9a863945f3356b01122aeb6f.png",
+     "plays": 1110,
+     "epa_per_play": -0.028511586486486485,
+     "def_epa_per_play": -0.02094945614035088
+    },
+    {
+     "team": "HOU",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/54/54b0fe559761860e4953851c197d995b2f9c0c4e278164edda7b608ffd64f39b.png",
+     "plays": 1093,
+     "epa_per_play": -0.039517823421774935,
+     "def_epa_per_play": -0.054001859245630175
+    },
+    {
+     "team": "MIA",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/b9/b9631269a82abda39bd748afc82390679ca67bfc167bc3581665e237407de8e0.png",
+     "plays": 1128,
+     "epa_per_play": -0.04019005496453901,
+     "def_epa_per_play": -0.021265579198473283
+    },
+    {
+     "team": "CAR",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/2c/2cebc1bbdcfd89f28c1578b397f440d229d93fa9a30bfa1193cc286482c82298.png",
+     "plays": 1026,
+     "epa_per_play": -0.04087427192982456,
+     "def_epa_per_play": 0.1544453020920502
+    },
+    {
+     "team": "IND",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/f1/f1f5222a876f810956aa8d4e75d4e6b47bcb3a6d11f876642b674010233c8a97.png",
+     "plays": 1075,
+     "epa_per_play": -0.047262845581395346,
+     "def_epa_per_play": 0.006128741000877963
+    },
+    {
+     "team": "NO",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/68/68ddfdf1d7ee8317f1af083a0c6d59142a11e8af4dad73c3c50bbafc338e0a94.png",
+     "plays": 1080,
+     "epa_per_play": -0.058756264814814815,
+     "def_epa_per_play": 0.035566412629757786
+    },
+    {
+     "team": "CHI",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/fd/fd7b5a207b9ad443f950b384d43dba6cb367c5737ad50a51a15e3893fa31753b.png",
+     "plays": 1119,
+     "epa_per_play": -0.07460389633601429,
+     "def_epa_per_play": -0.0011727630331753555
+    },
+    {
+     "team": "NE",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/da/dac19aa9a573dcf9075e2422bee3e35a4955b9ab494bb3191ab3bacfd3609729.png",
+     "plays": 1082,
+     "epa_per_play": -0.07891574768946395,
+     "def_epa_per_play": 0.08302175858951175
+    },
+    {
+     "team": "DAL",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/a4/a4612d560386298a5fe5dbb9d1f62e208933b9442782a623bd4a6695e952db00.png",
+     "plays": 1158,
+     "epa_per_play": -0.08977916753022452,
+     "def_epa_per_play": 0.06770862234533703
+    },
+    {
+     "team": "NYG",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/5a/5a772c3ec7eb3ebb22a521d67b6ec3a6892feabf46a1b80a74765c351a400a8f.png",
+     "plays": 1103,
+     "epa_per_play": -0.09175358839528558,
+     "def_epa_per_play": 0.07050022532588454
+    },
+    {
+     "team": "TEN",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/27/27cf283fca5b2e9e1c5e995a465a54223424c157d2013b603a6491f99333cf45.png",
+     "plays": 1088,
+     "epa_per_play": -0.10142502022058823,
+     "def_epa_per_play": 0.04975268552253116
+    },
+    {
+     "team": "LV",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/bf/bf304e45470927517802cbfc53d38b167491f00ea0d007b38f3bd506fc53c7d2.png",
+     "plays": 1108,
+     "epa_per_play": -0.1314928203971119,
+     "def_epa_per_play": 0.014218293738489872
+    },
+    {
+     "team": "CLE",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/9b/9b286fc4286dc39b1b5a6a08aab042b456ba5fdce99e45e49a4d1e2672411fa2.png",
+     "plays": 1176,
+     "epa_per_play": -0.17549994982993197,
+     "def_epa_per_play": 0.01726238725023787
+    }
+   ],
+   "warnings": []
+  },
+  {
+   "name": "custom name",
+   "team_col": "team",
+   "options": {
+    "league": "nfl",
+    "name": "logo"
+   },
+   "rows": [
+    {
+     "team": "BAL",
+     "plays": 1091,
+     "epa_per_play": 0.1973075142071494,
+     "def_epa_per_play": -0.01809329170383586
+    },
+    {
+     "team": "BUF",
+     "plays": 1065,
+     "epa_per_play": 0.18687425633802818,
+     "def_epa_per_play": -0.0031065497716894976
+    },
+    {
+     "team": "DET",
+     "plays": 1125,
+     "epa_per_play": 0.15521151466666666,
+     "def_epa_per_play": -0.045118736890524376
+    }
+   ],
+   "result": [
+    {
+     "team": "BAL",
+     "logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/67/67796023c172c9aeab5bcdac9204823d3590097246ad1cb92971134b5f26dcc0.png",
+     "plays": 1091,
+     "epa_per_play": 0.1973075142071494,
+     "def_epa_per_play": -0.01809329170383586
+    },
+    {
+     "team": "BUF",
+     "logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/79/79b71e2f536ee29f9d23834e89828883af2d95bf6968cbd07a505444229cdd20.png",
+     "plays": 1065,
+     "epa_per_play": 0.18687425633802818,
+     "def_epa_per_play": -0.0031065497716894976
+    },
+    {
+     "team": "DET",
+     "logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/97/9776b567ebab0bd3640165e915d948d8e736e35967dfc19ce62b967cfe7b4eb1.png",
+     "plays": 1125,
+     "epa_per_play": 0.15521151466666666,
+     "def_epa_per_play": -0.045118736890524376
+    }
+   ],
+   "warnings": []
+  },
+  {
+   "name": "relocations season 2015",
+   "team_col": "team",
+   "options": {
+    "league": "nfl",
+    "season": 2015
+   },
+   "rows": [
+    {
+     "team": "OAK"
+    },
+    {
+     "team": "LV"
+    },
+    {
+     "team": "SD"
+    },
+    {
+     "team": "LAC"
+    },
+    {
+     "team": "STL"
+    },
+    {
+     "team": "LA"
+    }
+   ],
+   "result": [
+    {
+     "team": "OAK",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/94/94de716ea6d3859effbfbc0966c8327eefc0a004e0d2f16c77ca80b58fd95eaa.png"
+    },
+    {
+     "team": "LV",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/94/94de716ea6d3859effbfbc0966c8327eefc0a004e0d2f16c77ca80b58fd95eaa.png"
+    },
+    {
+     "team": "SD",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/53/53f93bec23e754a3050185e61b3fcd39844173d89e9eb1e0d6c8c8e6e22da9a4.png"
+    },
+    {
+     "team": "LAC",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/53/53f93bec23e754a3050185e61b3fcd39844173d89e9eb1e0d6c8c8e6e22da9a4.png"
+    },
+    {
+     "team": "STL",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/51/519d52b92508ba622c6084c1845313d6ac4bc67269575e175128ecc6db26d27e.png"
+    },
+    {
+     "team": "LA",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/51/519d52b92508ba622c6084c1845313d6ac4bc67269575e175128ecc6db26d27e.png"
+    }
+   ],
+   "warnings": []
+  },
+  {
+   "name": "relocations season 2024",
+   "team_col": "team",
+   "options": {
+    "league": "nfl",
+    "season": 2024
+   },
+   "rows": [
+    {
+     "team": "OAK"
+    },
+    {
+     "team": "LV"
+    },
+    {
+     "team": "SD"
+    },
+    {
+     "team": "LAC"
+    },
+    {
+     "team": "STL"
+    },
+    {
+     "team": "LA"
+    }
+   ],
+   "result": [
+    {
+     "team": "OAK",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/25/25fbb03e972ae872fa024026b73c7b63ef9f23c2f2c51f87d1614d800dcee6e7.png"
+    },
+    {
+     "team": "LV",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/25/25fbb03e972ae872fa024026b73c7b63ef9f23c2f2c51f87d1614d800dcee6e7.png"
+    },
+    {
+     "team": "SD",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/54/5400f85bd93129c056717a771da57a97225e15f39c0022107ce89ef993f15bb0.png"
+    },
+    {
+     "team": "LAC",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/54/5400f85bd93129c056717a771da57a97225e15f39c0022107ce89ef993f15bb0.png"
+    },
+    {
+     "team": "STL",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/e2/e289b738a5e1259cccea921bee02eec881d35b4241761a8c4e12fe5964cab75c.png"
+    },
+    {
+     "team": "LA",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/e2/e289b738a5e1259cccea921bee02eec881d35b4241761a8c4e12fe5964cab75c.png"
+    }
+   ],
+   "warnings": []
+  },
+  {
+   "name": "no archived logo",
+   "team_col": "team",
+   "options": {
+    "league": "ncaa_whockey",
+    "variant": "dark"
+   },
+   "rows": [
+    {
+     "team": "MINN"
+    },
+    {
+     "team": "DEL"
+    },
+    {
+     "team": "ZZZ"
+    },
+    {
+     "team": "DEL"
+    }
+   ],
+   "result": [
+    {
+     "team": "MINN",
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/c2/c2c264abe254da36d21d5a37cfcb41e5fec0dce517cfd2b584fc743f4bb1bffc.png"
+    },
+    {
+     "team": "DEL",
+     "team_logo": null
+    },
+    {
+     "team": "ZZZ",
+     "team_logo": null
+    },
+    {
+     "team": "DEL",
+     "team_logo": null
+    }
+   ],
+   "warnings": [
+    "1 value(s) did not resolve to a ncaa_whockey team: 'ZZZ' (unknown). Use sdvplot.suggest() for candidates, or strict=True to raise.",
+    "skipped 1 point(s) with no logo archived: 'DEL'"
+   ]
   }
  ]
 }
