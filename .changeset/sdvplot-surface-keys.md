@@ -1,5 +1,0 @@
----
-"@sportsdataverse/sdvplot": minor
----
-
-`surface()` (plot, chartjs/surface) and `appendSurface()` (d3) take every key of the SDV surface table shared with sdvplot and sdvplotR: baseball (`mlb`, `milb`, `ncaa_baseball`, `little_league`, `pony`, `nfhs_baseball`), `ncaa_softball`, soccer (`soccer` at 105 x 68 m, `fifa`, `epl`, `mls`, `nwsl`, `ncaa_soccer`), `fiba`, `nfhs_basketball`, `cfl`, `nfhs_football`, `iihf`, `nwhl`, lacrosse, tennis, volleyball and curling. `SURFACES` and `colorUpdates` cover all ten sporty sports. `pwhl` draws the PWHL's own rink: sdvplot-js already did, while sdvplot and sdvplotR drew the NHL rink until this release, and the two differ only in that the PWHL rink has no goaltender trapezoid behind the goal lines (sportyR `has_trapezoid: false`; every other dimension is the NHL's). A team on a team league whose sport has no team painting (`mlb`, `soccer`, `ncaa_softball`, ...) resolves and leaves the surface unchanged; a team on a key with no team identities (`atp`, `nll`, `fiba`, `epl`, ...) throws `InputError` ("no team identities for ...", as in sdvplot).

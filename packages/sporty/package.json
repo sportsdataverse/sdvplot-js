@@ -1,6 +1,6 @@
 {
   "name": "@sportsdataverse/sporty",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Sport surfaces (geometry and dimensions) for SportsDataverse plots — TypeScript port of sportyR/sportypy",
   "license": "MIT",
   "keywords": [

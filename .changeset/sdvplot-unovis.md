@@ -1,5 +1,0 @@
----
-"@sportsdataverse/sdvplot": minor
----
-
-New subpath `@sportsdataverse/sdvplot/unovis` for Unovis 1.7 (`@unovis/ts`, and `@unovis/react` in React): accessor helpers in Unovis's idiom. `teamColorScale(league, teams, o)` is a team colour function for a colour accessor (a Graph's `nodeFill`, `nodeStroke` or `linkStroke`, a Sankey's `nodeColor` or `linkColor`): its `domain` keeps the team values as the data holds them, and any value naming a team of it (12, "12" or "KC") gets that team's colour; with `background` the colours keep 3:1 contrast on it (dark mode) and stay distinct. `teamColorPalette` returns the colours alone, for an XY component's `color`. `logoIcons` and `headshotIcons` give a Graph's node icons: `nodeIcon: (n) => logos(n.team)` names a `<symbol>` holding the image, and `logos.svgDefs` is the container's `svgDefs`; a team with no logo has no icon and warns once. A Sankey's node icon is text only, so a Sankey takes team colours, not logos. It never imports Unovis; `@unovis/ts` >= 1.7.1 is an optional peer.

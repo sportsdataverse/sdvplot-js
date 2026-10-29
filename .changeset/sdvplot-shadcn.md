@@ -1,5 +1,0 @@
----
-"@sportsdataverse/sdvplot": minor
----
-
-New subpath `@sportsdataverse/sdvplot/shadcn` for shadcn/ui charts (Recharts inside shadcn's copy-paste `chart.tsx`): `teamChartConfig(league, teams, o)` returns `{ config, keys }`, shadcn's `ChartConfig` for the teams and each team's key in it. Keys are CSS-safe (accents dropped, lower-cased, other characters dashed; "Trail Blazers" is `trail-blazers`; a taken key gets `-2`, `-3`, ...), for a series' `dataKey` and `var(--color-<key>)`. Each entry has the team's name as `label`, a `theme` whose `light` and `dark` colours keep 3:1 contrast on shadcn's default light (#ffffff) and dark card (#171717) backgrounds (`background` sets others), and the team's logo as `icon`, which shadcn's legend and tooltip draw in place of their swatch; a team with no logo has no `icon` and warns once, and `icon: false` leaves every logo out. The icons are the same components for the same logo and size on every call. It imports neither recharts nor shadcn, and adds no peer.
