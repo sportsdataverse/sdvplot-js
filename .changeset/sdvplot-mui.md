@@ -1,5 +1,0 @@
----
-"@sportsdataverse/sdvplot": minor
----
-
-New subpath `@sportsdataverse/sdvplot/mui` for MUI X Charts 9 (`@mui/x-charts`, the MIT community package). `teamColors(league, teams, o)` is a chart's `colors` palette callback that follows MUI's light and dark mode (3:1 contrast on MUI's #ffffff and #121212 backgrounds, or your own); `teamColorPalette` gives the colours alone and `teamColorGetter` a series' `colorGetter`, a colour per bar or point. Logos and headshots come through MUI's own slots: `logoMarker` / `headshotMarker` (a scatter's `marker`, twice the series' `markerSize` tall, keeping MUI's highlight, fade and tooltips), `logoMark` (a line's `mark`, `size` px; with the series' `showMark` one logo at the end of each line) and `logoTickLabel` (an axis' `axisTickLabel`, on the team axis of the composition API; a label with no logo keeps its text). A team or player with no image draws nothing and warns once; `sdvplot/testing`'s `drawnMarks` reads the drawn logos back. It never imports MUI and server-renders; `@mui/x-charts` >= 9.15.0 is an optional peer.
