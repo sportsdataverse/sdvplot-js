@@ -9,7 +9,7 @@ import {
   splitRings,
 } from "../src/shapes.js";
 import { addFeature } from "../src/surface.js";
-test("createCircle matches R seq(start*pi, end*pi, length.out = npoints)", () => {
+test("createCircle matches R cospi/sinpi(seq(start, end, length.out = npoints))", () => {
   const c = createCircle({ r: 1, start: 0, end: 2, npoints: 5 });
   expect(c).toHaveLength(5);
   expect(c[0]).toEqual([1, 0]);
@@ -28,6 +28,11 @@ test("rectangle is a closed 5-point outline; X shape has 14 points", () => {
     [0, 0],
   ]);
   expect(createXShape(2, 0.5)).toHaveLength(14);
+});
+test("createCircle puts the quarter points exactly on the axes (R cospi / sinpi, sportyR 2.4.1)", () => {
+  const half = createCircle({ r: 15, start: 0.5, end: 1.5, npoints: 101 });
+  expect(half[0]).toEqual([0, 15]);
+  expect(half[100]).toEqual([0, -15]);
 });
 test("splitRings and hasArea read back-to-back rings (sportyR 2.4.1)", () => {
   const square = createSquare(2);

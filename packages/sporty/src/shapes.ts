@@ -1,7 +1,30 @@
 import type { Point } from "./scene.js";
 import { rotateCoords } from "./transform.js";
 
-/** Angles `start`/`end` are in units of π, like R. */
+/** R `cospi()`: exact at the multiples of 0.5. */
+const cospi = (t: number): number => {
+  const x = Math.abs(t) % 2;
+  if (x % 1 === 0.5) return 0;
+  if (x === 1) return -1;
+  if (x === 0) return 1;
+  return Math.cos(Math.PI * x);
+};
+
+/** R `sinpi()`: exact at the multiples of 0.5. */
+const sinpi = (t: number): number => {
+  let x = t % 2;
+  if (x <= -1) x += 2;
+  else if (x > 1) x -= 2;
+  if (x === 0 || x === 1) return 0;
+  if (x === 0.5) return 1;
+  if (x === -0.5) return -1;
+  return Math.sin(Math.PI * x);
+};
+
+/**
+ * Angles `start`/`end` are in units of π, like R. As sportyR 2.4.1 (#79), the angles stay in units of π (R `seq()`,
+ * whose last value is `end` exactly) and go through `cospi`/`sinpi`, so the quarter points sit exactly on the axes.
+ */
 export function createCircle({
   center = [0, 0],
   npoints = 1000,
@@ -10,11 +33,10 @@ export function createCircle({
   end = 2,
 }: { center?: Point; npoints?: number; r?: number; start?: number; end?: number } = {}): Point[] {
   const out: Point[] = [];
-  const a0 = start * Math.PI;
-  const a1 = end * Math.PI;
+  const by = (end - start) / (npoints - 1);
   for (let i = 0; i < npoints; i++) {
-    const t = npoints === 1 ? a0 : a0 + ((a1 - a0) * i) / (npoints - 1);
-    out.push([center[0] + r * Math.cos(t), center[1] + r * Math.sin(t)]);
+    const t = i === 0 ? start : i === npoints - 1 ? end : start + i * by;
+    out.push([center[0] + r * cospi(t), center[1] + r * sinpi(t)]);
   }
   return out;
 }
