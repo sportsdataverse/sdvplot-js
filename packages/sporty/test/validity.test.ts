@@ -116,8 +116,9 @@ test("the NHL goal crease's inner arc meets the inner straight sides", () => {
   });
   expect(splitRings(df).reduce((a, r) => a + countCrossings(r), 0)).toBe(0);
   const inner = 6 - 2 / 12;
+  // exactly on the sides: rounding 4e-16 ft across them would leave a sliver a renderer's crossing test splits off
   const corners = df.filter(
-    ([x, y]) => Math.abs(Math.abs(y) - (4 - 2 / 12)) < 1e-9 && Math.abs(Math.hypot(x, y) - inner) < 1e-9,
+    ([x, y]) => Math.abs(y) === 4 - 2 / 12 && Math.abs(Math.hypot(x, y) - inner) < 1e-9,
   );
   expect(corners).toHaveLength(2);
 });
