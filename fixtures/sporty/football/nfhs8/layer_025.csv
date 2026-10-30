@@ -1,6 +1,6 @@
 x,y,fill
--20,-22.0000,#ffffff
--40,-22.0000,#ffffff
--40,-22.1111,#ffffff
--20,-22.1111,#ffffff
--20,-22.0000,#ffffff
+50,-22,#ffffff
+52,-22,#ffffff
+52, 22,#ffffff
+50, 22,#ffffff
+50,-22,#ffffff

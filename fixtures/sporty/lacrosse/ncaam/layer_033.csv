@@ -1,6 +1,5 @@
 x,y,fill
-20,20.0000,#ffffff
-55,20.0000,#ffffff
-55,20.1111,#ffffff
-20,20.1111,#ffffff
-20,20.0000,#ffffff
+40.0000, 1,#a5acaf4d
+41.2916, 0,#a5acaf4d
+40.0000,-1,#a5acaf4d
+40.0000, 1,#a5acaf4d
