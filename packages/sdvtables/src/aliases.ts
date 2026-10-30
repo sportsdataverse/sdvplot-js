@@ -1,7 +1,7 @@
 // src/aliases.ts — every sdvplotR gt_* / pal_* / reactable_sdv_* export (74, sdvplotR NAMESPACE), and the reactablefmtr
 // cell formatters, themes and add_icon_legend → their sdvtables targets.
 // Target forms: "c.<kind>" (column factory), "builder.<method>" (TableBuilder), "theme.<name>" (THEME_NAMES),
-// "html.<export>" (the ./html subpath), a bare root export ("snakeAlign", "PAL_MIDNIGHT"), or a Phase 5 name.
+// "html.<export>" (the ./html subpath), a bare root export ("snakeAlign", "PAL_MIDNIGHT"), or an engine name.
 /** One sdvplotR/gtUtils name and where it lives in sdvtables. */
 export interface Alias {
   readonly target: string;

@@ -154,7 +154,7 @@ export function nearestHover<R>(
     to(p !== undefined && far(p, px, py) <= radius ? p : undefined);
   };
   const leave = (): void => to(undefined);
-  // A34: capture, so a listener registered on the svg before ours (Plot's sticky-tip pointerdown) cannot stop it
+  // Capture, so a listener registered on the svg before ours (Plot's sticky-tip pointerdown) cannot stop it
   const listeners: readonly (readonly [string, (e: Event) => void, boolean])[] = [
     ["pointermove", move, true],
     ["pointerdown", move, true],

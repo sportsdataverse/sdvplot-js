@@ -3,7 +3,7 @@ import { type Table, type TableCursor, nextSortDir } from "../engine.js";
 // a body row of THIS table's block (a host page's or an outer table's tr[data-row] is never one)
 const BODY_ROW = "[data-sdv-body] tr.sdvt-row[data-row]";
 
-/** J31: the engine id of the body row an event landed in; null for a header, toolbar, pager, group row, or outside the table. */
+/** The engine id of the body row an event landed in; null for a header, toolbar, pager, group row, or outside the table. */
 export function rowIdAt<Row>(table: Table<Row>, target: EventTarget | null): string | null {
   // scoped to the body block: a host page or outer table with its own tr[data-row] is never read as one of ours
   const tr = target instanceof Element ? target.closest(BODY_ROW) : null;
@@ -13,11 +13,11 @@ export function rowIdAt<Row>(table: Table<Row>, target: EventTarget | null): str
 }
 
 /**
- * J31 (A18, A29): mark the body rows whose engine id is `id` with `sdvt-hover` and unmark the rest; `null` unmarks all.
+ * Mark the body rows whose engine id is `id` with `sdvt-hover` and unmark the rest; `null` unmarks all.
  * A class toggle, never `innerHTML`, so it writes only the rows whose state changes. Shared by hydrate and
  * `<SdvTable/>`, which call it on each `hover` event AND after each body render, since a render rebuilds the rows.
  */
-// ponytail: O(rows on the page) reads per hover. Measured in the Phase 8 Task 5 review on a synthetic DOM of the same
+// ponytail: O(rows on the page) reads per hover. Measured in review on a synthetic DOM of the same
 // shape as an unpaged 2,000-row table, not a hydrated one: 0.84 ms a hover in headless Chromium (26.5 ms in jsdom),
 // 0.19 ms at pageSize 25. Linear, so ~4 ms at 10,000 rows on one page, a quarter of a 60 Hz frame: past that, keep an
 // id → <tr> map rebuilt in render
@@ -33,7 +33,7 @@ export function handleClick<Row>(table: Table<Row>, target: EventTarget | null):
   const el =
     target instanceof Element ? target.closest<HTMLElement>("[data-sdv-sort],[data-sdv-page]") : null;
   if (!el) {
-    // J31: a click on a body row toggles its id in the selection
+    // A click on a body row toggles its id in the selection
     const id = rowIdAt(table, target);
     if (id === null) return;
     const next = new Set(table.getSelection());
@@ -41,7 +41,7 @@ export function handleClick<Row>(table: Table<Row>, target: EventTarget | null):
     table.setSelection(next);
     return;
   }
-  if (el.getAttribute("aria-disabled") === "true") return; // M1: an edge pager button keeps focus and does nothing
+  if (el.getAttribute("aria-disabled") === "true") return; // An edge pager button keeps focus and does nothing
   const sortCol = el.getAttribute("data-sdv-sort");
   const page = el.getAttribute("data-sdv-page");
   if (sortCol !== null) table.setSort(sortCol, nextSortDir(table.state.sort, sortCol));
@@ -57,12 +57,12 @@ export function handleInput<Row>(table: Table<Row>, target: EventTarget | null):
   else if (target.hasAttribute("data-sdv-global-filter")) table.setGlobalFilter(target.value);
 }
 
-/** J31: `mouseover` / `mouseleave` inside the wrapper → the engine's hover event (null off a body row). */
+/** `mouseover` / `mouseleave` inside the wrapper → the engine's hover event (null off a body row). */
 export function handleHover<Row>(table: Table<Row>, target: EventTarget | null): void {
   table.setHover(rowIdAt(table, target));
 }
 
-// M5: the attributes that name a control; a control rebuilt under focus gets focus back by name
+// The attributes that name a control; a control rebuilt under focus gets focus back by name
 const CONTROLS = ["data-sdv-sort", "data-sdv-filter", "data-sdv-global-filter", "data-sdv-page"] as const;
 const FOCUSABLE = "a[href],button,input,select,textarea,[tabindex]";
 
@@ -91,7 +91,7 @@ export function captureFocus(el: Element): () => void {
         n: Array.from(td.querySelectorAll(FOCUSABLE)).indexOf(focused),
       }
     : undefined;
-  // Task 10: the focused body row itself (the grid's roving tab stop) comes back by its data-row
+  // The focused body row itself (the grid's roving tab stop) comes back by its data-row
   const row = name === undefined && focused.matches(BODY_ROW) ? focused.getAttribute("data-row") : null;
   return () => {
     if (el.contains(focused)) return;
@@ -116,14 +116,14 @@ export function captureFocus(el: Element): () => void {
   };
 }
 
-/** Task 10: what a key means to an interactive table (see {@link keyAction}). */
+/** What a key means to an interactive table (see {@link keyAction}). */
 export type KeyAction =
   | { readonly type: "cursor"; readonly row: number; readonly col: string | null }
   | { readonly type: "sort"; readonly col: string }
   | { readonly type: "search" }
   | { readonly type: "toggle"; readonly row: number };
 
-/** Task 10: everything {@link keyAction} reads; {@link handleKeydown} gathers it from the engine and the DOM. */
+/** Everything {@link keyAction} reads; {@link handleKeydown} gathers it from the engine and the DOM. */
 export interface KeyContext {
   /** the `data-row` of the body row the key landed in, or null (toolbar, header, pager) */
   readonly focused: number | null;
@@ -160,12 +160,12 @@ const KEYS: ReadonlyMap<string, Move> = new Map([
   ["Enter", "toggle"],
   [" ", "toggle"],
 ]);
-// G19's keys, which `hotkeys: false` turns off; the arrows, Enter and Space are the grid's own keyboard model
+// The hotkeys, which `hotkeys: false` turns off; the arrows, Enter and Space are the grid's own keyboard model
 const LETTERS: ReadonlySet<string> = new Set(["j", "k", "h", "l", "s", "/"]);
 const clamp = (i: number, n: number): number => Math.max(0, Math.min(i, n - 1));
 
 /**
- * Task 10 (A45, G19): the action a keydown means, or null when it means nothing here. Pure. `j`/`k` (and the down and
+ * The action a keydown means, or null when it means nothing here. Pure. `j`/`k` (and the down and
  * up arrows) move the cursor row in display order, and enter the grid at the cursor row when the key came from
  * outside the rows; `h`/`l` (left and right arrows) move the cursor column over the shown sortable columns, starting
  * from the cursor column, else the sorted one, else the first; `s` sorts that column; `/` goes to the search box;
@@ -220,11 +220,11 @@ export function keyAction(key: string, k: KeyContext): KeyAction | null {
   }
 }
 
-// typing in a field is never a hotkey (A45); contenteditable="false" is not a field
+// typing in a field is never a hotkey; contenteditable="false" is not a field
 const TEXT_FIELD = 'input,textarea,select,[contenteditable]:not([contenteditable="false"])';
 
 /**
- * Task 10 (A45, A48): a keydown anywhere inside `root`, the table wrapper; shared by hydrate and `<SdvTable/>`.
+ * A keydown anywhere inside `root`, the table wrapper; shared by hydrate and `<SdvTable/>`.
  * Ignored with Ctrl, Meta or Alt held, during IME composition, or when it comes from a text field (input, textarea,
  * select, contenteditable). Otherwise {@link keyAction} decides, and a key that acts is consumed (`preventDefault`):
  * a cursor move focuses the destination row BEFORE the engine re-renders, so the re-render's focus restore keeps it
@@ -274,7 +274,7 @@ export function handleKeydown<Row>(table: Table<Row>, root: Element, e: Keyboard
     hotkeys: table.spec.interactive?.hotkeys !== false,
   });
   const box = action?.type === "search" ? root.querySelector<HTMLElement>("[data-sdv-global-filter]") : null;
-  if (action === null || (action.type === "search" && box === null)) return; // fix 1 (I1): no box, `/` is the browser's
+  if (action === null || (action.type === "search" && box === null)) return; // No box, `/` is the browser's
   e.preventDefault();
   if (action.type === "search") box?.focus();
   else if (action.type === "sort")

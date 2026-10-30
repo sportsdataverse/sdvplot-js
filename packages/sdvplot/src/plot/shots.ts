@@ -127,7 +127,7 @@ export interface ShotCellsOptions extends GeoPassThrough {
   /**
    * Drop the cells centred outside the plot's frame, as blazing-the-nets `main` drops those past its viewport
    * (`hexShotChart.ts:74`); a cell centred inside is drawn whole. Not Plot's `clip` (which cuts paths, and passes
-   * through). Default true. Was `clip` before Phase 11.
+   * through). Default true. Formerly named `clip`.
    */
   dropOutside?: boolean;
 }
@@ -187,7 +187,7 @@ export function shotCells(cells: readonly CellVsLeague[], o: ShotCellsOptions): 
   const size = (i: number): number => (typeof r === "number" ? r : (r[i] ?? 0));
   const centre = (h: CellVsLeague): Point => toPlot([h.x, h.y], f);
   // In an initializer (not render), so a tip never points at a dropped cell.
-  // ponytail: keeps a cell by its centre only, as Phase 10 did: a cell centred just inside is drawn whole (and
+  // ponytail: keeps a cell by its centre only, as earlier versions did: a cell centred just inside is drawn whole (and
   // tippable) though mostly off-frame. Plot's `clip: "frame"` cuts it; test every vertex if a partial cell must go.
   const inFrame: Plot.InitializerFunction = (data, facets, _channels, scales, dimensions) => {
     const { x, y } = scales;

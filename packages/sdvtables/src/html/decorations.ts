@@ -1,5 +1,5 @@
-// src/html/decorations.ts — Task 5 version: every hook exists (defaults are no-ops); title, subtitle, sourceNote here; groupBy is read by index.ts.
-// Later tasks only POPULATE hooks; none adds one. Style hooks return bare declarations — index.ts builds the one style="" (styleOf).
+// src/html/decorations.ts — every decoration hook (defaults are no-ops) and the decorations that fill them; groupBy is read by index.ts.
+// Decorations only POPULATE hooks; none adds one. Style hooks return bare declarations — index.ts builds the one style="" (styleOf).
 import { contrast, hex6, mix, onColor, solid } from "@sportsdataverse/sdvplot";
 import { RANK_PALETTE } from "../define.js";
 import { TableSpecError } from "../errors.js";
@@ -23,26 +23,26 @@ export interface DecorationOutput<Row> {
   css: string[];
   fonts: GoogleFont[];
   hiddenColumns: Set<string>;
-  /** raw label text replacing a column's label (marginalia, Task 11) */
+  /** raw label text replacing a column's label (marginalia) */
   labelText: Map<string, string>;
-  /** label HTML from raw text: escapes; wrapLabels (Task 6) wraps first */
+  /** label HTML from raw text: escapes; wrapLabels wraps first */
   label(col: ColumnSpec<Row>, text: string): string;
-  /** raw text appended to a label before label() (scaleNote where "label"/"both", Task 10) */
+  /** raw text appended to a label before label() (scaleNote where "label"/"both") */
   labelSuffix(key: string): string;
-  /** `<th>` declarations after the column's own width (marginalia width, Task 11) */
+  /** `<th>` declarations after the column's own width (marginalia width) */
   labelStyle(key: string): string;
-  /** " cls" list for `<tr class="sdvt-row…">` (groupStripes, cutline — Task 9) */
+  /** " cls" list for `<tr class="sdvt-row…">` (groupStripes, cutline) */
   rowClass(i: number): string;
-  /** `<tr>` declarations (rowAccent, boldRows, spotlight, colorResults — Task 9) */
+  /** `<tr>` declarations (rowAccent, boldRows, spotlight, colorResults) */
   rowStyle(i: number): string;
-  /** " cls" for the group header row of the `groupIndex`-th group (groupStripes, Task 9) */
+  /** " cls" for the group header row of the `groupIndex`-th group (groupStripes) */
   groupRowClass(groupIndex: number): string;
-  /** `<td>` declarations after the kind's own (spotlight columns — Task 9; outliers, marginalia, tiers — Tasks 11–12) */
+  /** `<td>` declarations after the kind's own (spotlight columns; outliers, marginalia, tiers) */
   cellStyle(i: number, key: string): string;
-  /** HTML appended after the rendered cell (significance stars, outlier symbol — Task 11) */
+  /** HTML appended after the rendered cell (significance stars, outlier symbol) */
   cellSuffix(i: number, key: string): string;
 }
-// ---- Task 6: R strwrap via Python textwrap.wrap(width - 1) (_layout.py:1813-1815) and _balanced (:1818-1833)
+// ---- label wrapping: R strwrap via Python textwrap.wrap(width - 1) (_layout.py:1813-1815) and _balanced (:1818-1833)
 function strwrap(words: readonly string[], width: number): string[] {
   const w = Math.max(width - 1, 1);
   const out: string[] = [];
@@ -74,7 +74,7 @@ export function wrapLabel(text: string, width: number, balance: boolean): string
   return cur ? [...lines, cur] : lines;
 }
 
-// ---- Task 9
+// ---- row decorations
 export function groupIndexOf<Row>(rows: readonly Row[], key: string): number[] {
   const seen = new Map<unknown, number>();
   return rows.map((r) => {
@@ -85,7 +85,7 @@ export function groupIndexOf<Row>(rows: readonly Row[], key: string): number[] {
 }
 const isList = (p: unknown): p is readonly string[] => Array.isArray(p);
 
-// ---- Task 10
+// ---- titles, notes and borders
 export function textStyleAttr(ts: TextStyle | undefined): string {
   if (!ts) return "";
   const s = styleAttr({
@@ -173,7 +173,7 @@ export function applyDecorations<Row>(
   );
   if (title || subtitle)
     out.caption = `${title ? `<span class="sdvt-title">${escapeHtml(title.text)}</span>` : ""}${subtitle ? `<span class="sdvt-subtitle">${escapeHtml(subtitle.text)}</span>` : ""}`;
-  // Task 9: the per-row / per-cell maps every row and cell decoration writes into (later tasks reuse them)
+  // The per-row / per-cell maps every row and cell decoration writes into (the later decorations reuse them)
   const rowStyles = new Map<number, Record<string, string>>();
   const rowClasses = new Map<number, string[]>();
   const cellStyles = new Map<string, Record<string, string | undefined>>(); // key `${i}:${col}`
@@ -190,14 +190,14 @@ export function applyDecorations<Row>(
   const fillCells = (i: number, decl: Record<string, string | undefined>): void => {
     for (const c of ctx.columns) addCell(i, c.key, decl);
   };
-  const suffixes = new Map<string, string>(); // Task 11, key `${i}:${col}`
-  const labelStyles = new Map<string, string>(); // Task 11
+  const suffixes = new Map<string, string>(); // significance and outlier suffixes, key `${i}:${col}`
+  const labelStyles = new Map<string, string>(); // marginalia label styles
   let recordedKey: Readonly<Record<string, string>> | undefined; // tiers sets it for legendDiscrete("recorded")
   let cutCount = 0; // one id per .cutline() call so two calls never share a class
   const bg = ctx.theme.tokens.bg === "transparent" ? "#ffffff" : hex6(ctx.theme.tokens.bg);
-  // "matched no rows" asks the source rows (A49): a page or filter that hides the picked rows still dims / skips the rest
+  // "matched no rows" asks the source rows: a page or filter that hides the picked rows still dims / skips the rest
   const matchesNone = (sel: RowSelector<Row>): boolean => selectRows(sel, ctx.domainRows).length === 0;
-  // colorResults is a column kind (spec §6.1) whose effect is a row fill: gt_color_results (_cells.py:203-222), exact W/L or 1/0
+  // colorResults is a column kind whose effect is a row fill: gt_color_results (_cells.py:203-222), exact W/L or 1/0
   for (const c of spec.columns)
     if (c.kind === "colorResults") {
       const [win, loss]: readonly [unknown, unknown] = c.resultType === "binary" ? [1, 0] : ["W", "L"];
@@ -225,7 +225,7 @@ export function applyDecorations<Row>(
             : prev(col, text);
         break;
       }
-      // ---- Task 9
+      // ---- row decorations
       case "groupStripes": {
         if (!ctx.groupKey) throw new TableSpecError("groupStripes needs .groupBy(key)");
         const on = (gi: number): boolean => gi % 2 === (d.start === 2 ? 1 : 0);
@@ -247,7 +247,7 @@ export function applyDecorations<Row>(
           return isBlank(v) ? null : String(v);
         };
         const keys = rows.map(keyOf);
-        // A49: levels from the source rows, so a row keeps its accent colour under paging, filtering and brushing
+        // Levels from the source rows, so a row keeps its accent colour under paging, filtering and brushing
         const levels = [...new Set(ctx.domainRows.map(keyOf).filter((k): k is string => k !== null))].sort();
         const pal = d.palette;
         const colors = keys.map((k) =>
@@ -375,7 +375,7 @@ export function applyDecorations<Row>(
         if (d.includeLabels) out.css.push(`${ctx.sel} th.sdvt-label:not(:last-child){${b}}`);
         break;
       }
-      // ---- Task 10
+      // ---- titles, notes and borders
       case "titleHeader": {
         // gt_title_header (_layout.py:121-215): kicker / title / subtitle / date, each with its own style; Python's kicker and date defaults live in the rules below
         for (const ts of [d.kickerStyle, d.titleStyle, d.subtitleStyle, d.dateStyle])
@@ -513,7 +513,7 @@ export function applyDecorations<Row>(
         );
         break;
       }
-      // ---- Task 11
+      // ---- legends, significance, outliers and marginalia
       case "legendContinuous": {
         // gt_legend_continuous (_layout.py:395-470), type "steps": nBins swatches sampled at bin midpoints (k + 0.5) / nBins (:471)
         const rec = ctx.recorded;
@@ -521,7 +521,7 @@ export function applyDecorations<Row>(
         let domain = d.domain ?? rec?.domain;
         if (!domain && d.columns && ctx.domainRows.length > 0)
           domain = domainOf(d.columns.map((k) => ctx.domainRows.map((r) => toNumber(cellValue(r, k)))));
-        // J31 (A4): the domain comes from domainRows like the cell scales, so a paged or brushed legend holds still.
+        // The domain comes from domainRows like the cell scales, so a paged or brushed legend holds still.
         // No domain rows: a data-derived domain does not exist yet (an empty page, fontsLinkFor), so no legend; a spec with no source still throws
         if (!domain && ctx.domainRows.length === 0 && (d.columns || ctx.columns.some(isScaled))) break;
         if (!domain)
@@ -610,7 +610,7 @@ export function applyDecorations<Row>(
         let flagged = false;
         for (const k of d.columns) {
           const xs = rows.map((r) => toNumber(cellValue(r, k)));
-          // A49: the limits come from the source rows, so a page or filter never flags a value the whole column does not
+          // The limits come from the source rows, so a page or filter never flags a value the whole column does not
           const nums = ctx.domainRows
             .map((r) => toNumber(cellValue(r, k)))
             .filter((v): v is number => v !== null);
@@ -700,7 +700,7 @@ export function applyDecorations<Row>(
           const v = cellValue(r, d.tierKey);
           return isBlank(v) ? null : String(v);
         };
-        // A49: the levels the SOURCE rows hold, so a page or filter without a level warns nothing
+        // The levels the SOURCE rows hold, so a page or filter without a level warns nothing
         const held = [...new Set(ctx.domainRows.map(tierOf).filter((t): t is string => t !== null))];
         const missing = d.levels.filter((l) => !held.includes(l));
         if (missing.length > 0)

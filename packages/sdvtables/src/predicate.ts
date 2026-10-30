@@ -37,7 +37,7 @@ export function matches<Row>(p: Predicate<Row>, row: Row): boolean {
 /**
  * The indices into `rows` that `sel` picks. A predicate tests each row; an index array names positions in `source`
  * (default `rows`), matched to `rows` by identity. An interactive render passes the table's source rows, so `[5]`
- * stays the sixth data row whatever page, filter or sort shows it (A49). Throws `TableSpecError` for an index outside `source`.
+ * stays the sixth data row whatever page, filter or sort shows it. Throws `TableSpecError` for an index outside `source`.
  */
 export function selectRows<Row>(
   sel: RowSelector<Row>,

@@ -184,7 +184,7 @@ function textStyle(label: string, h: number, ink: string): HTMLCanvasElement | "
   g.fillText(label, c.width / 2, h / 2);
   return c;
 }
-/** One image per resolvable value at `h` px tall, indexed like `values` (gaps where nothing can be drawn); warns once per call (J28). */
+/** One image per resolvable value at `h` px tall, indexed like `values` (gaps where nothing can be drawn); warns once per call. */
 function imagesFor(
   values: readonly Value[],
   h: number,
@@ -192,7 +192,7 @@ function imagesFor(
   load: LoadImage | undefined,
 ): (Mark | undefined)[] {
   const out = new Array<Mark | undefined>(values.length);
-  // The row index as x keeps data order; placeSync drops what it cannot draw and warns once per call (J28).
+  // The row index as x keeps data order; placeSync drops what it cannot draw and warns once per call.
   const idx = values.map((_, i) => i);
   for (const p of placeSync(idx, idx, values, place))
     out[p.index] =
@@ -423,7 +423,7 @@ type TickCallback = (this: Scale, value: number | string, index: number, ticks: 
 /**
  * Swap a category axis's tick labels for team logos: resolved labels are painted as images (after the datasets, under
  * the tooltip) and their text is blanked; unresolved labels keep their text, with one warning per distinct label set
- * (J28). Any other scale type is left as it is, with one warning.
+ * Any other scale type is left as it is, with one warning.
  */
 export function axisLogos(axis: "x" | "y", o: AxisLogoOptions): Plugin {
   if (axis !== "x" && axis !== "y")
@@ -522,7 +522,7 @@ export interface WatermarkOptions {
 /**
  * Faint team logos behind the datasets (Game on Paper's win-probability chart): the first team sits top-left of the
  * chart area, the last bottom-left, any between spaced evenly down the left edge, so pass `[home, away]` under a home
- * win-probability line. Unknown teams are skipped with one warning per call (J28); `variant: "dark"` falls back to a
+ * win-probability line. Unknown teams are skipped with one warning per call; `variant: "dark"` falls back to a
  * light mark by polarity, so no `onerror` retry is needed.
  */
 export function logoWatermarks(teams: readonly Value[], o: WatermarkOptions): Plugin {

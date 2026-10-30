@@ -8,7 +8,7 @@ import { InputError } from "./errors.js";
 export type RowFilter<Row> = (row: Row) => boolean;
 
 /**
- * A shared hover VALUE (J34): a number along one data field, such as the shot distance under the pointer, that every
+ * A shared hover VALUE: a number along one data field, such as the shot distance under the pointer, that every
  * linked chart draws through its own scale (a rule, a band, a ring). Not an id: it never dims marks or filters a table.
  * Unrelated to sdvtables' `TableCursor` (a grid's keyboard row).
  */
@@ -159,7 +159,7 @@ export function focusIds<Row>(s: SelectionState<Row>): ReadonlySet<string> | nul
 }
 
 /**
- * The linked-interactivity hub (J31): hover and selected id sets plus a row predicate. Pure data, zero deps, no DOM:
+ * The linked-interactivity hub: hover and selected id sets plus a row predicate. Pure data, zero deps, no DOM:
  * creating or updating one in Node changes nothing a server renders. Ids are strings, normalised by {@link toId}
  * (see {@link SelectionPatch}).
  *

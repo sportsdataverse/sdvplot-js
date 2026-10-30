@@ -2,7 +2,7 @@ import { InputError } from "../errors.js";
 import { hasDom } from "./highlight.js";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
-/** Colours are CSS custom properties with fallbacks (A13), so a page's light/dark tokens restyle the box with no JS. */
+/** Colours are CSS custom properties with fallbacks, so a page's light/dark tokens restyle the box with no JS. */
 const CSS =
   ".sdv-tip>.sdv-tip-box{fill:var(--sdv-tip-bg,rgba(34,34,34,.85))}.sdv-tip>text{fill:var(--sdv-tip-fg,#ddd)}" +
   ".sdv-tip>.sdv-tip-swatch{stroke:var(--sdv-tip-fg,#ddd)}";

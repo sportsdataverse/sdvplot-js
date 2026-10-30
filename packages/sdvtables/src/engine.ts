@@ -2,7 +2,7 @@ import type { RowFilter } from "@sportsdataverse/sdvplot";
 import { TableSpecError } from "./errors.js";
 import type { ColumnSpec, TableSpec } from "./spec.js";
 
-// J31: the row test setExternalFilter takes is sdvplot's own type, so a selection store's brush predicate fits as is
+// The row test setExternalFilter takes is sdvplot's own type, so a selection store's brush predicate fits as is
 export type { RowFilter };
 
 export type SortDir = "asc" | "desc";
@@ -15,13 +15,13 @@ export type ValuePredicate<Row> = (value: unknown, row: Row) => boolean;
 /** What `setFilter` takes for a column: a predicate on its value, a case-insensitive substring, or an exact number or boolean. */
 export type FilterValue<Row> = ValuePredicate<Row> | string | number | boolean;
 export type Comparator = (a: unknown, b: unknown) => number;
-/** J31: what `subscribe` listeners receive. Every mutation emits exactly one event. */
+/** What `subscribe` listeners receive. Every mutation emits exactly one event. */
 export type TableEvent =
   | { readonly type: "change" }
   | { readonly type: "hover"; readonly id: string | null }
   | { readonly type: "select"; readonly ids: ReadonlySet<string> };
 /**
- * Task 10 (A45, A48): the keyboard cursor of an interactive table. `row` is the body row holding the grid's one tab
+ * The keyboard cursor of an interactive table. `row` is the body row holding the grid's one tab
  * stop, as a page-relative index (that row's `data-row`); `col` is the column `s` sorts, null until `h`/`l` picks one.
  */
 export interface TableCursor {
@@ -29,7 +29,7 @@ export interface TableCursor {
   readonly col: string | null;
 }
 
-/** The whole user-controlled state of a table: sort, filters, page, hidden columns, and the J31 link fields. Immutable; every mutation replaces it. */
+/** The whole user-controlled state of a table: sort, filters, page, hidden columns, and the link fields (selection, hover, external filter). Immutable; every mutation replaces it. */
 export interface TableState<Row> {
   readonly sort: Sort | null;
   readonly filters: Readonly<Record<string, FilterValue<Row>>>;
@@ -40,11 +40,11 @@ export interface TableState<Row> {
   readonly pageSize: number;
   /** column keys hidden by toggleColumn */
   readonly hidden: readonly string[];
-  /** J31: set by setExternalFilter; ANDed with the column and global filters */
+  /** Set by setExternalFilter; ANDed with the column and global filters */
   readonly externalFilter: RowFilter<Row> | null;
-  /** J31: row ids (see `rowId`); NOT pruned to the rows present, so a linked store's ids round-trip intact */
+  /** Row ids (see `rowId`); NOT pruned to the rows present, so a linked store's ids round-trip intact */
   readonly selection: ReadonlySet<string>;
-  /** Task 10: the keyboard cursor; its row is kept on the current page */
+  /** The keyboard cursor; its row is kept on the current page */
   readonly cursor: TableCursor;
 }
 /** What `Table.getSnapshot()` returns: the state plus the derived visible page. Referentially stable until the next mutation. */
@@ -109,22 +109,22 @@ export interface Table<Row> {
    * `rowKey`, row ids are indices into the NEW rows, so a kept selection means the rows at those positions.
    */
   setRows(rows: readonly Row[]): void;
-  /** J31: `String(row[spec.rowKey])` ("" when missing), else the row's index in `allRows` */
+  /** `String(row[spec.rowKey])` ("" when missing), else the row's index in `allRows` */
   rowId(row: Row): string;
-  /** J31: same function again is a no-op; a new one resets the page */
+  /** Same function again is a no-op; a new one resets the page */
   setExternalFilter(filter: RowFilter<Row> | null): void;
-  /** J31: emits `{ type: "select" }`; an equal set is a no-op */
+  /** Emits `{ type: "select" }`; an equal set is a no-op */
   setSelection(ids: ReadonlySet<string>): void;
   getSelection(): ReadonlySet<string>;
-  /** J31: emits `{ type: "hover" }` without changing state; the same id twice in a row is a no-op */
+  /** Emits `{ type: "hover" }` without changing state; the same id twice in a row is a no-op */
   setHover(id: string | null): void;
   /**
-   * J31: the last `setHover` id, or null. A view that attaches (`hydrate`) or mounts (`<SdvTable table/>`) after a
+   * The last `setHover` id, or null. A view that attaches (`hydrate`) or mounts (`<SdvTable table/>`) after a
    * hover reads it, since no event comes until the hover changes.
    */
   getHover(): string | null;
   /**
-   * Task 10: move the keyboard cursor. `row` is clamped to the current page; `col` must name a spec column, or be
+   * Move the keyboard cursor. `row` is clamped to the current page; `col` must name a spec column, or be
    * null. One `"change"` event; an equal cursor (after clamping) is a no-op, and a non-finite `row` is ignored.
    */
   setCursor(row: number, col: string | null): void;
@@ -133,7 +133,7 @@ export interface Table<Row> {
   getSnapshot(): TableSnapshot<Row>;
 }
 
-/** Phase 4 column kinds whose values sort numerically. */
+/** The column kinds whose values sort numerically. */
 export const NUMERIC_KINDS: ReadonlySet<string> = new Set([
   "num",
   "int",
@@ -185,7 +185,7 @@ const fieldOf = <Row>(row: Row, key: string): unknown => (row as Record<string, 
  * @beta
  */
 export function comparatorFor<Row>(col: ColumnSpec<Row>, rows: readonly Row[]): Comparator {
-  if (col.compare) return col.compare as Comparator; // Phase 4 types it on Row[K]; the engine compares unknowns
+  if (col.compare) return col.compare as Comparator; // the spec types it on Row[K]; the engine compares unknowns
   if (NUMERIC_KINDS.has(col.kind)) return compareNum;
   const sample = rows.map((r) => fieldOf(r, col.key)).find((v) => !isMissing(v));
   return typeof sample === "number" ? compareNum : sample instanceof Date ? compareDate : compareText;
@@ -375,7 +375,7 @@ export function createTable<Row>(
     }
     const last = Math.max(0, snapshot.rows.length - 1);
     if (state.cursor.row > last) {
-      // Task 10: a filter, page or new rows that shrink the page pull the cursor row back onto it
+      // A filter, page or new rows that shrink the page pull the cursor row back onto it
       state = { ...state, cursor: { ...state.cursor, row: last } };
       snapshot = { ...snapshot, state };
     }
@@ -439,7 +439,7 @@ export function createTable<Row>(
     },
     rowId,
     setExternalFilter(filter) {
-      if (filter === state.externalFilter) return; // no recompute, no echo: the J31 loop guard
+      if (filter === state.externalFilter) return; // no recompute, no echo: the guard against linked-view loops
       update({ externalFilter: filter, page: 0 });
     },
     setSelection(ids) {

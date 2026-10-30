@@ -53,7 +53,7 @@ const first = (ids: ReadonlySet<string>): string | null => {
   return null;
 };
 /**
- * A data mark's element under the event: its stamp, never an axis decoration's (`data-sdv-axis`, A39), nor an empty
+ * A data mark's element under the event: its stamp, never an axis decoration's (`data-sdv-axis`), nor an empty
  * stamp (`toId`'s missing id), which names no row to hover or toggle.
  */
 const MARK = '[data-sdv-id]:not([data-sdv-id=""]):not([data-sdv-axis])';
@@ -73,7 +73,7 @@ const toggling = new WeakSet<Element>();
 const TOGGLE_ATTRS = ["role", "tabindex", "aria-checked", "aria-label"] as const;
 
 /**
- * Wire a figure and/or a table to a selection store (J31). Figure: pointer hover → `hover` (see
+ * Wire a figure and/or a table to a selection store. Figure: pointer hover → `hover` (see
  * {@link LinkSelectionOptions.hover}); every store change → `highlight(figure, focusIds(state))`. Table: row hover /
  * click → `hover` / `selected`; every store change → `setSelection(selected)`, `setExternalFilter(predicate)` and
  * `setHover` with the first hover id. Loop-free: the store and the engine drop no-op updates, and the events a table
@@ -167,7 +167,7 @@ export function linkSelection<Row, Datum = unknown>(
     // equal hover set first elsewhere keeps its identity (the store drops a no-op), so it stays theirs
     wrote = now !== had || had === wrote ? now : null;
   };
-  let syncing = false; // A29: the table's own events while the store is applied to it are echoes, not user input
+  let syncing = false; // The table's own events while the store is applied to it are echoes, not user input
   const sync = (s: SelectionState<Row>): void => {
     if (figure) {
       const focus = focusIds(s);
@@ -247,7 +247,7 @@ export function linkSelection<Row, Datum = unknown>(
   };
 }
 
-/** `select: "toggle"`'s marks, checked before the DOM test so a bad call throws in Node too (A36, A38). */
+/** `select: "toggle"`'s marks, checked before the DOM test so a bad call throws in Node too. */
 function toggleMarks(t: { readonly figure?: Element; readonly select?: "toggle" }): Element[] {
   if (t.select === undefined) return [];
   if (t.select !== "toggle")
@@ -255,7 +255,7 @@ function toggleMarks(t: { readonly figure?: Element; readonly select?: "toggle" 
   if (t.figure === undefined)
     throw new InputError('linkSelection: select "toggle" needs the figure whose marks it toggles');
   const marks = Array.from(t.figure.querySelectorAll(MARK));
-  // closest() matches the element itself: linkIds stamps an <a href> (A38), which a parent-only lookup would miss
+  // closest() matches the element itself: linkIds stamps an <a href>, which a parent-only lookup would miss
   const linked = marks.find((m) => m.closest("a[href]") !== null);
   if (linked)
     throw new InputError(

@@ -5,7 +5,7 @@ import { type D3ScaleLike, type PlotFigure, type ScaleLike, scaleOf } from "./br
 import { hasDom } from "./highlight.js";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
-/** A13: custom properties with fallbacks, so a page's light/dark tokens restyle every cursor with no JS. */
+/** Custom properties with fallbacks, so a page's light/dark tokens restyle every cursor with no JS. */
 const CSS =
   ".sdv-cursor line,.sdv-cursor ellipse{fill:none;stroke:var(--sdv-cursor-color,rgba(0,0,0,.2));stroke-width:var(--sdv-cursor-width,10px)}" +
   ".sdv-cursor rect{fill:var(--sdv-cursor-color,rgba(0,0,0,.2))}.sdv-cursor circle{fill:currentColor}";
@@ -77,7 +77,7 @@ const box = (svg: Element): { x: [number, number]; y: [number, number] } => {
 };
 
 /**
- * Draw the store's cursor (J34: one shared hover VALUE, such as a shot distance) through THIS figure's own scale, and
+ * Draw the store's cursor (one shared hover VALUE, such as a shot distance) through THIS figure's own scale, and
  * write the value under the pointer back. Every linked chart follows the same number its own way: a band on share bars
  * (linear x), the band holding it on FG% bars (a band scale), a band on a side chart (y), a rule on a curve, a ring
  * around the hoop. Moving inside one snapped bin writes nothing; crossing a bin edge is one update; leaving the figure
@@ -133,7 +133,7 @@ export function linkCursor<R>(root: Element, store: SelectionStore<R>, o: LinkCu
     throw new InputError(`linkCursor shape.axis must be "x", "y" or "ring", got ${String(shape.axis)}`);
   if (o.flipAt !== undefined && !(o.flipAt > 0 && o.flipAt <= 1))
     throw new InputError(`linkCursor flipAt must be in (0, 1], got ${String(o.flipAt)}`);
-  // a d3 scale is adapted once (A6): its range, bandwidth and domain are methods, its apply Function.prototype's
+  // a d3 scale is adapted once: its range, bandwidth and domain are methods, its apply Function.prototype's
   const ring = shape.axis === "ring" ? { ...shape, x: scaleOf(shape.x), y: scaleOf(shape.y) } : null;
   const line =
     shape.axis === "ring" ? null : { ...shape, scale: scaleOf(shape.scale), cross: scaleOf(shape.cross) };
@@ -356,7 +356,7 @@ export function linkCursor<R>(root: Element, store: SelectionStore<R>, o: LinkCu
       offs.push(() => svg.removeEventListener(type, fn, { capture }));
     };
     on("pointermove", move, true);
-    on("pointerdown", move, true); // A34: capture, before Plot's tip, which stops other pointerdowns
+    on("pointerdown", move, true); // Capture, before Plot's tip, which stops other pointerdowns
     // never capture a leave: pointerleave does not bubble, but a capture listener hears every mark's own leave, so
     // crossing a bar's edge inside one bin would write null and then the value again (nearestHover registers the same)
     on("pointerleave", clear, false);

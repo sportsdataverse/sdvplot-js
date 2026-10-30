@@ -11,7 +11,7 @@ import {
 import { pagerLabel, renderToolbar, tableRenderOptions } from "./interactive.js";
 import { renderParts, tableHTML } from "./parts.js";
 
-/** I2: each element's live binding, so hydrating it again replaces the old one (see `replace`). */
+/** Each element's live binding, so hydrating it again replaces the old one (see `replace`). */
 const live = new WeakMap<Element, () => void>();
 /** Bodies a teardown left behind the engine (it dropped a render still owed); the next hydrate of one redraws it. */
 // ponytail: exists for React StrictMode's double effect (mount, cleanup, mount); weak, so it never holds a body alive
@@ -61,16 +61,16 @@ export function hydrate<Row>(el: Element, table: Table<Row>): () => void {
     const p = renderParts(table.spec, table.rows, { css: "none", ...tableRenderOptions(table) });
     body.innerHTML = tableHTML(p);
     drawn = table.rows; // after the write: a render that throws leaves the rows the body still shows on record
-    // M8: a hidden column's filter input leaves the toolbar (and comes back), as in renderHTML(table) and <SdvTable/>
+    // A hidden column's filter input leaves the toolbar (and comes back), as in renderHTML(table) and <SdvTable/>
     const toolbar = el.querySelector(".sdvt-toolbar");
     if (toolbar && table.state.hidden !== hidden) toolbar.outerHTML = renderToolbar(table, p.labels);
     hidden = table.state.hidden;
     const label = el.querySelector("[data-sdv-page-label]");
     const page = pagerLabel(table);
-    if (label && label.textContent !== page) label.textContent = page; // M6: an unchanged live region is not re-announced
+    if (label && label.textContent !== page) label.textContent = page; // An unchanged live region is not re-announced
     edge(el.querySelector('[data-sdv-page="prev"]'), table.state.page === 0);
     edge(el.querySelector('[data-sdv-page="next"]'), table.state.page >= table.pageCount - 1);
-    // I1: an external setFilter / setGlobalFilter / clear moves the engine state, not the box; a focused input wins
+    // An external setFilter / setGlobalFilter / clear moves the engine state, not the box; a focused input wins
     for (const input of Array.from(
       el.querySelectorAll<HTMLInputElement>("[data-sdv-filter],[data-sdv-global-filter]"),
     )) {
@@ -83,7 +83,7 @@ export function hydrate<Row>(el: Element, table: Table<Row>): () => void {
     applyHover(el, table, table.getHover()); // the body was rebuilt: a linked figure's hover survives it
     restore();
   };
-  // M6: one render per animation frame however many changes land in it (typing in an unpaged 1000-row table
+  // One render per animation frame however many changes land in it (typing in an unpaged 1000-row table
   // re-rendered ~660 KB per keystroke); a timer where there is no requestAnimationFrame
   let cancel: (() => void) | undefined;
   const schedule = (): void => {
@@ -120,7 +120,7 @@ export function hydrate<Row>(el: Element, table: Table<Row>): () => void {
   const onInput = (e: Event): void => handleInput(table, e.target);
   const onHover = (e: Event): void => {
     flush();
-    handleHover(table, e.target); // J31 (A7)
+    handleHover(table, e.target);
   };
   const onKeydown = (e: Event): void => {
     const k = e as KeyboardEvent;
@@ -132,7 +132,7 @@ export function hydrate<Row>(el: Element, table: Table<Row>): () => void {
       (k.target as Element).matches(".sdvt-row[data-row]")
     )
       k.preventDefault();
-    handleKeydown(table, el, k); // Task 10
+    handleKeydown(table, el, k);
   };
 
   el.addEventListener("click", onClick);
@@ -140,7 +140,7 @@ export function hydrate<Row>(el: Element, table: Table<Row>): () => void {
   el.addEventListener("mouseover", onHover);
   el.addEventListener("mouseleave", onHover);
   el.addEventListener("keydown", onKeydown);
-  // J31: a hover changes no state, and re-rendering on it would replace the row under the pointer: a class toggle
+  // A hover changes no state, and re-rendering on it would replace the row under the pointer: a class toggle
   const unsubscribe = table.subscribe((e) => {
     if (e.type !== "hover") schedule();
     // a pending render means the DOM still shows the old rows, which data-row would misread: render applies it
@@ -162,7 +162,7 @@ export function hydrate<Row>(el: Element, table: Table<Row>): () => void {
     el.removeEventListener("mouseleave", onHover);
     el.removeEventListener("keydown", onKeydown);
   };
-  // M3: hydrating `el` again first draws a change this binding still owes, so the next one starts from a current body
+  // Hydrating `el` again first draws a change this binding still owes, so the next one starts from a current body
   // (its `drawn` is the engine's rows); a plain teardown drops it, since the element may no longer be ours to write,
   // and leaves the body `behind` for whichever hydrate comes next
   const replace = (): void => {

@@ -27,7 +27,7 @@ export interface EChartsAxis {
   data?: readonly unknown[];
   axisLabel?: Record<string, unknown>;
 }
-// A20: an interface is not a Record<string, unknown>, so the series list names LogoSeries explicitly.
+// An interface is not a Record<string, unknown>, so the series list names LogoSeries explicitly.
 export interface EChartsOption {
   xAxis?: EChartsAxis | readonly EChartsAxis[];
   yAxis?: EChartsAxis | readonly EChartsAxis[];
@@ -55,7 +55,7 @@ export interface LogoSeries {
 /** echarts types `coordSys` as `{ type: string }`; a cartesian2d series gets x, y, width and height at run time. */
 export interface RenderParams {
   coordSys: { type?: string; x?: number; y?: number; width?: number; height?: number };
-} // A20
+}
 export interface RenderApi {
   value: (dim: number) => number | string;
   coord: (data: (number | string)[]) => number[];
@@ -320,7 +320,7 @@ export function withAxisLogos(option: object, axis: "x" | "y", o: EChartsAxisOpt
     margin: (old.margin ?? LABEL_MARGIN) + 4,
   };
   // pure-data bookkeeping for the test hooks: an invisible custom series. Dim 0 (the tick index) sits on the category
-  // axis; dim 1 is "-" (ECharts' empty value) on the value axis, so the series never stretches that axis' extent (A22).
+  // axis; dim 1 is "-" (ECharts' empty value) on the value axis, so the series never stretches that axis' extent.
   const book: LogoSeries = {
     id: `sdvplot:axis:${letter}`,
     type: "custom",
