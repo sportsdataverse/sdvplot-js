@@ -35,9 +35,9 @@ centre field, the other surfaces their centre at the origin. three.js's own defa
 linear sRGB, three.js's working colour space, so the drawn colour is sporty's) and indices, with `loops` naming where
 each feature's triangles sit. The surface's background colour, if it has one (a baseball field's outfield grass), is
 the first loop, over the whole extent; then each closed loop of each feature in sporty's drawing order. sporty draws
-some features as two loops in one path (a faceoff circle's half rings) and a few that cross themselves at a corner
-(the NHL goaltender's trapezoid); each is split into simple loops before it is filled, so nothing is filled on the
-wrong side. Hidden features and text are left out, and sporty's heights are flattened: z is 0 throughout. `o` goes to
+some features as two or more loops in one path (a faceoff circle's half rings, the two strips of the NHL goaltender's
+trapezoid), and a ring that crosses itself (from unusual `updates`) is split at the crossing; each loop is filled on
+its own, so nothing is filled on the wrong side. Hidden features and text are left out, and sporty's heights are flattened: z is 0 throughout. `o` goes to
 sporty's `surface()` (`colorUpdates`, `units`, `rotation`, ...).
 
 Every loop lies in the same plane, so draw the mesh in order, without depth writes and before the rest of the scene:

@@ -169,9 +169,9 @@ export async function deckglSharedFixture(): Promise<string> {
     [...new Set(data.map((d) => JSON.stringify(d.fillColor)))].sort().map((s) => JSON.parse(s));
   const rink = surfaceLayer("hockey", "nhl");
   // Rows per feature name pin the ring rules both languages apply: a faceoff circle, spot ring or the centre circle is
-  // two half rings in one path (the loop split), and a goaltender trapezoid crosses itself at a corner (the
-  // self-crossing split: three rings per trapezoid). Left out: the faceoff hash marks, which sporty draws as 8 loops
-  // that twist (24 rows once split) and sportypy as 16 that do not.
+  // two half rings in one path, and a goaltender trapezoid is two strips in one path (the loop split; sportyR 2.4.1).
+  // Left out: the faceoff hash marks, which sporty drew as 8 loops that twisted before sportyR 2.4.1 (now 16, as
+  // sportypy); add them once sdvplot (Python) pins a sportypy with sportyR 2.4.5 parity.
   const LOOPED = [
     "odzone_faceoff_circle",
     "nodzone_faceoff_spot_ring",

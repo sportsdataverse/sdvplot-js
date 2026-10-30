@@ -357,10 +357,9 @@ describe("surfaceMesh: sporty's surface as one triangle mesh in the z = 0 plane"
     const count = (name: string): number => rink.loops.filter((l) => l.name === name).length;
     expect(count("odzone_faceoff_circle")).toBe(8);
     expect(count("nodzone_faceoff_spot_ring")).toBe(16);
-    // 16 loops in the paths, as in sdvplot/deckgl; the eight hash marks nearer centre ice cross themselves at their
-    // corner (sporty draws their L's end past the bend), and each splits there into its two strokes
-    expect(count("odzone_faceoff_lines")).toBe(24);
-    expect(count("goaltenders_restricted_area")).toBe(6); // each trapezoid twists at both corners: three pieces
+    // 16 loops in the paths, as in sdvplot/deckgl: since sportyR 2.4.1 the mirrored hash marks no longer cross
+    expect(count("odzone_faceoff_lines")).toBe(16);
+    expect(count("goaltenders_restricted_area")).toBe(4); // each trapezoid is two strips (sportyR 2.4.1)
     // a circle's two half rings, consecutive, fill the same area: neither is filled across its open side
     const halves = rink.loops.filter((l) => l.name === "odzone_faceoff_circle");
     for (let i = 0; i < halves.length; i += 2) {

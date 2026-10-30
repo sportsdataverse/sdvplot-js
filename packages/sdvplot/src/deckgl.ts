@@ -412,8 +412,8 @@ function empty(r: readonly Pt[]): boolean {
 }
 /**
  * A ring that crosses itself split at each crossing into rings that do not, each to be filled: what an SVG (nonzero)
- * fill shows of a figure-of-eight, and what deck.gl's earcut cannot triangulate. sporty has a few: the NHL goaltender's
- * trapezoids and some faceoff hash marks twist at their corners by an inch.
+ * fill shows of a figure-of-eight, and what deck.gl's earcut cannot triangulate. Since sportyR 2.4.1 sporty draws its
+ * features as simple rings, so this only catches a user's odd `updates` and rounding where an arc meets a straight side.
  */
 function simple(r: readonly Pt[]): Pt[][] {
   const n = r.length;
