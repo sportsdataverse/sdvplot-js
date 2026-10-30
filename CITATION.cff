@@ -6,7 +6,7 @@ authors:
   - family-names: Gilani
     given-names: Saiem
     orcid: "https://orcid.org/0000-0002-7194-9067"
-version: 0.2.0
+version: 0.3.0
 date-released: "2026-10-30"
 url: "https://plot.sportsdataverse.org"
 repository-code: "https://github.com/sportsdataverse/sdvplot-js"

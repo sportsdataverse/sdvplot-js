@@ -1,5 +1,17 @@
 # @sportsdataverse/sdvplot
 
+## 0.3.0
+
+### Minor Changes
+
+- 446a525: The README fits on its npm page again: npm keeps the first 65,536 characters, and the 0.2.0 README was 73,356, so the page stopped mid-sentence before the trademark, citation and license sections. The Plotly, Vega-Lite and ECharts option tables and the Chart.js notes moved to the chart libraries guide (https://plot.sportsdataverse.org/guides/chart-libraries). The README also links the 18 library guides, lists `Surface3D` and `Trajectory` under `/react` with their React 19 requirement, and names `/deckgl` and `/three` among the subpaths that need `@sportsdataverse/sporty` when they load. The type declarations' comments no longer cite internal plan ids.
+- 446a525: The peer ranges on the other sdvplot-js packages publish as `>=0.2.0 <1` instead of `^0`: sdvtables needs sdvplot 0.2 (its `/mui` and `/aggrid` import `sdvplot/mui` and `sdvplot/tanstack`, which sdvplot 0.1 lacks), and sdvplot asks for sporty 0.2. A later 0.x release of either still satisfies the range.
+- 96724d6: `surface(league, { team, centerLogo })` puts the logo where sdvplotR and sdvplot (Python) do. On a baseball or softball field, whose origin is home plate, the logo now goes in shallow centre field (x = 0, midway between second base and the centre-field fence) and `centerLogo: true` sizes it 0.15 of the centre-field distance across: 60 ft at 263.6 ft from home plate on an MLB field, where it used to sit on home plate. On grass (football, soccer, baseball, softball) the logo is the team's dark-background variant. The logo now moves with `xTrans` and `yTrans` as the surface does. `SURFACE_BASE` gains the soccer, baseball and softball colours.
+
+### Patch Changes
+
+- 065b53b: `surfaceLayer` (`/deckgl`) and `surfaceMesh` (`/three`) draw sporty's sportyR 2.4.5 rink: each NHL goaltender trapezoid is two strips (4 rows or loops, was 6 pieces of a ring that crossed itself), and the faceoff hash marks are 16 loops (were 24 after splitting the 8 that crossed). The deck.gl fixture shared with sdvplot (Python), `fixtures/deckgl/shared.json`, changes with it (`goaltenders_restricted_area`: 4 rows).
+
 ## 0.2.0
 
 ### Minor Changes
