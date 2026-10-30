@@ -18,7 +18,7 @@ export const GT_ALIASES: Readonly<Record<string, Alias>> = {
   gt_sdv_cols_label: {
     target: "labelHtml",
     status: "not-ported",
-    note: "labels are text in Phase 4; use .titleHeader() or subheader",
+    note: "labels are plain text; use .titleHeader() or subheader",
   },
   gt_merge_stack_team_color: T("c.mergeStackTeamColor"),
   gt_theme_sdv: T("theme.sdv"),
@@ -50,7 +50,7 @@ export const GT_ALIASES: Readonly<Record<string, Alias>> = {
   gt_border_grid: T("builder.borderGrid"),
   gt_color_pills: T("c.colorPills"),
   gt_color_ranks: T("c.colorRanks"),
-  gt_color_results: T("c.colorResults", "a column kind (spec §6.1) that fills its row"),
+  gt_color_results: T("c.colorResults", "a column kind that fills its row"),
   gt_column_subheaders: T("builder.columns", "the per-column subheader option of every c.* kind"),
   gt_cutline: T("builder.cutline"),
   gt_delta: T("c.delta"),
