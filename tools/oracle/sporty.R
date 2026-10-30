@@ -95,5 +95,6 @@ if (is.na(sha) || !nzchar(sha)) sha <- "unknown"
 desc <- packageDescription("sportyR")
 json_sha <- if (requireNamespace("digest", quietly = TRUE)) digest::digest(file = json, algo = "sha256") else unname(tools::sha256sum(json))
 writeLines(c(sprintf("sportyR %s (installed: %s, packaged %s)", desc$Version, desc$Repository %||% "local build", desc$Packaged %||% "unknown"),
-             sprintf("sportyR-git %s", sha), sprintf("surface-dimensions-sha256 %s", json_sha), sprintf("R %s.%s", R.version$major, R.version$minor)),
+             sprintf("sportyR-git %s", sha), sprintf("surface-dimensions-sha256 %s", json_sha), sprintf("R %s.%s", R.version$major, R.version$minor),
+             sprintf("generated %s", format(Sys.Date()))),
            file.path(root, "VERSION"))
