@@ -92,8 +92,11 @@ call `.id("a")` / `.id("b")` on the builder.
 
 ## **Themes**
 
-20 themes: the 18 gtUtils themes plus `sdv` (light/dark) and `sdvTeam`. Set one with
-`.theme(name, { density, options })`.
+170 themes: 20 house themes (the 18 gtUtils themes plus `sdv` (light/dark) and `sdvTeam`, in the table below), the 27
+reactablefmtr themes as `fmtr-<name>` plus `fmtr-team`, and the 122 themes of the shared table theme registry, named
+after their source (`listTableThemes()` lists them, `tableThemeSpec(name)` returns one as plain data). Set one with
+`.theme(name, { density, options })`. Guides: [Table themes](https://plot.sportsdataverse.org/guides/table-themes) and
+[the table theme registry](https://plot.sportsdataverse.org/guides/table-theme-registry).
 
 | Theme | Options | Default density |
 |---|---|---|
@@ -444,11 +447,19 @@ The [**sdvplot-js** documentation website](https://plot.sportsdataverse.org) has
 **Guides:**
 [Tables: the spec](https://plot.sportsdataverse.org/guides/tables) ·
 [Table themes](https://plot.sportsdataverse.org/guides/table-themes) ·
+[Table theme registry](https://plot.sportsdataverse.org/guides/table-theme-registry) ·
 [Cell kinds](https://plot.sportsdataverse.org/guides/cell-kinds) ·
+[Formatters](https://plot.sportsdataverse.org/guides/table-formatters) ·
 [Decorations](https://plot.sportsdataverse.org/guides/decorations) ·
+[Table recipes](https://plot.sportsdataverse.org/guides/table-recipes) ·
 [HTML, SSR and the host page](https://plot.sportsdataverse.org/guides/tables-html) ·
 [Export to PNG](https://plot.sportsdataverse.org/guides/export) ·
 [Node and SSR](https://plot.sportsdataverse.org/guides/node-ssr)
+
+**Grids:**
+[MUI X Data Grid](https://plot.sportsdataverse.org/guides/mui-x-data-grid) ·
+[AG Grid](https://plot.sportsdataverse.org/guides/ag-grid) ·
+[TanStack Table](https://plot.sportsdataverse.org/guides/tanstack-table)
 
 **Examples:**
 [Linked figures and tables](https://plot.sportsdataverse.org/examples/linked) ·

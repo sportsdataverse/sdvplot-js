@@ -1,7 +1,7 @@
 {
   "name": "@sportsdataverse/sdvtables",
   "version": "0.2.0",
-  "description": "Publication tables for SportsDataverse data — TableSpec, 18+3 themes, team logos/headshots/colors, static HTML renderer. TypeScript port of sdvplotR gt_* / gtUtils",
+  "description": "Publication tables for SportsDataverse data — a serializable TableSpec, 170 themes (house, reactablefmtr and the table theme registry), team logos/headshots/colors; static and interactive HTML, React, MUI X Data Grid, AG Grid, TanStack Table and PNG output. TypeScript port of sdvplotR gt_* / gtUtils",
   "license": "MIT",
   "keywords": [
     "sportsdataverse",
