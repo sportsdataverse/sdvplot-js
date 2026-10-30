@@ -74,7 +74,7 @@ export function writePages(outDir: string, docsDir: string): void {
   write(join(gallery, "_category_.json"), `${JSON.stringify({ label: "Gallery", position: 4 })}\n`);
   write(
     join(gallery, "index.mdx"),
-    `---\ntitle: Gallery\nsidebar_position: 0\n---\n\n${GENERATED}\n\nEvery example on this site runs in CI before it is published. Pick a package:\n\n${(Object.keys(PACKAGES) as ExamplePackage[]).map((p) => `- [${PACKAGES[p]}](/gallery/${p}/) (${rows.filter((r) => r.package === p).length} examples)`).join("\n")}\n`,
+    `---\ntitle: Gallery\ndescription: Every sdvplot-js example, run in CI before it is published\nsidebar_position: 0\n---\n\n${GENERATED}\n\nEvery example on this site runs in CI before it is published. Pick a package:\n\n${(Object.keys(PACKAGES) as ExamplePackage[]).map((p) => `- [${PACKAGES[p]}](/gallery/${p}/) (${rows.filter((r) => r.package === p).length} examples)`).join("\n")}\n`,
   );
   for (const r of rows) {
     const tags = r.tags.map((t) => `\`${t}\``).join(" · ");
@@ -104,7 +104,7 @@ export function writePages(outDir: string, docsDir: string): void {
     });
     write(
       join(gallery, p, "index.mdx"),
-      `---\ntitle: ${yaml(`${PACKAGES[p]} gallery`)}\n---\n\n${GENERATED}\n\n${body.join("\n\n")}\n`,
+      `---\ntitle: ${yaml(`${PACKAGES[p]} gallery`)}\ndescription: ${yaml(`Every ${PACKAGES[p]} example, run in CI before it is published`)}\n---\n\n${GENERATED}\n\n${body.join("\n\n")}\n`,
     );
   }
 }
