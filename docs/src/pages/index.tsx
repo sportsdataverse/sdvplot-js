@@ -61,8 +61,9 @@ const FEATURES: readonly { title: string; to: string; body: ReactNode }[] = [
     to: "/guides/chart-libraries",
     body: (
       <>
-        Observable Plot, D3 and React, plus adapters for Plotly, Vega-Lite, ECharts and Chart.js. Node and SSR
-        too.
+        Observable Plot, D3 and React, plus adapters for 20+ chart, map, grid and 3D libraries: Chart.js,
+        Plotly, Vega-Lite, ECharts, Recharts, MUI X, nivo, Victory, uPlot, Svelte, deck.gl, MapLibre, Three.js
+        and more. Node and SSR too.
       </>
     ),
   },

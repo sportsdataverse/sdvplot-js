@@ -5,8 +5,9 @@ sidebar_position: 1
 ---
 
 sdvplot-js draws team logos, headshots, team colours, playing surfaces (courts, rinks, fields) and styled tables for
-[Observable Plot](https://observablehq.com/plot/), D3, React, Plotly, Vega-Lite, ECharts and Chart.js. It is made of
-three packages.
+[Observable Plot](https://observablehq.com/plot/), D3 and React, with adapters for 20+ chart, map, grid and 3D
+libraries, from Chart.js, Plotly, Vega-Lite and ECharts to Recharts, MUI X, nivo, Svelte, deck.gl, MapLibre and
+Three.js. It is made of three packages.
 
 ## Install
 
@@ -14,10 +15,11 @@ three packages.
 pnpm add @sportsdataverse/sdvplot @sportsdataverse/sporty @sportsdataverse/sdvtables @observablehq/plot
 ```
 
-The charting libraries (`@observablehq/plot`, `d3`, `react`, `chart.js`) are optional peers: install the one you draw
-with. The Plotly, Vega-Lite and ECharts adapters import nothing from their libraries. Keep
-`@sportsdataverse/sporty` in the install even if you draw no surface: `sdvplot/plot`, `/d3`, `/shots` and
-`/chartjs/surface` import it when they load.
+Each adapter's library is an optional peer: install the one you draw with. Many adapters (Plotly, Vega-Lite, ECharts,
+uPlot, G2, MapLibre and others) import nothing from their library, and build options or specs for the copy you already
+load. The [README's install table](https://github.com/sportsdataverse/sdvplot-js#installation) lists what each entry
+point needs. Keep `@sportsdataverse/sporty` in the install even if you draw no surface: `sdvplot/plot`, `/d3`,
+`/shots`, `/chartjs/surface`, `/deckgl` and `/three` import it when they load.
 
 ## Entry points
 
@@ -43,7 +45,23 @@ with. The Plotly, Vega-Lite and ECharts adapters import nothing from their libra
   filled with SVG patterns, for its React, Svelte and DOM charts (see [TanStack Charts](guides/tanstack-charts.mdx)).
 - `@sportsdataverse/sdvplot/maplibre`: MapLibre GL JS sources and layers, team logos at their venues and
   team-coloured travel lines, and a keyless OpenFreeMap basemap (see [MapLibre GL JS](guides/maplibre.mdx)).
-
+- `@sportsdataverse/sdvplot/svelte`: Svelte 5 components for LayerChart charts (`LogoMark`, `HeadshotMark`,
+  `SurfaceBackdrop`) and `teamColorPalette` (see [Svelte and LayerChart](guides/svelte.mdx)).
+- `@sportsdataverse/sdvplot/nivo`: nivo team colours, `logoLayer` (logos over a Bump, SwarmPlot or Chord) and
+  `logoNode` (logos as nodes) (see [nivo](guides/nivo.mdx)).
+- `@sportsdataverse/sdvplot/victory`: `teamTheme` and `teamColorPalette` for Victory charts; `sdvplot/react`'s
+  `<LogoPoint>` and `<LogoTick>` draw the logos (see [Victory](guides/victory.mdx)).
+- `@sportsdataverse/sdvplot/uplot`: `withTeamSeries` (series in team colours) and `logoPlugin` (logos painted on
+  the canvas at data points) (see [uPlot](guides/uplot.mdx)).
+- `@sportsdataverse/sdvplot/lightweight-charts`: `teamSeriesOptions`, `logoMarkers`, and TradingView's attribution
+  through `withAttribution` and `attributionNotice` (see [Lightweight Charts](guides/lightweight-charts.mdx)).
+- `@sportsdataverse/sdvplot/deckgl`: deck.gl layer props: `logoIconLayer`, `passArcLayer` in team colours and
+  `surfaceLayer`, a sporty surface (see [deck.gl](guides/deckgl.mdx)).
+- `@sportsdataverse/sdvplot/cytoscape`: `passNetwork`, a passing network as Cytoscape elements and stylesheet, and
+  `teamStylesheet` (see [Cytoscape.js](guides/cytoscape.mdx)).
+- `@sportsdataverse/sdvplot/three`: mesh buffers for Three.js (`surfaceMesh`, `trajectoryTube`,
+  `statcastPitchPath`); `sdvplot/react`'s `<Surface3D>` and `<Trajectory>` draw them, on React 19 (see
+  [Three.js](guides/three.mdx)).
 - `@sportsdataverse/sdvplot/unovis`: Unovis accessor helpers: team colours for nodes, links and flows, and logos and
   headshots as a Graph's node icons, for `@unovis/ts` and `@unovis/react` (see [Unovis](guides/unovis.mdx)).
 - `@sportsdataverse/sdvplot/perspective`: a Perspective viewer config with team colours in the Datagrid and in split
@@ -52,6 +70,8 @@ with. The Plotly, Vega-Lite and ECharts adapters import nothing from their libra
 - `@sportsdataverse/sdvplot/interact`: linked figures and tables over one selection store (`brushFilter`,
   `linkSelection`, `linkCursor`, `nearestHover`, `tooltip`, `highlight`); see
   [Linked figures and tables](examples/linked.mdx).
+- `@sportsdataverse/sdvplot/export`: Node only: `toPNG` (an SVG to a PNG, with `@resvg/resvg-js`) and `socialCard`
+  (see [Export to PNG](guides/export.mdx)).
 - `@sportsdataverse/sdvplot/testing`: the adapter contract suite.
 
 `@sportsdataverse/sporty` (playing-surface geometry and data frames)
@@ -67,6 +87,10 @@ with. The Plotly, Vega-Lite and ECharts adapters import nothing from their libra
 
 - `@sportsdataverse/sdvtables`: `defineTable`, the column kinds, decorations and themes.
 - `@sportsdataverse/sdvtables/html`: `renderHTML`, `renderHTMLAsync`, `prepare`, `toElement`.
+- `@sportsdataverse/sdvtables/react`: `<SdvTable>` and `useTable`, a spec as a React table, static or interactive
+  (see [HTML, SSR and the host page](guides/tables-html.mdx)).
+- `@sportsdataverse/sdvtables/export`: Node only: `tableToPNG`, `htmlToPNG` and page layouts (`stackTables`,
+  `gridTables`, `composePage`, `socialCrop`) through Playwright (see [Export to PNG](guides/export.mdx)).
 - `@sportsdataverse/sdvtables/mui`: `dataGridProps`, a spec as MUI X Data Grid props: formats, logo and headshot cells,
   team-coloured rows and the theme (see [MUI X Data Grid](guides/mui-x-data-grid.mdx)).
 - `@sportsdataverse/sdvtables/aggrid`: `gridOptions`, a spec as AG Grid Community options: formats, sorting, logo and

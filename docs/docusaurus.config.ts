@@ -71,7 +71,7 @@ const sdvtables = "../packages/sdvtables";
 
 const config: Config = {
   title: "sdvplot-js",
-  tagline: "Team logos, colours and playing surfaces for Observable Plot and D3",
+  tagline: "Team logos, colours, playing surfaces and tables for JavaScript charts",
   favicon: "img/favicon.ico",
   future: { v4: true },
 
