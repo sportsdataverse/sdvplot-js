@@ -35,6 +35,23 @@ const CORNER_FACE_OFF_MARKER_BAR_WIDTH = 0; // R 541
 const CORNER_FACE_OFF_MARKER_BAR_LENGTH = 0; // R 542
 
 /**
+ * sportyR `same_color()` (2.4.5, #94): colours compared by rendered value, not spelling, so `#FFFFFF`, `#ffffff` and
+ * `#ffffffff` are the same colour.
+ */
+// ponytail: hex only (sporty's Color is `#rrggbb[aa]`); a CSS name such as "white" still compares by spelling. Add a
+// name table if users pass names here.
+const sameColor = (a: Color | readonly Color[], b: Color | readonly Color[]): boolean => {
+  const rgba = (c: Color | readonly Color[]): string =>
+    (typeof c === "string" ? [c] : c)
+      .map((x) => {
+        const v = x.trim().toLowerCase();
+        return /^#[0-9a-f]{6}$/.test(v) ? `${v}ff` : v;
+      })
+      .join();
+  return rgba(a) === rgba(b);
+};
+
+/**
  * Port of sportyR `geom_lacrosse()` (2.4.0, with the sportyR #60-#75 fixes): one PolygonFeature per ggplot layer R adds,
  * in R's layer order. Documented divergences: an unknown `displayRange` throws (R falls back to "full"). `units`
  * scales the points, anchors and display limits, as sportyR 2.4.0 does (#74).
@@ -55,12 +72,12 @@ export function lacrosseField(
     );
   const p = mergeParams(LACROSSE_SPECS[key], opts.updates, ["goal_fan_hash_mark_separation_from_center"]);
   // Contrasting centre marker (geom-lacrosse.R 305-315, sportyR #65): after the user's colours merge, and only when the
-  // user did not pick the marker colour and it matches the (possibly user-set) centre line.
+  // user did not pick the marker colour and it renders the same as the (possibly user-set) centre line (#94).
   const merged = mergeColors(LACROSSE_DEFAULT_COLORS, opts.colorUpdates);
   const colors =
     (p.center_face_off_marker_color_contrasting ?? false) &&
     opts.colorUpdates?.center_face_off_marker === undefined &&
-    merged.center_face_off_marker === merged.center_line
+    sameColor(merged.center_face_off_marker, merged.center_line)
       ? { ...merged, center_face_off_marker: "#ffcb05" }
       : merged;
   const col = (k: LacrosseColorKey): Color => colorAt(colors[k], 0);
