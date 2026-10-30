@@ -181,7 +181,7 @@
     "@perspective-dev/viewer": ">=5.5.1",
     "@react-three/fiber": ">=9.8.1",
     "@resvg/resvg-js": ">=2.6",
-    "@sportsdataverse/sporty": "workspace:^0",
+    "@sportsdataverse/sporty": "workspace:^",
     "@tanstack/charts": ">=1.1.0",
     "@unovis/ts": ">=1.7.1",
     "chart.js": ">=4.4",
