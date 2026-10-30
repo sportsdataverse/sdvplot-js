@@ -61,7 +61,13 @@ test("goalCreaseOutline nhl98: radius-6 arc cut at the crease width, notches at 
     [-(4 + t), -4 + t],
     [-4.5, -4 + t],
   ]);
-  near(pts[15], [(6 - t) * Math.cos((1.5 - theta) * Math.PI), (6 - t) * Math.sin((1.5 - theta) * Math.PI)]);
+  // sportyR 2.4.1: the inner arc starts where it meets the inner straight side (y = -(4 - t)), at its own angle
+  const innerTheta = Math.acos((4 - t) / (6 - t)) / Math.PI;
+  near(pts[15], [
+    (6 - t) * Math.cos((1.5 - innerTheta) * Math.PI),
+    (6 - t) * Math.sin((1.5 - innerTheta) * Math.PI),
+  ]);
+  expect(pts[15]![1]).toBeCloseTo(-(4 - t), 12);
   expect(pts.at(-1)).toEqual([0, 4]);
 });
 
