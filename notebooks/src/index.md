@@ -14,7 +14,7 @@ Twelve live notebooks that run the sdvplot-js packages in your browser: `@sports
 
 ## Surfaces
 
-- [Playing surfaces](./surfaces.html): sporty's courts, fields, rinks and pitches for nine sports, each rule set, display range and rotation; a surface in a team's colours; and real NBA, NHL, PWHL and NFL events moved onto them with `toSurfaceFrame`.
+- [Playing surfaces](./surfaces.html): sporty's courts, fields, rinks and pitches for ten sports, each rule set, display range and rotation; a surface in a team's colours; and real NBA, NHL, PWHL and NFL events moved onto them with `toSurfaceFrame`.
 
 ## Shot charts
 
