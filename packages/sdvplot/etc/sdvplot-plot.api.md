@@ -239,11 +239,14 @@ export function surface(league: League | (string & {}), o?: SurfaceOpts): {
     scene: Scene;
 };
 
-// @public (undocumented)
+// @public
 export const SURFACE_BASE: {
     readonly basketball: "#d2ab6f";
     readonly football: "#196f0c";
     readonly hockey: "#ffffff";
+    readonly soccer: "#196f0c";
+    readonly baseball: "#395d33";
+    readonly softball: "#395d33";
 };
 
 // Warning: (ae-forgotten-export) The symbol "SurfaceSceneOptions" needs to be exported by the entry point plot.d.ts

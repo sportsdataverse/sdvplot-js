@@ -1,5 +1,6 @@
 // Plot-free: sporty CORE only. Internal (not in the core barrel: sporty is an optional peer); reached via ./plot and ./d3.
 import {
+  BASEBALL_SPECS,
   type BaseballColorKey,
   type BaseballDisplayRange,
   type BaseballParamUpdates,
@@ -18,6 +19,7 @@ import {
   type LacrosseColorKey,
   type LacrosseDisplayRange,
   type LacrosseParamUpdates,
+  SOFTBALL_SPECS,
   type Scene,
   type SoccerColorKey,
   type SoccerDisplayRange,
@@ -33,7 +35,10 @@ import {
   type VolleyballColorKey,
   type VolleyballDisplayRange,
   type VolleyballParamUpdates,
+  convertUnits,
   displayRanges,
+  normalizeUnit,
+  rotateCoords,
   surface as sportySurface,
 } from "@sportsdataverse/sporty";
 import { teamColorPairSync } from "./colors.js";
@@ -110,7 +115,17 @@ export const SURFACES: Readonly<Record<string, readonly [SurfaceSport, string]>>
   wcf: ["curling", "wcf"],
   curling_canada: ["curling", "curling canada"],
 };
-export const SURFACE_BASE = { basketball: "#d2ab6f", football: "#196f0c", hockey: "#ffffff" } as const;
+/** sportyR's regulation surface colours (sdvplotR's `surface_base`, sdvplot's `SURFACE_BASE`): court wood, grass, ice. */
+export const SURFACE_BASE = {
+  basketball: "#d2ab6f",
+  football: "#196f0c",
+  hockey: "#ffffff",
+  soccer: "#196f0c",
+  baseball: "#395d33",
+  softball: "#395d33",
+} as const;
+/** A diamond's centre logo is this fraction of the centre-field distance across (sdvplotR's `field_logo_fraction`). */
+const FIELD_LOGO_FRACTION = 0.15;
 /** sportyR's "fifa" pitch is FIFA's 120 x 90 m maximum; the `soccer` key draws a real 105 x 68 m pitch, as sdvplot and sdvplotR do. */
 const SOCCER_PITCH = { pitch_length: 105, pitch_width: 68 } as const;
 
@@ -248,4 +263,41 @@ export function surfaceScene(league: League | (string & {}), o: SurfaceSceneOpti
     ...(displayRange === undefined ? {} : { displayRange }),
     ...(merged === undefined ? {} : { updates: merged }),
   } as never);
+}
+
+/**
+ * Where a team's centre logo goes on an sdv surface key: sdvplotR's `surface_logo_layer` (sdvplot's `_logo_box`).
+ * The surface centre, except on a baseball or softball field, whose origin is home plate: there the logo goes in shallow
+ * centre field, at x = 0 midway between second base (`baseline_distance * sqrt(2)`) and the centre-field fence, with
+ * `size` 0.15 x `center_field_distance` across, from the league's spec, `updates` and `units`. As sporty draws the
+ * surface, the point is translated by `xTrans` / `yTrans` and then rotated about the origin. `variant` is "dark" where
+ * white reads better than black on the sport's regulation surface (`SURFACE_BASE`: grass), as in sdvplotR.
+ * Internal: `league` must be a key of `SURFACES` (callers build the scene first, which checks it).
+ */
+export function centerLogoPlacement(
+  league: string,
+  o: SurfaceSceneOptions = {},
+): { x: number; y: number; size?: number; variant: "dark" | "default" } {
+  const [sport, key] = SURFACES[league] as readonly [SurfaceSport, string];
+  let offset = 0;
+  let size: number | undefined;
+  if (sport === "baseball" || sport === "softball") {
+    const specs: Readonly<
+      Record<string, { baseline_distance: number; center_field_distance: number; field_units: string }>
+    > = sport === "baseball" ? BASEBALL_SPECS : SOFTBALL_SPECS;
+    const spec = specs[key] as (typeof specs)[string];
+    const u = o.updates ?? {};
+    const bl = u.baseline_distance ?? spec.baseline_distance;
+    const cf = u.center_field_distance ?? spec.center_field_distance;
+    const from = normalizeUnit((u.field_units ?? spec.field_units) || "ft");
+    const to = normalizeUnit(o.units ?? from);
+    offset = convertUnits((bl * Math.SQRT2 + cf) / 2, from, to);
+    size = convertUnits(FIELD_LOGO_FRACTION * cf, from, to);
+  }
+  const [[x, y]] = rotateCoords([[o.xTrans ?? 0, offset + (o.yTrans ?? 0)]], o.rotation ?? 0) as [
+    [number, number],
+  ];
+  const base = (SURFACE_BASE as Readonly<Record<string, string>>)[sport];
+  const variant = base !== undefined && onColor(base) === "#ffffff" ? "dark" : "default";
+  return { x, y, ...(size === undefined ? {} : { size }), variant };
 }

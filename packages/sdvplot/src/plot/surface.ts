@@ -2,7 +2,7 @@ import type * as Plot from "@observablehq/plot";
 import type { Scene } from "@sportsdataverse/sporty";
 import { surfaceMark, surfaceScales } from "@sportsdataverse/sporty/plot";
 import { checkHeight } from "../placement.js";
-import { type SurfaceSceneOptions, surfaceScene } from "../surfaces.js";
+import { type SurfaceSceneOptions, centerLogoPlacement, surfaceScene } from "../surfaces.js";
 import type { League } from "../types.js";
 import { logos } from "./marks.js";
 
@@ -11,8 +11,13 @@ export { SURFACES, SURFACE_BASE, colorUpdates } from "../surfaces.js";
 /** Sporty's surface options plus `team` painting; `colorUpdates` overrides are keyed by sporty colour keys. */
 export interface SurfaceOpts extends SurfaceSceneOptions {
   /**
-   * A team logo at the surface centre (0, 0): `true` is 0.25 of the frame height, a number is that fraction in (0, 1] (0 or
-   * out of range throws InputError). Ignored without a `team`. xTrans/yTrans or a half-court displayRange can move (0, 0) off-frame.
+   * The team's logo at the surface centre, moved with `xTrans` / `yTrans` and `rotation` as the surface is: `true` is 0.25
+   * of the frame height, a number is that fraction in (0, 1] (0 or out of range throws InputError). A baseball or softball
+   * field's origin is home plate, so there the logo goes in shallow centre field, as in sdvplotR and sdvplot: at x = 0,
+   * midway between second base (`baseline_distance * sqrt(2)`) and the centre-field fence, and with `true` 0.15 x
+   * `center_field_distance` across (60 ft on an MLB field, at 263.6 ft from home plate). On grass (football, soccer,
+   * baseball, softball) it is the team's dark-background logo. Ignored without a `team` (sdvplotR errors instead). A
+   * half-surface displayRange can leave the logo off-frame.
    */
   centerLogo?: boolean | number;
 }
@@ -43,14 +48,22 @@ export function surface(
   const marks = surfaceMark(scene);
   const { team, season } = o;
   if (centerLogo !== undefined && centerLogo !== false && team !== undefined && team !== null) {
-    const height = centerLogo === true ? 0.25 : checkHeight(centerLogo);
+    const at = centerLogoPlacement(league, opts);
+    const [, y0, , y1] = scene.bbox;
+    const height =
+      centerLogo !== true
+        ? checkHeight(centerLogo)
+        : at.size === undefined
+          ? 0.25
+          : Math.min(at.size / (y1 - y0), 1);
     marks.push(
-      logos([{ x: 0, y: 0, team }], {
+      logos([{ x: at.x, y: at.y, team }], {
         league: league as League, // surfaceScene threw already if a team was passed for a key without team identities
         x: "x",
         y: "y",
         team: "team",
         height,
+        variant: at.variant,
         ...(season !== undefined ? { season } : {}),
       }),
     );
