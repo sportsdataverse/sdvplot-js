@@ -1,5 +1,5 @@
 ---
-"@sportsdataverse/sporty": patch
+"@sportsdataverse/sporty": minor
 ---
 
 The README and the type declarations' comments no longer cite internal decision or plan ids.
