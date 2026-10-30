@@ -19,6 +19,50 @@ export function createCircle({
   return out;
 }
 
+/**
+ * sportyR `split_rings` (2.4.1, #79): a feature's points split at every return to a ring's first point, after dropping
+ * each point that repeats the one before it. A path that never closes is kept as one trailing ring.
+ */
+export function splitRings(points: readonly Point[], tolerance = 1e-9): Point[][] {
+  if (points.length < 2) return [[...points]];
+  const pts = points.filter(
+    (p, i) =>
+      i === 0 ||
+      Math.abs(p[0] - (points[i - 1] as Point)[0]) + Math.abs(p[1] - (points[i - 1] as Point)[1]) >=
+        tolerance,
+  );
+  if (pts.length === 1) return [pts];
+  const rings: Point[][] = [];
+  let start = 0;
+  for (let i = 1; i < pts.length; i++) {
+    const [x, y] = pts[i] as Point;
+    const [x0, y0] = pts[start] as Point;
+    if (i > start && Math.abs(x - x0) < tolerance && Math.abs(y - y0) < tolerance) {
+      rings.push(pts.slice(start, i + 1));
+      start = i + 1;
+    }
+  }
+  if (start < pts.length - 1) rings.push(pts.slice(start));
+  return rings;
+}
+
+/**
+ * sportyR `has_area` (2.4.1, #79): true when some ring's unsigned shoelace area exceeds `tolerance`. Like R, an open
+ * ring is measured as given (not closed first).
+ */
+export function hasArea(points: readonly Point[], tolerance = 1e-9): boolean {
+  if (points.length < 3) return false;
+  return splitRings(points).some((ring) => {
+    let s = 0;
+    for (let i = 0; i < ring.length - 1; i++) {
+      const [x0, y0] = ring[i] as Point;
+      const [x1, y1] = ring[i + 1] as Point;
+      s += x0 * y1 - x1 * y0;
+    }
+    return Math.abs(s) / 2 > tolerance;
+  });
+}
+
 export const createRectangle = (xMin: number, xMax: number, yMin: number, yMax: number): Point[] => [
   [xMin, yMin],
   [xMax, yMin],

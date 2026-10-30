@@ -92,9 +92,11 @@ test("#63: the full display range covers the benches and penalty boxes (NLL y to
   expect(lacrosseField("ncaam").bbox).toEqual([-60, -35, 60, 35]);
 });
 
-test("#64: goal_arc_line_thickness defaults to 0, so an arc without it is a ring (2n + 9 points with the #70 corners), not a filled block", () => {
-  const arc = polys(lacrosseField("ncaam"), "goal_arc")[0]!.points;
-  expect(arc).toHaveLength(2 * 200 + 9);
+test("#64: goal_arc_line_thickness defaults to 0, so an arc without it is a zero-width ring, not a filled block (and, having no area, is not drawn: sportyR 2.4.1)", () => {
+  expect(polys(lacrosseField("ncaam"), "goal_arc")).toEqual([]);
+  const arc = polys(lacrosseField("ncaam", { updates: { goal_arc_line_thickness: 0.1 } }), "goal_arc")[0]!
+    .points;
+  expect(arc).toHaveLength(2 * 200 + 9); // a ring with the #70 corner points
 });
 
 test("#65: the contrasting centre face-off colour applies only when the user set neither it nor a matching centre line", () => {

@@ -1,6 +1,6 @@
 import { SportyError } from "./errors.js";
 import type { Color, Feature, Point, Scene, TextFeature, Units } from "./scene.js";
-import { createRectangle } from "./shapes.js";
+import { createRectangle, hasArea } from "./shapes.js";
 import { asArray } from "./specs/_normalize.js";
 import { type Placement, placeFeature, rotateCoords, strokeFor } from "./transform.js";
 import { convertPoints, convertUnits } from "./units.js";
@@ -63,7 +63,10 @@ export interface FeatureOptions {
   height?: number;
 }
 
-/** R `add_feature`: one PolygonFeature per placed copy, zIndex = position in `features` (= R's layer index). */
+/**
+ * R `add_feature`: one PolygonFeature per placed copy, zIndex = position in `features` (= R's layer index). A feature
+ * with no area and no visible stroke adds nothing (sportyR 2.4.1).
+ */
 export function addFeature(
   features: Feature[],
   name: string,
@@ -79,6 +82,9 @@ export function addFeature(
     yAnchor: convertUnits(placement.yAnchor, from, to),
   };
   const s = strokeFor(stroke);
+  // sportyR 2.4.1 (#79): a feature with no area and no visible outline (e.g. a line with no thickness in a league)
+  // is not added; area is measured on the unplaced points, in rule-book units, as R does
+  if (s === undefined && !hasArea(points)) return;
   for (const copy of placeFeature(convertPoints(points, from, to), p)) {
     features.push({
       kind: "polygon",

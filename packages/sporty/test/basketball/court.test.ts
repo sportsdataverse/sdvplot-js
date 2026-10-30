@@ -9,7 +9,7 @@ test("NBA full court: bbox is the court + apron, features are polygons in R call
   expect(s.origin).toBe("center");
   expect(s.bbox).toEqual([-47 - 8, -25 - 5, 47 + 8, 25 + 5]); // half court 47 + apron_endline 8; half width 25 + apron_sideline 5 (R "full")
   expect(s.features[0]?.name).toBe("half_court"); // R's first add_feature: the defensive half court
-  expect(s.features).toHaveLength(106); // R: length(geom_basketball("nba")$layers)
+  expect(s.features).toHaveLength(104); // R: length(geom_basketball("nba")$layers)
   expect(s.features.every((f, i) => f.kind === "polygon" && f.zIndex === i)).toBe(true);
   expect(s.features.filter((f) => f.name.startsWith("center_circle_outline"))).toHaveLength(2 * 2); // NBA has two center circles, each mirrored across x
   expect(s.background).toBeUndefined(); // R plot_background default is NULL
@@ -53,10 +53,10 @@ test("color and param updates: hidden feature is #00000000; updates typed; FIBA 
   expect(fiba.bbox[2]).toBeCloseTo((28 / 2 + 2.5) * 3.28084, 2); // FIBA JSON: court_length 28 m, court_apron_endline 2.5 m
 });
 
-test("three-point table counts R's corner column: a second corner adds a second arc (R draws 110 layers)", () => {
+test("three-point table counts R's corner column: a second corner adds a second arc (R draws 108 layers)", () => {
   expect(
     basketballCourt("nba", { updates: { basket_center_to_corner_three: [22, 21] } }).features,
-  ).toHaveLength(110);
+  ).toHaveLength(108);
 });
 
 test("colorUpdates: an undefined or null colour keeps the default instead of throwing", () => {

@@ -48,7 +48,7 @@ test("has_trapezoid gates the restricted area; heights are hints in the scene's 
   expect(frame?.kind === "polygon" && frame.height).toBeCloseTo(4 * 0.3048, 12);
 });
 
-test("colour keys map to features; an unknown crease style draws R's single-point default", () => {
+test("colour keys map to features; an unknown crease style's single-point default is not drawn", () => {
   const s = hockeyRink("nhl", { colorUpdates: { team_b_bench: "#123456", goal_fill: "#00ff00" } });
   expect(s.features.filter((f) => f.name === "player_bench_area_fill").map((f) => f.fill)).toEqual([
     "#ffffff",
@@ -57,5 +57,6 @@ test("colour keys map to features; an unknown crease style draws R's single-poin
   expect(s.features.find((f) => f.name === "goal_frame_fill")?.fill).toBe("#00ff00");
   const odd = hockeyRink("nhl", { updates: { goal_crease_style: "nhl2030" } });
   const crease = odd.features.filter((f) => f.name === "goal_crease_outline");
-  expect(crease.map((f) => f.kind === "polygon" && f.points)).toEqual([[[89, 0]], [[-89, 0]]]);
+  // R's switch default is a single (0, 0) point, which has no area and no outline, so sportyR 2.4.1 skips it
+  expect(crease).toEqual([]);
 });
