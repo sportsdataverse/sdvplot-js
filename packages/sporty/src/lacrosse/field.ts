@@ -1,3 +1,4 @@
+import { sameColor } from "../colors.js";
 import type { Color, Feature, Point, Scene, SurfaceOptions } from "../scene.js";
 import {
   LACROSSE_LEAGUES,
@@ -33,23 +34,6 @@ const isOneOf = <T extends string>(list: readonly T[], v: string): v is T =>
 const CENTER_FACE_OFF_MARKER_RADIUS = 0; // R 535
 const CORNER_FACE_OFF_MARKER_BAR_WIDTH = 0; // R 541
 const CORNER_FACE_OFF_MARKER_BAR_LENGTH = 0; // R 542
-
-/**
- * sportyR `same_color()` (2.4.5, #94): colours compared by rendered value, not spelling, so `#FFFFFF`, `#ffffff` and
- * `#ffffffff` are the same colour.
- */
-// ponytail: hex only (sporty's Color is `#rrggbb[aa]`); a CSS name such as "white" still compares by spelling. Add a
-// name table if users pass names here.
-const sameColor = (a: Color | readonly Color[], b: Color | readonly Color[]): boolean => {
-  const rgba = (c: Color | readonly Color[]): string =>
-    (typeof c === "string" ? [c] : c)
-      .map((x) => {
-        const v = x.trim().toLowerCase();
-        return /^#[0-9a-f]{6}$/.test(v) ? `${v}ff` : v;
-      })
-      .join();
-  return rgba(a) === rgba(b);
-};
 
 /**
  * Port of sportyR `geom_lacrosse()` (2.4.5, so with the 2.4.0 #60-#75 fixes and those of 2.4.1-2.4.5): one

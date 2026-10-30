@@ -124,9 +124,12 @@ test("sportyR 2.4.4 (#92): rectangular zones stop at the neutral zone's edges, s
 test("sportyR 2.4.5 (#94): the contrasting centre face-off marker matches the centre line by rendered colour", () => {
   const marker = (centerLine: string) =>
     polys(lacrosseField("ncaam", { colorUpdates: { center_line: centerLine } }), "face_off_marker")[0]!.fill;
-  // each hex spelling of white renders as the default #ffffff marker
-  for (const white of ["#FFFFFF", "#ffffffff", "#FfFfFfFF"]) expect(marker(white), white).toBe("#ffcb05");
+  // each spelling of white (CSS name, short or long hex, any case) renders as the default #ffffff marker
+  for (const white of ["white", " White ", "#fff", "#FFFF", "#FFFFFF", "#ffffffff", "#FfFfFfFF"])
+    expect(marker(white), white).toBe("#ffcb05");
   // a centre line that renders differently keeps the default white marker
   expect(marker("#123456")).toBe("#ffffff");
   expect(marker("#ffffff80")).toBe("#ffffff");
+  expect(marker("whitesmoke")).toBe("#ffffff");
+  expect(marker("#fff8")).toBe("#ffffff");
 });
