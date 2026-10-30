@@ -169,14 +169,14 @@ export async function deckglSharedFixture(): Promise<string> {
     [...new Set(data.map((d) => JSON.stringify(d.fillColor)))].sort().map((s) => JSON.parse(s));
   const rink = surfaceLayer("hockey", "nhl");
   // Rows per feature name pin the ring rules both languages apply: a faceoff circle, spot ring or the centre circle is
-  // two half rings in one path, and a goaltender trapezoid is two strips in one path (the loop split; sportyR 2.4.1).
-  // Left out: the faceoff hash marks, which sporty drew as 8 loops that twisted before sportyR 2.4.1 (now 16, as
-  // sportypy); add them once sdvplot (Python) pins a sportypy with sportyR 2.4.5 parity.
+  // two half rings in one path, a goaltender trapezoid is two strips in one path, and the faceoff hash marks are 16
+  // loops, as sportypy (the loop split; sportyR 2.4.1).
   const LOOPED = [
     "odzone_faceoff_circle",
     "nodzone_faceoff_spot_ring",
     "center_faceoff_circle",
     "goaltenders_restricted_area",
+    "odzone_faceoff_lines",
   ];
   const loops = Object.fromEntries(LOOPED.map((n) => [n, rink.data.filter((d) => d.name === n).length]));
   const pitch = surfaceLayer("soccer", "fifa", { updates: { pitch_length: 105, pitch_width: 68 } });

@@ -274,11 +274,20 @@ export function goalCreaseOutline({
   const r = featureRadius;
   const ri = featureRadius - featureThickness;
   // sportyR 2.4.1 (#79): the inner arc meets the inner straight sides (inset by the thickness) at its own angle
-  const innerTheta = ri <= 0 || Math.abs((hw - t) / ri) > 1 ? theta : Math.acos((hw - t) / ri) / Math.PI;
+  const meets = ri > 0 && Math.abs((hw - t) / ri) <= 1;
+  const innerTheta = meets ? Math.acos((hw - t) / ri) / Math.PI : theta;
   const arc = (start: number, end: number, rr: number): Point[] =>
     circle({ center: [0, 0], start, end, r: rr, npoints });
   switch (creaseStyle.toLowerCase()) {
-    case "nhl98":
+    case "nhl98": {
+      // acos then sinpi leaves the inner arc's ends ~4e-16 ft across the straight sides they meet, so a renderer's
+      // crossing test sees a sliver there; set their y to the sides' exactly (a change far inside the parity tolerance)
+      const inner = arc(1.5 - innerTheta, 0.5 + innerTheta, ri);
+      const [first, last] = [inner[0], inner.at(-1)];
+      if (meets && first && last && inner.length > 1) {
+        inner[0] = [first[0], -(hw - t)];
+        inner[inner.length - 1] = [last[0], hw - t];
+      }
       return [
         ...zip([0, -creaseLength], [hw, hw]),
         ...arc(0.5 + theta, 1.5 - theta, r),
@@ -286,12 +295,13 @@ export function goalCreaseOutline({
           [-creaseLength, 0, 0, -nx, -nx, -(nx + t), -(nx + t), -creaseLength],
           [-hw, -hw, -hw + t, -hw + t, -hw + t + notchWidth, -hw + t + notchWidth, -hw + t, -hw + t],
         ),
-        ...arc(1.5 - innerTheta, 0.5 + innerTheta, ri),
+        ...inner,
         ...zip(
           [-creaseLength, -(nx + t), -(nx + t), -nx, -nx, 0, 0],
           [hw - t, hw - t, hw - t - notchWidth, hw - t - notchWidth, hw - t, hw - t, hw],
         ),
       ];
+    }
     case "ushl1":
       return [
         ...arc(0.5, 1.5, r),

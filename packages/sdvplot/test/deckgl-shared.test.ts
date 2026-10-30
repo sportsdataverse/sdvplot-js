@@ -13,7 +13,7 @@ import "./_fixtures.js"; // preloads every league
 const PATH = new URL("../../../fixtures/deckgl/shared.json", import.meta.url);
 const BYTES = readFileSync(PATH);
 /** The same digest is pinned in sdvplot's tests/test_pydeck_shared.py: the two copies are one file. */
-const SHA256 = "415dbc4957e0a55d1d2e59bed4f5dab845b42b930137f2689f08f11f81cf9592";
+const SHA256 = "08796ff40a13db860a1495d75304894bb5d98b7c1df3d89c835d2a6a05063178";
 
 type Props = Record<string, unknown> & { data: Record<string, unknown>[] };
 interface LayerCase {

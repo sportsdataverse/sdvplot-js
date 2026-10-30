@@ -67,7 +67,7 @@ test("goalCreaseOutline nhl98: radius-6 arc cut at the crease width, notches at 
     (6 - t) * Math.cos((1.5 - innerTheta) * Math.PI),
     (6 - t) * Math.sin((1.5 - innerTheta) * Math.PI),
   ]);
-  expect(pts[15]![1]).toBeCloseTo(-(4 - t), 12);
+  expect(pts[15]![1]).toBe(-(4 - t)); // exactly on the side, not 4e-16 ft across it
   expect(pts.at(-1)).toEqual([0, 4]);
 });
 

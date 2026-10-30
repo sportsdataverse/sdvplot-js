@@ -265,14 +265,9 @@ describe("surfaceLayer", () => {
     const names = data.map((d) => d.name).filter((n, i, a) => n !== a[i - 1]);
     expect(names).toEqual(polys.map((f) => f.name).filter((n, i, a) => n !== a[i - 1]));
     const drawnPts = new Set(data.flatMap((d) => d.polygon.map((pt) => pt.join())));
-    // all but the corners of each goal crease where its inner arc meets a straight side: rounding (6e-16 ft) puts the
-    // arc's end across the side, and the zero-width sliver split off there is left out as empty
+    // every point: sporty puts the goal crease's inner arc ends exactly on its straight sides, so no sliver is split off
     const lost = polys.flatMap((f) => f.points).filter((pt) => !drawnPts.has(pt.join()));
-    expect(lost.length).toBeLessThanOrEqual(8);
-    for (const [x, y] of lost) {
-      expect(Math.abs(x)).toBeGreaterThan(84);
-      expect(Math.abs(y)).toBeCloseTo(4 - 2 / 12, 3);
-    }
+    expect(lost).toEqual([]);
     expect(call(p.getPolygon, data[0])).toEqual(polys[0]?.points);
     expect(call(p.getFillColor, data[0])).toEqual(rgba(polys[0]?.fill as string));
     // the goal frame fill is translucent (#a5acaf4d): its alpha survives
