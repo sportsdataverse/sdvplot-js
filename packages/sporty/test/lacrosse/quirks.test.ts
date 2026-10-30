@@ -107,3 +107,16 @@ test("#65: the contrasting centre face-off colour applies only when the user set
   // recolouring only the centre line: the white marker no longer matches it, so no contrast default
   expect(marker({ colorUpdates: { center_line: "#ff0000" } })).toBe("#ffffff");
 });
+
+test("sportyR 2.4.4 (#92): rectangular zones stop at the neutral zone's edges, so the three zones tile the field", () => {
+  // no league has a rectangular field with a neutral zone, so NLL is redrawn as a rectangle (R: x -100..-42.5,
+  // -42.5..42.5, 42.5..100)
+  const s = lacrosseField("nll", { updates: { field_shape: "rectangle" } });
+  const xRange = (name: string) => {
+    const xs = polys(s, name)[0]!.points.map((p) => p[0]);
+    return [Math.min(...xs), Math.max(...xs)];
+  };
+  expect(xRange("defensive_zone")).toEqual([-100, -42.5]);
+  expect(xRange("neutral_zone")).toEqual([-42.5, 42.5]);
+  expect(xRange("offensive_zone")).toEqual([42.5, 100]);
+});

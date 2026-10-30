@@ -17,7 +17,10 @@ type Zone = {
   fieldShape?: string;
 } & Arc;
 
-/** lacrosse_defensive_zone (features-lacrosse.R 19): oval → boards-shaped half (2n + 4 points), else the x <= 0 half rectangle. */
+/**
+ * lacrosse_defensive_zone (features-lacrosse.R 19): oval → boards-shaped half (2n + 4 points), else the rectangle from
+ * the end line to the neutral zone (sportyR 2.4.4, #92; it ran to x = 0).
+ */
 export function defensiveZone({
   fieldLength = 0,
   fieldWidth = 0,
@@ -27,7 +30,7 @@ export function defensiveZone({
   npoints,
 }: Zone = {}): Point[] {
   if (fieldShape.toLowerCase() !== "oval")
-    return createRectangle(-fieldLength / 2, 0, -fieldWidth / 2, fieldWidth / 2);
+    return createRectangle(-fieldLength / 2, -nzoneLength / 2, -fieldWidth / 2, fieldWidth / 2);
   const hl = fieldLength / 2;
   const hw = fieldWidth / 2;
   const cx = hl - cornerRadius;
@@ -50,7 +53,7 @@ export function neutralZone({
   return createRectangle(-nzoneLength / 2, nzoneLength / 2, -fieldWidth / 2, fieldWidth / 2);
 }
 
-/** lacrosse_offensive_zone (R 127): mirror image of `defensiveZone`. */
+/** lacrosse_offensive_zone (R 127): mirror image of `defensiveZone` (the rectangle starts at the neutral zone, #92). */
 export function offensiveZone({
   fieldLength = 0,
   fieldWidth = 0,
@@ -60,7 +63,7 @@ export function offensiveZone({
   npoints,
 }: Zone = {}): Point[] {
   if (fieldShape.toLowerCase() !== "oval")
-    return createRectangle(0, fieldLength / 2, -fieldWidth / 2, fieldWidth / 2);
+    return createRectangle(nzoneLength / 2, fieldLength / 2, -fieldWidth / 2, fieldWidth / 2);
   const hl = fieldLength / 2;
   const hw = fieldWidth / 2;
   const cx = hl - cornerRadius;
