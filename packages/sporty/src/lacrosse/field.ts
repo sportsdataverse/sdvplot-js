@@ -52,9 +52,9 @@ const sameColor = (a: Color | readonly Color[], b: Color | readonly Color[]): bo
 };
 
 /**
- * Port of sportyR `geom_lacrosse()` (2.4.0, with the sportyR #60-#75 fixes): one PolygonFeature per ggplot layer R adds,
- * in R's layer order. Documented divergences: an unknown `displayRange` throws (R falls back to "full"). `units`
- * scales the points, anchors and display limits, as sportyR 2.4.0 does (#74).
+ * Port of sportyR `geom_lacrosse()` (2.4.5, so with the 2.4.0 #60-#75 fixes and those of 2.4.1-2.4.5): one
+ * PolygonFeature per ggplot layer R adds, in R's layer order. Documented divergences: an unknown `displayRange`
+ * throws (R falls back to "full"). `units` scales the points, anchors and display limits, as sportyR 2.4.0 does (#74).
  */
 export function lacrosseField(
   league: LacrosseLeague | (string & {}),

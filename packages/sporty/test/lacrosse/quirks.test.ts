@@ -1,4 +1,4 @@
-// sportyR 2.4.0 geometry fixes (sportyR PR #68, issues #60-#65), ported: each test failed on the pre-port code.
+// sportyR 2.4.0-2.4.5 lacrosse geometry fixes (sportyR PR #68, issues #60-#65; #92, #94), ported: each test failed on the pre-port code.
 import { expect, test } from "vitest";
 import { lacrosseField } from "../../src/lacrosse/field.js";
 import type { Point } from "../../src/scene.js";
