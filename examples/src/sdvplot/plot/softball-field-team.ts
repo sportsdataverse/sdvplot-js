@@ -5,8 +5,8 @@ import type { ExampleMeta } from "../../contract.js";
 
 export const meta = {
   title:
-    "An NCAA softball field with its chalk in Texas orange: ncaa_softball is a team league and a surface",
-  tags: ["plot", "surface", "colorUpdates", "teamColorsSync", "softball", "ncaa_softball"],
+    "An NCAA softball field with its chalk in Texas orange and the Longhorns' logo in shallow centre field",
+  tags: ["plot", "surface", "colorUpdates", "centerLogo", "teamColorsSync", "softball", "ncaa_softball"],
 } satisfies ExampleMeta;
 
 await loadLeague("ncaa_softball");
@@ -24,11 +24,13 @@ const chalk = [
 const field = surface("ncaa_softball", {
   team: "TEX",
   colorUpdates: Object.fromEntries(chalk.map((k) => [k, orange])),
+  // the field's origin is home plate, so the logo goes in shallow centre field (as sdvplotR and sdvplot), dark on grass
+  centerLogo: true,
 });
 
 export default Plot.plot({
   ...field.scales,
   width: 640,
-  caption: `ncaa_softball draws sporty's ${SURFACES.ncaa_softball?.join(" ")} field; Texas (${orange}) on the chalk lines`,
+  caption: `ncaa_softball draws sporty's ${SURFACES.ncaa_softball?.join(" ")} field; Texas (${orange}) on the chalk lines and its logo in shallow centre field`,
   marks: field.marks,
 });
