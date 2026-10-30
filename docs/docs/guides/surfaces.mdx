@@ -181,6 +181,16 @@ scene powers sdvplot's D3 and Chart.js surfaces.
 
 <Live id="sdvplot/plot/surface-team" />
 
+`centerLogo: true` adds the team's logo where sdvplotR's `sdv_surface(center_logo = TRUE)` and sdvplot's
+`surface(center_logo=True)` put it: at centre court, centre ice or midfield, 0.25 of the frame tall (a number sets
+another fraction). A baseball or softball field's origin is home plate, so there it goes in shallow centre field, at
+x = 0 midway between second base and the centre-field fence and 0.15 of the centre-field distance across (60 ft at
+263.6 ft from home plate on an MLB field), following `updates` and `units`. The logo moves with `xTrans`, `yTrans` and
+`rotation` as the surface does. On grass (football, soccer, baseball and softball) it is the team's dark-background
+logo, as in sdvplotR and sdvplot. Without a `team` the option draws nothing, as in sdvplot; sdvplotR stops with an
+error. sdvplotR also sizes the logo in surface units on every sport (12 ft on a court, 10 yd on a field, 24 ft on a
+rink, 18.3 m on a pitch), where sdvplot-js and sdvplot use a fraction of the frame height except on a diamond.
+
 ## Every sport through sdvplot
 
 `SURFACES` is the surface-key table sdvplot (Python) and sdvplotR share: 59 keys over all ten sports. Keys that are also

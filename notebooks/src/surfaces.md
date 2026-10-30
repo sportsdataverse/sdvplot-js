@@ -48,7 +48,7 @@ ${sport} has ${specs.length} rule set${specs.length === 1 ? "" : "s"}, ${display
 
 ## In a team's colours
 
-`surface(league, { team })` from `@sportsdataverse/sdvplot/plot` paints a team's primary and secondary colours on the surface its league plays on (${Object.keys(SURFACES).length} leagues have one). **Centre logo** puts the team's logo at centre court.
+`surface(league, { team })` from `@sportsdataverse/sdvplot/plot` paints a team's primary and secondary colours on the surface its league plays on (${Object.keys(SURFACES).length} leagues have one). **Centre logo** puts the team's logo at centre court, centre ice or midfield, or in shallow centre field on a baseball or softball field (whose origin is home plate); on grass it is the team's dark-background logo.
 
 ```js
 const teamLeague = view(select(Object.keys(SURFACES), { label: "League", value: "nfl" }));
