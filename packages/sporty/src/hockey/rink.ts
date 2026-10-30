@@ -11,6 +11,7 @@ import {
   mergeColors,
   mergeParams,
 } from "../surface.js";
+import { reflectCoords } from "../transform.js";
 import { convertUnits, normalizeUnit } from "../units.js";
 import * as F from "./features.js";
 import {
@@ -237,26 +238,17 @@ export function hockeyRink(
   );
   add("nodzone_faceoff_spot_stripe", stripe, col("faceoff_spot_stripe"), odzoneX, spotY, true, true);
   add("nodzone_faceoff_spot_ring", ring, col("faceoff_spot_ring"), odzoneX, spotY, true, true);
+  const faceoffLines = F.odzoneFaceoffLines({
+    ...lines,
+    faceoffLineDistX: p.faceoff_line_dist_x,
+    faceoffLineLength: p.faceoff_line_length,
+  });
+  add("odzone_faceoff_lines", faceoffLines, col("faceoff_line"), odzoneX, spotY, true, true);
+  // sportyR 2.4.1 (#79): the second set is the mirror image of the first, so the lines' thickness stays on the same
+  // side of each edge
   add(
     "odzone_faceoff_lines",
-    F.odzoneFaceoffLines({
-      ...lines,
-      faceoffLineDistX: p.faceoff_line_dist_x,
-      faceoffLineLength: p.faceoff_line_length,
-    }),
-    col("faceoff_line"),
-    odzoneX,
-    spotY,
-    true,
-    true,
-  );
-  add(
-    "odzone_faceoff_lines",
-    F.odzoneFaceoffLines({
-      ...lines,
-      faceoffLineDistX: -1 * p.faceoff_line_dist_x,
-      faceoffLineLength: -1 * p.faceoff_line_length,
-    }),
+    reflectCoords(faceoffLines, { overX: false, overY: true }),
     col("faceoff_line"),
     odzoneX,
     spotY,

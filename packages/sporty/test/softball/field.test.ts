@@ -62,9 +62,10 @@ test("display range infield; unknown range throws; units convert points, anchors
   expect(() => softballField("mlb")).toThrow(/Unknown softball league/);
 });
 
-test("surface('softball', …) dispatches; colour updates apply; custom builds from zeros", () => {
+test("surface('softball', …) dispatches; colour updates apply; custom builds from zeros (and draws nothing)", () => {
   const s = surface("softball", "NCAA", { colorUpdates: { pitchers_circle: "#ff0000" } });
   expect(s.league).toBe("ncaa");
   expect(s.features.find((f) => f.name === "pitchers_circle")!.fill).toBe("#ff0000");
-  expect(softballField("custom").features.length).toBe(17);
+  // every all-zero feature has no area and no stroke, so sportyR 2.4.1 draws none of the 17
+  expect(softballField("custom").features).toEqual([]);
 });

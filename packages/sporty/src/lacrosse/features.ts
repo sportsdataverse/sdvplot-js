@@ -17,7 +17,10 @@ type Zone = {
   fieldShape?: string;
 } & Arc;
 
-/** lacrosse_defensive_zone (features-lacrosse.R 19): oval → boards-shaped half (2n + 4 points), else the x <= 0 half rectangle. */
+/**
+ * lacrosse_defensive_zone (features-lacrosse.R 19): oval → boards-shaped half (2n + 4 points), else the rectangle from
+ * the end line to the neutral zone (sportyR 2.4.4, #92; it ran to x = 0).
+ */
 export function defensiveZone({
   fieldLength = 0,
   fieldWidth = 0,
@@ -27,7 +30,7 @@ export function defensiveZone({
   npoints,
 }: Zone = {}): Point[] {
   if (fieldShape.toLowerCase() !== "oval")
-    return createRectangle(-fieldLength / 2, 0, -fieldWidth / 2, fieldWidth / 2);
+    return createRectangle(-fieldLength / 2, -nzoneLength / 2, -fieldWidth / 2, fieldWidth / 2);
   const hl = fieldLength / 2;
   const hw = fieldWidth / 2;
   const cx = hl - cornerRadius;
@@ -50,7 +53,7 @@ export function neutralZone({
   return createRectangle(-nzoneLength / 2, nzoneLength / 2, -fieldWidth / 2, fieldWidth / 2);
 }
 
-/** lacrosse_offensive_zone (R 127): mirror image of `defensiveZone`. */
+/** lacrosse_offensive_zone (R 127): mirror image of `defensiveZone` (the rectangle starts at the neutral zone, #92). */
 export function offensiveZone({
   fieldLength = 0,
   fieldWidth = 0,
@@ -60,7 +63,7 @@ export function offensiveZone({
   npoints,
 }: Zone = {}): Point[] {
   if (fieldShape.toLowerCase() !== "oval")
-    return createRectangle(0, fieldLength / 2, -fieldWidth / 2, fieldWidth / 2);
+    return createRectangle(nzoneLength / 2, fieldLength / 2, -fieldWidth / 2, fieldWidth / 2);
   const hl = fieldLength / 2;
   const hw = fieldWidth / 2;
   const cx = hl - cornerRadius;
@@ -409,7 +412,11 @@ export function goalMouthHashMark({
   return createRectangle(-goalMouthHashMarkLength, 0, -lineThickness, 0);
 }
 
-/** lacrosse_goal_mouth (R 981): semicircular ring split at ±goal_mouth_semi_circle_separation (2n + 9 points). */
+/**
+ * lacrosse_goal_mouth (R 1005): the half annulus and the straight stubs along the goal line extended, as one ring. As
+ * sportyR 2.4.2 (#89), the inner arc is cut back to the corners where a stub's inner edge (x = -line_thickness) or its
+ * end (|y| = separation) meets it, so the band does not cross itself; with no hole left it is the solid half disc.
+ */
 export function goalMouth({
   goalMouthRadius = 0,
   lineThickness = 0,
@@ -423,19 +430,26 @@ export function goalMouth({
   const r = goalMouthRadius;
   const t = lineThickness;
   const s = goalMouthSemiCircleSeparation;
-  return [
+  const ri = r - t;
+  const cx = -Math.min(t, Math.sqrt(Math.max(ri ** 2 - s ** 2, 0)));
+  const cy = Math.sqrt(Math.max(ri ** 2 - cx ** 2, 0));
+  if (ri <= 0 || cy === 0) return [...circle({ center: [0, 0], start: 0.5, end: 1.5, r, npoints }), [0, r]];
+  const offset = Math.asin(-cx / ri) / Math.PI; // between the bottom of the inner arc and the hole's corner, in units of pi
+  const pts: Point[] = [
     [0, s],
     [0, r],
     ...circle({ center: [0, 0], start: 0.5, end: 1.5, r, npoints }),
     [0, -r],
     [0, -s],
-    [-t, -s],
-    [-t, -r + t],
-    ...circle({ center: [0, 0], start: 1.5, end: 0.5, r: r - t, npoints }),
-    [-t, r - t],
-    [-t, s],
+    [cx, -s],
+    ...circle({ center: [0, 0], start: 1.5 - offset, end: 0.5 + offset, r: ri, npoints }),
+    [cx, s],
     [0, s],
   ];
+  // a corner on the inner arc or the goal line extended repeats the point next to it (R drops it)
+  return pts.filter(
+    (p, k) => k === 0 || Math.abs(p[0] - pts[k - 1]![0]) + Math.abs(p[1] - pts[k - 1]![1]) >= 1e-12,
+  );
 }
 
 /** lacrosse_below_goal_marking (R 1050): a full disc. */
@@ -448,7 +462,7 @@ export function belowGoalMarking({
 
 type Goal = { goalFrameOpeningInterior?: number; goalPostThickness?: number; goalDepth?: number };
 
-/** lacrosse_goal_frame (R 1075): 7-point frame. */
+/** lacrosse_goal_frame (R 1138): 7-point frame, closed on its first point (sportyR 2.4.1). */
 export function goalFrame({
   goalFrameOpeningInterior: o = 0,
   goalPostThickness: p = 0,
@@ -461,11 +475,11 @@ export function goalFrame({
     [0, -o / 2 - p],
     [d, 0],
     [0, o / 2 + p],
-    [0, 0],
+    [0, o / 2],
   ];
 }
 
-/** lacrosse_goal_net (R 1115): 4 points; the last y is the full opening, not half (R). */
+/** lacrosse_goal_net (R 1178): 4 points, closed on its first point (sportyR 2.4.1). */
 export function goalNet({
   goalFrameOpeningInterior: o = 0,
   goalPostThickness: p = 0,
@@ -475,7 +489,7 @@ export function goalNet({
     [0, o / 2],
     [d - p, 0],
     [0, -o / 2],
-    [0, o],
+    [0, o / 2],
   ];
 }
 
@@ -497,7 +511,7 @@ export function centerCircle({
 
 type Bench = { benchAreaOutlineThickness?: number; benchLength?: number; benchDepth?: number };
 
-/** lacrosse_player_bench_outline (R 1271): 9 points. */
+/** lacrosse_player_bench_outline (R 1285): 9 points, closed on its first point (sportyR 2.4.1). */
 export function playerBenchOutline({
   benchAreaOutlineThickness: t = 0,
   benchLength: l = 0,
@@ -512,7 +526,7 @@ export function playerBenchOutline({
     [l, t + d],
     [0, t + d],
     [0, t],
-    [t, t],
+    [-t, t],
   ];
 }
 

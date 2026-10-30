@@ -17,7 +17,7 @@
 
 <!-- badges: end -->
 
-Sport surfaces (courts, rinks, fields) as plain geometry for SportsDataverse plots. TypeScript port of the R package [sportyR](https://github.com/sportsdataverse/sportyR) 2.4.0: every surface is a `Scene` of polygons and text, rendered by the `svg`, `canvas`, `plot` and `d3` subpaths.
+Sport surfaces (courts, rinks, fields) as plain geometry for SportsDataverse plots. TypeScript port of the R package [sportyR](https://github.com/sportsdataverse/sportyR) 2.4.5: every surface is a `Scene` of polygons and text, rendered by the `svg`, `canvas`, `plot` and `d3` subpaths.
 
 Part of [sdvplot-js](https://github.com/sportsdataverse/sdvplot-js#readme) · [Documentation](https://plot.sportsdataverse.org) · [API reference](https://plot.sportsdataverse.org/api/sporty/) ·
 [Gallery](https://plot.sportsdataverse.org/gallery/sporty/) · [Notebooks](https://plot.sportsdataverse.org/notebooks/) · [Source](https://github.com/sportsdataverse/sdvplot-js/tree/main/packages/sporty)
@@ -123,7 +123,7 @@ Basketball shot zones: `basketballZoneOf(x, y, shotValue, { league, scale })` na
 
 ## **Provenance and parity**
 
-Ported from sportyR 2.4.0 (vendored from sportyR main at b97443a, which carries the geometry fixes merged in sportyR PR #68) - see [NOTICE.md](https://github.com/sportsdataverse/sdvplot-js/blob/main/packages/sporty/NOTICE.md). The R package is the oracle: the test suite compares every feature of all 54 non-`custom` league surfaces point for point to 1e-9 against R output stored under `fixtures/sporty`, and a league without fixtures fails. Regenerate the fixtures with `pnpm oracle:sporty basketball hockey football soccer baseball tennis volleyball curling lacrosse softball` (needs R and sportyR; set `R_LIBS` to a private library holding the vendored sportyR, and `SPORTYR_REPO` to its checkout so `VERSION` records the sha); the oracle refuses to run unless the installed sportyR's `surface_dimensions` equals the vendored `data/surface-dimensions.json`, and records that file's sha256 in `fixtures/sporty/VERSION`. Parameter specs in `src/specs` are generated from the vendored JSON (`pnpm codegen`).
+Ported from sportyR 2.4.5 (vendored from sportyR main at e021040, the 2.4.5 CRAN release) - see [NOTICE.md](https://github.com/sportsdataverse/sdvplot-js/blob/main/packages/sporty/NOTICE.md). The R package is the oracle: the test suite compares every feature of all 54 non-`custom` league surfaces point for point to 1e-9 against R output stored under `fixtures/sporty`, and a league without fixtures fails. Regenerate the fixtures with `pnpm oracle:sporty basketball hockey football soccer baseball tennis volleyball curling lacrosse softball` (needs R and sportyR; set `R_LIBS` to a private library holding the vendored sportyR, and `SPORTYR_REPO` to its checkout so `VERSION` records the sha); the oracle refuses to run unless the installed sportyR's `surface_dimensions` equals the vendored `data/surface-dimensions.json`, and records that file's sha256 in `fixtures/sporty/VERSION`. Parameter specs in `src/specs` are generated from the vendored JSON (`pnpm codegen`).
 
 Drift gates in CI: `pnpm codegen --check` (specs match the vendored JSON) and `test/fixtures-version.test.ts` (the vendored JSON's sha256 and sportyR version/checkout match the ones the fixtures were generated from). `pnpm vendor --check` compares the vendored JSON with a sportyR checkout, so it only runs where one exists (`SPORTYR_REPO`); elsewhere it skips.
 
@@ -133,8 +133,8 @@ Drift gates in CI: `pnpm codegen --check` (specs match the vendored JSON) and `t
 - Vector colours recycle per copy of a feature (`colorAt`), as R `data.frame()` does. Curling's `house_rings` recycles too, so a single colour fills every ring; R indexes it per ring and leaves rings 2 and 3 `NA`.
 - A lane space mark takes its own set's colour; R reads row `i` (the lane index) of the set instead, which is `NA` once a court has more lanes than marks per set. Default leagues are unaffected.
 - An `undefined`/`null` entry in `updates` or `colorUpdates` keeps the default.
-- The `custom` league builds a surface from its all-zero defaults in every sport. sportyR 2.4.0 builds it for every sport but football, which errors in `seq()`.
-- A `custom` league with empty native units (every sport except volleyball, whose `custom` is in metres) reads them as feet, so `units` converts it. sportyR 2.4.0 stops instead and asks for the units to be set first (e.g. `geom_curling("custom", sheet_units = "m")`).
+- The `custom` league builds a surface from its all-zero defaults in every sport; as in sportyR 2.4.5, a feature with no area and no stroke is left out, so the baseball, hockey and softball `custom` surfaces have no features. sportyR builds it for every sport but football, which errors in `seq()`.
+- A `custom` league with empty native units (every sport except volleyball, whose `custom` is in metres) reads them as feet, so `units` converts it. sportyR 2.4.5 stops instead and asks for the units to be set first (e.g. `geom_curling("custom", sheet_units = "m")`).
 - Tennis accepts R's misspelt receiving-half keys (`receivicehalf`, `receivice_half`, `receivice half`) and the correct spellings (`receivehalf`, `receive_half`, `receive half`); R has only the misspelling and draws the full court for the correct one.
 - Lacrosse: the three parameters R reads but no league defines (`center_face_off_marker_radius`, `corner_face_off_marker_bar_width`, `corner_face_off_marker_bar_length`) are fixed at 0 as R draws them, and `updates` cannot set them.
 - Text features carry a `fitBox` (the ggfittext box) that the SVG renderer fits by height only.
@@ -182,7 +182,7 @@ The [repository README](https://github.com/sportsdataverse/sdvplot-js#readme) co
 ## **Logos, trademarks and data**
 
 The surface geometry and the surface-dimensions data are ported from
-[sportyR](https://github.com/sportsdataverse/sportyR) 2.4.0 (Ross Drucker) and
+[sportyR](https://github.com/sportsdataverse/sportyR) 2.4.5 (Ross Drucker) and
 [sportypy](https://sportypy.sportsdataverse.org/); by agreement between the SportsDataverse maintainers the ported
 material is distributed here under MIT. League names identify the rule sets the dimensions follow; sporty draws no
 league or team marks.

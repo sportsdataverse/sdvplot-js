@@ -265,10 +265,14 @@ describe("surfaceLayer", () => {
     const names = data.map((d) => d.name).filter((n, i, a) => n !== a[i - 1]);
     expect(names).toEqual(polys.map((f) => f.name).filter((n, i, a) => n !== a[i - 1]));
     const drawnPts = new Set(data.flatMap((d) => d.polygon.map((pt) => pt.join())));
-    // all but the four points of the centre circle's zero-area slivers on the centre line (x = 0), left out as empty
+    // all but the corners of each goal crease where its inner arc meets a straight side: rounding (6e-16 ft) puts the
+    // arc's end across the side, and the zero-width sliver split off there is left out as empty
     const lost = polys.flatMap((f) => f.points).filter((pt) => !drawnPts.has(pt.join()));
-    expect(lost.length).toBeLessThanOrEqual(4);
-    for (const pt of lost) expect(Math.abs(pt[0])).toBe(0);
+    expect(lost.length).toBeLessThanOrEqual(8);
+    for (const [x, y] of lost) {
+      expect(Math.abs(x)).toBeGreaterThan(84);
+      expect(Math.abs(y)).toBeCloseTo(4 - 2 / 12, 3);
+    }
     expect(call(p.getPolygon, data[0])).toEqual(polys[0]?.points);
     expect(call(p.getFillColor, data[0])).toEqual(rgba(polys[0]?.fill as string));
     // the goal frame fill is translucent (#a5acaf4d): its alpha survives
@@ -317,11 +321,15 @@ describe("surfaceLayer", () => {
         const b = r[(i + 1) % r.length] as P;
         return s + a[0] * b[1] - b[0] * a[1];
       }, 0) / 2;
-    // sporty's NHL goaltender trapezoids and some faceoff hash marks twist at a corner by an inch
-    const twisted = surface("hockey", "nhl").features.filter(
-      (f) => f.kind === "polygon" && ["goaltenders_restricted_area", "odzone_faceoff_lines"].includes(f.name),
-    );
+    // since sportyR 2.4.1 sporty's features are simple rings; a faceoff L given a negative width crosses its own base
+    const odd = { updates: { faceoff_line_width: -1 } };
+    const twisted = surface("hockey", "nhl", odd).features.filter((f) => f.name === "odzone_faceoff_lines");
     expect(twisted.some((f) => f.kind === "polygon" && crosses(f.points))).toBe(true);
+    const split = (surfaceLayer("hockey", "nhl", odd).data as SurfaceRow[]).filter(
+      (d) => d.name === "odzone_faceoff_lines",
+    );
+    expect(split.filter((d) => crosses(d.polygon))).toEqual([]);
+    expect(split.length).toBeGreaterThan(16);
     for (const [sport, league] of [
       ["hockey", "nhl"],
       ["lacrosse", "nll"],

@@ -6,7 +6,7 @@ import { footballField } from "../src/football/field.js";
 import { hockeyRink } from "../src/hockey/rink.js";
 import { lacrosseField } from "../src/lacrosse/field.js";
 import type { Point, Scene } from "../src/scene.js";
-import { createCircle } from "../src/shapes.js";
+import { createCircle, fillRings } from "../src/shapes.js";
 import { soccerPitch } from "../src/soccer/pitch.js";
 import { softballField } from "../src/softball/field.js";
 import { BASEBALL_LEAGUES } from "../src/specs/baseball.js";
@@ -170,14 +170,20 @@ test("every surface: arcs='svg' never emits an A whose endpoint is the current p
         for (const [from, to] of arcHops(m[1]!)) expect(from, `${league}: ${m[1]}`).not.toBe(to);
       for (const f of scene.features) {
         if (f.kind !== "polygon") continue;
-        const runs = detectArcs(f.points);
-        if (runs.length === 0) continue;
-        const expected = runs.reduce((acc, r) => {
-          const [sx, sy] = f.points[r.start]!;
-          const [ex, ey] = f.points[r.end]!;
-          if (fmt(sx, 4) === fmt(ex, 4) && fmt(sy, 4) === fmt(ey, 4)) fullCircles++;
-          return acc + Math.max(1, Math.ceil((Math.abs(r.a1 - r.a0) - 1e-9) / (Math.PI / 2)));
-        }, 0);
+        // arcs are detected per sub-path: each ring of fillRings (a single ring as given)
+        const rings = fillRings(f.points);
+        const expected = (rings.length < 2 ? [f.points] : rings).reduce(
+          (sum, ring) =>
+            sum +
+            detectArcs(ring).reduce((acc, r) => {
+              const [sx, sy] = ring[r.start]!;
+              const [ex, ey] = ring[r.end]!;
+              if (fmt(sx, 4) === fmt(ex, 4) && fmt(sy, 4) === fmt(ey, 4)) fullCircles++;
+              return acc + Math.max(1, Math.ceil((Math.abs(r.a1 - r.a0) - 1e-9) / (Math.PI / 2)));
+            }, 0),
+          0,
+        );
+        if (expected === 0) continue;
         expect(countA(pathData(f.points, "svg", 4)), `${league} ${f.name}`).toBe(expected);
       }
     }

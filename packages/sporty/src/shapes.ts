@@ -1,7 +1,30 @@
 import type { Point } from "./scene.js";
 import { rotateCoords } from "./transform.js";
 
-/** Angles `start`/`end` are in units of π, like R. */
+/** R `cospi()`: exact at the multiples of 0.5. */
+const cospi = (t: number): number => {
+  const x = Math.abs(t) % 2;
+  if (x % 1 === 0.5) return 0;
+  if (x === 1) return -1;
+  if (x === 0) return 1;
+  return Math.cos(Math.PI * x);
+};
+
+/** R `sinpi()`: exact at the multiples of 0.5. */
+const sinpi = (t: number): number => {
+  let x = t % 2;
+  if (x <= -1) x += 2;
+  else if (x > 1) x -= 2;
+  if (x === 0 || x === 1) return 0;
+  if (x === 0.5) return 1;
+  if (x === -0.5) return -1;
+  return Math.sin(Math.PI * x);
+};
+
+/**
+ * Angles `start`/`end` are in units of π, like R. As sportyR 2.4.1 (#79), the angles stay in units of π (R `seq()`,
+ * whose last value is `end` exactly) and go through `cospi`/`sinpi`, so the quarter points sit exactly on the axes.
+ */
 export function createCircle({
   center = [0, 0],
   npoints = 1000,
@@ -10,13 +33,56 @@ export function createCircle({
   end = 2,
 }: { center?: Point; npoints?: number; r?: number; start?: number; end?: number } = {}): Point[] {
   const out: Point[] = [];
-  const a0 = start * Math.PI;
-  const a1 = end * Math.PI;
+  const by = (end - start) / (npoints - 1);
   for (let i = 0; i < npoints; i++) {
-    const t = npoints === 1 ? a0 : a0 + ((a1 - a0) * i) / (npoints - 1);
-    out.push([center[0] + r * Math.cos(t), center[1] + r * Math.sin(t)]);
+    const t = i === 0 ? start : i === npoints - 1 ? end : start + i * by;
+    out.push([center[0] + r * cospi(t), center[1] + r * sinpi(t)]);
   }
   return out;
+}
+
+/**
+ * sportyR `split_rings` (2.4.1, #79): a feature's points split at every return to a ring's first point, after dropping
+ * each point that repeats the one before it. A path that never closes is kept as one trailing ring.
+ */
+export function splitRings(points: readonly Point[], tolerance = 1e-9): Point[][] {
+  if (points.length < 2) return [[...points]];
+  const pts = points.filter(
+    (p, i) =>
+      i === 0 ||
+      Math.abs(p[0] - (points[i - 1] as Point)[0]) + Math.abs(p[1] - (points[i - 1] as Point)[1]) >=
+        tolerance,
+  );
+  if (pts.length === 1) return [pts];
+  const rings: Point[][] = [];
+  let start = 0;
+  for (let i = 1; i < pts.length; i++) {
+    const [x, y] = pts[i] as Point;
+    const [x0, y0] = pts[start] as Point;
+    if (i > start && Math.abs(x - x0) < tolerance && Math.abs(y - y0) < tolerance) {
+      rings.push(pts.slice(start, i + 1));
+      start = i + 1;
+    }
+  }
+  if (start < pts.length - 1) rings.push(pts.slice(start));
+  return rings;
+}
+
+/**
+ * sportyR `has_area` (2.4.1, #79): true when some ring's unsigned shoelace area exceeds `tolerance`. Like R, an open
+ * ring is measured as given, without its closing edge (sportypy closes it first; no sportyR feature differs).
+ */
+export function hasArea(points: readonly Point[], tolerance = 1e-9): boolean {
+  if (points.length < 3) return false;
+  return splitRings(points).some((ring) => {
+    let s = 0;
+    for (let i = 0; i < ring.length - 1; i++) {
+      const [x0, y0] = ring[i] as Point;
+      const [x1, y1] = ring[i + 1] as Point;
+      s += x0 * y1 - x1 * y0;
+    }
+    return Math.abs(s) / 2 > tolerance;
+  });
 }
 
 export const createRectangle = (xMin: number, xMax: number, yMin: number, yMax: number): Point[] => [
@@ -62,4 +128,41 @@ export function createXShape(barLength: number, barWidth: number, rotationDeg = 
     xs.map((x, i): Point => [x, ys[i] ?? 0]),
     rotationDeg,
   );
+}
+
+/** Twice the signed (shoelace) area of a ring, closing edge included: positive when counter-clockwise. */
+const signedArea2 = (r: readonly Point[]): number =>
+  r.reduce((s, [x, y], i) => {
+    const [x1, y1] = r[(i + 1) % r.length] as Point;
+    return s + x * y1 - x1 * y;
+  }, 0);
+
+/** Even-odd point-in-polygon test (a point on the edge may fall either side). */
+function inside([px, py]: Point, r: readonly Point[]): boolean {
+  let c = false;
+  for (let i = 0, j = r.length - 1; i < r.length; j = i++) {
+    const [xi, yi] = r[i] as Point;
+    const [xj, yj] = r[j] as Point;
+    if (yi > py !== yj > py && px < ((xj - xi) * (py - yi)) / (yj - yi) + xi) c = !c;
+  }
+  return c;
+}
+
+/**
+ * A feature's points as the rings a renderer fills, one sub-path each: `splitRings`, with each ring wound by how many of
+ * the feature's other rings hold it (counter-clockwise when none or an even number, clockwise when odd). sportyR fills
+ * each `group` (the nhl92 crease's band and L-marks, the trapezoid's strips) as its own polygon; one path joining
+ * them would also fill what the joins enclose. With these windings a nonzero fill draws each ring once, overlapping
+ * rings as their union, and a ring inside another (the NCAA men's goal mouth's hole) as a hole.
+ */
+// ponytail: a ring is "inside" another when most of its vertices are; enough for sporty's rings, which never cross.
+export function fillRings(points: readonly Point[]): Point[][] {
+  const rings = splitRings(points);
+  if (rings.length < 2) return rings;
+  return rings.map((r, i) => {
+    const depth = rings.filter(
+      (o, j) => j !== i && o.length > 2 && r.filter((p) => inside(p, o)).length * 2 > r.length,
+    ).length;
+    return signedArea2(r) >= 0 === (depth % 2 === 0) ? r : [...r].reverse();
+  });
 }

@@ -200,21 +200,11 @@ export function goaltendersRestrictedArea({
   const hl = longBaseWidth / 2;
   const ax = Math.abs(xAnchor);
   const t = featureThickness;
-  const xs = [
-    ax,
-    rinkLength / 2,
-    rinkLength / 2,
-    ax - t / 2,
-    ax - t / 2,
-    rinkLength / 2,
-    rinkLength / 2,
-    ax,
-    ax,
-  ];
-  const ys = [hs, hl, hl - t, hs - t, -hs + t, -hl + t, -hl, -hs, hs];
-  return zip(
-    xs.map((x) => x - ax),
-    ys,
+  // sportyR 2.4.1 (#79): two parallelogram strips (one each side of the net) from the goal line to the boards, as
+  // separate closed rings so neither crosses or retraces itself
+  const upper = zip([ax, rinkLength / 2, rinkLength / 2, ax, ax], [hs, hl, hl - t, hs - t, hs]);
+  return [...upper, ...reflectCoords(upper, { overX: true, overY: false })].map(
+    ([x, y]): Point => [x - ax, y],
   );
 }
 
@@ -283,6 +273,8 @@ export function goalCreaseOutline({
   const nx = notchDistX;
   const r = featureRadius;
   const ri = featureRadius - featureThickness;
+  // sportyR 2.4.1 (#79): the inner arc meets the inner straight sides (inset by the thickness) at its own angle
+  const innerTheta = ri <= 0 || Math.abs((hw - t) / ri) > 1 ? theta : Math.acos((hw - t) / ri) / Math.PI;
   const arc = (start: number, end: number, rr: number): Point[] =>
     circle({ center: [0, 0], start, end, r: rr, npoints });
   switch (creaseStyle.toLowerCase()) {
@@ -294,7 +286,7 @@ export function goalCreaseOutline({
           [-creaseLength, 0, 0, -nx, -nx, -(nx + t), -(nx + t), -creaseLength],
           [-hw, -hw, -hw + t, -hw + t, -hw + t + notchWidth, -hw + t + notchWidth, -hw + t, -hw + t],
         ),
-        ...arc(1.5 - theta, 0.5 + theta, ri),
+        ...arc(1.5 - innerTheta, 0.5 + innerTheta, ri),
         ...zip(
           [-creaseLength, -(nx + t), -(nx + t), -nx, -nx, 0, 0],
           [hw - t, hw - t, hw - t - notchWidth, hw - t - notchWidth, hw - t, hw - t, hw],
@@ -316,22 +308,20 @@ export function goalCreaseOutline({
         ...arc(0.5 + theta, 0.5, ri),
         ...zip([0, 0], [r - t, r]),
       ];
-    case "nhl92":
+    case "nhl92": {
+      // sportyR 2.4.3 (#90): the semicircle's band and each L-mark are separate closed rings
+      const lower = zip(
+        [-nx - t, -nx + notchWidth, -nx + notchWidth, -nx, -nx, -nx - t, -nx - t],
+        [-hw, -hw, -hw + t, -hw + t, -hw + t + notchWidth, -hw + t + notchWidth, -hw],
+      );
       return [
         ...arc(0.5, 1.5, r),
-        ...arc(1.5, 1.5 - theta, ri),
-        ...zip(
-          [-nx, -nx + notchWidth, -nx + notchWidth, -nx, -nx, -nx - t, -nx - t, -nx],
-          [-hw, -hw, -hw + t, -hw + t, -hw + t + notchWidth, -hw + t + notchWidth, -hw, -hw],
-        ),
-        ...arc(1.5 - theta, 0.5 + theta, ri),
-        ...zip(
-          [-nx, -nx + notchWidth, -nx + notchWidth, -nx, -nx, -nx - t, -nx - t, -nx],
-          [hw, hw, hw - t, hw - t, hw - t - notchWidth, hw - t - notchWidth, hw, hw],
-        ),
-        ...arc(0.5 + theta, 0.5, ri),
-        ...zip([0, 0], [r - t, r]),
+        ...arc(1.5, 0.5, Math.max(ri, 0)),
+        [0, r],
+        ...lower,
+        ...reflectCoords(lower, { overX: true, overY: false }),
       ];
+    }
     default:
       return [[0, 0]];
   }
@@ -388,8 +378,9 @@ export function centerFaceoffCircle({
   return [
     ...circle({ center: [0, 0], start: 0.5, end: 1.5, r: featureRadius, npoints }),
     [0, -featureRadius],
-    [0, -featureRadius - featureThickness],
+    [0, -featureRadius + featureThickness],
     ...circle({ center: [0, 0], start: 1.5, end: 0.5, r: featureRadius - featureThickness, npoints }),
+    [0, featureRadius],
   ];
 }
 
@@ -521,7 +512,7 @@ export function playerBenchOutline({
 }: BoxOpts = {}): Point[] {
   const t = featureThickness;
   return zip(
-    [-t, -t, benchLength + t, benchLength + t, benchLength, benchLength, 0, 0, t],
+    [-t, -t, benchLength + t, benchLength + t, benchLength, benchLength, 0, 0, -t],
     [t, 2 * t + benchDepth, 2 * t + benchDepth, t, t, t + benchDepth, t + benchDepth, t, t],
   );
 }

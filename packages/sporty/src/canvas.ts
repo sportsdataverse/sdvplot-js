@@ -1,5 +1,6 @@
 import { InputError } from "./errors.js";
 import { type Color, type Feature, type Scene, hidden, isVisiblePolygon, isVisibleText } from "./scene.js";
+import { fillRings } from "./shapes.js";
 
 /**
  * Browser `CanvasRenderingContext2D` or `@napi-rs/canvas` `SKRSContext2D`; only the members below are used.
@@ -74,11 +75,13 @@ export function drawScene(
     if (f.kind === "polygon") {
       if (!isVisiblePolygon(f) || f.points.length < 2) continue;
       ctx.beginPath();
-      f.points.forEach(([x, y], i) => {
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      });
-      ctx.closePath();
+      for (const ring of fillRings(f.points)) {
+        ring.forEach(([x, y], i) => {
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        });
+        ctx.closePath();
+      }
       if (!hidden(f.fill)) {
         ctx.fillStyle = f.fill;
         ctx.fill();

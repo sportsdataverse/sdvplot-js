@@ -1,4 +1,5 @@
 import type { Point, Polygon } from "./scene.js";
+import { fillRings } from "./shapes.js";
 
 /** points[start..end] inclusive lie on the circle; a0/a1 radians at start/end; a1 − a0 keeps the sign of the sampled direction. */
 export interface ArcRun {
@@ -107,7 +108,8 @@ export function resampleArc(run: ArcRun): Point[] {
 }
 
 /**
- * Path data for one polygon: "M x y L … Z" when arcs is "sampled"; with "svg" each ArcRun becomes
+ * Path data for one polygon, one "M … Z" sub-path per ring of `fillRings` (a single ring is kept as given): "M x y L … Z"
+ * when arcs is "sampled"; with "svg" each ArcRun becomes
  * `ceil(|span| / (π/2))` equal `A r r 0 0 sweep x y` commands (one per quarter turn, so a full circle is
  * four), each ending on the true circle. A half circle as one `A` locates its centre from the rounded
  * endpoints ill-conditionedly (error ≈ √(2rδ): 3.4 px at `precision` 2); quarters stay within the
@@ -115,6 +117,13 @@ export function resampleArc(run: ArcRun): Point[] {
  * segments.
  */
 export function pathData(points: Polygon, arcs: "sampled" | "svg", precision: number): string {
+  const rings = fillRings(points);
+  return rings.length < 2
+    ? ringPathData(points, arcs, precision)
+    : rings.map((r) => ringPathData(r, arcs, precision)).join(" ");
+}
+
+function ringPathData(points: Polygon, arcs: "sampled" | "svg", precision: number): string {
   const f = (v: number): string => fmt(v, precision);
   if (arcs === "sampled")
     return `${points.map(([x, y], i) => `${i === 0 ? "M" : "L"} ${f(x)} ${f(y)}`).join(" ")} Z`;

@@ -1,4 +1,4 @@
-// sportyR 2.4.0 geometry fixes (sportyR PR #68, issues #60-#65), ported: each test failed on the pre-port code.
+// sportyR 2.4.0-2.4.5 lacrosse geometry fixes (sportyR PR #68, issues #60-#65; #92, #94), ported: each test failed on the pre-port code.
 import { expect, test } from "vitest";
 import { lacrosseField } from "../../src/lacrosse/field.js";
 import type { Point } from "../../src/scene.js";
@@ -92,9 +92,11 @@ test("#63: the full display range covers the benches and penalty boxes (NLL y to
   expect(lacrosseField("ncaam").bbox).toEqual([-60, -35, 60, 35]);
 });
 
-test("#64: goal_arc_line_thickness defaults to 0, so an arc without it is a ring (2n + 9 points with the #70 corners), not a filled block", () => {
-  const arc = polys(lacrosseField("ncaam"), "goal_arc")[0]!.points;
-  expect(arc).toHaveLength(2 * 200 + 9);
+test("#64: goal_arc_line_thickness defaults to 0, so an arc without it is a zero-width ring, not a filled block (and, having no area, is not drawn: sportyR 2.4.1)", () => {
+  expect(polys(lacrosseField("ncaam"), "goal_arc")).toEqual([]);
+  const arc = polys(lacrosseField("ncaam", { updates: { goal_arc_line_thickness: 0.1 } }), "goal_arc")[0]!
+    .points;
+  expect(arc).toHaveLength(2 * 200 + 9); // a ring with the #70 corner points
 });
 
 test("#65: the contrasting centre face-off colour applies only when the user set neither it nor a matching centre line", () => {
@@ -104,4 +106,30 @@ test("#65: the contrasting centre face-off colour applies only when the user set
   expect(marker({ colorUpdates: { center_face_off_marker: "#123456" } })).toBe("#123456");
   // recolouring only the centre line: the white marker no longer matches it, so no contrast default
   expect(marker({ colorUpdates: { center_line: "#ff0000" } })).toBe("#ffffff");
+});
+
+test("sportyR 2.4.4 (#92): rectangular zones stop at the neutral zone's edges, so the three zones tile the field", () => {
+  // no league has a rectangular field with a neutral zone, so NLL is redrawn as a rectangle (R: x -100..-42.5,
+  // -42.5..42.5, 42.5..100)
+  const s = lacrosseField("nll", { updates: { field_shape: "rectangle" } });
+  const xRange = (name: string) => {
+    const xs = polys(s, name)[0]!.points.map((p) => p[0]);
+    return [Math.min(...xs), Math.max(...xs)];
+  };
+  expect(xRange("defensive_zone")).toEqual([-100, -42.5]);
+  expect(xRange("neutral_zone")).toEqual([-42.5, 42.5]);
+  expect(xRange("offensive_zone")).toEqual([42.5, 100]);
+});
+
+test("sportyR 2.4.5 (#94): the contrasting centre face-off marker matches the centre line by rendered colour", () => {
+  const marker = (centerLine: string) =>
+    polys(lacrosseField("ncaam", { colorUpdates: { center_line: centerLine } }), "face_off_marker")[0]!.fill;
+  // each spelling of white (CSS name, short or long hex, any case) renders as the default #ffffff marker
+  for (const white of ["white", " White ", "#fff", "#FFFF", "#FFFFFF", "#ffffffff", "#FfFfFfFF"])
+    expect(marker(white), white).toBe("#ffcb05");
+  // a centre line that renders differently keeps the default white marker
+  expect(marker("#123456")).toBe("#ffffff");
+  expect(marker("#ffffff80")).toBe("#ffffff");
+  expect(marker("whitesmoke")).toBe("#ffffff");
+  expect(marker("#fff8")).toBe("#ffffff");
 });

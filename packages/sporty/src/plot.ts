@@ -7,6 +7,7 @@ import {
   isVisiblePolygon,
   isVisibleText,
 } from "./scene.js";
+import { fillRings } from "./shapes.js";
 
 export { isVisiblePolygon }; // re-exported so existing importers keep working
 
@@ -32,7 +33,9 @@ export interface SurfaceFeatureCollection {
 
 /**
  * Polygons as a GeoJSON FeatureCollection in zIndex order. Applies the same skips as `toSVG`
- * (see {@link isVisiblePolygon}); a hidden fill with a stroke is kept (fill reads as transparent).
+ * (see {@link isVisiblePolygon}); a hidden fill with a stroke is kept (fill reads as transparent). Each ring of a
+ * feature (`fillRings`) is one ring of its Polygon, wound so a nonzero fill draws it: a ring inside another is a
+ * hole, any other ring is filled.
  */
 export function sceneToGeoJSON(scene: Scene): SurfaceFeatureCollection {
   const polys = scene.features
@@ -41,14 +44,17 @@ export function sceneToGeoJSON(scene: Scene): SurfaceFeatureCollection {
   return {
     type: "FeatureCollection",
     features: polys.map((f) => {
-      const ring = f.points.map(([x, y]) => [x, y] as [number, number]);
-      const [fx, fy] = ring[0] ?? [0, 0];
-      const [lx, ly] = ring[ring.length - 1] ?? [0, 0];
-      if (fx !== lx || fy !== ly) ring.push([fx, fy]); // GeoJSON rings close explicitly
+      const rings = fillRings(f.points).map((r) => {
+        const ring = r.map(([x, y]) => [x, y] as [number, number]);
+        const [fx, fy] = ring[0] ?? [0, 0];
+        const [lx, ly] = ring[ring.length - 1] ?? [0, 0];
+        if (fx !== lx || fy !== ly) ring.push([fx, fy]); // GeoJSON rings close explicitly
+        return ring;
+      });
       return {
         type: "Feature",
         properties: { name: f.name, zIndex: f.zIndex, fill: f.fill, stroke: f.stroke ?? null },
-        geometry: { type: "Polygon", coordinates: [ring] },
+        geometry: { type: "Polygon", coordinates: rings },
       };
     }),
   };
