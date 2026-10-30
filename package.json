@@ -25,7 +25,7 @@
     "oracle:matchup-colors": "tsx tools/oracle/matchup-colors.ts",
     "oracle:deckgl": "tsx tools/oracle/deckgl.ts",
     "changeset": "changeset",
-    "version-packages": "changeset version && biome format --write .",
+    "version-packages": "changeset version && node tools/sync-citation.mjs && biome format --write .",
     "release": "pnpm build && changeset publish"
   },
   "devDependencies": {
