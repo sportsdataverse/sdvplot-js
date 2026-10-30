@@ -70,7 +70,7 @@ export function splitRings(points: readonly Point[], tolerance = 1e-9): Point[][
 
 /**
  * sportyR `has_area` (2.4.1, #79): true when some ring's unsigned shoelace area exceeds `tolerance`. Like R, an open
- * ring is measured as given (not closed first).
+ * ring is measured as given, without its closing edge (sportypy closes it first; no sportyR feature differs).
  */
 export function hasArea(points: readonly Point[], tolerance = 1e-9): boolean {
   if (points.length < 3) return false;
@@ -128,4 +128,41 @@ export function createXShape(barLength: number, barWidth: number, rotationDeg = 
     xs.map((x, i): Point => [x, ys[i] ?? 0]),
     rotationDeg,
   );
+}
+
+/** Twice the signed (shoelace) area of a ring, closing edge included: positive when counter-clockwise. */
+const signedArea2 = (r: readonly Point[]): number =>
+  r.reduce((s, [x, y], i) => {
+    const [x1, y1] = r[(i + 1) % r.length] as Point;
+    return s + x * y1 - x1 * y;
+  }, 0);
+
+/** Even-odd point-in-polygon test (a point on the edge may fall either side). */
+function inside([px, py]: Point, r: readonly Point[]): boolean {
+  let c = false;
+  for (let i = 0, j = r.length - 1; i < r.length; j = i++) {
+    const [xi, yi] = r[i] as Point;
+    const [xj, yj] = r[j] as Point;
+    if (yi > py !== yj > py && px < ((xj - xi) * (py - yi)) / (yj - yi) + xi) c = !c;
+  }
+  return c;
+}
+
+/**
+ * A feature's points as the rings a renderer fills, one sub-path each: `splitRings`, with each ring wound by how many of
+ * the feature's other rings hold it (counter-clockwise when none or an even number, clockwise when odd). sportyR fills
+ * each `group` (the nhl92 crease's band and L-marks, the trapezoid's strips) as its own polygon; one path joining
+ * them would also fill what the joins enclose. With these windings a nonzero fill draws each ring once, overlapping
+ * rings as their union, and a ring inside another (the NCAA men's goal mouth's hole) as a hole.
+ */
+// ponytail: a ring is "inside" another when most of its vertices are; enough for sporty's rings, which never cross.
+export function fillRings(points: readonly Point[]): Point[][] {
+  const rings = splitRings(points);
+  if (rings.length < 2) return rings;
+  return rings.map((r, i) => {
+    const depth = rings.filter(
+      (o, j) => j !== i && o.length > 2 && r.filter((p) => inside(p, o)).length * 2 > r.length,
+    ).length;
+    return signedArea2(r) >= 0 === (depth % 2 === 0) ? r : [...r].reverse();
+  });
 }

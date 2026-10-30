@@ -1,5 +1,6 @@
 import type { BaseType, Selection } from "d3";
 import { type Scene, hidden, isVisiblePolygon, isVisibleText } from "./scene.js";
+import { fillRings } from "./shapes.js";
 
 /** A selection of `G` with any datum and parent: d3's `Selection` is invariant in its datum, so `unknown` would reject `create("svg")`. */
 type Sel<G extends Element, D> = Selection<G, D, BaseType, unknown>;
@@ -35,7 +36,9 @@ export function appendSurface<G extends SVGGElement | SVGSVGElement, D>(
   for (const f of ordered) {
     if (f.kind === "polygon") {
       if (!isVisiblePolygon(f)) continue;
-      const d = `${f.points.map(([px, py], i) => `${i === 0 ? "M" : "L"}${x(px)},${y(py)}`).join("")}Z`;
+      const d = fillRings(f.points)
+        .map((r) => `${r.map(([px, py], i) => `${i === 0 ? "M" : "L"}${x(px)},${y(py)}`).join("")}Z`)
+        .join("");
       const p = g
         .append("path")
         .attr("d", d)
