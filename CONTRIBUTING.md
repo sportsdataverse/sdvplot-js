@@ -20,7 +20,7 @@ Run what CI runs:
 
 ```bash
 pnpm lint && pnpm vendor --check && pnpm codegen --check && pnpm build:index --check && pnpm typecheck && pnpm build \
-  && pnpm test && pnpm api:check && pnpm pack:check && pnpm docs:build
+  && pnpm test && pnpm api:check && pnpm pack:check && pnpm docs:build && pnpm --filter docs typecheck
 ```
 
 - **Public types changed?** Run `pnpm -r api:report` and commit the updated `packages/*/etc/*.api.md`.

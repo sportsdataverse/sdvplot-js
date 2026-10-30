@@ -46,7 +46,12 @@ Open from here: 6 (trusted publishers), 7 (Node 24, drop the token) and the opti
    PR.
 2. Before merging the version PR, check that the docs describe what it ships: the root and package READMEs (npm shows
    them and cuts each one at 65,536 characters), `docs/docs/intro.mdx`, the home page and `CITATION.cff`.
-3. Merge the version PR. The release job publishes every package whose version is not on npm yet, tags it and opens
-   its GitHub release. Do not cancel or re-run that job: a re-run publishes again.
-4. Confirm each version with `npm view @sportsdataverse/<pkg> version`, and that main's `ci` run on the merge commit
-   is green (a bot pushes the version PR, so CI never ran on it).
+3. CI does not run on the version PR (a bot opens it with `GITHUB_TOKEN`), and the release job publishes on the merge
+   push without waiting for `ci`. So before merging, check that main's `ci` is green on the commit the version PR
+   was cut from: that is the only gate.
+4. Merge the version PR. The release job publishes every package whose version is not on npm yet, tags it and opens
+   its GitHub release. Do not cancel it while it runs. If it fails partway, re-running it is the recovery: changesets
+   skips versions already on npm and publishes the rest. Then check that each package has its tag and GitHub release,
+   and create any that are missing by hand.
+5. Confirm each version with `npm view @sportsdataverse/<pkg> version`, and that main's `ci` run on the merge commit
+   is green. That check comes after publishing; it does not gate it.

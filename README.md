@@ -237,7 +237,8 @@ attw + publint, changesets.
 
 ```bash
 pnpm install
-pnpm lint && pnpm vendor --check && pnpm codegen --check && pnpm build:index --check && pnpm typecheck && pnpm build \n  && pnpm test && pnpm api:check && pnpm pack:check && pnpm docs:build
+pnpm lint && pnpm vendor --check && pnpm codegen --check && pnpm build:index --check && pnpm typecheck && pnpm build \
+  && pnpm test && pnpm api:check && pnpm pack:check && pnpm docs:build && pnpm --filter docs typecheck
 ```
 
 That is what CI runs. After changing public types run `pnpm -r api:report` and commit the updated `etc/*.api.md`.
