@@ -188,11 +188,138 @@ Perspective, a WebAssembly data grid and chart viewer, has a guide of its own: [
 viewer config that colours each team in the Datagrid and in split charts (the same config sdvplot for Python builds), a
 logo column, and play-by-play streamed into a table, all served from your own files.
 
+## Every other library
+
+Each of these has a guide of its own: [Svelte and LayerChart](svelte.mdx), [nivo](nivo.mdx), [Victory](victory.mdx),
+[uPlot](uplot.mdx), [deck.gl](deckgl.mdx), [Cytoscape.js](cytoscape.mdx), [Three.js](three.mdx) and
+[Lightweight Charts](lightweight-charts.mdx).
+
+## Plotly, Vega-Lite and ECharts: options
+
+Each verb returns a new spec and leaves its input alone. TypeScript users can type the figure as plotly.js's own (and
+a Vega-Lite `TopLevelSpec` or an ECharts `EChartsOption` the same way): the same type comes back. The options every
+adapter takes (`withLogos`, `withWordmarks` and `withHeadshots` are the mark verbs):
+
+| Option | Verbs | Meaning |
+| --- | --- | --- |
+| `x`, `y` | marks | Row columns holding each image's position |
+| `team` | `withLogos`, `withWordmarks` | Row column holding the team (abbreviation, name or id) |
+| `player` | `withHeadshots` | Row column holding the player id |
+| `league` | all | `"nfl"`, `"nba"`, `"cfb"`, ... |
+| `season` | logos, wordmarks, `withAxisLogos` | A season; for the mark verbs also the name of a row column holding each row's season |
+| `height` | all | Image height as a fraction of the plot area's height, in (0, 1]; default 0.1 |
+| `alpha` | marks | Opacity in [0, 1]; default 1 |
+| `variant` | logos, wordmarks, `withAxisLogos` | Logo variant, e.g. `"dark"` |
+| `idSystem` | all | How the team values are read (default `"auto"`); for headshots `"espn"` (default) or `"gsis"` (needs `loadGsis()`) |
+| `markType` | `withAxisLogos` | `"logo"` (default) or `"wordmark"` |
+| `embed` | all | `await embedSources(urls)` (each subpath exports it): inlines the images as data URIs (offline HTML, static export) |
+
+An unknown team or player is skipped with one warning per call. The colour helpers (`teamColorway`, `teamColorScale`,
+`teamColorPalette`) take `(league, teams, { which, season, idSystem, fallback })`: `which` is `"primary"` (default) or
+`"secondary"`, and an unknown team gets `fallback` (default `"#808080"`).
+
+**Plotly** (`layout.images`):
+
+| Option | Verbs | Meaning |
+| --- | --- | --- |
+| `xref`, `yref` | all | The subplot's axes, e.g. `"x2"`, `"y2"`; default `"x"`, `"y"` |
+| `layer` | marks | `"above"` (default) or `"below"` the traces |
+
+`height` is a fraction of the subplot. The mark verbs pin the axis ranges (with half a mark of room), because a
+data-placed image is sized in axis units; set `layout.xaxis.range` yourself to keep your own. `withAxisLogos` sizes
+margins in pixels from `layout.width`/`layout.height` (Plotly's 700 × 450 when unset). x-axis images hang under their
+subplot and `margin.b` grows by what reaches below the figure; under an upper subplot they hang into the one below.
+Accessible name: plotly.js has no accessibility option and layout images carry no name, so name the chart on the
+element you pass to `Plotly.newPlot` (`role="img"` and an `aria-label`).
+
+**Vega-Lite** (a native `image` layer):
+
+| Option | Verbs | Meaning |
+| --- | --- | --- |
+| `chartHeight` | `logoLayer` | The chart height in px that `height` is a fraction of; default 300 |
+| `xType`, `yType` | `logoLayer` | The layer's encoding types (its fields are `x` and `y`); default `"quantitative"` |
+
+The verbs size from the chart's own `height` (else `config.view.continuousHeight`, else 300 px); a discrete y axis needs
+`height`. A discrete `sort` that Vega-Lite drops once a layer is added raises: sort with a list (`sort: [...]`). The
+shorthand `"-y"` works where Vega-Lite keeps it; on a stacked bar or area it sums the measure, which Vega-Lite drops,
+so it raises too. A `count` sort is written out as its order (a list) on both layers, so the image rows do not add to
+the counts; that needs inline data with no `transform`. `withAxisLogos` assumes the default axis orient (x at the
+bottom, y on the left): with `orient: "top"` or `"right"` the images land on the opposite side.
+
+**ECharts** (a `custom` series; axis logos as rich-text labels):
+
+| Option | Verbs | Meaning |
+| --- | --- | --- |
+| `xAxisIndex`, `yAxisIndex` | marks | The axes (and so the grid) the series draws on; default 0. Calls on other axes (or another `z`) get their own series |
+| `z` | marks | The series' z; default 100 |
+| `axisIndex` | `withAxisLogos` | Which x (or y) axis, for an option with several; default 0 |
+| `chartHeight` | `withAxisLogos` | The canvas height in px (an option has none); default 400 |
+
+Mark images are `height` × the grid's height at render time (they follow zoom and resize; no instance needed).
+Axis images are `height` of the axis' grid on a `chartHeight` px canvas: `grid.height`, else `chartHeight` less
+`grid.top` and `grid.bottom` (ECharts' 65 and 80 px when unset); `containLabel` can shrink the drawn grid a little
+below that. The helper series have no `name`, so a default `legend: {}` lists only your series. Accessible name:
+`aria: { enabled: true, label: { description: "…" } }` gives the chart's container `role="img"` and that `aria-label`
+(in the browser; server-side rendering writes none); without a `description` ECharts writes one from every series,
+the logo series too.
+
+## Chart.js: notes
+
+`@sportsdataverse/sdvplot/chartjs` returns Chart.js 4 dataset options and plugin objects, so no framework needs a
+wrapper: [Game on Paper](game-on-paper.mdx) shows them in an Astro page with a Svelte 5 island, and
+[react-chartjs-2](react-chartjs-2.mdx) in React. `teamFill` is `teamColor` at 0.2 opacity, for a radar's or an area's
+fill; `logoWatermarks([home, away])` puts the home logo top-left of the chart area and the away logo bottom-left, at 0.4
+opacity and 75 px tall by default.
+
+- Plugins are fixed when the chart is created (`new Chart`): to change the watermark teams or the court, destroy the
+  chart and create a new one.
+- Sizes are pixels: `radius` (point styles), `size` (axis logos, watermarks). Chart.js draws an image at its own size.
+- Add `pointImages` to `plugins` with any `*Points`: Chart.js does not redraw when an `<img>` finishes loading.
+- An unknown team draws its own label as text (or pass `fallback: "circle"`), with one warning per call; the text is
+  grey on a light chart and light grey on a dark one (`background`, default white, or black with `variant: "dark"`).
+- Dark theme: `variant: "dark"` (read `prefers-color-scheme`); a team with no dark mark falls back to a light one by
+  polarity, so no `onerror` retry is needed.
+- Two teams on one chart: `teamColor(team, league, { which: "secondary" })` is the alternate. For a two-team chart use
+  `matchupColors` ([above](#a-matchup-in-two-colours)).
+- `axisLogos` needs a category axis (any other scale is left as it is, with one warning); on `y` the axis widens to the
+  widest mark, so wordmarks fit; unresolved labels keep their text; your own scale options are not modified, and
+  replacing `chart.options` (`chart.options = next; chart.update()`) keeps the logos.
+- `surface` paints before the datasets, clipped to the chart area, through the chart's own scales (so it follows
+  resizes and a reversed axis); keep both axes linear (`court.scales`; any other scale is left unpainted, with one
+  warning). An `xlim` or `ylim` of zero width throws `InputError` when the surface is built. With `logoWatermarks` on
+  the same chart, list `court.plugin` first: both paint before the datasets, in `plugins` order (the wrong order warns
+  once). `aspectRatio` sizes the canvas, not the chart area, so the axes and the legend skew the court's proportions by
+  a few percent: hide the legend and match the court's aspect through layout padding for undistorted circles. On a
+  reversed x axis the football field's yard numbers render mirrored; courts and rinks are unaffected. It needs
+  `@sportsdataverse/sporty`, as `sdvplot/d3` does.
+- Destroying a chart drops its pending image listeners, so unmounting before the logos arrive is safe.
+- Accessible name: Chart.js adds none (it draws pixels), so name the chart on the canvas: `role="img"` and an
+  `aria-label`, or fallback content between `<canvas>` and `</canvas>`.
+
+### Chart.js in Node
+
+Pass `loadImage` and no DOM image is made: Chart.js renders on `@napi-rs/canvas` (server-rendered PNGs, social cards),
+as every Chart.js example on this page does. `@napi-rs/canvas`'s own `loadImage` fits as it is; wrap it to keep the
+promises, and once they settle the chart is complete.
+
+- Every image helper takes it: `logoPoints`, `wordmarkPoints`, `headshotPoints`, `axisLogos`, `logoWatermarks`. Point
+  styles still need `pointImages` in `plugins`, which updates the chart as they land.
+- `loadImage` is called once per URL and drawn size (per loader function), and the image's `width` and `height` are set
+  to that size, so resolve a new image on every call, as `@napi-rs/canvas`'s does (a loader that hands out one shared
+  image warns once and skips the use at a different size). Await `Promise.all(loads)` after `new Chart(...)`, since
+  `axisLogos` first calls the loader inside it.
+- In Node an unknown team's text fallback is a circle (there is no canvas to letter it on); pass `fallback` for another
+  style. A load that fails warns once and is skipped.
+
 ## In the gallery
 
 [Plotly](/gallery/sdvplot/#plotly), [Vega-Lite](/gallery/sdvplot/#vega-lite),
 [ECharts](/gallery/sdvplot/#echarts), [Chart.js](/gallery/sdvplot/#chartjs),
-[react-chartjs-2](/gallery/sdvplot/#react-chartjs-2), [shadcn/ui](/gallery/sdvplot/#shadcn), [G2](/gallery/sdvplot/#g2),
+[react-chartjs-2](/gallery/sdvplot/#react-chartjs-2), [Recharts](/gallery/sdvplot/#recharts),
+[shadcn/ui](/gallery/sdvplot/#shadcn), [G2](/gallery/sdvplot/#g2),
 [Ant Design Charts](/gallery/sdvplot/#ant-design-charts), [MUI X Charts](/gallery/sdvplot/#mui-x-charts),
 [TanStack Charts](/gallery/sdvplot/#tanstack-charts), [MapLibre GL JS](/gallery/sdvplot/#maplibre),
-[Unovis](/gallery/sdvplot/#unovis), [Mosaic](/gallery/sdvplot/#mosaic) and [Perspective](/gallery/sdvplot/#perspective).
+[Unovis](/gallery/sdvplot/#unovis), [Mosaic](/gallery/sdvplot/#mosaic), [Perspective](/gallery/sdvplot/#perspective),
+[Svelte](/gallery/sdvplot/#svelte), [nivo](/gallery/sdvplot/#nivo), [Victory](/gallery/sdvplot/#victory),
+[uPlot](/gallery/sdvplot/#uplot), [deck.gl](/gallery/sdvplot/#deckgl), [Cytoscape.js](/gallery/sdvplot/#cytoscape),
+[Three.js](/gallery/sdvplot/#three) and [Lightweight Charts](/gallery/sdvplot/#lightweight-charts).
