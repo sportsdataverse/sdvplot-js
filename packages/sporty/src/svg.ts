@@ -54,7 +54,7 @@ export function toSVG(scene: Scene, o: SvgOptions = {}): string {
       body.push(`<path d="${d}" fill="${noFill ? "none" : esc(f.fill)}"${stroke}/>`);
     } else {
       if (!isVisibleText(f)) continue;
-      // ponytail: font-size = fit-box height, no width fitting; refine in Phase 6
+      // ponytail: font-size = fit-box height, no width fitting; fit the width too if labels overflow
       body.push(
         `<text x="${n(f.x)}" y="${n(-f.y)}" font-family="${esc(f.fontFamily)}" font-size="${n(f.fitBox[1])}" fill="${esc(f.fill)}" text-anchor="middle" dominant-baseline="central" transform="scale(1,-1) rotate(${n(-f.rotation)} ${n(f.x)} ${n(-f.y)})">${esc(f.text)}</text>`,
       );

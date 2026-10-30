@@ -51,7 +51,7 @@ export interface LayoutImage {
   layer?: "above" | "below";
   name?: string;
 }
-// A18: an index-signature pattern may not contain a literal (TS1337), so `xaxis`/`yaxis` are declared and the pattern
+// An index-signature pattern may not contain a literal (TS1337), so `xaxis`/`yaxis` are declared and the pattern
 // covers the numbered axes only.
 export interface PlotlyLayout {
   width?: number;
@@ -268,7 +268,7 @@ function extent(
       // a bar is as wide as the gap between bars
       const spots = [...new Set(nums.filter((v): v is number => v !== null))].sort((a, b) => a - b);
       const gaps = spots.slice(1).map((b, i) => b - spots[i]!);
-      const half = (gaps.length ? Math.min(...gaps) : 1) / 2; // Python: min(..., default=1.0) / 2 (A33)
+      const half = (gaps.length ? Math.min(...gaps) : 1) / 2; // Python: min(..., default=1.0) / 2
       if (spots.length > 0) out.push(spots[0]! - half, spots[spots.length - 1]! + half);
     } else if (type !== "bar") {
       if (t.stackgroup !== undefined && along)
@@ -394,7 +394,7 @@ function add(
   return fig;
 }
 
-// A29: each verb is overloaded — the structural type, then the caller's own type (e.g. plotly.js's
+// Each verb is overloaded — the structural type, then the caller's own type (e.g. plotly.js's
 // { data: Data[]; layout: Partial<Layout> }) back unchanged. No library type enters the public .d.ts.
 export function withLogos(figure: PlotlyFigure, rows: readonly Row[], o: PlotlyMarkOptions): PlotlyFigure;
 export function withLogos<F extends object>(figure: F, rows: readonly Row[], o: PlotlyMarkOptions): F;

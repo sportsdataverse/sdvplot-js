@@ -71,7 +71,7 @@ const sdvtables = "../packages/sdvtables";
 
 const config: Config = {
   title: "sdvplot-js",
-  tagline: "Team logos, colours and playing surfaces for Observable Plot and D3",
+  tagline: "Team logos, colours, playing surfaces and tables for JavaScript charts",
   favicon: "img/favicon.ico",
   future: { v4: true },
 
@@ -170,6 +170,8 @@ const config: Config = {
           `${sdvplot}/src/unovis.ts`,
           `${sdvplot}/src/perspective.ts`,
           `${sdvplot}/src/uplot.ts`,
+          // /svelte's index re-exports .svelte files, which typedoc cannot read: svelte-api.ts is its TypeScript half
+          `${sdvplot}/src/svelte-api.ts`,
           `${sdvplot}/src/nivo.ts`,
           `${sdvplot}/src/victory.ts`,
           `${sdvplot}/src/deckgl.ts`,

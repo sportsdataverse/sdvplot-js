@@ -58,10 +58,10 @@ export interface ColumnBase<Row, K extends keyof Row & string = keyof Row & stri
   readonly align?: Align;
   /** CSS width of the column, written on its `<th>` (e.g. "220px"). */
   readonly width?: string;
-  /** Phase 5 (headless engine) — accepted and ignored by renderHTML. */
+  /** Read by the headless engine (`createTable`); accepted and ignored by a static renderHTML. */
   readonly sortable?: boolean;
   readonly filterable?: boolean;
-  /** Phase 5 — the one non-serializable field (JSON.stringify drops it). A method signature, so a numeric kind's comparator still fits `ColumnBase<Row>`. */
+  /** The one non-serializable field (JSON.stringify drops it). A method signature, so a numeric kind's comparator still fits `ColumnBase<Row>`. */
   compare?(a: Row[K], b: Row[K]): number;
   /** reactablefmtr `tooltip = TRUE`: the cell's formatted value as its `title` attribute (no tooltip library). */
   readonly tooltip?: boolean;
@@ -831,11 +831,11 @@ export interface TableSpec<Row> {
   readonly decorations: readonly Decoration<Row>[];
   readonly theme: ThemeRef;
   /**
-   * Phase 5, read by the engine and its renderers (a static `renderHTML(spec, rows)` ignores it): `pageSize` is
-   * `createTable`'s default page size; `hotkeys: false` turns off the j/k/h/l/s and `/` keys (Task 10), leaving the
+   * Read by the engine and its renderers (a static `renderHTML(spec, rows)` ignores it): `pageSize` is
+   * `createTable`'s default page size; `hotkeys: false` turns off the j/k/h/l/s and `/` keys, leaving the
    * grid's arrow keys, Enter and Space.
    */
   readonly interactive?: { readonly pageSize?: number; readonly hotkeys?: boolean };
-  /** J31: the column whose value is a row's link id (`String(row[rowKey])`); absent → the row's index in the input rows. */
+  /** The column whose value is a row's link id (`String(row[rowKey])`); absent → the row's index in the input rows. */
   readonly rowKey?: keyof Row & string;
 }

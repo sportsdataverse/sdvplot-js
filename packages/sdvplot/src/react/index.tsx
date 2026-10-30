@@ -255,7 +255,7 @@ export function useResolve(
 }
 
 /**
- * The state of a `createSelection` store (J31), re-rendering on every change and never on a no-op patch. On the
+ * The state of a `createSelection` store, re-rendering on every change and never on a no-op patch. On the
  * server, and in the first client render, it reads the store's current state, so server and client markup agree.
  * Redrawing from it is the component's choice: filter rows with `state.predicate`, emphasise `state.selected`.
  *

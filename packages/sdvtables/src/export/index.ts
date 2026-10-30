@@ -73,7 +73,7 @@ const REMEDY =
   "put fewer rows in each image (rows.slice() a page at a time, batchToPNG by a group column, or gridTables to set tables side by side), or lower deviceScaleFactor";
 const n = (v: number): string => v.toLocaleString("en-US");
 
-/** I1: a canvas past Chromium's limits draws nothing; say so, with the size, before drawing it. */
+/** A canvas past Chromium's limits draws nothing; say so, with the size, before drawing it. */
 function checkCanvas(what: string, w: number, h: number, o: Resolved): void {
   if (w <= MAX_SIDE && h <= MAX_SIDE && w * h <= MAX_AREA) return;
   throw new SdvplotError(

@@ -1,4 +1,4 @@
-// src/html/cells.ts — Task 5 version: the context types + dispatcher + text; Tasks 6–8 add the other kinds in this file
+// src/html/cells.ts — the cell context types, the per-kind dispatcher and every column kind's cell HTML
 import {
   contrast,
   headshotUrl,
@@ -31,7 +31,7 @@ import { checkPx, cssValue, escapeAttr, escapeHtml, styleAttr } from "./escape.j
 import { ICON_NAMES, iconSvg } from "./icons.js";
 import { namedColor } from "./named-colors.js";
 import { gaugeSvg, sparkbarSvg, sparklineSvg } from "./svg.js";
-/** One scaled column (pills, ranks, percentile), computed once per column by Task 8's columnScales. */
+/** One scaled column (pills, ranks, percentile), computed once per column by columnScales. */
 export interface ColumnScale {
   readonly domain: readonly [number, number];
   readonly palette: readonly string[];
@@ -41,11 +41,11 @@ export interface ColumnScale {
   /** colorPills: the widest label in `ch`, computed once per column (gt_color_pills); 1 otherwise. */
   readonly labelWidth: number;
 }
-/** Decided once here; Tasks 7, 8 and 10 fill the maps (index.ts passes them empty until then). */
+/** Decided once per render; the team, scale and scaleNote maps are filled before the row loop. */
 export interface RenderContext<Row> {
   readonly spec: TableSpec<Row>;
   readonly rows: readonly Row[];
-  /** J31 (A4): the rows scale and legend domains come from (`RenderOptions.domainRows`, default `rows`). */
+  /** The rows scale and legend domains come from (`RenderOptions.domainRows`, default `rows`). */
   readonly domainRows: readonly Row[];
   readonly theme: Theme;
   readonly id: string;
@@ -53,13 +53,13 @@ export interface RenderContext<Row> {
   readonly columns: readonly ColumnSpec<Row>[];
   readonly groupKey: string | undefined;
   readonly warn: (key: string, message: string) => void;
-  /** Task 7: team ids per team column, ONE resolveSync per column (J28), keyed by the column key. */
+  /** Team ids per team column, ONE resolveSync per column, keyed by the column key. */
   readonly teamIds: ReadonlyMap<string, readonly (string | undefined)[]>;
-  /** Task 8: scales per pills/ranks/percentile column, keyed by column key. */
+  /** Scales per pills/ranks/percentile column, keyed by column key. */
   readonly scales: ReadonlyMap<string, ColumnScale>;
-  /** Task 8: the last scale in column order — what gt_legend_continuous reads back as `_sdvplot_scale`. */
+  /** The last scale in column order — what gt_legend_continuous reads back as `_sdvplot_scale`. */
   readonly recorded: ColumnScale | undefined;
-  /** Task 10: scaleNote divisor + decimals per num/int column; applyDecorations fills it before the row loop. */
+  /** scaleNote divisor + decimals per num/int column; applyDecorations fills it before the row loop. */
   readonly scaled: Map<string, { readonly divisor: number; readonly decimals: number }>;
 }
 export const cellValue = <Row>(row: Row, key: string): unknown => (row as Record<string, unknown>)[key];
@@ -68,7 +68,7 @@ const blankOr = (v: unknown): string => (isBlank(v) ? "" : escapeHtml(v));
 const tableBg = <Row>(ctx: RenderContext<Row>): string =>
   ctx.theme.tokens.bg === "transparent" ? "#ffffff" : hex6(ctx.theme.tokens.bg);
 
-// ---- Task 7 helpers
+// ---- image and team helpers
 export function markImg(src: string, alt: string, heightPx: number, teamId?: string): string {
   return `<img class="sdvt-mark" src="${escapeAttr(src)}" alt="${escapeAttr(alt)}" style="height:${heightPx}px"${teamId ? ` data-sdvplot-team="${escapeAttr(teamId)}"` : ""}>`;
 }
@@ -92,7 +92,7 @@ function checkHeight(h: number, kind: string): number {
     throw new TableSpecError(`${kind} height must be a number of pixels >= 1, got ${String(h)}`);
   return h;
 }
-/** ONE resolveSync per team-aware column (J28: one warning per call listing every unresolved value; strict throws once). */
+/** ONE resolveSync per team-aware column (one warning per call listing every unresolved value; strict throws once). */
 export function teamIdsOf<Row>(
   spec: TableSpec<Row>,
   rows: readonly Row[],
@@ -634,7 +634,7 @@ export function columnScales<Row>(
   warnFn: (key: string, m: string) => void,
   domainRows: readonly Row[] = rows,
 ): Map<string, ColumnScale> {
-  // J31 (A4): domain, ranks and the out-of-domain count come from domainRows; `values` and pill widths follow `rows`
+  // Domain, ranks and the out-of-domain count come from domainRows; `values` and pill widths follow `rows`
   const at = domainRows === rows ? null : new Map(domainRows.map((r, j) => [r, j] as const));
   const missing = at !== null && rows.some((r) => !at.has(r));
   const out = new Map<string, ColumnScale>();
@@ -645,11 +645,11 @@ export function columnScales<Row>(
         `sdvtables:domainRows:${col.key}`,
         `column "${col.key}": a rendered row is not in domainRows (matched by identity, not by value), so it is colored from its own value (a rank fill: not at all); pass the same row objects as rows`,
       );
-    // zero rows: no domain to derive, nothing to color. Phase 4's throw for an all-null NON-empty column stays (domainOf).
+    // zero rows: no domain to derive, nothing to color. an all-null NON-empty column still throws (domainOf).
     if (col.domain === undefined && domainRows.length === 0) continue;
     const nums = domainRows.map((r) => toNumber(cellValue(r, col.key)));
     let values: (number | null)[] = nums;
-    let own = (n: number | null): number | null => n; // a rendered row's value when it is not in domainRows (I2)
+    let own = (n: number | null): number | null => n; // a rendered row's value when it is not in domainRows
     let spanned: readonly [number, number] | undefined;
     let buckets: readonly string[] | undefined;
     if (col.kind === "colorPills" && col.fillType === "rank") {
@@ -720,14 +720,14 @@ export function columnScales<Row>(
 export function renderCell<Row>(col: ColumnSpec<Row>, row: Row, i: number, ctx: RenderContext<Row>): string {
   switch (col.kind) {
     case "text":
-    case "colorResults": // colorResults fills its row (decorations.ts, Task 9); the cell is its text
+    case "colorResults": // colorResults fills its row (decorations.ts); the cell is its text
       return blankOr(cellValue(row, col.key));
-    // ---- Task 6
+    // ---- number, rank, delta and tally kinds
     case "num":
     case "int": {
       const n = toNumber(cellValue(row, col.key));
       if (n === null) return "";
-      const sc = ctx.scaled.get(col.key); // scaleNote (Task 10): Python fmt_number(scale_by = 1/divisor, decimals) replaces the column's own format
+      const sc = ctx.scaled.get(col.key); // scaleNote: Python fmt_number(scale_by = 1/divisor, decimals) replaces the column's own format
       if (sc) return escapeHtml(scaledNumber(n, sc));
       return escapeHtml(
         col.kind === "int"
@@ -791,13 +791,13 @@ export function renderCell<Row>(col: ColumnSpec<Row>, row: Row, i: number, ctx: 
         `${text}${col.sharePrefix}${formatNumber(((xs[col.shareOf] ?? 0) / total) * 100, { digits: col.shareDecimals })}%${col.shareSuffix}`,
       );
     }
-    // ---- Task 7
+    // ---- logo, headshot and team-colour kinds
     case "logo":
     case "wordmark": {
       const raw = cellValue(row, col.key);
       const text = blankOr(raw);
       const id = ctx.teamIds.get(col.key)?.[i];
-      if (id === undefined) return text; // blank or unknown: text kept; the column's one resolveSync already warned (J28)
+      if (id === undefined) return text; // blank or unknown: text kept; the column's one resolveSync already warned
       const url = logoUrlSync(id, col.league, {
         ...(col.season !== undefined ? { season: col.season } : {}),
         ...(col.variant ? { variant: col.variant } : {}),
@@ -831,7 +831,7 @@ export function renderCell<Row>(col: ColumnSpec<Row>, row: Row, i: number, ctx: 
     case "teamColorBar":
     case "teamColorBg":
       return blankOr(cellValue(row, col.key)); // the color lives on the <td> (kindCellStyle)
-    // ---- Task 8
+    // ---- scaled, image and reactablefmtr kinds
     case "colorPills": {
       // gt_color_pills (_cells.py:1203-1225)
       const sc = ctx.scales.get(col.key);
@@ -894,7 +894,7 @@ export function renderCell<Row>(col: ColumnSpec<Row>, row: Row, i: number, ctx: 
       return `<div class="sdvt-pbar" style="position:relative;height:${m}px;width:100%">${track}${fill}${marker}</div>`;
     }
     case "indicatorBox": {
-      // gt_indicator_boxes (_cells.py:1428-1449): box only (no show_text in Phase 4)
+      // gt_indicator_boxes (_cells.py:1428-1449): box only (no show_text)
       const on = col.truthy.includes(cellValue(row, col.key));
       if ((col.showOnly === "filled" && !on) || (col.showOnly === "neutral" && on)) return "";
       return `<span style="${styleAttr({ display: "inline-block", width: `${col.size}px`, height: `${col.size}px`, "background-color": on ? col.fill : col.neutral, "vertical-align": "middle", margin: "4px 1px" })}"></span>`;
@@ -931,7 +931,7 @@ export function renderCell<Row>(col: ColumnSpec<Row>, row: Row, i: number, ctx: 
     }
   }
 }
-/** Bare `prop:value` declarations a column kind puts on its own `<td>` (Task 7 team colors; Task 8 colorRanks/highlight/highlightNa); "" otherwise. */
+/** Bare `prop:value` declarations a column kind puts on its own `<td>` (team colors; colorRanks/highlight/highlightNa); "" otherwise. */
 export function kindCellStyle<Row>(
   col: ColumnSpec<Row>,
   row: Row,

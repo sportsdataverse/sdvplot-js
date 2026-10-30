@@ -1,9 +1,9 @@
 // Cell aggregations, ported from blazing-the-nets `main` lib/data/aggregate.ts (@31427b8). Pure; the parity gate
-// is fixtures/shots/oracle.json (hexagons). Squares (J38) run the same code on `squarebin`'s lattice.
+// is fixtures/shots/oracle.json (hexagons). Squares run the same code on `squarebin`'s lattice.
 import { BASKETBALL_ZONES, type BasketballZone, basketballZoneOf } from "@sportsdataverse/sporty";
 import { type Binner, type BinnerOptions, type Lattice, binner } from "../bins/index.js";
 
-/** A number is a hexagon radius (the parity default); an object is any lattice, squares included (J38). */
+/** A number is a hexagon radius (the parity default); an object is any lattice, squares included. */
 const latticeOf = (cell: number | BinnerOptions): Binner =>
   binner(typeof cell === "number" ? { radius: cell } : cell);
 

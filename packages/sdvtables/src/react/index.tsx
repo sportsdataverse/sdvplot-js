@@ -81,7 +81,7 @@ export interface SdvTableOwnProps<Row> {
   table?: undefined;
 }
 /**
- * J31 (A8): `<SdvTable/>` rendering an engine you own (from `createTable` or `useTable`, linked with
+ * `<SdvTable/>` rendering an engine you own (from `createTable` or `useTable`, linked with
  * `linkSelection`). Its own spec and rows are rendered; `spec` and `rows` passed beside it are accepted and IGNORED
  * (change the rows with `table.setRows`). Initial state (`pageSize`, `sort`) belongs to that engine, so it is rejected.
  */
@@ -174,7 +174,7 @@ function staticBlock(p: RenderedParts): ReactElement {
   return createElement("div", { ...wrapperProps(p), dangerouslySetInnerHTML: raw(inner) });
 }
 
-/** I2: the owned engine exists only here, so `{ table }` and static renders never build one. */
+/** The owned engine exists only here, so `{ table }` and static renders never build one. */
 function OwnedTable<Row>({ spec, rows, pageSize, sort, css }: SdvTableOwnProps<Row>): ReactElement {
   const table = useOwnedTable(spec, rows, {
     ...(pageSize !== undefined && { pageSize }),
@@ -194,7 +194,7 @@ function TableView<Row>({
 }): ReactElement {
   const ref = useRef<HTMLDivElement>(null);
   const restore = useRef<(() => void) | null>(null);
-  // A50: remember the focused control while the DOM still holds it (the engine notifies before React re-renders).
+  // Remember the focused control while the DOM still holds it (the engine notifies before React re-renders).
   // A hover is a class toggle on the rendered rows, never a re-render (that would replace the row under the pointer).
   const subscribe = useCallback(
     (onChange: () => void) =>
@@ -206,7 +206,7 @@ function TableView<Row>({
       }),
     [table],
   );
-  useSyncExternalStore(subscribe, table.getSnapshot, table.getSnapshot); // J31: an external engine re-renders us too
+  useSyncExternalStore(subscribe, table.getSnapshot, table.getSnapshot); // An external engine re-renders us too
   useIsoLayoutEffect(() => {
     // a render may have rebuilt the body rows; getHover, not a ref, so a (re)mount or a new table shows its own hover
     if (ref.current) applyHover(ref.current, table, table.getHover());
@@ -214,7 +214,7 @@ function TableView<Row>({
     restore.current = null;
   });
   const base: RenderOptions = { fonts: false, ...(css !== undefined && { css }) };
-  // M3: without controls, the engine's current page, coloured from all its rows (A49)
+  // Without controls, the engine's current page, coloured from all its rows
   if (!interactive)
     return staticBlock(
       renderParts(table.spec, table.rows, { ...base, ...tableRenderOptions(table), interactive: false }),
@@ -224,7 +224,7 @@ function TableView<Row>({
   const onInput = (e: SyntheticEvent): void => handleInput(table, e.target);
   const atStart = table.state.page === 0;
   const atEnd = table.state.page >= table.pageCount - 1;
-  // A50: the hydrated SSR markup: an edge button is aria-disabled (not disabled), the label a polite live region
+  // The hydrated SSR markup: an edge button is aria-disabled (not disabled), the label a polite live region
   const pager =
     table.state.pageSize === Number.POSITIVE_INFINITY
       ? null
@@ -265,9 +265,9 @@ function TableView<Row>({
       ...wrapperProps(p),
       ref,
       onClick: (e: SyntheticEvent) => handleClick(table, e.target),
-      onMouseOver: (e: SyntheticEvent) => handleHover(table, e.target), // J31 (A8): no attribute, so SSR is unchanged
+      onMouseOver: (e: SyntheticEvent) => handleHover(table, e.target), // No attribute, so SSR is unchanged
       onMouseLeave: (e: SyntheticEvent) => handleHover(table, e.target),
-      // Task 10: hotkeys and the grid's keys, as in hydrate; an event prop writes no attribute
+      // Hotkeys and the grid's keys, as in hydrate; an event prop writes no attribute
       onKeyDown: (e: ReactKeyboardEvent) => {
         if (ref.current) handleKeydown(table, ref.current, e.nativeEvent);
       },

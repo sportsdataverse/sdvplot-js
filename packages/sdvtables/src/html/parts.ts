@@ -1,5 +1,5 @@
-// src/html/parts.ts — Phase 4's renderHTML body (moved from index.ts), split into strings so the static path,
-// renderHTML(table), hydrate and <SdvTable/> share ONE renderer (Phase 5 Task 2).
+// src/html/parts.ts — the renderHTML body (moved from index.ts), split into strings so the static path,
+// renderHTML(table), hydrate and <SdvTable/> share ONE renderer.
 import { warn } from "@sportsdataverse/sdvplot";
 import type { Sort, TableCursor } from "../engine.js";
 import { TableSpecError } from "../errors.js";
@@ -25,24 +25,24 @@ import { expandTiers, snakeLayout } from "./layout.js";
 export interface RenderOptions {
   readonly css?: "inline" | "none";
   readonly fonts?: boolean;
-  /** Phase 5: a sort button on every `sortable !== false` column, and aria-sort on the sorted one */
+  /** A sort button on every `sortable !== false` column, and aria-sort on the sorted one */
   readonly interactive?: boolean;
-  /** Phase 5: the engine's current sort, for aria-sort */
+  /** The engine's current sort, for aria-sort */
   readonly sort?: Sort | null;
-  /** Phase 5: engine-hidden column keys (merged with decoration-hidden columns); a key that is not a column throws `TableSpecError` */
+  /** Engine-hidden column keys (merged with decoration-hidden columns); a key that is not a column throws `TableSpecError` */
   readonly hidden?: readonly string[];
-  /** J31 (A5): page-relative indices of selected rows → `sdvt-selected` on their `<tr>` */
+  /** Page-relative indices of selected rows → `sdvt-selected` on their `<tr>` */
   readonly selected?: ReadonlySet<number>;
   /**
-   * J31 (A4): rows the scale/legend domains, outlier limits and row-accent levels are computed from, and the rows
+   * Rows the scale/legend domains, outlier limits and row-accent levels are computed from, and the rows
    * an index row selector (`boldRows([5])`) counts in; default the rendered rows. Interactive renders pass the
-   * table's full source rows (A49), so nothing re-colours or moves while the user pages, filters, sorts or brushes.
+   * table's full source rows, so nothing re-colours or moves while the user pages, filters, sorts or brushes.
    * It must hold the same row OBJECTS as `rows` (matched by identity, as the engine passes them), not equal copies:
    * a rendered row missing from it is colored from its own value (a rank fill gets none) and warns once per column.
    */
   readonly domainRows?: readonly unknown[];
   /**
-   * Task 10 (A48): with `interactive`, render the table as a selectable ARIA grid: `role="grid"` and
+   * With `interactive`, render the table as a selectable ARIA grid: `role="grid"` and
    * `aria-multiselectable="true"` on the table, `tabindex="0"` on the body row whose index is `grid.row` (clamped to
    * the rows) and `"-1"` on the others, `aria-selected` on every body row, and `sdvt-col-current` plus
    * `aria-current="true"` on the header of `grid.col`. Ignored without `interactive`.
@@ -77,7 +77,7 @@ export interface RenderedParts {
   readonly foot: string;
   /** decoration blocks placed after the table element (bottom border bars and legends), or "" */
   readonly after: string;
-  /** the `<table>` tag's attributes with a leading space (Task 10: the grid role), or "" */
+  /** the `<table>` tag's attributes with a leading space (the grid role), or "" */
   readonly tableAttrs: string;
 }
 
@@ -193,8 +193,8 @@ export function renderParts<Row>(
     throw new TableSpecError(
       `hidden names no column ${bad.map((k) => JSON.stringify(k)).join(", ")}; columns are ${spec.columns.map((c) => c.key).join(", ")}`,
     );
-  const domainRows = (opts.domainRows ?? rows) as readonly Row[]; // J31 (A4)
-  const grid = opts.interactive === true ? opts.grid : undefined; // Task 10 (A48)
+  const domainRows = (opts.domainRows ?? rows) as readonly Row[];
+  const grid = opts.interactive === true ? opts.grid : undefined;
   const tabRow = grid === undefined ? -1 : Math.min(grid.row, rows.length - 1); // exactly one tab stop
   const scales = columnScales(spec, rows, warn, domainRows);
   const ctx: RenderContext<Row> = {
@@ -230,7 +230,7 @@ export function renderParts<Row>(
         : label;
       const isCurrent = grid?.col === c.key;
       const current = isCurrent ? " sdvt-col-current" : "";
-      // fix 1 (I2): the column `s` sorts, for assistive tech too (the class is only the visual marker)
+      // The column `s` sorts, for assistive tech too (the class is only the visual marker)
       const currentAria = isCurrent ? ' aria-current="true"' : "";
       return `<th scope="col" class="sdvt-label sdvt-${escapeAttr(alignOf(c))}${current}" data-col="${escapeAttr(c.key)}" data-kind="${escapeAttr(c.kind)}"${currentAria}${aria}${styleOf([c.width ? `width:${escapeAttr(cssValue(c.width, `column ${c.key} width`))}` : "", deco.labelStyle(c.key)])}>${inner}</th>`;
     })
@@ -323,7 +323,7 @@ export function renderParts<Row>(
   const name = spec.theme.name;
   return {
     id,
-    link: opts.fonts === false ? "" : fontsLink(fonts), // css:"none" drops only the shared theme sheet (A98, A100)
+    link: opts.fonts === false ? "" : fontsLink(fonts), // css:"none" drops only the shared theme sheet
     wrapperAttrs: {
       class: `sdvt sdvt-theme-${name} ${themeKey(spec.theme)}`,
       id,

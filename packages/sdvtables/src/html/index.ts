@@ -1,4 +1,4 @@
-// src/html/index.ts — the public renderer entry; the body lives in parts.ts (Phase 5 Task 2).
+// src/html/index.ts — the public renderer entry; the body lives in parts.ts.
 import { loadGsis, loadLeague } from "@sportsdataverse/sdvplot";
 import type { League } from "@sportsdataverse/sdvplot";
 import type { Table } from "../engine.js";
@@ -36,7 +36,7 @@ export function leaguesOf<Row>(spec: TableSpec<Row>): League[] {
     out.add(spec.theme.options.league as League);
   return [...out];
 }
-/** The documented preparation step: every league shard the spec names, plus the gsis map when a headshot column uses gsis ids (J27). Task 7 adds team names. */
+/** The documented preparation step: every league shard the spec names, plus the gsis map when a headshot column uses gsis ids, and the team names. */
 export async function prepare<Row>(spec: TableSpec<Row>): Promise<void> {
   const gsis = spec.columns.some((c) => c.kind === "headshot" && c.idSystem === "gsis");
   await Promise.all([...leaguesOf(spec).map((l) => loadLeague(l)), ...(gsis ? [loadGsis()] : [])]);
@@ -112,7 +112,7 @@ export function toElement<Row>(
   t.innerHTML = renderHTML(spec, rows, opts).trim();
   const el = t.content.querySelector("div.sdvt");
   if (!(el instanceof HTMLElement)) throw new TableSpecError("renderHTML produced no wrapper");
-  // the fonts <link> goes to <head> once per href (A100), so the theme fonts load without a duplicate per table
+  // the fonts <link> goes to <head> once per href, so the theme fonts load without a duplicate per table
   const link = t.content.querySelector("link");
   const href = link?.getAttribute("href");
   if (

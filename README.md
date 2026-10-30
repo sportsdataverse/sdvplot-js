@@ -19,16 +19,17 @@
 Team identity, colors, logos, wordmarks, headshots, playing surfaces and publication tables for JavaScript and
 TypeScript plots, from the SportsDataverse. sdvplot-js resolves team abbreviations, names and provider ids across 28
 leagues and picks the right era's mark for a season; draws courts, rinks and fields for ten sports; and renders
-themed tables with team logos. The marks work with Observable Plot, d3, React, Chart.js, Plotly, Vega-Lite and
-ECharts. These are the TypeScript ports of [sdvplot](https://sdvplot.sportsdataverse.org/) (Python),
+themed tables with team logos. The marks work with Observable Plot, d3 and React, plus adapters for 20+ chart, map,
+grid and 3D libraries: Chart.js, Plotly, Vega-Lite, ECharts, Recharts, MUI X, nivo, Victory, uPlot, Svelte and
+LayerChart, deck.gl, MapLibre, Three.js and more. These are the TypeScript ports of [sdvplot](https://sdvplot.sportsdataverse.org/) (Python),
 [sdvplotR](https://sdvplotR.sportsdataverse.org/) and [sportyR](https://github.com/sportsdataverse/sportyR) /
 [sportypy](https://sportypy.sportsdataverse.org/).
 
 | Package | Downloads | Contents |
 | --- | --- | --- |
-| [**`@sportsdataverse/sdvplot`**](packages/sdvplot/README.md) | [![sdvplot monthly downloads](https://img.shields.io/npm/dm/@sportsdataverse/sdvplot?style=for-the-badge)](https://www.npmjs.com/package/@sportsdataverse/sdvplot) [![sdvplot total downloads](https://img.shields.io/npm/dt/@sportsdataverse/sdvplot?style=for-the-badge)](https://www.npmjs.com/package/@sportsdataverse/sdvplot) | Team identity, colors, logos, wordmarks and headshots; marks for Observable Plot, d3, React, Chart.js, Plotly, Vega-Lite and ECharts; shot charts; linked interactivity; PNG export |
+| [**`@sportsdataverse/sdvplot`**](packages/sdvplot/README.md) | [![sdvplot monthly downloads](https://img.shields.io/npm/dm/@sportsdataverse/sdvplot?style=for-the-badge)](https://www.npmjs.com/package/@sportsdataverse/sdvplot) [![sdvplot total downloads](https://img.shields.io/npm/dt/@sportsdataverse/sdvplot?style=for-the-badge)](https://www.npmjs.com/package/@sportsdataverse/sdvplot) | Team identity, colors, logos, wordmarks and headshots; marks for Observable Plot, d3 and React, plus adapters for 20+ chart, map, grid and 3D libraries; shot charts; linked interactivity; PNG export |
 | [**`@sportsdataverse/sporty`**](packages/sporty/README.md) | [![sporty monthly downloads](https://img.shields.io/npm/dm/@sportsdataverse/sporty?style=for-the-badge)](https://www.npmjs.com/package/@sportsdataverse/sporty) [![sporty total downloads](https://img.shields.io/npm/dt/@sportsdataverse/sporty?style=for-the-badge)](https://www.npmjs.com/package/@sportsdataverse/sporty) | Playing surfaces (courts, rinks, fields) as plain geometry, rendered to SVG, canvas, Observable Plot or d3; coordinate frames for source data |
-| [**`@sportsdataverse/sdvtables`**](packages/sdvtables/README.md) | [![sdvtables monthly downloads](https://img.shields.io/npm/dm/@sportsdataverse/sdvtables?style=for-the-badge)](https://www.npmjs.com/package/@sportsdataverse/sdvtables) [![sdvtables total downloads](https://img.shields.io/npm/dt/@sportsdataverse/sdvtables?style=for-the-badge)](https://www.npmjs.com/package/@sportsdataverse/sdvtables) | Publication tables: a serializable `TableSpec` rendered to static or interactive HTML and to PNG, with team logos, headshots, colors and themes |
+| [**`@sportsdataverse/sdvtables`**](packages/sdvtables/README.md) | [![sdvtables monthly downloads](https://img.shields.io/npm/dm/@sportsdataverse/sdvtables?style=for-the-badge)](https://www.npmjs.com/package/@sportsdataverse/sdvtables) [![sdvtables total downloads](https://img.shields.io/npm/dt/@sportsdataverse/sdvtables?style=for-the-badge)](https://www.npmjs.com/package/@sportsdataverse/sdvtables) | Publication tables: a serializable `TableSpec` rendered to static or interactive HTML, React, MUI X Data Grid, AG Grid, TanStack Table and PNG, with team logos, headshots, colors and 170 themes |
 
 ## **Installation**
 
@@ -51,7 +52,7 @@ install for you, so add the ones for the subpaths you import:
 | `@sportsdataverse/sdvplot`, `/bins`, `/testing`, `/plotly`, `/vega`, `/echarts`, `/uplot` | nothing |
 | `@sportsdataverse/sdvplot/deckgl` | `@sportsdataverse/sporty` (draw with `@deck.gl/core` and `@deck.gl/layers` >= 9.4) |
 | `@sportsdataverse/sdvplot/cytoscape` | nothing (draw its elements and style with `cytoscape` >= 3.34.3) |
-| `@sportsdataverse/sdvplot/three` | `@sportsdataverse/sporty` (draw with `three` >= 0.186.1; `<Surface3D>` and `<Trajectory>` in `/react` also need `@react-three/fiber` >= 9.8.1) |
+| `@sportsdataverse/sdvplot/three` | `@sportsdataverse/sporty` (draw with `three` >= 0.186.1; `<Surface3D>` and `<Trajectory>` in `/react` also need `@react-three/fiber` >= 9.8.1, which needs React 19) |
 | `@sportsdataverse/sdvplot/g2` | nothing (draw with `@antv/g2` >= 5.4.8, or with Ant Design Charts, `@ant-design/plots`, whose configs are G2 specs; tested with 2.6.8; `axisLogos` needs `@antv/component` >= 2.1.12) |
 | `@sportsdataverse/sdvplot/tanstack` | nothing (draw with `@tanstack/charts` >= 1.1.0, through its React, Svelte or DOM `Chart`, SVG renderer) |
 | `@sportsdataverse/sdvplot/maplibre` | nothing at runtime (draw with `maplibre-gl` >= 6.14.0; deck.gl layers on the map with `@deck.gl/mapbox` >= 9.4.0; see the [MapLibre guide](https://plot.sportsdataverse.org/guides/maplibre)); its type declarations name `maplibre-gl`'s types, so TypeScript needs it installed |
@@ -64,7 +65,7 @@ install for you, so add the ones for the subpaths you import:
 | `@sportsdataverse/sdvplot/chartjs` | `chart.js` >= 4.4 (in React, pass its pieces to `react-chartjs-2` >= 5.3.1) |
 | `@sportsdataverse/sdvplot/chartjs/surface` | `chart.js` >= 4.4 and `@sportsdataverse/sporty` |
 | `@sportsdataverse/sdvplot/interact` | `d3` >= 7 |
-| `@sportsdataverse/sdvplot/react` | `react` >= 18 (`<SurfaceBackdrop>` also loads `recharts` >= 3.8 and `@sportsdataverse/sporty`, `<LogoBump>` loads `@nivo/bump` >= 0.99, when they render; `<LogoTick>` loads `victory` >= 37.3.6 to draw a label as text) |
+| `@sportsdataverse/sdvplot/react` | `react` >= 18 (`<Surface3D>` and `<Trajectory>` need React 19 and load `three` and `@react-three/fiber` when they render; `<SurfaceBackdrop>` also loads `recharts` >= 3.8 and `@sportsdataverse/sporty`, `<LogoBump>` loads `@nivo/bump` >= 0.99, when they render; `<LogoTick>` loads `victory` >= 37.3.6 to draw a label as text) |
 | `@sportsdataverse/sdvplot/recharts` | `react` >= 18 (draw with `recharts` >= 3.8) |
 | `@sportsdataverse/sdvplot/shadcn` | `react` >= 18 (draw with shadcn/ui's copy-paste `chart.tsx` and `recharts` >= 3.8; shadcn is not a package) |
 | `@sportsdataverse/sdvplot/mui` | `react` >= 18 (draw with `@mui/x-charts` >= 9.15.0 and its own peers, `@mui/material` and emotion) |
@@ -82,10 +83,10 @@ install for you, so add the ones for the subpaths you import:
 | `@sportsdataverse/sdvtables/aggrid` | nothing at runtime (draw with `ag-grid-community` >= 36.2.0, the MIT Community edition; never `ag-grid-enterprise`); its type declarations name `ag-grid-community`'s types, so TypeScript needs it installed |
 | `@sportsdataverse/sdvtables/tanstack-table` | nothing at runtime (draw with `@tanstack/react-table`, `@tanstack/svelte-table` or another TanStack Table adapter, >= 9.3.1); its type declarations name `@tanstack/table-core`'s types, so TypeScript needs it installed |
 
-`/plot`, `/d3`, `/shots` and `/chartjs/surface` need `@sportsdataverse/sporty` whether or not you draw a surface:
-they import it when they load, and fail to load without it. No other subpath imports sporty when it loads (`/react`'s
-`<SurfaceBackdrop>` loads it when it first renders). For an Observable Plot
-chart:
+`/plot`, `/d3`, `/shots`, `/chartjs/surface`, `/deckgl` and `/three` need `@sportsdataverse/sporty` whether or not you
+draw a surface: they import it when they load, and fail to load without it. No other subpath imports sporty when it
+loads (the `<SurfaceBackdrop>` components of `/react` and `/svelte`, and `/react`'s `<Surface3D>`, load it when they
+first render). For an Observable Plot chart:
 
 ```bash
 npm install @sportsdataverse/sdvplot @sportsdataverse/sporty @observablehq/plot
@@ -154,18 +155,44 @@ The [**sdvplot-js** documentation website](https://plot.sportsdataverse.org) has
 [D3](https://plot.sportsdataverse.org/guides/d3) ·
 [React](https://plot.sportsdataverse.org/guides/react) ·
 [Plotly, Vega-Lite, ECharts and Chart.js](https://plot.sportsdataverse.org/guides/chart-libraries) ·
-[MapLibre GL JS maps](https://plot.sportsdataverse.org/guides/maplibre) ·
 [Shot charts](https://plot.sportsdataverse.org/guides/shot-charts) ·
 [Playing surfaces](https://plot.sportsdataverse.org/guides/surfaces) ·
 [Node and SSR](https://plot.sportsdataverse.org/guides/node-ssr) ·
 [Export to PNG](https://plot.sportsdataverse.org/guides/export)
 
+**Chart libraries:**
+[react-chartjs-2](https://plot.sportsdataverse.org/guides/react-chartjs-2) ·
+[Recharts](https://plot.sportsdataverse.org/guides/recharts) ·
+[shadcn/ui charts](https://plot.sportsdataverse.org/guides/shadcn) ·
+[MUI X Charts](https://plot.sportsdataverse.org/guides/mui-x-charts) ·
+[Svelte and LayerChart](https://plot.sportsdataverse.org/guides/svelte) ·
+[nivo](https://plot.sportsdataverse.org/guides/nivo) ·
+[Victory](https://plot.sportsdataverse.org/guides/victory) ·
+[uPlot](https://plot.sportsdataverse.org/guides/uplot) ·
+[deck.gl](https://plot.sportsdataverse.org/guides/deckgl) ·
+[Cytoscape.js](https://plot.sportsdataverse.org/guides/cytoscape) ·
+[Three.js](https://plot.sportsdataverse.org/guides/three) ·
+[Lightweight Charts](https://plot.sportsdataverse.org/guides/lightweight-charts) ·
+[G2 and Ant Design Charts](https://plot.sportsdataverse.org/guides/g2) ·
+[TanStack Charts](https://plot.sportsdataverse.org/guides/tanstack-charts) ·
+[MapLibre GL JS](https://plot.sportsdataverse.org/guides/maplibre) ·
+[Unovis](https://plot.sportsdataverse.org/guides/unovis) ·
+[Perspective](https://plot.sportsdataverse.org/guides/perspective) ·
+[Mosaic (experimental)](https://plot.sportsdataverse.org/guides/mosaic) ·
+[Apache Superset](https://plot.sportsdataverse.org/guides/superset)
+
 **Tables:**
 [The spec](https://plot.sportsdataverse.org/guides/tables) ·
 [Table themes](https://plot.sportsdataverse.org/guides/table-themes) ·
+[Table theme registry](https://plot.sportsdataverse.org/guides/table-theme-registry) ·
 [Cell kinds](https://plot.sportsdataverse.org/guides/cell-kinds) ·
+[Formatters](https://plot.sportsdataverse.org/guides/table-formatters) ·
 [Decorations](https://plot.sportsdataverse.org/guides/decorations) ·
-[HTML, SSR and the host page](https://plot.sportsdataverse.org/guides/tables-html)
+[Table recipes](https://plot.sportsdataverse.org/guides/table-recipes) ·
+[HTML, SSR and the host page](https://plot.sportsdataverse.org/guides/tables-html) ·
+[MUI X Data Grid](https://plot.sportsdataverse.org/guides/mui-x-data-grid) ·
+[AG Grid](https://plot.sportsdataverse.org/guides/ag-grid) ·
+[TanStack Table](https://plot.sportsdataverse.org/guides/tanstack-table)
 
 **Examples:**
 [Basketball](https://plot.sportsdataverse.org/examples/basketball) ·
@@ -210,10 +237,12 @@ attw + publint, changesets.
 
 ```bash
 pnpm install
-pnpm lint && pnpm typecheck && pnpm build && pnpm test && pnpm api:check && pnpm pack:check
+pnpm lint && pnpm vendor --check && pnpm codegen --check && pnpm build:index --check && pnpm typecheck && pnpm build \
+  && pnpm test && pnpm api:check && pnpm pack:check && pnpm docs:build && pnpm --filter docs typecheck
 ```
 
-After changing public types run `pnpm -r api:report` and commit the updated `etc/*.api.md`.
+That is what CI runs. After changing public types run `pnpm -r api:report` and commit the updated `etc/*.api.md`.
+Add a changeset (`pnpm changeset`) for every user-visible change; [CONTRIBUTING.md](CONTRIBUTING.md) has the rest.
 
 ### Docs build
 

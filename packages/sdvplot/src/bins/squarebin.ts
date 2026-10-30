@@ -1,6 +1,6 @@
 // squarebin() is the square twin of hexbin(): the same bin record (BinOf), first-seen order, NaN skipped, -0
 // folded. binner() picks either lattice from one plain options object, so everything downstream of the bins is
-// shape-agnostic (spec J38).
+// shape-agnostic.
 import { InputError } from "../errors.js";
 import { type BinOf, hexagonPath, hexagonPoints, hexbin } from "./hexbin.js";
 

@@ -3,7 +3,7 @@ import { tableId } from "../table-id.js";
 import { escapeAttr, escapeHtml } from "./escape.js";
 import { type RenderOptions, assemble, renderParts, tableHTML } from "./parts.js";
 
-/** J31 (A4, A5): the engine-driven render options, built in ONE place for renderInteractive, hydrate and `<SdvTable/>`. */
+/** The engine-driven render options, built in ONE place for renderInteractive, hydrate and `<SdvTable/>`. */
 export function tableRenderOptions<Row>(table: Table<Row>): RenderOptions {
   const sel = table.getSelection();
   return {
@@ -11,10 +11,10 @@ export function tableRenderOptions<Row>(table: Table<Row>): RenderOptions {
     sort: table.state.sort,
     hidden: table.state.hidden,
     selected: new Set(table.rows.flatMap((r, i) => (sel.has(table.rowId(r)) ? [i] : []))),
-    // A49: always the full source rows, so colours, legends, outlier limits and row-accent palettes hold still
+    // Always the full source rows, so colours, legends, outlier limits and row-accent palettes hold still
     // while the user pages, types, sorts or brushes, and index row selectors mean source rows
     domainRows: table.allRows,
-    // Task 10 (A48): a selectable grid whose one tab stop is the cursor row
+    // A selectable grid whose one tab stop is the cursor row
     grid: table.state.cursor,
   };
 }
@@ -25,7 +25,7 @@ export function pagerLabel<Row>(table: Table<Row>): string {
 }
 
 /**
- * M8: one input per filterable column that is SHOWN, labelled with its shown header text (`labels`, from
+ * One input per filterable column that is SHOWN, labelled with its shown header text (`labels`, from
  * `RenderedParts.labels`, so a marginalia rename or scaleNote suffix carries over). A hidden column gets no input; a
  * filter already set on it stays active. The one rule renderToolbar, hydrate and `<SdvTable/>` all follow.
  */

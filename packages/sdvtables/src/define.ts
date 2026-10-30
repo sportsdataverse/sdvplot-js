@@ -275,7 +275,7 @@ export function columnFactory<Row>(): ColumnFactory<Row> {
       ...o,
     }),
     colorRanks: (key, o = {}) => ({ kind: "colorRanks", key, palette: RANK_PALETTE, reverse: false, ...o }),
-    // gt_color_results fills the whole row (_cells.py:155-222); spec §6.1 lists it among the c.* kinds
+    // gt_color_results fills the whole row (_cells.py:155-222); it is one of the c.* kinds
     colorResults: (key, o = {}) => ({
       kind: "colorResults",
       key,
@@ -477,7 +477,7 @@ export class TableBuilder<Row> {
   id(id: string): TableBuilder<Row> {
     return new TableBuilder({ ...this.s, id });
   }
-  /** J31: the link id column (see `TableSpec.rowKey`). */
+  /** The link id column (see `TableSpec.rowKey`). */
   rowKey(key: keyof Row & string): TableBuilder<Row> {
     return new TableBuilder({ ...this.s, rowKey: key });
   }

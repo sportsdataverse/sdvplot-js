@@ -29,7 +29,7 @@ export function setWarningHandler(fn: WarningHandler | null): void {
 export function resetWarnings(): void {
   seen.clear();
 }
-/** One warning per `key` per process (spec §4.3): a 10k-row join must not print 10k lines. */
+/** One warning per `key` per process: a 10k-row join must not print 10k lines. */
 export function warn(key: string, message: string): void {
   if (seen.has(key)) return;
   seen.add(key);
