@@ -34,13 +34,14 @@ const lastGeoPaths = (fig: Element): Element[] => {
   return [...(geos[geos.length - 1]?.querySelectorAll("path") ?? [])];
 };
 
-test("shotCells: one data-space hexagon per visible hex, on the court, id-stamped, coloured by shrunk diff", () => {
+test("shotCells: one data-space hexagon per drawn hex, on the court, id-stamped, coloured by shrunk diff", () => {
   const hexes = cellsVsLeague(BKN, LEAGUE.hex15);
   const { r } = sizeCells(hexes, { radius: 15 });
   const court = surface("nba", { displayRange: "defense" });
   const fig = Plot.plot({ ...court.scales, width: 500, marks: [...court.marks, shotCells(hexes, { r })] });
   const paths = lastGeoPaths(fig);
-  expect(paths).toHaveLength(211); // every hex has at least one attempt, so none is hidden
+  expect(hexes).toHaveLength(211);
+  expect(paths).toHaveLength(174); // sizeCells' r is 0 for the 37 single-attempt hexes, so they are not drawn
   const rim = fig.querySelector('path[data-sdv-id="0,0"]'); // 181 attempts, the biggest, drawn last
   expect(rim).toBe(paths[paths.length - 1]);
   const h = hexes.find((x) => x.x === 0 && x.y === 0);
@@ -48,6 +49,52 @@ test("shotCells: one data-space hexagon per visible hex, on the court, id-stampe
   expect(rim?.getAttribute("fill")).toBe(
     diffScale()(shrunkDiff(h?.makes ?? 0, h?.attempts ?? 0, h?.leagueFgPct ?? 0)),
   );
+});
+
+// The 2021 Blazing the Nets rule (Hexagon/index.js renderSize), as game-on-paper's square chart: the sqrt-to-p95 scale
+// grew the busiest squares to the full lattice side, so neighbours touched and their outlines overlapped.
+test("sizeCells' defaults on squares: single attempts are not drawn, no square reaches its cell, totals unchanged", () => {
+  const index = leagueIndex(BKN, { shape: "square", side: 15 });
+  const cells = cellsVsLeague(BKN, index);
+  const court = surface("nba", { displayRange: "defense" });
+  /** Each drawn square's centre and side in px, by id. */
+  const squares = (o: { fill?: number; minAttempts?: number }) => {
+    const fig = Plot.plot({
+      ...court.scales,
+      width: 500,
+      marks: [
+        ...court.marks,
+        shotCells(cells, { r: sizeCells(cells, { ...index, ...o }).r, shape: "square" }),
+      ],
+    });
+    return new Map(
+      lastGeoPaths(fig).map((p) => {
+        const pts = [...(p.getAttribute("d") ?? "").matchAll(/[ML]([-\d.e]+),([-\d.e]+)/g)].map((m) => [
+          Number(m[1]),
+          Number(m[2]),
+        ]);
+        const xs = pts.map((q) => q[0] as number);
+        const ys = pts.map((q) => q[1] as number);
+        const c = [(Math.max(...xs) + Math.min(...xs)) / 2, (Math.max(...ys) + Math.min(...ys)) / 2] as const;
+        return [p.getAttribute("data-sdv-id"), { c, side: Math.max(...xs) - Math.min(...xs) }] as const;
+      }),
+    );
+  };
+  const full = squares({ minAttempts: 1, fill: 1 });
+  const rim = full.get("0,0");
+  const next = full.get("15,0");
+  if (!rim || !next) throw new Error("the rim square or its neighbour is not drawn");
+  const cell = Math.hypot(next.c[0] - rim.c[0], next.c[1] - rim.c[1]); // the lattice step in px
+  expect(rim.side).toBeCloseTo(cell, 6); // at fill 1 the busiest squares fill their cells: neighbours touch
+  const drawn = squares({});
+  const sides = [...drawn.values()].map((q) => q.side);
+  expect(cells.some((c) => c.attempts < 2)).toBe(true);
+  expect(drawn.size).toBe(cells.filter((c) => c.attempts >= 2).length);
+  expect(Math.max(...sides)).toBeLessThanOrEqual(cell * 0.88 + 0.01); // Plot rounds paths to 0.001 px
+  expect(Math.max(...sides)).toBeLessThan(cell);
+  // the hidden cells stay in the data: every shot is still in some cell
+  expect(cells.reduce((t, c) => t + c.attempts, 0)).toBe(BKN.length);
+  expect(full.size).toBe(cells.length);
 });
 
 test("shotCells honours the frame: nba-legacy-vertical puts the rim hex at the bottom centre", () => {
@@ -147,12 +194,12 @@ test("with Plot's href, shotCells and shotZones stamp the <a> around each path, 
     width: 500,
     marks: [...court.marks, shotCells(hexes, { r, href: (h: CellVsLeague) => `#hex-${h.x},${h.y}` })],
   });
-  expect(cells.querySelectorAll("a[data-sdv-id]")).toHaveLength(211);
+  expect(cells.querySelectorAll("a[data-sdv-id]")).toHaveLength(174); // 211 hexes less 37 single attempts
   expect(cells.querySelectorAll("path[data-sdv-id]")).toHaveLength(0); // on the <a>, never also on its path
   const rim = cells.querySelector('a[data-sdv-id="0,0"]'); // 181 attempts
   expect(rim?.getAttribute("href")).toBe("#hex-0,0");
   expect(highlight(cells, new Set(["0,0"]))).toEqual([]); // the rim's id is found
-  expect(dimmed(cells)).toHaveLength(210);
+  expect(dimmed(cells)).toHaveLength(173);
   expect(dimmed(cells)).not.toContain(rim);
 
   const zones = Plot.plot({
@@ -210,7 +257,8 @@ test("shotCells shape 'square' (J38): four-corner data-space squares, id-stamped
     });
   const fig = draw("square");
   const paths = lastGeoPaths(fig);
-  expect(paths).toHaveLength(395);
+  expect(cells).toHaveLength(395);
+  expect(paths).toHaveLength(260); // the 135 single-attempt squares are not drawn
   const corners = (p: Element) => p.getAttribute("d")?.match(/[ML]/g)?.length;
   expect(new Set(paths.map(corners))).toEqual(new Set([4]));
   const hexPaths = lastGeoPaths(draw("hex"));

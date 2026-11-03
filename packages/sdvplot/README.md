@@ -351,7 +351,7 @@ The d3 twins are `appendLegend` (colour bar plus a cell size key) and `appendSig
 | Setting | `main` (default) | `master` |
 | --- | --- | --- |
 | League baseline | `cellsVsLeague(player, leagueIndex(league, 15))`: the league in the same cell | `cellsVsDistance(player, fgPctByDistance(league))`: the league at the cell's distance (radius 10 by default). The distance is `Math.hypot`: master's `sqrt` read 13 of BKN's 374 cells, those a whole number of feet out, one foot short |
-| Size (`sizeCells` `rule`) | `"sqrt-p95"` | `"linear-cap"` |
+| Size (`sizeCells` `rule`, `minAttempts`, `fill`) | `"sqrt-p95"`; `main` drew every cell up to full size, `{ minAttempts: 1, fill: 1 }`, where sdvplot's defaults skip single attempts and stop at 0.88 of the cell (`{ minAttempts: 2, fill: 0.88 }`) so neighbours never touch | `{ rule: "linear-cap", fill: 1 }` |
 | Colour prior in attempts (`shotCells` and `signaturePoints` `prior`, `shrunkDiff`'s `k`) | 25 | 0 |
 | Palette (`diffScale` `palette`) | `"rdbu"` | `"master"` |
 | Signature curve (`shootingSignature`, `appendSignature` `curve`) | `"monotone-x"` | `"basis"` |

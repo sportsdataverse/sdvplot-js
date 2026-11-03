@@ -156,8 +156,8 @@ export function teamColorScale(league: League, o?: {
 
 // Warnings were encountered during analysis:
 //
-// dist/d3.d.ts:51:9 - (ae-forgotten-export) The symbol "BinShape" needs to be exported by the entry point d3.d.ts
-// dist/d3.d.ts:219:5 - (ae-forgotten-export) The symbol "Which" needs to be exported by the entry point d3.d.ts
+// dist/d3.d.ts:54:9 - (ae-forgotten-export) The symbol "BinShape" needs to be exported by the entry point d3.d.ts
+// dist/d3.d.ts:225:5 - (ae-forgotten-export) The symbol "Which" needs to be exported by the entry point d3.d.ts
 
 // (No @packageDocumentation comment for this package)
 

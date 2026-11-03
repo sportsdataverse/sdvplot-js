@@ -33,6 +33,10 @@ the hottest spot on the floor.
 
 <Live id="sdvplot/shots/hex-chart" />
 
+`sizeCells` follows blazing-the-nets' 2021 rule: a cell of a single attempt is not drawn (it still counts in the
+cells and their totals), and the busiest cells stop at 0.88 of their lattice cell, so neighbouring hexagons or squares
+never touch. `{ minAttempts: 1, fill: 1 }` draws every cell up to full size, as `main` did.
+
 <Live id="api/sdvplot/shrunkDiff" />
 
 `shotCells` draws the cells as `Plot.geo` through the plot's own scales, so a cell is exact in court feet. The

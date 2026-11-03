@@ -2,6 +2,7 @@
 // is fixtures/shots/oracle.json (hexagons). Squares run the same code on `squarebin`'s lattice.
 import { BASKETBALL_ZONES, type BasketballZone, basketballZoneOf } from "@sportsdataverse/sporty";
 import { type Binner, type BinnerOptions, type Lattice, binner } from "../bins/index.js";
+import { InputError } from "../errors.js";
 
 /** A number is a hexagon radius (the parity default); an object is any lattice, squares included. */
 const latticeOf = (cell: number | BinnerOptions): Binner =>
@@ -216,6 +217,21 @@ export function cellsVsLeague(
 
 /** How a cell's attempts set its size: `main` (sqrt to the 95th percentile) or `master` (linear, capped). */
 export type SizeRule = "sqrt-p95" | "linear-cap";
+/** Options for `sizeCells`: the lattice (or its `LeagueIndex`), the rule, and which cells are drawn how large. */
+export type SizeCellsOptions = BinnerOptions & {
+  /** Default `"sqrt-p95"`. */
+  readonly rule?: SizeRule;
+  /**
+   * Cells under this many attempts get size 0 (not drawn); they still count in `binShots`' cells and totals.
+   * Default 2: single attempts are not drawn (blazing-the-nets' 2021 `Hexagon/index.js` `renderSize`).
+   */
+  readonly minAttempts?: number;
+  /**
+   * The largest drawn cell as a share of the lattice's full size, in (0, 1]. Default 0.88, so neighbours never touch
+   * even at the cap: a full-size hexagon or square shares its edges with the next one. 1 is the full cell.
+   */
+  readonly fill?: number;
+};
 /** `sizeCells`' result: each cell's size, the cap, the size of any count, and the counts for a size key. */
 export interface CellSizes {
   /** Size per cell in legacy tenths: a hexagon's circumradius, or a square's side. 0 hides a cell. */
@@ -224,7 +240,10 @@ export interface CellSizes {
   readonly cap: number;
   /** The size of any attempt count, for a size key. */
   readonly size: (attempts: number) => number;
-  /** A size key: 1, half the cap, the cap (blazing-the-nets `main` `lib/charts/hexShotChart.ts:199`). */
+  /**
+   * A size key: `minAttempts`, half the cap, the cap (blazing-the-nets `main` `lib/charts/hexShotChart.ts:199`, which
+   * started at 1), without repeats.
+   */
   readonly steps: readonly number[];
 }
 
@@ -245,10 +264,13 @@ function quantile(values: readonly number[], p: number): number | undefined {
 /**
  * Frequency size for each cell (the dual encoding's size half; colour is `diffScale`), on the lattice's full cell
  * size `R` (a hexagon's radius, or a square's side; pass the index itself: `sizeCells(cells, index)`).
- * `"sqrt-p95"` (default, `main` `hexShotChart.ts:65-81`): a sqrt scale of attempts to `R`, capped at the 95th
- * percentile so one busy rim cell does not shrink the rest; area follows attempts for either shape.
- * `"linear-cap"` (`master` `Hexagon/index.js:22-30`): attempts in tenths, capped at `R`, cells under 2 attempts
- * hidden.
+ * `"sqrt-p95"` (default, `main` `hexShotChart.ts:65-81`): a sqrt scale of attempts, capped at the 95th percentile of
+ * all the cells so one busy rim cell does not shrink the rest; area follows attempts for either shape.
+ * `"linear-cap"` (`master` `Hexagon/index.js:22-30`): attempts in tenths, capped at `R`.
+ * Under either rule a cell under `minAttempts` (default 2) is not drawn, and the drawn size is `fill` (default 0.88)
+ * times the rule's, so the busiest cells stop short of their neighbours. `main` drew every cell up to full size:
+ * `{ minAttempts: 1, fill: 1 }`; `master` is `{ rule: "linear-cap", fill: 1 }`. Throws `InputError` on a
+ * `minAttempts` that is not a finite number, or a `fill` outside (0, 1].
  *
  * @example
  * ```ts
@@ -260,16 +282,18 @@ function quantile(values: readonly number[], p: number): number | undefined {
  *   { x_legacy: 0, y_legacy: 0, shot_distance: 0, shot_value: 2, shot_result: "Missed" },
  *   { x_legacy: -44, y_legacy: 252, shot_distance: 26, shot_value: 3, shot_result: "Made" },
  * ];
- * sizeCells(binShots(shots, 15), { radius: 15 }).r; // the 2-attempt rim cell is full size, the 1-attempt three smaller
+ * sizeCells(binShots(shots, 15), { radius: 15 }).r; // the 2-attempt rim cell at 0.88 of full size, the 1-attempt three not drawn
  * ```
  */
-export function sizeCells(
-  cells: readonly { readonly attempts: number }[],
-  o: BinnerOptions & { readonly rule?: SizeRule },
-): CellSizes {
+export function sizeCells(cells: readonly { readonly attempts: number }[], o: SizeCellsOptions): CellSizes {
   const R = binner(o).size; // throws InputError on a size that is not a finite number > 0
+  const min = o.minAttempts ?? 2;
+  const fill = o.fill ?? 0.88;
+  if (!Number.isFinite(min))
+    throw new InputError(`sizeCells minAttempts must be a finite number, got ${String(min)}`);
+  if (!(fill > 0 && fill <= 1)) throw new InputError(`sizeCells fill must be in (0, 1], got ${String(fill)}`);
   let cap: number;
-  let size: (a: number) => number;
+  let full: (a: number) => number;
   if ((o.rule ?? "sqrt-p95") === "sqrt-p95") {
     cap = Math.max(
       2,
@@ -281,16 +305,20 @@ export function sizeCells(
       ),
     );
     const top = Math.sqrt(cap);
-    size = (a) => R * Math.min(1, Math.max(0, Math.sqrt(Math.max(0, a)) / top));
+    full = (a) => R * Math.min(1, Math.max(0, Math.sqrt(Math.max(0, a)) / top));
   } else {
     cap = R;
-    size = (a) => (a > R ? R : a < 2 ? 0 : a);
+    full = (a) => Math.min(R, Math.max(0, a));
   }
+  const size = (a: number): number => (a < min ? 0 : fill * full(a));
+  const first = Math.max(1, Math.ceil(min));
+  const last = Math.max(first, cap);
+  const mid = Math.max(first + 1, Math.round(cap / 2));
   return {
     r: cells.map((h) => size(h.attempts)),
     cap,
     size,
-    steps: [1, Math.max(2, Math.round(cap / 2)), cap],
+    steps: [first, ...(mid < last ? [mid] : []), ...(last > first ? [last] : [])],
   };
 }
 

@@ -9,9 +9,9 @@ export const meta = {
   tags: ["d3", "shots", "appendLegend", "sizeCells", "nba"],
 } satisfies ExampleMeta;
 
-// The key of blazing-the-nets main's hex chart: the colour bar of diffScale(), then a size key whose steps are 1,
-// half the cap and the cap, for Brooklyn's 2025-26 shots in 1.5 ft hexagons. Sizes are in tenths of a foot, drawn
-// here at one pixel per tenth.
+// The key of blazing-the-nets main's hex chart: the colour bar of diffScale(), then a size key whose steps are 2
+// (single attempts are not drawn), half the cap and the cap, for Brooklyn's 2025-26 shots in 1.5 ft hexagons. Sizes
+// are in tenths of a foot, at most 0.88 of the cell, drawn here at one pixel per tenth.
 const cells = cellsVsLeague(BKN_SHOTS_2026, NBA_LEAGUE_2026.hex15);
 const sizes = sizeCells(cells, NBA_LEAGUE_2026.hex15);
 const svg = create("svg").attr("viewBox", "0 0 300 200").attr("width", 300);

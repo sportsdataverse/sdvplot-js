@@ -32,7 +32,7 @@ test("appendLegend: main's 5-stop bar, -15/0/+15 ticks, caption, and a 1 / 15 / 
   );
   expect(texts(root).slice(0, 3)).toEqual(["−15.0", "0", "+15.0"]);
   expect(texts(root)).toContain("30+");
-  expect(texts(root)).toContain("hex size: attempts");
+  expect(texts(root)).toContain("hex size: attempts (single attempts not drawn)"); // px(1) is 0 under the defaults
   expect(used).toBe(8 + 11 + 6 + 2 * 15 + 8 + 42); // bar + ticks, caption + key-in-words, size key
 });
 
@@ -45,7 +45,8 @@ test("appendLegend size key, shape 'square' (J38): squares at the same pixel siz
   });
   const root = svg.node() as SVGSVGElement;
   expect(attr(root.querySelectorAll("path"), "d")).toEqual(s.steps.map((n) => squarePath(s.size(n))));
-  expect(texts(root)).toContain("square size: attempts");
+  expect(s.steps).toEqual([2, 29, 57]); // the key starts where drawing does
+  expect(texts(root)).toContain("square size: attempts (single attempts not drawn)");
 });
 
 test("appendLegend domain: master's legend spans [-0.30, 0.30] (Legend.js:36-38), its colours exact at every stop", () => {
@@ -198,7 +199,8 @@ test("appendLegend rejects a domain end that is not finite", () => {
 });
 
 test("the size-key note wraps like main's drawNotes (theme.ts:94-106) to width - 118, 8 characters at the least", () => {
-  const s = sizeCells([{ attempts: 1 }, { attempts: 30 }, { attempts: 60 }], { radius: 15 });
+  // main drew single attempts, so its note is the plain one
+  const s = sizeCells([{ attempts: 1 }, { attempts: 30 }, { attempts: 60 }], { radius: 15, minAttempts: 1 });
   const legend = (width: number) => {
     const svg = select(document.body).append("svg");
     const used = appendLegend(svg.append("g"), diffScale(), {

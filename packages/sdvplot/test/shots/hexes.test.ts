@@ -4,6 +4,7 @@ import { expect, test } from "vitest";
 import RAW_SQUARE from "../../../../fixtures/shots/nba-2026-league-square.json" with { type: "json" };
 import RAW_LEAGUE from "../../../../fixtures/shots/nba-2026-league.json" with { type: "json" };
 import ORACLE from "../../../../fixtures/shots/oracle.json" with { type: "json" };
+import { InputError } from "../../src/errors.js";
 import { shotZone } from "../../src/shots/aggregate.js";
 import {
   type LeagueCell,
@@ -60,16 +61,35 @@ test("a hex the league shot from fewer than 25 times takes its zone's league rat
   for (const h of thin) expect(h.leagueFgPct).toBe(LEAGUE.hex10.zones[h.zone as BasketballZone].fgPct);
   expect(leagueIndex(BKN, 15).zones).toEqual(ORACLE.main.zones);
 });
-test("sizeCells: main's sqrt-p95 caps (17 at r = 10, 30 at r = 15); master's linear cap hides singletons", () => {
+test("sizeCells: main's sqrt-p95 caps (17 at r = 10, 30 at r = 15); master's linear cap hides singletons; the 2021 defaults", () => {
   expect(sizeCells(ORACLE.main.hex10, { radius: 10 }).cap).toBe(ORACLE.main.cap10);
   expect(sizeCells(ORACLE.main.hex15, { radius: 15 }).cap).toBe(ORACLE.main.cap15);
   expect([ORACLE.main.cap10, ORACLE.main.cap15]).toEqual([17, 30]);
-  const s = sizeCells(ORACLE.main.hex15, { radius: 15 });
+  const s = sizeCells(ORACLE.main.hex15, { radius: 15, minAttempts: 1, fill: 1 }); // main drew every cell, to full size
   expect([s.size(30), s.size(181)]).toEqual([15, 15]);
+  expect(s.size(1)).toBeCloseTo(15 / Math.sqrt(30), 12);
   expect(s.steps).toEqual([1, 15, 30]);
-  const m = sizeCells(ORACLE.main.hex10, { radius: 10, rule: "linear-cap" });
+  const m = sizeCells(ORACLE.main.hex10, { radius: 10, rule: "linear-cap", fill: 1 });
   expect(m.r.filter((r) => r === 0)).toHaveLength(129); // the single-attempt hexes (Hexagon/index.js:26-28)
   expect(Math.max(...m.r)).toBe(10);
+  // The defaults: single attempts are not drawn, and the cap is 0.88 of the cell; the cap itself is main's.
+  const d = sizeCells(ORACLE.main.hex15, { radius: 15 });
+  expect(d.cap).toBe(30);
+  expect([d.size(1), d.size(30), d.size(181)]).toEqual([0, 0.88 * 15, 0.88 * 15]);
+  expect(d.size(2)).toBeCloseTo(0.88 * 15 * Math.sqrt(2 / 30), 12);
+  expect(d.steps).toEqual([2, 15, 30]);
+  expect(d.r.filter((r) => r === 0)).toHaveLength(ORACLE.main.hex15.filter((h) => h.attempts < 2).length);
+  expect(Math.max(...d.r)).toBeLessThan(15);
+  expect(sizeCells(ORACLE.main.hex10, { radius: 10, rule: "linear-cap" }).r).toEqual(
+    m.r.map((r) => 0.88 * r),
+  );
+  expect(sizeCells(ORACLE.main.hex15, { radius: 15, minAttempts: 5 }).steps).toEqual([5, 15, 30]);
+});
+test("sizeCells rejects a fill outside (0, 1] and a minAttempts that is not finite", () => {
+  for (const fill of [0, -0.5, 1.01, Number.NaN])
+    expect(() => sizeCells([], { radius: 15, fill })).toThrow(InputError);
+  for (const minAttempts of [Number.NaN, Number.POSITIVE_INFINITY])
+    expect(() => sizeCells([], { radius: 15, minAttempts })).toThrow(InputError);
 });
 test("shrunkDiff: (m + kL)/(a + k) - L; k = 0 is the raw difference", () => {
   expect(shrunkDiff(1, 1, 0.5)).toBeCloseTo((1 + 12.5) / 26 - 0.5, 12);
@@ -97,10 +117,10 @@ test("square index (J38): leagueIndex stores the resolved lattice; squarebin's c
   expect(cells.map((c) => [c.x, c.y, c.attempts])).toEqual(bins.map((b) => [b.x, b.y, b.length]));
   expect(cells).toHaveLength(395);
   // Only the full size enters the size rule: squares of side 15 size exactly like hexagons of radius 15.
-  expect(sizeCells(cells, index)).toMatchObject({ cap: 15, steps: [1, 8, 15] });
+  expect(sizeCells(cells, index)).toMatchObject({ cap: 15, steps: [2, 8, 15] });
   expect(sizeCells(cells, index).r).toEqual(sizeCells(cells, { radius: 15 }).r);
   expect(sizeCells(cells, { ...index, rule: "linear-cap" }).r.filter((r) => r === 0)).toHaveLength(135);
-  const e = sizeCells(cells, { shape: "square", radius: 15, equalArea: true });
+  const e = sizeCells(cells, { shape: "square", radius: 15, equalArea: true, fill: 1 });
   expect(e.size(e.cap)).toBeCloseTo(15 * Math.sqrt(1.5 * Math.sqrt(3)), 12);
 });
 test("square cells vs the real league (J38 S16): the SAME square's league rate at 25+ attempts, else its zone's", () => {
@@ -131,7 +151,7 @@ test("square cells vs the real league (J38 S16): the SAME square's league rate a
   }
   expect(fellBack).toBe(17); // both branches run: 361 squares on their own league rate, 17 on their zone's
   const s = sizeCells(cells, LEAGUE_SQUARE);
-  expect(s).toMatchObject({ cap: 16, steps: [1, 8, 16] });
+  expect(s).toMatchObject({ cap: 16, steps: [2, 8, 16] });
   expect(s.r).toEqual(sizeCells(cells, { radius: sq.size }).r);
   expect(s.r).toEqual(sizeCells(cells, { shape: "square", radius: 10, equalArea: true }).r);
 });
@@ -176,7 +196,7 @@ test("sqrt-p95 rounds a fractional 95th percentile UP (hexShotChart.ts:71): the 
   const s = sizeCells(LEAGUE.hex15.cells, LEAGUE.hex15);
   expect(LEAGUE.hex15.cells).toHaveLength(397);
   expect(s.cap).toBe(2254);
-  expect(s.steps).toEqual([1, 1127, 2254]);
-  expect(s.size(2254)).toBe(15);
-  expect(s.size(2253)).toBeLessThan(15);
+  expect(s.steps).toEqual([2, 1127, 2254]);
+  expect(s.size(2254)).toBe(0.88 * 15); // the cap, at the default fill
+  expect(s.size(2253)).toBeLessThan(0.88 * 15);
 });
