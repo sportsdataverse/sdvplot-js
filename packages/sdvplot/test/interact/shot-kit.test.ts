@@ -334,6 +334,19 @@ test("square cells link like hex cells (J38 S11): '0,0' toggles by click, Enter 
   expect([...store.getState().hover]).toEqual([c.id]);
   fire(k.court, "pointermove", ...probe(19));
   expect([...store.getState().hover]).toEqual([]);
+  // a square sizeCells hides (one attempt, r = 0) is not tippable: Plot's tip shares the geo mark's index, which drops
+  // a null geometry, so pointing at a hidden square's centre never shows an "n/1 FG" line
+  const hidden = k.cells.filter((h) => h.attempts < 2);
+  expect(hidden).toHaveLength(135);
+  for (const h of hidden) {
+    fire(
+      k.court,
+      "pointermove",
+      px(k.court, "x", f.x({ x: h.x }) ?? Number.NaN),
+      px(k.court, "y", f.y({ y: h.y }) ?? Number.NaN),
+    );
+    expect(tipLines(k.court).filter((l) => /^\d+\/1 FG/.test(l))).toEqual([]);
+  }
   expect(highlight(k.court, new Set(["0,0"]))).toEqual([]);
   expect(warnings).toEqual([]);
 });
