@@ -226,9 +226,14 @@ export function signaturePoints(bins: readonly DistanceVsLeague[], o?: Signature
 // @public
 export function sizeCells(cells: readonly {
     readonly attempts: number;
-}[], o: BinnerOptions & {
+}[], o: SizeCellsOptions): CellSizes;
+
+// @public
+export type SizeCellsOptions = BinnerOptions & {
     readonly rule?: SizeRule;
-}): CellSizes;
+    readonly minAttempts?: number;
+    readonly fill?: number;
+};
 
 // @public
 export type SizeRule = "sqrt-p95" | "linear-cap";

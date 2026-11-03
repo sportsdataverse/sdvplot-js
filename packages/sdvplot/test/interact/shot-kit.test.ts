@@ -108,7 +108,8 @@ function expectToggles(k: Kit, store: ReturnType<typeof setup>["store"], id: str
 
 test("click-to-select a hex (J36(b)): a click on the rim hex puts '0,0' in selected and a second removes it; Enter and Space toggle; aria-checked follows", () => {
   const { k, store } = setup();
-  expect(k.court.querySelectorAll("path[data-sdv-id]")).toHaveLength(211); // main's 211 hexagons, all on the court
+  expect(k.cells).toHaveLength(211); // main's 211 hexagons
+  expect(k.court.querySelectorAll("path[data-sdv-id]")).toHaveLength(174); // all but the 37 single attempts drawn
   const rim = k.cells.find((h) => h.x === 0 && h.y === 0);
   expect([rim?.makes, rim?.attempts]).toEqual([147, 181]);
   expectToggles(k, store, "0,0");
@@ -166,7 +167,7 @@ test("a toggled zone or cell keeps its own accessible name: the label's text win
     ]);
   expect(named(cell(k, "0,0"))).toEqual(["checkbox", "147 of 181 made, 81.2%"]);
   const cells = Array.from(k.court.querySelectorAll("[data-sdv-id]"));
-  expect(cells).toHaveLength(211);
+  expect(cells).toHaveLength(174); // 211 hexes less 37 single attempts
   for (const c of cells) expect(c.getAttribute("aria-label")).not.toBe(c.getAttribute("data-sdv-id"));
   off();
   expect(named(paint)).toEqual([null, "Paint (non-RA), 136/326"]);
@@ -291,12 +292,13 @@ test("one cursor, the ring and the rule (master ShotchartCursor.js:11-18, Shooti
 
 // S11 (J38): squares link exactly like hexagons. The index is S5's real-shot one (no square league fixture at side
 // 15). Measured: the rim square's four neighbours sit 12.47 px away (1.5 ft at 8.317 px a foot; S11 said about 15).
-test("square cells link like hex cells (J38 S11): '0,0' toggles by click, Enter and Space; the nearest square within 18 px hovers; every square id is drawn", () => {
+test("square cells link like hex cells (J38 S11): '0,0' toggles by click, Enter and Space; the nearest square within 18 px hovers; every drawn square id is drawn", () => {
   const sq = leagueIndex(BKN, { shape: "square", side: 15 });
   const { k, store } = setup({ index: sq, shape: "square" });
   const ids = Array.from(k.court.querySelectorAll("path[data-sdv-id]"), (e) => e.getAttribute("data-sdv-id"));
-  expect(new Set(ids)).toEqual(new Set(k.cells.map((h) => `${h.x},${h.y}`))); // every square, its "x,y"
-  expect(ids).toHaveLength(395);
+  const drawn = k.cells.filter((h) => h.attempts >= 2); // sizeCells does not draw single attempts
+  expect(new Set(ids)).toEqual(new Set(drawn.map((h) => `${h.x},${h.y}`))); // every drawn square, its "x,y"
+  expect([k.cells.length, ids.length]).toEqual([395, 260]);
   const rim = k.cells.find((h) => h.x === 0 && h.y === 0);
   expect([rim?.makes, rim?.attempts]).toEqual([91, 115]);
   expectToggles(k, store, "0,0");

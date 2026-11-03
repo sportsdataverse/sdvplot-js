@@ -43,5 +43,5 @@ test("SSR: shot cells with a tip render in Node (the cell centre anchors the tip
     marks: [...court.marks, shotCells(cells, { r: sizeCells(cells, { radius: 15 }).r, tip: true })],
   });
   expect(fig.outerHTML).toContain(EMPTY_TIP);
-  expect(fig.querySelectorAll("path[data-sdv-id]")).toHaveLength(211);
+  expect(fig.querySelectorAll("path[data-sdv-id]")).toHaveLength(174); // 211 hexes less 37 single attempts
 });

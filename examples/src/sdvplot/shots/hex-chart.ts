@@ -10,7 +10,8 @@ export const meta = {
 } satisfies ExampleMeta;
 
 // Brooklyn's first 2000 shots of 2025-26 against the 2025-26 league, hoop at the bottom. Colour is a cell's FG% minus
-// the league's; size is its attempts.
+// the league's; size is its attempts. sizeCells does not draw single attempts, and its biggest cells are 0.88 of the
+// cell, so neighbours never touch.
 const court = surface("nba", { displayRange: "defense", rotation: 90 });
 const frame = "nba-legacy-vertical";
 

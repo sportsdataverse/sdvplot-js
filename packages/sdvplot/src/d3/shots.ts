@@ -53,13 +53,19 @@ export interface AppendLegendOptions {
   caption?: readonly string[] | null;
   /** More lines under the caption, wrapped to `width` (e.g. a shrinkage note). */
   notes?: readonly string[];
-  /** A cell size key under the colour key: pixel size per attempt count and the counts (`sizeCells(...).steps`). */
+  /**
+   * A cell size key under the colour key: pixel size per attempt count and the counts (`sizeCells(...).steps`, which
+   * start at `minAttempts`).
+   */
   size?: {
     readonly px: (attempts: number) => number;
     readonly steps: readonly number[];
     /** The key's cell shape; default `"hex"`. */
     readonly shape?: BinShape;
-    /** Default `"hex size: attempts"` or `"square size: attempts"`. */
+    /**
+     * Default `"hex size: attempts"` or `"square size: attempts"`, plus `" (single attempts not drawn)"` when `px(1)`
+     * is 0 (`sizeCells`' default `minAttempts: 2`; `" (under n attempts not drawn)"` for a larger first step).
+     */
     readonly note?: string;
   };
 }
@@ -155,7 +161,14 @@ export function appendLegend<D>(
         .text(i === size.steps.length - 1 ? `${n}+` : String(n));
     });
     // main's drawNotes(key, 118, 4, width - 24 - 118, …) (hexShotChart.ts:212): wrapped, 8 characters a line at the least
-    const note = wrap(size.note ?? `${shape} size: attempts`, maxWidth - 118);
+    const first = size.steps[0] ?? 2;
+    const hidden =
+      size.px(1) > 0
+        ? ""
+        : first <= 2
+          ? " (single attempts not drawn)"
+          : ` (under ${first} attempts not drawn)`;
+    const note = wrap(size.note ?? `${shape} size: attempts${hidden}`, maxWidth - 118);
     note.forEach((t, i) => {
       key
         .append("text")

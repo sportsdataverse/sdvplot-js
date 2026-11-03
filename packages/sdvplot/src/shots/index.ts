@@ -18,6 +18,7 @@ export type {
   LeagueCell,
   LeagueIndex,
   ShotRow,
+  SizeCellsOptions,
   SizeRule,
   Split,
 } from "./aggregate.js";
