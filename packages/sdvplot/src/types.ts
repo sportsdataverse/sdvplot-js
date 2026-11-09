@@ -21,10 +21,17 @@ export const PRIORITY = [
   "bref",
   "sportsipy",
   "fangraphs",
+  "yahoo", // Yahoo's dotted ids ("ncaaf.t.1", "nba.t.1") are no other system's
+  "kenpom", // KenPom and Torvik team names (mbb; Torvik wbb too): the providers' own spellings, before "name"
+  "torvik",
   "sdvplotr",
   "name",
 ] as const;
-export const EXPLICIT_ONLY = ["nhl_id"] as const;
+/**
+ * Systems "auto" never tries, only an explicit `idSystem`: their numbers are other teams' ESPN ids. NHL stats API
+ * ids 1-28; Fox, CBS, 247Sports (team and institution ids) and On3 (org ids): Fox 25 is Ohio State, ESPN 25 California.
+ */
+export const EXPLICIT_ONLY = ["nhl_id", "fox", "cbs", "sports247", "on3"] as const;
 export type IdSystem = "auto" | (typeof PRIORITY)[number] | (typeof EXPLICIT_ONLY)[number];
 export type MarkType = "logo" | "wordmark";
 export type Which = "primary" | "secondary";

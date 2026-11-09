@@ -5,8 +5,28 @@ import type { SeasonInput } from "./types.js";
 
 const FLOAT_ID = /^-?\d+\.0+$/;
 const PUNCT: Record<string, string> = { "‘": "'", "’": "'", "–": "-", "—": "-" };
+// Eight Latin letters NFKD leaves whole, which providers also write plain (HB Koge, sdvplotR#70): o-slash, ae, oe,
+// d-stroke, eth, l-stroke, thorn, dotless i (Python _normalize._FOLD). Folded after NFKD, so a letter under an
+// accent (ǿ, ǣ) folds too.
+const LETTERS: Record<string, string> = {
+  ø: "o",
+  Ø: "o",
+  æ: "ae",
+  Æ: "ae",
+  œ: "oe",
+  Œ: "oe",
+  đ: "d",
+  Đ: "d",
+  ð: "d",
+  Ð: "d",
+  ł: "l",
+  Ł: "l",
+  þ: "th",
+  Þ: "th",
+  ı: "i",
+};
 
-/** Port of `_normalize.norm_value`: trimmed, accents + typographic punctuation folded, case-folded, integral numbers without ".0". */
+/** Port of `_normalize.norm_value`: trimmed, accents, the letters ø æ œ đ ð ł þ ı and typographic punctuation folded, case-folded, integral numbers without ".0". */
 export function normValue(value: unknown): string | null {
   if (value === null || value === undefined) return null;
   if (typeof value === "boolean") return String(value);
@@ -18,7 +38,8 @@ export function normValue(value: unknown): string | null {
     s = s
       .replace(/[‘’–—]/g, (c) => PUNCT[c] ?? c)
       .normalize("NFKD")
-      .replace(/\p{M}/gu, "");
+      .replace(/\p{M}/gu, "")
+      .replace(/[øØæÆœŒđĐðÐłŁþÞı]/g, (c) => LETTERS[c] ?? c);
   s = s.toLowerCase().replace(/ß/g, "ss").replace(/ς/g, "σ"); // Python casefold ≈ toLowerCase for these inputs; the oracle confirms
   if (FLOAT_ID.test(s)) s = s.split(".")[0] as string;
   return s || null;
