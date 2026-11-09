@@ -51,7 +51,11 @@ async function inked(png: Buffer, boxes: Box[]): Promise<{ inside: number[]; out
     for (let x = 0; x < img.width; x++) {
       const i = 4 * (y * img.width + x);
       const [r, gr, b, a] = [d[i]!, d[i + 1]!, d[i + 2]!, d[i + 3]!];
-      if (a === 0 || Math.max(r, gr, b) - Math.min(r, gr, b) <= 40) continue;
+      // Chroma as composited (premultiplied, i.e. as seen over a white page), not of the unpremultiplied value: in a
+      // near-transparent pixel one unit of rounding is 255 / a units of colour, so the grey (#666) tick-label text's
+      // alpha-5 edge, stored premultiplied as (2, 1, 1), reads back as (102, 51, 51) and passed for "coloured" on
+      // the ubuntu-26.04 20261101 runner image (3 pixels in the x labels). The logo's blue keeps chroma ~60 at 0.4 alpha.
+      if (a === 0 || ((Math.max(r, gr, b) - Math.min(r, gr, b)) * a) / 255 <= 40) continue;
       // a 1 px margin for the anti-aliased edge of an image drawn at a fractional position
       const k = boxes.findIndex(
         (o) => x >= o.x - 1 && x < o.x + o.w + 1 && y >= o.y - 1 && y < o.y + o.h + 1,
