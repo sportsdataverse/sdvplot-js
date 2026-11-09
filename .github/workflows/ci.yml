@@ -21,11 +21,13 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm build
       - run: pnpm test:coverage
-      # Non-fatal: a Codecov outage never fails ci. The org CODECOV_TOKEN; a fork's pull request gets an empty one,
-      # which Codecov accepts for forks.
+      # The org CODECOV_TOKEN; a fork's pull request gets an empty one, which Codecov accepts for forks.
+      # fail_ci_if_error stops the uploader on a failed signature or checksum check (it would otherwise run the
+      # downloaded binary); continue-on-error keeps a Codecov failure from failing ci.
       - uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5  # v7.1.1
         if: matrix.node == 22
-        with: { token: "${{ secrets.CODECOV_TOKEN }}", files: coverage/lcov.info, fail_ci_if_error: false }
+        continue-on-error: true
+        with: { token: "${{ secrets.CODECOV_TOKEN }}", files: coverage/lcov.info, fail_ci_if_error: true }
       - run: pnpm api:check
       - run: pnpm pack:check
       - run: pnpm docs:build

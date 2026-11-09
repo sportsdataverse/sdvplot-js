@@ -8,6 +8,8 @@ export default defineConfig({
       provider: "v8",
       reporter: ["text-summary", "lcov"],
       include: ["packages/*/src/**"],
+      // the generated index shards (build:index) are data: loading them all would count as covered code
+      exclude: ["packages/sdvplot/src/data/**"],
     },
   },
 });
