@@ -16,6 +16,7 @@ const row = (team_id: string, program: string | null, color: string): Team => ({
   color_primary: color,
   color_secondary: null,
   color_source: "fallback",
+  division: null,
 });
 const EXTRA = [
   row("ZCONF", "conference", "#010101"),

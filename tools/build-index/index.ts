@@ -113,6 +113,7 @@ async function main() {
         color_primary: str(t.color_primary),
         color_secondary: str(t.color_secondary),
         color_source: str(t.color_source),
+        division: str(t.division),
       }));
     const A = aliases
       .filter((a) => a.league === lg)
@@ -123,7 +124,8 @@ async function main() {
         valid_from: num(a.valid_from),
         valid_to: num(a.valid_to),
       }));
-    const dated = A.filter((a) => a.id_system !== "mark");
+    // the index's internal systems (Python _resolve._MARKS_ONLY) never date a league
+    const dated = A.filter((a) => !["mark", "conference", "competition"].includes(a.id_system));
     const nums = (xs: (number | null)[]) => xs.filter((x): x is number => x !== null);
     const hi = nums([...dated.map((a) => a.valid_from), ...dated.map((a) => a.valid_to)]);
     const lo = nums([...A.map((a) => a.valid_from), ...A.map((a) => a.valid_to)]);
@@ -165,7 +167,8 @@ export const MANIFEST_LAST_MODIFIED: string = ${JSON.stringify(new Date().toISOS
 export const VARIANTS = ${JSON.stringify(manifestVariants(manifest))} as const;
 export const INDEX_FIRST_SEASON: number | null = ${idxFirst}; export const INDEX_LAST_ALIAS_SEASON: number | null = ${idxLast};
 export const LEAGUE_META: Readonly<Record<League, { latestSeason: number | null; firstSeason: number | null }>> = ${JSON.stringify(meta)};
-export interface Team { league: League; team_id: string; abbr: string | null; name: string | null; short_name: string | null; location: string | null; program: string | null; conference_id: string | null; conference: string | null; color_primary: string | null; color_secondary: string | null; color_source: string | null }
+/** division: a college team's NCAA division in its latest season ("FBS", "FCS", "DII" or "DIII" in cfb; "DI", "DII" or "DIII" in the other college leagues), null for a pro team, a team with no NCAA division and a conference or league row (Python's teams()). */
+export interface Team { league: League; team_id: string; abbr: string | null; name: string | null; short_name: string | null; location: string | null; program: string | null; conference_id: string | null; conference: string | null; color_primary: string | null; color_secondary: string | null; color_source: string | null; division: string | null }
 export interface Alias { id_system: string; value: string; team_id: string; valid_from: number | null; valid_to: number | null }
 export interface MarkRow { team_id: string; mark_type: "logo" | "wordmark"; variant: string; valid_from: number | null; valid_to: number | null; source: string; source_rank: number; first_seen: string; sha256: string; ext: string; width: number | null; height: number | null; archive_url: string }
 /** Shard row: archive_url is derived by the loader (archiveUrl), never stored. */
