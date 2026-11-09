@@ -12,7 +12,7 @@ pinning, Excel export) is mapped.
 
 The subpath never imports MUI. It returns plain props whose types only match MUI's shapes (checked against MUI's own
 types), and builds its images with React's `createElement`, so it also renders on the server. `@mui/x-data-grid` is an
-optional peer, 9.15.0 or later; these examples run 9.15.0 with `@mui/material` 9.5.0. MUI's own peers
+optional peer, 9.15.0 or later but below 10 (the adapter styles v9's grid); these examples run 9.15.0 with `@mui/material` 9.5.0. MUI's own peers
 (`@mui/material`, `@mui/system`, `@emotion/react` and `@emotion/styled`) are your app's, as for any MUI component. Each
 grid below is drawn by MUI in your browser.
 
