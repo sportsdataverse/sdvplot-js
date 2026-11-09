@@ -492,7 +492,12 @@ export type TeamId = string & {
 };
 
 // @public
-export function teams(league?: League): Promise<readonly Team[]>;
+export function teams(league?: League, opts?: TeamsOptions): Promise<readonly Team[]>;
+
+// @public
+export interface TeamsOptions {
+    includeConferences?: boolean;
+}
 
 // @public (undocumented)
 export const TIER_DESC: Readonly<Record<number, string>>;
