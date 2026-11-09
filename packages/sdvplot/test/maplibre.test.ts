@@ -26,6 +26,7 @@ import {
 } from "../src/maplibre.js";
 import { teamColorPalette as rechartsPalette } from "../src/recharts.js";
 import "./_fixtures.js";
+import { withoutLogos } from "./_no-logo.js";
 
 /**
  * The style JSON `./maplibre` builds, checked value by value and by MapLibre's own style validator (the
@@ -139,6 +140,7 @@ describe("logoSymbols", () => {
   });
 
   test("a team with colours but no archived logo draws nothing and warns once", async () => {
+    await withoutLogos("ncaa_whockey", "48"); // Delaware keeps its colours; its archived logo is taken away
     await loadLeague("ncaa_whockey");
     expect(teamColorsSync("ncaa_whockey", ["DEL"])[0]).toBeDefined();
     const other = getLeagueSync("ncaa_whockey").teams.find((t) => t.abbr !== "DEL")?.team_id as string;

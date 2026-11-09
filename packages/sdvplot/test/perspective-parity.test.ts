@@ -58,7 +58,7 @@ afterEach(() => setWarningHandler(null));
 describe("perspectiveConfig equals Python's perspective_sdv_config", () => {
   test("the fixture is the recorded one, from sdvplot's perspective.py of 519695e2 on perspective-python 5.5.1", () => {
     expect(createHash("sha256").update(readFileSync(FILE)).digest("hex")).toBe(
-      "6844c52bcdab5b7e358c41c763f47dc6f4a7abdb4f68ff68f4faf483eafe8f92",
+      "92e9a103de65686084d8982d9e7d54805b9c0b072284d8f6252e30e0e08e08fe",
     );
     expect(oracle.meta).toMatchObject({
       perspective_py_commit: "519695e2ee4b968b76bd7f2e167116e8ab81ec8a",
@@ -111,23 +111,24 @@ describe("perspectiveConfig equals Python's perspective_sdv_config", () => {
 });
 
 describe("perspectiveLogoColumn equals Python's perspective_logo_column", () => {
-  test("the logo columns cover string and numeric teams, unresolved and null ones, a team with no logo, a variant, a name and seasons", () => {
+  test("the logo columns cover string and numeric teams, unresolved and null ones, a variant, a name and seasons", () => {
     expect(oracle.meta).toMatchObject({
-      manifest_etag: '"2b13d9cab12913e507f4b72d702562a7"',
-      manifest_last_modified: "Thu, 01 Oct 2026 07:44:07 GMT",
-      manifest_sha256: "39579c5515acb75547ce4c30da58478c26b3d9336af7bf66c6582d96df571da8",
+      manifest_etag: '"7f2aa39f8df02fdbcb98e91f9979d416"',
+      manifest_last_modified: "Mon, 09 Nov 2026 05:29:06 GMT",
+      manifest_sha256: "b1ff1a376641bd168718977ded881e492d27ac2e76e956a33ab59d1c21007442",
     });
     // both snapshots pinned: a rebuilt index can move a URL (a rebrand) without any port change, so re-run the oracle
     expect(
       INDEX_VERSION,
       "the bundled index changed: re-run tools/oracle/perspective.py, then update this pin",
-    ).toBe("1c025b69f8cf");
+    ).toBe("e04c50e5682e");
     const cases = oracle.logo_columns;
     const has = (f: (c: LogoCase) => boolean) => cases.some(f);
     expect(has((c) => typeof c.rows[0]?.[c.team_col] === "number")).toBe(true);
     expect(has((c) => c.rows.some((r) => r[c.team_col] === null))).toBe(true);
     expect(has((c) => c.warnings.some((w) => /did not resolve/.test(w)))).toBe(true);
-    expect(has((c) => c.warnings.some((w) => /no logo archived/.test(w)))).toBe(true);
+    // no real team gives "no logo archived" since the 2026-11 index (every team with colours has a logo):
+    // perspective.test.ts covers that warning with withoutLogos
     expect(has((c) => c.options.variant === "dark")).toBe(true);
     expect(has((c) => c.options.name !== undefined)).toBe(true);
     expect(cases.filter((c) => c.options.season !== undefined)).toHaveLength(2);

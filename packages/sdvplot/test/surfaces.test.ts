@@ -160,7 +160,8 @@ test("an unknown key, including an inherited Object property name, is an InputEr
   }
 });
 test("a team on a surface without team identities is an InputError naming the league", () => {
-  for (const key of ["atp", "wcf", "fiba", "nll"]) {
+  // fiba is a team surface since the 2026-11 index (its national teams), as in Python
+  for (const key of ["atp", "wcf", "nll"]) {
     expect(() => surfaceScene(key as never, { team: "X" }), key).toThrow(InputError);
     expect(() => surfaceScene(key as never, { team: "X" }), key).toThrow(
       new RegExp(`no team identities for '${key}'`),

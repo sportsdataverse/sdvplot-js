@@ -11,6 +11,7 @@ import {
 import { teamColorPalette } from "@sportsdataverse/sdvplot/mui";
 import { cleanup, render } from "@testing-library/react";
 import { afterEach, beforeAll, beforeEach, expect, test } from "vitest";
+import { withoutLogos } from "../../../sdvplot/test/_no-logo.js";
 import { defineTable } from "../../src/define.js";
 import { prepare, renderHTML } from "../../src/html/index.js";
 import { dataGridProps } from "../../src/mui.js";
@@ -242,6 +243,7 @@ test("headshots: a player leaderboard draws each player's ESPN headshot in its o
 });
 
 test("missing assets: a team with colours but no logo, or an unknown team, keeps its text; one warning each", async () => {
+  await withoutLogos("ncaa_whockey", "48"); // Delaware keeps its colours; its archived logo is taken away
   type R = { team: string; n: number };
   const rows: R[] = [
     { team: "DEL", n: 1 },

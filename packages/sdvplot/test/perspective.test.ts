@@ -6,6 +6,7 @@ import { getLeagueSync } from "../src/index-data.js";
 import { loadLeague, logoUrlSync, resetWarnings, setWarningHandler } from "../src/index.js";
 import { type PerspectiveRow, perspectiveConfig, perspectiveLogoColumn } from "../src/perspective.js";
 import "./_fixtures.js";
+import { withoutLogos } from "./_no-logo.js";
 
 function warnings<T>(fn: () => T): [T, string[]] {
   const spy = vi.fn();
@@ -107,8 +108,9 @@ describe("the logo column", () => {
   });
 
   test("a missing asset is null, with one warning per reason: no team, and no archived logo", async () => {
+    await withoutLogos("ncaa_whockey", "48"); // Delaware keeps its colours; its archived logo is taken away
     await loadLeague("ncaa_whockey");
-    // Delaware is in the NCAA women's hockey index with colours but no archived logo
+    // Delaware is in the NCAA women's hockey index with colours (withoutLogos takes its logo away)
     const del = getLeagueSync("ncaa_whockey").teams.find((t) => t.abbr === "DEL");
     expect(del).toBeDefined();
     const other = getLeagueSync("ncaa_whockey").teams.find((t) => t.abbr === "MINN")?.abbr as string;

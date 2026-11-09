@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sdvplot_commit": "fc6c77add684a9698319c12f31e0548ae3bbc263",
+  "sdvplot_commit": "1b19cf0cf786baf5b7732476db4b859bfe040c51",
   "perspective_py_commit": "519695e2ee4b968b76bd7f2e167116e8ab81ec8a",
-  "sdvplot_version": "0.1.1",
+  "sdvplot_version": "0.3.0",
   "table_themes_py_commit": "6c5d2050c071549df5937aefde868917dd2e6a4a",
   "table_themes_json_commit": "6c5d2050c071549df5937aefde868917dd2e6a4a",
   "perspective_python": "5.5.1",
-  "index_version": "0aeef853ec2b",
-  "manifest_etag": "\"2b13d9cab12913e507f4b72d702562a7\"",
-  "manifest_last_modified": "Thu, 01 Oct 2026 07:44:07 GMT",
-  "manifest_sha256": "39579c5515acb75547ce4c30da58478c26b3d9336af7bf66c6582d96df571da8"
+  "index_version": "e04c50e5682e",
+  "manifest_etag": "\"7f2aa39f8df02fdbcb98e91f9979d416\"",
+  "manifest_last_modified": "Mon, 09 Nov 2026 05:29:06 GMT",
+  "manifest_sha256": "b1ff1a376641bd168718977ded881e492d27ac2e76e956a33ab59d1c21007442"
  },
  "cases": [
   {
@@ -6800,7 +6800,7 @@
    "warnings": []
   },
   {
-   "name": "no archived logo",
+   "name": "college hockey, dark",
    "team_col": "team",
    "options": {
     "league": "ncaa_whockey",
@@ -6827,7 +6827,7 @@
     },
     {
      "team": "DEL",
-     "team_logo": null
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/96/9691fa8cbf9228264585cd79bf35d091ce0f532f62935af087c169227b200fe0.png"
     },
     {
      "team": "ZZZ",
@@ -6835,12 +6835,11 @@
     },
     {
      "team": "DEL",
-     "team_logo": null
+     "team_logo": "https://sdv.nyc3.cdn.digitaloceanspaces.com/assets/public/sha256/96/9691fa8cbf9228264585cd79bf35d091ce0f532f62935af087c169227b200fe0.png"
     }
    ],
    "warnings": [
-    "1 value(s) did not resolve to a ncaa_whockey team: 'ZZZ' (unknown). Use sdvplot.suggest() for candidates, or strict=True to raise.",
-    "skipped 1 point(s) with no logo archived: 'DEL'"
+    "1 value(s) did not resolve to a ncaa_whockey team: 'ZZZ' (unknown). Use sdvplot.suggest() for candidates, or strict=True to raise."
    ]
   }
  ]

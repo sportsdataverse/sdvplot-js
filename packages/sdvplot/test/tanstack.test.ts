@@ -27,6 +27,7 @@ import {
 } from "../src/tanstack.js";
 import { MIN_CONTRAST, MIN_DELTA_E, deltaE } from "../src/team-palette.js";
 import { ROWS, ROWS_UNKNOWN } from "./_fixtures.js";
+import { withoutLogos } from "./_no-logo.js";
 
 beforeEach(() => resetWarnings()); // warn() dedupes per key per process; every test counts its own
 
@@ -139,8 +140,9 @@ describe("logoDots / wordmarkDots / headshotDots", () => {
   });
 
   test("a team with colours but no archived logo draws nothing (no broken image) and warns once", async () => {
+    await withoutLogos("ncaa_whockey", "48"); // Delaware keeps its colours; its archived logo is taken away
     await loadLeague("ncaa_whockey");
-    // Delaware is in the NCAA women's hockey index with colours but no archived logo
+    // Delaware is in the NCAA women's hockey index with colours (withoutLogos takes its logo away)
     expect(getLeagueSync("ncaa_whockey").teams.find((t) => t.abbr === "DEL")).toBeDefined();
     expect(teamColorsSync("ncaa_whockey", ["DEL"])[0]).toBeDefined();
     const other = getLeagueSync("ncaa_whockey").teams.find((t) => t.abbr !== "DEL")?.team_id as string;

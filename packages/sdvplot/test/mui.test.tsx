@@ -34,6 +34,7 @@ import { teamColorPalette as rechartsPalette } from "../src/recharts.js";
 import { MIN_CONTRAST, MIN_DELTA_E, deltaE } from "../src/team-palette.js";
 import { drawnMarks } from "../src/testing/index.js";
 import "./_fixtures.js";
+import { withoutLogos } from "./_no-logo.js";
 
 beforeEach(() => resetWarnings()); // warn() dedupes per key per process; every test counts its own
 afterEach(cleanup);
@@ -165,8 +166,9 @@ describe("logoMarker: a scatter's marker slot, in a real MUI X Charts 9.15 rende
     expect(box(img as Element).h).toBe(40);
   });
 
-  test("a missing logo, an unknown team or a point with no team: nothing drawn there, one warning each", () => {
-    // Delaware women's hockey has colours but no archived logo
+  test("a missing logo, an unknown team or a point with no team: nothing drawn there, one warning each", async () => {
+    await withoutLogos("ncaa_whockey", "48"); // Delaware keeps its colours; its archived logo is taken away
+    // Delaware women's hockey has colours (withoutLogos takes its logo away)
     const del = getLeagueSync("ncaa_whockey").teams.find((t) => t.abbr === "DEL");
     if (del === undefined) throw new Error("no Delaware in ncaa_whockey");
     expect(logoUrlSync("DEL", "ncaa_whockey")).toBeUndefined();
