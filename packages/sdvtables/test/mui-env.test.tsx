@@ -110,7 +110,7 @@ test("./mui is pure: no import of MUI, static or dynamic; it reuses sdvplot/mui'
 test("the ./mui subpath is exported, with @mui/x-data-grid an optional peer at the tested 9.15.0, and no Pro, Premium or material peer", () => {
   const pkg = JSON.parse(readFileSync(resolve(SRC, "../package.json"), "utf8"));
   expect(pkg.exports["./mui"]).toEqual({ types: "./dist/mui.d.ts", import: "./dist/mui.js" });
-  expect(pkg.peerDependencies["@mui/x-data-grid"]).toBe(">=9.15.0");
+  expect(pkg.peerDependencies["@mui/x-data-grid"]).toBe(">=9.15.0 <10");
   expect(pkg.peerDependenciesMeta["@mui/x-data-grid"]).toEqual({ optional: true });
   expect(pkg.devDependencies["@mui/x-data-grid"], "the floor is the version the tests run").toBe("9.15.0");
   // MUI's own peers (material, system, emotion) are the app's: sdvtables' types never name them

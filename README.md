@@ -78,7 +78,7 @@ install for you, so add the ones for the subpaths you import:
 | `@sportsdataverse/sporty/d3` | `d3` >= 7 |
 | `@sportsdataverse/sdvtables`, `/html` | `@sportsdataverse/sdvplot` (a required peer; npm 7+ and pnpm install it for you) |
 | `@sportsdataverse/sdvtables/react` | `react` >= 18 |
-| `@sportsdataverse/sdvtables/mui` | `react` >= 18 (draw with `@mui/x-data-grid` >= 9.15.0, the MIT package, and its own peers, `@mui/material` and emotion) |
+| `@sportsdataverse/sdvtables/mui` | `react` >= 18 (draw with `@mui/x-data-grid` >= 9.15.0 < 10, the MIT package, and its own peers, `@mui/material` and emotion) |
 | `@sportsdataverse/sdvtables/export` | `playwright` >= 1.45 |
 | `@sportsdataverse/sdvtables/aggrid` | nothing at runtime (draw with `ag-grid-community` >= 36.2.0, the MIT Community edition; never `ag-grid-enterprise`); its type declarations name `ag-grid-community`'s types, so TypeScript needs it installed |
 | `@sportsdataverse/sdvtables/tanstack-table` | nothing at runtime (draw with `@tanstack/react-table`, `@tanstack/svelte-table` or another TanStack Table adapter, >= 9.3.1); its type declarations name `@tanstack/table-core`'s types, so TypeScript needs it installed |

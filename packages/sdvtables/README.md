@@ -247,7 +247,7 @@ component renders the static table. The `react` entry is marked `"use client"`.
 ### MUI X Data Grid
 
 ```tsx
-import { DataGrid } from "@mui/x-data-grid"; // peer: @mui/x-data-grid >= 9.15.0 (MIT; never -pro or -premium)
+import { DataGrid } from "@mui/x-data-grid"; // peer: @mui/x-data-grid >= 9.15.0 < 10 (MIT; never -pro or -premium)
 import { prepare } from "@sportsdataverse/sdvtables/html";
 import { dataGridProps } from "@sportsdataverse/sdvtables/mui";
 
