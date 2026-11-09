@@ -4,8 +4,9 @@ import { leagueRowsSync, loadLeague, preloadAll } from "./index-data.js";
 /** Options of `teams`. */
 export interface TeamsOptions {
   /**
-   * Also list the conference and league rows (`program` `"conference"` or `"league"`; Python's and sdvplotR's
-   * `include_conferences`). The default, false, lists teams only, as palettes, colours and every other team listing do.
+   * Also list the non-team rows, whose `program` is `"conference"`, `"league"` or `"division"` (the index has only the
+   * first two today; Python's and sdvplotR's `include_conferences`). The default, false, lists teams only, as palettes,
+   * colours and every other team listing do.
    */
   includeConferences?: boolean;
 }
