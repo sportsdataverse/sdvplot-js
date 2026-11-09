@@ -66,7 +66,7 @@
     "render:themes": "vitest run test/theme-pass.test.ts"
   },
   "peerDependencies": {
-    "@mui/x-data-grid": ">=9.15.0",
+    "@mui/x-data-grid": ">=9.15.0 <10",
     "@sportsdataverse/sdvplot": "workspace:>=0.2.0 <1",
     "@tanstack/table-core": ">=9.3.1",
     "ag-grid-community": ">=36.2.0",
