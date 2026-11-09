@@ -5,6 +5,7 @@ import {
   LEAGUE_META,
   type League,
   type LeagueData,
+  type Team,
   loaders,
 } from "./data/index.js";
 import { InputError } from "./errors.js";
@@ -12,6 +13,14 @@ import { loadGsis } from "./headshots.js";
 
 const loaded = new Map<League, LeagueData>();
 const pending = new Map<League, Promise<LeagueData>>();
+const allRows = new Map<League, readonly Team[]>();
+
+/**
+ * Python `_index.NON_TEAM`: the `program` of the conference and league rows (and the NHL's division marks). Every team
+ * listing leaves them out unless asked (`teams(league, { includeConferences: true })`); a null program (soccer) is a team.
+ */
+const NON_TEAM: readonly string[] = ["conference", "league", "division"];
+const isTeam = (t: Team): boolean => t.program === null || !NON_TEAM.includes(t.program);
 
 export function checkLeague(league: string): asserts league is League {
   if (!(LEAGUES as readonly string[]).includes(league))
@@ -37,7 +46,10 @@ export async function loadLeague(league: League): Promise<LeagueData> {
   let p = pending.get(league);
   if (!p) {
     p = loaders[league]().then(
-      (d) => {
+      (raw) => {
+        // Python `_index.team_table`: the rows palettes, colours, tables and every team listing read
+        const d = raw.teams.every(isTeam) ? raw : { ...raw, teams: raw.teams.filter(isTeam) };
+        allRows.set(league, raw.teams);
         loaded.set(league, d);
         pending.delete(league);
         return d;
@@ -63,6 +75,11 @@ export function getLeagueSync(league: League): LeagueData {
       `league ${league} is not loaded; await loadLeague("${league}") or preloadAll() before calling the *Sync variant`,
     );
   return d;
+}
+/** Every index row of a loaded league, its conference and league rows included (Python `teams(include_conferences=True)`). */
+export function leagueRowsSync(league: League): readonly Team[] {
+  getLeagueSync(league);
+  return allRows.get(league) as readonly Team[];
 }
 /** Port of `_index.season_bounds`: [first, last]; last = max(latest alias season, next year). */
 export function seasonBounds(league?: League): readonly [number, number] | null {

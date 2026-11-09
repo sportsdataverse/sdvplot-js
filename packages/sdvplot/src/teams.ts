@@ -1,9 +1,32 @@
 import { LEAGUES, type League, type Team } from "./data/index.js";
-import { loadLeague, preloadAll } from "./index-data.js";
+import { leagueRowsSync, loadLeague, preloadAll } from "./index-data.js";
 
-/** All teams for one league, or every league (in `LEAGUES` order) when omitted. */
-export async function teams(league?: League): Promise<readonly Team[]> {
-  if (league) return (await loadLeague(league)).teams;
+/** Options of `teams`. */
+export interface TeamsOptions {
+  /**
+   * Also list the non-team rows, whose `program` is `"conference"`, `"league"` or `"division"` (the index has only the
+   * first two today; Python's and sdvplotR's `include_conferences`). The default, false, lists teams only, as palettes,
+   * colours and every other team listing do.
+   */
+  includeConferences?: boolean;
+}
+
+/**
+ * All teams for one league, or every league (in `LEAGUES` order) when omitted.
+ *
+ * @example
+ * ```ts
+ * import { teams } from "@sportsdataverse/sdvplot";
+ *
+ * await teams("cfb", { includeConferences: true });
+ * ```
+ */
+export async function teams(league?: League, opts: TeamsOptions = {}): Promise<readonly Team[]> {
+  const rows = async (lg: League): Promise<readonly Team[]> => {
+    const d = await loadLeague(lg);
+    return opts.includeConferences ? leagueRowsSync(lg) : d.teams;
+  };
+  if (league) return rows(league);
   await preloadAll();
-  return (await Promise.all(LEAGUES.map(loadLeague))).flatMap((d) => d.teams);
+  return (await Promise.all(LEAGUES.map(rows))).flat();
 }

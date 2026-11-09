@@ -34,16 +34,14 @@ interface SdvplotData {
   INDEX_VERSION: string;
   MANIFEST_LAST_MODIFIED: string;
   ARCHIVE_BASE: string;
-  loaders: Readonly<
-    Record<
-      string,
-      () => Promise<{
-        teams: readonly { color_primary: string | null; color_source: string | null }[];
-        aliases: readonly { id_system: string }[];
-        marks: readonly { team_id: string; mark_type: string; source: string }[];
-      }>
-    >
-  >;
+}
+/** sdvplot's own loader (packages/sdvplot/src/index-data.ts): its `teams` are team rows, never conference or league rows. */
+interface SdvplotIndex {
+  loadLeague: (league: string) => Promise<{
+    teams: readonly { color_primary: string | null; color_source: string | null }[];
+    aliases: readonly { id_system: string }[];
+    marks: readonly { team_id: string; mark_type: string; source: string }[];
+  }>;
 }
 interface SdvplotHeadshots {
   ESPN_HEADSHOT_LEAGUES: Readonly<Record<string, string>>;
@@ -64,8 +62,9 @@ interface Sporty {
  */
 export async function coverage(): Promise<Coverage> {
   const load = <T>(p: string): Promise<T> => import(/* webpackIgnore: true */ abs(p)) as Promise<T>;
-  const [data, shots, sporty] = await Promise.all([
+  const [data, index, shots, sporty] = await Promise.all([
     load<SdvplotData>("packages/sdvplot/src/data/index.ts"),
+    load<SdvplotIndex>("packages/sdvplot/src/index-data.ts"),
     load<SdvplotHeadshots>("packages/sdvplot/src/headshots.ts"),
     load<Sporty>("packages/sporty/src/api.ts"),
   ]);
@@ -85,9 +84,7 @@ export async function coverage(): Promise<Coverage> {
   };
   const leagues: LeagueCoverage[] = [];
   for (const league of data.LEAGUES) {
-    const loader = data.loaders[league];
-    if (!loader) throw new Error(`sdv-coverage: no loader for league ${league}`);
-    const d = await loader();
+    const d = await index.loadLeague(league);
     for (const t of d.teams) count(colorSources, t.color_source);
     for (const m of d.marks) count(markSources, m.source);
     const withMark = (type: string): number =>

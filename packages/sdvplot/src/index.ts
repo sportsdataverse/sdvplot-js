@@ -33,7 +33,7 @@ export {
 export { normSeason, normValue } from "./normalize.js";
 export { latestSeason, loadLeague, preloadAll, seasonBounds } from "./index-data.js";
 export { resolve, resolveSync, suggest } from "./resolve.js";
-export { teams } from "./teams.js";
+export { type TeamsOptions, teams } from "./teams.js";
 export { rowsFrom } from "./rows.js";
 export { palette, teamColors, teamColorsSync } from "./colors.js";
 export { matchupColors, matchupColorsSync } from "./matchup-colors.js";
