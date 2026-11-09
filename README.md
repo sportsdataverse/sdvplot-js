@@ -1,5 +1,7 @@
 # **sdvplot-js** <a href='https://plot.sportsdataverse.org/'><img src='https://raw.githubusercontent.com/sportsdataverse/sdvplot-js/main/docs/static/img/sdvplot-js-logo.png' align="right" width="25%" min-width="120px" alt="sdvplot-js hex logo" /></a>
 
+Team identity, colors, logos, wordmarks, headshots, playing surfaces and publication tables for JavaScript and TypeScript plots, from the SportsDataverse.
+
 <!-- badges: start -->
 
 [![sdvplot](https://img.shields.io/npm/v/@sportsdataverse/sdvplot?label=sdvplot&logo=npm&style=for-the-badge)](https://www.npmjs.com/package/@sportsdataverse/sdvplot)
@@ -8,16 +10,17 @@
 [![Node](https://img.shields.io/node/v/@sportsdataverse/sdvplot?logo=nodedotjs&logoColor=white&style=for-the-badge)](https://nodejs.org/)
 [![ci](https://img.shields.io/github/actions/workflow/status/sportsdataverse/sdvplot-js/ci.yml?branch=main&label=ci&logo=github&style=for-the-badge)](https://github.com/sportsdataverse/sdvplot-js/actions/workflows/ci.yml)
 [![release](https://img.shields.io/github/actions/workflow/status/sportsdataverse/sdvplot-js/release.yml?branch=main&label=release&logo=github&style=for-the-badge)](https://github.com/sportsdataverse/sdvplot-js/actions/workflows/release.yml)
+[![Coverage](https://img.shields.io/codecov/c/github/sportsdataverse/sdvplot-js?logo=codecov&style=for-the-badge)](https://app.codecov.io/gh/sportsdataverse/sdvplot-js)
 [![docs](https://img.shields.io/github/deployments/sportsdataverse/sdvplot-js/Production?label=docs&logo=vercel&style=for-the-badge)](https://plot.sportsdataverse.org)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg?style=for-the-badge&logo=github)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![License](https://img.shields.io/github/license/sportsdataverse/sdvplot-js?style=for-the-badge)](https://github.com/sportsdataverse/sdvplot-js/blob/main/LICENSE)
 [![Contributors](https://img.shields.io/github/contributors/sportsdataverse/sdvplot-js?style=for-the-badge)](https://github.com/sportsdataverse/sdvplot-js/graphs/contributors)
-[![Twitter Follow](https://img.shields.io/twitter/follow/SportsDataverse?color=blue&label=%40SportsDataverse&logo=x&style=for-the-badge)](https://x.com/SportsDataverse)
+[![GitHub stars](https://img.shields.io/github/stars/sportsdataverse/sdvplot-js?logo=github&style=for-the-badge)](https://github.com/sportsdataverse/sdvplot-js)
+[![X Follow](https://img.shields.io/twitter/follow/SportsDataverse?color=blue&label=%40SportsDataverse&logo=x&style=for-the-badge)](https://x.com/SportsDataverse)
 
 <!-- badges: end -->
 
-Team identity, colors, logos, wordmarks, headshots, playing surfaces and publication tables for JavaScript and
-TypeScript plots, from the SportsDataverse. sdvplot-js resolves team abbreviations, names and provider ids across 28
+sdvplot-js resolves team abbreviations, names and provider ids across 28
 leagues and picks the right era's mark for a season; draws courts, rinks and fields for ten sports; and renders
 themed tables with team logos. The marks work with Observable Plot, d3 and React, plus adapters for 20+ chart, map,
 grid and 3D libraries: Chart.js, Plotly, Vega-Lite, ECharts, Recharts, MUI X, nivo, Victory, uPlot, Svelte and
@@ -207,17 +210,6 @@ The [**sdvplot-js** documentation website](https://plot.sportsdataverse.org) has
 [Game on Paper (Chart.js + Astro/Svelte)](https://plot.sportsdataverse.org/guides/game-on-paper) ·
 [blazing-the-nets (Next/React + d3)](https://plot.sportsdataverse.org/guides/blazing-the-nets)
 
-<!-- cheatsheet-section -->
-## **Cheat sheet**
-
-A printable four-page reference for **sdvplot-js**: team marks on seven chart libraries and React, sporty surfaces,
-shot charts, linked interactivity and sdvtables, in four colour themes, light and dark.
-
-📄 **[Download the sdvplot-js cheat sheet (PDF)](https://sportsdataverse.org/cheatsheets/sdvplot-js.pdf)**
-
-Browse the other SportsDataverse cheat sheets at
-**[sportsdataverse.org/cheatsheets](https://sportsdataverse.org/cheatsheets)**.
-
 ## **Development**
 
 ### Repository layout
@@ -310,10 +302,10 @@ See the full ecosystem at [sportsdataverse.org](https://sportsdataverse.org/).
 
 ## **Follow the [SportsDataverse](https://x.com/SportsDataverse) on X and star this repo**
 
-[![Twitter Follow](https://img.shields.io/twitter/follow/SportsDataverse?color=blue&label=%40SportsDataverse&logo=x&style=for-the-badge)](https://x.com/SportsDataverse)
-[![GitHub stars](https://img.shields.io/github/stars/sportsdataverse/sdvplot-js.svg?color=eee&logo=github&style=for-the-badge&label=Star%20sdvplot-js&maxAge=2592000)](https://github.com/sportsdataverse/sdvplot-js/stargazers)
+[![X Follow](https://img.shields.io/twitter/follow/SportsDataverse?color=blue&label=%40SportsDataverse&logo=x&style=for-the-badge)](https://x.com/SportsDataverse)
+[![GitHub stars](https://img.shields.io/github/stars/sportsdataverse/sdvplot-js.svg?color=eee&logo=github&style=for-the-badge&label=Star%20sdvplot-js&maxAge=2592000)](https://github.com/sportsdataverse/sdvplot-js)
 
-<a href="https://github.com/sportsdataverse/sdvplot-js/stargazers">
+<a href="https://github.com/sportsdataverse/sdvplot-js">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/sportsdataverse/sdvplot-js/star-history/star-history-dark.svg">
     <img alt="Star history of sportsdataverse/sdvplot-js" src="https://raw.githubusercontent.com/sportsdataverse/sdvplot-js/star-history/star-history.png" width="600">
@@ -325,6 +317,17 @@ See the full ecosystem at [sportsdataverse.org](https://sportsdataverse.org/).
 - [Saiem Gilani](https://x.com/saiemgilani)
   <a href="https://x.com/saiemgilani" target="blank"><img src="https://img.shields.io/twitter/follow/saiemgilani?color=blue&label=%40saiemgilani&logo=x&style=for-the-badge" alt="@saiemgilani" /></a>
   <a href="https://github.com/saiemgilani" target="blank"><img src="https://img.shields.io/github/followers/saiemgilani?color=eee&logo=Github&style=for-the-badge" alt="@saiemgilani" /></a>
+
+<!-- cheatsheet-section -->
+## **Cheat sheet**
+
+A printable four-page reference for **sdvplot-js**: team marks on seven chart libraries and React, sporty surfaces,
+shot charts, linked interactivity and sdvtables, in four colour themes, light and dark.
+
+📄 **[Download the sdvplot-js cheat sheet (PDF)](https://sportsdataverse.org/cheatsheets/sdvplot-js.pdf)**
+
+Browse the other SportsDataverse cheat sheets at
+**[sportsdataverse.org/cheatsheets](https://sportsdataverse.org/cheatsheets)**.
 
 ## **Citations**
 
