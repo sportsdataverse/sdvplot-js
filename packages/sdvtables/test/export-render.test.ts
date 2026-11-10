@@ -327,7 +327,7 @@ describe.skipIf(!process.env.SDV_RENDER_TESTS)("playwright rendering (SDV_RENDER
       .build();
     const dir = await mkdtemp(join(tmpdir(), "sdvt-tall-"));
     await expect(tableToPNG(s, tall, { file: join(dir, "tall.png") })).rejects.toThrow(
-      /^the table renders [\d,]{3,5} ×\d{2},\d{3} px at deviceScaleFactor 2, past Chromium's canvas limit/,
+      /^the table renders [\d,]{3,5} × \d{2},\d{3} px at deviceScaleFactor 2, past Chromium's canvas limit/,
     );
     expect(await readdir(dir)).toEqual([]);
     const half = dims(await tableToPNG(s, tall, { deviceScaleFactor: 1 })); // the remedy the message names
