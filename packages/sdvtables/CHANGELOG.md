@@ -1,5 +1,16 @@
 # @sportsdataverse/sdvtables
 
+## 0.3.0
+
+### Minor Changes
+
+- 446a525: The peer ranges on the other sdvplot-js packages publish as `>=0.2.0 <1` instead of `^0`: sdvtables needs sdvplot 0.2 (its `/mui` and `/aggrid` import `sdvplot/mui` and `sdvplot/tanstack`, which sdvplot 0.1 lacks), and sdvplot asks for sporty 0.2. A later 0.x release of either still satisfies the range.
+- 446a525: The README and the npm description count all 170 themes (20 house themes, the 27 reactablefmtr themes plus `fmtr-team`, and the 122 registry themes) instead of "20 themes" and "18+3 themes", and the description names the React, MUI X Data Grid, AG Grid, TanStack Table and PNG outputs. The README links the theme registry, formatters, recipes and grid guides. The type declarations' comments no longer cite internal plan ids.
+
+### Patch Changes
+
+- e6626b9: The `@mui/x-data-grid` peer range is now `>=9.15.0 <10`. The MUI X adapter (`/mui`) styles the grid through v9's CSS variables and class names, which MUI doesn't document as stable, so v10 is outside the supported range. Depending on the package manager and its settings, installing v10 now gives a peer-dependency warning or error.
+
 ## 0.2.0
 
 ### Minor Changes
