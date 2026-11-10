@@ -1,10 +1,10 @@
 import { VARIANTS } from "./data/index.js";
 import type { League, LeagueData, MarkRow } from "./data/index.js";
 import { InputError, UnresolvedTeamError, warn } from "./errors.js";
-import { getLeagueSync, loadLeague } from "./index-data.js";
-import { fetchManifest, manifestMarks } from "./manifest.js";
+import { getLeagueSync, leagueRowsSync, loadLeague } from "./index-data.js";
+import { NON_TEAM_LEVELS, fetchManifest, manifestMarks } from "./manifest.js";
 import { normSeason } from "./normalize.js";
-import { type ResolveOptions, type Value, resolveSync } from "./resolve.js";
+import { type ResolveOptions, type Value, resolveMarksSync } from "./resolve.js";
 import type { IdSystem, MarkType, SeasonInput, Variant } from "./types.js";
 
 export interface SelectOptions {
@@ -50,9 +50,15 @@ export function selectMarkSync(team: Value, league: League, o: SelectOptions = {
   const s = normSeason(o.season, league);
   const d = getLeagueSync(league);
   checkVariant(variant, league, d);
-  const teamId = resolveSync(team, league, { season: s });
+  const teamId = resolveMarksSync(team, league, { season: s });
   if (teamId === undefined) return undefined;
-  const rows = d.marks.filter((r) => r.team_id === teamId && r.mark_type === markType);
+  let rows = d.marks.filter((r) => r.team_id === teamId && r.mark_type === markType);
+  // a conference or league row whose only official mark is a wordmark (the NHL's Conference Final marks) draws it as
+  // its logo; teams never do (Python select_mark)
+  if (!rows.length && markType === "logo") {
+    const program = leagueRowsSync(league).find((t) => t.team_id === teamId)?.program ?? null;
+    if (program !== null && NON_TEAM_LEVELS.has(program)) rows = d.marks.filter((r) => r.team_id === teamId);
+  }
   const side = variant === "dark" ? "dark" : "light";
   const polarity = (v: string): boolean => v === `on_${side}` || v.endsWith(`_on_${side}`);
   const requested = (v: string): boolean => v === variant;
@@ -83,7 +89,11 @@ export function logoUrlSync(team: Value, league: League, o: LogoUrlOptions = {})
   const markType = o.markType ?? "logo";
   checkMarkType(markType);
   checkVariant(o.variant ?? "default", league, getLeagueSync(league));
-  const teamId = resolveSync(team, league, ro({ season: o.season, idSystem: o.idSystem, strict: o.strict }));
+  const teamId = resolveMarksSync(
+    team,
+    league,
+    ro({ season: o.season, idSystem: o.idSystem, strict: o.strict }),
+  );
   if (teamId === undefined) return undefined;
   const row = selectMarkSync(teamId, league, o);
   if (row === undefined) {
@@ -125,7 +135,7 @@ export async function marks(
   o: { season?: SeasonInput; idSystem?: IdSystem; full?: boolean; fetch?: typeof fetch } = {},
 ): Promise<readonly MarkRow[]> {
   const d = await loadLeague(league);
-  const teamId = resolveSync(team, league, ro({ season: o.season, idSystem: o.idSystem, strict: true }));
+  const teamId = resolveMarksSync(team, league, ro({ season: o.season, idSystem: o.idSystem, strict: true }));
   if (teamId === undefined) throw new UnresolvedTeamError(`marks() needs a team, got ${String(team)}`);
   if (!o.full) return d.marks.filter((r) => r.team_id === teamId);
   const fo = o.fetch === undefined ? {} : { fetch: o.fetch };

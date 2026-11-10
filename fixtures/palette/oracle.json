@@ -1,8 +1,8 @@
 {
  "meta": {
-  "sdvplot_version": "0.1.1",
-  "sdvplot_commit": "fc6c77ad",
-  "index_version": "0aeef853ec2b",
+  "sdvplot_version": "0.3.0",
+  "sdvplot_commit": "1b19cf0c",
+  "index_version": "e04c50e5682e",
   "fallback": "#808080"
  },
  "cases": [

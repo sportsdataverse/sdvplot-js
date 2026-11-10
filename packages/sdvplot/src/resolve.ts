@@ -1,6 +1,7 @@
 import type { League, LeagueData } from "./data/index.js";
 import { InputError, UnresolvedTeamError, warn } from "./errors.js";
-import { getLeagueSync, latestSeason, loadLeague } from "./index-data.js";
+import { getLeagueSync, latestSeason, leagueRowsSync, loadLeague } from "./index-data.js";
+import { NON_TEAM_LEVELS } from "./manifest.js";
 import { checkSeason, normSeason, normValue } from "./normalize.js";
 import { EXPLICIT_ONLY, type IdSystem, PRIORITY, type SeasonInput, type TeamId, asTeamId } from "./types.js";
 
@@ -85,12 +86,35 @@ function seasons(season: ResolveOptions["season"], n: number, league: League): (
   return (season as readonly SeasonInput[]).map((s) => normSeason(s, league));
 }
 
+/**
+ * Python `_non_team`: normalized key -> team_id of the league's conference, league and division rows, by the row's own
+ * key and by its "conference" aliases (sdvplotR's other keys: "Southeastern Conference", "B1G"). Read after every team
+ * alias and only for marks, so a team's code that is also a conference's (cfb's "MAC", Macalester) stays the team's.
+ */
+const nonTeams = new WeakMap<LeagueData, Map<string, string>>();
+function nonTeam(league: League, d: LeagueData): Map<string, string> {
+  let m = nonTeams.get(d);
+  if (!m) {
+    m = new Map();
+    for (const t of leagueRowsSync(league)) {
+      if (t.program === null || !NON_TEAM_LEVELS.has(t.program)) continue;
+      const k = normValue(t.team_id);
+      if (k !== null) m.set(k, t.team_id);
+    }
+    for (const [k, cands] of lookup(d).get("conference") ?? [])
+      if (!m.has(k) && cands[0]) m.set(k, cands[0][0]);
+    nonTeams.set(d, m);
+  }
+  return m;
+}
+
 function resolveIds(
   items: readonly Value[],
   league: League,
   ss: (number | null)[],
   idSystem: IdSystem,
   d: LeagueData,
+  marks = false,
 ): { out: (TeamId | undefined)[]; unresolved: Map<string, string> } {
   const sys = systems(idSystem);
   for (const y of new Set(ss)) if (y !== null) checkSeason(y, league);
@@ -111,7 +135,11 @@ function resolveIds(
       return;
     }
     const mk = `${key}\u0000${ss[i]}`;
-    if (!memo.has(mk)) memo.set(mk, match(key, ss[i] ?? null, sys, table, latest));
+    if (!memo.has(mk)) {
+      let hit = match(key, ss[i] ?? null, sys, table, latest);
+      if (hit === null && marks) hit = nonTeam(league, d).get(key) ?? null; // a conference or league row's key
+      memo.set(mk, hit);
+    }
     const hit = memo.get(mk) as ReturnType<typeof match>;
     if (hit === null || Array.isArray(hit)) {
       unresolved.set(
@@ -143,6 +171,25 @@ export function resolveSync<T extends Value | readonly Value[]>(
   league: League,
   opts: ResolveOptions = {},
 ): Resolved<T> {
+  return resolveWith(values, league, opts, false);
+}
+/**
+ * Python `resolve_marks`, for the mark functions: a value no team answers to may be a conference or league row's key
+ * ("SEC", "Big 12", "AFC"), which has marks but is never a team, so `resolveSync` itself leaves it unresolved.
+ */
+export function resolveMarksSync<T extends Value | readonly Value[]>(
+  values: T,
+  league: League,
+  opts: ResolveOptions = {},
+): Resolved<T> {
+  return resolveWith(values, league, opts, true);
+}
+function resolveWith<T extends Value | readonly Value[]>(
+  values: T,
+  league: League,
+  opts: ResolveOptions,
+  marks: boolean,
+): Resolved<T> {
   const d = getLeagueSync(league);
   const arr = Array.isArray(values);
   const items = (arr ? values : [values]) as readonly Value[];
@@ -152,6 +199,7 @@ export function resolveSync<T extends Value | readonly Value[]>(
     seasons(opts.season, items.length, league),
     opts.idSystem ?? "auto",
     d,
+    marks,
   );
   if (unresolved.size) report(unresolved, league, opts.strict ?? false);
   return (arr ? out : out[0]) as Resolved<T>;
@@ -191,8 +239,10 @@ export async function suggest(
   const key = normValue(value);
   if (key === null) return [];
   const merged = new Map<string, string[]>();
-  for (const sys of lookup(d).values())
+  for (const [name, sys] of lookup(d)) {
+    if (name === "conference" || name === "competition") continue; // a conference row's key, a competition slug: never a team's
     for (const [k, cands] of sys) merged.set(k, [...(merged.get(k) ?? []), ...cands.map((c) => c[0])]);
+  }
   const names = new Map(d.teams.map((t) => [t.team_id, t.name ?? t.team_id]));
   const scored = [...merged.keys()]
     .map((k) => [k, ratio(k, key)] as const)

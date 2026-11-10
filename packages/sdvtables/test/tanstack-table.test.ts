@@ -10,6 +10,7 @@ import {
 } from "@tanstack/table-core";
 import { storeReactivityBindings } from "@tanstack/table-core/store-reactivity-bindings";
 import { beforeAll, beforeEach, expect, test } from "vitest";
+import { withoutLogos } from "../../sdvplot/test/_no-logo.js";
 import { defineTable } from "../src/define.js";
 import { prepare } from "../src/html/index.js";
 import type { TableSpec } from "../src/spec.js";
@@ -168,6 +169,7 @@ test("numeric team ids (as numbers and as strings) resolve to the same logos as 
 });
 
 test("missing assets: a team with colours but no logo, or an unknown team, keeps its text; one warning per value", async () => {
+  await withoutLogos("ncaa_whockey", "48"); // Delaware keeps its colours; its archived logo is taken away
   type R = { team: string; n: number };
   const rows: R[] = [
     { team: "DEL", n: 1 },

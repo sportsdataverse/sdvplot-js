@@ -22,6 +22,7 @@ from __future__ import annotations
 import dataclasses
 import hashlib
 import json
+import os
 import socket
 import subprocess
 import sys
@@ -231,7 +232,8 @@ SPECS = [
 # stats.nba.com ids), unresolved and null teams, the "dark" variant, a custom name, and a season for every team on the
 # codes of relocated franchises (Oakland/Las Vegas Raiders, San Diego/Los Angeles Chargers, St. Louis/Los Angeles Rams)
 reloc = pl.DataFrame({"team": ["OAK", "LV", "SD", "LAC", "STL", "LA"]})
-# NCAA women's hockey: Minnesota, Delaware (in the index, with no archived logo: the other warning), an unknown code
+# NCAA women's hockey: Minnesota, Delaware and an unknown code. Since the 2026-11 index every team with colours has an
+# archived logo, so no real team gives the "no logo archived" warning; perspective.test.ts covers it (withoutLogos)
 whockey = pl.DataFrame({"team": ["MINN", "DEL", "ZZZ", "DEL"]})
 LOGO_CASES: list[tuple[str, pl.DataFrame, str, dict]] = [
     ("nfl teams", epa, "team", {"league": "nfl"}),
@@ -242,7 +244,7 @@ LOGO_CASES: list[tuple[str, pl.DataFrame, str, dict]] = [
     ("custom name", epa.head(3), "team", {"league": "nfl", "name": "logo"}),
     ("relocations season 2015", reloc, "team", {"league": "nfl", "season": 2015}),
     ("relocations season 2024", reloc, "team", {"league": "nfl", "season": 2024}),
-    ("no archived logo", whockey, "team", {"league": "ncaa_whockey", "variant": "dark"}),
+    ("college hockey, dark", whockey, "team", {"league": "ncaa_whockey", "variant": "dark"}),
 ]
 
 
@@ -296,7 +298,7 @@ for name, frame, team_col, kw in LOGO_CASES:
     )
 manifest = _cache.read_meta("manifest/marks.csv") or {}
 
-PY = ROOT.parent / "sdvplot"
+PY = Path(os.environ.get("SDVPLOT_PY_REPO", ROOT.parent / "sdvplot"))  # as build:index and oracle:sdvplot
 git = lambda *a: subprocess.run(
     ["git", "-C", str(PY), *a], capture_output=True, text=True, check=True
 ).stdout.strip()  # noqa: E731

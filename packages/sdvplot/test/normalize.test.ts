@@ -18,6 +18,14 @@ test.each([
   [Number.NaN, null],
   [true, "true"],
   [12.5, "12.5"],
+  // the eight letters NFKD leaves whole (Python _FOLD): HB Køge is HB Koge
+  ["HB Køge", "hb koge"],
+  ["Æ Œ", "ae oe"],
+  ["Đorđe Ðakovo", "dorde dakovo"],
+  ["Łódź", "lodz"],
+  ["Þór", "thor"],
+  ["Kırıkkale", "kirikkale"],
+  ["ǿ", "o"],
 ])("normValue(%j) = %j", (v, want) => expect(normValue(v)).toBe(want));
 
 test("normSeason accepts 2020, 2020.0, '2020'; rejects split seasons with a hint", () => {

@@ -67,6 +67,8 @@ export function parseManifestCsv(text: string): ManifestRow[] {
   });
 }
 
+/** The index's non-team row kinds (Python _index.NON_TEAM): their marks are keyed "level:league:source:entity_id". */
+export const NON_TEAM_LEVELS: ReadonlySet<string> = new Set(["conference", "league", "division"]);
 const int = (s: string): number | null => (s === "" ? null : Number.parseInt(s, 10));
 const key = (source: string, id: string): string => `${source}:${id}`.trim().toLowerCase();
 
@@ -115,8 +117,14 @@ export function manifestMarks(
   const ma = markAliases(aliases);
   const out: MarkRow[] = [];
   for (const m of rows) {
-    if (m.level !== "team" || m.league !== league || !safeArchive(m)) continue;
-    const a = ma.get(key(m.source, m.entity_id));
+    // A team row of this league, or any conference, league or division row: ESPN files one conference logo under
+    // several leagues (sec.png: cfb 8, mbb 23), so the key carries the manifest's own level and league and the
+    // index row's mark alias names the row it reaches (Python _marks._ranked).
+    const nonTeam = NON_TEAM_LEVELS.has(m.level);
+    if ((!nonTeam && (m.level !== "team" || m.league !== league)) || !safeArchive(m)) continue;
+    const a = ma.get(
+      nonTeam ? key(`${m.level}:${m.league}:${m.source}`, m.entity_id) : key(m.source, m.entity_id),
+    );
     if (!a) continue;
     const vf = int(m.valid_from);
     const vt = int(m.valid_to);

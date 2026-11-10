@@ -4,6 +4,7 @@ import { type ReactElement, act } from "react";
 import { createRoot } from "react-dom/client";
 import { Bar, BarChart, Line, LineChart, XAxis } from "recharts";
 import { afterEach, beforeAll, expect, test, vi } from "vitest";
+import { withoutLogos } from "../../packages/sdvplot/test/_no-logo.js";
 import {
   ChartContainer,
   ChartLegend,
@@ -74,6 +75,7 @@ test("ChartStyle writes each team's --color-<key>: theme.light under the chart, 
 });
 
 test("ChartLegendContent draws each team's logo and name; a team with no logo keeps shadcn's swatch", async () => {
+  await withoutLogos("ncaa_whockey", "48"); // Delaware keeps its colours; its archived logo is taken away
   const { config, keys } = teamChartConfig("nfl", TEAMS);
   const rows = [{ week: 1, ...Object.fromEntries(keys.map((k, i) => [k, i])) }];
   const el = await mount(

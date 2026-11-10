@@ -9,6 +9,7 @@ import { teamColorPalette } from "../src/recharts.js";
 import { type TeamChartConfigOptions, teamChartConfig } from "../src/shadcn.js";
 import { MIN_CONTRAST } from "../src/team-palette.js";
 import "./_fixtures.js";
+import { withoutLogos } from "./_no-logo.js";
 
 beforeEach(() => resetWarnings()); // warn() dedupes per key per process; every test counts its own
 afterEach(cleanup);
@@ -204,8 +205,9 @@ describe("teamChartConfig", () => {
     expect(container.querySelector("img")).toBe(first);
   });
 
-  test("a team with no logo has no icon (shadcn draws its swatch) and warns once, naming it", () => {
-    // Delaware is in the NCAA women's hockey index with colours but no archived logo
+  test("a team with no logo has no icon (shadcn draws its swatch) and warns once, naming it", async () => {
+    await withoutLogos("ncaa_whockey", "48"); // Delaware keeps its colours; its archived logo is taken away
+    // Delaware is in the NCAA women's hockey index with colours (withoutLogos takes its logo away)
     const other = getLeagueSync("ncaa_whockey").teams.find((t) => t.abbr !== "DEL")?.team_id as string;
     const spy = vi.fn();
     setWarningHandler(spy);

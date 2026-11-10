@@ -1,6 +1,20 @@
 [
 {
 "league": "aaf",
+"value": "Alliance of American Football",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "aaf",
+"value": "Alliance of American Football",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "aaf",
 "value": "Arizona Hotshots",
 "season": null,
 "id_system": "auto",
@@ -204,24 +218,6 @@
 "id_system": "auto",
 "palette": {
 "722": "#0b2240"
-}
-},
-{
-"league": "aaf",
-"value": "722",
-"season": null,
-"id_system": "pff",
-"palette": {
-"722": "#0b2240"
-}
-},
-{
-"league": "aaf",
-"value": "723",
-"season": null,
-"id_system": "auto",
-"palette": {
-"723": "#0b2240"
 }
 },
 {
@@ -450,228 +446,1550 @@
 }
 },
 {
-"league": "cfb",
-"value": "Texas Christian",
+"league": "ajhl",
+"value": "1",
 "season": null,
 "id_system": "auto",
 "palette": {
-"Texas Christian": "#4d1979"
+"1": "#c1a260"
 }
 },
 {
-"league": "cfb",
-"value": "Texas Christian",
+"league": "ajhl",
+"value": "1",
 "season": null,
-"id_system": "cfbd",
+"id_system": "hockeytech",
 "palette": {
-"Texas Christian": "#4d1979"
+"1": "#c1a260"
 }
 },
 {
-"league": "cfb",
-"value": "Sioux Falls",
-"season": null,
-"id_system": "auto",
-"palette": {
-"Sioux Falls": "#492f91"
-}
-},
-{
-"league": "cfb",
-"value": "Sioux Falls",
-"season": null,
-"id_system": "cfbd",
-"palette": {
-"Sioux Falls": "#492f91"
-}
-},
-{
-"league": "cfb",
-"value": "Boston College",
+"league": "ajhl",
+"value": "11",
 "season": null,
 "id_system": "auto",
 "palette": {
-"Boston College": "#8c2232"
+"11": "#464e72"
 }
 },
 {
-"league": "cfb",
-"value": "Boston College",
+"league": "ajhl",
+"value": "11",
 "season": null,
-"id_system": "cfbd",
+"id_system": "hockeytech",
 "palette": {
-"Boston College": "#8c2232"
+"11": "#464e72"
 }
 },
 {
-"league": "cfb",
-"value": "Simpson (IA)",
-"season": null,
-"id_system": "auto",
-"palette": {
-"Simpson (IA)": "#b20838"
-}
-},
-{
-"league": "cfb",
-"value": "Simpson (IA)",
-"season": null,
-"id_system": "cfbd",
-"palette": {
-"Simpson (IA)": "#b20838"
-}
-},
-{
-"league": "cfb",
-"value": "Claremont-M-S",
+"league": "ajhl",
+"value": "12",
 "season": null,
 "id_system": "auto",
 "palette": {
-"Claremont-M-S": "#981a31"
+"12": "#fc640c"
 }
 },
 {
-"league": "cfb",
-"value": "Claremont-M-S",
+"league": "ajhl",
+"value": "12",
 "season": null,
-"id_system": "cfbd",
+"id_system": "hockeytech",
 "palette": {
-"Claremont-M-S": "#981a31"
+"12": "#fc640c"
 }
 },
 {
-"league": "cfb",
-"value": "New Mexico St",
-"season": null,
-"id_system": "auto",
-"palette": {
-"New Mexico St": "#7e141b"
-}
-},
-{
-"league": "cfb",
-"value": "New Mexico St",
-"season": null,
-"id_system": "cfbd",
-"palette": {
-"New Mexico St": "#7e141b"
-}
-},
-{
-"league": "cfb",
-"value": "Wisconsin",
+"league": "ajhl",
+"value": "13",
 "season": null,
 "id_system": "auto",
 "palette": {
-"Wisconsin": "#a00000"
+"13": "#d59c00"
 }
 },
 {
-"league": "cfb",
-"value": "Wisconsin",
+"league": "ajhl",
+"value": "13",
 "season": null,
-"id_system": "cfbd",
+"id_system": "hockeytech",
 "palette": {
-"Wisconsin": "#a00000"
+"13": "#d59c00"
 }
 },
 {
-"league": "cfb",
-"value": "Minnesota St",
-"season": null,
-"id_system": "auto",
-"palette": {
-"Minnesota St": "#480059"
-}
-},
-{
-"league": "cfb",
-"value": "Minnesota St",
-"season": null,
-"id_system": "cfbd",
-"palette": {
-"Minnesota St": "#480059"
-}
-},
-{
-"league": "cfb",
-"value": "ACU",
+"league": "ajhl",
+"value": "14",
 "season": null,
 "id_system": "auto",
 "palette": {
-"ACU": "#592d82"
+"14": "#fed900"
 }
 },
 {
-"league": "cfb",
-"value": "ACU",
+"league": "ajhl",
+"value": "14",
 "season": null,
-"id_system": "cfbd",
+"id_system": "hockeytech",
 "palette": {
-"ACU": "#592d82"
+"14": "#fed900"
 }
 },
 {
-"league": "cfb",
-"value": "COLG",
-"season": null,
-"id_system": "auto",
-"palette": {
-"COLG": "#821019"
-}
-},
-{
-"league": "cfb",
-"value": "COLG",
-"season": null,
-"id_system": "cfbd",
-"palette": {
-"COLG": "#821019"
-}
-},
-{
-"league": "cfb",
-"value": "WIS",
+"league": "ajhl",
+"value": "15",
 "season": null,
 "id_system": "auto",
 "palette": {
-"WIS": "#a00000"
+"15": "#00a935"
 }
 },
 {
-"league": "cfb",
-"value": "WIS",
+"league": "ajhl",
+"value": "15",
 "season": null,
-"id_system": "cfbd",
+"id_system": "hockeytech",
 "palette": {
-"WIS": "#a00000"
+"15": "#00a935"
 }
 },
 {
-"league": "cfb",
-"value": "HSU",
-"season": null,
-"id_system": "auto",
-"palette": {
-"HSU": "#5b2d83"
-}
-},
-{
-"league": "cfb",
-"value": "HSU",
-"season": null,
-"id_system": "cfbd",
-"palette": {
-"HSU": "#5b2d83"
-}
-},
-{
-"league": "cfb",
-"value": "BUCK",
+"league": "ajhl",
+"value": "16",
 "season": null,
 "id_system": "auto",
 "palette": {
-"BUCK": "#000060"
+"16": "#e8c433"
+}
+},
+{
+"league": "ajhl",
+"value": "16",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"16": "#e8c433"
+}
+},
+{
+"league": "ajhl",
+"value": "19",
+"season": null,
+"id_system": "auto",
+"palette": {
+"19": "#6a1019"
+}
+},
+{
+"league": "ajhl",
+"value": "19",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"19": "#6a1019"
+}
+},
+{
+"league": "ajhl",
+"value": "2",
+"season": null,
+"id_system": "auto",
+"palette": {
+"2": "#ee2140"
+}
+},
+{
+"league": "ajhl",
+"value": "2",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"2": "#ee2140"
+}
+},
+{
+"league": "ajhl",
+"value": "20",
+"season": null,
+"id_system": "auto",
+"palette": {
+"20": "#413f3e"
+}
+},
+{
+"league": "ajhl",
+"value": "20",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"20": "#413f3e"
+}
+},
+{
+"league": "ajhl",
+"value": "27",
+"season": null,
+"id_system": "auto",
+"palette": {
+"27": "#214194"
+}
+},
+{
+"league": "ajhl",
+"value": "27",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"27": "#214194"
+}
+},
+{
+"league": "ajhl",
+"value": "3",
+"season": null,
+"id_system": "auto",
+"palette": {
+"3": "#fac020"
+}
+},
+{
+"league": "ajhl",
+"value": "3",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"3": "#fac020"
+}
+},
+{
+"league": "ajhl",
+"value": "5",
+"season": null,
+"id_system": "auto",
+"palette": {
+"5": "#9d8558"
+}
+},
+{
+"league": "bchl",
+"value": "10",
+"season": null,
+"id_system": "auto",
+"palette": {
+"10": "#0a233f"
+}
+},
+{
+"league": "bchl",
+"value": "10",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"10": "#0a233f"
+}
+},
+{
+"league": "bchl",
+"value": "11",
+"season": null,
+"id_system": "auto",
+"palette": {
+"11": "#002a5f"
+}
+},
+{
+"league": "bchl",
+"value": "11",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"11": "#002a5f"
+}
+},
+{
+"league": "bchl",
+"value": "12",
+"season": null,
+"id_system": "auto",
+"palette": {
+"12": "#25366c"
+}
+},
+{
+"league": "bchl",
+"value": "12",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"12": "#25366c"
+}
+},
+{
+"league": "bchl",
+"value": "13",
+"season": null,
+"id_system": "auto",
+"palette": {
+"13": "#9b0d03"
+}
+},
+{
+"league": "bchl",
+"value": "13",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"13": "#9b0d03"
+}
+},
+{
+"league": "bchl",
+"value": "14",
+"season": null,
+"id_system": "auto",
+"palette": {
+"14": "#3f72aa"
+}
+},
+{
+"league": "bchl",
+"value": "14",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"14": "#3f72aa"
+}
+},
+{
+"league": "bchl",
+"value": "15",
+"season": null,
+"id_system": "auto",
+"palette": {
+"15": "#ed1b34"
+}
+},
+{
+"league": "bchl",
+"value": "15",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"15": "#ed1b34"
+}
+},
+{
+"league": "bchl",
+"value": "16",
+"season": null,
+"id_system": "auto",
+"palette": {
+"16": "#991b2c"
+}
+},
+{
+"league": "bchl",
+"value": "16",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"16": "#991b2c"
+}
+},
+{
+"league": "bchl",
+"value": "17",
+"season": null,
+"id_system": "auto",
+"palette": {
+"17": "#0b1f40"
+}
+},
+{
+"league": "bchl",
+"value": "17",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"17": "#0b1f40"
+}
+},
+{
+"league": "bchl",
+"value": "18",
+"season": null,
+"id_system": "auto",
+"palette": {
+"18": "#f8c417"
+}
+},
+{
+"league": "bchl",
+"value": "18",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"18": "#f8c417"
+}
+},
+{
+"league": "bchl",
+"value": "19",
+"season": null,
+"id_system": "auto",
+"palette": {
+"19": "#dcc995"
+}
+},
+{
+"league": "bchl",
+"value": "19",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"19": "#dcc995"
+}
+},
+{
+"league": "bchl",
+"value": "20",
+"season": null,
+"id_system": "auto",
+"palette": {
+"20": "#472a5c"
+}
+},
+{
+"league": "bchl",
+"value": "20",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"20": "#472a5c"
+}
+},
+{
+"league": "bchl",
+"value": "21",
+"season": null,
+"id_system": "auto",
+"palette": {
+"21": "#776c54"
+}
+},
+{
+"league": "bchl",
+"value": "21",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"21": "#776c54"
+}
+},
+{
+"league": "bchl",
+"value": "22",
+"season": null,
+"id_system": "auto",
+"palette": {
+"22": "#e29a5b"
+}
+},
+{
+"league": "cchl",
+"value": "1",
+"season": null,
+"id_system": "auto",
+"palette": {
+"1": "#a7233c"
+}
+},
+{
+"league": "cchl",
+"value": "1",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"1": "#a7233c"
+}
+},
+{
+"league": "cchl",
+"value": "10",
+"season": null,
+"id_system": "auto",
+"palette": {
+"10": "#01036e"
+}
+},
+{
+"league": "cchl",
+"value": "10",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"10": "#01036e"
+}
+},
+{
+"league": "cchl",
+"value": "11",
+"season": null,
+"id_system": "auto",
+"palette": {
+"11": "#bb0c0c"
+}
+},
+{
+"league": "cchl",
+"value": "11",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"11": "#bb0c0c"
+}
+},
+{
+"league": "cchl",
+"value": "12",
+"season": null,
+"id_system": "auto",
+"palette": {
+"12": "#015aaa"
+}
+},
+{
+"league": "cchl",
+"value": "12",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"12": "#015aaa"
+}
+},
+{
+"league": "cchl",
+"value": "179",
+"season": null,
+"id_system": "auto",
+"palette": {
+"179": "#fab702"
+}
+},
+{
+"league": "cchl",
+"value": "179",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"179": "#fab702"
+}
+},
+{
+"league": "cchl",
+"value": "2",
+"season": null,
+"id_system": "auto",
+"palette": {
+"2": "#f60405"
+}
+},
+{
+"league": "cchl",
+"value": "2",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"2": "#f60405"
+}
+},
+{
+"league": "cchl",
+"value": "3",
+"season": null,
+"id_system": "auto",
+"palette": {
+"3": "#203883"
+}
+},
+{
+"league": "cchl",
+"value": "3",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"3": "#203883"
+}
+},
+{
+"league": "cchl",
+"value": "4",
+"season": null,
+"id_system": "auto",
+"palette": {
+"4": "#21456b"
+}
+},
+{
+"league": "cchl",
+"value": "4",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"4": "#21456b"
+}
+},
+{
+"league": "cchl",
+"value": "5",
+"season": null,
+"id_system": "auto",
+"palette": {
+"5": "#da262e"
+}
+},
+{
+"league": "cchl",
+"value": "5",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"5": "#da262e"
+}
+},
+{
+"league": "cchl",
+"value": "6",
+"season": null,
+"id_system": "auto",
+"palette": {
+"6": "#422d72"
+}
+},
+{
+"league": "cchl",
+"value": "6",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"6": "#422d72"
+}
+},
+{
+"league": "cchl",
+"value": "7",
+"season": null,
+"id_system": "auto",
+"palette": {
+"7": "#c22027"
+}
+},
+{
+"league": "cchl",
+"value": "7",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"7": "#c22027"
+}
+},
+{
+"league": "cchl",
+"value": "8",
+"season": null,
+"id_system": "auto",
+"palette": {
+"8": "#fdcb23"
+}
+},
+{
+"league": "cchl",
+"value": "8",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"8": "#fdcb23"
+}
+},
+{
+"league": "cchl",
+"value": "9",
+"season": null,
+"id_system": "auto",
+"palette": {
+"9": "#b7142e"
+}
+},
+{
+"league": "cebl",
+"value": "Brampton Honey Badgers",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Brampton Honey Badgers": "#fbba12"
+}
+},
+{
+"league": "cebl",
+"value": "Brampton Honey Badgers",
+"season": null,
+"id_system": "name",
+"palette": {
+"Brampton Honey Badgers": "#fbba12"
+}
+},
+{
+"league": "cebl",
+"value": "Calgary Surge",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Calgary Surge": "#e91c2e"
+}
+},
+{
+"league": "cebl",
+"value": "Calgary Surge",
+"season": null,
+"id_system": "name",
+"palette": {
+"Calgary Surge": "#e91c2e"
+}
+},
+{
+"league": "cebl",
+"value": "Edmonton Stingers",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Edmonton Stingers": "#0f173b"
+}
+},
+{
+"league": "cebl",
+"value": "Edmonton Stingers",
+"season": null,
+"id_system": "name",
+"palette": {
+"Edmonton Stingers": "#0f173b"
+}
+},
+{
+"league": "cebl",
+"value": "Fraser Valley Bandits",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Fraser Valley Bandits": "#081c32"
+}
+},
+{
+"league": "cebl",
+"value": "Fraser Valley Bandits",
+"season": null,
+"id_system": "name",
+"palette": {
+"Fraser Valley Bandits": "#081c32"
+}
+},
+{
+"league": "cebl",
+"value": "Guelph Nighthawks",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Guelph Nighthawks": "#265484"
+}
+},
+{
+"league": "cebl",
+"value": "Guelph Nighthawks",
+"season": null,
+"id_system": "name",
+"palette": {
+"Guelph Nighthawks": "#265484"
+}
+},
+{
+"league": "cebl",
+"value": "Hamilton Honey Badgers",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Hamilton Honey Badgers": "#eacc50"
+}
+},
+{
+"league": "cebl",
+"value": "Hamilton Honey Badgers",
+"season": null,
+"id_system": "name",
+"palette": {
+"Hamilton Honey Badgers": "#eacc50"
+}
+},
+{
+"league": "cebl",
+"value": "Montreal Alliance",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Montreal Alliance": "#729eca"
+}
+},
+{
+"league": "cebl",
+"value": "Montreal Alliance",
+"season": null,
+"id_system": "name",
+"palette": {
+"Montreal Alliance": "#729eca"
+}
+},
+{
+"league": "cebl",
+"value": "Newfoundland Growlers",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Newfoundland Growlers": "#ad9567"
+}
+},
+{
+"league": "cebl",
+"value": "Newfoundland Growlers",
+"season": null,
+"id_system": "name",
+"palette": {
+"Newfoundland Growlers": "#ad9567"
+}
+},
+{
+"league": "cebl",
+"value": "Niagara River Lions",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Niagara River Lions": "#79ab65"
+}
+},
+{
+"league": "cebl",
+"value": "Niagara River Lions",
+"season": null,
+"id_system": "name",
+"palette": {
+"Niagara River Lions": "#79ab65"
+}
+},
+{
+"league": "cebl",
+"value": "Ottawa BlackJacks",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Ottawa BlackJacks": "#581f25"
+}
+},
+{
+"league": "cebl",
+"value": "Ottawa BlackJacks",
+"season": null,
+"id_system": "name",
+"palette": {
+"Ottawa BlackJacks": "#581f25"
+}
+},
+{
+"league": "cebl",
+"value": "Saskatchewan Rattlers",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Saskatchewan Rattlers": "#003720"
+}
+},
+{
+"league": "cebl",
+"value": "Saskatchewan Rattlers",
+"season": null,
+"id_system": "name",
+"palette": {
+"Saskatchewan Rattlers": "#003720"
+}
+},
+{
+"league": "cebl",
+"value": "Saskatoon Mamba",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Saskatoon Mamba": "#c423bf"
+}
+},
+{
+"league": "cebl",
+"value": "Saskatoon Mamba",
+"season": null,
+"id_system": "name",
+"palette": {
+"Saskatoon Mamba": "#c423bf"
+}
+},
+{
+"league": "cebl",
+"value": "Scarborough Shooting Stars",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Scarborough Shooting Stars": "#10dcf9"
+}
+},
+{
+"league": "cfb",
+"value": "841",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "cfb",
+"value": "841",
+"season": null,
+"id_system": "cbs",
+"palette": {
+"841": "#ce181e"
+}
+},
+{
+"league": "cfb",
+"value": "797",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "cfb",
+"value": "797",
+"season": null,
+"id_system": "cbs",
+"palette": {
+"797": "#280298"
+}
+},
+{
+"league": "cfb",
+"value": "345138",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "cfb",
+"value": "345138",
+"season": null,
+"id_system": "cbs",
+"palette": {
+"345138": "#eb7135"
+}
+},
+{
+"league": "cfb",
+"value": "13428",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "cfb",
+"value": "13428",
+"season": null,
+"id_system": "cbs",
+"palette": {
+"13428": "#000000"
+}
+},
+{
+"league": "cfb",
+"value": "493",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "cfb",
+"value": "493",
+"season": null,
+"id_system": "cbs",
+"palette": {
+"493": "#8c2232"
+}
+},
+{
+"league": "cfb",
+"value": "729",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "cfb",
+"value": "729",
+"season": null,
+"id_system": "cbs",
+"palette": {
+"729": "#041e42"
+}
+},
+{
+"league": "cfb",
+"value": "928",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "cfb",
+"value": "928",
+"season": null,
+"id_system": "cbs",
+"palette": {
+"928": "#a00000"
+}
+},
+{
+"league": "cfb",
+"value": "690",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "cfb",
+"value": "690",
+"season": null,
+"id_system": "cbs",
+"palette": {
+"690": "#173f35"
+}
+},
+{
+"league": "cfb",
+"value": "455",
+"season": null,
+"id_system": "auto",
+"palette": {
+"455": "#ff4c00"
+}
+},
+{
+"league": "cfb",
+"value": "455",
+"season": null,
+"id_system": "cbs",
+"palette": {
+"455": "#041e42"
+}
+},
+{
+"league": "cfb",
+"value": "470",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "cfb",
+"value": "470",
+"season": null,
+"id_system": "cbs",
+"palette": {
+"470": "#e0aa0f"
+}
+},
+{
+"league": "cfb",
+"value": "883",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "cfb",
+"value": "883",
+"season": null,
+"id_system": "cbs",
+"palette": {
+"883": "#00205b"
+}
+},
+{
+"league": "cfb",
+"value": "584",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "cfb",
+"value": "584",
+"season": null,
+"id_system": "cbs",
+"palette": {
+"584": "#830032"
+}
+},
+{
+"league": "cfb",
+"value": "13471",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "cfl",
+"value": "Canadian Football League",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "cfl",
+"value": "Canadian Football League",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "cfl",
+"value": "79",
+"season": null,
+"id_system": "auto",
+"palette": {
+"79": "#ea4c24"
+}
+},
+{
+"league": "cfl",
+"value": "79",
+"season": null,
+"id_system": "espn",
+"palette": {
+"79": "#ea4c24"
+}
+},
+{
+"league": "cfl",
+"value": "80",
+"season": null,
+"id_system": "auto",
+"palette": {
+"80": "#231f20"
+}
+},
+{
+"league": "cfl",
+"value": "80",
+"season": null,
+"id_system": "espn",
+"palette": {
+"80": "#231f20"
+}
+},
+{
+"league": "cfl",
+"value": "81",
+"season": null,
+"id_system": "auto",
+"palette": {
+"81": "#fcb525"
+}
+},
+{
+"league": "cfl",
+"value": "81",
+"season": null,
+"id_system": "espn",
+"palette": {
+"81": "#fcb525"
+}
+},
+{
+"league": "cfl",
+"value": "82",
+"season": null,
+"id_system": "auto",
+"palette": {
+"82": "#ffb819"
+}
+},
+{
+"league": "cfl",
+"value": "82",
+"season": null,
+"id_system": "espn",
+"palette": {
+"82": "#ffb819"
+}
+},
+{
+"league": "cfl",
+"value": "83",
+"season": null,
+"id_system": "auto",
+"palette": {
+"83": "#d71f29"
+}
+},
+{
+"league": "cfl",
+"value": "83",
+"season": null,
+"id_system": "espn",
+"palette": {
+"83": "#d71f29"
+}
+},
+{
+"league": "cfl",
+"value": "84",
+"season": null,
+"id_system": "auto",
+"palette": {
+"84": "#006241"
+}
+},
+{
+"league": "cfl",
+"value": "84",
+"season": null,
+"id_system": "espn",
+"palette": {
+"84": "#006241"
+}
+},
+{
+"league": "cfl",
+"value": "85",
+"season": null,
+"id_system": "auto",
+"palette": {
+"85": "#0a2240"
+}
+},
+{
+"league": "cfl",
+"value": "85",
+"season": null,
+"id_system": "espn",
+"palette": {
+"85": "#0a2240"
+}
+},
+{
+"league": "cfl",
+"value": "86",
+"season": null,
+"id_system": "auto",
+"palette": {
+"86": "#244681"
+}
+},
+{
+"league": "cfl",
+"value": "86",
+"season": null,
+"id_system": "espn",
+"palette": {
+"86": "#244681"
+}
+},
+{
+"league": "cfl",
+"value": "87",
+"season": null,
+"id_system": "auto",
+"palette": {
+"87": "#000000"
+}
+},
+{
+"league": "cfl",
+"value": "87",
+"season": null,
+"id_system": "espn",
+"palette": {
+"87": "#000000"
+}
+},
+{
+"league": "cfl",
+"value": "BCL",
+"season": null,
+"id_system": "auto",
+"palette": {
+"BCL": "#ea4c24"
+}
+},
+{
+"league": "cfl",
+"value": "BCL",
+"season": null,
+"id_system": "espn_abbr",
+"palette": {
+"BCL": "#ea4c24"
+}
+},
+{
+"league": "cfl",
+"value": "CSP",
+"season": null,
+"id_system": "auto",
+"palette": {
+"CSP": "#231f20"
+}
+},
+{
+"league": "cfl",
+"value": "CSP",
+"season": null,
+"id_system": "espn_abbr",
+"palette": {
+"CSP": "#231f20"
+}
+},
+{
+"league": "cfl",
+"value": "EES",
+"season": null,
+"id_system": "auto",
+"palette": {
+"EES": "#fcb525"
+}
+},
+{
+"league": "chl",
+"value": "87",
+"season": null,
+"id_system": "auto",
+"palette": {
+"87": "#fac815"
+}
+},
+{
+"league": "chl",
+"value": "87",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"87": "#fac815"
+}
+},
+{
+"league": "chl",
+"value": "80",
+"season": null,
+"id_system": "auto",
+"palette": {
+"80": "#e09c5b"
+}
+},
+{
+"league": "chl",
+"value": "80",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"80": "#e09c5b"
+}
+},
+{
+"league": "chl",
+"value": "14",
+"season": null,
+"id_system": "auto",
+"palette": {
+"14": "#fec13e"
+}
+},
+{
+"league": "chl",
+"value": "14",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"14": "#fec13e"
+}
+},
+{
+"league": "chl",
+"value": "81",
+"season": null,
+"id_system": "auto",
+"palette": {
+"81": "#062d61"
+}
+},
+{
+"league": "chl",
+"value": "81",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"81": "#062d61"
+}
+},
+{
+"league": "chl",
+"value": "3",
+"season": null,
+"id_system": "auto",
+"palette": {
+"3": "#9c3b4c"
+}
+},
+{
+"league": "chl",
+"value": "3",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"3": "#9c3b4c"
+}
+},
+{
+"league": "chl",
+"value": "56",
+"season": null,
+"id_system": "auto",
+"palette": {
+"56": "#104870"
+}
+},
+{
+"league": "chl",
+"value": "56",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"56": "#104870"
+}
+},
+{
+"league": "chl",
+"value": "97",
+"season": null,
+"id_system": "auto",
+"palette": {
+"97": "#cc0000"
+}
+},
+{
+"league": "chl",
+"value": "97",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"97": "#cc0000"
+}
+},
+{
+"league": "chl",
+"value": "53",
+"season": null,
+"id_system": "auto",
+"palette": {
+"53": "#f8e365"
+}
+},
+{
+"league": "chl",
+"value": "53",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"53": "#f8e365"
+}
+},
+{
+"league": "chl",
+"value": "30",
+"season": null,
+"id_system": "auto",
+"palette": {
+"30": "#233959"
+}
+},
+{
+"league": "chl",
+"value": "30",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"30": "#233959"
+}
+},
+{
+"league": "chl",
+"value": "32",
+"season": null,
+"id_system": "auto",
+"palette": {
+"32": "#005dab"
+}
+},
+{
+"league": "chl",
+"value": "32",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"32": "#005dab"
+}
+},
+{
+"league": "chl",
+"value": "93",
+"season": null,
+"id_system": "auto",
+"palette": {
+"93": "#1e2a4b"
+}
+},
+{
+"league": "chl",
+"value": "93",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"93": "#1e2a4b"
+}
+},
+{
+"league": "chl",
+"value": "43",
+"season": null,
+"id_system": "auto",
+"palette": {
+"43": "#ef2722"
+}
+},
+{
+"league": "chl",
+"value": "43",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"43": "#ef2722"
+}
+},
+{
+"league": "chl",
+"value": "33",
+"season": null,
+"id_system": "auto",
+"palette": {
+"33": "#f34b4f"
 }
 },
 {
@@ -900,6 +2218,231 @@
 }
 },
 {
+"league": "easl",
+"value": "Abra Weavers",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Abra Weavers": "#c27533"
+}
+},
+{
+"league": "easl",
+"value": "Abra Weavers",
+"season": null,
+"id_system": "name",
+"palette": {
+"Abra Weavers": "#c27533"
+}
+},
+{
+"league": "easl",
+"value": "Alvark Tokyo",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Alvark Tokyo": "#e60021"
+}
+},
+{
+"league": "easl",
+"value": "Alvark Tokyo",
+"season": null,
+"id_system": "name",
+"palette": {
+"Alvark Tokyo": "#e60021"
+}
+},
+{
+"league": "easl",
+"value": "Busan KCC Egis",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Busan KCC Egis": "#006db3"
+}
+},
+{
+"league": "easl",
+"value": "Busan KCC Egis",
+"season": null,
+"id_system": "name",
+"palette": {
+"Busan KCC Egis": "#006db3"
+}
+},
+{
+"league": "easl",
+"value": "Goyang Sono Skygunners",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Goyang Sono Skygunners": "#516f9b"
+}
+},
+{
+"league": "easl",
+"value": "Goyang Sono Skygunners",
+"season": null,
+"id_system": "name",
+"palette": {
+"Goyang Sono Skygunners": "#516f9b"
+}
+},
+{
+"league": "easl",
+"value": "Hong Kong Eastern",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Hong Kong Eastern": "#3b5095"
+}
+},
+{
+"league": "easl",
+"value": "Hong Kong Eastern",
+"season": null,
+"id_system": "name",
+"palette": {
+"Hong Kong Eastern": "#3b5095"
+}
+},
+{
+"league": "easl",
+"value": "Macau Hou Chon",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Macau Hou Chon": "#181d61"
+}
+},
+{
+"league": "easl",
+"value": "Macau Hou Chon",
+"season": null,
+"id_system": "name",
+"palette": {
+"Macau Hou Chon": "#181d61"
+}
+},
+{
+"league": "easl",
+"value": "Nagasaki Velca",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Nagasaki Velca": "#22345a"
+}
+},
+{
+"league": "easl",
+"value": "Nagasaki Velca",
+"season": null,
+"id_system": "name",
+"palette": {
+"Nagasaki Velca": "#22345a"
+}
+},
+{
+"league": "easl",
+"value": "Ryukyu Golden Kings",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Ryukyu Golden Kings": "#033f6c"
+}
+},
+{
+"league": "easl",
+"value": "Ryukyu Golden Kings",
+"season": null,
+"id_system": "name",
+"palette": {
+"Ryukyu Golden Kings": "#033f6c"
+}
+},
+{
+"league": "easl",
+"value": "South Gobi Broncos",
+"season": null,
+"id_system": "auto",
+"palette": {
+"South Gobi Broncos": "#ff2929"
+}
+},
+{
+"league": "easl",
+"value": "South Gobi Broncos",
+"season": null,
+"id_system": "name",
+"palette": {
+"South Gobi Broncos": "#ff2929"
+}
+},
+{
+"league": "easl",
+"value": "TSG Ghosthawks",
+"season": null,
+"id_system": "auto",
+"palette": {
+"TSG Ghosthawks": "#6c1119"
+}
+},
+{
+"league": "easl",
+"value": "TSG Ghosthawks",
+"season": null,
+"id_system": "name",
+"palette": {
+"TSG Ghosthawks": "#6c1119"
+}
+},
+{
+"league": "easl",
+"value": "Taipei Fubon Braves",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Taipei Fubon Braves": "#07254b"
+}
+},
+{
+"league": "easl",
+"value": "Taipei Fubon Braves",
+"season": null,
+"id_system": "name",
+"palette": {
+"Taipei Fubon Braves": "#07254b"
+}
+},
+{
+"league": "easl",
+"value": "Taoyuan Pauian Pilots",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Taoyuan Pauian Pilots": "#161455"
+}
+},
+{
+"league": "easl",
+"value": "Taoyuan Pauian Pilots",
+"season": null,
+"id_system": "name",
+"palette": {
+"Taoyuan Pauian Pilots": "#161455"
+}
+},
+{
+"league": "easl",
+"value": "0548e9a7-99e0-11f0-9c0a-a1d6bfd6d57a",
+"season": null,
+"id_system": "auto",
+"palette": {
+"0548e9a7-99e0-11f0-9c0a-a1d6bfd6d57a": "#e60021"
+}
+},
+{
 "league": "echl",
 "value": "72",
 "season": null,
@@ -1125,228 +2668,1753 @@
 }
 },
 {
-"league": "mbb",
-"value": "295",
+"league": "f1",
+"value": "Alfa Romeo",
 "season": null,
 "id_system": "auto",
 "palette": {
-"295": "#003768"
+"Alfa Romeo": "#c92d4b"
 }
 },
 {
-"league": "mbb",
-"value": "295",
+"league": "f1",
+"value": "Alfa Romeo",
+"season": null,
+"id_system": "name",
+"palette": {
+"Alfa Romeo": "#c92d4b"
+}
+},
+{
+"league": "f1",
+"value": "AlphaTauri",
+"season": null,
+"id_system": "auto",
+"palette": {
+"AlphaTauri": "#5e8faa"
+}
+},
+{
+"league": "f1",
+"value": "AlphaTauri",
+"season": null,
+"id_system": "name",
+"palette": {
+"AlphaTauri": "#5e8faa"
+}
+},
+{
+"league": "f1",
+"value": "Alpine F1 Team",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Alpine F1 Team": "#00a1e8"
+}
+},
+{
+"league": "f1",
+"value": "Alpine F1 Team",
+"season": null,
+"id_system": "name",
+"palette": {
+"Alpine F1 Team": "#00a1e8"
+}
+},
+{
+"league": "f1",
+"value": "Aston Martin",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Aston Martin": "#229971"
+}
+},
+{
+"league": "f1",
+"value": "Aston Martin",
+"season": null,
+"id_system": "name",
+"palette": {
+"Aston Martin": "#229971"
+}
+},
+{
+"league": "f1",
+"value": "Audi",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Audi": "#f50537"
+}
+},
+{
+"league": "f1",
+"value": "Audi",
+"season": null,
+"id_system": "name",
+"palette": {
+"Audi": "#f50537"
+}
+},
+{
+"league": "f1",
+"value": "BMW Sauber",
+"season": null,
+"id_system": "auto",
+"palette": {
+"BMW Sauber": "#000000"
+}
+},
+{
+"league": "f1",
+"value": "BMW Sauber",
+"season": null,
+"id_system": "name",
+"palette": {
+"BMW Sauber": "#000000"
+}
+},
+{
+"league": "f1",
+"value": "Brawn",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Brawn": "#000000"
+}
+},
+{
+"league": "f1",
+"value": "Brawn",
+"season": null,
+"id_system": "name",
+"palette": {
+"Brawn": "#000000"
+}
+},
+{
+"league": "f1",
+"value": "Cadillac F1 Team",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Cadillac F1 Team": "#909090"
+}
+},
+{
+"league": "f1",
+"value": "Cadillac F1 Team",
+"season": null,
+"id_system": "name",
+"palette": {
+"Cadillac F1 Team": "#909090"
+}
+},
+{
+"league": "f1",
+"value": "Caterham",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Caterham": "#153726"
+}
+},
+{
+"league": "f1",
+"value": "Caterham",
+"season": null,
+"id_system": "name",
+"palette": {
+"Caterham": "#153726"
+}
+},
+{
+"league": "f1",
+"value": "Ferrari",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Ferrari": "#ed1131"
+}
+},
+{
+"league": "f1",
+"value": "Ferrari",
+"season": null,
+"id_system": "name",
+"palette": {
+"Ferrari": "#ed1131"
+}
+},
+{
+"league": "f1",
+"value": "Force India",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Force India": "#525450"
+}
+},
+{
+"league": "f1",
+"value": "Force India",
+"season": null,
+"id_system": "name",
+"palette": {
+"Force India": "#525450"
+}
+},
+{
+"league": "f1",
+"value": "HRT",
+"season": null,
+"id_system": "auto",
+"palette": {
+"HRT": "#ff0000"
+}
+},
+{
+"league": "f1",
+"value": "HRT",
+"season": null,
+"id_system": "name",
+"palette": {
+"HRT": "#ff0000"
+}
+},
+{
+"league": "f1",
+"value": "Haas F1 Team",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Haas F1 Team": "#9c9fa2"
+}
+},
+{
+"league": "fiba",
+"value": "104882",
+"season": null,
+"id_system": "auto",
+"palette": {
+"104882": "#dabf00"
+}
+},
+{
+"league": "fiba",
+"value": "104882",
 "season": null,
 "id_system": "espn",
 "palette": {
-"295": "#003768"
+"104882": "#dabf00"
 }
 },
 {
-"league": "mbb",
-"value": "2754",
+"league": "fiba",
+"value": "104956",
 "season": null,
 "id_system": "auto",
 "palette": {
-"2754": "#e51935"
+"104956": "#052789"
 }
 },
 {
-"league": "mbb",
-"value": "2754",
+"league": "fiba",
+"value": "104956",
 "season": null,
 "id_system": "espn",
 "palette": {
-"2754": "#e51935"
+"104956": "#052789"
 }
 },
 {
-"league": "mbb",
-"value": "172",
+"league": "fiba",
+"value": "104957",
 "season": null,
 "id_system": "auto",
 "palette": {
-"172": "#b31b1b"
+"104957": "#e22d34"
 }
 },
 {
-"league": "mbb",
-"value": "172",
+"league": "fiba",
+"value": "104957",
 "season": null,
 "id_system": "espn",
 "palette": {
-"172": "#b31b1b"
+"104957": "#e22d34"
 }
 },
 {
-"league": "mbb",
-"value": "104",
+"league": "fiba",
+"value": "104958",
 "season": null,
 "id_system": "auto",
 "palette": {
-"104": "#cc0000"
+"104958": "#ff0000"
 }
 },
 {
-"league": "mbb",
-"value": "104",
+"league": "fiba",
+"value": "104958",
 "season": null,
 "id_system": "espn",
 "palette": {
-"104": "#cc0000"
+"104958": "#ff0000"
 }
 },
 {
-"league": "mbb",
-"value": "2099",
+"league": "fiba",
+"value": "104959",
 "season": null,
 "id_system": "auto",
 "palette": {
-"2099": "#004a81"
+"104959": "#0537e4"
 }
 },
 {
-"league": "mbb",
-"value": "2099",
+"league": "fiba",
+"value": "104959",
 "season": null,
 "id_system": "espn",
 "palette": {
-"2099": "#004a81"
+"104959": "#0537e4"
 }
 },
 {
-"league": "mbb",
-"value": "2569",
+"league": "fiba",
+"value": "106761",
 "season": null,
 "id_system": "auto",
 "palette": {
-"2569": "#7d1315"
+"106761": "#de2918"
 }
 },
 {
-"league": "mbb",
-"value": "2569",
+"league": "fiba",
+"value": "106761",
 "season": null,
 "id_system": "espn",
 "palette": {
-"2569": "#7d1315"
+"106761": "#de2918"
 }
 },
 {
-"league": "mbb",
-"value": "94",
+"league": "fiba",
+"value": "107068",
 "season": null,
 "id_system": "auto",
 "palette": {
-"94": "#ffc82e"
+"107068": "#ce1126"
 }
 },
 {
-"league": "mbb",
-"value": "94",
+"league": "fiba",
+"value": "107068",
 "season": null,
 "id_system": "espn",
 "palette": {
-"94": "#ffc82e"
+"107068": "#ce1126"
 }
 },
 {
-"league": "mbb",
-"value": "2509",
+"league": "fiba",
+"value": "109331",
 "season": null,
 "id_system": "auto",
 "palette": {
-"2509": "#ceb888"
+"109331": "#c6363c"
 }
 },
 {
-"league": "mbb",
-"value": "2509",
+"league": "fiba",
+"value": "109331",
 "season": null,
 "id_system": "espn",
 "palette": {
-"2509": "#ceb888"
+"109331": "#c6363c"
 }
 },
 {
-"league": "mbb",
-"value": "193",
+"league": "fiba",
+"value": "122706",
 "season": null,
 "id_system": "auto",
 "palette": {
-"193": "#c41230"
+"122706": "#dd0000"
 }
 },
 {
-"league": "mbb",
-"value": "193",
+"league": "fiba",
+"value": "122706",
 "season": null,
 "id_system": "espn",
 "palette": {
-"193": "#c41230"
+"122706": "#dd0000"
 }
 },
 {
-"league": "mbb",
-"value": "2026",
+"league": "fiba",
+"value": "122783",
 "season": null,
 "id_system": "auto",
 "palette": {
-"2026": "#000000"
+"122783": "#da131a"
 }
 },
 {
-"league": "mbb",
-"value": "2026",
+"league": "fiba",
+"value": "122783",
 "season": null,
 "id_system": "espn",
 "palette": {
-"2026": "#000000"
+"122783": "#da131a"
 }
 },
 {
-"league": "mbb",
-"value": "52",
+"league": "fiba",
+"value": "129555",
 "season": null,
 "id_system": "auto",
 "palette": {
-"52": "#782f40"
+"129555": "#0064aa"
 }
 },
 {
-"league": "mbb",
-"value": "52",
+"league": "fiba",
+"value": "129555",
 "season": null,
 "id_system": "espn",
 "palette": {
-"52": "#782f40"
+"129555": "#0064aa"
 }
 },
 {
-"league": "mbb",
-"value": "2344",
+"league": "fiba",
+"value": "15095",
 "season": null,
 "id_system": "auto",
 "palette": {
-"2344": "#003273"
+"15095": "#009c3b"
 }
 },
 {
-"league": "mbb",
-"value": "2344",
+"league": "fiba",
+"value": "15095",
 "season": null,
 "id_system": "espn",
 "palette": {
-"2344": "#003273"
+"15095": "#009c3b"
+}
+},
+{
+"league": "fiba",
+"value": "15097",
+"season": null,
+"id_system": "auto",
+"palette": {
+"15097": "#0537e4"
+}
+},
+{
+"league": "gojhl",
+"value": "73",
+"season": null,
+"id_system": "auto",
+"palette": {
+"73": "#fa7e24"
+}
+},
+{
+"league": "gojhl",
+"value": "73",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"73": "#fa7e24"
+}
+},
+{
+"league": "gojhl",
+"value": "70",
+"season": null,
+"id_system": "auto",
+"palette": {
+"70": "#b32018"
+}
+},
+{
+"league": "gojhl",
+"value": "70",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"70": "#b32018"
+}
+},
+{
+"league": "gojhl",
+"value": "15",
+"season": null,
+"id_system": "auto",
+"palette": {
+"15": "#077344"
+}
+},
+{
+"league": "gojhl",
+"value": "15",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"15": "#077344"
+}
+},
+{
+"league": "gojhl",
+"value": "71",
+"season": null,
+"id_system": "auto",
+"palette": {
+"71": "#da251c"
+}
+},
+{
+"league": "gojhl",
+"value": "71",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"71": "#da251c"
+}
+},
+{
+"league": "gojhl",
+"value": "19",
+"season": null,
+"id_system": "auto",
+"palette": {
+"19": "#081f40"
+}
+},
+{
+"league": "gojhl",
+"value": "19",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"19": "#081f40"
+}
+},
+{
+"league": "gojhl",
+"value": "55",
+"season": null,
+"id_system": "auto",
+"palette": {
+"55": "#ffc156"
+}
+},
+{
+"league": "gojhl",
+"value": "55",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"55": "#ffc156"
+}
+},
+{
+"league": "gojhl",
+"value": "9",
+"season": null,
+"id_system": "auto",
+"palette": {
+"9": "#eb182c"
+}
+},
+{
+"league": "gojhl",
+"value": "9",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"9": "#eb182c"
+}
+},
+{
+"league": "gojhl",
+"value": "5",
+"season": null,
+"id_system": "auto",
+"palette": {
+"5": "#2d563c"
+}
+},
+{
+"league": "gojhl",
+"value": "5",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"5": "#2d563c"
+}
+},
+{
+"league": "gojhl",
+"value": "13",
+"season": null,
+"id_system": "auto",
+"palette": {
+"13": "#000000"
+}
+},
+{
+"league": "gojhl",
+"value": "13",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"13": "#000000"
+}
+},
+{
+"league": "gojhl",
+"value": "20",
+"season": null,
+"id_system": "auto",
+"palette": {
+"20": "#710d21"
+}
+},
+{
+"league": "gojhl",
+"value": "20",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"20": "#710d21"
+}
+},
+{
+"league": "gojhl",
+"value": "8",
+"season": null,
+"id_system": "auto",
+"palette": {
+"8": "#0d1d42"
+}
+},
+{
+"league": "gojhl",
+"value": "8",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"8": "#0d1d42"
+}
+},
+{
+"league": "gojhl",
+"value": "38",
+"season": null,
+"id_system": "auto",
+"palette": {
+"38": "#096c90"
+}
+},
+{
+"league": "gojhl",
+"value": "38",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"38": "#096c90"
+}
+},
+{
+"league": "gojhl",
+"value": "21",
+"season": null,
+"id_system": "auto",
+"palette": {
+"21": "#d02030"
+}
+},
+{
+"league": "iihf",
+"value": "132244",
+"season": null,
+"id_system": "auto",
+"palette": {
+"132244": "#ce2c23"
+}
+},
+{
+"league": "iihf",
+"value": "132244",
+"season": null,
+"id_system": "espn",
+"palette": {
+"132244": "#ce2c23"
+}
+},
+{
+"league": "iihf",
+"value": "16",
+"season": null,
+"id_system": "auto",
+"palette": {
+"16": "#ed2224"
+}
+},
+{
+"league": "iihf",
+"value": "16",
+"season": null,
+"id_system": "espn",
+"palette": {
+"16": "#ed2224"
+}
+},
+{
+"league": "iihf",
+"value": "21",
+"season": null,
+"id_system": "auto",
+"palette": {
+"21": "#d7141a"
+}
+},
+{
+"league": "iihf",
+"value": "21",
+"season": null,
+"id_system": "espn",
+"palette": {
+"21": "#d7141a"
+}
+},
+{
+"league": "iihf",
+"value": "22",
+"season": null,
+"id_system": "auto",
+"palette": {
+"22": "#d02a3e"
+}
+},
+{
+"league": "iihf",
+"value": "22",
+"season": null,
+"id_system": "espn",
+"palette": {
+"22": "#d02a3e"
+}
+},
+{
+"league": "iihf",
+"value": "25",
+"season": null,
+"id_system": "auto",
+"palette": {
+"25": "#003580"
+}
+},
+{
+"league": "iihf",
+"value": "25",
+"season": null,
+"id_system": "espn",
+"palette": {
+"25": "#003580"
+}
+},
+{
+"league": "iihf",
+"value": "26",
+"season": null,
+"id_system": "auto",
+"palette": {
+"26": "#ce2c23"
+}
+},
+{
+"league": "iihf",
+"value": "26",
+"season": null,
+"id_system": "espn",
+"palette": {
+"26": "#ce2c23"
+}
+},
+{
+"league": "iihf",
+"value": "28",
+"season": null,
+"id_system": "auto",
+"palette": {
+"28": "#db2c32"
+}
+},
+{
+"league": "iihf",
+"value": "28",
+"season": null,
+"id_system": "espn",
+"palette": {
+"28": "#db2c32"
+}
+},
+{
+"league": "iihf",
+"value": "40",
+"season": null,
+"id_system": "auto",
+"palette": {
+"40": "#ed1c24"
+}
+},
+{
+"league": "iihf",
+"value": "40",
+"season": null,
+"id_system": "espn",
+"palette": {
+"40": "#ed1c24"
+}
+},
+{
+"league": "iihf",
+"value": "45",
+"season": null,
+"id_system": "auto",
+"palette": {
+"45": "#770000"
+}
+},
+{
+"league": "iihf",
+"value": "45",
+"season": null,
+"id_system": "espn",
+"palette": {
+"45": "#770000"
+}
+},
+{
+"league": "iihf",
+"value": "47841",
+"season": null,
+"id_system": "auto",
+"palette": {
+"47841": "#24923c"
+}
+},
+{
+"league": "iihf",
+"value": "47841",
+"season": null,
+"id_system": "espn",
+"palette": {
+"47841": "#24923c"
+}
+},
+{
+"league": "iihf",
+"value": "48099",
+"season": null,
+"id_system": "auto",
+"palette": {
+"48099": "#db2c32"
+}
+},
+{
+"league": "iihf",
+"value": "48099",
+"season": null,
+"id_system": "espn",
+"palette": {
+"48099": "#db2c32"
+}
+},
+{
+"league": "iihf",
+"value": "48105",
+"season": null,
+"id_system": "auto",
+"palette": {
+"48105": "#24923c"
+}
+},
+{
+"league": "iihf",
+"value": "48105",
+"season": null,
+"id_system": "espn",
+"palette": {
+"48105": "#24923c"
+}
+},
+{
+"league": "iihf",
+"value": "65",
+"season": null,
+"id_system": "auto",
+"palette": {
+"65": "#ce1126"
+}
+},
+{
+"league": "kijhl",
+"value": "1",
+"season": null,
+"id_system": "auto",
+"palette": {
+"1": "#f59848"
+}
+},
+{
+"league": "kijhl",
+"value": "1",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"1": "#f59848"
+}
+},
+{
+"league": "kijhl",
+"value": "10",
+"season": null,
+"id_system": "auto",
+"palette": {
+"10": "#c61d30"
+}
+},
+{
+"league": "kijhl",
+"value": "10",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"10": "#c61d30"
+}
+},
+{
+"league": "kijhl",
+"value": "11",
+"season": null,
+"id_system": "auto",
+"palette": {
+"11": "#df452d"
+}
+},
+{
+"league": "kijhl",
+"value": "11",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"11": "#df452d"
+}
+},
+{
+"league": "kijhl",
+"value": "12",
+"season": null,
+"id_system": "auto",
+"palette": {
+"12": "#6f55a4"
+}
+},
+{
+"league": "kijhl",
+"value": "12",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"12": "#6f55a4"
+}
+},
+{
+"league": "kijhl",
+"value": "13",
+"season": null,
+"id_system": "auto",
+"palette": {
+"13": "#770b0c"
+}
+},
+{
+"league": "kijhl",
+"value": "13",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"13": "#770b0c"
+}
+},
+{
+"league": "kijhl",
+"value": "14",
+"season": null,
+"id_system": "auto",
+"palette": {
+"14": "#fff5b4"
+}
+},
+{
+"league": "kijhl",
+"value": "14",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"14": "#fff5b4"
+}
+},
+{
+"league": "kijhl",
+"value": "15",
+"season": null,
+"id_system": "auto",
+"palette": {
+"15": "#e31938"
+}
+},
+{
+"league": "kijhl",
+"value": "15",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"15": "#e31938"
+}
+},
+{
+"league": "kijhl",
+"value": "16",
+"season": null,
+"id_system": "auto",
+"palette": {
+"16": "#0e1033"
+}
+},
+{
+"league": "kijhl",
+"value": "16",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"16": "#0e1033"
+}
+},
+{
+"league": "kijhl",
+"value": "17",
+"season": null,
+"id_system": "auto",
+"palette": {
+"17": "#000000"
+}
+},
+{
+"league": "kijhl",
+"value": "17",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"17": "#000000"
+}
+},
+{
+"league": "kijhl",
+"value": "18",
+"season": null,
+"id_system": "auto",
+"palette": {
+"18": "#3c4160"
+}
+},
+{
+"league": "kijhl",
+"value": "18",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"18": "#3c4160"
+}
+},
+{
+"league": "kijhl",
+"value": "19",
+"season": null,
+"id_system": "auto",
+"palette": {
+"19": "#762b39"
+}
+},
+{
+"league": "kijhl",
+"value": "19",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"19": "#762b39"
+}
+},
+{
+"league": "kijhl",
+"value": "2",
+"season": null,
+"id_system": "auto",
+"palette": {
+"2": "#010166"
+}
+},
+{
+"league": "kijhl",
+"value": "2",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"2": "#010166"
+}
+},
+{
+"league": "kijhl",
+"value": "20",
+"season": null,
+"id_system": "auto",
+"palette": {
+"20": "#b3786f"
+}
+},
+{
+"league": "lba",
+"value": "APU Old Wild West Udine",
+"season": null,
+"id_system": "auto",
+"palette": {
+"APU Old Wild West Udine": "#8b6c3c"
+}
+},
+{
+"league": "lba",
+"value": "APU Old Wild West Udine",
+"season": null,
+"id_system": "name",
+"palette": {
+"APU Old Wild West Udine": "#8b6c3c"
+}
+},
+{
+"league": "lba",
+"value": "Acqua S.Bernardo Cantù",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Acqua S.Bernardo Cantù": "#006265"
+}
+},
+{
+"league": "lba",
+"value": "Acqua S.Bernardo Cantù",
+"season": null,
+"id_system": "name",
+"palette": {
+"Acqua S.Bernardo Cantù": "#006265"
+}
+},
+{
+"league": "lba",
+"value": "Armani Olimpia Milano",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Armani Olimpia Milano": "#ab1c2f"
+}
+},
+{
+"league": "lba",
+"value": "Armani Olimpia Milano",
+"season": null,
+"id_system": "name",
+"palette": {
+"Armani Olimpia Milano": "#ab1c2f"
+}
+},
+{
+"league": "lba",
+"value": "BC Roma",
+"season": null,
+"id_system": "auto",
+"palette": {
+"BC Roma": "#f7ba01"
+}
+},
+{
+"league": "lba",
+"value": "BC Roma",
+"season": null,
+"id_system": "name",
+"palette": {
+"BC Roma": "#f7ba01"
+}
+},
+{
+"league": "lba",
+"value": "Banco di Sardegna Sassari",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Banco di Sardegna Sassari": "#8994c4"
+}
+},
+{
+"league": "lba",
+"value": "Banco di Sardegna Sassari",
+"season": null,
+"id_system": "name",
+"palette": {
+"Banco di Sardegna Sassari": "#8994c4"
+}
+},
+{
+"league": "lba",
+"value": "Bertram Derthona Tortona",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Bertram Derthona Tortona": "#132b47"
+}
+},
+{
+"league": "lba",
+"value": "Bertram Derthona Tortona",
+"season": null,
+"id_system": "name",
+"palette": {
+"Bertram Derthona Tortona": "#132b47"
+}
+},
+{
+"league": "lba",
+"value": "Carpegna Prosciutto Pesaro",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Carpegna Prosciutto Pesaro": "#c31a1a"
+}
+},
+{
+"league": "lba",
+"value": "Carpegna Prosciutto Pesaro",
+"season": null,
+"id_system": "name",
+"palette": {
+"Carpegna Prosciutto Pesaro": "#c31a1a"
+}
+},
+{
+"league": "lba",
+"value": "Dolomiti Energia Trentino",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Dolomiti Energia Trentino": "#532f92"
+}
+},
+{
+"league": "lba",
+"value": "Dolomiti Energia Trentino",
+"season": null,
+"id_system": "name",
+"palette": {
+"Dolomiti Energia Trentino": "#532f92"
+}
+},
+{
+"league": "lba",
+"value": "Estra Pistoia",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Estra Pistoia": "#d41126"
+}
+},
+{
+"league": "lba",
+"value": "Estra Pistoia",
+"season": null,
+"id_system": "name",
+"palette": {
+"Estra Pistoia": "#d41126"
+}
+},
+{
+"league": "lba",
+"value": "Fortitudo Kigili Bologna",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Fortitudo Kigili Bologna": "#192f50"
+}
+},
+{
+"league": "lba",
+"value": "Fortitudo Kigili Bologna",
+"season": null,
+"id_system": "name",
+"palette": {
+"Fortitudo Kigili Bologna": "#192f50"
+}
+},
+{
+"league": "lba",
+"value": "Germani Brescia",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Germani Brescia": "#064c96"
+}
+},
+{
+"league": "lba",
+"value": "Germani Brescia",
+"season": null,
+"id_system": "name",
+"palette": {
+"Germani Brescia": "#064c96"
+}
+},
+{
+"league": "lba",
+"value": "Happy Casa Brindisi",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Happy Casa Brindisi": "#0066aa"
+}
+},
+{
+"league": "lba",
+"value": "Happy Casa Brindisi",
+"season": null,
+"id_system": "name",
+"palette": {
+"Happy Casa Brindisi": "#0066aa"
+}
+},
+{
+"league": "lba",
+"value": "Longobardi Scafati Basket",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Longobardi Scafati Basket": "#322873"
 }
 },
 {
 "league": "mbb",
-"value": "171",
+"value": "PATRIOT LEAGUE",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "mbb",
+"value": "PATRIOT LEAGUE",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "mbb",
+"value": "P12",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "mbb",
+"value": "P12",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "mbb",
+"value": "ATL10",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "mbb",
+"value": "ATL10",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "mbb",
+"value": "A10",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "mbb",
+"value": "A10",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "mbb",
+"value": "BIG 12 CONFERENCE",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "mbb",
+"value": "BIG 12 CONFERENCE",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "mbb",
+"value": "MIDWESTERN COLLEGIATE CONFERENCE",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "mbb",
+"value": "MIDWESTERN COLLEGIATE CONFERENCE",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "mbb",
+"value": "WEST COAST CONFERENCE",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "mbb",
+"value": "WEST COAST CONFERENCE",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "mbb",
+"value": "MID-CON",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "mbb",
+"value": "MID-CON",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "mbb",
+"value": "B10",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "mbb",
+"value": "B10",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "mbb",
+"value": "AEC",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "mbb",
+"value": "AEC",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "mbb",
+"value": "SUN BELT CONFERENCE",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "mbb",
+"value": "SUN BELT CONFERENCE",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "mbb",
+"value": "HOR",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "mbb",
+"value": "HOR",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "mbb",
+"value": "B12",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "mhl",
+"value": "1",
 "season": null,
 "id_system": "auto",
 "palette": {
-"171": "#7ba4db"
+"1": "#6d4a8a"
+}
+},
+{
+"league": "mhl",
+"value": "1",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"1": "#6d4a8a"
+}
+},
+{
+"league": "mhl",
+"value": "10",
+"season": null,
+"id_system": "auto",
+"palette": {
+"10": "#023ca7"
+}
+},
+{
+"league": "mhl",
+"value": "10",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"10": "#023ca7"
+}
+},
+{
+"league": "mhl",
+"value": "11",
+"season": null,
+"id_system": "auto",
+"palette": {
+"11": "#bc1e2c"
+}
+},
+{
+"league": "mhl",
+"value": "11",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"11": "#bc1e2c"
+}
+},
+{
+"league": "mhl",
+"value": "12",
+"season": null,
+"id_system": "auto",
+"palette": {
+"12": "#8aaf59"
+}
+},
+{
+"league": "mhl",
+"value": "12",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"12": "#8aaf59"
+}
+},
+{
+"league": "mhl",
+"value": "2",
+"season": null,
+"id_system": "auto",
+"palette": {
+"2": "#011447"
+}
+},
+{
+"league": "mhl",
+"value": "2",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"2": "#011447"
+}
+},
+{
+"league": "mhl",
+"value": "21",
+"season": null,
+"id_system": "auto",
+"palette": {
+"21": "#2e2d57"
+}
+},
+{
+"league": "mhl",
+"value": "21",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"21": "#2e2d57"
+}
+},
+{
+"league": "mhl",
+"value": "3",
+"season": null,
+"id_system": "auto",
+"palette": {
+"3": "#d12028"
+}
+},
+{
+"league": "mhl",
+"value": "3",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"3": "#d12028"
+}
+},
+{
+"league": "mhl",
+"value": "4",
+"season": null,
+"id_system": "auto",
+"palette": {
+"4": "#e71824"
+}
+},
+{
+"league": "mhl",
+"value": "4",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"4": "#e71824"
+}
+},
+{
+"league": "mhl",
+"value": "5",
+"season": null,
+"id_system": "auto",
+"palette": {
+"5": "#0b1a41"
+}
+},
+{
+"league": "mhl",
+"value": "5",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"5": "#0b1a41"
+}
+},
+{
+"league": "mhl",
+"value": "6",
+"season": null,
+"id_system": "auto",
+"palette": {
+"6": "#151644"
+}
+},
+{
+"league": "mhl",
+"value": "6",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"6": "#151644"
+}
+},
+{
+"league": "mhl",
+"value": "7",
+"season": null,
+"id_system": "auto",
+"palette": {
+"7": "#ba2429"
+}
+},
+{
+"league": "mhl",
+"value": "7",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"7": "#ba2429"
+}
+},
+{
+"league": "mhl",
+"value": "8",
+"season": null,
+"id_system": "auto",
+"palette": {
+"8": "#efaf13"
+}
+},
+{
+"league": "mhl",
+"value": "8",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"8": "#efaf13"
+}
+},
+{
+"league": "mhl",
+"value": "9",
+"season": null,
+"id_system": "auto",
+"palette": {
+"9": "#868789"
 }
 },
 {
@@ -1572,6 +4640,231 @@
 "id_system": "auto",
 "palette": {
 "417": "#002b5c"
+}
+},
+{
+"league": "mjhl",
+"value": "1",
+"season": null,
+"id_system": "auto",
+"palette": {
+"1": "#00003c"
+}
+},
+{
+"league": "mjhl",
+"value": "1",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"1": "#00003c"
+}
+},
+{
+"league": "mjhl",
+"value": "10",
+"season": null,
+"id_system": "auto",
+"palette": {
+"10": "#e25b21"
+}
+},
+{
+"league": "mjhl",
+"value": "10",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"10": "#e25b21"
+}
+},
+{
+"league": "mjhl",
+"value": "11",
+"season": null,
+"id_system": "auto",
+"palette": {
+"11": "#67b1e2"
+}
+},
+{
+"league": "mjhl",
+"value": "11",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"11": "#67b1e2"
+}
+},
+{
+"league": "mjhl",
+"value": "13",
+"season": null,
+"id_system": "auto",
+"palette": {
+"13": "#f7c400"
+}
+},
+{
+"league": "mjhl",
+"value": "13",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"13": "#f7c400"
+}
+},
+{
+"league": "mjhl",
+"value": "14",
+"season": null,
+"id_system": "auto",
+"palette": {
+"14": "#550110"
+}
+},
+{
+"league": "mjhl",
+"value": "14",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"14": "#550110"
+}
+},
+{
+"league": "mjhl",
+"value": "15",
+"season": null,
+"id_system": "auto",
+"palette": {
+"15": "#e71c38"
+}
+},
+{
+"league": "mjhl",
+"value": "15",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"15": "#e71c38"
+}
+},
+{
+"league": "mjhl",
+"value": "16",
+"season": null,
+"id_system": "auto",
+"palette": {
+"16": "#db7736"
+}
+},
+{
+"league": "mjhl",
+"value": "16",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"16": "#db7736"
+}
+},
+{
+"league": "mjhl",
+"value": "2",
+"season": null,
+"id_system": "auto",
+"palette": {
+"2": "#7f735a"
+}
+},
+{
+"league": "mjhl",
+"value": "2",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"2": "#7f735a"
+}
+},
+{
+"league": "mjhl",
+"value": "23",
+"season": null,
+"id_system": "auto",
+"palette": {
+"23": "#00539f"
+}
+},
+{
+"league": "mjhl",
+"value": "23",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"23": "#00539f"
+}
+},
+{
+"league": "mjhl",
+"value": "3",
+"season": null,
+"id_system": "auto",
+"palette": {
+"3": "#e62e3a"
+}
+},
+{
+"league": "mjhl",
+"value": "3",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"3": "#e62e3a"
+}
+},
+{
+"league": "mjhl",
+"value": "4",
+"season": null,
+"id_system": "auto",
+"palette": {
+"4": "#1b7c47"
+}
+},
+{
+"league": "mjhl",
+"value": "4",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"4": "#1b7c47"
+}
+},
+{
+"league": "mjhl",
+"value": "41",
+"season": null,
+"id_system": "auto",
+"palette": {
+"41": "#2c2d8a"
+}
+},
+{
+"league": "mjhl",
+"value": "41",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"41": "#2c2d8a"
+}
+},
+{
+"league": "mjhl",
+"value": "42",
+"season": null,
+"id_system": "auto",
+"palette": {
+"42": "#0a1e41"
 }
 },
 {
@@ -2240,229 +5533,544 @@
 }
 },
 {
-"league": "ncaa_baseball",
-"value": "461",
+"league": "nbl",
+"value": "1",
 "season": null,
 "id_system": "auto",
 "palette": {
-"461": "#18005a"
+"1": "#ed302e"
 }
 },
 {
-"league": "ncaa_baseball",
-"value": "461",
+"league": "nbl",
+"value": "1",
 "season": null,
 "id_system": "espn",
 "palette": {
-"461": "#18005a"
+"1": "#ed302e"
 }
 },
 {
-"league": "ncaa_baseball",
-"value": "434",
+"league": "nbl",
+"value": "10",
 "season": null,
 "id_system": "auto",
 "palette": {
-"434": "#d10000"
+"10": "#008b45"
 }
 },
 {
-"league": "ncaa_baseball",
-"value": "434",
+"league": "nbl",
+"value": "10",
 "season": null,
 "id_system": "espn",
 "palette": {
-"434": "#d10000"
+"10": "#008b45"
 }
 },
 {
-"league": "ncaa_baseball",
-"value": "125",
+"league": "nbl",
+"value": "2",
 "season": null,
 "id_system": "auto",
 "palette": {
-"125": "#004b7c"
+"2": "#1f4fa2"
 }
 },
 {
-"league": "ncaa_baseball",
-"value": "125",
+"league": "nbl",
+"value": "2",
 "season": null,
 "id_system": "espn",
 "palette": {
-"125": "#004b7c"
+"2": "#1f4fa2"
 }
 },
 {
-"league": "ncaa_baseball",
-"value": "101",
+"league": "nbl",
+"value": "3",
 "season": null,
 "id_system": "auto",
 "palette": {
-"101": "#ff9408"
+"3": "#f69138"
 }
 },
 {
-"league": "ncaa_baseball",
-"value": "101",
+"league": "nbl",
+"value": "3",
 "season": null,
 "id_system": "espn",
 "palette": {
-"101": "#ff9408"
+"3": "#f69138"
 }
 },
 {
-"league": "ncaa_baseball",
-"value": "146",
+"league": "nbl",
+"value": "4",
 "season": null,
 "id_system": "auto",
 "palette": {
-"146": "#59a0a0"
+"4": "#ce202f"
 }
 },
 {
-"league": "ncaa_baseball",
-"value": "146",
+"league": "nbl",
+"value": "4",
 "season": null,
 "id_system": "espn",
 "palette": {
-"146": "#59a0a0"
+"4": "#ce202f"
 }
 },
 {
-"league": "ncaa_baseball",
-"value": "371",
+"league": "nbl",
+"value": "5",
 "season": null,
 "id_system": "auto",
 "palette": {
-"371": "#000000"
+"5": "#4370b7"
 }
 },
 {
-"league": "ncaa_baseball",
-"value": "371",
+"league": "nbl",
+"value": "5",
 "season": null,
 "id_system": "espn",
 "palette": {
-"371": "#000000"
+"5": "#4370b7"
 }
 },
 {
-"league": "ncaa_baseball",
-"value": "94",
+"league": "nbl",
+"value": "6",
 "season": null,
 "id_system": "auto",
 "palette": {
-"94": "#4b1869"
+"6": "#e33c95"
 }
 },
 {
-"league": "ncaa_baseball",
-"value": "94",
+"league": "nbl",
+"value": "6",
 "season": null,
 "id_system": "espn",
 "palette": {
-"94": "#4b1869"
+"6": "#e33c95"
 }
 },
 {
-"league": "ncaa_baseball",
-"value": "345",
+"league": "nbl",
+"value": "7",
 "season": null,
 "id_system": "auto",
 "palette": {
-"345": "#020260"
+"7": "#ec1c23"
 }
 },
 {
-"league": "ncaa_baseball",
-"value": "345",
+"league": "nbl",
+"value": "7",
 "season": null,
 "id_system": "espn",
 "palette": {
-"345": "#020260"
+"7": "#ec1c23"
 }
 },
 {
-"league": "ncaa_baseball",
-"value": "1274",
+"league": "nbl",
+"value": "8",
 "season": null,
 "id_system": "auto",
 "palette": {
-"1274": "#c1002a"
+"8": "#69bf29"
 }
 },
 {
-"league": "ncaa_baseball",
-"value": "1274",
+"league": "nbl",
+"value": "8",
 "season": null,
 "id_system": "espn",
 "palette": {
-"1274": "#c1002a"
+"8": "#69bf29"
 }
 },
 {
-"league": "ncaa_baseball",
-"value": "130",
+"league": "nbl",
+"value": "9",
 "season": null,
 "id_system": "auto",
 "palette": {
-"130": "#004371"
+"9": "#552583"
 }
 },
 {
-"league": "ncaa_baseball",
-"value": "130",
+"league": "nbl",
+"value": "9",
 "season": null,
 "id_system": "espn",
 "palette": {
-"130": "#004371"
+"9": "#552583"
 }
 },
 {
-"league": "ncaa_baseball",
-"value": "836",
+"league": "nbl",
+"value": "ADL",
 "season": null,
 "id_system": "auto",
 "palette": {
-"836": "#282d74"
+"ADL": "#ed302e"
 }
 },
 {
-"league": "ncaa_baseball",
-"value": "836",
+"league": "nbl",
+"value": "ADL",
 "season": null,
-"id_system": "espn",
+"id_system": "espn_abbr",
 "palette": {
-"836": "#282d74"
+"ADL": "#ed302e"
 }
 },
 {
-"league": "ncaa_baseball",
-"value": "265",
-"season": null,
-"id_system": "auto",
-"palette": {
-"265": "#4f8537"
-}
-},
-{
-"league": "ncaa_baseball",
-"value": "265",
-"season": null,
-"id_system": "espn",
-"palette": {
-"265": "#4f8537"
-}
-},
-{
-"league": "ncaa_baseball",
-"value": "1247",
+"league": "nbl",
+"value": "BRI",
 "season": null,
 "id_system": "auto",
 "palette": {
-"1247": "#46256a"
+"BRI": "#1f4fa2"
 }
+},
+{
+"league": "nbl",
+"value": "BRI",
+"season": null,
+"id_system": "espn_abbr",
+"palette": {
+"BRI": "#1f4fa2"
+}
+},
+{
+"league": "nbl",
+"value": "CNS",
+"season": null,
+"id_system": "auto",
+"palette": {
+"CNS": "#f69138"
+}
+},
+{
+"league": "ncaa_baseball",
+"value": "America East Conference",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "ncaa_baseball",
+"value": "America East Conference",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "ncaa_baseball",
+"value": "American Athletic Conference",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "ncaa_baseball",
+"value": "American Athletic Conference",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "ncaa_baseball",
+"value": "American Conference",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "ncaa_baseball",
+"value": "American Conference",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "ncaa_baseball",
+"value": "Atlantic 10 Conference",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "ncaa_baseball",
+"value": "Atlantic 10 Conference",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "ncaa_baseball",
+"value": "Atlantic Coast Conference",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "ncaa_baseball",
+"value": "Atlantic Coast Conference",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "ncaa_baseball",
+"value": "Atlantic Sun Conference",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "ncaa_baseball",
+"value": "Atlantic Sun Conference",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "ncaa_baseball",
+"value": "Big 12 Conference",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "ncaa_baseball",
+"value": "Big 12 Conference",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "ncaa_baseball",
+"value": "Big East Conference",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "ncaa_baseball",
+"value": "Big East Conference",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "ncaa_baseball",
+"value": "Big South Conference",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "ncaa_baseball",
+"value": "Big South Conference",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "ncaa_baseball",
+"value": "Big Ten Conference",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "ncaa_baseball",
+"value": "Big Ten Conference",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "ncaa_baseball",
+"value": "Big West Conference",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "ncaa_baseball",
+"value": "Big West Conference",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "ncaa_baseball",
+"value": "Coastal Athletic Association",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "ncaa_baseball",
+"value": "Coastal Athletic Association",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "ncaa_baseball",
+"value": "Conference USA",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "ncaa_mhockey",
+"value": "Atlantic Hockey America",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "ncaa_mhockey",
+"value": "Atlantic Hockey America",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "ncaa_mhockey",
+"value": "Big Ten Conference",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "ncaa_mhockey",
+"value": "Big Ten Conference",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "ncaa_mhockey",
+"value": "Central Collegiate Hockey Association",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "ncaa_mhockey",
+"value": "Central Collegiate Hockey Association",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "ncaa_mhockey",
+"value": "College Hockey America",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "ncaa_mhockey",
+"value": "College Hockey America",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "ncaa_mhockey",
+"value": "ECAC Hockey",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "ncaa_mhockey",
+"value": "ECAC Hockey",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "ncaa_mhockey",
+"value": "Hockey East Association",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "ncaa_mhockey",
+"value": "Hockey East Association",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "ncaa_mhockey",
+"value": "Metro Atlantic Athletic Conference",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "ncaa_mhockey",
+"value": "Metro Atlantic Athletic Conference",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "ncaa_mhockey",
+"value": "National Collegiate Athletic Association",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "ncaa_mhockey",
+"value": "National Collegiate Athletic Association",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "ncaa_mhockey",
+"value": "National Collegiate Hockey Conference",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "ncaa_mhockey",
+"value": "National Collegiate Hockey Conference",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "ncaa_mhockey",
+"value": "Western Collegiate Hockey Association",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "ncaa_mhockey",
+"value": "Western Collegiate Hockey Association",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
 },
 {
 "league": "ncaa_mhockey",
@@ -2510,409 +6118,277 @@
 }
 },
 {
-"league": "ncaa_mhockey",
-"value": "126807",
-"season": null,
-"id_system": "espn",
-"palette": {
-"126807": "#9a112b"
-}
-},
-{
-"league": "ncaa_mhockey",
-"value": "103",
+"league": "ncaa_softball",
+"value": "America East Conference",
 "season": null,
 "id_system": "auto",
-"palette": {
-"103": "#8c2232"
-}
+"palette": {}
 },
 {
-"league": "ncaa_mhockey",
-"value": "103",
+"league": "ncaa_softball",
+"value": "America East Conference",
 "season": null,
-"id_system": "espn",
-"palette": {
-"103": "#8c2232"
-}
+"id_system": "conference",
+"error": "InputError"
 },
 {
-"league": "ncaa_mhockey",
-"value": "128",
+"league": "ncaa_softball",
+"value": "American Athletic Conference",
 "season": null,
 "id_system": "auto",
-"palette": {
-"128": "#0f553a"
-}
+"palette": {}
 },
 {
-"league": "ncaa_mhockey",
-"value": "128",
+"league": "ncaa_softball",
+"value": "American Athletic Conference",
 "season": null,
-"id_system": "espn",
-"palette": {
-"128": "#0f553a"
-}
+"id_system": "conference",
+"error": "InputError"
 },
 {
-"league": "ncaa_mhockey",
-"value": "2514",
+"league": "ncaa_softball",
+"value": "American Conference",
 "season": null,
 "id_system": "auto",
-"palette": {
-"2514": "#041b43"
-}
+"palette": {}
 },
 {
-"league": "ncaa_mhockey",
-"value": "2514",
+"league": "ncaa_softball",
+"value": "American Conference",
 "season": null,
-"id_system": "espn",
-"palette": {
-"2514": "#041b43"
-}
+"id_system": "conference",
+"error": "InputError"
 },
 {
-"league": "ncaa_mhockey",
-"value": "87",
+"league": "ncaa_softball",
+"value": "Atlantic 10 Conference",
 "season": null,
 "id_system": "auto",
-"palette": {
-"87": "#062340"
-}
+"palette": {}
 },
 {
-"league": "ncaa_mhockey",
-"value": "87",
+"league": "ncaa_softball",
+"value": "Atlantic 10 Conference",
 "season": null,
-"id_system": "espn",
-"palette": {
-"87": "#062340"
-}
+"id_system": "conference",
+"error": "InputError"
 },
 {
-"league": "ncaa_mhockey",
-"value": "2349",
+"league": "ncaa_softball",
+"value": "Atlantic Coast Conference",
 "season": null,
 "id_system": "auto",
-"palette": {
-"2349": "#000000"
-}
+"palette": {}
 },
 {
-"league": "ncaa_mhockey",
-"value": "2349",
+"league": "ncaa_softball",
+"value": "Atlantic Coast Conference",
 "season": null,
-"id_system": "espn",
-"palette": {
-"2349": "#000000"
-}
+"id_system": "conference",
+"error": "InputError"
 },
 {
-"league": "ncaa_mhockey",
-"value": "126812",
+"league": "ncaa_softball",
+"value": "Atlantic Sun Conference",
 "season": null,
 "id_system": "auto",
-"palette": {
-"126812": "#d71e25"
-}
+"palette": {}
 },
 {
-"league": "ncaa_mhockey",
-"value": "126812",
+"league": "ncaa_softball",
+"value": "Atlantic Sun Conference",
 "season": null,
-"id_system": "espn",
-"palette": {
-"126812": "#d71e25"
-}
+"id_system": "conference",
+"error": "InputError"
 },
 {
-"league": "ncaa_mhockey",
-"value": "127963",
+"league": "ncaa_softball",
+"value": "Big 12 Conference",
 "season": null,
 "id_system": "auto",
-"palette": {
-"127963": "#c1b38d"
-}
+"palette": {}
 },
 {
-"league": "ncaa_mhockey",
-"value": "127963",
+"league": "ncaa_softball",
+"value": "Big 12 Conference",
 "season": null,
-"id_system": "espn",
-"palette": {
-"127963": "#c1b38d"
-}
+"id_system": "conference",
+"error": "InputError"
 },
 {
-"league": "ncaa_mhockey",
-"value": "41",
+"league": "ncaa_softball",
+"value": "Big East Conference",
 "season": null,
 "id_system": "auto",
-"palette": {
-"41": "#0c2340"
-}
+"palette": {}
 },
 {
-"league": "ncaa_mhockey",
-"value": "41",
+"league": "ncaa_softball",
+"value": "Big East Conference",
 "season": null,
-"id_system": "espn",
-"palette": {
-"41": "#0c2340"
-}
+"id_system": "conference",
+"error": "InputError"
 },
 {
-"league": "ncaa_mhockey",
-"value": "2038",
+"league": "ncaa_softball",
+"value": "Big Sky Conference",
 "season": null,
 "id_system": "auto",
-"palette": {
-"2038": "#004b87"
-}
+"palette": {}
 },
 {
-"league": "ncaa_mhockey",
-"value": "2038",
+"league": "ncaa_softball",
+"value": "Big Sky Conference",
 "season": null,
-"id_system": "espn",
-"palette": {
-"2038": "#004b87"
-}
+"id_system": "conference",
+"error": "InputError"
 },
 {
-"league": "ncaa_mhockey",
-"value": "126814",
+"league": "ncaa_softball",
+"value": "Big South Conference",
 "season": null,
 "id_system": "auto",
-"palette": {
-"126814": "#0d1132"
-}
+"palette": {}
 },
 {
 "league": "ncaa_softball",
-"value": "783",
+"value": "Big South Conference",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "ncaa_softball",
+"value": "Big Ten Conference",
 "season": null,
 "id_system": "auto",
-"palette": {
-"783": "#eb1c23"
-}
+"palette": {}
 },
 {
 "league": "ncaa_softball",
-"value": "783",
+"value": "Big Ten Conference",
 "season": null,
-"id_system": "espn",
-"palette": {
-"783": "#eb1c23"
-}
+"id_system": "conference",
+"error": "InputError"
 },
 {
 "league": "ncaa_softball",
-"value": "757",
+"value": "Big West Conference",
 "season": null,
 "id_system": "auto",
-"palette": {
-"757": "#00a15e"
-}
+"palette": {}
 },
 {
 "league": "ncaa_softball",
-"value": "757",
+"value": "Big West Conference",
 "season": null,
-"id_system": "espn",
-"palette": {
-"757": "#00a15e"
-}
+"id_system": "conference",
+"error": "InputError"
 },
 {
 "league": "ncaa_softball",
-"value": "490",
+"value": "Central Intercollegiate Athletic Association",
 "season": null,
 "id_system": "auto",
-"palette": {
-"490": "#d60022"
-}
+"palette": {}
 },
 {
-"league": "ncaa_softball",
-"value": "490",
-"season": null,
-"id_system": "espn",
-"palette": {
-"490": "#d60022"
-}
-},
-{
-"league": "ncaa_softball",
-"value": "1106",
+"league": "ncaa_whockey",
+"value": "Atlantic Hockey America",
 "season": null,
 "id_system": "auto",
-"palette": {
-"1106": "#663399"
-}
+"palette": {}
 },
 {
-"league": "ncaa_softball",
-"value": "1106",
+"league": "ncaa_whockey",
+"value": "Atlantic Hockey America",
 "season": null,
-"id_system": "espn",
-"palette": {
-"1106": "#663399"
-}
+"id_system": "conference",
+"error": "InputError"
 },
 {
-"league": "ncaa_softball",
-"value": "526",
+"league": "ncaa_whockey",
+"value": "College Hockey America",
 "season": null,
 "id_system": "auto",
-"palette": {
-"526": "#bc0138"
-}
+"palette": {}
 },
 {
-"league": "ncaa_softball",
-"value": "526",
+"league": "ncaa_whockey",
+"value": "College Hockey America",
 "season": null,
-"id_system": "espn",
-"palette": {
-"526": "#bc0138"
-}
+"id_system": "conference",
+"error": "InputError"
 },
 {
-"league": "ncaa_softball",
-"value": "694",
+"league": "ncaa_whockey",
+"value": "ECAC Hockey",
 "season": null,
 "id_system": "auto",
-"palette": {
-"694": "#ff3630"
-}
+"palette": {}
 },
 {
-"league": "ncaa_softball",
-"value": "694",
+"league": "ncaa_whockey",
+"value": "ECAC Hockey",
 "season": null,
-"id_system": "espn",
-"palette": {
-"694": "#ff3630"
-}
+"id_system": "conference",
+"error": "InputError"
 },
 {
-"league": "ncaa_softball",
-"value": "916",
+"league": "ncaa_whockey",
+"value": "Hockey East Association",
 "season": null,
 "id_system": "auto",
-"palette": {
-"916": "#2d1a46"
-}
+"palette": {}
 },
 {
-"league": "ncaa_softball",
-"value": "916",
+"league": "ncaa_whockey",
+"value": "Hockey East Association",
 "season": null,
-"id_system": "espn",
-"palette": {
-"916": "#2d1a46"
-}
+"id_system": "conference",
+"error": "InputError"
 },
 {
-"league": "ncaa_softball",
-"value": "667",
+"league": "ncaa_whockey",
+"value": "National Collegiate Athletic Association",
 "season": null,
 "id_system": "auto",
-"palette": {
-"667": "#000060"
-}
+"palette": {}
 },
 {
-"league": "ncaa_softball",
-"value": "667",
+"league": "ncaa_whockey",
+"value": "National Collegiate Athletic Association",
 "season": null,
-"id_system": "espn",
-"palette": {
-"667": "#000060"
-}
+"id_system": "conference",
+"error": "InputError"
 },
 {
-"league": "ncaa_softball",
-"value": "494",
+"league": "ncaa_whockey",
+"value": "New England Women's Hockey Alliance",
 "season": null,
 "id_system": "auto",
-"palette": {
-"494": "#003399"
-}
+"palette": {}
 },
 {
-"league": "ncaa_softball",
-"value": "494",
+"league": "ncaa_whockey",
+"value": "New England Women's Hockey Alliance",
 "season": null,
-"id_system": "espn",
-"palette": {
-"494": "#003399"
-}
+"id_system": "conference",
+"error": "InputError"
 },
 {
-"league": "ncaa_softball",
-"value": "510",
+"league": "ncaa_whockey",
+"value": "Western Collegiate Hockey Association",
 "season": null,
 "id_system": "auto",
-"palette": {
-"510": "#13299e"
-}
+"palette": {}
 },
 {
-"league": "ncaa_softball",
-"value": "510",
+"league": "ncaa_whockey",
+"value": "Western Collegiate Hockey Association",
 "season": null,
-"id_system": "espn",
-"palette": {
-"510": "#13299e"
-}
-},
-{
-"league": "ncaa_softball",
-"value": "868",
-"season": null,
-"id_system": "auto",
-"palette": {
-"868": "#003e7e"
-}
-},
-{
-"league": "ncaa_softball",
-"value": "868",
-"season": null,
-"id_system": "espn",
-"palette": {
-"868": "#003e7e"
-}
-},
-{
-"league": "ncaa_softball",
-"value": "596",
-"season": null,
-"id_system": "auto",
-"palette": {
-"596": "#2b3986"
-}
-},
-{
-"league": "ncaa_softball",
-"value": "596",
-"season": null,
-"id_system": "espn",
-"palette": {
-"596": "#2b3986"
-}
-},
-{
-"league": "ncaa_softball",
-"value": "488",
-"season": null,
-"id_system": "auto",
-"palette": {
-"488": "#004231"
-}
+"id_system": "conference",
+"error": "InputError"
 },
 {
 "league": "ncaa_whockey",
@@ -3011,132 +6487,6 @@
 "id_system": "auto",
 "palette": {
 "2528": "#ed3023"
-}
-},
-{
-"league": "ncaa_whockey",
-"value": "2528",
-"season": null,
-"id_system": "espn",
-"palette": {
-"2528": "#ed3023"
-}
-},
-{
-"league": "ncaa_whockey",
-"value": "48",
-"season": null,
-"id_system": "auto",
-"palette": {
-"48": "#00539f"
-}
-},
-{
-"league": "ncaa_whockey",
-"value": "48",
-"season": null,
-"id_system": "espn",
-"palette": {
-"48": "#00539f"
-}
-},
-{
-"league": "ncaa_whockey",
-"value": "2514",
-"season": null,
-"id_system": "auto",
-"palette": {
-"2514": "#041b43"
-}
-},
-{
-"league": "ncaa_whockey",
-"value": "2514",
-"season": null,
-"id_system": "espn",
-"palette": {
-"2514": "#041b43"
-}
-},
-{
-"league": "ncaa_whockey",
-"value": "155",
-"season": null,
-"id_system": "auto",
-"palette": {
-"155": "#00a26b"
-}
-},
-{
-"league": "ncaa_whockey",
-"value": "155",
-"season": null,
-"id_system": "espn",
-"palette": {
-"155": "#00a26b"
-}
-},
-{
-"league": "ncaa_whockey",
-"value": "163",
-"season": null,
-"id_system": "auto",
-"palette": {
-"163": "#000000"
-}
-},
-{
-"league": "ncaa_whockey",
-"value": "163",
-"season": null,
-"id_system": "espn",
-"palette": {
-"163": "#000000"
-}
-},
-{
-"league": "ncaa_whockey",
-"value": "41",
-"season": null,
-"id_system": "auto",
-"palette": {
-"41": "#0c2340"
-}
-},
-{
-"league": "ncaa_whockey",
-"value": "41",
-"season": null,
-"id_system": "espn",
-"palette": {
-"41": "#0c2340"
-}
-},
-{
-"league": "ncaa_whockey",
-"value": "2364",
-"season": null,
-"id_system": "auto",
-"palette": {
-"2364": "#480059"
-}
-},
-{
-"league": "ncaa_whockey",
-"value": "2364",
-"season": null,
-"id_system": "espn",
-"palette": {
-"2364": "#480059"
-}
-},
-{
-"league": "ncaa_whockey",
-"value": "134",
-"season": null,
-"id_system": "auto",
-"palette": {
-"134": "#fec050"
 }
 },
 {
@@ -3366,227 +6716,426 @@
 },
 {
 "league": "nhl",
+"value": "1842464",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "nhl",
+"value": "1842464",
+"season": null,
+"id_system": "cbs",
+"palette": {
+"1842464": "#002d62"
+}
+},
+{
+"league": "nhl",
+"value": "26678952",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "nhl",
+"value": "26678952",
+"season": null,
+"id_system": "cbs",
+"palette": {
+"26678952": "#000d33"
+}
+},
+{
+"league": "nhl",
+"value": "2835761",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "nhl",
+"value": "2835761",
+"season": null,
+"id_system": "cbs",
+"palette": {
+"2835761": "#344043"
+}
+},
+{
+"league": "nhl",
+"value": "29397659",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "nhl",
+"value": "29397659",
+"season": null,
+"id_system": "cbs",
+"palette": {
+"29397659": "#000000"
+}
+},
+{
+"league": "nhl",
+"value": "372",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "nhl",
+"value": "372",
+"season": null,
+"id_system": "cbs",
+"palette": {
+"372": "#fc4c02"
+}
+},
+{
+"league": "nhl",
+"value": "373",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "nhl",
+"value": "373",
+"season": null,
+"id_system": "cbs",
+"palette": {
+"373": "#231f20"
+}
+},
+{
+"league": "nhl",
+"value": "374",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "nhl",
+"value": "374",
+"season": null,
+"id_system": "cbs",
+"palette": {
+"374": "#00468b"
+}
+},
+{
+"league": "nhl",
+"value": "375",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "nhl",
+"value": "375",
+"season": null,
+"id_system": "cbs",
+"palette": {
+"375": "#dd1a32"
+}
+},
+{
+"league": "nhl",
+"value": "376",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "nhl",
+"value": "376",
+"season": null,
+"id_system": "cbs",
+"palette": {
+"376": "#e30426"
+}
+},
+{
+"league": "nhl",
+"value": "377",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "nhl",
+"value": "377",
+"season": null,
+"id_system": "cbs",
+"palette": {
+"377": "#e31937"
+}
+},
+{
+"league": "nhl",
+"value": "378",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "nhl",
+"value": "378",
+"season": null,
+"id_system": "cbs",
+"palette": {
+"378": "#860038"
+}
+},
+{
+"league": "nhl",
+"value": "379",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "nhl",
+"value": "379",
+"season": null,
+"id_system": "cbs",
+"palette": {
+"379": "#20864c"
+}
+},
+{
+"league": "nhl",
+"value": "380",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "nojhl",
 "value": "1",
 "season": null,
 "id_system": "auto",
 "palette": {
-"1": "#231f20"
+"1": "#dbbb65"
 }
 },
 {
-"league": "nhl",
+"league": "nojhl",
 "value": "1",
 "season": null,
-"id_system": "espn",
+"id_system": "hockeytech",
 "palette": {
-"1": "#231f20"
+"1": "#dbbb65"
 }
 },
 {
-"league": "nhl",
+"league": "nojhl",
 "value": "10",
 "season": null,
 "id_system": "auto",
 "palette": {
-"10": "#c41230"
+"10": "#ba6f3a"
 }
 },
 {
-"league": "nhl",
+"league": "nojhl",
 "value": "10",
 "season": null,
-"id_system": "espn",
+"id_system": "hockeytech",
 "palette": {
-"10": "#c41230"
+"10": "#ba6f3a"
 }
 },
 {
-"league": "nhl",
+"league": "nojhl",
 "value": "11",
 "season": null,
 "id_system": "auto",
 "palette": {
-"11": "#e30b2b"
+"11": "#11234c"
 }
 },
 {
-"league": "nhl",
+"league": "nojhl",
 "value": "11",
 "season": null,
-"id_system": "espn",
+"id_system": "hockeytech",
 "palette": {
-"11": "#e30b2b"
+"11": "#11234c"
 }
 },
 {
-"league": "nhl",
+"league": "nojhl",
 "value": "12",
 "season": null,
 "id_system": "auto",
 "palette": {
-"12": "#00529b"
+"12": "#8a3b10"
 }
 },
 {
-"league": "nhl",
+"league": "nojhl",
 "value": "12",
 "season": null,
-"id_system": "espn",
+"id_system": "hockeytech",
 "palette": {
-"12": "#00529b"
+"12": "#8a3b10"
 }
 },
 {
-"league": "nhl",
-"value": "124292",
-"season": null,
-"id_system": "auto",
-"palette": {
-"124292": "#000d33"
-}
-},
-{
-"league": "nhl",
-"value": "124292",
-"season": null,
-"id_system": "espn",
-"palette": {
-"124292": "#000d33"
-}
-},
-{
-"league": "nhl",
-"value": "129764",
-"season": null,
-"id_system": "auto",
-"palette": {
-"129764": "#000000"
-}
-},
-{
-"league": "nhl",
-"value": "129764",
-"season": null,
-"id_system": "espn",
-"palette": {
-"129764": "#000000"
-}
-},
-{
-"league": "nhl",
+"league": "nojhl",
 "value": "13",
 "season": null,
 "id_system": "auto",
 "palette": {
-"13": "#0056ae"
+"13": "#dc2d1b"
 }
 },
 {
-"league": "nhl",
+"league": "nojhl",
 "value": "13",
 "season": null,
-"id_system": "espn",
+"id_system": "hockeytech",
 "palette": {
-"13": "#0056ae"
+"13": "#dc2d1b"
 }
 },
 {
-"league": "nhl",
+"league": "nojhl",
 "value": "14",
 "season": null,
 "id_system": "auto",
 "palette": {
-"14": "#dd1a32"
+"14": "#f11823"
 }
 },
 {
-"league": "nhl",
+"league": "nojhl",
 "value": "14",
 "season": null,
-"id_system": "espn",
+"id_system": "hockeytech",
 "palette": {
-"14": "#dd1a32"
+"14": "#f11823"
 }
 },
 {
-"league": "nhl",
+"league": "nojhl",
 "value": "15",
 "season": null,
 "id_system": "auto",
 "palette": {
-"15": "#fe5823"
+"15": "#033c8d"
 }
 },
 {
-"league": "nhl",
+"league": "nojhl",
 "value": "15",
 "season": null,
-"id_system": "espn",
+"id_system": "hockeytech",
 "palette": {
-"15": "#fe5823"
+"15": "#033c8d"
 }
 },
 {
-"league": "nhl",
+"league": "nojhl",
 "value": "16",
 "season": null,
 "id_system": "auto",
 "palette": {
-"16": "#000000"
+"16": "#20402f"
 }
 },
 {
-"league": "nhl",
+"league": "nojhl",
 "value": "16",
 "season": null,
-"id_system": "espn",
+"id_system": "hockeytech",
 "palette": {
-"16": "#000000"
+"16": "#20402f"
 }
 },
 {
-"league": "nhl",
+"league": "nojhl",
 "value": "17",
 "season": null,
 "id_system": "auto",
 "palette": {
-"17": "#860038"
+"17": "#142349"
 }
 },
 {
-"league": "nhl",
+"league": "nojhl",
 "value": "17",
 "season": null,
-"id_system": "espn",
+"id_system": "hockeytech",
 "palette": {
-"17": "#860038"
+"17": "#142349"
 }
 },
 {
-"league": "nhl",
+"league": "nojhl",
 "value": "18",
 "season": null,
 "id_system": "auto",
 "palette": {
-"18": "#00788a"
+"18": "#1a2c6d"
 }
 },
 {
-"league": "nhl",
+"league": "nojhl",
 "value": "18",
 "season": null,
-"id_system": "espn",
+"id_system": "hockeytech",
 "palette": {
-"18": "#00788a"
+"18": "#1a2c6d"
 }
 },
 {
-"league": "nhl",
+"league": "nojhl",
 "value": "19",
 "season": null,
 "id_system": "auto",
 "palette": {
-"19": "#0070b9"
+"19": "#dd5f37"
+}
+},
+{
+"league": "nojhl",
+"value": "19",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"19": "#dd5f37"
+}
+},
+{
+"league": "nojhl",
+"value": "2",
+"season": null,
+"id_system": "auto",
+"palette": {
+"2": "#612424"
+}
+},
+{
+"league": "nojhl",
+"value": "2",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"2": "#612424"
+}
+},
+{
+"league": "nojhl",
+"value": "20",
+"season": null,
+"id_system": "auto",
+"palette": {
+"20": "#131728"
 }
 },
 {
@@ -3812,6 +7361,231 @@
 "id_system": "auto",
 "palette": {
 "20": "#e51937"
+}
+},
+{
+"league": "ojhl",
+"value": "10",
+"season": null,
+"id_system": "auto",
+"palette": {
+"10": "#f7db16"
+}
+},
+{
+"league": "ojhl",
+"value": "10",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"10": "#f7db16"
+}
+},
+{
+"league": "ojhl",
+"value": "11",
+"season": null,
+"id_system": "auto",
+"palette": {
+"11": "#811d2f"
+}
+},
+{
+"league": "ojhl",
+"value": "11",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"11": "#811d2f"
+}
+},
+{
+"league": "ojhl",
+"value": "12",
+"season": null,
+"id_system": "auto",
+"palette": {
+"12": "#001f3c"
+}
+},
+{
+"league": "ojhl",
+"value": "12",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"12": "#001f3c"
+}
+},
+{
+"league": "ojhl",
+"value": "13",
+"season": null,
+"id_system": "auto",
+"palette": {
+"13": "#0c193c"
+}
+},
+{
+"league": "ojhl",
+"value": "13",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"13": "#0c193c"
+}
+},
+{
+"league": "ojhl",
+"value": "14",
+"season": null,
+"id_system": "auto",
+"palette": {
+"14": "#37783b"
+}
+},
+{
+"league": "ojhl",
+"value": "14",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"14": "#37783b"
+}
+},
+{
+"league": "ojhl",
+"value": "15",
+"season": null,
+"id_system": "auto",
+"palette": {
+"15": "#203b77"
+}
+},
+{
+"league": "ojhl",
+"value": "15",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"15": "#203b77"
+}
+},
+{
+"league": "ojhl",
+"value": "16",
+"season": null,
+"id_system": "auto",
+"palette": {
+"16": "#d81431"
+}
+},
+{
+"league": "ojhl",
+"value": "16",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"16": "#d81431"
+}
+},
+{
+"league": "ojhl",
+"value": "17",
+"season": null,
+"id_system": "auto",
+"palette": {
+"17": "#051e3c"
+}
+},
+{
+"league": "ojhl",
+"value": "17",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"17": "#051e3c"
+}
+},
+{
+"league": "ojhl",
+"value": "18",
+"season": null,
+"id_system": "auto",
+"palette": {
+"18": "#415c61"
+}
+},
+{
+"league": "ojhl",
+"value": "18",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"18": "#415c61"
+}
+},
+{
+"league": "ojhl",
+"value": "19",
+"season": null,
+"id_system": "auto",
+"palette": {
+"19": "#e9132f"
+}
+},
+{
+"league": "ojhl",
+"value": "19",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"19": "#e9132f"
+}
+},
+{
+"league": "ojhl",
+"value": "2",
+"season": null,
+"id_system": "auto",
+"palette": {
+"2": "#c0152f"
+}
+},
+{
+"league": "ojhl",
+"value": "2",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"2": "#c0152f"
+}
+},
+{
+"league": "ojhl",
+"value": "20",
+"season": null,
+"id_system": "auto",
+"palette": {
+"20": "#0b1d3e"
+}
+},
+{
+"league": "ojhl",
+"value": "20",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"20": "#0b1d3e"
+}
+},
+{
+"league": "ojhl",
+"value": "21",
+"season": null,
+"id_system": "auto",
+"palette": {
+"21": "#877d67"
 }
 },
 {
@@ -4482,212 +8256,628 @@
 }
 },
 {
-"league": "soccer",
-"value": "Somalia",
+"league": "sjhl",
+"value": "10",
 "season": null,
 "id_system": "auto",
 "palette": {
-"Somalia": "#418fde"
+"10": "#0c665d"
 }
 },
 {
-"league": "soccer",
-"value": "Somalia",
+"league": "sjhl",
+"value": "10",
 "season": null,
-"id_system": "name",
+"id_system": "hockeytech",
 "palette": {
-"Somalia": "#418fde"
+"10": "#0c665d"
 }
 },
 {
-"league": "soccer",
-"value": "Romania U21",
-"season": null,
-"id_system": "auto",
-"palette": {
-"Romania U21": "#ffec00"
-}
-},
-{
-"league": "soccer",
-"value": "Romania U21",
-"season": null,
-"id_system": "name",
-"palette": {
-"Romania U21": "#ffec00"
-}
-},
-{
-"league": "soccer",
-"value": "Barnet",
+"league": "sjhl",
+"value": "11",
 "season": null,
 "id_system": "auto",
 "palette": {
-"Barnet": "#fe7a00"
+"11": "#b67b56"
 }
 },
 {
-"league": "soccer",
-"value": "Barnet",
+"league": "sjhl",
+"value": "11",
 "season": null,
-"id_system": "name",
+"id_system": "hockeytech",
 "palette": {
-"Barnet": "#fe7a00"
+"11": "#b67b56"
 }
 },
 {
-"league": "soccer",
-"value": "Romania U17",
-"season": null,
-"id_system": "auto",
-"palette": {
-"Romania U17": "#fcd116"
-}
-},
-{
-"league": "soccer",
-"value": "Romania U17",
-"season": null,
-"id_system": "name",
-"palette": {
-"Romania U17": "#fcd116"
-}
-},
-{
-"league": "soccer",
-"value": "Charleston Battery",
+"league": "sjhl",
+"value": "12",
 "season": null,
 "id_system": "auto",
 "palette": {
-"Charleston Battery": "#000000"
+"12": "#fab319"
 }
 },
 {
-"league": "soccer",
-"value": "Charleston Battery",
+"league": "sjhl",
+"value": "12",
 "season": null,
-"id_system": "name",
+"id_system": "hockeytech",
 "palette": {
-"Charleston Battery": "#000000"
+"12": "#fab319"
+}
+},
+{
+"league": "sjhl",
+"value": "13",
+"season": null,
+"id_system": "auto",
+"palette": {
+"13": "#e71b38"
+}
+},
+{
+"league": "sjhl",
+"value": "13",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"13": "#e71b38"
+}
+},
+{
+"league": "sjhl",
+"value": "14",
+"season": null,
+"id_system": "auto",
+"palette": {
+"14": "#ffffff"
+}
+},
+{
+"league": "sjhl",
+"value": "14",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"14": "#ffffff"
+}
+},
+{
+"league": "sjhl",
+"value": "15",
+"season": null,
+"id_system": "auto",
+"palette": {
+"15": "#db2c29"
+}
+},
+{
+"league": "sjhl",
+"value": "15",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"15": "#db2c29"
+}
+},
+{
+"league": "sjhl",
+"value": "16",
+"season": null,
+"id_system": "auto",
+"palette": {
+"16": "#085b34"
+}
+},
+{
+"league": "sjhl",
+"value": "16",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"16": "#085b34"
+}
+},
+{
+"league": "sjhl",
+"value": "17",
+"season": null,
+"id_system": "auto",
+"palette": {
+"17": "#004f2f"
+}
+},
+{
+"league": "sjhl",
+"value": "17",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"17": "#004f2f"
+}
+},
+{
+"league": "sjhl",
+"value": "18",
+"season": null,
+"id_system": "auto",
+"palette": {
+"18": "#9b9a96"
+}
+},
+{
+"league": "sjhl",
+"value": "18",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"18": "#9b9a96"
+}
+},
+{
+"league": "sjhl",
+"value": "19",
+"season": null,
+"id_system": "auto",
+"palette": {
+"19": "#cfa44c"
+}
+},
+{
+"league": "sjhl",
+"value": "19",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"19": "#cfa44c"
+}
+},
+{
+"league": "sjhl",
+"value": "68",
+"season": null,
+"id_system": "auto",
+"palette": {
+"68": "#121f2c"
+}
+},
+{
+"league": "sjhl",
+"value": "68",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"68": "#121f2c"
+}
+},
+{
+"league": "sjhl",
+"value": "8",
+"season": null,
+"id_system": "auto",
+"palette": {
+"8": "#681c40"
+}
+},
+{
+"league": "sjhl",
+"value": "8",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"8": "#681c40"
+}
+},
+{
+"league": "sjhl",
+"value": "9",
+"season": null,
+"id_system": "auto",
+"palette": {
+"9": "#2e2864"
 }
 },
 {
 "league": "soccer",
-"value": "Morocco U17",
+"value": "uefa.euroq",
 "season": null,
 "id_system": "auto",
 "palette": {}
 },
 {
 "league": "soccer",
-"value": "Morocco U17",
+"value": "uefa.euroq",
 "season": null,
-"id_system": "name",
+"id_system": "competition",
+"error": "InputError"
+},
+{
+"league": "soccer",
+"value": "uefa.euroq",
+"season": 2023,
+"id_system": "auto",
 "palette": {}
 },
 {
 "league": "soccer",
-"value": "Wycombe Wanderers",
+"value": "uefa.euroq",
+"season": 2024,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "soccer",
+"value": "uefa.euro.u19",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "soccer",
+"value": "uefa.euro.u19",
+"season": null,
+"id_system": "competition",
+"error": "InputError"
+},
+{
+"league": "soccer",
+"value": "uefa.euro.u19",
+"season": 2026,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "soccer",
+"value": "uefa.euro.u19",
+"season": 2027,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "soccer",
+"value": "bra.copa_do_brazil",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "soccer",
+"value": "bra.copa_do_brazil",
+"season": null,
+"id_system": "competition",
+"error": "InputError"
+},
+{
+"league": "soccer",
+"value": "bra.copa_do_brazil",
+"season": 2026,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "soccer",
+"value": "bra.copa_do_brazil",
+"season": 2027,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "soccer",
+"value": "uefa.euro",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "soccer",
+"value": "uefa.euro",
+"season": null,
+"id_system": "competition",
+"error": "InputError"
+},
+{
+"league": "soccer",
+"value": "uefa.euro",
+"season": 2024,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "soccer",
+"value": "uefa.euro",
+"season": 2025,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "soccer",
+"value": "club.friendly",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "soccer",
+"value": "club.friendly",
+"season": null,
+"id_system": "competition",
+"error": "InputError"
+},
+{
+"league": "soccer",
+"value": "club.friendly",
+"season": 2026,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "soccer",
+"value": "club.friendly",
+"season": 2027,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "soccer",
+"value": "ger.dfb_pokal",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "soccer",
+"value": "ger.dfb_pokal",
+"season": null,
+"id_system": "competition",
+"error": "InputError"
+},
+{
+"league": "soccer",
+"value": "ger.dfb_pokal",
+"season": 2026,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "soccer",
+"value": "ger.dfb_pokal",
+"season": 2027,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "soccer",
+"value": "usa.usl.1",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "sphl",
+"value": "1",
 "season": null,
 "id_system": "auto",
 "palette": {
-"Wycombe Wanderers": "#4cb8e5"
+"1": "#0b2241"
 }
 },
 {
-"league": "soccer",
-"value": "Wycombe Wanderers",
+"league": "sphl",
+"value": "1",
 "season": null,
-"id_system": "name",
+"id_system": "hockeytech",
 "palette": {
-"Wycombe Wanderers": "#4cb8e5"
+"1": "#0b2241"
 }
 },
 {
-"league": "soccer",
-"value": "Longwood Lancers",
-"season": null,
-"id_system": "auto",
-"palette": {}
-},
-{
-"league": "soccer",
-"value": "Longwood Lancers",
-"season": null,
-"id_system": "name",
-"palette": {}
-},
-{
-"league": "soccer",
-"value": "Barbados",
+"league": "sphl",
+"value": "10",
 "season": null,
 "id_system": "auto",
 "palette": {
-"Barbados": "#00267f"
+"10": "#2b3338"
 }
 },
 {
-"league": "soccer",
-"value": "Barbados",
+"league": "sphl",
+"value": "10",
 "season": null,
-"id_system": "name",
+"id_system": "hockeytech",
 "palette": {
-"Barbados": "#00267f"
+"10": "#2b3338"
 }
 },
 {
-"league": "soccer",
-"value": "Brighton & Hove Albion",
-"season": null,
-"id_system": "auto",
-"palette": {}
-},
-{
-"league": "soccer",
-"value": "Brighton & Hove Albion",
-"season": null,
-"id_system": "name",
-"palette": {}
-},
-{
-"league": "soccer",
-"value": "United States",
-"season": null,
-"id_system": "auto",
-"palette": {}
-},
-{
-"league": "soccer",
-"value": "United States",
-"season": null,
-"id_system": "name",
-"palette": {}
-},
-{
-"league": "soccer",
-"value": "Finland U21",
+"league": "sphl",
+"value": "11",
 "season": null,
 "id_system": "auto",
 "palette": {
-"Finland U21": "#ffffff"
+"11": "#fdb527"
 }
 },
 {
-"league": "soccer",
-"value": "Finland U21",
+"league": "sphl",
+"value": "11",
 "season": null,
-"id_system": "name",
+"id_system": "hockeytech",
 "palette": {
-"Finland U21": "#ffffff"
+"11": "#fdb527"
 }
 },
 {
-"league": "soccer",
-"value": "Atletico Balboa",
+"league": "sphl",
+"value": "12",
 "season": null,
 "id_system": "auto",
 "palette": {
-"Atletico Balboa": "#fc0304"
+"12": "#0157a1"
+}
+},
+{
+"league": "sphl",
+"value": "12",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"12": "#0157a1"
+}
+},
+{
+"league": "sphl",
+"value": "13",
+"season": null,
+"id_system": "auto",
+"palette": {
+"13": "#1e2e1a"
+}
+},
+{
+"league": "sphl",
+"value": "13",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"13": "#1e2e1a"
+}
+},
+{
+"league": "sphl",
+"value": "2",
+"season": null,
+"id_system": "auto",
+"palette": {
+"2": "#ead6ab"
+}
+},
+{
+"league": "sphl",
+"value": "2",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"2": "#ead6ab"
+}
+},
+{
+"league": "sphl",
+"value": "26",
+"season": null,
+"id_system": "auto",
+"palette": {
+"26": "#c9992d"
+}
+},
+{
+"league": "sphl",
+"value": "26",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"26": "#c9992d"
+}
+},
+{
+"league": "sphl",
+"value": "27",
+"season": null,
+"id_system": "auto",
+"palette": {
+"27": "#09253b"
+}
+},
+{
+"league": "sphl",
+"value": "27",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"27": "#09253b"
+}
+},
+{
+"league": "sphl",
+"value": "28",
+"season": null,
+"id_system": "auto",
+"palette": {
+"28": "#0d223f"
+}
+},
+{
+"league": "sphl",
+"value": "28",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"28": "#0d223f"
+}
+},
+{
+"league": "sphl",
+"value": "3",
+"season": null,
+"id_system": "auto",
+"palette": {
+"3": "#a91927"
+}
+},
+{
+"league": "sphl",
+"value": "3",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"3": "#a91927"
+}
+},
+{
+"league": "sphl",
+"value": "4",
+"season": null,
+"id_system": "auto",
+"palette": {
+"4": "#0c233e"
+}
+},
+{
+"league": "sphl",
+"value": "4",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"4": "#0c233e"
+}
+},
+{
+"league": "sphl",
+"value": "5",
+"season": null,
+"id_system": "auto",
+"palette": {
+"5": "#1d2a54"
+}
+},
+{
+"league": "sphl",
+"value": "5",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"5": "#1d2a54"
+}
+},
+{
+"league": "sphl",
+"value": "6",
+"season": null,
+"id_system": "auto",
+"palette": {
+"6": "#4a3170"
 }
 },
 {
@@ -5366,229 +9556,404 @@
 }
 },
 {
-"league": "wbb",
-"value": "299",
+"league": "vijhl",
+"value": "1",
 "season": null,
 "id_system": "auto",
 "palette": {
-"299": "#000000"
+"1": "#b53a3c"
 }
 },
 {
-"league": "wbb",
-"value": "299",
+"league": "vijhl",
+"value": "1",
 "season": null,
-"id_system": "espn",
+"id_system": "hockeytech",
 "palette": {
-"299": "#000000"
+"1": "#b53a3c"
 }
 },
 {
-"league": "wbb",
-"value": "276",
-"season": null,
-"id_system": "auto",
-"palette": {
-"276": "#00b140"
-}
-},
-{
-"league": "wbb",
-"value": "276",
-"season": null,
-"id_system": "espn",
-"palette": {
-"276": "#00b140"
-}
-},
-{
-"league": "wbb",
-"value": "172",
+"league": "vijhl",
+"value": "10",
 "season": null,
 "id_system": "auto",
 "palette": {
-"172": "#b31b1b"
+"10": "#2c2d21"
 }
 },
 {
-"league": "wbb",
-"value": "172",
+"league": "vijhl",
+"value": "10",
 "season": null,
-"id_system": "espn",
+"id_system": "hockeytech",
 "palette": {
-"172": "#b31b1b"
+"10": "#2c2d21"
 }
 },
 {
-"league": "wbb",
-"value": "104",
-"season": null,
-"id_system": "auto",
-"palette": {
-"104": "#cc0000"
-}
-},
-{
-"league": "wbb",
-"value": "104",
-"season": null,
-"id_system": "espn",
-"palette": {
-"104": "#cc0000"
-}
-},
-{
-"league": "wbb",
-"value": "2099",
+"league": "vijhl",
+"value": "12",
 "season": null,
 "id_system": "auto",
 "palette": {
-"2099": "#004a81"
+"12": "#154734"
 }
 },
 {
-"league": "wbb",
-"value": "2099",
+"league": "vijhl",
+"value": "12",
 "season": null,
-"id_system": "espn",
+"id_system": "hockeytech",
 "palette": {
-"2099": "#004a81"
+"12": "#154734"
 }
 },
 {
-"league": "wbb",
-"value": "2569",
-"season": null,
-"id_system": "auto",
-"palette": {
-"2569": "#7d1315"
-}
-},
-{
-"league": "wbb",
-"value": "2569",
-"season": null,
-"id_system": "espn",
-"palette": {
-"2569": "#7d1315"
-}
-},
-{
-"league": "wbb",
-"value": "94",
+"league": "vijhl",
+"value": "14",
 "season": null,
 "id_system": "auto",
 "palette": {
-"94": "#ffc82e"
+"14": "#e92333"
 }
 },
 {
-"league": "wbb",
-"value": "94",
+"league": "vijhl",
+"value": "14",
 "season": null,
-"id_system": "espn",
+"id_system": "hockeytech",
 "palette": {
-"94": "#ffc82e"
+"14": "#e92333"
 }
 },
 {
-"league": "wbb",
-"value": "251",
-"season": null,
-"id_system": "auto",
-"palette": {
-"251": "#af5c37"
-}
-},
-{
-"league": "wbb",
-"value": "251",
-"season": null,
-"id_system": "espn",
-"palette": {
-"251": "#af5c37"
-}
-},
-{
-"league": "wbb",
-"value": "193",
+"league": "vijhl",
+"value": "2",
 "season": null,
 "id_system": "auto",
 "palette": {
-"193": "#c41230"
+"2": "#4a363a"
 }
 },
 {
-"league": "wbb",
-"value": "193",
+"league": "vijhl",
+"value": "2",
 "season": null,
-"id_system": "espn",
+"id_system": "hockeytech",
 "palette": {
-"193": "#c41230"
+"2": "#4a363a"
 }
 },
 {
-"league": "wbb",
-"value": "2026",
-"season": null,
-"id_system": "auto",
-"palette": {
-"2026": "#000000"
-}
-},
-{
-"league": "wbb",
-"value": "2026",
-"season": null,
-"id_system": "espn",
-"palette": {
-"2026": "#000000"
-}
-},
-{
-"league": "wbb",
-"value": "526",
+"league": "vijhl",
+"value": "3",
 "season": null,
 "id_system": "auto",
 "palette": {
-"526": "#00885a"
+"3": "#f1cc28"
 }
 },
 {
-"league": "wbb",
-"value": "526",
+"league": "vijhl",
+"value": "3",
 "season": null,
-"id_system": "espn",
+"id_system": "hockeytech",
 "palette": {
-"526": "#00885a"
+"3": "#f1cc28"
 }
 },
 {
-"league": "wbb",
-"value": "2344",
-"season": null,
-"id_system": "auto",
-"palette": {
-"2344": "#003273"
-}
-},
-{
-"league": "wbb",
-"value": "2344",
-"season": null,
-"id_system": "espn",
-"palette": {
-"2344": "#003273"
-}
-},
-{
-"league": "wbb",
-"value": "171",
+"league": "vijhl",
+"value": "4",
 "season": null,
 "id_system": "auto",
 "palette": {
-"171": "#7ba4db"
+"4": "#8e2722"
 }
+},
+{
+"league": "vijhl",
+"value": "4",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"4": "#8e2722"
+}
+},
+{
+"league": "vijhl",
+"value": "5",
+"season": null,
+"id_system": "auto",
+"palette": {
+"5": "#f00b03"
+}
+},
+{
+"league": "vijhl",
+"value": "5",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"5": "#f00b03"
+}
+},
+{
+"league": "vijhl",
+"value": "6",
+"season": null,
+"id_system": "auto",
+"palette": {
+"6": "#a9dade"
+}
+},
+{
+"league": "vijhl",
+"value": "6",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"6": "#a9dade"
+}
+},
+{
+"league": "vijhl",
+"value": "7",
+"season": null,
+"id_system": "auto",
+"palette": {
+"7": "#051e40"
+}
+},
+{
+"league": "vijhl",
+"value": "7",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"7": "#051e40"
+}
+},
+{
+"league": "vijhl",
+"value": "8",
+"season": null,
+"id_system": "auto",
+"palette": {
+"8": "#4e9796"
+}
+},
+{
+"league": "vijhl",
+"value": "8",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"8": "#4e9796"
+}
+},
+{
+"league": "vijhl",
+"value": "9",
+"season": null,
+"id_system": "auto",
+"palette": {
+"9": "#044566"
+}
+},
+{
+"league": "vijhl",
+"value": "9",
+"season": null,
+"id_system": "hockeytech",
+"palette": {
+"9": "#044566"
+}
+},
+{
+"league": "vijhl",
+"value": "Campbell River Storm",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Campbell River Storm": "#4a363a"
+}
+},
+{
+"league": "wbb",
+"value": "PL",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "wbb",
+"value": "PL",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "wbb",
+"value": "PAC-10",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "wbb",
+"value": "PAC-10",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "wbb",
+"value": "ASUN CONFERENCE",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "wbb",
+"value": "ASUN CONFERENCE",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "wbb",
+"value": "PAC-12 CONFERENCE",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "wbb",
+"value": "PAC-12 CONFERENCE",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "wbb",
+"value": "BELT",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "wbb",
+"value": "BELT",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "wbb",
+"value": "MIDWESTERN COLLEGIATE CONFERENCE",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "wbb",
+"value": "MIDWESTERN COLLEGIATE CONFERENCE",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "wbb",
+"value": "WEST COAST CONFERENCE",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "wbb",
+"value": "WEST COAST CONFERENCE",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "wbb",
+"value": "MID-AMERICAN CONFERENCE",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "wbb",
+"value": "MID-AMERICAN CONFERENCE",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "wbb",
+"value": "ATLANTIC SUN CONFERENCE",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "wbb",
+"value": "ATLANTIC SUN CONFERENCE",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "wbb",
+"value": "AEC",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "wbb",
+"value": "AEC",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "wbb",
+"value": "SUN BELT CONFERENCE",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "wbb",
+"value": "SUN BELT CONFERENCE",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "wbb",
+"value": "COLONIAL ATHLETIC ASSOCIATION",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "wbb",
+"value": "COLONIAL ATHLETIC ASSOCIATION",
+"season": null,
+"id_system": "conference",
+"error": "InputError"
+},
+{
+"league": "wbb",
+"value": "B12",
+"season": null,
+"id_system": "auto",
+"palette": {}
 },
 {
 "league": "whl",

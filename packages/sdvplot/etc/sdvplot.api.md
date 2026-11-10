@@ -72,8 +72,8 @@ export const ESPN_HEADSHOT_LEAGUES: {
 // @public
 export type EspnHeadshotLeague = keyof typeof ESPN_HEADSHOT_LEAGUES;
 
-// @public (undocumented)
-export const EXPLICIT_ONLY: readonly ["nhl_id"];
+// @public
+export const EXPLICIT_ONLY: readonly ["nhl_id", "fox", "cbs", "sports247", "on3"];
 
 // @public
 export function fetchManifest(o?: {
@@ -129,7 +129,7 @@ export interface LeagueData {
 }
 
 // @public (undocumented)
-export const LEAGUES: readonly ["aaf", "ahl", "cfb", "cricket", "echl", "mbb", "milb", "mlb", "nba", "nbagl", "ncaa_baseball", "ncaa_mhockey", "ncaa_softball", "ncaa_whockey", "nfl", "nhl", "ohl", "phf", "pwhl", "qmjhl", "soccer", "ufl", "usfl", "ushl", "wbb", "whl", "wnba", "xfl"];
+export const LEAGUES: readonly ["aaf", "ahl", "ajhl", "bchl", "cchl", "cebl", "cfb", "cfl", "chl", "cricket", "easl", "echl", "f1", "fiba", "gojhl", "iihf", "kijhl", "lba", "mbb", "mhl", "milb", "mjhl", "mlb", "nba", "nbagl", "nbl", "ncaa_baseball", "ncaa_mhockey", "ncaa_softball", "ncaa_whockey", "nfl", "nhl", "nojhl", "ohl", "ojhl", "phf", "pwhl", "qmjhl", "sjhl", "soccer", "sphl", "ufl", "usfl", "ushl", "vijhl", "wbb", "whl", "wnba", "xfl"];
 
 // @public
 export function loadGsis(): Promise<void>;
@@ -337,7 +337,7 @@ export function preloadAll(): Promise<void>;
 export function prepareTiers(rows: readonly TierRow[], league: League, o?: TiersOptions): Tiers;
 
 // @public (undocumented)
-export const PRIORITY: readonly ["team_id", "espn", "espn_abbr", "nhl", "nflverse", "mlbstats", "nba_api", "hockeytech", "ncaa", "pff", "cricinfo", "cfbd", "bref", "sportsipy", "fangraphs", "sdvplotr", "name"];
+export const PRIORITY: readonly ["team_id", "espn", "espn_abbr", "nhl", "nflverse", "mlbstats", "nba_api", "hockeytech", "ncaa", "pff", "cricinfo", "cfbd", "bref", "sportsipy", "fangraphs", "yahoo", "kenpom", "torvik", "sdvplotr", "name"];
 
 // @public (undocumented)
 export interface Rankable {
@@ -452,7 +452,7 @@ export function suggest(value: Value, league: League, opts?: {
     n?: number;
 }): Promise<Array<[TeamId, string]>>;
 
-// @public (undocumented)
+// @public
 export interface Team {
     // (undocumented)
     abbr: string | null;
@@ -466,6 +466,8 @@ export interface Team {
     conference: string | null;
     // (undocumented)
     conference_id: string | null;
+    // (undocumented)
+    division: string | null;
     // (undocumented)
     league: League;
     // (undocumented)
@@ -610,7 +612,7 @@ export type Value = string | number | bigint | null | undefined;
 export type Variant = "default" | "dark" | (string & {});
 
 // @public (undocumented)
-export const VARIANTS: readonly ["alternate", "cap_on_dark", "cap_on_light", "cricinfo", "crop_64px", "dark", "default", "grayscale", "large", "logo2", "medium", "on_dark", "on_light", "primary_logo_black", "primary_logo_on_black_color", "primary_logo_on_primary_color", "primary_logo_on_secondary_color", "primary_logo_on_white_color", "primary_logo_white", "primary_on_dark", "primary_on_light", "scoreboard", "scoreboard_dark", "secondary_logo_black", "secondary_logo_on_black_color", "secondary_logo_on_primary_color", "secondary_logo_on_secondary_color", "secondary_logo_on_white_color", "secondary_logo_white", "sport_pictogram", "squared", "team_strip"];
+export const VARIANTS: readonly ["alternate", "cap_on_dark", "cap_on_light", "conference_final", "cricinfo", "crop_64px", "dark", "default", "french", "grayscale", "icon", "large", "logo2", "medium", "on_dark", "on_light", "primary_logo_black", "primary_logo_on_black_color", "primary_logo_on_primary_color", "primary_logo_on_secondary_color", "primary_logo_on_white_color", "primary_logo_white", "primary_on_dark", "primary_on_light", "scoreboard", "scoreboard_dark", "secondary_logo_black", "secondary_logo_on_black_color", "secondary_logo_on_primary_color", "secondary_logo_on_secondary_color", "secondary_logo_on_white_color", "secondary_logo_white", "sport_pictogram", "squared", "team_strip"];
 
 // @public (undocumented)
 export const VERSION: string;

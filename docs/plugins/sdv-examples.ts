@@ -123,6 +123,10 @@ export default function sdvExamples(_context: LoadContext): Plugin {
         optimization: isServer
           ? {}
           : {
+              // realContentHash rewrites every string in an emitted asset that equals an interim chunk hash, and the
+              // inlined example outputs are full of 8-hex-digit runs: a beeswarm's y="166.1505580297717" became
+              // "166.15055ebcaade3" on Linux (check-build caught it). The content hashes it skips stay deterministic.
+              realContentHash: false,
               splitChunks: {
                 cacheGroups: {
                   sdvData: {
