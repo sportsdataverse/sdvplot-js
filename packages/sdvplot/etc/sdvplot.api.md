@@ -14,8 +14,10 @@ export function addAthleteId<R extends Record<string, unknown>>(rows: readonly R
 export interface AddAthleteIdOptions {
     fetch?: typeof fetch;
     headshotUrls?: boolean;
+    idSystem?: IdSystem;
     league?: "cfb";
     seasonKey?: string;
+    strict?: boolean;
     teamKey?: string;
     today?: Date;
 }

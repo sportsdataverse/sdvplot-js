@@ -2,7 +2,8 @@ import { InputError, warn } from "./errors.js";
 import { checkLeague, getLeagueSync, loadLeague } from "./index-data.js";
 import { parseManifestCsv } from "./manifest.js";
 import { normValue } from "./normalize.js";
-import { resolveIds } from "./resolve.js";
+import { report, resolveIds } from "./resolve.js";
+import type { IdSystem } from "./types.js";
 
 /** College football rosters (ESPN athlete ids): cfbfastR-data's yearly files, what Python and sdvplotR read. */
 export const ROSTER_URL = (season: number): string =>
@@ -26,6 +27,10 @@ export interface AddAthleteIdOptions {
   seasonKey?: string;
   /** A league with rosters: `"cfb"` (the default). */
   league?: "cfb";
+  /** The id system of `teamKey`'s values, as in `resolve` (default "auto"); roster team names resolve under "auto". */
+  idSystem?: IdSystem;
+  /** Throw `UnresolvedTeamError` when a team in `teamKey` does not resolve, instead of matching it by name. */
+  strict?: boolean;
   /** Also add each player's `headshot_url`. */
   headshotUrls?: boolean;
   /** The fetch to download rosters with (default `globalThis.fetch`). */
@@ -147,22 +152,33 @@ export async function addAthleteId<R extends Record<string, unknown>>(
       `could not read the cfb rosters for ${read.join(", ")}, so every athlete_id is undefined`,
     );
   const d = getLeagueSync(league);
-  const teamKeys = (values: unknown[]): string[] => {
-    const { out } = resolveIds(values as never, league, Array(values.length).fill(null), "auto", d);
+  const teamKeys = (values: unknown[], system: IdSystem = "auto", must = false): string[] => {
+    const { out, unresolved } = resolveIds(
+      values as never,
+      league,
+      Array(values.length).fill(null),
+      system,
+      d,
+    );
+    if (must && unresolved.size) report(unresolved, league, true);
     return values.map((v, i) => out[i] ?? `name:${normValue(v) ?? "\u0000"}`); // a missing team never meets a name
   };
-  const keys = (names: unknown[], teams: unknown[] | null, ss: (number | null)[] | null): string[] => {
-    const t = teams ? teamKeys(teams) : null;
-    return names.map((n, i) => [normValue(n), ...(t ? [t[i]] : []), ...(ss ? [ss[i]] : [])].join("\r"));
-  };
+  const keys = (names: unknown[], t: string[] | null, ss: (number | null)[] | null): string[] =>
+    names.map((n, i) => [normValue(n), ...(t ? [t[i]] : []), ...(ss ? [ss[i]] : [])].join("\r"));
   const keyDf = keys(
     rows.map((r) => r[nameKey]),
-    teamKey ? rows.map((r) => r[teamKey]) : null,
+    teamKey
+      ? teamKeys(
+          rows.map((r) => r[teamKey]),
+          opts.idSystem ?? "auto",
+          opts.strict ?? false,
+        )
+      : null,
     seasonKey ? dfSeasons : null,
   );
   const keyRo = keys(
     ro.map((r) => r[2]),
-    teamKey ? ro.map((r) => r[3]) : null,
+    teamKey ? teamKeys(ro.map((r) => r[3])) : null, // the rosters' own team names: always "auto"
     seasonKey ? ro.map((r) => r[0]) : null,
   );
   const firstHit = new Map<string, number>();

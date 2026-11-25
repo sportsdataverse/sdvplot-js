@@ -230,3 +230,21 @@ test("the async forms, a scalar altColors and the edge branches answer as their 
   const got = await addAthleteId(rows, "p", { fetch: rosterFetch, today });
   expect(got.map((r) => r.athlete_id)).toEqual([undefined, undefined]);
 });
+
+test("addAthleteId takes the team id system and strict, as Python's id_system and strict", async () => {
+  resetRosterCache();
+  const opts = { fetch: rosterFetch, today };
+  const covey = [{ player_name: "Britain Covey", team: "254", season: 2021 }]; // Utah's ESPN id
+  expect((await addAthleteId(covey, "player_name", { ...opts, idSystem: "espn" }))[0]?.athlete_id).toBe(
+    "3926231",
+  );
+  expect(
+    (await addAthleteId(covey, "player_name", { ...opts, idSystem: "name" }))[0]?.athlete_id,
+  ).toBeUndefined();
+  await expect(
+    addAthleteId([{ player_name: "Britain Covey", team: "nowhere", season: 2021 }], "player_name", {
+      ...opts,
+      strict: true,
+    }),
+  ).rejects.toBeInstanceOf(UnresolvedTeamError);
+});
