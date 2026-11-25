@@ -1,0 +1,4 @@
+athlete_id,first_name,last_name,team,weight,height,jersey,year,position,home_city,home_state,home_country,home_latitude,home_longitude,home_county_fips,recruit_ids,headshot_url,season
+3926231,Britain,Covey,Utah,172,68,18,3,WR,Provo,UT,USA,40.2338438,-111.6585337,49049,,https://a.espncdn.com/i/headshots/college-football/players/full/3926231.png,2021
+4374303,JT,Daniels,Georgia,237,74,18,4,QB,Irvine,CA,USA,33.6856969,-117.8259819,06059,,https://a.espncdn.com/i/headshots/college-football/players/full/4374303.png,2021
+4374303,JT,Daniels,USC,237,74,18,4,QB,Irvine,CA,USA,33.6856969,-117.8259819,06059,,https://a.espncdn.com/i/headshots/college-football/players/full/4374303.png,2021

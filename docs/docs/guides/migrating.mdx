@@ -20,6 +20,9 @@ The Python names become camelCase; sdvplotR's `sdv_` prefix goes.
 | `logo_url`, `marks` | `sdv_logo_url` | `logoUrl` / `logoUrlSync`, `marks`, `selectMark` |
 | `headshot_url` | `sdv_headshot_url` | `headshotUrl` |
 | `versions` | | `versions`, `VERSION`, `INDEX_VERSION` |
+| `clean_names`, `aliases`, `team_factor` | `sdv_clean_names`, `sdv_aliases`, `sdv_team_factor` (cfbplotR `clean_school_names`, `team_name_mapping`, `cfb_team_factor`) | `cleanNames` / `cleanNamesSync`, `aliases`, `teamFactor` / `teamFactorSync` |
+| `teams(league, division=)`, `alt_colors=` | `sdv_teams(division =)`, the scales' `alt_colors` | `teams(league, { division })`, `altColors` on `palette` / `teamColors` |
+| `add_athlete_id` | `sdv_add_athlete_id` (cfbplotR `add_athlete_id_col`) | `addAthleteId` |
 
 A season resolves a relocated franchise the same way in all three:
 

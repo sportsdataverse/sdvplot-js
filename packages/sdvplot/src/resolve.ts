@@ -79,7 +79,8 @@ function match(
   return null;
 }
 
-function seasons(season: ResolveOptions["season"], n: number, league: League): (number | null)[] {
+/** Internal (not in the barrel): one season per value. */
+export function seasons(season: ResolveOptions["season"], n: number, league: League): (number | null)[] {
   if (!Array.isArray(season)) return Array<number | null>(n).fill(normSeason(season as SeasonInput, league));
   if (season.length !== n)
     throw new InputError(`season has ${season.length} values but there are ${n} teams`);
@@ -108,7 +109,8 @@ function nonTeam(league: League, d: LeagueData): Map<string, string> {
   return m;
 }
 
-function resolveIds(
+/** Internal (not in the barrel): `resolveSync` without the report, as Python `_resolve_ids`. */
+export function resolveIds(
   items: readonly Value[],
   league: League,
   ss: (number | null)[],
@@ -154,7 +156,8 @@ function resolveIds(
   return { out, unresolved };
 }
 
-function report(unresolved: Map<string, string>, league: League, strict: boolean): void {
+/** Internal (not in the barrel): the one unresolved-values warning (or error with `strict`). */
+export function report(unresolved: Map<string, string>, league: League, strict: boolean): void {
   const shown = [...unresolved].map(([v, why]) => `'${v}' (${why})`).join(", ");
   let msg = `${unresolved.size} value(s) did not resolve to a ${league} team: ${shown}`;
   if ([...unresolved.values()].some((w) => w.startsWith("ambiguous")))

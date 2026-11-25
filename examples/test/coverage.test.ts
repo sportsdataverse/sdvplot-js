@@ -42,6 +42,11 @@ const EXEMPT: readonly (readonly [spec: string, name: RegExp | "*", reason: stri
     "test hook: forgets the fetched manifest (the gate calls it per example)",
   ],
   [
+    "@sportsdataverse/sdvplot",
+    /^(ROSTER_URL|resetRosterCache|latestRosterSeason)$/,
+    "addAthleteId's helpers: the roster URL the gate answers from a fixture, the test hook that forgets the fetched rosters (the gate calls it per example) and the August 15 season rule addAthleteId applies",
+  ],
+  [
     "@sportsdataverse/sdvplot/plot",
     /^sizeRender$/,
     "the render transform logos/wordmarks/headshots are built on; every example of those marks draws through it",
