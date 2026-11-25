@@ -245,6 +245,7 @@ out = {
     "alt_colors": alt,
     "add_athlete_id": athletes,
 }
-OUT.write_text(json.dumps(out, indent=0, ensure_ascii=False) + "\n", encoding="utf-8", newline="
-")
+OUT.write_text(
+    json.dumps(out, indent=0, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n"
+)
 print(f"wrote {OUT.name}: index {_index.index_version()}")
