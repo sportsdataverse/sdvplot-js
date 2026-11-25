@@ -1,12 +1,12 @@
 {
  "meta": {
-  "sdvplot_commit": "1b19cf0cf786baf5b7732476db4b859bfe040c51",
+  "sdvplot_commit": "ca596a1dd0f938e40bc26c6191bc21e0d03333e7",
   "perspective_py_commit": "519695e2ee4b968b76bd7f2e167116e8ab81ec8a",
   "sdvplot_version": "0.3.0",
   "table_themes_py_commit": "6c5d2050c071549df5937aefde868917dd2e6a4a",
   "table_themes_json_commit": "6c5d2050c071549df5937aefde868917dd2e6a4a",
   "perspective_python": "5.5.1",
-  "index_version": "e04c50e5682e",
+  "index_version": "9a2282ad9505",
   "manifest_etag": "\"7f2aa39f8df02fdbcb98e91f9979d416\"",
   "manifest_last_modified": "Mon, 09 Nov 2026 05:29:06 GMT",
   "manifest_sha256": "b1ff1a376641bd168718977ded881e492d27ac2e76e956a33ab59d1c21007442"
