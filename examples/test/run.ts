@@ -1,6 +1,13 @@
 import { readFileSync } from "node:fs";
 import { type Canvas, createCanvas } from "@napi-rs/canvas";
-import { MANIFEST_URL, resetManifestCache, resetWarnings, setWarningHandler } from "@sportsdataverse/sdvplot";
+import {
+  MANIFEST_URL,
+  ROSTER_URL,
+  resetManifestCache,
+  resetRosterCache,
+  resetWarnings,
+  setWarningHandler,
+} from "@sportsdataverse/sdvplot";
 import { type ReactElement, act, isValidElement } from "react";
 import { createRoot } from "react-dom/client";
 import { abs } from "../sources.js";
@@ -25,6 +32,7 @@ const HEADSHOT_FIXTURES: readonly string[] = ["3139477", "4038941", "4426338", "
 /** The only URLs an example may fetch, and only when tagged "network": each answers from a committed fixture. */
 export const FIXTURES: Readonly<Record<string, string>> = {
   [MANIFEST_URL]: "fixtures/sdvplot/manifest_sample.csv",
+  [ROSTER_URL(2021)]: "fixtures/examples/cfb_rosters_2021_sample.csv",
   ...Object.fromEntries(
     LOGO_FIXTURES.map((h) => [`${CDN_SHA256}/${h.slice(0, 2)}/${h}.png`, `fixtures/examples/${h}.png`]),
   ),
@@ -243,6 +251,7 @@ export async function runExample(
   const restoreSinks = recordOtherNetworkPaths(fetched);
   resetWarnings();
   resetManifestCache();
+  resetRosterCache();
   setWarningHandler((m) => warnings.push(m));
   try {
     const restore = entry.tags.includes("node") ? hideBrowser() : browserCanvas();
@@ -261,6 +270,7 @@ export async function runExample(
     setWarningHandler(null);
     resetWarnings();
     resetManifestCache();
+    resetRosterCache();
   }
 }
 

@@ -5,6 +5,11 @@ import type { League, Which } from "./types.js";
 
 export interface ColorOptions extends ResolveOptions {
   which?: Which;
+  /**
+   * Teams (any value `resolve` reads) drawn in their other colour: the secondary one, or the primary one with
+   * `which: "secondary"`. A team with no other colour keeps its own (Python's and sdvplotR's `alt_colors`).
+   */
+  altColors?: Value | readonly Value[];
 }
 export type ColorResult<T> = T extends readonly Value[] ? (string | undefined)[] : string | undefined;
 
@@ -18,6 +23,26 @@ function colorMap(league: League, col: "color_primary" | "color_secondary"): Map
   const m = new Map<string, string>();
   for (const t of getLeagueSync(league).teams) if (t[col]) m.set(t.team_id, t[col] as string);
   return m;
+}
+/** `colors` with the `altColors` teams in their other colour, where they have one (Python `_colors._with_alt`). */
+function withAlt(
+  league: League,
+  which: Which,
+  colors: Map<string, string>,
+  opts: ColorOptions,
+): Map<string, string> {
+  if (opts.altColors === undefined) return colors;
+  const alt = resolveSync(
+    (Array.isArray(opts.altColors) ? opts.altColors : [opts.altColors]) as readonly Value[],
+    league,
+    {
+      strict: opts.strict ?? false,
+    },
+  );
+  const other = colorMap(league, which === "primary" ? "color_secondary" : "color_primary");
+  const out = new Map(colors);
+  for (const id of alt) if (id !== undefined && other.has(id)) out.set(id, other.get(id) as string);
+  return out;
 }
 
 /**
@@ -39,7 +64,7 @@ export async function palette(
   const col = column(opts.which ?? "primary");
   checkLeague(league);
   await loadLeague(league);
-  const colors = colorMap(league, col);
+  const colors = withAlt(league, opts.which ?? "primary", colorMap(league, col), opts);
   const out: Record<string, string> = Object.create(null);
   if (teams == null) {
     const rows = getLeagueSync(league).teams;
@@ -95,7 +120,7 @@ export function teamColorsSync<T extends Value | readonly Value[]>(
 ): ColorResult<T> {
   const col = column(opts.which ?? "primary");
   checkLeague(league);
-  const colors = colorMap(league, col);
+  const colors = withAlt(league, opts.which ?? "primary", colorMap(league, col), opts);
   const ids = resolveSync(teams, league, opts) as Resolved<T>;
   const pick = (id: string | undefined): string | undefined =>
     id === undefined ? undefined : colors.get(id);

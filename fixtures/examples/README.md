@@ -4,6 +4,12 @@ Real bytes the examples use: images the gate serves to `network`-tagged examples
 so an example that fetches still runs offline, and the captures the shared sample data is checked against
 (`examples/test/sample-data.test.ts`). Nothing here is hand-written; where a file is a trimmed capture, its entry says how.
 
+## Rosters
+
+- `cfb_rosters_2021_sample.csv`: the header and the two players' lines (Britain Covey, and JT Daniels on both his 2021
+  teams), byte-exact, of cfbfastR-data's `rosters/csv/cfb_rosters_2021.csv`, the file `addAthleteId` downloads for
+  2021 (`ROSTER_URL(2021)`). Fetched 2026-11-25. Used by the `sdvplot/core/athlete-ids` example.
+
 ## Images
 
 - `<sha256>.png`: team marks as the sdvplot archive serves them,
