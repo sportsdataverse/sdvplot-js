@@ -16,11 +16,11 @@ Python `sdvplot` answers for real inputs sampled from its own index; the TS port
 
 Python `sdvplot`'s answers for its cfbplotR-era functions (`teams(division=)`, `aliases`, `clean_names`, `team_factor`,
 `alt_colors`, `add_athlete_id`) on the inputs its own tests hold to sdvplotR (sdvplot's `tests/fixtures/sdvplotr_*.csv`,
-from sdvplotR fb7b15b), so the TS port matches Python and, through it, R
+from sdvplotR c4e695b, sdvplotR#111), so the TS port matches Python and, through it, R
 (`packages/sdvplot/test/cfbplotr-parity.test.ts`). Never hand-edit.
 
-- sdvplot commit: 0b322ed0 (sdvplot#178), index e04c50e5682e
-- contents: 40 division cases (7 college leagues), the md5 of every league's sorted aliases (49), 21 `clean_names`
+- sdvplot commit: 523021e6 (sdvplot#184), index 4ce85fb64837
+- contents: 40 division cases (7 college leagues), the md5 of every league's sorted aliases (70), 21 `clean_names`
   cases (4 leagues x 5 columns, and numbers in), 4 `team_factor` vectors, 6 `alt_colors` cases, and `add_athlete_id`
   on 14 real players with the cfbfastR-data roster rows sdvplotR read (2026-11-25), on 6 with seasons as text,
   fractions, missing and out of range and teams as ESPN ids, and real 2009 CSV lines (an empty name part included)
