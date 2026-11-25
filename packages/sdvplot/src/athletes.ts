@@ -99,14 +99,19 @@ export async function addAthleteId<R extends Record<string, unknown>>(
   rows: readonly R[],
   nameKey: keyof R & string,
   opts: AddAthleteIdOptions = {},
-): Promise<(R & { athlete_id: string | undefined; headshot_url?: string | undefined })[]> {
+): Promise<
+  (Omit<R, "athlete_id" | "headshot_url"> & {
+    athlete_id: string | undefined;
+    headshot_url?: string | undefined;
+  })[]
+> {
   const league = opts.league ?? "cfb";
   checkLeague(league);
   if (league !== "cfb")
     throw new InputError(`sdvplot has rosters for cfb only, not ${JSON.stringify(league)}`);
   if (!Array.isArray(rows)) throw new InputError("rows must be an array of objects");
   const first = rows[0] ?? {};
-  if ("athlete_id" in first) throw new InputError("rows already have an athlete_id key");
+  if (rows.some((r) => "athlete_id" in r)) throw new InputError("rows already have an athlete_id key");
   if (rows.length)
     for (const [arg, k] of [
       ["nameKey", nameKey],

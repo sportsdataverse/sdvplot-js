@@ -23,7 +23,7 @@
     "codegen": "tsx tools/codegen/index.ts",
     "brand": "tsx tools/brand/hex-logo.ts",
     "oracle:sdvplot": "uv run --project ${SDVPLOT_PY_REPO:-../sdvplot} python tools/oracle/sdvplot.py",
-    "oracle:cfbplotr": "uv run --project ${SDVPLOT_PY_REPO:-../sdvplot} python tools/oracle/cfbplotr.py",
+    "oracle:cfbplotr": "uv run --project \"${SDVPLOT_PY_REPO:-../sdvplot}\" python tools/oracle/cfbplotr.py",
     "oracle:sporty": "Rscript tools/oracle/sporty.R",
     "oracle:shots": "tsx tools/oracle/shots.ts",
     "oracle:matchup-colors": "tsx tools/oracle/matchup-colors.ts",

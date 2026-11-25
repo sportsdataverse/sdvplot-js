@@ -12,6 +12,7 @@ import io
 import json
 import os
 import sys
+import tempfile
 import warnings
 from pathlib import Path
 
@@ -42,7 +43,7 @@ if meta["index_version"] != _index.index_version():
 def attempt(fn):
     try:
         return fn()
-    except Exception as e:  # the error class name is the answer
+    except sdvplot.InputError as e:  # an expected error: its class name is the answer; anything else fails the run
         return {"error": type(e).__name__}
 
 
@@ -141,8 +142,8 @@ by_season = {
     int(s): r.drop("season")
     for (s,), r in rosters.group_by("season", maintain_order=True)
 }
-tmp = OUT.parent / ".cfbplotr_rosters"
-tmp.mkdir(exist_ok=True)
+tmp_dir = tempfile.TemporaryDirectory()  # one per run: two runs never share a staged file
+tmp = Path(tmp_dir.name)
 paths = {}
 for s, r in by_season.items():
     paths[s] = tmp / f"{s}.parquet"
@@ -205,11 +206,22 @@ for p in paths.values():
 
 # real CSV lines (the file addAthleteId downloads) and what Python reads from the same rows of the parquet file: the
 # rows with an empty name part, and the first few
-base = "https://raw.githubusercontent.com/sportsdataverse/cfbfastR-data/main/rosters"
-text = requests.get(f"{base}/csv/cfb_rosters_2009.csv", timeout=120).text
+# one commit for both files, so the CSV and the parquet rows are the same revision
+sha = requests.get("https://api.github.com/repos/sportsdataverse/cfbfastR-data/commits/main", timeout=60)
+sha.raise_for_status()
+base = f"https://raw.githubusercontent.com/sportsdataverse/cfbfastR-data/{sha.json()['sha']}/rosters"
+
+
+def get(url: str) -> requests.Response:
+    r = requests.get(url, timeout=120)
+    r.raise_for_status()  # never a fixture made from an error page
+    return r
+
+
+text = get(f"{base}/csv/cfb_rosters_2009.csv").text
 pq = pl.read_parquet(
     io.BytesIO(
-        requests.get(f"{base}/parquet/cfb_rosters_2009.parquet", timeout=120).content
+        get(f"{base}/parquet/cfb_rosters_2009.parquet").content
     )
 )
 odd = pq.filter((pl.col("first_name") == "") | (pl.col("last_name") == ""))[
@@ -226,7 +238,7 @@ athletes["csv_2009"] = {
     "empty_name_ids": odd,
 }
 part.unlink()
-tmp.rmdir()
+tmp_dir.cleanup()
 # Python agrees with R on these (sdvplot's tests/test_cfbplotr_parity.py); check again so a stale sdvplot fails here
 assert [r["athlete_id"] for r in athletes["with_team"]] == players[
     "athlete_id"

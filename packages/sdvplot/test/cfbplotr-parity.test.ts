@@ -147,6 +147,9 @@ test("addAthleteId warns offline, keeps every row and checks its arguments", asy
   expect(out.map((r) => r.athlete_id)).toEqual([undefined, undefined]);
   expect(warnings.some((w) => w.includes("could not read the cfb rosters"))).toBe(true);
   await expect(addAthleteId([{ p: "x", athlete_id: "1" }], "p")).rejects.toBeInstanceOf(InputError);
+  await expect(addAthleteId([{ p: "x" }, { p: "y", athlete_id: "1" }] as never, "p")).rejects.toThrow(
+    "athlete_id",
+  );
   await expect(addAthleteId([{ p: "x" }], "p", { league: "nfl" as never })).rejects.toBeInstanceOf(
     InputError,
   );
