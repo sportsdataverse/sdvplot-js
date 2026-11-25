@@ -5,10 +5,7 @@
 ```ts
 
 // @public
-export function addAthleteId<R extends Record<string, unknown>>(rows: readonly R[], nameKey: keyof R & string, opts?: AddAthleteIdOptions): Promise<(Omit<R, "athlete_id" | "headshot_url"> & {
-    athlete_id: string | undefined;
-    headshot_url?: string | undefined;
-})[]>;
+export function addAthleteId<R extends Record<string, unknown>>(rows: readonly R[], nameKey: keyof R & string, opts?: AddAthleteIdOptions): Promise<WithAthleteId<R>[]>;
 
 // @public
 export interface AddAthleteIdOptions {
@@ -699,6 +696,12 @@ export type WarningHandler = (message: string) => void;
 
 // @public (undocumented)
 export type Which = "primary" | "secondary";
+
+// @public
+export type WithAthleteId<R> = R extends unknown ? Omit<R, "athlete_id" | "headshot_url"> & {
+    athlete_id: string | undefined;
+    headshot_url?: string | undefined;
+} : never;
 
 // @public (undocumented)
 export function wnbaHeadshotUrl(id: string | number): string;

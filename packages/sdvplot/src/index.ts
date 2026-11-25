@@ -45,6 +45,7 @@ export {
 } from "./names.js";
 export {
   type AddAthleteIdOptions,
+  type WithAthleteId,
   ROSTER_URL,
   addAthleteId,
   latestRosterSeason,

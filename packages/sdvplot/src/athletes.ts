@@ -19,6 +19,17 @@ export type RosterRow = readonly [
   url: string | null,
 ];
 
+/**
+ * A row of `addAthleteId`'s result: the row's own fields, and `athlete_id` (with `headshot_url`) written over any it
+ * had. Distributes over a union of row shapes, so each member keeps its own fields.
+ */
+export type WithAthleteId<R> = R extends unknown
+  ? Omit<R, "athlete_id" | "headshot_url"> & {
+      athlete_id: string | undefined;
+      headshot_url?: string | undefined;
+    }
+  : never;
+
 /** Options of `addAthleteId`. */
 export interface AddAthleteIdOptions {
   /** The key with each player's team; default a `team` or `school` key of the first row, if any. */
@@ -104,12 +115,7 @@ export async function addAthleteId<R extends Record<string, unknown>>(
   rows: readonly R[],
   nameKey: keyof R & string,
   opts: AddAthleteIdOptions = {},
-): Promise<
-  (Omit<R, "athlete_id" | "headshot_url"> & {
-    athlete_id: string | undefined;
-    headshot_url?: string | undefined;
-  })[]
-> {
+): Promise<WithAthleteId<R>[]> {
   const league = opts.league ?? "cfb";
   checkLeague(league);
   if (league !== "cfb")
