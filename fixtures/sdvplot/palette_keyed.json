@@ -221,6 +221,456 @@
 }
 },
 {
+"league": "aba",
+"value": "BC Vienna",
+"season": null,
+"id_system": "auto",
+"palette": {
+"BC Vienna": "#b51217"
+}
+},
+{
+"league": "aba",
+"value": "BC Vienna",
+"season": null,
+"id_system": "name",
+"palette": {
+"BC Vienna": "#b51217"
+}
+},
+{
+"league": "aba",
+"value": "Borac Mozzart",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Borac Mozzart": "#ed1f24"
+}
+},
+{
+"league": "aba",
+"value": "Borac Mozzart",
+"season": null,
+"id_system": "name",
+"palette": {
+"Borac Mozzart": "#ed1f24"
+}
+},
+{
+"league": "aba",
+"value": "Bosna BH Telecom",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Bosna BH Telecom": "#f4ac1c"
+}
+},
+{
+"league": "aba",
+"value": "Bosna BH Telecom",
+"season": null,
+"id_system": "name",
+"palette": {
+"Bosna BH Telecom": "#f4ac1c"
+}
+},
+{
+"league": "aba",
+"value": "Budućnost VOLI",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Budućnost VOLI": "#f27005"
+}
+},
+{
+"league": "aba",
+"value": "Budućnost VOLI",
+"season": null,
+"id_system": "name",
+"palette": {
+"Budućnost VOLI": "#f27005"
+}
+},
+{
+"league": "aba",
+"value": "Cedevita",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Cedevita": "#ff6e00"
+}
+},
+{
+"league": "aba",
+"value": "Cedevita",
+"season": null,
+"id_system": "name",
+"palette": {
+"Cedevita": "#ff6e00"
+}
+},
+{
+"league": "aba",
+"value": "Cedevita Olimpija",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Cedevita Olimpija": "#00652e"
+}
+},
+{
+"league": "aba",
+"value": "Cedevita Olimpija",
+"season": null,
+"id_system": "name",
+"palette": {
+"Cedevita Olimpija": "#00652e"
+}
+},
+{
+"league": "aba",
+"value": "Cibona",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Cibona": "#ed1c24"
+}
+},
+{
+"league": "aba",
+"value": "Cibona",
+"season": null,
+"id_system": "name",
+"palette": {
+"Cibona": "#ed1c24"
+}
+},
+{
+"league": "aba",
+"value": "Crvena zvezda Meridianbet",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Crvena zvezda Meridianbet": "#eb1c27"
+}
+},
+{
+"league": "aba",
+"value": "Crvena zvezda Meridianbet",
+"season": null,
+"id_system": "name",
+"palette": {
+"Crvena zvezda Meridianbet": "#eb1c27"
+}
+},
+{
+"league": "aba",
+"value": "Dubai Basketball",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Dubai Basketball": "#8b6f4c"
+}
+},
+{
+"league": "aba",
+"value": "Dubai Basketball",
+"season": null,
+"id_system": "name",
+"palette": {
+"Dubai Basketball": "#8b6f4c"
+}
+},
+{
+"league": "aba",
+"value": "FMP MrBit",
+"season": null,
+"id_system": "auto",
+"palette": {
+"FMP MrBit": "#9b073f"
+}
+},
+{
+"league": "aba",
+"value": "FMP MrBit",
+"season": null,
+"id_system": "name",
+"palette": {
+"FMP MrBit": "#9b073f"
+}
+},
+{
+"league": "aba",
+"value": "HKK Široki TT Kabeli",
+"season": null,
+"id_system": "auto",
+"palette": {
+"HKK Široki TT Kabeli": "#006cad"
+}
+},
+{
+"league": "aba",
+"value": "HKK Široki TT Kabeli",
+"season": null,
+"id_system": "name",
+"palette": {
+"HKK Široki TT Kabeli": "#006cad"
+}
+},
+{
+"league": "aba",
+"value": "Helios Domžale",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Helios Domžale": "#ff9e18"
+}
+},
+{
+"league": "aba",
+"value": "Helios Domžale",
+"season": null,
+"id_system": "name",
+"palette": {
+"Helios Domžale": "#ff9e18"
+}
+},
+{
+"league": "aba",
+"value": "Hemofarm STADA",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Hemofarm STADA": "#95161f"
+}
+},
+{
+"league": "acb",
+"value": "Acunsa GBC",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Acunsa GBC": "#0a1b29"
+}
+},
+{
+"league": "acb",
+"value": "Acunsa GBC",
+"season": null,
+"id_system": "name",
+"palette": {
+"Acunsa GBC": "#0a1b29"
+}
+},
+{
+"league": "acb",
+"value": "Asisa Joventut",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Asisa Joventut": "#00499c"
+}
+},
+{
+"league": "acb",
+"value": "Asisa Joventut",
+"season": null,
+"id_system": "name",
+"palette": {
+"Asisa Joventut": "#00499c"
+}
+},
+{
+"league": "acb",
+"value": "Barça",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Barça": "#deb400"
+}
+},
+{
+"league": "acb",
+"value": "Barça",
+"season": null,
+"id_system": "name",
+"palette": {
+"Barça": "#deb400"
+}
+},
+{
+"league": "acb",
+"value": "Carplus Fuenlabrada",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Carplus Fuenlabrada": "#ef7632"
+}
+},
+{
+"league": "acb",
+"value": "Carplus Fuenlabrada",
+"season": null,
+"id_system": "name",
+"palette": {
+"Carplus Fuenlabrada": "#ef7632"
+}
+},
+{
+"league": "acb",
+"value": "Casademont Zaragoza",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Casademont Zaragoza": "#570d2c"
+}
+},
+{
+"league": "acb",
+"value": "Casademont Zaragoza",
+"season": null,
+"id_system": "name",
+"palette": {
+"Casademont Zaragoza": "#570d2c"
+}
+},
+{
+"league": "acb",
+"value": "Coviran Granada",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Coviran Granada": "#ff1235"
+}
+},
+{
+"league": "acb",
+"value": "Coviran Granada",
+"season": null,
+"id_system": "name",
+"palette": {
+"Coviran Granada": "#ff1235"
+}
+},
+{
+"league": "acb",
+"value": "Dreamland Gran Canaria",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Dreamland Gran Canaria": "#ffb71a"
+}
+},
+{
+"league": "acb",
+"value": "Dreamland Gran Canaria",
+"season": null,
+"id_system": "name",
+"palette": {
+"Dreamland Gran Canaria": "#ffb71a"
+}
+},
+{
+"league": "acb",
+"value": "FIATC Girona",
+"season": null,
+"id_system": "auto",
+"palette": {
+"FIATC Girona": "#f14f4e"
+}
+},
+{
+"league": "acb",
+"value": "FIATC Girona",
+"season": null,
+"id_system": "name",
+"palette": {
+"FIATC Girona": "#f14f4e"
+}
+},
+{
+"league": "acb",
+"value": "Kids&Us Manresa",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Kids&Us Manresa": "#f6101a"
+}
+},
+{
+"league": "acb",
+"value": "Kids&Us Manresa",
+"season": null,
+"id_system": "name",
+"palette": {
+"Kids&Us Manresa": "#f6101a"
+}
+},
+{
+"league": "acb",
+"value": "Kosner Baskonia",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Kosner Baskonia": "#001c3f"
+}
+},
+{
+"league": "acb",
+"value": "Kosner Baskonia",
+"season": null,
+"id_system": "name",
+"palette": {
+"Kosner Baskonia": "#001c3f"
+}
+},
+{
+"league": "acb",
+"value": "La Laguna Tenerife",
+"season": null,
+"id_system": "auto",
+"palette": {
+"La Laguna Tenerife": "#0c79ac"
+}
+},
+{
+"league": "acb",
+"value": "La Laguna Tenerife",
+"season": null,
+"id_system": "name",
+"palette": {
+"La Laguna Tenerife": "#0c79ac"
+}
+},
+{
+"league": "acb",
+"value": "Leyma Coruña",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Leyma Coruña": "#002857"
+}
+},
+{
+"league": "acb",
+"value": "Leyma Coruña",
+"season": null,
+"id_system": "name",
+"palette": {
+"Leyma Coruña": "#002857"
+}
+},
+{
+"league": "acb",
+"value": "Monbus Obradoiro",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Monbus Obradoiro": "#c71128"
+}
+},
+{
 "league": "ahl",
 "value": "406",
 "season": null,
@@ -671,6 +1121,231 @@
 }
 },
 {
+"league": "bbl",
+"value": "Telekom Baskets Bonn",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Telekom Baskets Bonn": "#b5176a"
+}
+},
+{
+"league": "bbl",
+"value": "Telekom Baskets Bonn",
+"season": null,
+"id_system": "name",
+"palette": {
+"Telekom Baskets Bonn": "#b5176a"
+}
+},
+{
+"league": "bbl",
+"value": "TV 1860 Lich",
+"season": null,
+"id_system": "auto",
+"palette": {
+"TV 1860 Lich": "#32120b"
+}
+},
+{
+"league": "bbl",
+"value": "TV 1860 Lich",
+"season": null,
+"id_system": "name",
+"palette": {
+"TV 1860 Lich": "#32120b"
+}
+},
+{
+"league": "bbl",
+"value": "BMA365 Bamberg Baskets",
+"season": null,
+"id_system": "auto",
+"palette": {
+"BMA365 Bamberg Baskets": "#e5032f"
+}
+},
+{
+"league": "bbl",
+"value": "BMA365 Bamberg Baskets",
+"season": null,
+"id_system": "name",
+"palette": {
+"BMA365 Bamberg Baskets": "#e5032f"
+}
+},
+{
+"league": "bbl",
+"value": "ASC 46 Göttingen",
+"season": null,
+"id_system": "auto",
+"palette": {
+"ASC 46 Göttingen": "#80ffcc"
+}
+},
+{
+"league": "bbl",
+"value": "ASC 46 Göttingen",
+"season": null,
+"id_system": "name",
+"palette": {
+"ASC 46 Göttingen": "#80ffcc"
+}
+},
+{
+"league": "bbl",
+"value": "Eisbären Bremerhaven",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Eisbären Bremerhaven": "#013d69"
+}
+},
+{
+"league": "bbl",
+"value": "Eisbären Bremerhaven",
+"season": null,
+"id_system": "name",
+"palette": {
+"Eisbären Bremerhaven": "#013d69"
+}
+},
+{
+"league": "bbl",
+"value": "SG FT/MTV Braunschweig",
+"season": null,
+"id_system": "auto",
+"palette": {
+"SG FT/MTV Braunschweig": "#80ffcc"
+}
+},
+{
+"league": "bbl",
+"value": "SG FT/MTV Braunschweig",
+"season": null,
+"id_system": "name",
+"palette": {
+"SG FT/MTV Braunschweig": "#80ffcc"
+}
+},
+{
+"league": "bbl",
+"value": "webmoebel Baskets",
+"season": null,
+"id_system": "auto",
+"palette": {
+"webmoebel Baskets": "#e2031b"
+}
+},
+{
+"league": "bbl",
+"value": "webmoebel Baskets",
+"season": null,
+"id_system": "name",
+"palette": {
+"webmoebel Baskets": "#e2031b"
+}
+},
+{
+"league": "bbl",
+"value": "Ruhr Devils",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Ruhr Devils": "#80ffcc"
+}
+},
+{
+"league": "bbl",
+"value": "Ruhr Devils",
+"season": null,
+"id_system": "name",
+"palette": {
+"Ruhr Devils": "#80ffcc"
+}
+},
+{
+"league": "bbl",
+"value": "EWE Baskets Oldenburg",
+"season": null,
+"id_system": "auto",
+"palette": {
+"EWE Baskets Oldenburg": "#ffdd00"
+}
+},
+{
+"league": "bbl",
+"value": "EWE Baskets Oldenburg",
+"season": null,
+"id_system": "name",
+"palette": {
+"EWE Baskets Oldenburg": "#ffdd00"
+}
+},
+{
+"league": "bbl",
+"value": "Fitness First Würzburg Baskets",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Fitness First Würzburg Baskets": "#b80027"
+}
+},
+{
+"league": "bbl",
+"value": "Fitness First Würzburg Baskets",
+"season": null,
+"id_system": "name",
+"palette": {
+"Fitness First Würzburg Baskets": "#b80027"
+}
+},
+{
+"league": "bbl",
+"value": "medi bayreuth",
+"season": null,
+"id_system": "auto",
+"palette": {
+"medi bayreuth": "#511236"
+}
+},
+{
+"league": "bbl",
+"value": "medi bayreuth",
+"season": null,
+"id_system": "name",
+"palette": {
+"medi bayreuth": "#511236"
+}
+},
+{
+"league": "bbl",
+"value": "NINERS Chemnitz",
+"season": null,
+"id_system": "auto",
+"palette": {
+"NINERS Chemnitz": "#ea7403"
+}
+},
+{
+"league": "bbl",
+"value": "NINERS Chemnitz",
+"season": null,
+"id_system": "name",
+"palette": {
+"NINERS Chemnitz": "#ea7403"
+}
+},
+{
+"league": "bbl",
+"value": "Basketball Löwen Braunschweig",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Basketball Löwen Braunschweig": "#bf9d5a"
+}
+},
+{
 "league": "bchl",
 "value": "10",
 "season": null,
@@ -893,6 +1568,456 @@
 "id_system": "auto",
 "palette": {
 "22": "#e29a5b"
+}
+},
+{
+"league": "bleague",
+"value": "立川",
+"season": null,
+"id_system": "auto",
+"palette": {
+"立川": "#103f98"
+}
+},
+{
+"league": "bleague",
+"value": "立川",
+"season": null,
+"id_system": "name",
+"palette": {
+"立川": "#103f98"
+}
+},
+{
+"league": "bleague",
+"value": "福井",
+"season": null,
+"id_system": "auto",
+"palette": {
+"福井": "#1e2571"
+}
+},
+{
+"league": "bleague",
+"value": "福井",
+"season": null,
+"id_system": "name",
+"palette": {
+"福井": "#1e2571"
+}
+},
+{
+"league": "bleague",
+"value": "京都",
+"season": null,
+"id_system": "auto",
+"palette": {
+"京都": "#0995ac"
+}
+},
+{
+"league": "bleague",
+"value": "京都",
+"season": null,
+"id_system": "name",
+"palette": {
+"京都": "#0995ac"
+}
+},
+{
+"league": "bleague",
+"value": "福岡",
+"season": null,
+"id_system": "auto",
+"palette": {
+"福岡": "#e60321"
+}
+},
+{
+"league": "bleague",
+"value": "福岡",
+"season": null,
+"id_system": "name",
+"palette": {
+"福岡": "#e60321"
+}
+},
+{
+"league": "bleague",
+"value": "千葉J",
+"season": null,
+"id_system": "auto",
+"palette": {
+"千葉J": "#e60020"
+}
+},
+{
+"league": "bleague",
+"value": "千葉J",
+"season": null,
+"id_system": "name",
+"palette": {
+"千葉J": "#e60020"
+}
+},
+{
+"league": "bleague",
+"value": "横浜BC",
+"season": null,
+"id_system": "auto",
+"palette": {
+"横浜BC": "#002855"
+}
+},
+{
+"league": "bleague",
+"value": "横浜BC",
+"season": null,
+"id_system": "name",
+"palette": {
+"横浜BC": "#002855"
+}
+},
+{
+"league": "bleague",
+"value": "鹿児島",
+"season": null,
+"id_system": "auto",
+"palette": {
+"鹿児島": "#e60012"
+}
+},
+{
+"league": "bleague",
+"value": "鹿児島",
+"season": null,
+"id_system": "name",
+"palette": {
+"鹿児島": "#e60012"
+}
+},
+{
+"league": "bleague",
+"value": "東京U",
+"season": null,
+"id_system": "auto",
+"palette": {
+"東京U": "#3bbbee"
+}
+},
+{
+"league": "bleague",
+"value": "東京U",
+"season": null,
+"id_system": "name",
+"palette": {
+"東京U": "#3bbbee"
+}
+},
+{
+"league": "bleague",
+"value": "北海道",
+"season": null,
+"id_system": "auto",
+"palette": {
+"北海道": "#90c31f"
+}
+},
+{
+"league": "bleague",
+"value": "北海道",
+"season": null,
+"id_system": "name",
+"palette": {
+"北海道": "#90c31f"
+}
+},
+{
+"league": "bleague",
+"value": "品川",
+"season": null,
+"id_system": "auto",
+"palette": {
+"品川": "#0a132e"
+}
+},
+{
+"league": "bleague",
+"value": "品川",
+"season": null,
+"id_system": "name",
+"palette": {
+"品川": "#0a132e"
+}
+},
+{
+"league": "bleague",
+"value": "青森",
+"season": null,
+"id_system": "auto",
+"palette": {
+"青森": "#03388a"
+}
+},
+{
+"league": "bleague",
+"value": "青森",
+"season": null,
+"id_system": "name",
+"palette": {
+"青森": "#03388a"
+}
+},
+{
+"league": "bleague",
+"value": "川崎",
+"season": null,
+"id_system": "auto",
+"palette": {
+"川崎": "#8f0038"
+}
+},
+{
+"league": "bleague",
+"value": "川崎",
+"season": null,
+"id_system": "name",
+"palette": {
+"川崎": "#8f0038"
+}
+},
+{
+"league": "bleague",
+"value": "佐賀",
+"season": null,
+"id_system": "auto",
+"palette": {
+"佐賀": "#009bc0"
+}
+},
+{
+"league": "bnxt",
+"value": "AB InBev Leuven Bears",
+"season": null,
+"id_system": "auto",
+"palette": {
+"AB InBev Leuven Bears": "#f49200"
+}
+},
+{
+"league": "bnxt",
+"value": "AB InBev Leuven Bears",
+"season": null,
+"id_system": "name",
+"palette": {
+"AB InBev Leuven Bears": "#f49200"
+}
+},
+{
+"league": "bnxt",
+"value": "BC Apollo Amsterdam",
+"season": null,
+"id_system": "auto",
+"palette": {
+"BC Apollo Amsterdam": "#000000"
+}
+},
+{
+"league": "bnxt",
+"value": "BC Apollo Amsterdam",
+"season": null,
+"id_system": "name",
+"palette": {
+"BC Apollo Amsterdam": "#000000"
+}
+},
+{
+"league": "bnxt",
+"value": "Brussels Basketball",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Brussels Basketball": "#0e151b"
+}
+},
+{
+"league": "bnxt",
+"value": "Brussels Basketball",
+"season": null,
+"id_system": "name",
+"palette": {
+"Brussels Basketball": "#0e151b"
+}
+},
+{
+"league": "bnxt",
+"value": "CB Liège",
+"season": null,
+"id_system": "auto",
+"palette": {
+"CB Liège": "#182750"
+}
+},
+{
+"league": "bnxt",
+"value": "CB Liège",
+"season": null,
+"id_system": "name",
+"palette": {
+"CB Liège": "#182750"
+}
+},
+{
+"league": "bnxt",
+"value": "CityX Mons",
+"season": null,
+"id_system": "auto",
+"palette": {
+"CityX Mons": "#370812"
+}
+},
+{
+"league": "bnxt",
+"value": "CityX Mons",
+"season": null,
+"id_system": "name",
+"palette": {
+"CityX Mons": "#370812"
+}
+},
+{
+"league": "bnxt",
+"value": "Coretec Oostende",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Coretec Oostende": "#003766"
+}
+},
+{
+"league": "bnxt",
+"value": "Coretec Oostende",
+"season": null,
+"id_system": "name",
+"palette": {
+"Coretec Oostende": "#003766"
+}
+},
+{
+"league": "bnxt",
+"value": "Den Helder Suns Playoff",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Den Helder Suns Playoff": "#fe9d2b"
+}
+},
+{
+"league": "bnxt",
+"value": "Den Helder Suns Playoff",
+"season": null,
+"id_system": "name",
+"palette": {
+"Den Helder Suns Playoff": "#fe9d2b"
+}
+},
+{
+"league": "bnxt",
+"value": "Donar Groningen",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Donar Groningen": "#283582"
+}
+},
+{
+"league": "bnxt",
+"value": "Donar Groningen",
+"season": null,
+"id_system": "name",
+"palette": {
+"Donar Groningen": "#283582"
+}
+},
+{
+"league": "bnxt",
+"value": "Heroes Den Bosch",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Heroes Den Bosch": "#0e4d8d"
+}
+},
+{
+"league": "bnxt",
+"value": "Heroes Den Bosch",
+"season": null,
+"id_system": "name",
+"palette": {
+"Heroes Den Bosch": "#0e4d8d"
+}
+},
+{
+"league": "bnxt",
+"value": "House of Talents Spurs Kortrijk",
+"season": null,
+"id_system": "auto",
+"palette": {
+"House of Talents Spurs Kortrijk": "#e51b1c"
+}
+},
+{
+"league": "bnxt",
+"value": "House of Talents Spurs Kortrijk",
+"season": null,
+"id_system": "name",
+"palette": {
+"House of Talents Spurs Kortrijk": "#e51b1c"
+}
+},
+{
+"league": "bnxt",
+"value": "Hubo Limburg United",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Hubo Limburg United": "#132192"
+}
+},
+{
+"league": "bnxt",
+"value": "Hubo Limburg United",
+"season": null,
+"id_system": "name",
+"palette": {
+"Hubo Limburg United": "#132192"
+}
+},
+{
+"league": "bnxt",
+"value": "Kangoeroes Basket Mechelen",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Kangoeroes Basket Mechelen": "#0c5ba8"
+}
+},
+{
+"league": "bnxt",
+"value": "Kangoeroes Basket Mechelen",
+"season": null,
+"id_system": "name",
+"palette": {
+"Kangoeroes Basket Mechelen": "#0c5ba8"
+}
+},
+{
+"league": "bnxt",
+"value": "LWD Basket playoff",
+"season": null,
+"id_system": "auto",
+"palette": {
+"LWD Basket playoff": "#ffd700"
 }
 },
 {
@@ -2218,6 +3343,456 @@
 }
 },
 {
+"league": "dbbl",
+"value": "ALBA BERLIN",
+"season": null,
+"id_system": "auto",
+"palette": {
+"ALBA BERLIN": "#002652"
+}
+},
+{
+"league": "dbbl",
+"value": "ALBA BERLIN",
+"season": null,
+"id_system": "name",
+"palette": {
+"ALBA BERLIN": "#002652"
+}
+},
+{
+"league": "dbbl",
+"value": "BC Marburg",
+"season": null,
+"id_system": "auto",
+"palette": {
+"BC Marburg": "#11539c"
+}
+},
+{
+"league": "dbbl",
+"value": "BC Marburg",
+"season": null,
+"id_system": "name",
+"palette": {
+"BC Marburg": "#11539c"
+}
+},
+{
+"league": "dbbl",
+"value": "BG74 Veilchen Ladies Göttingen",
+"season": null,
+"id_system": "auto",
+"palette": {
+"BG74 Veilchen Ladies Göttingen": "#4e286a"
+}
+},
+{
+"league": "dbbl",
+"value": "BG74 Veilchen Ladies Göttingen",
+"season": null,
+"id_system": "name",
+"palette": {
+"BG74 Veilchen Ladies Göttingen": "#4e286a"
+}
+},
+{
+"league": "dbbl",
+"value": "Eigner Angels Nördlingen ",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Eigner Angels Nördlingen ": "#e6012c"
+}
+},
+{
+"league": "dbbl",
+"value": "Eigner Angels Nördlingen ",
+"season": null,
+"id_system": "name",
+"palette": {
+"Eigner Angels Nördlingen ": "#e6012c"
+}
+},
+{
+"league": "dbbl",
+"value": "Eisvögel USC Freiburg",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Eisvögel USC Freiburg": "#e6007d"
+}
+},
+{
+"league": "dbbl",
+"value": "Eisvögel USC Freiburg",
+"season": null,
+"id_system": "name",
+"palette": {
+"Eisvögel USC Freiburg": "#e6007d"
+}
+},
+{
+"league": "dbbl",
+"value": "GiroLive Panthers Osnabrück ",
+"season": null,
+"id_system": "auto",
+"palette": {
+"GiroLive Panthers Osnabrück ": "#ed5c2b"
+}
+},
+{
+"league": "dbbl",
+"value": "GiroLive Panthers Osnabrück ",
+"season": null,
+"id_system": "name",
+"palette": {
+"GiroLive Panthers Osnabrück ": "#ed5c2b"
+}
+},
+{
+"league": "dbbl",
+"value": "Herner TC",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Herner TC": "#c50a23"
+}
+},
+{
+"league": "dbbl",
+"value": "Herner TC",
+"season": null,
+"id_system": "name",
+"palette": {
+"Herner TC": "#c50a23"
+}
+},
+{
+"league": "dbbl",
+"value": "Rutronik Stars Keltern",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Rutronik Stars Keltern": "#0388bd"
+}
+},
+{
+"league": "dbbl",
+"value": "Rutronik Stars Keltern",
+"season": null,
+"id_system": "name",
+"palette": {
+"Rutronik Stars Keltern": "#0388bd"
+}
+},
+{
+"league": "dbbl",
+"value": "Saarlouis Royals ",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Saarlouis Royals ": "#eab627"
+}
+},
+{
+"league": "dbbl",
+"value": "Saarlouis Royals ",
+"season": null,
+"id_system": "name",
+"palette": {
+"Saarlouis Royals ": "#eab627"
+}
+},
+{
+"league": "dbbl",
+"value": "TK Hannover Luchse",
+"season": null,
+"id_system": "auto",
+"palette": {
+"TK Hannover Luchse": "#b8a97c"
+}
+},
+{
+"league": "dbbl",
+"value": "TK Hannover Luchse",
+"season": null,
+"id_system": "name",
+"palette": {
+"TK Hannover Luchse": "#b8a97c"
+}
+},
+{
+"league": "dbbl",
+"value": "WINGS Leverkusen ",
+"season": null,
+"id_system": "auto",
+"palette": {
+"WINGS Leverkusen ": "#27487c"
+}
+},
+{
+"league": "dbbl",
+"value": "WINGS Leverkusen ",
+"season": null,
+"id_system": "name",
+"palette": {
+"WINGS Leverkusen ": "#27487c"
+}
+},
+{
+"league": "dbbl",
+"value": "halfit LIONS ",
+"season": null,
+"id_system": "auto",
+"palette": {
+"halfit LIONS ": "#5c378d"
+}
+},
+{
+"league": "dbbl",
+"value": "halfit LIONS ",
+"season": null,
+"id_system": "name",
+"palette": {
+"halfit LIONS ": "#5c378d"
+}
+},
+{
+"league": "dbbl",
+"value": "100",
+"season": null,
+"id_system": "auto",
+"palette": {
+"100": "#002652"
+}
+},
+{
+"league": "dbl",
+"value": "BC Copenhagen",
+"season": null,
+"id_system": "auto",
+"palette": {
+"BC Copenhagen": "#131413"
+}
+},
+{
+"league": "dbl",
+"value": "BC Copenhagen",
+"season": null,
+"id_system": "name",
+"palette": {
+"BC Copenhagen": "#131413"
+}
+},
+{
+"league": "dbl",
+"value": "BK Vejen",
+"season": null,
+"id_system": "auto",
+"palette": {
+"BK Vejen": "#cb5e1d"
+}
+},
+{
+"league": "dbl",
+"value": "BK Vejen",
+"season": null,
+"id_system": "name",
+"palette": {
+"BK Vejen": "#cb5e1d"
+}
+},
+{
+"league": "dbl",
+"value": "BMS Herlev",
+"season": null,
+"id_system": "auto",
+"palette": {
+"BMS Herlev": "#233268"
+}
+},
+{
+"league": "dbl",
+"value": "BMS Herlev",
+"season": null,
+"id_system": "name",
+"palette": {
+"BMS Herlev": "#233268"
+}
+},
+{
+"league": "dbl",
+"value": "Bakken Bears",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Bakken Bears": "#76a6e5"
+}
+},
+{
+"league": "dbl",
+"value": "Bakken Bears",
+"season": null,
+"id_system": "name",
+"palette": {
+"Bakken Bears": "#76a6e5"
+}
+},
+{
+"league": "dbl",
+"value": "Bears Academy",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Bears Academy": "#1c1929"
+}
+},
+{
+"league": "dbl",
+"value": "Bears Academy",
+"season": null,
+"id_system": "name",
+"palette": {
+"Bears Academy": "#1c1929"
+}
+},
+{
+"league": "dbl",
+"value": "Gladsaxe Basketball Klub",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Gladsaxe Basketball Klub": "#d1050c"
+}
+},
+{
+"league": "dbl",
+"value": "Gladsaxe Basketball Klub",
+"season": null,
+"id_system": "name",
+"palette": {
+"Gladsaxe Basketball Klub": "#d1050c"
+}
+},
+{
+"league": "dbl",
+"value": "Holbæk-Stenhus",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Holbæk-Stenhus": "#ff9500"
+}
+},
+{
+"league": "dbl",
+"value": "Holbæk-Stenhus",
+"season": null,
+"id_system": "name",
+"palette": {
+"Holbæk-Stenhus": "#ff9500"
+}
+},
+{
+"league": "dbl",
+"value": "Horsens IC",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Horsens IC": "#ffeb00"
+}
+},
+{
+"league": "dbl",
+"value": "Horsens IC",
+"season": null,
+"id_system": "name",
+"palette": {
+"Horsens IC": "#ffeb00"
+}
+},
+{
+"league": "dbl",
+"value": "Randers Cimbria",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Randers Cimbria": "#a92e31"
+}
+},
+{
+"league": "dbl",
+"value": "Randers Cimbria",
+"season": null,
+"id_system": "name",
+"palette": {
+"Randers Cimbria": "#a92e31"
+}
+},
+{
+"league": "dbl",
+"value": "Svendborg Rabbits",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Svendborg Rabbits": "#000000"
+}
+},
+{
+"league": "dbl",
+"value": "Svendborg Rabbits",
+"season": null,
+"id_system": "name",
+"palette": {
+"Svendborg Rabbits": "#000000"
+}
+},
+{
+"league": "dbl",
+"value": "Team FOG Næstved",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Team FOG Næstved": "#12110c"
+}
+},
+{
+"league": "dbl",
+"value": "Team FOG Næstved",
+"season": null,
+"id_system": "name",
+"palette": {
+"Team FOG Næstved": "#12110c"
+}
+},
+{
+"league": "dbl",
+"value": "Værløse Blue Hawks",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Værløse Blue Hawks": "#292362"
+}
+},
+{
+"league": "dbl",
+"value": "Værløse Blue Hawks",
+"season": null,
+"id_system": "name",
+"palette": {
+"Værløse Blue Hawks": "#292362"
+}
+},
+{
+"league": "dbl",
+"value": "114932",
+"season": null,
+"id_system": "auto",
+"palette": {
+"114932": "#292362"
+}
+},
+{
 "league": "easl",
 "value": "Abra Weavers",
 "season": null,
@@ -2668,6 +4243,456 @@
 }
 },
 {
+"league": "elh",
+"value": "BANES Motor České Budějovice",
+"season": null,
+"id_system": "auto",
+"palette": {
+"BANES Motor České Budějovice": "#0c4da2"
+}
+},
+{
+"league": "elh",
+"value": "BANES Motor České Budějovice",
+"season": null,
+"id_system": "name",
+"palette": {
+"BANES Motor České Budějovice": "#0c4da2"
+}
+},
+{
+"league": "elh",
+"value": "BK Mladá Boleslav",
+"season": null,
+"id_system": "auto",
+"palette": {
+"BK Mladá Boleslav": "#56bb72"
+}
+},
+{
+"league": "elh",
+"value": "BK Mladá Boleslav",
+"season": null,
+"id_system": "name",
+"palette": {
+"BK Mladá Boleslav": "#56bb72"
+}
+},
+{
+"league": "elh",
+"value": "BYD Energie Karlovy Vary",
+"season": null,
+"id_system": "auto",
+"palette": {
+"BYD Energie Karlovy Vary": "#abc147"
+}
+},
+{
+"league": "elh",
+"value": "BYD Energie Karlovy Vary",
+"season": null,
+"id_system": "name",
+"palette": {
+"BYD Energie Karlovy Vary": "#abc147"
+}
+},
+{
+"league": "elh",
+"value": "Bílí Tygři Liberec",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Bílí Tygři Liberec": "#171730"
+}
+},
+{
+"league": "elh",
+"value": "Bílí Tygři Liberec",
+"season": null,
+"id_system": "name",
+"palette": {
+"Bílí Tygři Liberec": "#171730"
+}
+},
+{
+"league": "elh",
+"value": "HC DYNAMO PARDUBICE",
+"season": null,
+"id_system": "auto",
+"palette": {
+"HC DYNAMO PARDUBICE": "#ee1d25"
+}
+},
+{
+"league": "elh",
+"value": "HC DYNAMO PARDUBICE",
+"season": null,
+"id_system": "name",
+"palette": {
+"HC DYNAMO PARDUBICE": "#ee1d25"
+}
+},
+{
+"league": "elh",
+"value": "HC KOMETA BRNO",
+"season": null,
+"id_system": "auto",
+"palette": {
+"HC KOMETA BRNO": "#0d2a70"
+}
+},
+{
+"league": "elh",
+"value": "HC KOMETA BRNO",
+"season": null,
+"id_system": "name",
+"palette": {
+"HC KOMETA BRNO": "#0d2a70"
+}
+},
+{
+"league": "elh",
+"value": "HC Litvínov",
+"season": null,
+"id_system": "auto",
+"palette": {
+"HC Litvínov": "#fff200"
+}
+},
+{
+"league": "elh",
+"value": "HC Litvínov",
+"season": null,
+"id_system": "name",
+"palette": {
+"HC Litvínov": "#fff200"
+}
+},
+{
+"league": "elh",
+"value": "HC Oceláři Třinec",
+"season": null,
+"id_system": "auto",
+"palette": {
+"HC Oceláři Třinec": "#ed1c24"
+}
+},
+{
+"league": "elh",
+"value": "HC Oceláři Třinec",
+"season": null,
+"id_system": "name",
+"palette": {
+"HC Oceláři Třinec": "#ed1c24"
+}
+},
+{
+"league": "elh",
+"value": "HC Olomouc",
+"season": null,
+"id_system": "auto",
+"palette": {
+"HC Olomouc": "#ee2c32"
+}
+},
+{
+"league": "elh",
+"value": "HC Olomouc",
+"season": null,
+"id_system": "name",
+"palette": {
+"HC Olomouc": "#ee2c32"
+}
+},
+{
+"league": "elh",
+"value": "HC Sparta Praha",
+"season": null,
+"id_system": "auto",
+"palette": {
+"HC Sparta Praha": "#760328"
+}
+},
+{
+"league": "elh",
+"value": "HC Sparta Praha",
+"season": null,
+"id_system": "name",
+"palette": {
+"HC Sparta Praha": "#760328"
+}
+},
+{
+"league": "elh",
+"value": "HC VÍTKOVICE RIDERA",
+"season": null,
+"id_system": "auto",
+"palette": {
+"HC VÍTKOVICE RIDERA": "#eb1d25"
+}
+},
+{
+"league": "elh",
+"value": "HC VÍTKOVICE RIDERA",
+"season": null,
+"id_system": "name",
+"palette": {
+"HC VÍTKOVICE RIDERA": "#eb1d25"
+}
+},
+{
+"league": "elh",
+"value": "HC ŠKODA PLZEŇ",
+"season": null,
+"id_system": "auto",
+"palette": {
+"HC ŠKODA PLZEŇ": "#023279"
+}
+},
+{
+"league": "elh",
+"value": "HC ŠKODA PLZEŇ",
+"season": null,
+"id_system": "name",
+"palette": {
+"HC ŠKODA PLZEŇ": "#023279"
+}
+},
+{
+"league": "elh",
+"value": "Mountfield HK, a.s.",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Mountfield HK, a.s.": "#a11d25"
+}
+},
+{
+"league": "euroleague",
+"value": "RheinEnergie",
+"season": null,
+"id_system": "auto",
+"palette": {
+"RheinEnergie": "#da251d"
+}
+},
+{
+"league": "euroleague",
+"value": "RheinEnergie",
+"season": null,
+"id_system": "name",
+"palette": {
+"RheinEnergie": "#da251d"
+}
+},
+{
+"league": "euroleague",
+"value": "Paris Basketball",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Paris Basketball": "#ff0000"
+}
+},
+{
+"league": "euroleague",
+"value": "Paris Basketball",
+"season": null,
+"id_system": "name",
+"palette": {
+"Paris Basketball": "#ff0000"
+}
+},
+{
+"league": "euroleague",
+"value": "Benetton Basket",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Benetton Basket": "#00924b"
+}
+},
+{
+"league": "euroleague",
+"value": "Benetton Basket",
+"season": null,
+"id_system": "name",
+"palette": {
+"Benetton Basket": "#00924b"
+}
+},
+{
+"league": "euroleague",
+"value": "Partizan Mozzart Bet Belgrade",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Partizan Mozzart Bet Belgrade": "#a19180"
+}
+},
+{
+"league": "euroleague",
+"value": "Partizan Mozzart Bet Belgrade",
+"season": null,
+"id_system": "name",
+"palette": {
+"Partizan Mozzart Bet Belgrade": "#a19180"
+}
+},
+{
+"league": "euroleague",
+"value": "Cibona Zagreb",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Cibona Zagreb": "#ed1c24"
+}
+},
+{
+"league": "euroleague",
+"value": "Cibona Zagreb",
+"season": null,
+"id_system": "name",
+"palette": {
+"Cibona Zagreb": "#ed1c24"
+}
+},
+{
+"league": "euroleague",
+"value": "Maroussi",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Maroussi": "#fde500"
+}
+},
+{
+"league": "euroleague",
+"value": "Maroussi",
+"season": null,
+"id_system": "name",
+"palette": {
+"Maroussi": "#fde500"
+}
+},
+{
+"league": "euroleague",
+"value": "Zalgiris Kaunas",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Zalgiris Kaunas": "#00803f"
+}
+},
+{
+"league": "euroleague",
+"value": "Zalgiris Kaunas",
+"season": null,
+"id_system": "name",
+"palette": {
+"Zalgiris Kaunas": "#00803f"
+}
+},
+{
+"league": "euroleague",
+"value": "Lokomotiv Kuban Krasnodar",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Lokomotiv Kuban Krasnodar": "#e40a2d"
+}
+},
+{
+"league": "euroleague",
+"value": "Lokomotiv Kuban Krasnodar",
+"season": null,
+"id_system": "name",
+"palette": {
+"Lokomotiv Kuban Krasnodar": "#e40a2d"
+}
+},
+{
+"league": "euroleague",
+"value": "CSKA Moscow",
+"season": null,
+"id_system": "auto",
+"palette": {
+"CSKA Moscow": "#0d3981"
+}
+},
+{
+"league": "euroleague",
+"value": "CSKA Moscow",
+"season": null,
+"id_system": "name",
+"palette": {
+"CSKA Moscow": "#0d3981"
+}
+},
+{
+"league": "euroleague",
+"value": "Air Avellino",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Air Avellino": "#007331"
+}
+},
+{
+"league": "euroleague",
+"value": "Air Avellino",
+"season": null,
+"id_system": "name",
+"palette": {
+"Air Avellino": "#007331"
+}
+},
+{
+"league": "euroleague",
+"value": "Ural Great",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Ural Great": "#1d2d59"
+}
+},
+{
+"league": "euroleague",
+"value": "Ural Great",
+"season": null,
+"id_system": "name",
+"palette": {
+"Ural Great": "#1d2d59"
+}
+},
+{
+"league": "euroleague",
+"value": "Hapoel Jerusalem",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Hapoel Jerusalem": "#d21919"
+}
+},
+{
+"league": "euroleague",
+"value": "Hapoel Jerusalem",
+"season": null,
+"id_system": "name",
+"palette": {
+"Hapoel Jerusalem": "#d21919"
+}
+},
+{
+"league": "euroleague",
+"value": "Cholet Basket",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Cholet Basket": "#b60c2d"
+}
+},
+{
 "league": "f1",
 "value": "Alfa Romeo",
 "season": null,
@@ -2890,6 +4915,191 @@
 "id_system": "auto",
 "palette": {
 "Haas F1 Team": "#9c9fa2"
+}
+},
+{
+"league": "feb",
+"value": "PERFUMERIAS AVENIDA",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "feb",
+"value": "PERFUMERIAS AVENIDA",
+"season": null,
+"id_system": "name",
+"palette": {}
+},
+{
+"league": "feb",
+"value": "MOVISTAR ESTUDIANTES",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "feb",
+"value": "MOVISTAR ESTUDIANTES",
+"season": null,
+"id_system": "name",
+"palette": {}
+},
+{
+"league": "feb",
+"value": "C.B. NATURAVIA MORÓN",
+"season": null,
+"id_system": "auto",
+"palette": {
+"C.B. NATURAVIA MORÓN": "#38414b"
+}
+},
+{
+"league": "feb",
+"value": "C.B. NATURAVIA MORÓN",
+"season": null,
+"id_system": "name",
+"palette": {
+"C.B. NATURAVIA MORÓN": "#38414b"
+}
+},
+{
+"league": "feb",
+"value": "AIRCARGOBOOKING OURENSE",
+"season": null,
+"id_system": "auto",
+"palette": {
+"AIRCARGOBOOKING OURENSE": "#251f4f"
+}
+},
+{
+"league": "feb",
+"value": "AIRCARGOBOOKING OURENSE",
+"season": null,
+"id_system": "name",
+"palette": {
+"AIRCARGOBOOKING OURENSE": "#251f4f"
+}
+},
+{
+"league": "feb",
+"value": "CASADEMONT ZARAGOZA",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "feb",
+"value": "CASADEMONT ZARAGOZA",
+"season": null,
+"id_system": "name",
+"palette": {}
+},
+{
+"league": "feb",
+"value": "KUTXABANK ARASKI",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "feb",
+"value": "KUTXABANK ARASKI",
+"season": null,
+"id_system": "name",
+"palette": {}
+},
+{
+"league": "feb",
+"value": "VALENCIA B.C.",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "feb",
+"value": "VALENCIA B.C.",
+"season": null,
+"id_system": "name",
+"palette": {}
+},
+{
+"league": "feb",
+"value": "IDK EUSKOTREN",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "feb",
+"value": "IDK EUSKOTREN",
+"season": null,
+"id_system": "name",
+"palette": {}
+},
+{
+"league": "feb",
+"value": "C.B. PRAT",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "feb",
+"value": "C.B. PRAT",
+"season": null,
+"id_system": "name",
+"palette": {}
+},
+{
+"league": "feb",
+"value": "CADI LA SEU",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "feb",
+"value": "CADI LA SEU",
+"season": null,
+"id_system": "name",
+"palette": {}
+},
+{
+"league": "feb",
+"value": "SPAR GRAN CANARIA",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "feb",
+"value": "SPAR GRAN CANARIA",
+"season": null,
+"id_system": "name",
+"palette": {}
+},
+{
+"league": "feb",
+"value": "FIBWI MALLORCA BASQUET PALMA",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "feb",
+"value": "FIBWI MALLORCA BASQUET PALMA",
+"season": null,
+"id_system": "name",
+"palette": {}
+},
+{
+"league": "feb",
+"value": "ALBACETE BASKET",
+"season": null,
+"id_system": "auto",
+"palette": {
+"ALBACETE BASKET": "#ddd65f"
 }
 },
 {
@@ -3343,6 +5553,456 @@
 }
 },
 {
+"league": "ha",
+"value": "AIK",
+"season": null,
+"id_system": "auto",
+"palette": {
+"AIK": "#003155"
+}
+},
+{
+"league": "ha",
+"value": "AIK",
+"season": null,
+"id_system": "name",
+"palette": {
+"AIK": "#003155"
+}
+},
+{
+"league": "ha",
+"value": "Almtuna IS",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Almtuna IS": "#ffe803"
+}
+},
+{
+"league": "ha",
+"value": "Almtuna IS",
+"season": null,
+"id_system": "name",
+"palette": {
+"Almtuna IS": "#ffe803"
+}
+},
+{
+"league": "ha",
+"value": "Asplöven HC",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Asplöven HC": "#2c3748"
+}
+},
+{
+"league": "ha",
+"value": "Asplöven HC",
+"season": null,
+"id_system": "name",
+"palette": {
+"Asplöven HC": "#2c3748"
+}
+},
+{
+"league": "ha",
+"value": "BIK Karlskoga",
+"season": null,
+"id_system": "auto",
+"palette": {
+"BIK Karlskoga": "#002d74"
+}
+},
+{
+"league": "ha",
+"value": "BIK Karlskoga",
+"season": null,
+"id_system": "name",
+"palette": {
+"BIK Karlskoga": "#002d74"
+}
+},
+{
+"league": "ha",
+"value": "Borås HC",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Borås HC": "#d9bc29"
+}
+},
+{
+"league": "ha",
+"value": "Borås HC",
+"season": null,
+"id_system": "name",
+"palette": {
+"Borås HC": "#d9bc29"
+}
+},
+{
+"league": "ha",
+"value": "Brynäs IF",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Brynäs IF": "#f4c847"
+}
+},
+{
+"league": "ha",
+"value": "Brynäs IF",
+"season": null,
+"id_system": "name",
+"palette": {
+"Brynäs IF": "#f4c847"
+}
+},
+{
+"league": "ha",
+"value": "Djurgården Hockey",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Djurgården Hockey": "#dab769"
+}
+},
+{
+"league": "ha",
+"value": "Djurgården Hockey",
+"season": null,
+"id_system": "name",
+"palette": {
+"Djurgården Hockey": "#dab769"
+}
+},
+{
+"league": "ha",
+"value": "HC Vita Hästen",
+"season": null,
+"id_system": "auto",
+"palette": {
+"HC Vita Hästen": "#d31019"
+}
+},
+{
+"league": "ha",
+"value": "HC Vita Hästen",
+"season": null,
+"id_system": "name",
+"palette": {
+"HC Vita Hästen": "#d31019"
+}
+},
+{
+"league": "ha",
+"value": "HV71",
+"season": null,
+"id_system": "auto",
+"palette": {
+"HV71": "#fdd314"
+}
+},
+{
+"league": "ha",
+"value": "HV71",
+"season": null,
+"id_system": "name",
+"palette": {
+"HV71": "#fdd314"
+}
+},
+{
+"league": "ha",
+"value": "Hammarby IF",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Hammarby IF": "#ed332b"
+}
+},
+{
+"league": "ha",
+"value": "Hammarby IF",
+"season": null,
+"id_system": "name",
+"palette": {
+"Hammarby IF": "#ed332b"
+}
+},
+{
+"league": "ha",
+"value": "Huddinge IK",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Huddinge IK": "#2c3748"
+}
+},
+{
+"league": "ha",
+"value": "Huddinge IK",
+"season": null,
+"id_system": "name",
+"palette": {
+"Huddinge IK": "#2c3748"
+}
+},
+{
+"league": "ha",
+"value": "IF Björklöven",
+"season": null,
+"id_system": "auto",
+"palette": {
+"IF Björklöven": "#125840"
+}
+},
+{
+"league": "ha",
+"value": "IF Björklöven",
+"season": null,
+"id_system": "name",
+"palette": {
+"IF Björklöven": "#125840"
+}
+},
+{
+"league": "ha",
+"value": "IF Malmö Redhawks",
+"season": null,
+"id_system": "auto",
+"palette": {
+"IF Malmö Redhawks": "#e50211"
+}
+},
+{
+"league": "ibba",
+"value": "Bnei Penlink Herzliya",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Bnei Penlink Herzliya": "#073966"
+}
+},
+{
+"league": "ibba",
+"value": "Bnei Penlink Herzliya",
+"season": null,
+"id_system": "name",
+"palette": {
+"Bnei Penlink Herzliya": "#073966"
+}
+},
+{
+"league": "ibba",
+"value": "Elitzur Netanya",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Elitzur Netanya": "#fff000"
+}
+},
+{
+"league": "ibba",
+"value": "Elitzur Netanya",
+"season": null,
+"id_system": "name",
+"palette": {
+"Elitzur Netanya": "#fff000"
+}
+},
+{
+"league": "ibba",
+"value": "Hapoel Afula",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Hapoel Afula": "#b48454"
+}
+},
+{
+"league": "ibba",
+"value": "Hapoel Afula",
+"season": null,
+"id_system": "name",
+"palette": {
+"Hapoel Afula": "#b48454"
+}
+},
+{
+"league": "ibba",
+"value": "Hapoel Alfi Benedek Galil Elion",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Hapoel Alfi Benedek Galil Elion": "#6782ac"
+}
+},
+{
+"league": "ibba",
+"value": "Hapoel Alfi Benedek Galil Elion",
+"season": null,
+"id_system": "name",
+"palette": {
+"Hapoel Alfi Benedek Galil Elion": "#6782ac"
+}
+},
+{
+"league": "ibba",
+"value": "Hapoel Altshuler Shaham Beer Sheva/Dimona",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Hapoel Altshuler Shaham Beer Sheva/Dimona": "#df2438"
+}
+},
+{
+"league": "ibba",
+"value": "Hapoel Altshuler Shaham Beer Sheva/Dimona",
+"season": null,
+"id_system": "name",
+"palette": {
+"Hapoel Altshuler Shaham Beer Sheva/Dimona": "#df2438"
+}
+},
+{
+"league": "ibba",
+"value": "Hapoel Gilat Telecom Haemek",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Hapoel Gilat Telecom Haemek": "#bd242d"
+}
+},
+{
+"league": "ibba",
+"value": "Hapoel Gilat Telecom Haemek",
+"season": null,
+"id_system": "name",
+"palette": {
+"Hapoel Gilat Telecom Haemek": "#bd242d"
+}
+},
+{
+"league": "ibba",
+"value": "Hapoel IBI Tel Aviv",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Hapoel IBI Tel Aviv": "#ff0400"
+}
+},
+{
+"league": "ibba",
+"value": "Hapoel IBI Tel Aviv",
+"season": null,
+"id_system": "name",
+"palette": {
+"Hapoel IBI Tel Aviv": "#ff0400"
+}
+},
+{
+"league": "ibba",
+"value": "Hapoel Irony Eilat",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Hapoel Irony Eilat": "#25123e"
+}
+},
+{
+"league": "ibba",
+"value": "Hapoel Irony Eilat",
+"season": null,
+"id_system": "name",
+"palette": {
+"Hapoel Irony Eilat": "#25123e"
+}
+},
+{
+"league": "ibba",
+"value": "Hapoel Maoz Daniel Holon",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Hapoel Maoz Daniel Holon": "#ffe115"
+}
+},
+{
+"league": "ibba",
+"value": "Hapoel Maoz Daniel Holon",
+"season": null,
+"id_system": "name",
+"palette": {
+"Hapoel Maoz Daniel Holon": "#ffe115"
+}
+},
+{
+"league": "ibba",
+"value": "Hapoel Midtown Jerusalem",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Hapoel Midtown Jerusalem": "#e80510"
+}
+},
+{
+"league": "ibba",
+"value": "Hapoel Midtown Jerusalem",
+"season": null,
+"id_system": "name",
+"palette": {
+"Hapoel Midtown Jerusalem": "#e80510"
+}
+},
+{
+"league": "ibba",
+"value": "Hapoel Shoval Haifa",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Hapoel Shoval Haifa": "#981b1f"
+}
+},
+{
+"league": "ibba",
+"value": "Hapoel Shoval Haifa",
+"season": null,
+"id_system": "name",
+"palette": {
+"Hapoel Shoval Haifa": "#981b1f"
+}
+},
+{
+"league": "ibba",
+"value": "Ironi Geshem Nahariya",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Ironi Geshem Nahariya": "#62557d"
+}
+},
+{
+"league": "ibba",
+"value": "Ironi Geshem Nahariya",
+"season": null,
+"id_system": "name",
+"palette": {
+"Ironi Geshem Nahariya": "#62557d"
+}
+},
+{
+"league": "ibba",
+"value": "Ironi Hai Motors Ness Ziona",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Ironi Hai Motors Ness Ziona": "#06203e"
+}
+},
+{
 "league": "iihf",
 "value": "132244",
 "season": null,
@@ -3565,6 +6225,231 @@
 "id_system": "auto",
 "palette": {
 "65": "#ce1126"
+}
+},
+{
+"league": "kbl",
+"value": "ANYANG JUNG KWAN JANG RED BOOSTERS",
+"season": null,
+"id_system": "auto",
+"palette": {
+"ANYANG JUNG KWAN JANG RED BOOSTERS": "#cf1f25"
+}
+},
+{
+"league": "kbl",
+"value": "ANYANG JUNG KWAN JANG RED BOOSTERS",
+"season": null,
+"id_system": "name",
+"palette": {
+"ANYANG JUNG KWAN JANG RED BOOSTERS": "#cf1f25"
+}
+},
+{
+"league": "kbl",
+"value": "BUSAN KCC EGIS",
+"season": null,
+"id_system": "auto",
+"palette": {
+"BUSAN KCC EGIS": "#f09814"
+}
+},
+{
+"league": "kbl",
+"value": "BUSAN KCC EGIS",
+"season": null,
+"id_system": "name",
+"palette": {
+"BUSAN KCC EGIS": "#f09814"
+}
+},
+{
+"league": "kbl",
+"value": "CHANGWON LG SAKERS",
+"season": null,
+"id_system": "auto",
+"palette": {
+"CHANGWON LG SAKERS": "#ffd900"
+}
+},
+{
+"league": "kbl",
+"value": "CHANGWON LG SAKERS",
+"season": null,
+"id_system": "name",
+"palette": {
+"CHANGWON LG SAKERS": "#ffd900"
+}
+},
+{
+"league": "kbl",
+"value": "DAEGU KOREAGASCORPORATION PEGASUS",
+"season": null,
+"id_system": "auto",
+"palette": {
+"DAEGU KOREAGASCORPORATION PEGASUS": "#374ea2"
+}
+},
+{
+"league": "kbl",
+"value": "DAEGU KOREAGASCORPORATION PEGASUS",
+"season": null,
+"id_system": "name",
+"palette": {
+"DAEGU KOREAGASCORPORATION PEGASUS": "#374ea2"
+}
+},
+{
+"league": "kbl",
+"value": "GOYANG SONO SKY GUNNERS",
+"season": null,
+"id_system": "auto",
+"palette": {
+"GOYANG SONO SKY GUNNERS": "#223e63"
+}
+},
+{
+"league": "kbl",
+"value": "GOYANG SONO SKY GUNNERS",
+"season": null,
+"id_system": "name",
+"palette": {
+"GOYANG SONO SKY GUNNERS": "#223e63"
+}
+},
+{
+"league": "kbl",
+"value": "SEOUL SAMSUNG THUNDERS",
+"season": null,
+"id_system": "auto",
+"palette": {
+"SEOUL SAMSUNG THUNDERS": "#fac10b"
+}
+},
+{
+"league": "kbl",
+"value": "SEOUL SAMSUNG THUNDERS",
+"season": null,
+"id_system": "name",
+"palette": {
+"SEOUL SAMSUNG THUNDERS": "#fac10b"
+}
+},
+{
+"league": "kbl",
+"value": "SEOUL SK KNIGHTS",
+"season": null,
+"id_system": "auto",
+"palette": {
+"SEOUL SK KNIGHTS": "#e1002b"
+}
+},
+{
+"league": "kbl",
+"value": "SEOUL SK KNIGHTS",
+"season": null,
+"id_system": "name",
+"palette": {
+"SEOUL SK KNIGHTS": "#e1002b"
+}
+},
+{
+"league": "kbl",
+"value": "SUWON KT SONICBOOM",
+"season": null,
+"id_system": "auto",
+"palette": {
+"SUWON KT SONICBOOM": "#d92728"
+}
+},
+{
+"league": "kbl",
+"value": "SUWON KT SONICBOOM",
+"season": null,
+"id_system": "name",
+"palette": {
+"SUWON KT SONICBOOM": "#d92728"
+}
+},
+{
+"league": "kbl",
+"value": "ULSAN HYUNDAI MOBIS PHOEBUS",
+"season": null,
+"id_system": "auto",
+"palette": {
+"ULSAN HYUNDAI MOBIS PHOEBUS": "#df2528"
+}
+},
+{
+"league": "kbl",
+"value": "ULSAN HYUNDAI MOBIS PHOEBUS",
+"season": null,
+"id_system": "name",
+"palette": {
+"ULSAN HYUNDAI MOBIS PHOEBUS": "#df2528"
+}
+},
+{
+"league": "kbl",
+"value": "WONJU DB PROMY",
+"season": null,
+"id_system": "auto",
+"palette": {
+"WONJU DB PROMY": "#005828"
+}
+},
+{
+"league": "kbl",
+"value": "WONJU DB PROMY",
+"season": null,
+"id_system": "name",
+"palette": {
+"WONJU DB PROMY": "#005828"
+}
+},
+{
+"league": "kbl",
+"value": "06",
+"season": null,
+"id_system": "auto",
+"palette": {
+"06": "#d92728"
+}
+},
+{
+"league": "kbl",
+"value": "06",
+"season": null,
+"id_system": "team_id",
+"palette": {
+"06": "#d92728"
+}
+},
+{
+"league": "kbl",
+"value": "10",
+"season": null,
+"id_system": "auto",
+"palette": {
+"10": "#df2528"
+}
+},
+{
+"league": "kbl",
+"value": "10",
+"season": null,
+"id_system": "team_id",
+"palette": {
+"10": "#df2528"
+}
+},
+{
+"league": "kbl",
+"value": "16",
+"season": null,
+"id_system": "auto",
+"palette": {
+"16": "#005828"
 }
 },
 {
@@ -3793,6 +6678,231 @@
 }
 },
 {
+"league": "kzs",
+"value": "Cedevita Olimpija",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Cedevita Olimpija": "#007337"
+}
+},
+{
+"league": "kzs",
+"value": "Cedevita Olimpija",
+"season": null,
+"id_system": "name",
+"palette": {
+"Cedevita Olimpija": "#007337"
+}
+},
+{
+"league": "kzs",
+"value": "ECE Triglav Kranj",
+"season": null,
+"id_system": "auto",
+"palette": {
+"ECE Triglav Kranj": "#0075bf"
+}
+},
+{
+"league": "kzs",
+"value": "ECE Triglav Kranj",
+"season": null,
+"id_system": "name",
+"palette": {
+"ECE Triglav Kranj": "#0075bf"
+}
+},
+{
+"league": "kzs",
+"value": "GGD Šenčur",
+"season": null,
+"id_system": "auto",
+"palette": {
+"GGD Šenčur": "#293b83"
+}
+},
+{
+"league": "kzs",
+"value": "GGD Šenčur",
+"season": null,
+"id_system": "name",
+"palette": {
+"GGD Šenčur": "#293b83"
+}
+},
+{
+"league": "kzs",
+"value": "Gorica",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Gorica": "#1c8ccc"
+}
+},
+{
+"league": "kzs",
+"value": "Gorica",
+"season": null,
+"id_system": "name",
+"palette": {
+"Gorica": "#1c8ccc"
+}
+},
+{
+"league": "kzs",
+"value": "Hopsi Polzela",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Hopsi Polzela": "#1652a0"
+}
+},
+{
+"league": "kzs",
+"value": "Hopsi Polzela",
+"season": null,
+"id_system": "name",
+"palette": {
+"Hopsi Polzela": "#1652a0"
+}
+},
+{
+"league": "kzs",
+"value": "Kansai Helios Domžale",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Kansai Helios Domžale": "#f59c00"
+}
+},
+{
+"league": "kzs",
+"value": "Kansai Helios Domžale",
+"season": null,
+"id_system": "name",
+"palette": {
+"Kansai Helios Domžale": "#f59c00"
+}
+},
+{
+"league": "kzs",
+"value": "Krka",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Krka": "#a8d8bb"
+}
+},
+{
+"league": "kzs",
+"value": "Krka",
+"season": null,
+"id_system": "name",
+"palette": {
+"Krka": "#a8d8bb"
+}
+},
+{
+"league": "kzs",
+"value": "Perspektiva Ilirija",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Perspektiva Ilirija": "#03afdb"
+}
+},
+{
+"league": "kzs",
+"value": "Perspektiva Ilirija",
+"season": null,
+"id_system": "name",
+"palette": {
+"Perspektiva Ilirija": "#03afdb"
+}
+},
+{
+"league": "kzs",
+"value": "Rogaška",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Rogaška": "#e9540f"
+}
+},
+{
+"league": "kzs",
+"value": "Rogaška",
+"season": null,
+"id_system": "name",
+"palette": {
+"Rogaška": "#e9540f"
+}
+},
+{
+"league": "kzs",
+"value": "Thermana Laško",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Thermana Laško": "#f28021"
+}
+},
+{
+"league": "kzs",
+"value": "Thermana Laško",
+"season": null,
+"id_system": "name",
+"palette": {
+"Thermana Laško": "#f28021"
+}
+},
+{
+"league": "kzs",
+"value": "Šentjur",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Šentjur": "#e30017"
+}
+},
+{
+"league": "kzs",
+"value": "Šentjur",
+"season": null,
+"id_system": "name",
+"palette": {
+"Šentjur": "#e30017"
+}
+},
+{
+"league": "kzs",
+"value": "16",
+"season": null,
+"id_system": "auto",
+"palette": {
+"16": "#03afdb"
+}
+},
+{
+"league": "kzs",
+"value": "16",
+"season": null,
+"id_system": "team_id",
+"palette": {
+"16": "#03afdb"
+}
+},
+{
+"league": "kzs",
+"value": "223",
+"season": null,
+"id_system": "auto",
+"palette": {
+"223": "#1c8ccc"
+}
+},
+{
 "league": "lba",
 "value": "APU Old Wild West Udine",
 "season": null,
@@ -4015,6 +7125,424 @@
 "id_system": "auto",
 "palette": {
 "Longobardi Scafati Basket": "#322873"
+}
+},
+{
+"league": "lkl",
+"value": "Gargždai",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Gargždai": "#002e1e"
+}
+},
+{
+"league": "lkl",
+"value": "Gargždai",
+"season": null,
+"id_system": "name",
+"palette": {
+"Gargždai": "#002e1e"
+}
+},
+{
+"league": "lkl",
+"value": "Hipocredit",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Hipocredit": "#00224f"
+}
+},
+{
+"league": "lkl",
+"value": "Hipocredit",
+"season": null,
+"id_system": "name",
+"palette": {
+"Hipocredit": "#00224f"
+}
+},
+{
+"league": "lkl",
+"value": "Juventus",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Juventus": "#be1b1b"
+}
+},
+{
+"league": "lkl",
+"value": "Juventus",
+"season": null,
+"id_system": "name",
+"palette": {
+"Juventus": "#be1b1b"
+}
+},
+{
+"league": "lkl",
+"value": "Lietkabelis",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Lietkabelis": "#550e2e"
+}
+},
+{
+"league": "lkl",
+"value": "Lietkabelis",
+"season": null,
+"id_system": "name",
+"palette": {
+"Lietkabelis": "#550e2e"
+}
+},
+{
+"league": "lkl",
+"value": "Neptūnas",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Neptūnas": "#224194"
+}
+},
+{
+"league": "lkl",
+"value": "Neptūnas",
+"season": null,
+"id_system": "name",
+"palette": {
+"Neptūnas": "#224194"
+}
+},
+{
+"league": "lkl",
+"value": "Nevėžis-Paskolų klubas",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Nevėžis-Paskolų klubas": "#000000"
+}
+},
+{
+"league": "lkl",
+"value": "Nevėžis-Paskolų klubas",
+"season": null,
+"id_system": "name",
+"palette": {
+"Nevėžis-Paskolų klubas": "#000000"
+}
+},
+{
+"league": "lkl",
+"value": "Rytas",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Rytas": "#eb0028"
+}
+},
+{
+"league": "lkl",
+"value": "Rytas",
+"season": null,
+"id_system": "name",
+"palette": {
+"Rytas": "#eb0028"
+}
+},
+{
+"league": "lkl",
+"value": "Tauragė",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Tauragė": "#004124"
+}
+},
+{
+"league": "lkl",
+"value": "Tauragė",
+"season": null,
+"id_system": "name",
+"palette": {
+"Tauragė": "#004124"
+}
+},
+{
+"league": "lkl",
+"value": "Šiauliai",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Šiauliai": "#f9a417"
+}
+},
+{
+"league": "lkl",
+"value": "Šiauliai",
+"season": null,
+"id_system": "name",
+"palette": {
+"Šiauliai": "#f9a417"
+}
+},
+{
+"league": "lkl",
+"value": "Žalgiris",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Žalgiris": "#00803f"
+}
+},
+{
+"league": "lkl",
+"value": "Žalgiris",
+"season": null,
+"id_system": "name",
+"palette": {
+"Žalgiris": "#00803f"
+}
+},
+{
+"league": "lkl",
+"value": "10",
+"season": null,
+"id_system": "auto",
+"palette": {
+"10": "#550e2e"
+}
+},
+{
+"league": "lkl",
+"value": "10",
+"season": null,
+"id_system": "team_id",
+"palette": {
+"10": "#550e2e"
+}
+},
+{
+"league": "lkl",
+"value": "11",
+"season": null,
+"id_system": "auto",
+"palette": {
+"11": "#000000"
+}
+},
+{
+"league": "lkl",
+"value": "11",
+"season": null,
+"id_system": "team_id",
+"palette": {
+"11": "#000000"
+}
+},
+{
+"league": "lkl",
+"value": "12",
+"season": null,
+"id_system": "auto",
+"palette": {
+"12": "#f9a417"
+}
+},
+{
+"league": "magnus",
+"value": "Aigles de Nice",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Aigles de Nice": "#1a1b35"
+}
+},
+{
+"league": "magnus",
+"value": "Aigles de Nice",
+"season": null,
+"id_system": "name",
+"palette": {
+"Aigles de Nice": "#1a1b35"
+}
+},
+{
+"league": "magnus",
+"value": "Anglet Hormadi",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "magnus",
+"value": "Anglet Hormadi",
+"season": null,
+"id_system": "name",
+"palette": {}
+},
+{
+"league": "magnus",
+"value": "Anglet Hormadi",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "magnus",
+"value": "Anglet Hormadi",
+"season": null,
+"id_system": "name",
+"palette": {}
+},
+{
+"league": "magnus",
+"value": "Boxers de Bordeaux",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "magnus",
+"value": "Boxers de Bordeaux",
+"season": null,
+"id_system": "name",
+"palette": {}
+},
+{
+"league": "magnus",
+"value": "Boxers de Bordeaux",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "magnus",
+"value": "Boxers de Bordeaux",
+"season": null,
+"id_system": "name",
+"palette": {}
+},
+{
+"league": "magnus",
+"value": "Boxers de Bordeaux",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "magnus",
+"value": "Boxers de Bordeaux",
+"season": null,
+"id_system": "name",
+"palette": {}
+},
+{
+"league": "magnus",
+"value": "Brûleurs de Loups de Grenoble",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Brûleurs de Loups de Grenoble": "#fea316"
+}
+},
+{
+"league": "magnus",
+"value": "Brûleurs de Loups de Grenoble",
+"season": null,
+"id_system": "name",
+"palette": {
+"Brûleurs de Loups de Grenoble": "#fea316"
+}
+},
+{
+"league": "magnus",
+"value": "Diables Rouges de Briançon",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "magnus",
+"value": "Diables Rouges de Briançon",
+"season": null,
+"id_system": "name",
+"palette": {}
+},
+{
+"league": "magnus",
+"value": "Diables Rouges de Briançon",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "magnus",
+"value": "Diables Rouges de Briançon",
+"season": null,
+"id_system": "name",
+"palette": {}
+},
+{
+"league": "magnus",
+"value": "Diables Rouges de Briançon",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "magnus",
+"value": "Diables Rouges de Briançon",
+"season": null,
+"id_system": "name",
+"palette": {}
+},
+{
+"league": "magnus",
+"value": "Dragons de Rouen",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Dragons de Rouen": "#f5b720"
+}
+},
+{
+"league": "magnus",
+"value": "Dragons de Rouen",
+"season": null,
+"id_system": "name",
+"palette": {
+"Dragons de Rouen": "#f5b720"
+}
+},
+{
+"league": "magnus",
+"value": "Ducs d'Angers",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Ducs d'Angers": "#534c67"
+}
+},
+{
+"league": "magnus",
+"value": "Ducs d'Angers",
+"season": null,
+"id_system": "name",
+"palette": {
+"Ducs d'Angers": "#534c67"
+}
+},
+{
+"league": "magnus",
+"value": "Gothiques d'Amiens",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Gothiques d'Amiens": "#e20613"
 }
 },
 {
@@ -5755,6 +9283,223 @@
 "id_system": "auto",
 "palette": {
 "CNS": "#f69138"
+}
+},
+{
+"league": "nbl_au",
+"value": "Adelaide 36ers",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Adelaide 36ers": "#051130"
+}
+},
+{
+"league": "nbl_au",
+"value": "Adelaide 36ers",
+"season": null,
+"id_system": "name",
+"palette": {
+"Adelaide 36ers": "#051130"
+}
+},
+{
+"league": "nbl_au",
+"value": "B League United",
+"season": null,
+"id_system": "auto",
+"palette": {
+"B League United": "#000000"
+}
+},
+{
+"league": "nbl_au",
+"value": "B League United",
+"season": null,
+"id_system": "name",
+"palette": {
+"B League United": "#000000"
+}
+},
+{
+"league": "nbl_au",
+"value": "Brisbane Bullets",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Brisbane Bullets": "#1f4ea2"
+}
+},
+{
+"league": "nbl_au",
+"value": "Brisbane Bullets",
+"season": null,
+"id_system": "name",
+"palette": {
+"Brisbane Bullets": "#1f4ea2"
+}
+},
+{
+"league": "nbl_au",
+"value": "Cairns Taipans",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Cairns Taipans": "#f79239"
+}
+},
+{
+"league": "nbl_au",
+"value": "Cairns Taipans",
+"season": null,
+"id_system": "name",
+"palette": {
+"Cairns Taipans": "#f79239"
+}
+},
+{
+"league": "nbl_au",
+"value": "California Baptist University",
+"season": null,
+"id_system": "auto",
+"palette": {
+"California Baptist University": "#002554"
+}
+},
+{
+"league": "nbl_au",
+"value": "California Baptist University",
+"season": null,
+"id_system": "name",
+"palette": {
+"California Baptist University": "#002554"
+}
+},
+{
+"league": "nbl_au",
+"value": "Chiba Jets",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Chiba Jets": "#ce2029"
+}
+},
+{
+"league": "nbl_au",
+"value": "Chiba Jets",
+"season": null,
+"id_system": "name",
+"palette": {
+"Chiba Jets": "#ce2029"
+}
+},
+{
+"league": "nbl_au",
+"value": "Illawarra Hawks",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "nbl_au",
+"value": "Illawarra Hawks",
+"season": null,
+"id_system": "name",
+"palette": {}
+},
+{
+"league": "nbl_au",
+"value": "Illawarra Hawks",
+"season": null,
+"id_system": "auto",
+"palette": {}
+},
+{
+"league": "nbl_au",
+"value": "Illawarra Hawks",
+"season": null,
+"id_system": "name",
+"palette": {}
+},
+{
+"league": "nbl_au",
+"value": "KK Partizan",
+"season": null,
+"id_system": "auto",
+"palette": {
+"KK Partizan": "#978378"
+}
+},
+{
+"league": "nbl_au",
+"value": "KK Partizan",
+"season": null,
+"id_system": "name",
+"palette": {
+"KK Partizan": "#978378"
+}
+},
+{
+"league": "nbl_au",
+"value": "Melbourne United",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Melbourne United": "#0054ff"
+}
+},
+{
+"league": "nbl_au",
+"value": "Melbourne United",
+"season": null,
+"id_system": "name",
+"palette": {
+"Melbourne United": "#0054ff"
+}
+},
+{
+"league": "nbl_au",
+"value": "NBL1 North Select",
+"season": null,
+"id_system": "auto",
+"palette": {
+"NBL1 North Select": "#ae6f44"
+}
+},
+{
+"league": "nbl_au",
+"value": "NBL1 North Select",
+"season": null,
+"id_system": "name",
+"palette": {
+"NBL1 North Select": "#ae6f44"
+}
+},
+{
+"league": "nbl_au",
+"value": "NBL1 South Select Team",
+"season": null,
+"id_system": "auto",
+"palette": {
+"NBL1 South Select Team": "#fc7e30"
+}
+},
+{
+"league": "nbl_au",
+"value": "NBL1 South Select Team",
+"season": null,
+"id_system": "name",
+"palette": {
+"NBL1 South Select Team": "#fc7e30"
+}
+},
+{
+"league": "nbl_au",
+"value": "NBL1 West Select",
+"season": null,
+"id_system": "auto",
+"palette": {
+"NBL1 West Select": "#e1b043"
 }
 },
 {
@@ -8256,6 +12001,231 @@
 }
 },
 {
+"league": "shl",
+"value": "AIK",
+"season": null,
+"id_system": "auto",
+"palette": {
+"AIK": "#002944"
+}
+},
+{
+"league": "shl",
+"value": "AIK",
+"season": null,
+"id_system": "name",
+"palette": {
+"AIK": "#002944"
+}
+},
+{
+"league": "shl",
+"value": "Björklöven",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Björklöven": "#0b5640"
+}
+},
+{
+"league": "shl",
+"value": "Björklöven",
+"season": null,
+"id_system": "name",
+"palette": {
+"Björklöven": "#0b5640"
+}
+},
+{
+"league": "shl",
+"value": "Brynäs IF",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Brynäs IF": "#ffcc00"
+}
+},
+{
+"league": "shl",
+"value": "Brynäs IF",
+"season": null,
+"id_system": "name",
+"palette": {
+"Brynäs IF": "#ffcc00"
+}
+},
+{
+"league": "shl",
+"value": "Djurgårdens IF",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Djurgårdens IF": "#cfb571"
+}
+},
+{
+"league": "shl",
+"value": "Djurgårdens IF",
+"season": null,
+"id_system": "name",
+"palette": {
+"Djurgårdens IF": "#cfb571"
+}
+},
+{
+"league": "shl",
+"value": "Frölunda HC",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Frölunda HC": "#00573f"
+}
+},
+{
+"league": "shl",
+"value": "Frölunda HC",
+"season": null,
+"id_system": "name",
+"palette": {
+"Frölunda HC": "#00573f"
+}
+},
+{
+"league": "shl",
+"value": "Färjestad BK",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Färjestad BK": "#008e52"
+}
+},
+{
+"league": "shl",
+"value": "Färjestad BK",
+"season": null,
+"id_system": "name",
+"palette": {
+"Färjestad BK": "#008e52"
+}
+},
+{
+"league": "shl",
+"value": "HV71",
+"season": null,
+"id_system": "auto",
+"palette": {
+"HV71": "#ffd500"
+}
+},
+{
+"league": "shl",
+"value": "HV71",
+"season": null,
+"id_system": "name",
+"palette": {
+"HV71": "#ffd500"
+}
+},
+{
+"league": "shl",
+"value": "Hammarby Hockey",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Hammarby Hockey": "#ffcc00"
+}
+},
+{
+"league": "shl",
+"value": "Hammarby Hockey",
+"season": null,
+"id_system": "name",
+"palette": {
+"Hammarby Hockey": "#ffcc00"
+}
+},
+{
+"league": "shl",
+"value": "IK Oskarshamn",
+"season": null,
+"id_system": "auto",
+"palette": {
+"IK Oskarshamn": "#002d74"
+}
+},
+{
+"league": "shl",
+"value": "IK Oskarshamn",
+"season": null,
+"id_system": "name",
+"palette": {
+"IK Oskarshamn": "#002d74"
+}
+},
+{
+"league": "shl",
+"value": "Karlskrona HK",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Karlskrona HK": "#e84e0f"
+}
+},
+{
+"league": "shl",
+"value": "Karlskrona HK",
+"season": null,
+"id_system": "name",
+"palette": {
+"Karlskrona HK": "#e84e0f"
+}
+},
+{
+"league": "shl",
+"value": "Leksands IF",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Leksands IF": "#00358e"
+}
+},
+{
+"league": "shl",
+"value": "Leksands IF",
+"season": null,
+"id_system": "name",
+"palette": {
+"Leksands IF": "#00358e"
+}
+},
+{
+"league": "shl",
+"value": "Linköping HC",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Linköping HC": "#002e5f"
+}
+},
+{
+"league": "shl",
+"value": "Linköping HC",
+"season": null,
+"id_system": "name",
+"palette": {
+"Linköping HC": "#002e5f"
+}
+},
+{
+"league": "shl",
+"value": "Luleå Hockey",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Luleå Hockey": "#d20a11"
+}
+},
+{
 "league": "sjhl",
 "value": "10",
 "season": null,
@@ -9781,6 +13751,231 @@
 }
 },
 {
+"league": "vtb",
+"value": "Avtodor",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Avtodor": "#bfa084"
+}
+},
+{
+"league": "vtb",
+"value": "Avtodor",
+"season": null,
+"id_system": "name",
+"palette": {
+"Avtodor": "#bfa084"
+}
+},
+{
+"league": "vtb",
+"value": "BETCITY PARMA",
+"season": null,
+"id_system": "auto",
+"palette": {
+"BETCITY PARMA": "#1c355e"
+}
+},
+{
+"league": "vtb",
+"value": "BETCITY PARMA",
+"season": null,
+"id_system": "name",
+"palette": {
+"BETCITY PARMA": "#1c355e"
+}
+},
+{
+"league": "vtb",
+"value": "CSKA",
+"season": null,
+"id_system": "auto",
+"palette": {
+"CSKA": "#db1d24"
+}
+},
+{
+"league": "vtb",
+"value": "CSKA",
+"season": null,
+"id_system": "name",
+"palette": {
+"CSKA": "#db1d24"
+}
+},
+{
+"league": "vtb",
+"value": "Dynamo",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Dynamo": "#077fc1"
+}
+},
+{
+"league": "vtb",
+"value": "Dynamo",
+"season": null,
+"id_system": "name",
+"palette": {
+"Dynamo": "#077fc1"
+}
+},
+{
+"league": "vtb",
+"value": "Enisey",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Enisey": "#101f50"
+}
+},
+{
+"league": "vtb",
+"value": "Enisey",
+"season": null,
+"id_system": "name",
+"palette": {
+"Enisey": "#101f50"
+}
+},
+{
+"league": "vtb",
+"value": "Lokomotiv Kuban",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Lokomotiv Kuban": "#e9312d"
+}
+},
+{
+"league": "vtb",
+"value": "Lokomotiv Kuban",
+"season": null,
+"id_system": "name",
+"palette": {
+"Lokomotiv Kuban": "#e9312d"
+}
+},
+{
+"league": "vtb",
+"value": "MBA",
+"season": null,
+"id_system": "auto",
+"palette": {
+"MBA": "#8e5e41"
+}
+},
+{
+"league": "vtb",
+"value": "MBA",
+"season": null,
+"id_system": "name",
+"palette": {
+"MBA": "#8e5e41"
+}
+},
+{
+"league": "vtb",
+"value": "Samara",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Samara": "#eb6608"
+}
+},
+{
+"league": "vtb",
+"value": "Samara",
+"season": null,
+"id_system": "name",
+"palette": {
+"Samara": "#eb6608"
+}
+},
+{
+"league": "vtb",
+"value": "UNICS",
+"season": null,
+"id_system": "auto",
+"palette": {
+"UNICS": "#f67932"
+}
+},
+{
+"league": "vtb",
+"value": "UNICS",
+"season": null,
+"id_system": "name",
+"palette": {
+"UNICS": "#f67932"
+}
+},
+{
+"league": "vtb",
+"value": "Uralmash",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Uralmash": "#f07f1b"
+}
+},
+{
+"league": "vtb",
+"value": "Uralmash",
+"season": null,
+"id_system": "name",
+"palette": {
+"Uralmash": "#f07f1b"
+}
+},
+{
+"league": "vtb",
+"value": "Zenit",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Zenit": "#00aeef"
+}
+},
+{
+"league": "vtb",
+"value": "Zenit",
+"season": null,
+"id_system": "name",
+"palette": {
+"Zenit": "#00aeef"
+}
+},
+{
+"league": "vtb",
+"value": "1390",
+"season": null,
+"id_system": "auto",
+"palette": {
+"1390": "#f07f1b"
+}
+},
+{
+"league": "vtb",
+"value": "1390",
+"season": null,
+"id_system": "team_id",
+"palette": {
+"1390": "#f07f1b"
+}
+},
+{
+"league": "vtb",
+"value": "15",
+"season": null,
+"id_system": "auto",
+"palette": {
+"15": "#db1d24"
+}
+},
+{
 "league": "wbb",
 "value": "PL",
 "season": null,
@@ -10181,6 +14376,231 @@
 }
 },
 {
+"league": "wjbl",
+"value": "ENEOSサンフラワーズ",
+"season": null,
+"id_system": "auto",
+"palette": {
+"ENEOSサンフラワーズ": "#fcef0a"
+}
+},
+{
+"league": "wjbl",
+"value": "ENEOSサンフラワーズ",
+"season": null,
+"id_system": "name",
+"palette": {
+"ENEOSサンフラワーズ": "#fcef0a"
+}
+},
+{
+"league": "wjbl",
+"value": "SMBC TOKYO SOLUA",
+"season": null,
+"id_system": "auto",
+"palette": {
+"SMBC TOKYO SOLUA": "#004832"
+}
+},
+{
+"league": "wjbl",
+"value": "SMBC TOKYO SOLUA",
+"season": null,
+"id_system": "name",
+"palette": {
+"SMBC TOKYO SOLUA": "#004832"
+}
+},
+{
+"league": "wjbl",
+"value": "アイシン ウィングス",
+"season": null,
+"id_system": "auto",
+"palette": {
+"アイシン ウィングス": "#f899d0"
+}
+},
+{
+"league": "wjbl",
+"value": "アイシン ウィングス",
+"season": null,
+"id_system": "name",
+"palette": {
+"アイシン ウィングス": "#f899d0"
+}
+},
+{
+"league": "wjbl",
+"value": "シャンソン化粧品 シャンソンVマジック",
+"season": null,
+"id_system": "auto",
+"palette": {
+"シャンソン化粧品 シャンソンVマジック": "#e91695"
+}
+},
+{
+"league": "wjbl",
+"value": "シャンソン化粧品 シャンソンVマジック",
+"season": null,
+"id_system": "name",
+"palette": {
+"シャンソン化粧品 シャンソンVマジック": "#e91695"
+}
+},
+{
+"league": "wjbl",
+"value": "デンソー アイリス",
+"season": null,
+"id_system": "auto",
+"palette": {
+"デンソー アイリス": "#eab8ac"
+}
+},
+{
+"league": "wjbl",
+"value": "デンソー アイリス",
+"season": null,
+"id_system": "name",
+"palette": {
+"デンソー アイリス": "#eab8ac"
+}
+},
+{
+"league": "wjbl",
+"value": "トヨタ紡織 サンシャインラビッツ",
+"season": null,
+"id_system": "auto",
+"palette": {
+"トヨタ紡織 サンシャインラビッツ": "#992032"
+}
+},
+{
+"league": "wjbl",
+"value": "トヨタ紡織 サンシャインラビッツ",
+"season": null,
+"id_system": "name",
+"palette": {
+"トヨタ紡織 サンシャインラビッツ": "#992032"
+}
+},
+{
+"league": "wjbl",
+"value": "トヨタ自動車 アンテロープス",
+"season": null,
+"id_system": "auto",
+"palette": {
+"トヨタ自動車 アンテロープス": "#e70012"
+}
+},
+{
+"league": "wjbl",
+"value": "トヨタ自動車 アンテロープス",
+"season": null,
+"id_system": "name",
+"palette": {
+"トヨタ自動車 アンテロープス": "#e70012"
+}
+},
+{
+"league": "wjbl",
+"value": "プレステージインターナショナル アランマーレ",
+"season": null,
+"id_system": "auto",
+"palette": {
+"プレステージインターナショナル アランマーレ": "#1e2753"
+}
+},
+{
+"league": "wjbl",
+"value": "プレステージインターナショナル アランマーレ",
+"season": null,
+"id_system": "name",
+"palette": {
+"プレステージインターナショナル アランマーレ": "#1e2753"
+}
+},
+{
+"league": "wjbl",
+"value": "三菱電機 コアラーズ",
+"season": null,
+"id_system": "auto",
+"palette": {
+"三菱電機 コアラーズ": "#d74944"
+}
+},
+{
+"league": "wjbl",
+"value": "三菱電機 コアラーズ",
+"season": null,
+"id_system": "name",
+"palette": {
+"三菱電機 コアラーズ": "#d74944"
+}
+},
+{
+"league": "wjbl",
+"value": "富士通 レッドウェーブ",
+"season": null,
+"id_system": "auto",
+"palette": {
+"富士通 レッドウェーブ": "#e60012"
+}
+},
+{
+"league": "wjbl",
+"value": "富士通 レッドウェーブ",
+"season": null,
+"id_system": "name",
+"palette": {
+"富士通 レッドウェーブ": "#e60012"
+}
+},
+{
+"league": "wjbl",
+"value": "山梨クィーンビーズ",
+"season": null,
+"id_system": "auto",
+"palette": {
+"山梨クィーンビーズ": "#826048"
+}
+},
+{
+"league": "wjbl",
+"value": "山梨クィーンビーズ",
+"season": null,
+"id_system": "name",
+"palette": {
+"山梨クィーンビーズ": "#826048"
+}
+},
+{
+"league": "wjbl",
+"value": "広島イーグレッツ",
+"season": null,
+"id_system": "auto",
+"palette": {
+"広島イーグレッツ": "#08a0a3"
+}
+},
+{
+"league": "wjbl",
+"value": "広島イーグレッツ",
+"season": null,
+"id_system": "name",
+"palette": {
+"広島イーグレッツ": "#08a0a3"
+}
+},
+{
+"league": "wjbl",
+"value": "新潟アルビレックスBBラビッツ",
+"season": null,
+"id_system": "auto",
+"palette": {
+"新潟アルビレックスBBラビッツ": "#a7502d"
+}
+},
+{
 "league": "wnba",
 "value": "ATL",
 "season": null,
@@ -10403,6 +14823,231 @@
 "id_system": "auto",
 "palette": {
 "LAS": "#552583"
+}
+},
+{
+"league": "wnbl",
+"value": "Adelaide Lightning",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Adelaide Lightning": "#bf9bc2"
+}
+},
+{
+"league": "wnbl",
+"value": "Adelaide Lightning",
+"season": null,
+"id_system": "name",
+"palette": {
+"Adelaide Lightning": "#bf9bc2"
+}
+},
+{
+"league": "wnbl",
+"value": "Bendigo Spirit",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Bendigo Spirit": "#ffda0c"
+}
+},
+{
+"league": "wnbl",
+"value": "Bendigo Spirit",
+"season": null,
+"id_system": "name",
+"palette": {
+"Bendigo Spirit": "#ffda0c"
+}
+},
+{
+"league": "wnbl",
+"value": "Geelong Venom",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Geelong Venom": "#6997f0"
+}
+},
+{
+"league": "wnbl",
+"value": "Geelong Venom",
+"season": null,
+"id_system": "name",
+"palette": {
+"Geelong Venom": "#6997f0"
+}
+},
+{
+"league": "wnbl",
+"value": "Hitachi High-Tech Cougars",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Hitachi High-Tech Cougars": "#013b02"
+}
+},
+{
+"league": "wnbl",
+"value": "Hitachi High-Tech Cougars",
+"season": null,
+"id_system": "name",
+"palette": {
+"Hitachi High-Tech Cougars": "#013b02"
+}
+},
+{
+"league": "wnbl",
+"value": "Perth Lynx",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Perth Lynx": "#ffafa9"
+}
+},
+{
+"league": "wnbl",
+"value": "Perth Lynx",
+"season": null,
+"id_system": "name",
+"palette": {
+"Perth Lynx": "#ffafa9"
+}
+},
+{
+"league": "wnbl",
+"value": "Southside Melbourne Flyers",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Southside Melbourne Flyers": "#152c51"
+}
+},
+{
+"league": "wnbl",
+"value": "Southside Melbourne Flyers",
+"season": null,
+"id_system": "name",
+"palette": {
+"Southside Melbourne Flyers": "#152c51"
+}
+},
+{
+"league": "wnbl",
+"value": "Sydney Flames",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Sydney Flames": "#fb025f"
+}
+},
+{
+"league": "wnbl",
+"value": "Sydney Flames",
+"season": null,
+"id_system": "name",
+"palette": {
+"Sydney Flames": "#fb025f"
+}
+},
+{
+"league": "wnbl",
+"value": "Tasmania Jewels",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Tasmania Jewels": "#002a22"
+}
+},
+{
+"league": "wnbl",
+"value": "Tasmania Jewels",
+"season": null,
+"id_system": "name",
+"palette": {
+"Tasmania Jewels": "#002a22"
+}
+},
+{
+"league": "wnbl",
+"value": "Townsville Fire",
+"season": null,
+"id_system": "auto",
+"palette": {
+"Townsville Fire": "#f76f2a"
+}
+},
+{
+"league": "wnbl",
+"value": "Townsville Fire",
+"season": null,
+"id_system": "name",
+"palette": {
+"Townsville Fire": "#f76f2a"
+}
+},
+{
+"league": "wnbl",
+"value": "UC Capitals",
+"season": null,
+"id_system": "auto",
+"palette": {
+"UC Capitals": "#00b5e2"
+}
+},
+{
+"league": "wnbl",
+"value": "UC Capitals",
+"season": null,
+"id_system": "name",
+"palette": {
+"UC Capitals": "#00b5e2"
+}
+},
+{
+"league": "wnbl",
+"value": "WA All Stars",
+"season": null,
+"id_system": "auto",
+"palette": {
+"WA All Stars": "#f6b522"
+}
+},
+{
+"league": "wnbl",
+"value": "WA All Stars",
+"season": null,
+"id_system": "name",
+"palette": {
+"WA All Stars": "#f6b522"
+}
+},
+{
+"league": "wnbl",
+"value": "17cd24e4-2bfe-11f1-857f-89f5905ce248",
+"season": null,
+"id_system": "auto",
+"palette": {
+"17cd24e4-2bfe-11f1-857f-89f5905ce248": "#002a22"
+}
+},
+{
+"league": "wnbl",
+"value": "17cd24e4-2bfe-11f1-857f-89f5905ce248",
+"season": null,
+"id_system": "team_id",
+"palette": {
+"17cd24e4-2bfe-11f1-857f-89f5905ce248": "#002a22"
+}
+},
+{
+"league": "wnbl",
+"value": "7146a2c3-9927-11f1-8d62-8f97f45d3bf8",
+"season": null,
+"id_system": "auto",
+"palette": {
+"7146a2c3-9927-11f1-8d62-8f97f45d3bf8": "#f6b522"
 }
 },
 {

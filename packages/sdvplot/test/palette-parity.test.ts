@@ -24,11 +24,11 @@ const { meta, cases } = JSON.parse(BYTES.toString("utf8")) as {
   cases: Case[];
 };
 
-test("the fixture is the one sdvplot 0.3.0 (ca596a1d) wrote", () => {
+test("the fixture is the one sdvplot 0.3.0 (f8125cae) wrote", () => {
   expect(createHash("sha256").update(BYTES).digest("hex")).toBe(
-    "895f751aaffd38b89a45be75796338128b52ca3b315417b926cc46b907f59a69",
+    "68152b141e144f4ee88fedd831d55be73f6f0094a9a6f1f06f4e2433a65f3089",
   );
-  expect([meta.sdvplot_version, meta.sdvplot_commit]).toEqual(["0.3.0", "ca596a1d"]);
+  expect([meta.sdvplot_version, meta.sdvplot_commit]).toEqual(["0.3.0", "f8125cae"]);
   // what the cases exercise: aliases sharing a colour, unresolved values in grey, both colours, no background
   const flat = (c: Case) => c.values.map(String);
   expect(cases.some((c) => new Set(c.colors).size < new Set(flat(c)).size && c.background !== null)).toBe(

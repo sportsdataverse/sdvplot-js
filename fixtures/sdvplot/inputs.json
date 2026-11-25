@@ -300,6 +300,1326 @@
 "id_system": "team_id"
 },
 {
+"league": "aba",
+"value": "BC Vienna",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "BC Vienna",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "aba",
+"value": "Borac Mozzart",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "Borac Mozzart",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "aba",
+"value": "Bosna BH Telecom",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "Bosna BH Telecom",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "aba",
+"value": "Budućnost VOLI",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "Budućnost VOLI",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "aba",
+"value": "Cedevita",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "Cedevita",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "aba",
+"value": "Cedevita Olimpija",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "Cedevita Olimpija",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "aba",
+"value": "Cibona",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "Cibona",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "aba",
+"value": "Crvena zvezda Meridianbet",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "Crvena zvezda Meridianbet",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "aba",
+"value": "Dubai Basketball",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "Dubai Basketball",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "aba",
+"value": "FMP MrBit",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "FMP MrBit",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "aba",
+"value": "HKK Široki TT Kabeli",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "HKK Široki TT Kabeli",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "aba",
+"value": "Helios Domžale",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "Helios Domžale",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "aba",
+"value": "Hemofarm STADA",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "Hemofarm STADA",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "aba",
+"value": "Igokea m:tel",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "Igokea m:tel",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "aba",
+"value": "Karpoš Sokoli",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "Karpoš Sokoli",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "aba",
+"value": "Koper Primorska",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "Koper Primorska",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "aba",
+"value": "Krka",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "Krka",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "aba",
+"value": "MZT Skopje Aerodrom",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "MZT Skopje Aerodrom",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "aba",
+"value": "Mega Superbet",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "Mega Superbet",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "aba",
+"value": "Mornar-Barsko zlato",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "Mornar-Barsko zlato",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "aba",
+"value": "Partizan Mozzart Bet",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "Partizan Mozzart Bet",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "aba",
+"value": "Perspektiva Ilirija",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "Perspektiva Ilirija",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "aba",
+"value": "Petrol Olimpija",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "Petrol Olimpija",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "aba",
+"value": "SC Derby",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "SC Derby",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "aba",
+"value": "Slovan Bratislava",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "Slovan Bratislava",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "aba",
+"value": "Spartak Office Shoes",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "Spartak Office Shoes",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "aba",
+"value": "Split",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "Split",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "aba",
+"value": "Sutjeska",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "Sutjeska",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "aba",
+"value": "U-BT Cluj-Napoca",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "U-BT Cluj-Napoca",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "aba",
+"value": "Zadar",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "Zadar",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "aba",
+"value": "1",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "1",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "aba",
+"value": "10",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "10",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "aba",
+"value": "100",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "100",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "aba",
+"value": "101",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "101",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "aba",
+"value": "110",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "110",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "aba",
+"value": "12",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "12",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "aba",
+"value": "17",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "17",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "aba",
+"value": "18",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "18",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "aba",
+"value": "2",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "2",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "aba",
+"value": "20",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "20",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "aba",
+"value": "21",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "21",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "aba",
+"value": "22",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "22",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "aba",
+"value": "27",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "27",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "aba",
+"value": "3",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "3",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "aba",
+"value": "30",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "30",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "aba",
+"value": "32",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "32",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "aba",
+"value": "33",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "33",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "aba",
+"value": "37",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "37",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "aba",
+"value": "38",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "38",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "aba",
+"value": "39",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "39",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "aba",
+"value": "4",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "4",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "aba",
+"value": "43",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "43",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "aba",
+"value": "47",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "47",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "aba",
+"value": "6",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "6",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "aba",
+"value": "66",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "66",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "aba",
+"value": "7",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "7",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "aba",
+"value": "74",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "74",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "aba",
+"value": "91",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "91",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "aba",
+"value": "92",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "92",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "aba",
+"value": "95",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "aba",
+"value": "95",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "acb",
+"value": "Acunsa GBC",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "Acunsa GBC",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "acb",
+"value": "Asisa Joventut",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "Asisa Joventut",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "acb",
+"value": "Barça",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "Barça",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "acb",
+"value": "Carplus Fuenlabrada",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "Carplus Fuenlabrada",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "acb",
+"value": "Casademont Zaragoza",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "Casademont Zaragoza",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "acb",
+"value": "Coviran Granada",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "Coviran Granada",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "acb",
+"value": "Dreamland Gran Canaria",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "Dreamland Gran Canaria",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "acb",
+"value": "FIATC Girona",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "FIATC Girona",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "acb",
+"value": "Kids&Us Manresa",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "Kids&Us Manresa",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "acb",
+"value": "Kosner Baskonia",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "Kosner Baskonia",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "acb",
+"value": "La Laguna Tenerife",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "La Laguna Tenerife",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "acb",
+"value": "Leyma Coruña",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "Leyma Coruña",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "acb",
+"value": "Monbus Obradoiro",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "Monbus Obradoiro",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "acb",
+"value": "MoraBanc Andorra",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "MoraBanc Andorra",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "acb",
+"value": "Movistar Estudiantes",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "Movistar Estudiantes",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "acb",
+"value": "Real Betis Baloncesto",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "Real Betis Baloncesto",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "acb",
+"value": "Real Madrid",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "Real Madrid",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "acb",
+"value": "Recoletas Salud San Pablo Burgos",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "Recoletas Salud San Pablo Burgos",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "acb",
+"value": "Río Breogán",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "Río Breogán",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "acb",
+"value": "Surne Bilbao",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "Surne Bilbao",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "acb",
+"value": "UCAM Murcia",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "UCAM Murcia",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "acb",
+"value": "Unicaja",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "Unicaja",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "acb",
+"value": "Valencia Basket",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "Valencia Basket",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "acb",
+"value": "Zunder Palencia",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "Zunder Palencia",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "acb",
+"value": "iLERNA Lleida",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "iLERNA Lleida",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "acb",
+"value": "10",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "10",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "acb",
+"value": "12",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "12",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "acb",
+"value": "13",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "13",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "acb",
+"value": "14",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "14",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "acb",
+"value": "15",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "15",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "acb",
+"value": "16",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "16",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "acb",
+"value": "17",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "17",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "acb",
+"value": "2",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "2",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "acb",
+"value": "22",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "22",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "acb",
+"value": "25",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "25",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "acb",
+"value": "28",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "28",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "acb",
+"value": "3",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "3",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "acb",
+"value": "4",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "4",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "acb",
+"value": "5",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "5",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "acb",
+"value": "549",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "549",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "acb",
+"value": "57",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "57",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "acb",
+"value": "591",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "591",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "acb",
+"value": "592",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "592",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "acb",
+"value": "6",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "6",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "acb",
+"value": "624",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "624",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "acb",
+"value": "657",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "657",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "acb",
+"value": "658",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "658",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "acb",
+"value": "7",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "7",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "acb",
+"value": "8",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "8",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "acb",
+"value": "9",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "acb",
+"value": "9",
+"season": null,
+"id_system": "team_id"
+},
+{
 "league": "ahl",
 "value": "406",
 "season": null,
@@ -2352,6 +3672,966 @@
 "id_system": "team_id"
 },
 {
+"league": "bbl",
+"value": "Telekom Baskets Bonn",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "Telekom Baskets Bonn",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bbl",
+"value": "TV 1860 Lich",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "TV 1860 Lich",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bbl",
+"value": "BMA365 Bamberg Baskets",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "BMA365 Bamberg Baskets",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bbl",
+"value": "ASC 46 Göttingen",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "ASC 46 Göttingen",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bbl",
+"value": "Eisbären Bremerhaven",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "Eisbären Bremerhaven",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bbl",
+"value": "SG FT/MTV Braunschweig",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "SG FT/MTV Braunschweig",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bbl",
+"value": "webmoebel Baskets",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "webmoebel Baskets",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bbl",
+"value": "Ruhr Devils",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "Ruhr Devils",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bbl",
+"value": "EWE Baskets Oldenburg",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "EWE Baskets Oldenburg",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bbl",
+"value": "Fitness First Würzburg Baskets",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "Fitness First Würzburg Baskets",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bbl",
+"value": "medi bayreuth",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "medi bayreuth",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bbl",
+"value": "NINERS Chemnitz",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "NINERS Chemnitz",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bbl",
+"value": "Basketball Löwen Braunschweig",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "Basketball Löwen Braunschweig",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bbl",
+"value": "RASTA Vechta",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "RASTA Vechta",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bbl",
+"value": "Gloria GIANTS Düsseldorf",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "Gloria GIANTS Düsseldorf",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bbl",
+"value": "JobStairs GIESSEN 46ers",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "JobStairs GIESSEN 46ers",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bbl",
+"value": "SYNTAINICS MBC",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "SYNTAINICS MBC",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bbl",
+"value": "BG Göttingen",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "BG Göttingen",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bbl",
+"value": "sellbytel Baskets Nürnberg",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "sellbytel Baskets Nürnberg",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bbl",
+"value": "TV 1862 Langen",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "TV 1862 Langen",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bbl",
+"value": "BCJ Hamburg",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "BCJ Hamburg",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bbl",
+"value": "USC Freiburg",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "USC Freiburg",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bbl",
+"value": "Phoenix Hagen",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "Phoenix Hagen",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bbl",
+"value": "SV Tally Oberelchingen",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "SV Tally Oberelchingen",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bbl",
+"value": "Rockets",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "Rockets",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bbl",
+"value": "TV TATAMI Rhöndorf",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "TV TATAMI Rhöndorf",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bbl",
+"value": "MLP Academics Heidelberg",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "MLP Academics Heidelberg",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bbl",
+"value": "BG Karlsruhe",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "BG Karlsruhe",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bbl",
+"value": "ALBA BERLIN",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "ALBA BERLIN",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bbl",
+"value": "BSC Saturn Köln",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "BSC Saturn Köln",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bbl",
+"value": "Post Hannover",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "Post Hannover",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bbl",
+"value": "TuS Aschaffenburg Damm",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "TuS Aschaffenburg Damm",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bbl",
+"value": "MTV Wolfenbüttel",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "MTV Wolfenbüttel",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bbl",
+"value": "Brandt Hagen",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "Brandt Hagen",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bbl",
+"value": "Köln 99ers",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "Köln 99ers",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bbl",
+"value": "Artland Dragons",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "Artland Dragons",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bbl",
+"value": "Science City Jena",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "Science City Jena",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bbl",
+"value": "Veolia Towers Hamburg",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "Veolia Towers Hamburg",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bbl",
+"value": "HAKRO Merlins Crailsheim",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "HAKRO Merlins Crailsheim",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bbl",
+"value": "Giants Nördlingen",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "Giants Nördlingen",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bbl",
+"value": "484",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "484",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bbl",
+"value": "479",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "479",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bbl",
+"value": "310",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "310",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bbl",
+"value": "182",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "182",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bbl",
+"value": "416",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "416",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bbl",
+"value": "441",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "441",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bbl",
+"value": "554",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "554",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bbl",
+"value": "435",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "435",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bbl",
+"value": "415",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "415",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bbl",
+"value": "418",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "418",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bbl",
+"value": "540",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "540",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bbl",
+"value": "429",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "429",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bbl",
+"value": "412",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "412",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bbl",
+"value": "432",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "432",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bbl",
+"value": "420",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "420",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bbl",
+"value": "424",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "424",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bbl",
+"value": "447",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "447",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bbl",
+"value": "298",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "298",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bbl",
+"value": "551",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "551",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bbl",
+"value": "482",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "482",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bbl",
+"value": "296",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "296",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bbl",
+"value": "488",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "488",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bbl",
+"value": "430",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "430",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bbl",
+"value": "446",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "446",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bbl",
+"value": "434",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "434",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bbl",
+"value": "483",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "483",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bbl",
+"value": "427",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "427",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bbl",
+"value": "299",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "299",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bbl",
+"value": "136",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "136",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bbl",
+"value": "312",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "312",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bbl",
+"value": "431",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "431",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bbl",
+"value": "486",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "486",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bbl",
+"value": "428",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "428",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bbl",
+"value": "414",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "414",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bbl",
+"value": "425",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "425",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bbl",
+"value": "290",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "290",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bbl",
+"value": "473",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "473",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bbl",
+"value": "536",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "536",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bbl",
+"value": "421",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "421",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bbl",
+"value": "419",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bbl",
+"value": "419",
+"season": null,
+"id_system": "team_id"
+},
+{
 "league": "bchl",
 "value": "10",
 "season": null,
@@ -3175,6 +5455,1518 @@
 },
 {
 "league": "bchl",
+"value": "9",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bleague",
+"value": "立川",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "立川",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bleague",
+"value": "福井",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "福井",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bleague",
+"value": "京都",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "京都",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bleague",
+"value": "福岡",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "福岡",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bleague",
+"value": "千葉J",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "千葉J",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bleague",
+"value": "横浜BC",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "横浜BC",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bleague",
+"value": "鹿児島",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "鹿児島",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bleague",
+"value": "東京U",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "東京U",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bleague",
+"value": "北海道",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "北海道",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bleague",
+"value": "品川",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "品川",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bleague",
+"value": "青森",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "青森",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bleague",
+"value": "川崎",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "川崎",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bleague",
+"value": "佐賀",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "佐賀",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bleague",
+"value": "愛媛",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "愛媛",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bleague",
+"value": "大阪",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "大阪",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bleague",
+"value": "山口",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "山口",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bleague",
+"value": "滋賀",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "滋賀",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bleague",
+"value": "三遠",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "三遠",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bleague",
+"value": "香川",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "香川",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bleague",
+"value": "アイシン",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "アイシン",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bleague",
+"value": "三河",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "三河",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bleague",
+"value": "豊田合成",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "豊田合成",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bleague",
+"value": "八王子",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "八王子",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bleague",
+"value": "横浜EX",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "横浜EX",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bleague",
+"value": "東京SR",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "東京SR",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bleague",
+"value": "宇都宮",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "宇都宮",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bleague",
+"value": "新潟",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "新潟",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bleague",
+"value": "三重",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "三重",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bleague",
+"value": "秋田",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "秋田",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bleague",
+"value": "仙台",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "仙台",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bleague",
+"value": "広島",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "広島",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bleague",
+"value": "群馬",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "群馬",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bleague",
+"value": "福島",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "福島",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bleague",
+"value": "島根",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "島根",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bleague",
+"value": "奈良",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "奈良",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bleague",
+"value": "神戸",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "神戸",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bleague",
+"value": "湘南",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "湘南",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bleague",
+"value": "金沢",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "金沢",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bleague",
+"value": "東京Z",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "東京Z",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bleague",
+"value": "岐阜",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "岐阜",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bleague",
+"value": "728",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "728",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bleague",
+"value": "724",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "724",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bleague",
+"value": "2725",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "2725",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bleague",
+"value": "725",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "725",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bleague",
+"value": "692",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "692",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bleague",
+"value": "717",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "717",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bleague",
+"value": "753",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "753",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bleague",
+"value": "714",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "714",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bleague",
+"value": "2891",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "2891",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bleague",
+"value": "694",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "694",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bleague",
+"value": "750",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "750",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bleague",
+"value": "708",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "708",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bleague",
+"value": "2727",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "2727",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bleague",
+"value": "711",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "711",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bleague",
+"value": "696",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "696",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bleague",
+"value": "700",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "700",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bleague",
+"value": "720",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "720",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bleague",
+"value": "2487",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "2487",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bleague",
+"value": "752",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "752",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bleague",
+"value": "1639",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "1639",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bleague",
+"value": "2486",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "2486",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bleague",
+"value": "745",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "745",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bleague",
+"value": "2890",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "2890",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bleague",
+"value": "718",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "718",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bleague",
+"value": "713",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "713",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bleague",
+"value": "698",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "698",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bleague",
+"value": "712",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "712",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bleague",
+"value": "2488",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "2488",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bleague",
+"value": "727",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "727",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bleague",
+"value": "2726",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "2726",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bleague",
+"value": "709",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "709",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bleague",
+"value": "729",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "729",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bleague",
+"value": "726",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "726",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bleague",
+"value": "706",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "706",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bleague",
+"value": "697",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "697",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bleague",
+"value": "723",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "723",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bleague",
+"value": "719",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "719",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bleague",
+"value": "748",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "748",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bleague",
+"value": "715",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "715",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bleague",
+"value": "702",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bleague",
+"value": "702",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bnxt",
+"value": "AB InBev Leuven Bears",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "AB InBev Leuven Bears",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bnxt",
+"value": "BC Apollo Amsterdam",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "BC Apollo Amsterdam",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bnxt",
+"value": "Brussels Basketball",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "Brussels Basketball",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bnxt",
+"value": "CB Liège",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "CB Liège",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bnxt",
+"value": "CityX Mons",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "CityX Mons",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bnxt",
+"value": "Coretec Oostende",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "Coretec Oostende",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bnxt",
+"value": "Den Helder Suns Playoff",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "Den Helder Suns Playoff",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bnxt",
+"value": "Donar Groningen",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "Donar Groningen",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bnxt",
+"value": "Heroes Den Bosch",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "Heroes Den Bosch",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bnxt",
+"value": "House of Talents Spurs Kortrijk",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "House of Talents Spurs Kortrijk",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bnxt",
+"value": "Hubo Limburg United",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "Hubo Limburg United",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bnxt",
+"value": "Kangoeroes Basket Mechelen",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "Kangoeroes Basket Mechelen",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bnxt",
+"value": "LWD Basket playoff",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "LWD Basket playoff",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bnxt",
+"value": "Landstede Hammers",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "Landstede Hammers",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bnxt",
+"value": "Partena Professional Okapi Aalst",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "Partena Professional Okapi Aalst",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bnxt",
+"value": "PrismaWorx BAL",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "PrismaWorx BAL",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bnxt",
+"value": "QSTA United",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "QSTA United",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bnxt",
+"value": "RSW Liege Basket",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "RSW Liege Basket",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bnxt",
+"value": "The Hague Royals",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "The Hague Royals",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bnxt",
+"value": "Val-Dieu Spirou Basket",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "Val-Dieu Spirou Basket",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bnxt",
+"value": "Windrose Giants Antwerp",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "Windrose Giants Antwerp",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bnxt",
+"value": "Zeeuw & Zeeuw Rotterdam City",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "Zeeuw & Zeeuw Rotterdam City",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bnxt",
+"value": "Zorg en Zekerheid Leiden",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "Zorg en Zekerheid Leiden",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "bnxt",
+"value": "1",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "1",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bnxt",
+"value": "10",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "10",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bnxt",
+"value": "11",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "11",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bnxt",
+"value": "12",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "12",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bnxt",
+"value": "13",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "13",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bnxt",
+"value": "14",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "14",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bnxt",
+"value": "16",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "16",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bnxt",
+"value": "17",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "17",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bnxt",
+"value": "18",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "18",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bnxt",
+"value": "19",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "19",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bnxt",
+"value": "2",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "2",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bnxt",
+"value": "20",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "20",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bnxt",
+"value": "21",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "21",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bnxt",
+"value": "22",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "22",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bnxt",
+"value": "3",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "3",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bnxt",
+"value": "32",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "32",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bnxt",
+"value": "33",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "33",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bnxt",
+"value": "4",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "4",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bnxt",
+"value": "5",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "5",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bnxt",
+"value": "6",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "6",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bnxt",
+"value": "7",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "7",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bnxt",
+"value": "8",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
+"value": "8",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "bnxt",
+"value": "9",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "bnxt",
 "value": "9",
 "season": null,
 "id_system": "team_id"
@@ -14394,6 +18186,582 @@
 "id_system": "team_id"
 },
 {
+"league": "dbbl",
+"value": "ALBA BERLIN",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbbl",
+"value": "ALBA BERLIN",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "dbbl",
+"value": "BC Marburg",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbbl",
+"value": "BC Marburg",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "dbbl",
+"value": "BG74 Veilchen Ladies Göttingen",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbbl",
+"value": "BG74 Veilchen Ladies Göttingen",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "dbbl",
+"value": "Eigner Angels Nördlingen ",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbbl",
+"value": "Eigner Angels Nördlingen ",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "dbbl",
+"value": "Eisvögel USC Freiburg",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbbl",
+"value": "Eisvögel USC Freiburg",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "dbbl",
+"value": "GiroLive Panthers Osnabrück ",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbbl",
+"value": "GiroLive Panthers Osnabrück ",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "dbbl",
+"value": "Herner TC",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbbl",
+"value": "Herner TC",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "dbbl",
+"value": "Rutronik Stars Keltern",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbbl",
+"value": "Rutronik Stars Keltern",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "dbbl",
+"value": "Saarlouis Royals ",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbbl",
+"value": "Saarlouis Royals ",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "dbbl",
+"value": "TK Hannover Luchse",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbbl",
+"value": "TK Hannover Luchse",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "dbbl",
+"value": "WINGS Leverkusen ",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbbl",
+"value": "WINGS Leverkusen ",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "dbbl",
+"value": "halfit LIONS ",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbbl",
+"value": "halfit LIONS ",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "dbbl",
+"value": "100",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbbl",
+"value": "100",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "dbbl",
+"value": "101",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbbl",
+"value": "101",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "dbbl",
+"value": "102",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbbl",
+"value": "102",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "dbbl",
+"value": "103",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbbl",
+"value": "103",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "dbbl",
+"value": "104",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbbl",
+"value": "104",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "dbbl",
+"value": "105",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbbl",
+"value": "105",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "dbbl",
+"value": "106",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbbl",
+"value": "106",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "dbbl",
+"value": "107",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbbl",
+"value": "107",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "dbbl",
+"value": "108",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbbl",
+"value": "108",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "dbbl",
+"value": "109",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbbl",
+"value": "109",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "dbbl",
+"value": "110",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbbl",
+"value": "110",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "dbbl",
+"value": "111",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbbl",
+"value": "111",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "dbl",
+"value": "BC Copenhagen",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbl",
+"value": "BC Copenhagen",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "dbl",
+"value": "BK Vejen",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbl",
+"value": "BK Vejen",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "dbl",
+"value": "BMS Herlev",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbl",
+"value": "BMS Herlev",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "dbl",
+"value": "Bakken Bears",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbl",
+"value": "Bakken Bears",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "dbl",
+"value": "Bears Academy",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbl",
+"value": "Bears Academy",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "dbl",
+"value": "Gladsaxe Basketball Klub",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbl",
+"value": "Gladsaxe Basketball Klub",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "dbl",
+"value": "Holbæk-Stenhus",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbl",
+"value": "Holbæk-Stenhus",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "dbl",
+"value": "Horsens IC",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbl",
+"value": "Horsens IC",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "dbl",
+"value": "Randers Cimbria",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbl",
+"value": "Randers Cimbria",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "dbl",
+"value": "Svendborg Rabbits",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbl",
+"value": "Svendborg Rabbits",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "dbl",
+"value": "Team FOG Næstved",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbl",
+"value": "Team FOG Næstved",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "dbl",
+"value": "Værløse Blue Hawks",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbl",
+"value": "Værløse Blue Hawks",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "dbl",
+"value": "114932",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbl",
+"value": "114932",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "dbl",
+"value": "130088",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbl",
+"value": "130088",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "dbl",
+"value": "140898",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbl",
+"value": "140898",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "dbl",
+"value": "153747",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbl",
+"value": "153747",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "dbl",
+"value": "156486",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbl",
+"value": "156486",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "dbl",
+"value": "187013",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbl",
+"value": "187013",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "dbl",
+"value": "199228",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbl",
+"value": "199228",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "dbl",
+"value": "22248",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbl",
+"value": "22248",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "dbl",
+"value": "22249",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbl",
+"value": "22249",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "dbl",
+"value": "22250",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbl",
+"value": "22250",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "dbl",
+"value": "22255",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbl",
+"value": "22255",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "dbl",
+"value": "22256",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "dbl",
+"value": "22256",
+"season": null,
+"id_system": "team_id"
+},
+{
 "league": "easl",
 "value": "Abra Weavers",
 "season": null,
@@ -16122,6 +20490,1302 @@
 "id_system": "team_id"
 },
 {
+"league": "elh",
+"value": "BANES Motor České Budějovice",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "elh",
+"value": "BANES Motor České Budějovice",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "elh",
+"value": "BK Mladá Boleslav",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "elh",
+"value": "BK Mladá Boleslav",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "elh",
+"value": "BYD Energie Karlovy Vary",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "elh",
+"value": "BYD Energie Karlovy Vary",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "elh",
+"value": "Bílí Tygři Liberec",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "elh",
+"value": "Bílí Tygři Liberec",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "elh",
+"value": "HC DYNAMO PARDUBICE",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "elh",
+"value": "HC DYNAMO PARDUBICE",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "elh",
+"value": "HC KOMETA BRNO",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "elh",
+"value": "HC KOMETA BRNO",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "elh",
+"value": "HC Litvínov",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "elh",
+"value": "HC Litvínov",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "elh",
+"value": "HC Oceláři Třinec",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "elh",
+"value": "HC Oceláři Třinec",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "elh",
+"value": "HC Olomouc",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "elh",
+"value": "HC Olomouc",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "elh",
+"value": "HC Sparta Praha",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "elh",
+"value": "HC Sparta Praha",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "elh",
+"value": "HC VÍTKOVICE RIDERA",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "elh",
+"value": "HC VÍTKOVICE RIDERA",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "elh",
+"value": "HC ŠKODA PLZEŇ",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "elh",
+"value": "HC ŠKODA PLZEŇ",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "elh",
+"value": "Mountfield HK, a.s.",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "elh",
+"value": "Mountfield HK, a.s.",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "elh",
+"value": "Rytíři Kladno",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "elh",
+"value": "Rytíři Kladno",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "elh",
+"value": "11",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "elh",
+"value": "11",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "elh",
+"value": "12",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "elh",
+"value": "12",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "elh",
+"value": "1711",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "elh",
+"value": "1711",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "elh",
+"value": "1721",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "elh",
+"value": "1721",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "elh",
+"value": "18",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "elh",
+"value": "18",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "elh",
+"value": "22",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "elh",
+"value": "22",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "elh",
+"value": "24",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "elh",
+"value": "24",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "elh",
+"value": "5",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "elh",
+"value": "5",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "elh",
+"value": "7",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "elh",
+"value": "7",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "elh",
+"value": "8",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "elh",
+"value": "8",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "elh",
+"value": "823",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "elh",
+"value": "823",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "elh",
+"value": "828",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "elh",
+"value": "828",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "elh",
+"value": "89",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "elh",
+"value": "89",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "elh",
+"value": "917",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "elh",
+"value": "917",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "euroleague",
+"value": "RheinEnergie",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "RheinEnergie",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "euroleague",
+"value": "Paris Basketball",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "Paris Basketball",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "euroleague",
+"value": "Benetton Basket",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "Benetton Basket",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "euroleague",
+"value": "Partizan Mozzart Bet Belgrade",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "Partizan Mozzart Bet Belgrade",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "euroleague",
+"value": "Cibona Zagreb",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "Cibona Zagreb",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "euroleague",
+"value": "Maroussi",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "Maroussi",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "euroleague",
+"value": "Zalgiris Kaunas",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "Zalgiris Kaunas",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "euroleague",
+"value": "Lokomotiv Kuban Krasnodar",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "Lokomotiv Kuban Krasnodar",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "euroleague",
+"value": "CSKA Moscow",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "CSKA Moscow",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "euroleague",
+"value": "Air Avellino",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "Air Avellino",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "euroleague",
+"value": "Ural Great",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "Ural Great",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "euroleague",
+"value": "Hapoel Jerusalem",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "Hapoel Jerusalem",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "euroleague",
+"value": "Cholet Basket",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "Cholet Basket",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "euroleague",
+"value": "Kinder London Towers",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "Kinder London Towers",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "euroleague",
+"value": "Climamio Bologna",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "Climamio Bologna",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "euroleague",
+"value": "Dynamo Moscow",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "Dynamo Moscow",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "euroleague",
+"value": "Muller Verona",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "Muller Verona",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "euroleague",
+"value": "Lugano Snakes",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "Lugano Snakes",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "euroleague",
+"value": "Zagreb",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "Zagreb",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "euroleague",
+"value": "PGE Turow Zgorzelec",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "PGE Turow Zgorzelec",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "euroleague",
+"value": "Herbalife Gran Canaria",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "Herbalife Gran Canaria",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "euroleague",
+"value": "Saint Petersburg Lions",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "Saint Petersburg Lions",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "euroleague",
+"value": "FC Bayern Munich",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "FC Bayern Munich",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "euroleague",
+"value": "Lottomatica Roma",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "Lottomatica Roma",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "euroleague",
+"value": "Idea Slask",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "Idea Slask",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "euroleague",
+"value": "Belgacom Spirou Charleroi",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "Belgacom Spirou Charleroi",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "euroleague",
+"value": "Besiktas Fuzul Istanbul",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "Besiktas Fuzul Istanbul",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "euroleague",
+"value": "Aris TT Bank",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "Aris TT Bank",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "euroleague",
+"value": "Panionios On Telecoms",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "Panionios On Telecoms",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "euroleague",
+"value": "AEK Athens",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "AEK Athens",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "euroleague",
+"value": "Elan Chalon-Sur-Saone",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "Elan Chalon-Sur-Saone",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "euroleague",
+"value": "Pau-Orthez",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "Pau-Orthez",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "euroleague",
+"value": "Opel Skyliners",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "Opel Skyliners",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "euroleague",
+"value": "Adecco Estudiantes",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "Adecco Estudiantes",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "euroleague",
+"value": "Chorale Roanne",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "Chorale Roanne",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "euroleague",
+"value": "Maccabi Rapyd Tel Aviv",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "Maccabi Rapyd Tel Aviv",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "euroleague",
+"value": "Khimki Moscow Region",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "Khimki Moscow Region",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "euroleague",
+"value": "Scavolini Pesaro",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "Scavolini Pesaro",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "euroleague",
+"value": "Virtus Bologna",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "Virtus Bologna",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "euroleague",
+"value": "SLUC Nancy",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "SLUC Nancy",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "euroleague",
+"value": "ROM",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "ROM",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "euroleague",
+"value": "PER",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "PER",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "euroleague",
+"value": "BUD",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "BUD",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "euroleague",
+"value": "PES",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "PES",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "euroleague",
+"value": "CTU",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "CTU",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "euroleague",
+"value": "NTR",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "NTR",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "euroleague",
+"value": "ZAL",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "ZAL",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "euroleague",
+"value": "NAN",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "NAN",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "euroleague",
+"value": "CHO",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "CHO",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "euroleague",
+"value": "BAM",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "BAM",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "euroleague",
+"value": "VER",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "VER",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "euroleague",
+"value": "LIE",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "LIE",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "euroleague",
+"value": "COL",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "COL",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "euroleague",
+"value": "MAD",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "MAD",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "euroleague",
+"value": "DAR",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "DAR",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "euroleague",
+"value": "FRA",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "FRA",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "euroleague",
+"value": "OLY",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "OLY",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "euroleague",
+"value": "NIK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "NIK",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "euroleague",
+"value": "ZAG",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "ZAG",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "euroleague",
+"value": "PAR",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "PAR",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "euroleague",
+"value": "LJU",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "LJU",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "euroleague",
+"value": "SIE",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "SIE",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "euroleague",
+"value": "JOV",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "JOV",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "euroleague",
+"value": "NAP",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "NAP",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "euroleague",
+"value": "LMG",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "LMG",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "euroleague",
+"value": "BIL",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "BIL",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "euroleague",
+"value": "CAN",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "CAN",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "euroleague",
+"value": "BAS",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "BAS",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "euroleague",
+"value": "PEM",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "PEM",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "euroleague",
+"value": "AEK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "AEK",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "euroleague",
+"value": "GSS",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "GSS",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "euroleague",
+"value": "PET",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "PET",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "euroleague",
+"value": "PAM",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "PAM",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "euroleague",
+"value": "AVE",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "AVE",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "euroleague",
+"value": "CSK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "CSK",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "euroleague",
+"value": "NIO",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "NIO",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "euroleague",
+"value": "LUG",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "LUG",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "euroleague",
+"value": "SOP",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "SOP",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "euroleague",
+"value": "WRO",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "WRO",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "euroleague",
+"value": "SAS",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "euroleague",
+"value": "SAS",
+"season": null,
+"id_system": "team_id"
+},
+{
 "league": "f1",
 "value": "Alfa Romeo",
 "season": null,
@@ -16862,6 +22526,966 @@
 {
 "league": "f1",
 "value": "williams",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "feb",
+"value": "PERFUMERIAS AVENIDA",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "PERFUMERIAS AVENIDA",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "feb",
+"value": "MOVISTAR ESTUDIANTES",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "MOVISTAR ESTUDIANTES",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "feb",
+"value": "C.B. NATURAVIA MORÓN",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "C.B. NATURAVIA MORÓN",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "feb",
+"value": "AIRCARGOBOOKING OURENSE",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "AIRCARGOBOOKING OURENSE",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "feb",
+"value": "CASADEMONT ZARAGOZA",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "CASADEMONT ZARAGOZA",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "feb",
+"value": "KUTXABANK ARASKI",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "KUTXABANK ARASKI",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "feb",
+"value": "VALENCIA B.C.",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "VALENCIA B.C.",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "feb",
+"value": "IDK EUSKOTREN",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "IDK EUSKOTREN",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "feb",
+"value": "C.B. PRAT",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "C.B. PRAT",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "feb",
+"value": "CADI LA SEU",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "CADI LA SEU",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "feb",
+"value": "SPAR GRAN CANARIA",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "SPAR GRAN CANARIA",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "feb",
+"value": "FIBWI MALLORCA BASQUET PALMA",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "FIBWI MALLORCA BASQUET PALMA",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "feb",
+"value": "ALBACETE BASKET",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "ALBACETE BASKET",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "feb",
+"value": "GRUPO URETA TIZONA BURGOS",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "GRUPO URETA TIZONA BURGOS",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "feb",
+"value": "C.B. ZARAGOZA",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "C.B. ZARAGOZA",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "feb",
+"value": "ALIMERKA OVIEDO BALONCESTO",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "ALIMERKA OVIEDO BALONCESTO",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "feb",
+"value": "INVERSUS GERNIKA BIZKAIA",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "INVERSUS GERNIKA BIZKAIA",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "feb",
+"value": "HOZONO GLOBAL JAIRIS",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "HOZONO GLOBAL JAIRIS",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "feb",
+"value": "UEMC REAL VALLADOLID BALONCESTO",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "UEMC REAL VALLADOLID BALONCESTO",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "feb",
+"value": "LONGEVIDA SAN PABLO BURGOS",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "LONGEVIDA SAN PABLO BURGOS",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "feb",
+"value": "DECOLOR FUNDACION GLOBALCAJA LA RODA",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "DECOLOR FUNDACION GLOBALCAJA LA RODA",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "feb",
+"value": "PERFUMERIAS AVENIDA",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "PERFUMERIAS AVENIDA",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "feb",
+"value": "CB ALMANSA CON AFANION",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "CB ALMANSA CON AFANION",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "feb",
+"value": "HESTIA MENORCA",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "HESTIA MENORCA",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "feb",
+"value": "CLÍNICA PONFERRADA SDP",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "CLÍNICA PONFERRADA SDP",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "feb",
+"value": "LIBERBANK OVIEDO BALONCESTO",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "LIBERBANK OVIEDO BALONCESTO",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "feb",
+"value": "CIUDAD MOLINA BASKET",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "CIUDAD MOLINA BASKET",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "feb",
+"value": "VALENCIA B.C.",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "VALENCIA B.C.",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "feb",
+"value": "LOINTEK GERNIKA BIZKAIA",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "LOINTEK GERNIKA BIZKAIA",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "feb",
+"value": "MOVISTAR ESTUDIANTES",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "MOVISTAR ESTUDIANTES",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "feb",
+"value": "LEYMA CORUÑA",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "LEYMA CORUÑA",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "feb",
+"value": "MELILLA CIUDAD DEL DEPORTE",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "MELILLA CIUDAD DEL DEPORTE",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "feb",
+"value": "INNOVA-TSN LEGANES",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "INNOVA-TSN LEGANES",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "feb",
+"value": "LOINTEK GERNIKA BIZKAIA",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "LOINTEK GERNIKA BIZKAIA",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "feb",
+"value": "BAXI FERROL",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "BAXI FERROL",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "feb",
+"value": "GRAN CANARIA",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "GRAN CANARIA",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "feb",
+"value": "CASADEMONT ZARAGOZA",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "CASADEMONT ZARAGOZA",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "feb",
+"value": "OCA GLOBAL - CBSALOU",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "OCA GLOBAL - CBSALOU",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "feb",
+"value": "SPAR GRAN CANARIA",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "SPAR GRAN CANARIA",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "feb",
+"value": "MOVISTAR ESTUDIANTES",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "MOVISTAR ESTUDIANTES",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "feb",
+"value": "951466",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "951466",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "feb",
+"value": "950776",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "950776",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "feb",
+"value": "1009929",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "1009929",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "feb",
+"value": "1008381",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "1008381",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "feb",
+"value": "848629",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "848629",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "feb",
+"value": "921660",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "921660",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "feb",
+"value": "981490",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "981490",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "feb",
+"value": "888285",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "888285",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "feb",
+"value": "1010207",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "1010207",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "feb",
+"value": "848397",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "848397",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "feb",
+"value": "981214",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "981214",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "feb",
+"value": "858054",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "858054",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "feb",
+"value": "1008400",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "1008400",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "feb",
+"value": "887605",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "887605",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "feb",
+"value": "1010324",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "1010324",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "feb",
+"value": "1008404",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "1008404",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "feb",
+"value": "921516",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "921516",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "feb",
+"value": "888095",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "888095",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "feb",
+"value": "981325",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "981325",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "feb",
+"value": "922533",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "922533",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "feb",
+"value": "857939",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "857939",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "feb",
+"value": "951408",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "951408",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "feb",
+"value": "848708",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "848708",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "feb",
+"value": "887941",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "887941",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "feb",
+"value": "857866",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "857866",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "feb",
+"value": "922184",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "922184",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "feb",
+"value": "848762",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "848762",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "feb",
+"value": "981431",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "981431",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "feb",
+"value": "922371",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "922371",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "feb",
+"value": "950810",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "950810",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "feb",
+"value": "922183",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "922183",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "feb",
+"value": "922724",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "922724",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "feb",
+"value": "889028",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "889028",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "feb",
+"value": "922519",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "922519",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "feb",
+"value": "1008971",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "1008971",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "feb",
+"value": "858110",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "858110",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "feb",
+"value": "848662",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "848662",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "feb",
+"value": "950871",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "950871",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "feb",
+"value": "981129",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "981129",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "feb",
+"value": "950692",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "feb",
+"value": "950692",
 "season": null,
 "id_system": "team_id"
 },
@@ -19746,6 +26370,1470 @@
 "id_system": "team_id"
 },
 {
+"league": "ha",
+"value": "AIK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "AIK",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ha",
+"value": "Almtuna IS",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "Almtuna IS",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ha",
+"value": "Asplöven HC",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "Asplöven HC",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ha",
+"value": "BIK Karlskoga",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "BIK Karlskoga",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ha",
+"value": "Borås HC",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "Borås HC",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ha",
+"value": "Brynäs IF",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "Brynäs IF",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ha",
+"value": "Djurgården Hockey",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "Djurgården Hockey",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ha",
+"value": "HC Vita Hästen",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "HC Vita Hästen",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ha",
+"value": "HV71",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "HV71",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ha",
+"value": "Hammarby IF",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "Hammarby IF",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ha",
+"value": "Huddinge IK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "Huddinge IK",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ha",
+"value": "IF Björklöven",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "IF Björklöven",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ha",
+"value": "IF Malmö Redhawks",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "IF Malmö Redhawks",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ha",
+"value": "IF Sundsvall Hockey",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "IF Sundsvall Hockey",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ha",
+"value": "IF Troja-Ljungby",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "IF Troja-Ljungby",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ha",
+"value": "IFK Arboga",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "IFK Arboga",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ha",
+"value": "IK Oskarshamn",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "IK Oskarshamn",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ha",
+"value": "IK Pantern",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "IK Pantern",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ha",
+"value": "Kalmar HC",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "Kalmar HC",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ha",
+"value": "Karlskrona HK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "Karlskrona HK",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ha",
+"value": "Kristianstads IK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "Kristianstads IK",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ha",
+"value": "Leksands IF",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "Leksands IF",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ha",
+"value": "Mariestad BoIS",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "Mariestad BoIS",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ha",
+"value": "MoDo Hockey",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "MoDo Hockey",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ha",
+"value": "Mora IK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "Mora IK",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ha",
+"value": "Nybro Vikings",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "Nybro Vikings",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ha",
+"value": "Nyköpings HK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "Nyköpings HK",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ha",
+"value": "Rögle BK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "Rögle BK",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ha",
+"value": "Skellefteå AIK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "Skellefteå AIK",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ha",
+"value": "Södertälje SK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "Södertälje SK",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ha",
+"value": "Timrå IK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "Timrå IK",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ha",
+"value": "Tingsryds AIF",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "Tingsryds AIF",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ha",
+"value": "Vimmerby Hockey",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "Vimmerby Hockey",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ha",
+"value": "Visby Roma HK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "Visby Roma HK",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ha",
+"value": "Väsby IK HK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "Väsby IK HK",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ha",
+"value": "Västerviks IK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "Västerviks IK",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ha",
+"value": "Västerås IK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "Västerås IK",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ha",
+"value": "Växjö Lakers",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "Växjö Lakers",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ha",
+"value": "Örebro Hockey",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "Örebro Hockey",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ha",
+"value": "Östersund IK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "Östersund IK",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ha",
+"value": "AHC",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "AHC",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ha",
+"value": "AIK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "AIK",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ha",
+"value": "AIS",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "AIS",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ha",
+"value": "ARB",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "ARB",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ha",
+"value": "BIF",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "BIF",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ha",
+"value": "BIK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "BIK",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ha",
+"value": "BOR",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "BOR",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ha",
+"value": "DIF",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "DIF",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ha",
+"value": "HIF",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "HIF",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ha",
+"value": "HUD",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "HUD",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ha",
+"value": "HV71",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "HV71",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ha",
+"value": "IFB",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "IFB",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ha",
+"value": "IFSH",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "IFSH",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ha",
+"value": "IKO",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "IKO",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ha",
+"value": "IKP",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "IKP",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ha",
+"value": "KHC",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "KHC",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ha",
+"value": "KHK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "KHK",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ha",
+"value": "KRI",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "KRI",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ha",
+"value": "LIF",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "LIF",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ha",
+"value": "MAR",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "MAR",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ha",
+"value": "MIF",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "MIF",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ha",
+"value": "MIK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "MIK",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ha",
+"value": "MODO",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "MODO",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ha",
+"value": "NHK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "NHK",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ha",
+"value": "NYB",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "NYB",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ha",
+"value": "OHK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "OHK",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ha",
+"value": "OSIK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "OSIK",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ha",
+"value": "RBK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "RBK",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ha",
+"value": "SAIK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "SAIK",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ha",
+"value": "SSK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "SSK",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ha",
+"value": "TAIF",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "TAIF",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ha",
+"value": "TIK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "TIK",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ha",
+"value": "TRO",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "TRO",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ha",
+"value": "VHC",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "VHC",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ha",
+"value": "VIK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "VIK",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ha",
+"value": "VIS",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "VIS",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ha",
+"value": "VIT",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "VIT",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ha",
+"value": "VLH",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "VLH",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ha",
+"value": "VSB",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "VSB",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ha",
+"value": "VVIK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ha",
+"value": "VVIK",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ibba",
+"value": "Bnei Penlink Herzliya",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "Bnei Penlink Herzliya",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ibba",
+"value": "Elitzur Netanya",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "Elitzur Netanya",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ibba",
+"value": "Hapoel Afula",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "Hapoel Afula",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ibba",
+"value": "Hapoel Alfi Benedek Galil Elion",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "Hapoel Alfi Benedek Galil Elion",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ibba",
+"value": "Hapoel Altshuler Shaham Beer Sheva/Dimona",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "Hapoel Altshuler Shaham Beer Sheva/Dimona",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ibba",
+"value": "Hapoel Gilat Telecom Haemek",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "Hapoel Gilat Telecom Haemek",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ibba",
+"value": "Hapoel IBI Tel Aviv",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "Hapoel IBI Tel Aviv",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ibba",
+"value": "Hapoel Irony Eilat",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "Hapoel Irony Eilat",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ibba",
+"value": "Hapoel Maoz Daniel Holon",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "Hapoel Maoz Daniel Holon",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ibba",
+"value": "Hapoel Midtown Jerusalem",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "Hapoel Midtown Jerusalem",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ibba",
+"value": "Hapoel Shoval Haifa",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "Hapoel Shoval Haifa",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ibba",
+"value": "Ironi Geshem Nahariya",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "Ironi Geshem Nahariya",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ibba",
+"value": "Ironi Hai Motors Ness Ziona",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "Ironi Hai Motors Ness Ziona",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ibba",
+"value": "Ironi Lati Kiryat Ata",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "Ironi Lati Kiryat Ata",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ibba",
+"value": "Maccabi Ashdod",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "Maccabi Ashdod",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ibba",
+"value": "Maccabi Cnaan Group Ramat Gan",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "Maccabi Cnaan Group Ramat Gan",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ibba",
+"value": "Maccabi Haifa",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "Maccabi Haifa",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ibba",
+"value": "Maccabi Kiryat Gat",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "Maccabi Kiryat Gat",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ibba",
+"value": "Maccabi Ra'ananna",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "Maccabi Ra'ananna",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ibba",
+"value": "Maccabi Rapyd Tel Aviv",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "Maccabi Rapyd Tel Aviv",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ibba",
+"value": "Maccabi Tapuzina Rishon LeZion",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "Maccabi Tapuzina Rishon LeZion",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "ibba",
+"value": "1",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "1",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ibba",
+"value": "10",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "10",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ibba",
+"value": "12",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "12",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ibba",
+"value": "13",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "13",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ibba",
+"value": "16",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "16",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ibba",
+"value": "17",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "17",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ibba",
+"value": "20",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "20",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ibba",
+"value": "22",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "22",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ibba",
+"value": "3",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "3",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ibba",
+"value": "31",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "31",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ibba",
+"value": "5",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "5",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ibba",
+"value": "50",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "50",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ibba",
+"value": "57",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "57",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ibba",
+"value": "58",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "58",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ibba",
+"value": "59",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "59",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ibba",
+"value": "6",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "6",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ibba",
+"value": "60",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "60",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ibba",
+"value": "61",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "61",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ibba",
+"value": "7",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "7",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ibba",
+"value": "8",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "8",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "ibba",
+"value": "9",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "ibba",
+"value": "9",
+"season": null,
+"id_system": "team_id"
+},
+{
 "league": "iihf",
 "value": "132244",
 "season": null,
@@ -20510,6 +28598,246 @@
 {
 "league": "iihf",
 "value": "79",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "kbl",
+"value": "ANYANG JUNG KWAN JANG RED BOOSTERS",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kbl",
+"value": "ANYANG JUNG KWAN JANG RED BOOSTERS",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "kbl",
+"value": "BUSAN KCC EGIS",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kbl",
+"value": "BUSAN KCC EGIS",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "kbl",
+"value": "CHANGWON LG SAKERS",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kbl",
+"value": "CHANGWON LG SAKERS",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "kbl",
+"value": "DAEGU KOREAGASCORPORATION PEGASUS",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kbl",
+"value": "DAEGU KOREAGASCORPORATION PEGASUS",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "kbl",
+"value": "GOYANG SONO SKY GUNNERS",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kbl",
+"value": "GOYANG SONO SKY GUNNERS",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "kbl",
+"value": "SEOUL SAMSUNG THUNDERS",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kbl",
+"value": "SEOUL SAMSUNG THUNDERS",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "kbl",
+"value": "SEOUL SK KNIGHTS",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kbl",
+"value": "SEOUL SK KNIGHTS",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "kbl",
+"value": "SUWON KT SONICBOOM",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kbl",
+"value": "SUWON KT SONICBOOM",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "kbl",
+"value": "ULSAN HYUNDAI MOBIS PHOEBUS",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kbl",
+"value": "ULSAN HYUNDAI MOBIS PHOEBUS",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "kbl",
+"value": "WONJU DB PROMY",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kbl",
+"value": "WONJU DB PROMY",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "kbl",
+"value": "06",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kbl",
+"value": "06",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "kbl",
+"value": "10",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kbl",
+"value": "10",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "kbl",
+"value": "16",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kbl",
+"value": "16",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "kbl",
+"value": "35",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kbl",
+"value": "35",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "kbl",
+"value": "50",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kbl",
+"value": "50",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "kbl",
+"value": "55",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kbl",
+"value": "55",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "kbl",
+"value": "60",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kbl",
+"value": "60",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "kbl",
+"value": "64",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kbl",
+"value": "64",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "kbl",
+"value": "66",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kbl",
+"value": "66",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "kbl",
+"value": "70",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kbl",
+"value": "70",
 "season": null,
 "id_system": "team_id"
 },
@@ -21342,6 +29670,270 @@
 "id_system": "team_id"
 },
 {
+"league": "kzs",
+"value": "Cedevita Olimpija",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kzs",
+"value": "Cedevita Olimpija",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "kzs",
+"value": "ECE Triglav Kranj",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kzs",
+"value": "ECE Triglav Kranj",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "kzs",
+"value": "GGD Šenčur",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kzs",
+"value": "GGD Šenčur",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "kzs",
+"value": "Gorica",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kzs",
+"value": "Gorica",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "kzs",
+"value": "Hopsi Polzela",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kzs",
+"value": "Hopsi Polzela",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "kzs",
+"value": "Kansai Helios Domžale",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kzs",
+"value": "Kansai Helios Domžale",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "kzs",
+"value": "Krka",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kzs",
+"value": "Krka",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "kzs",
+"value": "Perspektiva Ilirija",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kzs",
+"value": "Perspektiva Ilirija",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "kzs",
+"value": "Rogaška",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kzs",
+"value": "Rogaška",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "kzs",
+"value": "Thermana Laško",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kzs",
+"value": "Thermana Laško",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "kzs",
+"value": "Šentjur",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kzs",
+"value": "Šentjur",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "kzs",
+"value": "16",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kzs",
+"value": "16",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "kzs",
+"value": "223",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kzs",
+"value": "223",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "kzs",
+"value": "254",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kzs",
+"value": "254",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "kzs",
+"value": "26",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kzs",
+"value": "26",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "kzs",
+"value": "44",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kzs",
+"value": "44",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "kzs",
+"value": "46",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kzs",
+"value": "46",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "kzs",
+"value": "49",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kzs",
+"value": "49",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "kzs",
+"value": "55",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kzs",
+"value": "55",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "kzs",
+"value": "56",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kzs",
+"value": "56",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "kzs",
+"value": "59",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kzs",
+"value": "59",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "kzs",
+"value": "9",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "kzs",
+"value": "9",
+"season": null,
+"id_system": "team_id"
+},
+{
 "league": "lba",
 "value": "APU Old Wild West Udine",
 "season": null,
@@ -21914,6 +30506,798 @@
 {
 "league": "lba",
 "value": "82",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "lkl",
+"value": "Gargždai",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "lkl",
+"value": "Gargždai",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "lkl",
+"value": "Hipocredit",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "lkl",
+"value": "Hipocredit",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "lkl",
+"value": "Juventus",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "lkl",
+"value": "Juventus",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "lkl",
+"value": "Lietkabelis",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "lkl",
+"value": "Lietkabelis",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "lkl",
+"value": "Neptūnas",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "lkl",
+"value": "Neptūnas",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "lkl",
+"value": "Nevėžis-Paskolų klubas",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "lkl",
+"value": "Nevėžis-Paskolų klubas",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "lkl",
+"value": "Rytas",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "lkl",
+"value": "Rytas",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "lkl",
+"value": "Tauragė",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "lkl",
+"value": "Tauragė",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "lkl",
+"value": "Šiauliai",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "lkl",
+"value": "Šiauliai",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "lkl",
+"value": "Žalgiris",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "lkl",
+"value": "Žalgiris",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "lkl",
+"value": "10",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "lkl",
+"value": "10",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "lkl",
+"value": "11",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "lkl",
+"value": "11",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "lkl",
+"value": "12",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "lkl",
+"value": "12",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "lkl",
+"value": "3",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "lkl",
+"value": "3",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "lkl",
+"value": "4",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "lkl",
+"value": "4",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "lkl",
+"value": "41",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "lkl",
+"value": "41",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "lkl",
+"value": "5",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "lkl",
+"value": "5",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "lkl",
+"value": "6",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "lkl",
+"value": "6",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "lkl",
+"value": "60",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "lkl",
+"value": "60",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "lkl",
+"value": "61",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "lkl",
+"value": "61",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "magnus",
+"value": "Aigles de Nice",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "Aigles de Nice",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "magnus",
+"value": "Anglet Hormadi",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "Anglet Hormadi",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "magnus",
+"value": "Anglet Hormadi",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "Anglet Hormadi",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "magnus",
+"value": "Boxers de Bordeaux",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "Boxers de Bordeaux",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "magnus",
+"value": "Boxers de Bordeaux",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "Boxers de Bordeaux",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "magnus",
+"value": "Boxers de Bordeaux",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "Boxers de Bordeaux",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "magnus",
+"value": "Brûleurs de Loups de Grenoble",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "Brûleurs de Loups de Grenoble",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "magnus",
+"value": "Diables Rouges de Briançon",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "Diables Rouges de Briançon",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "magnus",
+"value": "Diables Rouges de Briançon",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "Diables Rouges de Briançon",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "magnus",
+"value": "Diables Rouges de Briançon",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "Diables Rouges de Briançon",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "magnus",
+"value": "Dragons de Rouen",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "Dragons de Rouen",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "magnus",
+"value": "Ducs d'Angers",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "Ducs d'Angers",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "magnus",
+"value": "Gothiques d'Amiens",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "Gothiques d'Amiens",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "magnus",
+"value": "Jokers de Cergy-Pontoise",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "Jokers de Cergy-Pontoise",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "magnus",
+"value": "Pionniers de Chamonix",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "Pionniers de Chamonix",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "magnus",
+"value": "Pionniers de Chamonix",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "Pionniers de Chamonix",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "magnus",
+"value": "Rapaces de Gap",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "Rapaces de Gap",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "magnus",
+"value": "Scorpions de Mulhouse",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "Scorpions de Mulhouse",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "magnus",
+"value": "Scorpions de Mulhouse",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "Scorpions de Mulhouse",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "magnus",
+"value": "Scorpions de Mulhouse",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "Scorpions de Mulhouse",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "magnus",
+"value": "Spartiates de Marseille",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "Spartiates de Marseille",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "magnus",
+"value": "Spartiates de Marseille",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "Spartiates de Marseille",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "magnus",
+"value": "Spartiates de Marseille",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "Spartiates de Marseille",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "magnus",
+"value": "1017",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "1017",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "magnus",
+"value": "103",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "103",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "magnus",
+"value": "1512",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "1512",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "magnus",
+"value": "1558",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "1558",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "magnus",
+"value": "1671",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "1671",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "magnus",
+"value": "1884",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "1884",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "magnus",
+"value": "2285",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "2285",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "magnus",
+"value": "253",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "253",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "magnus",
+"value": "3095",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "3095",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "magnus",
+"value": "327",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "327",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "magnus",
+"value": "33",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "33",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "magnus",
+"value": "3409",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "3409",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "magnus",
+"value": "345",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "345",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "magnus",
+"value": "366",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "366",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "magnus",
+"value": "423",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "423",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "magnus",
+"value": "472",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "472",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "magnus",
+"value": "529",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "529",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "magnus",
+"value": "553",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "553",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "magnus",
+"value": "611",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "611",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "magnus",
+"value": "75",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "75",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "magnus",
+"value": "779",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "779",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "magnus",
+"value": "894",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "894",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "magnus",
+"value": "990",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "magnus",
+"value": "990",
 "season": null,
 "id_system": "team_id"
 },
@@ -44954,6 +54338,630 @@
 {
 "league": "nbl",
 "value": "9",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "nbl_au",
+"value": "Adelaide 36ers",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "Adelaide 36ers",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "nbl_au",
+"value": "B League United",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "B League United",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "nbl_au",
+"value": "Brisbane Bullets",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "Brisbane Bullets",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "nbl_au",
+"value": "Cairns Taipans",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "Cairns Taipans",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "nbl_au",
+"value": "California Baptist University",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "California Baptist University",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "nbl_au",
+"value": "Chiba Jets",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "Chiba Jets",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "nbl_au",
+"value": "Illawarra Hawks",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "Illawarra Hawks",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "nbl_au",
+"value": "Illawarra Hawks",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "Illawarra Hawks",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "nbl_au",
+"value": "KK Partizan",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "KK Partizan",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "nbl_au",
+"value": "Melbourne United",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "Melbourne United",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "nbl_au",
+"value": "NBL1 North Select",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "NBL1 North Select",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "nbl_au",
+"value": "NBL1 South Select Team",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "NBL1 South Select Team",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "nbl_au",
+"value": "NBL1 West Select",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "NBL1 West Select",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "nbl_au",
+"value": "NZ Breakers",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "NZ Breakers",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "nbl_au",
+"value": "Nagoya Diamond Dolphins",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "Nagoya Diamond Dolphins",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "nbl_au",
+"value": "Panathinaikos BC Aktor",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "Panathinaikos BC Aktor",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "nbl_au",
+"value": "Perth Wildcats",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "Perth Wildcats",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "nbl_au",
+"value": "Ryukyu Golden Kings",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "Ryukyu Golden Kings",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "nbl_au",
+"value": "Shanghai Sharks",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "Shanghai Sharks",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "nbl_au",
+"value": "South East Melbourne Phoenix",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "South East Melbourne Phoenix",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "nbl_au",
+"value": "St Marys College",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "St Marys College",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "nbl_au",
+"value": "Sunrockers Shibuya",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "Sunrockers Shibuya",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "nbl_au",
+"value": "Sydney Kings",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "Sydney Kings",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "nbl_au",
+"value": "Tasmania JackJumpers",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "Tasmania JackJumpers",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "nbl_au",
+"value": "Townsville Crocodiles",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "Townsville Crocodiles",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "nbl_au",
+"value": "Yokohama B-Corsairs",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "Yokohama B-Corsairs",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "nbl_au",
+"value": "1c5f45fb-73e4-11f0-aa21-41ae7a480955",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "1c5f45fb-73e4-11f0-aa21-41ae7a480955",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "nbl_au",
+"value": "1d549ccd-5c76-11f0-b860-f99763e86280",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "1d549ccd-5c76-11f0-b860-f99763e86280",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "nbl_au",
+"value": "32183e31-8fcc-11f1-a493-870222930f0b",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "32183e31-8fcc-11f1-a493-870222930f0b",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "nbl_au",
+"value": "7f6f40ed-7110-11f1-8cb0-53c0e8cb873f",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "7f6f40ed-7110-11f1-8cb0-53c0e8cb873f",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "nbl_au",
+"value": "902cc282-5c76-11f0-a529-5babd99db2ce",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "902cc282-5c76-11f0-a529-5babd99db2ce",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "nbl_au",
+"value": "bed4fbfb-410c-11f0-aaa8-1b3c55488bbb",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "bed4fbfb-410c-11f0-aaa8-1b3c55488bbb",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "nbl_au",
+"value": "bedd705b-410c-11f0-8d69-1b3c55488bbb",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "bedd705b-410c-11f0-8d69-1b3c55488bbb",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "nbl_au",
+"value": "befee10a-410c-11f0-b3f4-1b3c55488bbb",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "befee10a-410c-11f0-b3f4-1b3c55488bbb",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "nbl_au",
+"value": "bf06cec9-410c-11f0-8100-1b3c55488bbb",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "bf06cec9-410c-11f0-8100-1b3c55488bbb",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "nbl_au",
+"value": "bf1e1ec9-8d63-11f0-aacb-178c47a9af89",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "bf1e1ec9-8d63-11f0-aacb-178c47a9af89",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "nbl_au",
+"value": "bf3d7137-410c-11f0-8229-1b3c55488bbb",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "bf3d7137-410c-11f0-8229-1b3c55488bbb",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "nbl_au",
+"value": "bf4129ff-410c-11f0-9033-1b3c55488bbb",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "bf4129ff-410c-11f0-9033-1b3c55488bbb",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "nbl_au",
+"value": "bf4cfb88-410c-11f0-82f6-1b3c55488bbb",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "bf4cfb88-410c-11f0-82f6-1b3c55488bbb",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "nbl_au",
+"value": "bf59b516-410c-11f0-abf1-1b3c55488bbb",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "bf59b516-410c-11f0-abf1-1b3c55488bbb",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "nbl_au",
+"value": "bf6cf4f0-410c-11f0-8107-1b3c55488bbb",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "bf6cf4f0-410c-11f0-8107-1b3c55488bbb",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "nbl_au",
+"value": "bf8c7fb4-410c-11f0-bd51-1b3c55488bbb",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "bf8c7fb4-410c-11f0-bd51-1b3c55488bbb",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "nbl_au",
+"value": "bf90ae8e-410c-11f0-adfd-1b3c55488bbb",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "bf90ae8e-410c-11f0-adfd-1b3c55488bbb",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "nbl_au",
+"value": "bfa778cb-410c-11f0-b867-1b3c55488bbb",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "bfa778cb-410c-11f0-b867-1b3c55488bbb",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "nbl_au",
+"value": "bfab212e-410c-11f0-b95c-1b3c55488bbb",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "bfab212e-410c-11f0-b95c-1b3c55488bbb",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "nbl_au",
+"value": "bfaec75a-410c-11f0-9a0d-1b3c55488bbb",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "bfaec75a-410c-11f0-9a0d-1b3c55488bbb",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "nbl_au",
+"value": "bfb28def-410c-11f0-b2ce-1b3c55488bbb",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "bfb28def-410c-11f0-b2ce-1b3c55488bbb",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "nbl_au",
+"value": "bfb698fa-410c-11f0-968e-1b3c55488bbb",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "bfb698fa-410c-11f0-968e-1b3c55488bbb",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "nbl_au",
+"value": "bfbabaef-410c-11f0-8429-1b3c55488bbb",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "bfbabaef-410c-11f0-8429-1b3c55488bbb",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "nbl_au",
+"value": "bfbe9c14-410c-11f0-9fa4-1b3c55488bbb",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "bfbe9c14-410c-11f0-9fa4-1b3c55488bbb",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "nbl_au",
+"value": "c01b5273-410c-11f0-a3e1-1b3c55488bbb",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "c01b5273-410c-11f0-a3e1-1b3c55488bbb",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "nbl_au",
+"value": "f73c9ef2-8d63-11f0-9aed-bd3107be424e",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "nbl_au",
+"value": "f73c9ef2-8d63-11f0-9aed-bd3107be424e",
 "season": null,
 "id_system": "team_id"
 },
@@ -68982,6 +78990,606 @@
 "id_system": "team_id"
 },
 {
+"league": "shl",
+"value": "AIK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "AIK",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "shl",
+"value": "Björklöven",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "Björklöven",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "shl",
+"value": "Brynäs IF",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "Brynäs IF",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "shl",
+"value": "Djurgårdens IF",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "Djurgårdens IF",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "shl",
+"value": "Frölunda HC",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "Frölunda HC",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "shl",
+"value": "Färjestad BK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "Färjestad BK",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "shl",
+"value": "HV71",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "HV71",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "shl",
+"value": "Hammarby Hockey",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "Hammarby Hockey",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "shl",
+"value": "IK Oskarshamn",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "IK Oskarshamn",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "shl",
+"value": "Karlskrona HK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "Karlskrona HK",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "shl",
+"value": "Leksands IF",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "Leksands IF",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "shl",
+"value": "Linköping HC",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "Linköping HC",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "shl",
+"value": "Luleå Hockey",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "Luleå Hockey",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "shl",
+"value": "Malmö Redhawks",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "Malmö Redhawks",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "shl",
+"value": "MoDo Hockey",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "MoDo Hockey",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "shl",
+"value": "Mora IK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "Mora IK",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "shl",
+"value": "Rögle BK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "Rögle BK",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "shl",
+"value": "Skellefteå AIK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "Skellefteå AIK",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "shl",
+"value": "Södertälje SK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "Södertälje SK",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "shl",
+"value": "Timrå IK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "Timrå IK",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "shl",
+"value": "Väsby Hockey",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "Väsby Hockey",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "shl",
+"value": "Västerås IK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "Västerås IK",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "shl",
+"value": "Växjö Lakers",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "Växjö Lakers",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "shl",
+"value": "Örebro Hockey",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "Örebro Hockey",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "shl",
+"value": "Örebro IK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "Örebro IK",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "shl",
+"value": "AIK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "AIK",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "shl",
+"value": "BIF",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "BIF",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "shl",
+"value": "DIF",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "DIF",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "shl",
+"value": "FBK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "FBK",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "shl",
+"value": "FHC",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "FHC",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "shl",
+"value": "HIF",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "HIF",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "shl",
+"value": "HV71",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "HV71",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "shl",
+"value": "IFB",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "IFB",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "shl",
+"value": "IKO",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "IKO",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "shl",
+"value": "KHK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "KHK",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "shl",
+"value": "LHC",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "LHC",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "shl",
+"value": "LHF",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "LHF",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "shl",
+"value": "LIF",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "LIF",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "shl",
+"value": "MIF",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "MIF",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "shl",
+"value": "MIK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "MIK",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "shl",
+"value": "MoDo",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "MoDo",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "shl",
+"value": "OIK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "OIK",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "shl",
+"value": "RBK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "RBK",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "shl",
+"value": "SKE",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "SKE",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "shl",
+"value": "SSK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "SSK",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "shl",
+"value": "TIK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "TIK",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "shl",
+"value": "VIK",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "VIK",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "shl",
+"value": "VLH",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "VLH",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "shl",
+"value": "VSB",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "VSB",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "shl",
+"value": "ÖRE",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "shl",
+"value": "ÖRE",
+"season": null,
+"id_system": "team_id"
+},
+{
 "league": "sjhl",
 "value": "10",
 "season": null,
@@ -74522,6 +85130,270 @@
 {
 "league": "vijhl",
 "value": "9",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "vtb",
+"value": "Avtodor",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "vtb",
+"value": "Avtodor",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "vtb",
+"value": "BETCITY PARMA",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "vtb",
+"value": "BETCITY PARMA",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "vtb",
+"value": "CSKA",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "vtb",
+"value": "CSKA",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "vtb",
+"value": "Dynamo",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "vtb",
+"value": "Dynamo",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "vtb",
+"value": "Enisey",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "vtb",
+"value": "Enisey",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "vtb",
+"value": "Lokomotiv Kuban",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "vtb",
+"value": "Lokomotiv Kuban",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "vtb",
+"value": "MBA",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "vtb",
+"value": "MBA",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "vtb",
+"value": "Samara",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "vtb",
+"value": "Samara",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "vtb",
+"value": "UNICS",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "vtb",
+"value": "UNICS",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "vtb",
+"value": "Uralmash",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "vtb",
+"value": "Uralmash",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "vtb",
+"value": "Zenit",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "vtb",
+"value": "Zenit",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "vtb",
+"value": "1390",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "vtb",
+"value": "1390",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "vtb",
+"value": "15",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "vtb",
+"value": "15",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "vtb",
+"value": "23358",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "vtb",
+"value": "23358",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "vtb",
+"value": "2650",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "vtb",
+"value": "2650",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "vtb",
+"value": "2747",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "vtb",
+"value": "2747",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "vtb",
+"value": "2792",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "vtb",
+"value": "2792",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "vtb",
+"value": "2994",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "vtb",
+"value": "2994",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "vtb",
+"value": "3059",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "vtb",
+"value": "3059",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "vtb",
+"value": "682",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "vtb",
+"value": "682",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "vtb",
+"value": "688",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "vtb",
+"value": "688",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "vtb",
+"value": "697",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "vtb",
+"value": "697",
 "season": null,
 "id_system": "team_id"
 },
@@ -81144,6 +92016,366 @@
 "id_system": "team_id"
 },
 {
+"league": "wjbl",
+"value": "ENEOSサンフラワーズ",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wjbl",
+"value": "ENEOSサンフラワーズ",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "wjbl",
+"value": "SMBC TOKYO SOLUA",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wjbl",
+"value": "SMBC TOKYO SOLUA",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "wjbl",
+"value": "アイシン ウィングス",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wjbl",
+"value": "アイシン ウィングス",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "wjbl",
+"value": "シャンソン化粧品 シャンソンVマジック",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wjbl",
+"value": "シャンソン化粧品 シャンソンVマジック",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "wjbl",
+"value": "デンソー アイリス",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wjbl",
+"value": "デンソー アイリス",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "wjbl",
+"value": "トヨタ紡織 サンシャインラビッツ",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wjbl",
+"value": "トヨタ紡織 サンシャインラビッツ",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "wjbl",
+"value": "トヨタ自動車 アンテロープス",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wjbl",
+"value": "トヨタ自動車 アンテロープス",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "wjbl",
+"value": "プレステージインターナショナル アランマーレ",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wjbl",
+"value": "プレステージインターナショナル アランマーレ",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "wjbl",
+"value": "三菱電機 コアラーズ",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wjbl",
+"value": "三菱電機 コアラーズ",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "wjbl",
+"value": "富士通 レッドウェーブ",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wjbl",
+"value": "富士通 レッドウェーブ",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "wjbl",
+"value": "山梨クィーンビーズ",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wjbl",
+"value": "山梨クィーンビーズ",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "wjbl",
+"value": "広島イーグレッツ",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wjbl",
+"value": "広島イーグレッツ",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "wjbl",
+"value": "新潟アルビレックスBBラビッツ",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wjbl",
+"value": "新潟アルビレックスBBラビッツ",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "wjbl",
+"value": "日立ハイテク クーガーズ",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wjbl",
+"value": "日立ハイテク クーガーズ",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "wjbl",
+"value": "東京羽田ヴィッキーズ",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wjbl",
+"value": "東京羽田ヴィッキーズ",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "wjbl",
+"value": "10",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wjbl",
+"value": "10",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "wjbl",
+"value": "11",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wjbl",
+"value": "11",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "wjbl",
+"value": "12",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wjbl",
+"value": "12",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "wjbl",
+"value": "13",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wjbl",
+"value": "13",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "wjbl",
+"value": "14",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wjbl",
+"value": "14",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "wjbl",
+"value": "16",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wjbl",
+"value": "16",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "wjbl",
+"value": "18",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wjbl",
+"value": "18",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "wjbl",
+"value": "204",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wjbl",
+"value": "204",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "wjbl",
+"value": "232",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wjbl",
+"value": "232",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "wjbl",
+"value": "26",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wjbl",
+"value": "26",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "wjbl",
+"value": "30",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wjbl",
+"value": "30",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "wjbl",
+"value": "31",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wjbl",
+"value": "31",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "wjbl",
+"value": "357",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wjbl",
+"value": "357",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "wjbl",
+"value": "36",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wjbl",
+"value": "36",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "wjbl",
+"value": "8",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wjbl",
+"value": "8",
+"season": null,
+"id_system": "team_id"
+},
+{
 "league": "wnba",
 "value": "ATL",
 "season": null,
@@ -84280,6 +95512,270 @@
 "value": "wnba.t.9",
 "season": null,
 "id_system": "yahoo"
+},
+{
+"league": "wnbl",
+"value": "Adelaide Lightning",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wnbl",
+"value": "Adelaide Lightning",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "wnbl",
+"value": "Bendigo Spirit",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wnbl",
+"value": "Bendigo Spirit",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "wnbl",
+"value": "Geelong Venom",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wnbl",
+"value": "Geelong Venom",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "wnbl",
+"value": "Hitachi High-Tech Cougars",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wnbl",
+"value": "Hitachi High-Tech Cougars",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "wnbl",
+"value": "Perth Lynx",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wnbl",
+"value": "Perth Lynx",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "wnbl",
+"value": "Southside Melbourne Flyers",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wnbl",
+"value": "Southside Melbourne Flyers",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "wnbl",
+"value": "Sydney Flames",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wnbl",
+"value": "Sydney Flames",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "wnbl",
+"value": "Tasmania Jewels",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wnbl",
+"value": "Tasmania Jewels",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "wnbl",
+"value": "Townsville Fire",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wnbl",
+"value": "Townsville Fire",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "wnbl",
+"value": "UC Capitals",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wnbl",
+"value": "UC Capitals",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "wnbl",
+"value": "WA All Stars",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wnbl",
+"value": "WA All Stars",
+"season": null,
+"id_system": "name"
+},
+{
+"league": "wnbl",
+"value": "17cd24e4-2bfe-11f1-857f-89f5905ce248",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wnbl",
+"value": "17cd24e4-2bfe-11f1-857f-89f5905ce248",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "wnbl",
+"value": "7146a2c3-9927-11f1-8d62-8f97f45d3bf8",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wnbl",
+"value": "7146a2c3-9927-11f1-8d62-8f97f45d3bf8",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "wnbl",
+"value": "e7cd9434-45e2-11f0-9c43-c5864f4b75a8",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wnbl",
+"value": "e7cd9434-45e2-11f0-9c43-c5864f4b75a8",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "wnbl",
+"value": "e7d138b4-45e2-11f0-b18b-c5864f4b75a8",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wnbl",
+"value": "e7d138b4-45e2-11f0-b18b-c5864f4b75a8",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "wnbl",
+"value": "e7d23ff3-b6e9-11f1-8ab9-afd612b3b190",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wnbl",
+"value": "e7d23ff3-b6e9-11f1-8ab9-afd612b3b190",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "wnbl",
+"value": "e7d4f3a7-45e2-11f0-9ce6-c5864f4b75a8",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wnbl",
+"value": "e7d4f3a7-45e2-11f0-9ce6-c5864f4b75a8",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "wnbl",
+"value": "e7dcb7e5-45e2-11f0-8342-c5864f4b75a8",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wnbl",
+"value": "e7dcb7e5-45e2-11f0-8342-c5864f4b75a8",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "wnbl",
+"value": "e7e7e83d-45e2-11f0-9e55-c5864f4b75a8",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wnbl",
+"value": "e7e7e83d-45e2-11f0-9e55-c5864f4b75a8",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "wnbl",
+"value": "e7eb9808-45e2-11f0-9481-c5864f4b75a8",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wnbl",
+"value": "e7eb9808-45e2-11f0-9481-c5864f4b75a8",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "wnbl",
+"value": "e7ef2142-45e2-11f0-a8b0-c5864f4b75a8",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wnbl",
+"value": "e7ef2142-45e2-11f0-a8b0-c5864f4b75a8",
+"season": null,
+"id_system": "team_id"
+},
+{
+"league": "wnbl",
+"value": "e7f2ce4b-45e2-11f0-b6e3-c5864f4b75a8",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "wnbl",
+"value": "e7f2ce4b-45e2-11f0-b6e3-c5864f4b75a8",
+"season": null,
+"id_system": "team_id"
 },
 {
 "league": "xfl",

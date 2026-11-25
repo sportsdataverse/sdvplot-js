@@ -199,6 +199,886 @@
 "secondary": "#fec526"
 },
 {
+"primary": "#b51217",
+"secondary": "#7c6162"
+},
+{
+"primary": "#b51217",
+"secondary": "#7c6162"
+},
+{
+"primary": "#ed1f24",
+"secondary": "#ede144"
+},
+{
+"primary": "#ed1f24",
+"secondary": "#ede144"
+},
+{
+"primary": "#f4ac1c",
+"secondary": "#67080a"
+},
+{
+"primary": "#f4ac1c",
+"secondary": "#67080a"
+},
+{
+"primary": "#f27005",
+"secondary": "#023c78"
+},
+{
+"primary": "#f27005",
+"secondary": "#023c78"
+},
+{
+"primary": "#ff6e00",
+"secondary": "#452711"
+},
+{
+"primary": "#ff6e00",
+"secondary": "#452711"
+},
+{
+"primary": "#00652e",
+"secondary": "#f58233"
+},
+{
+"primary": "#00652e",
+"secondary": "#f58233"
+},
+{
+"primary": "#ed1c24",
+"secondary": "#fabcbe"
+},
+{
+"primary": "#ed1c24",
+"secondary": "#fabcbe"
+},
+{
+"primary": "#eb1c27",
+"secondary": "#d2a96d"
+},
+{
+"primary": "#eb1c27",
+"secondary": "#d2a96d"
+},
+{
+"primary": "#8b6f4c",
+"secondary": "#4f555c"
+},
+{
+"primary": "#8b6f4c",
+"secondary": "#4f555c"
+},
+{
+"primary": "#9b073f",
+"secondary": "#ae9889"
+},
+{
+"primary": "#9b073f",
+"secondary": "#ae9889"
+},
+{
+"primary": "#006cad",
+"secondary": "#d2232a"
+},
+{
+"primary": "#006cad",
+"secondary": "#d2232a"
+},
+{
+"primary": "#ff9e18",
+"secondary": "#000000"
+},
+{
+"primary": "#ff9e18",
+"secondary": "#000000"
+},
+{
+"primary": "#95161f",
+"secondary": "#c37c57"
+},
+{
+"primary": "#95161f",
+"secondary": "#c37c57"
+},
+{
+"primary": "#1d2e6f",
+"secondary": "#78254c"
+},
+{
+"primary": "#1d2e6f",
+"secondary": "#78254c"
+},
+{
+"primary": "#ed1c24",
+"secondary": null
+},
+{
+"primary": "#ed1c24",
+"secondary": null
+},
+{
+"primary": "#002857",
+"secondary": "#fad61a"
+},
+{
+"primary": "#002857",
+"secondary": "#fad61a"
+},
+{
+"primary": "#05983f",
+"secondary": "#83c29c"
+},
+{
+"primary": "#05983f",
+"secondary": "#83c29c"
+},
+{
+"primary": "#2e3192",
+"secondary": "#7d7eba"
+},
+{
+"primary": "#2e3192",
+"secondary": "#7d7eba"
+},
+{
+"primary": "#ef3b6f",
+"secondary": "#fac2d2"
+},
+{
+"primary": "#ef3b6f",
+"secondary": "#fac2d2"
+},
+{
+"primary": "#0c4da2",
+"secondary": "#f5821f"
+},
+{
+"primary": "#0c4da2",
+"secondary": "#f5821f"
+},
+{
+"primary": "#886465",
+"secondary": "#82272a"
+},
+{
+"primary": "#886465",
+"secondary": "#82272a"
+},
+{
+"primary": "#00a7d7",
+"secondary": "#859fa7"
+},
+{
+"primary": "#00a7d7",
+"secondary": "#859fa7"
+},
+{
+"primary": "#e30010",
+"secondary": "#81494d"
+},
+{
+"primary": "#e30010",
+"secondary": "#81494d"
+},
+{
+"primary": "#0b3d68",
+"secondary": "#e29a46"
+},
+{
+"primary": "#0b3d68",
+"secondary": "#e29a46"
+},
+{
+"primary": "#7ac1f1",
+"secondary": "#6c7f9e"
+},
+{
+"primary": "#7ac1f1",
+"secondary": "#6c7f9e"
+},
+{
+"primary": "#9db9d8",
+"secondary": "#0966b1"
+},
+{
+"primary": "#9db9d8",
+"secondary": "#0966b1"
+},
+{
+"primary": "#f8b81f",
+"secondary": "#fbd57a"
+},
+{
+"primary": "#f8b81f",
+"secondary": "#fbd57a"
+},
+{
+"primary": "#2a5aa8",
+"secondary": "#6689c1"
+},
+{
+"primary": "#2a5aa8",
+"secondary": "#6689c1"
+},
+{
+"primary": "#15171c",
+"secondary": "#9a9a9b"
+},
+{
+"primary": "#15171c",
+"secondary": "#9a9a9b"
+},
+{
+"primary": "#004191",
+"secondary": "#d60014"
+},
+{
+"primary": "#004191",
+"secondary": "#d60014"
+},
+{
+"primary": "#f4ac1c",
+"secondary": "#67080a"
+},
+{
+"primary": "#f4ac1c",
+"secondary": "#67080a"
+},
+{
+"primary": "#05983f",
+"secondary": "#83c29c"
+},
+{
+"primary": "#05983f",
+"secondary": "#83c29c"
+},
+{
+"primary": "#15171c",
+"secondary": "#9a9a9b"
+},
+{
+"primary": "#15171c",
+"secondary": "#9a9a9b"
+},
+{
+"primary": "#b51217",
+"secondary": "#7c6162"
+},
+{
+"primary": "#b51217",
+"secondary": "#7c6162"
+},
+{
+"primary": "#7ac1f1",
+"secondary": "#6c7f9e"
+},
+{
+"primary": "#7ac1f1",
+"secondary": "#6c7f9e"
+},
+{
+"primary": "#f27005",
+"secondary": "#023c78"
+},
+{
+"primary": "#f27005",
+"secondary": "#023c78"
+},
+{
+"primary": "#9b073f",
+"secondary": "#ae9889"
+},
+{
+"primary": "#9b073f",
+"secondary": "#ae9889"
+},
+{
+"primary": "#eb1c27",
+"secondary": "#d2a96d"
+},
+{
+"primary": "#eb1c27",
+"secondary": "#d2a96d"
+},
+{
+"primary": "#ed1c24",
+"secondary": "#fabcbe"
+},
+{
+"primary": "#ed1c24",
+"secondary": "#fabcbe"
+},
+{
+"primary": "#ff9e18",
+"secondary": "#000000"
+},
+{
+"primary": "#ff9e18",
+"secondary": "#000000"
+},
+{
+"primary": "#95161f",
+"secondary": "#c37c57"
+},
+{
+"primary": "#95161f",
+"secondary": "#c37c57"
+},
+{
+"primary": "#886465",
+"secondary": "#82272a"
+},
+{
+"primary": "#886465",
+"secondary": "#82272a"
+},
+{
+"primary": "#ff6e00",
+"secondary": "#452711"
+},
+{
+"primary": "#ff6e00",
+"secondary": "#452711"
+},
+{
+"primary": "#004191",
+"secondary": "#d60014"
+},
+{
+"primary": "#004191",
+"secondary": "#d60014"
+},
+{
+"primary": "#1d2e6f",
+"secondary": "#78254c"
+},
+{
+"primary": "#1d2e6f",
+"secondary": "#78254c"
+},
+{
+"primary": "#2e3192",
+"secondary": "#7d7eba"
+},
+{
+"primary": "#2e3192",
+"secondary": "#7d7eba"
+},
+{
+"primary": "#ef3b6f",
+"secondary": "#fac2d2"
+},
+{
+"primary": "#ef3b6f",
+"secondary": "#fac2d2"
+},
+{
+"primary": "#2a5aa8",
+"secondary": "#6689c1"
+},
+{
+"primary": "#2a5aa8",
+"secondary": "#6689c1"
+},
+{
+"primary": "#0c4da2",
+"secondary": "#f5821f"
+},
+{
+"primary": "#0c4da2",
+"secondary": "#f5821f"
+},
+{
+"primary": "#ed1c24",
+"secondary": null
+},
+{
+"primary": "#ed1c24",
+"secondary": null
+},
+{
+"primary": "#e30010",
+"secondary": "#81494d"
+},
+{
+"primary": "#e30010",
+"secondary": "#81494d"
+},
+{
+"primary": "#ed1f24",
+"secondary": "#ede144"
+},
+{
+"primary": "#ed1f24",
+"secondary": "#ede144"
+},
+{
+"primary": "#002857",
+"secondary": "#fad61a"
+},
+{
+"primary": "#002857",
+"secondary": "#fad61a"
+},
+{
+"primary": "#006cad",
+"secondary": "#d2232a"
+},
+{
+"primary": "#006cad",
+"secondary": "#d2232a"
+},
+{
+"primary": "#00652e",
+"secondary": "#f58233"
+},
+{
+"primary": "#00652e",
+"secondary": "#f58233"
+},
+{
+"primary": "#f8b81f",
+"secondary": "#fbd57a"
+},
+{
+"primary": "#f8b81f",
+"secondary": "#fbd57a"
+},
+{
+"primary": "#0b3d68",
+"secondary": "#e29a46"
+},
+{
+"primary": "#0b3d68",
+"secondary": "#e29a46"
+},
+{
+"primary": "#9db9d8",
+"secondary": "#0966b1"
+},
+{
+"primary": "#9db9d8",
+"secondary": "#0966b1"
+},
+{
+"primary": "#00a7d7",
+"secondary": "#859fa7"
+},
+{
+"primary": "#00a7d7",
+"secondary": "#859fa7"
+},
+{
+"primary": "#8b6f4c",
+"secondary": "#4f555c"
+},
+{
+"primary": "#8b6f4c",
+"secondary": "#4f555c"
+},
+{
+"primary": "#0a1b29",
+"secondary": "#f07617"
+},
+{
+"primary": "#0a1b29",
+"secondary": "#f07617"
+},
+{
+"primary": "#00499c",
+"secondary": "#00583c"
+},
+{
+"primary": "#00499c",
+"secondary": "#00583c"
+},
+{
+"primary": "#deb400",
+"secondary": "#26377a"
+},
+{
+"primary": "#deb400",
+"secondary": "#26377a"
+},
+{
+"primary": "#ef7632",
+"secondary": "#1b3b70"
+},
+{
+"primary": "#ef7632",
+"secondary": "#1b3b70"
+},
+{
+"primary": "#570d2c",
+"secondary": "#fa1627"
+},
+{
+"primary": "#570d2c",
+"secondary": "#fa1627"
+},
+{
+"primary": "#ff1235",
+"secondary": "#431217"
+},
+{
+"primary": "#ff1235",
+"secondary": "#431217"
+},
+{
+"primary": "#ffb71a",
+"secondary": "#002856"
+},
+{
+"primary": "#ffb71a",
+"secondary": "#002856"
+},
+{
+"primary": "#f14f4e",
+"secondary": "#002d54"
+},
+{
+"primary": "#f14f4e",
+"secondary": "#002d54"
+},
+{
+"primary": "#f6101a",
+"secondary": "#ff9300"
+},
+{
+"primary": "#f6101a",
+"secondary": "#ff9300"
+},
+{
+"primary": "#001c3f",
+"secondary": "#e50e2a"
+},
+{
+"primary": "#001c3f",
+"secondary": "#e50e2a"
+},
+{
+"primary": "#0c79ac",
+"secondary": "#b29409"
+},
+{
+"primary": "#0c79ac",
+"secondary": "#b29409"
+},
+{
+"primary": "#002857",
+"secondary": "#e75200"
+},
+{
+"primary": "#002857",
+"secondary": "#e75200"
+},
+{
+"primary": "#c71128",
+"secondary": "#7d8aaa"
+},
+{
+"primary": "#c71128",
+"secondary": "#7d8aaa"
+},
+{
+"primary": "#49c5f1",
+"secondary": "#021b46"
+},
+{
+"primary": "#49c5f1",
+"secondary": "#021b46"
+},
+{
+"primary": "#0faae3",
+"secondary": "#ffffff"
+},
+{
+"primary": "#0faae3",
+"secondary": "#ffffff"
+},
+{
+"primary": "#008916",
+"secondary": "#f15814"
+},
+{
+"primary": "#008916",
+"secondary": "#f15814"
+},
+{
+"primary": "#004699",
+"secondary": "#fdbf00"
+},
+{
+"primary": "#004699",
+"secondary": "#fdbf00"
+},
+{
+"primary": "#ed711b",
+"secondary": "#0e65a1"
+},
+{
+"primary": "#ed711b",
+"secondary": "#0e65a1"
+},
+{
+"primary": "#0065a5",
+"secondary": "#ff2d30"
+},
+{
+"primary": "#0065a5",
+"secondary": "#ff2d30"
+},
+{
+"primary": "#000000",
+"secondary": "#878786"
+},
+{
+"primary": "#000000",
+"secondary": "#878786"
+},
+{
+"primary": "#002b60",
+"secondary": "#ffc000"
+},
+{
+"primary": "#002b60",
+"secondary": "#ffc000"
+},
+{
+"primary": "#005166",
+"secondary": "#00d100"
+},
+{
+"primary": "#005166",
+"secondary": "#00d100"
+},
+{
+"primary": "#ff6c00",
+"secondary": "#5598ab"
+},
+{
+"primary": "#ff6c00",
+"secondary": "#5598ab"
+},
+{
+"primary": "#552b7b",
+"secondary": "#fc7c04"
+},
+{
+"primary": "#552b7b",
+"secondary": "#fc7c04"
+},
+{
+"primary": "#c11c5d",
+"secondary": "#530a27"
+},
+{
+"primary": "#c11c5d",
+"secondary": "#530a27"
+},
+{
+"primary": "#f6101a",
+"secondary": "#ff9300"
+},
+{
+"primary": "#f6101a",
+"secondary": "#ff9300"
+},
+{
+"primary": "#002b60",
+"secondary": "#ffc000"
+},
+{
+"primary": "#002b60",
+"secondary": "#ffc000"
+},
+{
+"primary": "#ff6c00",
+"secondary": "#5598ab"
+},
+{
+"primary": "#ff6c00",
+"secondary": "#5598ab"
+},
+{
+"primary": "#005166",
+"secondary": "#00d100"
+},
+{
+"primary": "#005166",
+"secondary": "#00d100"
+},
+{
+"primary": "#008916",
+"secondary": "#f15814"
+},
+{
+"primary": "#008916",
+"secondary": "#f15814"
+},
+{
+"primary": "#570d2c",
+"secondary": "#fa1627"
+},
+{
+"primary": "#570d2c",
+"secondary": "#fa1627"
+},
+{
+"primary": "#ef7632",
+"secondary": "#1b3b70"
+},
+{
+"primary": "#ef7632",
+"secondary": "#1b3b70"
+},
+{
+"primary": "#deb400",
+"secondary": "#26377a"
+},
+{
+"primary": "#deb400",
+"secondary": "#26377a"
+},
+{
+"primary": "#49c5f1",
+"secondary": "#021b46"
+},
+{
+"primary": "#49c5f1",
+"secondary": "#021b46"
+},
+{
+"primary": "#0065a5",
+"secondary": "#ff2d30"
+},
+{
+"primary": "#0065a5",
+"secondary": "#ff2d30"
+},
+{
+"primary": "#0c79ac",
+"secondary": "#b29409"
+},
+{
+"primary": "#0c79ac",
+"secondary": "#b29409"
+},
+{
+"primary": "#001c3f",
+"secondary": "#e50e2a"
+},
+{
+"primary": "#001c3f",
+"secondary": "#e50e2a"
+},
+{
+"primary": "#000000",
+"secondary": "#878786"
+},
+{
+"primary": "#000000",
+"secondary": "#878786"
+},
+{
+"primary": "#ffb71a",
+"secondary": "#002856"
+},
+{
+"primary": "#ffb71a",
+"secondary": "#002856"
+},
+{
+"primary": "#ed711b",
+"secondary": "#0e65a1"
+},
+{
+"primary": "#ed711b",
+"secondary": "#0e65a1"
+},
+{
+"primary": "#c71128",
+"secondary": "#7d8aaa"
+},
+{
+"primary": "#c71128",
+"secondary": "#7d8aaa"
+},
+{
+"primary": "#f14f4e",
+"secondary": "#002d54"
+},
+{
+"primary": "#f14f4e",
+"secondary": "#002d54"
+},
+{
+"primary": "#ff1235",
+"secondary": "#431217"
+},
+{
+"primary": "#ff1235",
+"secondary": "#431217"
+},
+{
+"primary": "#0faae3",
+"secondary": "#ffffff"
+},
+{
+"primary": "#0faae3",
+"secondary": "#ffffff"
+},
+{
+"primary": "#552b7b",
+"secondary": "#fc7c04"
+},
+{
+"primary": "#552b7b",
+"secondary": "#fc7c04"
+},
+{
+"primary": "#002857",
+"secondary": "#e75200"
+},
+{
+"primary": "#002857",
+"secondary": "#e75200"
+},
+{
+"primary": "#c11c5d",
+"secondary": "#530a27"
+},
+{
+"primary": "#c11c5d",
+"secondary": "#530a27"
+},
+{
+"primary": "#0a1b29",
+"secondary": "#f07617"
+},
+{
+"primary": "#0a1b29",
+"secondary": "#f07617"
+},
+{
+"primary": "#00499c",
+"secondary": "#00583c"
+},
+{
+"primary": "#00499c",
+"secondary": "#00583c"
+},
+{
+"primary": "#004699",
+"secondary": "#fdbf00"
+},
+{
+"primary": "#004699",
+"secondary": "#fdbf00"
+},
+{
 "primary": "#cb0211",
 "secondary": "#a3693a"
 },
@@ -1567,6 +2447,646 @@
 "secondary": "#246191"
 },
 {
+"primary": "#b5176a",
+"secondary": "#000000"
+},
+{
+"primary": "#b5176a",
+"secondary": "#000000"
+},
+{
+"primary": "#32120b",
+"secondary": "#bb100c"
+},
+{
+"primary": "#32120b",
+"secondary": "#bb100c"
+},
+{
+"primary": "#e5032f",
+"secondary": "#513739"
+},
+{
+"primary": "#e5032f",
+"secondary": "#513739"
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#013d69",
+"secondary": "#547a8e"
+},
+{
+"primary": "#013d69",
+"secondary": "#547a8e"
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#e2031b",
+"secondary": "#43161b"
+},
+{
+"primary": "#e2031b",
+"secondary": "#43161b"
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#ffdd00",
+"secondary": "#3c4455"
+},
+{
+"primary": "#ffdd00",
+"secondary": "#3c4455"
+},
+{
+"primary": "#b80027",
+"secondary": "#da93a2"
+},
+{
+"primary": "#b80027",
+"secondary": "#da93a2"
+},
+{
+"primary": "#511236",
+"secondary": "#c0cb81"
+},
+{
+"primary": "#511236",
+"secondary": "#c0cb81"
+},
+{
+"primary": "#ea7403",
+"secondary": "#9f1830"
+},
+{
+"primary": "#ea7403",
+"secondary": "#9f1830"
+},
+{
+"primary": "#bf9d5a",
+"secondary": "#746240"
+},
+{
+"primary": "#bf9d5a",
+"secondary": "#746240"
+},
+{
+"primary": "#ec6c1c",
+"secondary": "#e78f52"
+},
+{
+"primary": "#ec6c1c",
+"secondary": "#e78f52"
+},
+{
+"primary": "#0095d6",
+"secondary": "#005c83"
+},
+{
+"primary": "#0095d6",
+"secondary": "#005c83"
+},
+{
+"primary": "#df0613",
+"secondary": "#4d292b"
+},
+{
+"primary": "#df0613",
+"secondary": "#4d292b"
+},
+{
+"primary": "#0076be",
+"secondary": "#e54316"
+},
+{
+"primary": "#0076be",
+"secondary": "#e54316"
+},
+{
+"primary": "#64267f",
+"secondary": "#ccc8cd"
+},
+{
+"primary": "#64267f",
+"secondary": "#ccc8cd"
+},
+{
+"primary": "#003157",
+"secondary": "#b8113f"
+},
+{
+"primary": "#003157",
+"secondary": "#b8113f"
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#fbd714",
+"secondary": "#a28f63"
+},
+{
+"primary": "#fbd714",
+"secondary": "#a28f63"
+},
+{
+"primary": "#c9b89a",
+"secondary": "#6c615d"
+},
+{
+"primary": "#c9b89a",
+"secondary": "#6c615d"
+},
+{
+"primary": "#f3a83a",
+"secondary": "#e75919"
+},
+{
+"primary": "#f3a83a",
+"secondary": "#e75919"
+},
+{
+"primary": "#c43a2f",
+"secondary": "#4881a8"
+},
+{
+"primary": "#c43a2f",
+"secondary": "#4881a8"
+},
+{
+"primary": "#e95c0e",
+"secondary": "#003f89"
+},
+{
+"primary": "#e95c0e",
+"secondary": "#003f89"
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#033255",
+"secondary": "#4b6273"
+},
+{
+"primary": "#033255",
+"secondary": "#4b6273"
+},
+{
+"primary": "#eb7221",
+"secondary": "#225097"
+},
+{
+"primary": "#eb7221",
+"secondary": "#225097"
+},
+{
+"primary": "#002652",
+"secondary": "#ffd91a"
+},
+{
+"primary": "#002652",
+"secondary": "#ffd91a"
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#471f06",
+"secondary": "#e3001a"
+},
+{
+"primary": "#471f06",
+"secondary": "#e3001a"
+},
+{
+"primary": "#c4c84d",
+"secondary": "#d61920"
+},
+{
+"primary": "#c4c84d",
+"secondary": "#d61920"
+},
+{
+"primary": "#ed7002",
+"secondary": "#c69972"
+},
+{
+"primary": "#ed7002",
+"secondary": "#c69972"
+},
+{
+"primary": "#0a0b14",
+"secondary": "#7c7c7f"
+},
+{
+"primary": "#0a0b14",
+"secondary": "#7c7c7f"
+},
+{
+"primary": "#0e366b",
+"secondary": "#11122e"
+},
+{
+"primary": "#0e366b",
+"secondary": "#11122e"
+},
+{
+"primary": "#016bb6",
+"secondary": "#1b3c58"
+},
+{
+"primary": "#016bb6",
+"secondary": "#1b3c58"
+},
+{
+"primary": "#016bb6",
+"secondary": "#1b3c58"
+},
+{
+"primary": "#016bb6",
+"secondary": "#1b3c58"
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#f1b526",
+"secondary": "#574726"
+},
+{
+"primary": "#f1b526",
+"secondary": "#574726"
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#0a0b14",
+"secondary": "#7c7c7f"
+},
+{
+"primary": "#0a0b14",
+"secondary": "#7c7c7f"
+},
+{
+"primary": "#c4c84d",
+"secondary": "#d61920"
+},
+{
+"primary": "#c4c84d",
+"secondary": "#d61920"
+},
+{
+"primary": "#b5176a",
+"secondary": "#000000"
+},
+{
+"primary": "#b5176a",
+"secondary": "#000000"
+},
+{
+"primary": "#ecbc9a",
+"secondary": "#f37920"
+},
+{
+"primary": "#ecbc9a",
+"secondary": "#f37920"
+},
+{
+"primary": "#b80027",
+"secondary": "#da93a2"
+},
+{
+"primary": "#b80027",
+"secondary": "#da93a2"
+},
+{
+"primary": "#32120b",
+"secondary": "#bb100c"
+},
+{
+"primary": "#32120b",
+"secondary": "#bb100c"
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#fdc301",
+"secondary": "#423f33"
+},
+{
+"primary": "#fdc301",
+"secondary": "#423f33"
+},
+{
+"primary": "#e5032f",
+"secondary": "#513739"
+},
+{
+"primary": "#e5032f",
+"secondary": "#513739"
+},
+{
+"primary": "#c9b89a",
+"secondary": "#6c615d"
+},
+{
+"primary": "#c9b89a",
+"secondary": "#6c615d"
+},
+{
+"primary": "#003157",
+"secondary": "#b8113f"
+},
+{
+"primary": "#003157",
+"secondary": "#b8113f"
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#1a2f63",
+"secondary": "#f9aa02"
+},
+{
+"primary": "#1a2f63",
+"secondary": "#f9aa02"
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#033255",
+"secondary": "#4b6273"
+},
+{
+"primary": "#033255",
+"secondary": "#4b6273"
+},
+{
+"primary": "#ffdd00",
+"secondary": "#3c4455"
+},
+{
+"primary": "#ffdd00",
+"secondary": "#3c4455"
+},
+{
+"primary": "#0e366b",
+"secondary": "#11122e"
+},
+{
+"primary": "#0e366b",
+"secondary": "#11122e"
+},
+{
+"primary": "#eb7221",
+"secondary": "#225097"
+},
+{
+"primary": "#eb7221",
+"secondary": "#225097"
+},
+{
+"primary": "#ed7002",
+"secondary": "#c69972"
+},
+{
+"primary": "#ed7002",
+"secondary": "#c69972"
+},
+{
+"primary": "#fbd714",
+"secondary": "#a28f63"
+},
+{
+"primary": "#fbd714",
+"secondary": "#a28f63"
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#471f06",
+"secondary": "#e3001a"
+},
+{
+"primary": "#471f06",
+"secondary": "#e3001a"
+},
+{
+"primary": "#5376e8",
+"secondary": "#ed0036"
+},
+{
+"primary": "#5376e8",
+"secondary": "#ed0036"
+},
+{
+"primary": "#0076be",
+"secondary": "#e54316"
+},
+{
+"primary": "#0076be",
+"secondary": "#e54316"
+},
+{
+"primary": "#014721",
+"secondary": "#f0a13c"
+},
+{
+"primary": "#014721",
+"secondary": "#f0a13c"
+},
+{
+"primary": "#511236",
+"secondary": "#c0cb81"
+},
+{
+"primary": "#511236",
+"secondary": "#c0cb81"
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#80ffcc",
+"secondary": null
+},
+{
+"primary": "#f3a83a",
+"secondary": "#e75919"
+},
+{
+"primary": "#f3a83a",
+"secondary": "#e75919"
+},
+{
+"primary": "#0095d6",
+"secondary": "#005c83"
+},
+{
+"primary": "#0095d6",
+"secondary": "#005c83"
+},
+{
+"primary": "#df0613",
+"secondary": "#4d292b"
+},
+{
+"primary": "#df0613",
+"secondary": "#4d292b"
+},
+{
+"primary": "#c43a2f",
+"secondary": "#4881a8"
+},
+{
+"primary": "#c43a2f",
+"secondary": "#4881a8"
+},
+{
 "primary": "#0a233f",
 "secondary": "#cf202f"
 },
@@ -2117,6 +3637,1014 @@
 {
 "primary": "#c3c5c6",
 "secondary": "#050708"
+},
+{
+"primary": "#103f98",
+"secondary": "#ea5404"
+},
+{
+"primary": "#103f98",
+"secondary": "#ea5404"
+},
+{
+"primary": "#1e2571",
+"secondary": "#5e6399"
+},
+{
+"primary": "#1e2571",
+"secondary": "#5e6399"
+},
+{
+"primary": "#0995ac",
+"secondary": "#1d1410"
+},
+{
+"primary": "#0995ac",
+"secondary": "#1d1410"
+},
+{
+"primary": "#e60321",
+"secondary": "#04328f"
+},
+{
+"primary": "#e60321",
+"secondary": "#04328f"
+},
+{
+"primary": "#e60020",
+"secondary": null
+},
+{
+"primary": "#e60020",
+"secondary": null
+},
+{
+"primary": "#002855",
+"secondary": "#ae9859"
+},
+{
+"primary": "#002855",
+"secondary": "#ae9859"
+},
+{
+"primary": "#e60012",
+"secondary": "#dfb664"
+},
+{
+"primary": "#e60012",
+"secondary": "#dfb664"
+},
+{
+"primary": "#3bbbee",
+"secondary": "#24414d"
+},
+{
+"primary": "#3bbbee",
+"secondary": "#24414d"
+},
+{
+"primary": "#90c31f",
+"secondary": null
+},
+{
+"primary": "#90c31f",
+"secondary": null
+},
+{
+"primary": "#0a132e",
+"secondary": null
+},
+{
+"primary": "#0a132e",
+"secondary": null
+},
+{
+"primary": "#03388a",
+"secondary": "#648ec4"
+},
+{
+"primary": "#03388a",
+"secondary": "#648ec4"
+},
+{
+"primary": "#8f0038",
+"secondary": "#b99330"
+},
+{
+"primary": "#8f0038",
+"secondary": "#b99330"
+},
+{
+"primary": "#009bc0",
+"secondary": "#d24795"
+},
+{
+"primary": "#009bc0",
+"secondary": "#d24795"
+},
+{
+"primary": "#ed6d00",
+"secondary": "#8e3b05"
+},
+{
+"primary": "#ed6d00",
+"secondary": "#8e3b05"
+},
+{
+"primary": "#e60017",
+"secondary": "#d79b77"
+},
+{
+"primary": "#e60017",
+"secondary": "#d79b77"
+},
+{
+"primary": "#e96003",
+"secondary": "#004096"
+},
+{
+"primary": "#e96003",
+"secondary": "#004096"
+},
+{
+"primary": "#005bac",
+"secondary": null
+},
+{
+"primary": "#005bac",
+"secondary": null
+},
+{
+"primary": "#e50020",
+"secondary": "#dc9596"
+},
+{
+"primary": "#e50020",
+"secondary": "#dc9596"
+},
+{
+"primary": "#fccb00",
+"secondary": null
+},
+{
+"primary": "#fccb00",
+"secondary": null
+},
+{
+"primary": "#042275",
+"secondary": "#c6763a"
+},
+{
+"primary": "#042275",
+"secondary": "#c6763a"
+},
+{
+"primary": "#5a83af",
+"secondary": "#1d4979"
+},
+{
+"primary": "#5a83af",
+"secondary": "#1d4979"
+},
+{
+"primary": "#0055a2",
+"secondary": "#cf000d"
+},
+{
+"primary": "#0055a2",
+"secondary": "#cf000d"
+},
+{
+"primary": "#e60012",
+"secondary": "#ec404d"
+},
+{
+"primary": "#e60012",
+"secondary": "#ec404d"
+},
+{
+"primary": "#006d3b",
+"secondary": "#ffffff"
+},
+{
+"primary": "#006d3b",
+"secondary": "#ffffff"
+},
+{
+"primary": "#3f2573",
+"secondary": "#a28870"
+},
+{
+"primary": "#3f2573",
+"secondary": "#a28870"
+},
+{
+"primary": "#043457",
+"secondary": "#fed900"
+},
+{
+"primary": "#043457",
+"secondary": "#fed900"
+},
+{
+"primary": "#02409a",
+"secondary": "#ea5404"
+},
+{
+"primary": "#02409a",
+"secondary": "#ea5404"
+},
+{
+"primary": "#ed6d00",
+"secondary": "#b18407"
+},
+{
+"primary": "#ed6d00",
+"secondary": "#b18407"
+},
+{
+"primary": "#665744",
+"secondary": "#eb1161"
+},
+{
+"primary": "#665744",
+"secondary": "#eb1161"
+},
+{
+"primary": "#d0d521",
+"secondary": "#4a4317"
+},
+{
+"primary": "#d0d521",
+"secondary": "#4a4317"
+},
+{
+"primary": "#dc4713",
+"secondary": "#f2b9a5"
+},
+{
+"primary": "#dc4713",
+"secondary": "#f2b9a5"
+},
+{
+"primary": "#988566",
+"secondary": "#ffe100"
+},
+{
+"primary": "#988566",
+"secondary": "#ffe100"
+},
+{
+"primary": "#1d2088",
+"secondary": "#974697"
+},
+{
+"primary": "#1d2088",
+"secondary": "#974697"
+},
+{
+"primary": "#000000",
+"secondary": "#bfc0c0"
+},
+{
+"primary": "#000000",
+"secondary": "#bfc0c0"
+},
+{
+"primary": "#00383a",
+"secondary": "#285d5e"
+},
+{
+"primary": "#00383a",
+"secondary": "#285d5e"
+},
+{
+"primary": "#0e4b30",
+"secondary": "#678475"
+},
+{
+"primary": "#0e4b30",
+"secondary": "#678475"
+},
+{
+"primary": "#da091d",
+"secondary": "#1b1b1b"
+},
+{
+"primary": "#da091d",
+"secondary": "#1b1b1b"
+},
+{
+"primary": "#d1ba5a",
+"secondary": null
+},
+{
+"primary": "#d1ba5a",
+"secondary": null
+},
+{
+"primary": "#004280",
+"secondary": null
+},
+{
+"primary": "#004280",
+"secondary": null
+},
+{
+"primary": "#d70c19",
+"secondary": "#b09b6d"
+},
+{
+"primary": "#d70c19",
+"secondary": "#b09b6d"
+},
+{
+"primary": "#5a83af",
+"secondary": "#1d4979"
+},
+{
+"primary": "#5a83af",
+"secondary": "#1d4979"
+},
+{
+"primary": "#e60012",
+"secondary": "#000000"
+},
+{
+"primary": "#e60012",
+"secondary": "#000000"
+},
+{
+"primary": "#3bbbee",
+"secondary": "#24414d"
+},
+{
+"primary": "#3bbbee",
+"secondary": "#24414d"
+},
+{
+"primary": "#e60012",
+"secondary": "#dfb664"
+},
+{
+"primary": "#e60012",
+"secondary": "#dfb664"
+},
+{
+"primary": "#d0d521",
+"secondary": "#4a4317"
+},
+{
+"primary": "#d0d521",
+"secondary": "#4a4317"
+},
+{
+"primary": "#0b308e",
+"secondary": "#e50012"
+},
+{
+"primary": "#0b308e",
+"secondary": "#e50012"
+},
+{
+"primary": "#e60321",
+"secondary": "#04328f"
+},
+{
+"primary": "#e60321",
+"secondary": "#04328f"
+},
+{
+"primary": "#006d3b",
+"secondary": "#ffffff"
+},
+{
+"primary": "#006d3b",
+"secondary": "#ffffff"
+},
+{
+"primary": "#1e2571",
+"secondary": "#5e6399"
+},
+{
+"primary": "#1e2571",
+"secondary": "#5e6399"
+},
+{
+"primary": "#002855",
+"secondary": "#ae9859"
+},
+{
+"primary": "#002855",
+"secondary": "#ae9859"
+},
+{
+"primary": "#d1ba5a",
+"secondary": null
+},
+{
+"primary": "#d1ba5a",
+"secondary": null
+},
+{
+"primary": "#03388a",
+"secondary": "#648ec4"
+},
+{
+"primary": "#03388a",
+"secondary": "#648ec4"
+},
+{
+"primary": "#103f98",
+"secondary": "#ea5404"
+},
+{
+"primary": "#103f98",
+"secondary": "#ea5404"
+},
+{
+"primary": "#1d2088",
+"secondary": "#974697"
+},
+{
+"primary": "#1d2088",
+"secondary": "#974697"
+},
+{
+"primary": "#ef2c19",
+"secondary": "#9c2d24"
+},
+{
+"primary": "#ef2c19",
+"secondary": "#9c2d24"
+},
+{
+"primary": "#e60017",
+"secondary": "#d79b77"
+},
+{
+"primary": "#e60017",
+"secondary": "#d79b77"
+},
+{
+"primary": "#000000",
+"secondary": "#bfc0c0"
+},
+{
+"primary": "#000000",
+"secondary": "#bfc0c0"
+},
+{
+"primary": "#e96003",
+"secondary": "#004096"
+},
+{
+"primary": "#e96003",
+"secondary": "#004096"
+},
+{
+"primary": "#0055a2",
+"secondary": "#cf000d"
+},
+{
+"primary": "#0055a2",
+"secondary": "#cf000d"
+},
+{
+"primary": "#f39800",
+"secondary": "#39659a"
+},
+{
+"primary": "#f39800",
+"secondary": "#39659a"
+},
+{
+"primary": "#070d28",
+"secondary": null
+},
+{
+"primary": "#070d28",
+"secondary": null
+},
+{
+"primary": "#98866e",
+"secondary": "#625041"
+},
+{
+"primary": "#98866e",
+"secondary": "#625041"
+},
+{
+"primary": "#1bc3f5",
+"secondary": "#052831"
+},
+{
+"primary": "#1bc3f5",
+"secondary": "#052831"
+},
+{
+"primary": "#0e4b30",
+"secondary": "#678475"
+},
+{
+"primary": "#0e4b30",
+"secondary": "#678475"
+},
+{
+"primary": "#988566",
+"secondary": "#ffe100"
+},
+{
+"primary": "#988566",
+"secondary": "#ffe100"
+},
+{
+"primary": "#005bac",
+"secondary": null
+},
+{
+"primary": "#005bac",
+"secondary": null
+},
+{
+"primary": "#18469d",
+"secondary": "#b48360"
+},
+{
+"primary": "#18469d",
+"secondary": "#b48360"
+},
+{
+"primary": "#22345a",
+"secondary": null
+},
+{
+"primary": "#22345a",
+"secondary": null
+},
+{
+"primary": "#8f0038",
+"secondary": "#b99330"
+},
+{
+"primary": "#8f0038",
+"secondary": "#b99330"
+},
+{
+"primary": "#ed6d00",
+"secondary": "#b18407"
+},
+{
+"primary": "#ed6d00",
+"secondary": "#b18407"
+},
+{
+"primary": "#0b1332",
+"secondary": "#d9000c"
+},
+{
+"primary": "#0b1332",
+"secondary": "#d9000c"
+},
+{
+"primary": "#f39800",
+"secondary": "#c00613"
+},
+{
+"primary": "#f39800",
+"secondary": "#c00613"
+},
+{
+"primary": "#3f2573",
+"secondary": "#a28870"
+},
+{
+"primary": "#3f2573",
+"secondary": "#a28870"
+},
+{
+"primary": "#e60021",
+"secondary": null
+},
+{
+"primary": "#e60021",
+"secondary": null
+},
+{
+"primary": "#e50020",
+"secondary": "#dc9596"
+},
+{
+"primary": "#e50020",
+"secondary": "#dc9596"
+},
+{
+"primary": "#ed6d00",
+"secondary": "#8e3b05"
+},
+{
+"primary": "#ed6d00",
+"secondary": "#8e3b05"
+},
+{
+"primary": "#00383a",
+"secondary": "#285d5e"
+},
+{
+"primary": "#00383a",
+"secondary": "#285d5e"
+},
+{
+"primary": "#0a132e",
+"secondary": null
+},
+{
+"primary": "#0a132e",
+"secondary": null
+},
+{
+"primary": "#004280",
+"secondary": null
+},
+{
+"primary": "#004280",
+"secondary": null
+},
+{
+"primary": "#90c31f",
+"secondary": null
+},
+{
+"primary": "#90c31f",
+"secondary": null
+},
+{
+"primary": "#f49200",
+"secondary": "#c6af8b"
+},
+{
+"primary": "#f49200",
+"secondary": "#c6af8b"
+},
+{
+"primary": "#000000",
+"secondary": "#ffffff"
+},
+{
+"primary": "#000000",
+"secondary": "#ffffff"
+},
+{
+"primary": "#0e151b",
+"secondary": null
+},
+{
+"primary": "#0e151b",
+"secondary": null
+},
+{
+"primary": "#182750",
+"secondary": "#b26754"
+},
+{
+"primary": "#182750",
+"secondary": "#b26754"
+},
+{
+"primary": "#370812",
+"secondary": "#bd9c68"
+},
+{
+"primary": "#370812",
+"secondary": "#bd9c68"
+},
+{
+"primary": "#003766",
+"secondary": "#fcc932"
+},
+{
+"primary": "#003766",
+"secondary": "#fcc932"
+},
+{
+"primary": "#fe9d2b",
+"secondary": "#306fa1"
+},
+{
+"primary": "#fe9d2b",
+"secondary": "#306fa1"
+},
+{
+"primary": "#283582",
+"secondary": "#009ee2"
+},
+{
+"primary": "#283582",
+"secondary": "#009ee2"
+},
+{
+"primary": "#0e4d8d",
+"secondary": "#c11f3d"
+},
+{
+"primary": "#0e4d8d",
+"secondary": "#c11f3d"
+},
+{
+"primary": "#e51b1c",
+"secondary": "#000000"
+},
+{
+"primary": "#e51b1c",
+"secondary": "#000000"
+},
+{
+"primary": "#132192",
+"secondary": "#e30612"
+},
+{
+"primary": "#132192",
+"secondary": "#e30612"
+},
+{
+"primary": "#0c5ba8",
+"secondary": "#cc162c"
+},
+{
+"primary": "#0c5ba8",
+"secondary": "#cc162c"
+},
+{
+"primary": "#ffd700",
+"secondary": "#091945"
+},
+{
+"primary": "#ffd700",
+"secondary": "#091945"
+},
+{
+"primary": "#0c2042",
+"secondary": "#495e8f"
+},
+{
+"primary": "#0c2042",
+"secondary": "#495e8f"
+},
+{
+"primary": "#2c0a00",
+"secondary": "#175798"
+},
+{
+"primary": "#2c0a00",
+"secondary": "#175798"
+},
+{
+"primary": "#ae1e24",
+"secondary": "#392221"
+},
+{
+"primary": "#ae1e24",
+"secondary": "#392221"
+},
+{
+"primary": "#1e4390",
+"secondary": "#f7db10"
+},
+{
+"primary": "#1e4390",
+"secondary": "#f7db10"
+},
+{
+"primary": "#1e1a37",
+"secondary": "#b71a1b"
+},
+{
+"primary": "#1e1a37",
+"secondary": "#b71a1b"
+},
+{
+"primary": "#a75d24",
+"secondary": "#f1dc22"
+},
+{
+"primary": "#a75d24",
+"secondary": "#f1dc22"
+},
+{
+"primary": "#e62328",
+"secondary": "#644f33"
+},
+{
+"primary": "#e62328",
+"secondary": "#644f33"
+},
+{
+"primary": "#71171b",
+"secondary": "#daaa9a"
+},
+{
+"primary": "#71171b",
+"secondary": "#daaa9a"
+},
+{
+"primary": "#73b843",
+"secondary": "#17284d"
+},
+{
+"primary": "#73b843",
+"secondary": "#17284d"
+},
+{
+"primary": "#01549d",
+"secondary": "#a73246"
+},
+{
+"primary": "#01549d",
+"secondary": "#a73246"
+},
+{
+"primary": "#e62328",
+"secondary": "#644f33"
+},
+{
+"primary": "#e62328",
+"secondary": "#644f33"
+},
+{
+"primary": "#73b843",
+"secondary": "#17284d"
+},
+{
+"primary": "#73b843",
+"secondary": "#17284d"
+},
+{
+"primary": "#ffd700",
+"secondary": "#091945"
+},
+{
+"primary": "#ffd700",
+"secondary": "#091945"
+},
+{
+"primary": "#01549d",
+"secondary": "#a73246"
+},
+{
+"primary": "#01549d",
+"secondary": "#a73246"
+},
+{
+"primary": "#000000",
+"secondary": "#ffffff"
+},
+{
+"primary": "#000000",
+"secondary": "#ffffff"
+},
+{
+"primary": "#fe9d2b",
+"secondary": "#306fa1"
+},
+{
+"primary": "#fe9d2b",
+"secondary": "#306fa1"
+},
+{
+"primary": "#a75d24",
+"secondary": "#f1dc22"
+},
+{
+"primary": "#a75d24",
+"secondary": "#f1dc22"
+},
+{
+"primary": "#1e4390",
+"secondary": "#f7db10"
+},
+{
+"primary": "#1e4390",
+"secondary": "#f7db10"
+},
+{
+"primary": "#0e4d8d",
+"secondary": "#c11f3d"
+},
+{
+"primary": "#0e4d8d",
+"secondary": "#c11f3d"
+},
+{
+"primary": "#2c0a00",
+"secondary": "#175798"
+},
+{
+"primary": "#2c0a00",
+"secondary": "#175798"
+},
+{
+"primary": "#003766",
+"secondary": "#fcc932"
+},
+{
+"primary": "#003766",
+"secondary": "#fcc932"
+},
+{
+"primary": "#f49200",
+"secondary": "#c6af8b"
+},
+{
+"primary": "#f49200",
+"secondary": "#c6af8b"
+},
+{
+"primary": "#0e151b",
+"secondary": null
+},
+{
+"primary": "#0e151b",
+"secondary": null
+},
+{
+"primary": "#0c5ba8",
+"secondary": "#cc162c"
+},
+{
+"primary": "#0c5ba8",
+"secondary": "#cc162c"
+},
+{
+"primary": "#71171b",
+"secondary": "#daaa9a"
+},
+{
+"primary": "#71171b",
+"secondary": "#daaa9a"
+},
+{
+"primary": "#e51b1c",
+"secondary": "#000000"
+},
+{
+"primary": "#e51b1c",
+"secondary": "#000000"
+},
+{
+"primary": "#182750",
+"secondary": "#b26754"
+},
+{
+"primary": "#182750",
+"secondary": "#b26754"
+},
+{
+"primary": "#370812",
+"secondary": "#bd9c68"
+},
+{
+"primary": "#370812",
+"secondary": "#bd9c68"
+},
+{
+"primary": "#132192",
+"secondary": "#e30612"
+},
+{
+"primary": "#132192",
+"secondary": "#e30612"
+},
+{
+"primary": "#1e1a37",
+"secondary": "#b71a1b"
+},
+{
+"primary": "#1e1a37",
+"secondary": "#b71a1b"
+},
+{
+"primary": "#283582",
+"secondary": "#009ee2"
+},
+{
+"primary": "#283582",
+"secondary": "#009ee2"
+},
+{
+"primary": "#ae1e24",
+"secondary": "#392221"
+},
+{
+"primary": "#ae1e24",
+"secondary": "#392221"
+},
+{
+"primary": "#0c2042",
+"secondary": "#495e8f"
+},
+{
+"primary": "#0c2042",
+"secondary": "#495e8f"
 },
 {
 "primary": "#a7233c",
@@ -9554,6 +12082,390 @@
 "secondary": "#eb141d"
 },
 {
+"primary": "#002652",
+"secondary": "#ffd810"
+},
+{
+"primary": "#002652",
+"secondary": "#ffd810"
+},
+{
+"primary": "#11539c",
+"secondary": "#202b4f"
+},
+{
+"primary": "#11539c",
+"secondary": "#202b4f"
+},
+{
+"primary": "#4e286a",
+"secondary": "#241f21"
+},
+{
+"primary": "#4e286a",
+"secondary": "#241f21"
+},
+{
+"primary": "#e6012c",
+"secondary": "#5a83aa"
+},
+{
+"primary": "#e6012c",
+"secondary": "#5a83aa"
+},
+{
+"primary": "#e6007d",
+"secondary": "#001b3e"
+},
+{
+"primary": "#e6007d",
+"secondary": "#001b3e"
+},
+{
+"primary": "#ed5c2b",
+"secondary": "#a4412f"
+},
+{
+"primary": "#ed5c2b",
+"secondary": "#a4412f"
+},
+{
+"primary": "#c50a23",
+"secondary": "#bb5968"
+},
+{
+"primary": "#c50a23",
+"secondary": "#bb5968"
+},
+{
+"primary": "#0388bd",
+"secondary": "#85c9d0"
+},
+{
+"primary": "#0388bd",
+"secondary": "#85c9d0"
+},
+{
+"primary": "#eab627",
+"secondary": "#5c551f"
+},
+{
+"primary": "#eab627",
+"secondary": "#5c551f"
+},
+{
+"primary": "#b8a97c",
+"secondary": "#756e5c"
+},
+{
+"primary": "#b8a97c",
+"secondary": "#756e5c"
+},
+{
+"primary": "#27487c",
+"secondary": "#b14a35"
+},
+{
+"primary": "#27487c",
+"secondary": "#b14a35"
+},
+{
+"primary": "#5c378d",
+"secondary": "#81bb29"
+},
+{
+"primary": "#5c378d",
+"secondary": "#81bb29"
+},
+{
+"primary": "#002652",
+"secondary": "#ffd810"
+},
+{
+"primary": "#002652",
+"secondary": "#ffd810"
+},
+{
+"primary": "#11539c",
+"secondary": "#202b4f"
+},
+{
+"primary": "#11539c",
+"secondary": "#202b4f"
+},
+{
+"primary": "#e6012c",
+"secondary": "#5a83aa"
+},
+{
+"primary": "#e6012c",
+"secondary": "#5a83aa"
+},
+{
+"primary": "#e6007d",
+"secondary": "#001b3e"
+},
+{
+"primary": "#e6007d",
+"secondary": "#001b3e"
+},
+{
+"primary": "#ed5c2b",
+"secondary": "#a4412f"
+},
+{
+"primary": "#ed5c2b",
+"secondary": "#a4412f"
+},
+{
+"primary": "#c50a23",
+"secondary": "#bb5968"
+},
+{
+"primary": "#c50a23",
+"secondary": "#bb5968"
+},
+{
+"primary": "#4e286a",
+"secondary": "#241f21"
+},
+{
+"primary": "#4e286a",
+"secondary": "#241f21"
+},
+{
+"primary": "#0388bd",
+"secondary": "#85c9d0"
+},
+{
+"primary": "#0388bd",
+"secondary": "#85c9d0"
+},
+{
+"primary": "#eab627",
+"secondary": "#5c551f"
+},
+{
+"primary": "#eab627",
+"secondary": "#5c551f"
+},
+{
+"primary": "#5c378d",
+"secondary": "#81bb29"
+},
+{
+"primary": "#5c378d",
+"secondary": "#81bb29"
+},
+{
+"primary": "#b8a97c",
+"secondary": "#756e5c"
+},
+{
+"primary": "#b8a97c",
+"secondary": "#756e5c"
+},
+{
+"primary": "#27487c",
+"secondary": "#b14a35"
+},
+{
+"primary": "#27487c",
+"secondary": "#b14a35"
+},
+{
+"primary": "#131413",
+"secondary": null
+},
+{
+"primary": "#131413",
+"secondary": null
+},
+{
+"primary": "#cb5e1d",
+"secondary": "#533c2e"
+},
+{
+"primary": "#cb5e1d",
+"secondary": "#533c2e"
+},
+{
+"primary": "#233268",
+"secondary": "#cfd1d2"
+},
+{
+"primary": "#233268",
+"secondary": "#cfd1d2"
+},
+{
+"primary": "#76a6e5",
+"secondary": "#142f7b"
+},
+{
+"primary": "#76a6e5",
+"secondary": "#142f7b"
+},
+{
+"primary": "#1c1929",
+"secondary": "#a4bde4"
+},
+{
+"primary": "#1c1929",
+"secondary": "#a4bde4"
+},
+{
+"primary": "#d1050c",
+"secondary": null
+},
+{
+"primary": "#d1050c",
+"secondary": null
+},
+{
+"primary": "#ff9500",
+"secondary": "#007547"
+},
+{
+"primary": "#ff9500",
+"secondary": "#007547"
+},
+{
+"primary": "#ffeb00",
+"secondary": "#e30b10"
+},
+{
+"primary": "#ffeb00",
+"secondary": "#e30b10"
+},
+{
+"primary": "#a92e31",
+"secondary": "#0b1c35"
+},
+{
+"primary": "#a92e31",
+"secondary": "#0b1c35"
+},
+{
+"primary": "#000000",
+"secondary": null
+},
+{
+"primary": "#000000",
+"secondary": null
+},
+{
+"primary": "#12110c",
+"secondary": "#c4c5c4"
+},
+{
+"primary": "#12110c",
+"secondary": "#c4c5c4"
+},
+{
+"primary": "#292362",
+"secondary": "#0071b9"
+},
+{
+"primary": "#292362",
+"secondary": "#0071b9"
+},
+{
+"primary": "#292362",
+"secondary": "#0071b9"
+},
+{
+"primary": "#292362",
+"secondary": "#0071b9"
+},
+{
+"primary": "#1c1929",
+"secondary": "#a4bde4"
+},
+{
+"primary": "#1c1929",
+"secondary": "#a4bde4"
+},
+{
+"primary": "#233268",
+"secondary": "#cfd1d2"
+},
+{
+"primary": "#233268",
+"secondary": "#cfd1d2"
+},
+{
+"primary": "#ff9500",
+"secondary": "#007547"
+},
+{
+"primary": "#ff9500",
+"secondary": "#007547"
+},
+{
+"primary": "#131413",
+"secondary": null
+},
+{
+"primary": "#131413",
+"secondary": null
+},
+{
+"primary": "#cb5e1d",
+"secondary": "#533c2e"
+},
+{
+"primary": "#cb5e1d",
+"secondary": "#533c2e"
+},
+{
+"primary": "#d1050c",
+"secondary": null
+},
+{
+"primary": "#d1050c",
+"secondary": null
+},
+{
+"primary": "#76a6e5",
+"secondary": "#142f7b"
+},
+{
+"primary": "#76a6e5",
+"secondary": "#142f7b"
+},
+{
+"primary": "#ffeb00",
+"secondary": "#e30b10"
+},
+{
+"primary": "#ffeb00",
+"secondary": "#e30b10"
+},
+{
+"primary": "#a92e31",
+"secondary": "#0b1c35"
+},
+{
+"primary": "#a92e31",
+"secondary": "#0b1c35"
+},
+{
+"primary": "#12110c",
+"secondary": "#c4c5c4"
+},
+{
+"primary": "#12110c",
+"secondary": "#c4c5c4"
+},
+{
+"primary": "#000000",
+"secondary": null
+},
+{
+"primary": "#000000",
+"secondary": null
+},
+{
 "primary": "#c27533",
 "secondary": "#01247b"
 },
@@ -10706,6 +13618,870 @@
 "secondary": "#293743"
 },
 {
+"primary": "#0c4da2",
+"secondary": "#ed1c24"
+},
+{
+"primary": "#0c4da2",
+"secondary": "#ed1c24"
+},
+{
+"primary": "#56bb72",
+"secondary": "#130c0d"
+},
+{
+"primary": "#56bb72",
+"secondary": "#130c0d"
+},
+{
+"primary": "#abc147",
+"secondary": "#348744"
+},
+{
+"primary": "#abc147",
+"secondary": "#348744"
+},
+{
+"primary": "#171730",
+"secondary": "#9d9ea4"
+},
+{
+"primary": "#171730",
+"secondary": "#9d9ea4"
+},
+{
+"primary": "#ee1d25",
+"secondary": "#0a0a14"
+},
+{
+"primary": "#ee1d25",
+"secondary": "#0a0a14"
+},
+{
+"primary": "#0d2a70",
+"secondary": "#0e1a2b"
+},
+{
+"primary": "#0d2a70",
+"secondary": "#0e1a2b"
+},
+{
+"primary": "#fff200",
+"secondary": "#8e8610"
+},
+{
+"primary": "#fff200",
+"secondary": "#8e8610"
+},
+{
+"primary": "#ed1c24",
+"secondary": null
+},
+{
+"primary": "#ed1c24",
+"secondary": null
+},
+{
+"primary": "#ee2c32",
+"secondary": "#2d171b"
+},
+{
+"primary": "#ee2c32",
+"secondary": "#2d171b"
+},
+{
+"primary": "#760328",
+"secondary": null
+},
+{
+"primary": "#760328",
+"secondary": null
+},
+{
+"primary": "#eb1d25",
+"secondary": "#01669e"
+},
+{
+"primary": "#eb1d25",
+"secondary": "#01669e"
+},
+{
+"primary": "#023279",
+"secondary": "#7183a0"
+},
+{
+"primary": "#023279",
+"secondary": "#7183a0"
+},
+{
+"primary": "#a11d25",
+"secondary": "#461012"
+},
+{
+"primary": "#a11d25",
+"secondary": "#461012"
+},
+{
+"primary": "#002356",
+"secondary": "#8098b0"
+},
+{
+"primary": "#002356",
+"secondary": "#8098b0"
+},
+{
+"primary": "#ed1c24",
+"secondary": null
+},
+{
+"primary": "#ed1c24",
+"secondary": null
+},
+{
+"primary": "#ee1d25",
+"secondary": "#0a0a14"
+},
+{
+"primary": "#ee1d25",
+"secondary": "#0a0a14"
+},
+{
+"primary": "#a11d25",
+"secondary": "#461012"
+},
+{
+"primary": "#a11d25",
+"secondary": "#461012"
+},
+{
+"primary": "#0c4da2",
+"secondary": "#ed1c24"
+},
+{
+"primary": "#0c4da2",
+"secondary": "#ed1c24"
+},
+{
+"primary": "#171730",
+"secondary": "#9d9ea4"
+},
+{
+"primary": "#171730",
+"secondary": "#9d9ea4"
+},
+{
+"primary": "#0d2a70",
+"secondary": "#0e1a2b"
+},
+{
+"primary": "#0d2a70",
+"secondary": "#0e1a2b"
+},
+{
+"primary": "#ee2c32",
+"secondary": "#2d171b"
+},
+{
+"primary": "#ee2c32",
+"secondary": "#2d171b"
+},
+{
+"primary": "#abc147",
+"secondary": "#348744"
+},
+{
+"primary": "#abc147",
+"secondary": "#348744"
+},
+{
+"primary": "#eb1d25",
+"secondary": "#01669e"
+},
+{
+"primary": "#eb1d25",
+"secondary": "#01669e"
+},
+{
+"primary": "#760328",
+"secondary": null
+},
+{
+"primary": "#760328",
+"secondary": null
+},
+{
+"primary": "#fff200",
+"secondary": "#8e8610"
+},
+{
+"primary": "#fff200",
+"secondary": "#8e8610"
+},
+{
+"primary": "#002356",
+"secondary": "#8098b0"
+},
+{
+"primary": "#002356",
+"secondary": "#8098b0"
+},
+{
+"primary": "#56bb72",
+"secondary": "#130c0d"
+},
+{
+"primary": "#56bb72",
+"secondary": "#130c0d"
+},
+{
+"primary": "#023279",
+"secondary": "#7183a0"
+},
+{
+"primary": "#023279",
+"secondary": "#7183a0"
+},
+{
+"primary": "#da251d",
+"secondary": "#eb9852"
+},
+{
+"primary": "#da251d",
+"secondary": "#eb9852"
+},
+{
+"primary": "#ff0000",
+"secondary": "#0230a0"
+},
+{
+"primary": "#ff0000",
+"secondary": "#0230a0"
+},
+{
+"primary": "#00924b",
+"secondary": "#9ed5b9"
+},
+{
+"primary": "#00924b",
+"secondary": "#9ed5b9"
+},
+{
+"primary": "#a19180",
+"secondary": "#e40c18"
+},
+{
+"primary": "#a19180",
+"secondary": "#e40c18"
+},
+{
+"primary": "#ed1c24",
+"secondary": "#f56164"
+},
+{
+"primary": "#ed1c24",
+"secondary": "#f56164"
+},
+{
+"primary": "#fde500",
+"secondary": "#67610d"
+},
+{
+"primary": "#fde500",
+"secondary": "#67610d"
+},
+{
+"primary": "#00803f",
+"secondary": "#f48131"
+},
+{
+"primary": "#00803f",
+"secondary": "#f48131"
+},
+{
+"primary": "#e40a2d",
+"secondary": "#e4a6af"
+},
+{
+"primary": "#e40a2d",
+"secondary": "#e4a6af"
+},
+{
+"primary": "#0d3981",
+"secondary": "#d10a11"
+},
+{
+"primary": "#0d3981",
+"secondary": "#d10a11"
+},
+{
+"primary": "#007331",
+"secondary": "#ef6e1f"
+},
+{
+"primary": "#007331",
+"secondary": "#ef6e1f"
+},
+{
+"primary": "#1d2d59",
+"secondary": "#76839a"
+},
+{
+"primary": "#1d2d59",
+"secondary": "#76839a"
+},
+{
+"primary": "#d21919",
+"secondary": "#672828"
+},
+{
+"primary": "#d21919",
+"secondary": "#672828"
+},
+{
+"primary": "#b60c2d",
+"secondary": "#5d1a26"
+},
+{
+"primary": "#b60c2d",
+"secondary": "#5d1a26"
+},
+{
+"primary": "#939316",
+"secondary": "#e5e524"
+},
+{
+"primary": "#939316",
+"secondary": "#e5e524"
+},
+{
+"primary": "#033c82",
+"secondary": "#5a6d9c"
+},
+{
+"primary": "#033c82",
+"secondary": "#5a6d9c"
+},
+{
+"primary": "#0072bc",
+"secondary": "#acd1ea"
+},
+{
+"primary": "#0072bc",
+"secondary": "#acd1ea"
+},
+{
+"primary": "#2d2d83",
+"secondary": "#f2e60f"
+},
+{
+"primary": "#2d2d83",
+"secondary": "#f2e60f"
+},
+{
+"primary": "#5a2d1e",
+"secondary": "#ac471c"
+},
+{
+"primary": "#5a2d1e",
+"secondary": "#ac471c"
+},
+{
+"primary": "#4c546d",
+"secondary": "#efe35c"
+},
+{
+"primary": "#4c546d",
+"secondary": "#efe35c"
+},
+{
+"primary": "#318925",
+"secondary": "#adb58c"
+},
+{
+"primary": "#318925",
+"secondary": "#adb58c"
+},
+{
+"primary": "#fab427",
+"secondary": "#152e4d"
+},
+{
+"primary": "#fab427",
+"secondary": "#152e4d"
+},
+{
+"primary": "#ae5937",
+"secondary": "#6c5140"
+},
+{
+"primary": "#ae5937",
+"secondary": "#6c5140"
+},
+{
+"primary": "#6279e6",
+"secondary": "#ed0037"
+},
+{
+"primary": "#6279e6",
+"secondary": "#ed0037"
+},
+{
+"primary": "#faaa28",
+"secondary": "#a90333"
+},
+{
+"primary": "#faaa28",
+"secondary": "#a90333"
+},
+{
+"primary": "#47a15a",
+"secondary": "#e4b259"
+},
+{
+"primary": "#47a15a",
+"secondary": "#e4b259"
+},
+{
+"primary": "#ca1a27",
+"secondary": "#3a2b2e"
+},
+{
+"primary": "#ca1a27",
+"secondary": "#3a2b2e"
+},
+{
+"primary": "#e10916",
+"secondary": "#815a5c"
+},
+{
+"primary": "#e10916",
+"secondary": "#815a5c"
+},
+{
+"primary": "#f6cc18",
+"secondary": "#816d1d"
+},
+{
+"primary": "#f6cc18",
+"secondary": "#816d1d"
+},
+{
+"primary": "#d62028",
+"secondary": "#324c6c"
+},
+{
+"primary": "#d62028",
+"secondary": "#324c6c"
+},
+{
+"primary": "#fbc811",
+"secondary": "#362e06"
+},
+{
+"primary": "#fbc811",
+"secondary": "#362e06"
+},
+{
+"primary": "#ac2c26",
+"secondary": "#d88e94"
+},
+{
+"primary": "#ac2c26",
+"secondary": "#d88e94"
+},
+{
+"primary": "#151f48",
+"secondary": "#00a2a2"
+},
+{
+"primary": "#151f48",
+"secondary": "#00a2a2"
+},
+{
+"primary": "#00529b",
+"secondary": "#e6960d"
+},
+{
+"primary": "#00529b",
+"secondary": "#e6960d"
+},
+{
+"primary": "#171697",
+"secondary": "#7493bc"
+},
+{
+"primary": "#171697",
+"secondary": "#7493bc"
+},
+{
+"primary": "#df9e48",
+"secondary": "#0065ad"
+},
+{
+"primary": "#df9e48",
+"secondary": "#0065ad"
+},
+{
+"primary": "#233b78",
+"secondary": "#e3c75e"
+},
+{
+"primary": "#233b78",
+"secondary": "#e3c75e"
+},
+{
+"primary": "#2d4a99",
+"secondary": "#cfaa22"
+},
+{
+"primary": "#2d4a99",
+"secondary": "#cfaa22"
+},
+{
+"primary": "#ed1b24",
+"secondary": "#580b0f"
+},
+{
+"primary": "#ed1b24",
+"secondary": "#580b0f"
+},
+{
+"primary": "#989070",
+"secondary": "#000000"
+},
+{
+"primary": "#989070",
+"secondary": "#000000"
+},
+{
+"primary": "#bf1a27",
+"secondary": "#ae5a60"
+},
+{
+"primary": "#bf1a27",
+"secondary": "#ae5a60"
+},
+{
+"primary": "#faaa28",
+"secondary": "#a90333"
+},
+{
+"primary": "#faaa28",
+"secondary": "#a90333"
+},
+{
+"primary": "#1f2977",
+"secondary": "#8287a8"
+},
+{
+"primary": "#1f2977",
+"secondary": "#8287a8"
+},
+{
+"primary": "#e9540d",
+"secondary": "#0d3e66"
+},
+{
+"primary": "#e9540d",
+"secondary": "#0d3e66"
+},
+{
+"primary": "#ed1b24",
+"secondary": "#580b0f"
+},
+{
+"primary": "#ed1b24",
+"secondary": "#580b0f"
+},
+{
+"primary": "#0287c7",
+"secondary": "#015599"
+},
+{
+"primary": "#0287c7",
+"secondary": "#015599"
+},
+{
+"primary": "#157c42",
+"secondary": "#7eac92"
+},
+{
+"primary": "#157c42",
+"secondary": "#7eac92"
+},
+{
+"primary": "#00803f",
+"secondary": "#f48131"
+},
+{
+"primary": "#00803f",
+"secondary": "#f48131"
+},
+{
+"primary": "#bf1a27",
+"secondary": "#ae5a60"
+},
+{
+"primary": "#bf1a27",
+"secondary": "#ae5a60"
+},
+{
+"primary": "#b60c2d",
+"secondary": "#5d1a26"
+},
+{
+"primary": "#b60c2d",
+"secondary": "#5d1a26"
+},
+{
+"primary": "#b91c3f",
+"secondary": "#561d29"
+},
+{
+"primary": "#b91c3f",
+"secondary": "#561d29"
+},
+{
+"primary": "#2d2d83",
+"secondary": "#f2e60f"
+},
+{
+"primary": "#2d2d83",
+"secondary": "#f2e60f"
+},
+{
+"primary": "#ed1c29",
+"secondary": "#470f13"
+},
+{
+"primary": "#ed1c29",
+"secondary": "#470f13"
+},
+{
+"primary": "#da251d",
+"secondary": "#eb9852"
+},
+{
+"primary": "#da251d",
+"secondary": "#eb9852"
+},
+{
+"primary": "#0052a1",
+"secondary": "#febe10"
+},
+{
+"primary": "#0052a1",
+"secondary": "#febe10"
+},
+{
+"primary": "#50a160",
+"secondary": "#485f4e"
+},
+{
+"primary": "#50a160",
+"secondary": "#485f4e"
+},
+{
+"primary": "#00529b",
+"secondary": "#e6960d"
+},
+{
+"primary": "#00529b",
+"secondary": "#e6960d"
+},
+{
+"primary": "#d1071e",
+"secondary": "#e46e7a"
+},
+{
+"primary": "#d1071e",
+"secondary": "#e46e7a"
+},
+{
+"primary": "#ffc400",
+"secondary": "#01afdb"
+},
+{
+"primary": "#ffc400",
+"secondary": "#01afdb"
+},
+{
+"primary": "#4c546d",
+"secondary": "#efe35c"
+},
+{
+"primary": "#4c546d",
+"secondary": "#efe35c"
+},
+{
+"primary": "#a19180",
+"secondary": "#e40c18"
+},
+{
+"primary": "#a19180",
+"secondary": "#e40c18"
+},
+{
+"primary": "#00652e",
+"secondary": "#f58232"
+},
+{
+"primary": "#00652e",
+"secondary": "#f58232"
+},
+{
+"primary": "#009059",
+"secondary": null
+},
+{
+"primary": "#009059",
+"secondary": null
+},
+{
+"primary": "#1b4533",
+"secondary": "#000000"
+},
+{
+"primary": "#1b4533",
+"secondary": "#000000"
+},
+{
+"primary": "#19223d",
+"secondary": "#09a6e2"
+},
+{
+"primary": "#19223d",
+"secondary": "#09a6e2"
+},
+{
+"primary": "#008852",
+"secondary": "#5aaa83"
+},
+{
+"primary": "#008852",
+"secondary": "#5aaa83"
+},
+{
+"primary": "#211915",
+"secondary": "#7d7c7a"
+},
+{
+"primary": "#211915",
+"secondary": "#7d7c7a"
+},
+{
+"primary": "#fab427",
+"secondary": "#152e4d"
+},
+{
+"primary": "#fab427",
+"secondary": "#152e4d"
+},
+{
+"primary": "#052241",
+"secondary": "#af162c"
+},
+{
+"primary": "#052241",
+"secondary": "#af162c"
+},
+{
+"primary": "#1d2d59",
+"secondary": "#76839a"
+},
+{
+"primary": "#1d2d59",
+"secondary": "#76839a"
+},
+{
+"primary": "#fbc811",
+"secondary": "#362e06"
+},
+{
+"primary": "#fbc811",
+"secondary": "#362e06"
+},
+{
+"primary": "#f58220",
+"secondary": "#609d7e"
+},
+{
+"primary": "#f58220",
+"secondary": "#609d7e"
+},
+{
+"primary": "#ae5937",
+"secondary": "#6c5140"
+},
+{
+"primary": "#ae5937",
+"secondary": "#6c5140"
+},
+{
+"primary": "#ed6c23",
+"secondary": "#6ba1b1"
+},
+{
+"primary": "#ed6c23",
+"secondary": "#6ba1b1"
+},
+{
+"primary": "#007331",
+"secondary": "#ef6e1f"
+},
+{
+"primary": "#007331",
+"secondary": "#ef6e1f"
+},
+{
+"primary": "#0d3981",
+"secondary": "#d10a11"
+},
+{
+"primary": "#0d3981",
+"secondary": "#d10a11"
+},
+{
+"primary": "#d62028",
+"secondary": "#324c6c"
+},
+{
+"primary": "#d62028",
+"secondary": "#324c6c"
+},
+{
+"primary": "#5a2d1e",
+"secondary": "#ac471c"
+},
+{
+"primary": "#5a2d1e",
+"secondary": "#ac471c"
+},
+{
+"primary": "#ed820b",
+"secondary": "#783d00"
+},
+{
+"primary": "#ed820b",
+"secondary": "#783d00"
+},
+{
+"primary": "#47a15a",
+"secondary": "#e4b259"
+},
+{
+"primary": "#47a15a",
+"secondary": "#e4b259"
+},
+{
+"primary": "#233e81",
+"secondary": "#8393b4"
+},
+{
+"primary": "#233e81",
+"secondary": "#8393b4"
+},
+{
 "primary": "#c92d4b",
 "secondary": null
 },
@@ -11200,6 +14976,646 @@
 {
 "primary": "#1868db",
 "secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": "#38414b",
+"secondary": "#041b2e"
+},
+{
+"primary": "#38414b",
+"secondary": "#041b2e"
+},
+{
+"primary": "#251f4f",
+"secondary": "#599abb"
+},
+{
+"primary": "#251f4f",
+"secondary": "#599abb"
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": "#ddd65f",
+"secondary": "#5b5b4f"
+},
+{
+"primary": "#ddd65f",
+"secondary": "#5b5b4f"
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": "#f01a3a",
+"secondary": "#362724"
+},
+{
+"primary": "#f01a3a",
+"secondary": "#362724"
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": "#252450",
+"secondary": "#a5144c"
+},
+{
+"primary": "#252450",
+"secondary": "#a5144c"
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": "#f86406",
+"secondary": "#0351b6"
+},
+{
+"primary": "#f86406",
+"secondary": "#0351b6"
+},
+{
+"primary": "#805620",
+"secondary": "#78a95e"
+},
+{
+"primary": "#805620",
+"secondary": "#78a95e"
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": "#dbbe42",
+"secondary": "#1f3975"
+},
+{
+"primary": "#dbbe42",
+"secondary": "#1f3975"
+},
+{
+"primary": "#081d4f",
+"secondary": "#c6c8d0"
+},
+{
+"primary": "#081d4f",
+"secondary": "#c6c8d0"
+},
+{
+"primary": "#053648",
+"secondary": "#e89d08"
+},
+{
+"primary": "#053648",
+"secondary": "#e89d08"
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": "#01a3f8",
+"secondary": "#e1f6fc"
+},
+{
+"primary": "#01a3f8",
+"secondary": "#e1f6fc"
+},
+{
+"primary": "#f8241f",
+"secondary": "#624546"
+},
+{
+"primary": "#f8241f",
+"secondary": "#624546"
+},
+{
+"primary": "#0094a8",
+"secondary": "#1b4466"
+},
+{
+"primary": "#0094a8",
+"secondary": "#1b4466"
+},
+{
+"primary": "#ee6d08",
+"secondary": "#173946"
+},
+{
+"primary": "#ee6d08",
+"secondary": "#173946"
+},
+{
+"primary": "#f48b11",
+"secondary": "#613b22"
+},
+{
+"primary": "#f48b11",
+"secondary": "#613b22"
+},
+{
+"primary": "#e11f1c",
+"secondary": "#290c0b"
+},
+{
+"primary": "#e11f1c",
+"secondary": "#290c0b"
+},
+{
+"primary": "#ffef00",
+"secondary": "#686044"
+},
+{
+"primary": "#ffef00",
+"secondary": "#686044"
+},
+{
+"primary": "#01a431",
+"secondary": "#1b1310"
+},
+{
+"primary": "#01a431",
+"secondary": "#1b1310"
+},
+{
+"primary": "#552b7b",
+"secondary": "#eb8028"
+},
+{
+"primary": "#552b7b",
+"secondary": "#eb8028"
+},
+{
+"primary": "#f00a29",
+"secondary": "#2f0811"
+},
+{
+"primary": "#f00a29",
+"secondary": "#2f0811"
+},
+{
+"primary": "#010204",
+"secondary": "#2c2c2d"
+},
+{
+"primary": "#010204",
+"secondary": "#2c2c2d"
+},
+{
+"primary": "#542a7b",
+"secondary": "#e36d23"
+},
+{
+"primary": "#542a7b",
+"secondary": "#e36d23"
+},
+{
+"primary": "#0d2b59",
+"secondary": "#ff7f05"
+},
+{
+"primary": "#0d2b59",
+"secondary": "#ff7f05"
+},
+{
+"primary": "#ec7e12",
+"secondary": "#69a0c4"
+},
+{
+"primary": "#ec7e12",
+"secondary": "#69a0c4"
+},
+{
+"primary": "#016b35",
+"secondary": "#ff7802"
+},
+{
+"primary": "#016b35",
+"secondary": "#ff7802"
+},
+{
+"primary": "#244a6b",
+"secondary": "#3d7fb7"
+},
+{
+"primary": "#244a6b",
+"secondary": "#3d7fb7"
+},
+{
+"primary": "#ff6c0b",
+"secondary": "#526573"
+},
+{
+"primary": "#ff6c0b",
+"secondary": "#526573"
+},
+{
+"primary": "#e07337",
+"secondary": "#3f160a"
+},
+{
+"primary": "#e07337",
+"secondary": "#3f160a"
+},
+{
+"primary": "#000b45",
+"secondary": "#68c2ff"
+},
+{
+"primary": "#000b45",
+"secondary": "#68c2ff"
+},
+{
+"primary": "#e07337",
+"secondary": "#3f160a"
+},
+{
+"primary": "#e07337",
+"secondary": "#3f160a"
+},
+{
+"primary": "#ff6c0b",
+"secondary": "#526573"
+},
+{
+"primary": "#ff6c0b",
+"secondary": "#526573"
+},
+{
+"primary": "#fcf135",
+"secondary": "#918a64"
+},
+{
+"primary": "#fcf135",
+"secondary": "#918a64"
+},
+{
+"primary": "#fca404",
+"secondary": "#133468"
+},
+{
+"primary": "#fca404",
+"secondary": "#133468"
+},
+{
+"primary": "#cb812b",
+"secondary": "#192a57"
+},
+{
+"primary": "#cb812b",
+"secondary": "#192a57"
+},
+{
+"primary": "#4c1630",
+"secondary": "#d50f27"
+},
+{
+"primary": "#4c1630",
+"secondary": "#d50f27"
+},
+{
+"primary": "#843345",
+"secondary": "#f3df54"
+},
+{
+"primary": "#843345",
+"secondary": "#f3df54"
+},
+{
+"primary": "#ddd65f",
+"secondary": "#5b5b4f"
+},
+{
+"primary": "#ddd65f",
+"secondary": "#5b5b4f"
+},
+{
+"primary": "#03a2f5",
+"secondary": null
+},
+{
+"primary": "#03a2f5",
+"secondary": null
+},
+{
+"primary": "#0192a6",
+"secondary": "#1f4666"
+},
+{
+"primary": "#0192a6",
+"secondary": "#1f4666"
+},
+{
+"primary": "#001741",
+"secondary": "#ffffff"
+},
+{
+"primary": "#001741",
+"secondary": "#ffffff"
+},
+{
+"primary": "#fdde16",
+"secondary": "#a7983a"
+},
+{
+"primary": "#fdde16",
+"secondary": "#a7983a"
+},
+{
+"primary": "#444e76",
+"secondary": "#0b1037"
+},
+{
+"primary": "#444e76",
+"secondary": "#0b1037"
+},
+{
+"primary": "#002858",
+"secondary": "#ec4e03"
+},
+{
+"primary": "#002858",
+"secondary": "#ec4e03"
+},
+{
+"primary": "#d92519",
+"secondary": "#59755c"
+},
+{
+"primary": "#d92519",
+"secondary": "#59755c"
+},
+{
+"primary": "#6aa250",
+"secondary": "#2a3927"
+},
+{
+"primary": "#6aa250",
+"secondary": "#2a3927"
+},
+{
+"primary": "#294d9b",
+"secondary": "#8a8eac"
+},
+{
+"primary": "#294d9b",
+"secondary": "#8a8eac"
+},
+{
+"primary": "#e07337",
+"secondary": "#3f160a"
+},
+{
+"primary": "#e07337",
+"secondary": "#3f160a"
+},
+{
+"primary": "#d92519",
+"secondary": "#59755c"
+},
+{
+"primary": "#d92519",
+"secondary": "#59755c"
+},
+{
+"primary": "#6aa250",
+"secondary": "#2a3927"
+},
+{
+"primary": "#6aa250",
+"secondary": "#2a3927"
+},
+{
+"primary": "#01a1df",
+"secondary": "#f25a26"
+},
+{
+"primary": "#01a1df",
+"secondary": "#f25a26"
 },
 {
 "primary": "#dabf00",
@@ -13122,6 +17538,982 @@
 "secondary": "#004282"
 },
 {
+"primary": "#003155",
+"secondary": "#c7b10f"
+},
+{
+"primary": "#003155",
+"secondary": "#c7b10f"
+},
+{
+"primary": "#ffe803",
+"secondary": "#e8253b"
+},
+{
+"primary": "#ffe803",
+"secondary": "#e8253b"
+},
+{
+"primary": "#2c3748",
+"secondary": "#ffffff"
+},
+{
+"primary": "#2c3748",
+"secondary": "#ffffff"
+},
+{
+"primary": "#002d74",
+"secondary": "#858cb3"
+},
+{
+"primary": "#002d74",
+"secondary": "#858cb3"
+},
+{
+"primary": "#d9bc29",
+"secondary": "#010f40"
+},
+{
+"primary": "#d9bc29",
+"secondary": "#010f40"
+},
+{
+"primary": "#f4c847",
+"secondary": "#705c26"
+},
+{
+"primary": "#f4c847",
+"secondary": "#705c26"
+},
+{
+"primary": "#dab769",
+"secondary": "#1961ad"
+},
+{
+"primary": "#dab769",
+"secondary": "#1961ad"
+},
+{
+"primary": "#d31019",
+"secondary": "#935a5c"
+},
+{
+"primary": "#d31019",
+"secondary": "#935a5c"
+},
+{
+"primary": "#fdd314",
+"secondary": "#0c2a52"
+},
+{
+"primary": "#fdd314",
+"secondary": "#0c2a52"
+},
+{
+"primary": "#ed332b",
+"secondary": "#2b439b"
+},
+{
+"primary": "#ed332b",
+"secondary": "#2b439b"
+},
+{
+"primary": "#2c3748",
+"secondary": "#ffffff"
+},
+{
+"primary": "#2c3748",
+"secondary": "#ffffff"
+},
+{
+"primary": "#125840",
+"secondary": "#fdd003"
+},
+{
+"primary": "#125840",
+"secondary": "#fdd003"
+},
+{
+"primary": "#e50211",
+"secondary": "#712023"
+},
+{
+"primary": "#e50211",
+"secondary": "#712023"
+},
+{
+"primary": "#2c3748",
+"secondary": "#ffffff"
+},
+{
+"primary": "#2c3748",
+"secondary": "#ffffff"
+},
+{
+"primary": "#ed1d26",
+"secondary": "#f1a8ab"
+},
+{
+"primary": "#ed1d26",
+"secondary": "#f1a8ab"
+},
+{
+"primary": "#171796",
+"secondary": "#f5da69"
+},
+{
+"primary": "#171796",
+"secondary": "#f5da69"
+},
+{
+"primary": "#ee1a2d",
+"secondary": "#67779d"
+},
+{
+"primary": "#ee1a2d",
+"secondary": "#67779d"
+},
+{
+"primary": "#2c3748",
+"secondary": "#ffffff"
+},
+{
+"primary": "#2c3748",
+"secondary": "#ffffff"
+},
+{
+"primary": "#a30c13",
+"secondary": "#cb8060"
+},
+{
+"primary": "#a30c13",
+"secondary": "#cb8060"
+},
+{
+"primary": "#e84e0e",
+"secondary": "#aa6e48"
+},
+{
+"primary": "#e84e0e",
+"secondary": "#aa6e48"
+},
+{
+"primary": "#033126",
+"secondary": "#5e6c67"
+},
+{
+"primary": "#033126",
+"secondary": "#5e6c67"
+},
+{
+"primary": "#25358d",
+"secondary": "#5a65a3"
+},
+{
+"primary": "#25358d",
+"secondary": "#5a65a3"
+},
+{
+"primary": "#f8c100",
+"secondary": "#b71b2f"
+},
+{
+"primary": "#f8c100",
+"secondary": "#b71b2f"
+},
+{
+"primary": "#d12c32",
+"secondary": "#314d36"
+},
+{
+"primary": "#d12c32",
+"secondary": "#314d36"
+},
+{
+"primary": "#068135",
+"secondary": "#ee2721"
+},
+{
+"primary": "#068135",
+"secondary": "#ee2721"
+},
+{
+"primary": "#ed3b43",
+"secondary": "#f5d297"
+},
+{
+"primary": "#ed3b43",
+"secondary": "#f5d297"
+},
+{
+"primary": "#2c3748",
+"secondary": "#ffffff"
+},
+{
+"primary": "#2c3748",
+"secondary": "#ffffff"
+},
+{
+"primary": "#118235",
+"secondary": "#589b4f"
+},
+{
+"primary": "#118235",
+"secondary": "#589b4f"
+},
+{
+"primary": "#ffc323",
+"secondary": "#977c26"
+},
+{
+"primary": "#ffc323",
+"secondary": "#977c26"
+},
+{
+"primary": "#69573d",
+"secondary": "#202c63"
+},
+{
+"primary": "#69573d",
+"secondary": "#202c63"
+},
+{
+"primary": "#274fa6",
+"secondary": "#eb2c2f"
+},
+{
+"primary": "#274fa6",
+"secondary": "#eb2c2f"
+},
+{
+"primary": "#184f3d",
+"secondary": "#5c8275"
+},
+{
+"primary": "#184f3d",
+"secondary": "#5c8275"
+},
+{
+"primary": "#fddd04",
+"secondary": "#39351d"
+},
+{
+"primary": "#fddd04",
+"secondary": "#39351d"
+},
+{
+"primary": "#10203b",
+"secondary": "#fdc401"
+},
+{
+"primary": "#10203b",
+"secondary": "#fdc401"
+},
+{
+"primary": "#2c3748",
+"secondary": "#ffffff"
+},
+{
+"primary": "#2c3748",
+"secondary": "#ffffff"
+},
+{
+"primary": "#2c3748",
+"secondary": "#ffffff"
+},
+{
+"primary": "#2c3748",
+"secondary": "#ffffff"
+},
+{
+"primary": "#fdd200",
+"secondary": "#a68f11"
+},
+{
+"primary": "#fdd200",
+"secondary": "#a68f11"
+},
+{
+"primary": "#013a80",
+"secondary": "#a18f60"
+},
+{
+"primary": "#013a80",
+"secondary": "#a18f60"
+},
+{
+"primary": "#ce132e",
+"secondary": "#1b1a1a"
+},
+{
+"primary": "#ce132e",
+"secondary": "#1b1a1a"
+},
+{
+"primary": "#144929",
+"secondary": "#fdd616"
+},
+{
+"primary": "#144929",
+"secondary": "#fdd616"
+},
+{
+"primary": "#2c3748",
+"secondary": "#ffffff"
+},
+{
+"primary": "#2c3748",
+"secondary": "#ffffff"
+},
+{
+"primary": "#003155",
+"secondary": "#c7b10f"
+},
+{
+"primary": "#003155",
+"secondary": "#c7b10f"
+},
+{
+"primary": "#ffe803",
+"secondary": "#e8253b"
+},
+{
+"primary": "#ffe803",
+"secondary": "#e8253b"
+},
+{
+"primary": "#171796",
+"secondary": "#f5da69"
+},
+{
+"primary": "#171796",
+"secondary": "#f5da69"
+},
+{
+"primary": "#f4c847",
+"secondary": "#705c26"
+},
+{
+"primary": "#f4c847",
+"secondary": "#705c26"
+},
+{
+"primary": "#002d74",
+"secondary": "#858cb3"
+},
+{
+"primary": "#002d74",
+"secondary": "#858cb3"
+},
+{
+"primary": "#d9bc29",
+"secondary": "#010f40"
+},
+{
+"primary": "#d9bc29",
+"secondary": "#010f40"
+},
+{
+"primary": "#dab769",
+"secondary": "#1961ad"
+},
+{
+"primary": "#dab769",
+"secondary": "#1961ad"
+},
+{
+"primary": "#ed332b",
+"secondary": "#2b439b"
+},
+{
+"primary": "#ed332b",
+"secondary": "#2b439b"
+},
+{
+"primary": "#2c3748",
+"secondary": "#ffffff"
+},
+{
+"primary": "#2c3748",
+"secondary": "#ffffff"
+},
+{
+"primary": "#fdd314",
+"secondary": "#0c2a52"
+},
+{
+"primary": "#fdd314",
+"secondary": "#0c2a52"
+},
+{
+"primary": "#125840",
+"secondary": "#fdd003"
+},
+{
+"primary": "#125840",
+"secondary": "#fdd003"
+},
+{
+"primary": "#2c3748",
+"secondary": "#ffffff"
+},
+{
+"primary": "#2c3748",
+"secondary": "#ffffff"
+},
+{
+"primary": "#ee1a2d",
+"secondary": "#67779d"
+},
+{
+"primary": "#ee1a2d",
+"secondary": "#67779d"
+},
+{
+"primary": "#2c3748",
+"secondary": "#ffffff"
+},
+{
+"primary": "#2c3748",
+"secondary": "#ffffff"
+},
+{
+"primary": "#a30c13",
+"secondary": "#cb8060"
+},
+{
+"primary": "#a30c13",
+"secondary": "#cb8060"
+},
+{
+"primary": "#e84e0e",
+"secondary": "#aa6e48"
+},
+{
+"primary": "#e84e0e",
+"secondary": "#aa6e48"
+},
+{
+"primary": "#033126",
+"secondary": "#5e6c67"
+},
+{
+"primary": "#033126",
+"secondary": "#5e6c67"
+},
+{
+"primary": "#25358d",
+"secondary": "#5a65a3"
+},
+{
+"primary": "#25358d",
+"secondary": "#5a65a3"
+},
+{
+"primary": "#f8c100",
+"secondary": "#b71b2f"
+},
+{
+"primary": "#f8c100",
+"secondary": "#b71b2f"
+},
+{
+"primary": "#e50211",
+"secondary": "#712023"
+},
+{
+"primary": "#e50211",
+"secondary": "#712023"
+},
+{
+"primary": "#068135",
+"secondary": "#ee2721"
+},
+{
+"primary": "#068135",
+"secondary": "#ee2721"
+},
+{
+"primary": "#d12c32",
+"secondary": "#314d36"
+},
+{
+"primary": "#d12c32",
+"secondary": "#314d36"
+},
+{
+"primary": "#2c3748",
+"secondary": "#ffffff"
+},
+{
+"primary": "#2c3748",
+"secondary": "#ffffff"
+},
+{
+"primary": "#ed3b43",
+"secondary": "#f5d297"
+},
+{
+"primary": "#ed3b43",
+"secondary": "#f5d297"
+},
+{
+"primary": "#ce132e",
+"secondary": "#1b1a1a"
+},
+{
+"primary": "#ce132e",
+"secondary": "#1b1a1a"
+},
+{
+"primary": "#144929",
+"secondary": "#fdd616"
+},
+{
+"primary": "#144929",
+"secondary": "#fdd616"
+},
+{
+"primary": "#118235",
+"secondary": "#589b4f"
+},
+{
+"primary": "#118235",
+"secondary": "#589b4f"
+},
+{
+"primary": "#ffc323",
+"secondary": "#977c26"
+},
+{
+"primary": "#ffc323",
+"secondary": "#977c26"
+},
+{
+"primary": "#69573d",
+"secondary": "#202c63"
+},
+{
+"primary": "#69573d",
+"secondary": "#202c63"
+},
+{
+"primary": "#184f3d",
+"secondary": "#5c8275"
+},
+{
+"primary": "#184f3d",
+"secondary": "#5c8275"
+},
+{
+"primary": "#274fa6",
+"secondary": "#eb2c2f"
+},
+{
+"primary": "#274fa6",
+"secondary": "#eb2c2f"
+},
+{
+"primary": "#ed1d26",
+"secondary": "#f1a8ab"
+},
+{
+"primary": "#ed1d26",
+"secondary": "#f1a8ab"
+},
+{
+"primary": "#fddd04",
+"secondary": "#39351d"
+},
+{
+"primary": "#fddd04",
+"secondary": "#39351d"
+},
+{
+"primary": "#fdd200",
+"secondary": "#a68f11"
+},
+{
+"primary": "#fdd200",
+"secondary": "#a68f11"
+},
+{
+"primary": "#10203b",
+"secondary": "#fdc401"
+},
+{
+"primary": "#10203b",
+"secondary": "#fdc401"
+},
+{
+"primary": "#d31019",
+"secondary": "#935a5c"
+},
+{
+"primary": "#d31019",
+"secondary": "#935a5c"
+},
+{
+"primary": "#013a80",
+"secondary": "#a18f60"
+},
+{
+"primary": "#013a80",
+"secondary": "#a18f60"
+},
+{
+"primary": "#2c3748",
+"secondary": "#ffffff"
+},
+{
+"primary": "#2c3748",
+"secondary": "#ffffff"
+},
+{
+"primary": "#2c3748",
+"secondary": "#ffffff"
+},
+{
+"primary": "#2c3748",
+"secondary": "#ffffff"
+},
+{
+"primary": "#073966",
+"secondary": "#e56842"
+},
+{
+"primary": "#073966",
+"secondary": "#e56842"
+},
+{
+"primary": "#fff000",
+"secondary": "#a19800"
+},
+{
+"primary": "#fff000",
+"secondary": "#a19800"
+},
+{
+"primary": "#b48454",
+"secondary": "#231f20"
+},
+{
+"primary": "#b48454",
+"secondary": "#231f20"
+},
+{
+"primary": "#6782ac",
+"secondary": "#c12623"
+},
+{
+"primary": "#6782ac",
+"secondary": "#c12623"
+},
+{
+"primary": "#df2438",
+"secondary": "#e96e7a"
+},
+{
+"primary": "#df2438",
+"secondary": "#e96e7a"
+},
+{
+"primary": "#bd242d",
+"secondary": "#d98186"
+},
+{
+"primary": "#bd242d",
+"secondary": "#d98186"
+},
+{
+"primary": "#ff0400",
+"secondary": "#ff9594"
+},
+{
+"primary": "#ff0400",
+"secondary": "#ff9594"
+},
+{
+"primary": "#25123e",
+"secondary": "#c4b48b"
+},
+{
+"primary": "#25123e",
+"secondary": "#c4b48b"
+},
+{
+"primary": "#ffe115",
+"secondary": "#5a2a62"
+},
+{
+"primary": "#ffe115",
+"secondary": "#5a2a62"
+},
+{
+"primary": "#e80510",
+"secondary": "#461516"
+},
+{
+"primary": "#e80510",
+"secondary": "#461516"
+},
+{
+"primary": "#981b1f",
+"secondary": "#362223"
+},
+{
+"primary": "#981b1f",
+"secondary": "#362223"
+},
+{
+"primary": "#62557d",
+"secondary": "#c0a88e"
+},
+{
+"primary": "#62557d",
+"secondary": "#c0a88e"
+},
+{
+"primary": "#06203e",
+"secondary": "#ce9771"
+},
+{
+"primary": "#06203e",
+"secondary": "#ce9771"
+},
+{
+"primary": "#152e76",
+"secondary": "#821321"
+},
+{
+"primary": "#152e76",
+"secondary": "#821321"
+},
+{
+"primary": "#f6ee00",
+"secondary": "#a1d08f"
+},
+{
+"primary": "#f6ee00",
+"secondary": "#a1d08f"
+},
+{
+"primary": "#ee7a21",
+"secondary": "#2a2853"
+},
+{
+"primary": "#ee7a21",
+"secondary": "#2a2853"
+},
+{
+"primary": "#0e592b",
+"secondary": "#c9b18c"
+},
+{
+"primary": "#0e592b",
+"secondary": "#c9b18c"
+},
+{
+"primary": "#0c2192",
+"secondary": "#e4510f"
+},
+{
+"primary": "#0c2192",
+"secondary": "#e4510f"
+},
+{
+"primary": "#1e2b87",
+"secondary": "#4f599e"
+},
+{
+"primary": "#1e2b87",
+"secondary": "#4f599e"
+},
+{
+"primary": "#fff90e",
+"secondary": "#2a8bc7"
+},
+{
+"primary": "#fff90e",
+"secondary": "#2a8bc7"
+},
+{
+"primary": "#da6117",
+"secondary": "#2b1d18"
+},
+{
+"primary": "#da6117",
+"secondary": "#2b1d18"
+},
+{
+"primary": "#6782ac",
+"secondary": "#c12623"
+},
+{
+"primary": "#6782ac",
+"secondary": "#c12623"
+},
+{
+"primary": "#fff90e",
+"secondary": "#2a8bc7"
+},
+{
+"primary": "#fff90e",
+"secondary": "#2a8bc7"
+},
+{
+"primary": "#62557d",
+"secondary": "#c0a88e"
+},
+{
+"primary": "#62557d",
+"secondary": "#c0a88e"
+},
+{
+"primary": "#ee7a21",
+"secondary": "#2a2853"
+},
+{
+"primary": "#ee7a21",
+"secondary": "#2a2853"
+},
+{
+"primary": "#0e592b",
+"secondary": "#c9b18c"
+},
+{
+"primary": "#0e592b",
+"secondary": "#c9b18c"
+},
+{
+"primary": "#152e76",
+"secondary": "#821321"
+},
+{
+"primary": "#152e76",
+"secondary": "#821321"
+},
+{
+"primary": "#25123e",
+"secondary": "#c4b48b"
+},
+{
+"primary": "#25123e",
+"secondary": "#c4b48b"
+},
+{
+"primary": "#fff000",
+"secondary": "#a19800"
+},
+{
+"primary": "#fff000",
+"secondary": "#a19800"
+},
+{
+"primary": "#073966",
+"secondary": "#e56842"
+},
+{
+"primary": "#073966",
+"secondary": "#e56842"
+},
+{
+"primary": "#1e2b87",
+"secondary": "#4f599e"
+},
+{
+"primary": "#1e2b87",
+"secondary": "#4f599e"
+},
+{
+"primary": "#da6117",
+"secondary": "#2b1d18"
+},
+{
+"primary": "#da6117",
+"secondary": "#2b1d18"
+},
+{
+"primary": "#981b1f",
+"secondary": "#362223"
+},
+{
+"primary": "#981b1f",
+"secondary": "#362223"
+},
+{
+"primary": "#f6ee00",
+"secondary": "#a1d08f"
+},
+{
+"primary": "#f6ee00",
+"secondary": "#a1d08f"
+},
+{
+"primary": "#06203e",
+"secondary": "#ce9771"
+},
+{
+"primary": "#06203e",
+"secondary": "#ce9771"
+},
+{
+"primary": "#0c2192",
+"secondary": "#e4510f"
+},
+{
+"primary": "#0c2192",
+"secondary": "#e4510f"
+},
+{
+"primary": "#b48454",
+"secondary": "#231f20"
+},
+{
+"primary": "#b48454",
+"secondary": "#231f20"
+},
+{
+"primary": "#df2438",
+"secondary": "#e96e7a"
+},
+{
+"primary": "#df2438",
+"secondary": "#e96e7a"
+},
+{
+"primary": "#bd242d",
+"secondary": "#d98186"
+},
+{
+"primary": "#bd242d",
+"secondary": "#d98186"
+},
+{
+"primary": "#ffe115",
+"secondary": "#5a2a62"
+},
+{
+"primary": "#ffe115",
+"secondary": "#5a2a62"
+},
+{
+"primary": "#e80510",
+"secondary": "#461516"
+},
+{
+"primary": "#e80510",
+"secondary": "#461516"
+},
+{
+"primary": "#ff0400",
+"secondary": "#ff9594"
+},
+{
+"primary": "#ff0400",
+"secondary": "#ff9594"
+},
+{
 "primary": "#ce2c23",
 "secondary": "#002f79"
 },
@@ -13632,6 +19024,166 @@
 {
 "primary": "#213065",
 "secondary": "#bf2033"
+},
+{
+"primary": "#cf1f25",
+"secondary": "#000000"
+},
+{
+"primary": "#cf1f25",
+"secondary": "#000000"
+},
+{
+"primary": "#f09814",
+"secondary": "#0069b4"
+},
+{
+"primary": "#f09814",
+"secondary": "#0069b4"
+},
+{
+"primary": "#ffd900",
+"secondary": "#470000"
+},
+{
+"primary": "#ffd900",
+"secondary": "#470000"
+},
+{
+"primary": "#374ea2",
+"secondary": "#d96b33"
+},
+{
+"primary": "#374ea2",
+"secondary": "#d96b33"
+},
+{
+"primary": "#223e63",
+"secondary": "#72a3cd"
+},
+{
+"primary": "#223e63",
+"secondary": "#72a3cd"
+},
+{
+"primary": "#fac10b",
+"secondary": "#b98e09"
+},
+{
+"primary": "#fac10b",
+"secondary": "#b98e09"
+},
+{
+"primary": "#e1002b",
+"secondary": "#f18928"
+},
+{
+"primary": "#e1002b",
+"secondary": "#f18928"
+},
+{
+"primary": "#d92728",
+"secondary": "#c18c7a"
+},
+{
+"primary": "#d92728",
+"secondary": "#c18c7a"
+},
+{
+"primary": "#df2528",
+"secondary": "#1a3065"
+},
+{
+"primary": "#df2528",
+"secondary": "#1a3065"
+},
+{
+"primary": "#005828",
+"secondary": "#00215b"
+},
+{
+"primary": "#005828",
+"secondary": "#00215b"
+},
+{
+"primary": "#d92728",
+"secondary": "#c18c7a"
+},
+{
+"primary": "#d92728",
+"secondary": "#c18c7a"
+},
+{
+"primary": "#df2528",
+"secondary": "#1a3065"
+},
+{
+"primary": "#df2528",
+"secondary": "#1a3065"
+},
+{
+"primary": "#005828",
+"secondary": "#00215b"
+},
+{
+"primary": "#005828",
+"secondary": "#00215b"
+},
+{
+"primary": "#fac10b",
+"secondary": "#b98e09"
+},
+{
+"primary": "#fac10b",
+"secondary": "#b98e09"
+},
+{
+"primary": "#ffd900",
+"secondary": "#470000"
+},
+{
+"primary": "#ffd900",
+"secondary": "#470000"
+},
+{
+"primary": "#e1002b",
+"secondary": "#f18928"
+},
+{
+"primary": "#e1002b",
+"secondary": "#f18928"
+},
+{
+"primary": "#f09814",
+"secondary": "#0069b4"
+},
+{
+"primary": "#f09814",
+"secondary": "#0069b4"
+},
+{
+"primary": "#374ea2",
+"secondary": "#d96b33"
+},
+{
+"primary": "#374ea2",
+"secondary": "#d96b33"
+},
+{
+"primary": "#223e63",
+"secondary": "#72a3cd"
+},
+{
+"primary": "#223e63",
+"secondary": "#72a3cd"
+},
+{
+"primary": "#cf1f25",
+"secondary": "#000000"
+},
+{
+"primary": "#cf1f25",
+"secondary": "#000000"
 },
 {
 "primary": "#f59848",
@@ -14184,6 +19736,182 @@
 {
 "primary": "#015027",
 "secondary": "#58866e"
+},
+{
+"primary": "#007337",
+"secondary": "#f07e26"
+},
+{
+"primary": "#007337",
+"secondary": "#f07e26"
+},
+{
+"primary": "#0075bf",
+"secondary": "#e29469"
+},
+{
+"primary": "#0075bf",
+"secondary": "#e29469"
+},
+{
+"primary": "#293b83",
+"secondary": "#f4a613"
+},
+{
+"primary": "#293b83",
+"secondary": "#f4a613"
+},
+{
+"primary": "#1c8ccc",
+"secondary": null
+},
+{
+"primary": "#1c8ccc",
+"secondary": null
+},
+{
+"primary": "#1652a0",
+"secondary": "#fbeb04"
+},
+{
+"primary": "#1652a0",
+"secondary": "#fbeb04"
+},
+{
+"primary": "#f59c00",
+"secondary": "#000000"
+},
+{
+"primary": "#f59c00",
+"secondary": "#000000"
+},
+{
+"primary": "#a8d8bb",
+"secondary": "#46ae6c"
+},
+{
+"primary": "#a8d8bb",
+"secondary": "#46ae6c"
+},
+{
+"primary": "#03afdb",
+"secondary": "#000000"
+},
+{
+"primary": "#03afdb",
+"secondary": "#000000"
+},
+{
+"primary": "#e9540f",
+"secondary": "#0f395c"
+},
+{
+"primary": "#e9540f",
+"secondary": "#0f395c"
+},
+{
+"primary": "#f28021",
+"secondary": "#008357"
+},
+{
+"primary": "#f28021",
+"secondary": "#008357"
+},
+{
+"primary": "#e30017",
+"secondary": "#00539c"
+},
+{
+"primary": "#e30017",
+"secondary": "#00539c"
+},
+{
+"primary": "#03afdb",
+"secondary": "#000000"
+},
+{
+"primary": "#03afdb",
+"secondary": "#000000"
+},
+{
+"primary": "#1c8ccc",
+"secondary": null
+},
+{
+"primary": "#1c8ccc",
+"secondary": null
+},
+{
+"primary": "#007337",
+"secondary": "#f07e26"
+},
+{
+"primary": "#007337",
+"secondary": "#f07e26"
+},
+{
+"primary": "#a8d8bb",
+"secondary": "#46ae6c"
+},
+{
+"primary": "#a8d8bb",
+"secondary": "#46ae6c"
+},
+{
+"primary": "#f28021",
+"secondary": "#008357"
+},
+{
+"primary": "#f28021",
+"secondary": "#008357"
+},
+{
+"primary": "#1652a0",
+"secondary": "#fbeb04"
+},
+{
+"primary": "#1652a0",
+"secondary": "#fbeb04"
+},
+{
+"primary": "#e9540f",
+"secondary": "#0f395c"
+},
+{
+"primary": "#e9540f",
+"secondary": "#0f395c"
+},
+{
+"primary": "#293b83",
+"secondary": "#f4a613"
+},
+{
+"primary": "#293b83",
+"secondary": "#f4a613"
+},
+{
+"primary": "#e30017",
+"secondary": "#00539c"
+},
+{
+"primary": "#e30017",
+"secondary": "#00539c"
+},
+{
+"primary": "#0075bf",
+"secondary": "#e29469"
+},
+{
+"primary": "#0075bf",
+"secondary": "#e29469"
+},
+{
+"primary": "#f59c00",
+"secondary": "#000000"
+},
+{
+"primary": "#f59c00",
+"secondary": "#000000"
 },
 {
 "primary": "#8b6c3c",
@@ -14568,6 +20296,534 @@
 {
 "primary": "#0066aa",
 "secondary": "#95bdda"
+},
+{
+"primary": "#002e1e",
+"secondary": "#0b663d"
+},
+{
+"primary": "#002e1e",
+"secondary": "#0b663d"
+},
+{
+"primary": "#00224f",
+"secondary": "#308bb9"
+},
+{
+"primary": "#00224f",
+"secondary": "#308bb9"
+},
+{
+"primary": "#be1b1b",
+"secondary": "#d89ba0"
+},
+{
+"primary": "#be1b1b",
+"secondary": "#d89ba0"
+},
+{
+"primary": "#550e2e",
+"secondary": "#baaa78"
+},
+{
+"primary": "#550e2e",
+"secondary": "#baaa78"
+},
+{
+"primary": "#224194",
+"secondary": "#f5a904"
+},
+{
+"primary": "#224194",
+"secondary": "#f5a904"
+},
+{
+"primary": "#000000",
+"secondary": null
+},
+{
+"primary": "#000000",
+"secondary": null
+},
+{
+"primary": "#eb0028",
+"secondary": "#000000"
+},
+{
+"primary": "#eb0028",
+"secondary": "#000000"
+},
+{
+"primary": "#004124",
+"secondary": "#4d7a66"
+},
+{
+"primary": "#004124",
+"secondary": "#4d7a66"
+},
+{
+"primary": "#f9a417",
+"secondary": "#4a4236"
+},
+{
+"primary": "#f9a417",
+"secondary": "#4a4236"
+},
+{
+"primary": "#00803f",
+"secondary": "#fc8231"
+},
+{
+"primary": "#00803f",
+"secondary": "#fc8231"
+},
+{
+"primary": "#550e2e",
+"secondary": "#baaa78"
+},
+{
+"primary": "#550e2e",
+"secondary": "#baaa78"
+},
+{
+"primary": "#000000",
+"secondary": null
+},
+{
+"primary": "#000000",
+"secondary": null
+},
+{
+"primary": "#f9a417",
+"secondary": "#4a4236"
+},
+{
+"primary": "#f9a417",
+"secondary": "#4a4236"
+},
+{
+"primary": "#00803f",
+"secondary": "#fc8231"
+},
+{
+"primary": "#00803f",
+"secondary": "#fc8231"
+},
+{
+"primary": "#be1b1b",
+"secondary": "#d89ba0"
+},
+{
+"primary": "#be1b1b",
+"secondary": "#d89ba0"
+},
+{
+"primary": "#00224f",
+"secondary": "#308bb9"
+},
+{
+"primary": "#00224f",
+"secondary": "#308bb9"
+},
+{
+"primary": "#224194",
+"secondary": "#f5a904"
+},
+{
+"primary": "#224194",
+"secondary": "#f5a904"
+},
+{
+"primary": "#eb0028",
+"secondary": "#000000"
+},
+{
+"primary": "#eb0028",
+"secondary": "#000000"
+},
+{
+"primary": "#002e1e",
+"secondary": "#0b663d"
+},
+{
+"primary": "#002e1e",
+"secondary": "#0b663d"
+},
+{
+"primary": "#004124",
+"secondary": "#4d7a66"
+},
+{
+"primary": "#004124",
+"secondary": "#4d7a66"
+},
+{
+"primary": "#1a1b35",
+"secondary": "#fbea97"
+},
+{
+"primary": "#1a1b35",
+"secondary": "#fbea97"
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": "#fea316",
+"secondary": "#f93f09"
+},
+{
+"primary": "#fea316",
+"secondary": "#f93f09"
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": "#f5b720",
+"secondary": "#534b34"
+},
+{
+"primary": "#f5b720",
+"secondary": "#534b34"
+},
+{
+"primary": "#534c67",
+"secondary": "#221e3b"
+},
+{
+"primary": "#534c67",
+"secondary": "#221e3b"
+},
+{
+"primary": "#e20613",
+"secondary": null
+},
+{
+"primary": "#e20613",
+"secondary": null
+},
+{
+"primary": "#15493a",
+"secondary": "#b01917"
+},
+{
+"primary": "#15493a",
+"secondary": "#b01917"
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": "#449cc8",
+"secondary": "#5e6d78"
+},
+{
+"primary": "#449cc8",
+"secondary": "#5e6d78"
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": "#930e17",
+"secondary": "#020509"
+},
+{
+"primary": "#930e17",
+"secondary": "#020509"
+},
+{
+"primary": "#e20613",
+"secondary": null
+},
+{
+"primary": "#e20613",
+"secondary": null
+},
+{
+"primary": "#b30b0d",
+"secondary": "#000000"
+},
+{
+"primary": "#b30b0d",
+"secondary": "#000000"
+},
+{
+"primary": "#53d1f1",
+"secondary": "#385b73"
+},
+{
+"primary": "#53d1f1",
+"secondary": "#385b73"
+},
+{
+"primary": "#b30b0d",
+"secondary": "#000000"
+},
+{
+"primary": "#b30b0d",
+"secondary": "#000000"
+},
+{
+"primary": "#53d1f1",
+"secondary": "#385b73"
+},
+{
+"primary": "#53d1f1",
+"secondary": "#385b73"
+},
+{
+"primary": "#a8d7d2",
+"secondary": "#ec002c"
+},
+{
+"primary": "#a8d7d2",
+"secondary": "#ec002c"
+},
+{
+"primary": "#f5b720",
+"secondary": "#534b34"
+},
+{
+"primary": "#f5b720",
+"secondary": "#534b34"
+},
+{
+"primary": "#53d2f1",
+"secondary": "#34566f"
+},
+{
+"primary": "#53d2f1",
+"secondary": "#34566f"
+},
+{
+"primary": "#fea316",
+"secondary": "#f93f09"
+},
+{
+"primary": "#fea316",
+"secondary": "#f93f09"
+},
+{
+"primary": "#ef1c24",
+"secondary": "#6e1e21"
+},
+{
+"primary": "#ef1c24",
+"secondary": "#6e1e21"
+},
+{
+"primary": "#cd1017",
+"secondary": "#621518"
+},
+{
+"primary": "#cd1017",
+"secondary": "#621518"
+},
+{
+"primary": "#15493a",
+"secondary": "#b01917"
+},
+{
+"primary": "#15493a",
+"secondary": "#b01917"
+},
+{
+"primary": "#449cc8",
+"secondary": "#5e6d78"
+},
+{
+"primary": "#449cc8",
+"secondary": "#5e6d78"
+},
+{
+"primary": "#d71217",
+"secondary": "#391f1f"
+},
+{
+"primary": "#d71217",
+"secondary": "#391f1f"
+},
+{
+"primary": "#1a1b35",
+"secondary": "#fbea97"
+},
+{
+"primary": "#1a1b35",
+"secondary": "#fbea97"
+},
+{
+"primary": "#b70a0e",
+"secondary": "#705857"
+},
+{
+"primary": "#b70a0e",
+"secondary": "#705857"
+},
+{
+"primary": "#534c67",
+"secondary": "#221e3b"
+},
+{
+"primary": "#534c67",
+"secondary": "#221e3b"
+},
+{
+"primary": "#930e17",
+"secondary": "#020509"
+},
+{
+"primary": "#930e17",
+"secondary": "#020509"
+},
+{
+"primary": "#a8d7d2",
+"secondary": "#ec002c"
+},
+{
+"primary": "#a8d7d2",
+"secondary": "#ec002c"
+},
+{
+"primary": "#d71217",
+"secondary": "#391f1f"
+},
+{
+"primary": "#d71217",
+"secondary": "#391f1f"
+},
+{
+"primary": "#ca0b13",
+"secondary": "#321718"
+},
+{
+"primary": "#ca0b13",
+"secondary": "#321718"
+},
+{
+"primary": "#d71217",
+"secondary": "#391f1f"
+},
+{
+"primary": "#d71217",
+"secondary": "#391f1f"
 },
 {
 "primary": null,
@@ -29824,6 +36080,422 @@
 {
 "primary": "#552583",
 "secondary": "#fdb927"
+},
+{
+"primary": "#051130",
+"secondary": "#aaa791"
+},
+{
+"primary": "#051130",
+"secondary": "#aaa791"
+},
+{
+"primary": "#000000",
+"secondary": "#ffffff"
+},
+{
+"primary": "#000000",
+"secondary": "#ffffff"
+},
+{
+"primary": "#1f4ea2",
+"secondary": "#fab81b"
+},
+{
+"primary": "#1f4ea2",
+"secondary": "#fab81b"
+},
+{
+"primary": "#f79239",
+"secondary": "#d1a371"
+},
+{
+"primary": "#f79239",
+"secondary": "#d1a371"
+},
+{
+"primary": "#002554",
+"secondary": "#b7912e"
+},
+{
+"primary": "#002554",
+"secondary": "#b7912e"
+},
+{
+"primary": "#ce2029",
+"secondary": "#efb9bb"
+},
+{
+"primary": "#ce2029",
+"secondary": "#efb9bb"
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": null,
+"secondary": null
+},
+{
+"primary": "#978378",
+"secondary": "#ae4649"
+},
+{
+"primary": "#978378",
+"secondary": "#ae4649"
+},
+{
+"primary": "#0054ff",
+"secondary": "#000526"
+},
+{
+"primary": "#0054ff",
+"secondary": "#000526"
+},
+{
+"primary": "#ae6f44",
+"secondary": "#352822"
+},
+{
+"primary": "#ae6f44",
+"secondary": "#352822"
+},
+{
+"primary": "#fc7e30",
+"secondary": "#be9d89"
+},
+{
+"primary": "#fc7e30",
+"secondary": "#be9d89"
+},
+{
+"primary": "#e1b043",
+"secondary": "#484236"
+},
+{
+"primary": "#e1b043",
+"secondary": "#484236"
+},
+{
+"primary": "#1b1b1b",
+"secondary": "#929292"
+},
+{
+"primary": "#1b1b1b",
+"secondary": "#929292"
+},
+{
+"primary": "#f6aa00",
+"secondary": "#ca0512"
+},
+{
+"primary": "#f6aa00",
+"secondary": "#ca0512"
+},
+{
+"primary": "#f7941d",
+"secondary": "#007841"
+},
+{
+"primary": "#f7941d",
+"secondary": "#007841"
+},
+{
+"primary": "#ee0000",
+"secondary": "#2f0000"
+},
+{
+"primary": "#ee0000",
+"secondary": "#2f0000"
+},
+{
+"primary": "#d9a27b",
+"secondary": "#004070"
+},
+{
+"primary": "#d9a27b",
+"secondary": "#004070"
+},
+{
+"primary": "#f86f27",
+"secondary": "#0d1d62"
+},
+{
+"primary": "#f86f27",
+"secondary": "#0d1d62"
+},
+{
+"primary": "#69bf29",
+"secondary": "#cbfa03"
+},
+{
+"primary": "#69bf29",
+"secondary": "#cbfa03"
+},
+{
+"primary": "#06315b",
+"secondary": "#425978"
+},
+{
+"primary": "#06315b",
+"secondary": "#425978"
+},
+{
+"primary": "#a0937f",
+"secondary": "#291c1a"
+},
+{
+"primary": "#a0937f",
+"secondary": "#291c1a"
+},
+{
+"primary": "#783dbd",
+"secondary": "#ffb600"
+},
+{
+"primary": "#783dbd",
+"secondary": "#ffb600"
+},
+{
+"primary": "#002a22",
+"secondary": "#008b46"
+},
+{
+"primary": "#002a22",
+"secondary": "#008b46"
+},
+{
+"primary": "#34394f",
+"secondary": "#358257"
+},
+{
+"primary": "#34394f",
+"secondary": "#358257"
+},
+{
+"primary": "#8b7c6c",
+"secondary": "#4f423e"
+},
+{
+"primary": "#8b7c6c",
+"secondary": "#4f423e"
+},
+{
+"primary": "#fc7e30",
+"secondary": "#be9d89"
+},
+{
+"primary": "#fc7e30",
+"secondary": "#be9d89"
+},
+{
+"primary": "#d9a27b",
+"secondary": "#004070"
+},
+{
+"primary": "#d9a27b",
+"secondary": "#004070"
+},
+{
+"primary": "#ae6f44",
+"secondary": "#352822"
+},
+{
+"primary": "#ae6f44",
+"secondary": "#352822"
+},
+{
+"primary": "#000000",
+"secondary": "#ffffff"
+},
+{
+"primary": "#000000",
+"secondary": "#ffffff"
+},
+{
+"primary": "#a0937f",
+"secondary": "#291c1a"
+},
+{
+"primary": "#a0937f",
+"secondary": "#291c1a"
+},
+{
+"primary": "#051130",
+"secondary": "#aaa791"
+},
+{
+"primary": "#051130",
+"secondary": "#aaa791"
+},
+{
+"primary": "#1b1b1b",
+"secondary": "#929292"
+},
+{
+"primary": "#1b1b1b",
+"secondary": "#929292"
+},
+{
+"primary": "#ee0000",
+"secondary": "#2f0000"
+},
+{
+"primary": "#ee0000",
+"secondary": "#2f0000"
+},
+{
+"primary": "#783dbd",
+"secondary": "#ffb600"
+},
+{
+"primary": "#783dbd",
+"secondary": "#ffb600"
+},
+{
+"primary": "#f7941d",
+"secondary": "#007841"
+},
+{
+"primary": "#f7941d",
+"secondary": "#007841"
+},
+{
+"primary": "#1f4ea2",
+"secondary": "#fab81b"
+},
+{
+"primary": "#1f4ea2",
+"secondary": "#fab81b"
+},
+{
+"primary": "#34394f",
+"secondary": "#358257"
+},
+{
+"primary": "#34394f",
+"secondary": "#358257"
+},
+{
+"primary": "#f79239",
+"secondary": "#d1a371"
+},
+{
+"primary": "#f79239",
+"secondary": "#d1a371"
+},
+{
+"primary": "#e01837",
+"secondary": "#ffffff"
+},
+{
+"primary": "#e01837",
+"secondary": "#ffffff"
+},
+{
+"primary": "#0054ff",
+"secondary": "#000526"
+},
+{
+"primary": "#0054ff",
+"secondary": "#000526"
+},
+{
+"primary": "#06315b",
+"secondary": "#425978"
+},
+{
+"primary": "#06315b",
+"secondary": "#425978"
+},
+{
+"primary": "#69bf29",
+"secondary": "#cbfa03"
+},
+{
+"primary": "#69bf29",
+"secondary": "#cbfa03"
+},
+{
+"primary": "#e01837",
+"secondary": "#ffffff"
+},
+{
+"primary": "#e01837",
+"secondary": "#ffffff"
+},
+{
+"primary": "#002a22",
+"secondary": "#008b46"
+},
+{
+"primary": "#002a22",
+"secondary": "#008b46"
+},
+{
+"primary": "#e1b043",
+"secondary": "#484236"
+},
+{
+"primary": "#e1b043",
+"secondary": "#484236"
+},
+{
+"primary": "#f86f27",
+"secondary": "#0d1d62"
+},
+{
+"primary": "#f86f27",
+"secondary": "#0d1d62"
+},
+{
+"primary": "#f6aa00",
+"secondary": "#ca0512"
+},
+{
+"primary": "#f6aa00",
+"secondary": "#ca0512"
+},
+{
+"primary": "#8b7c6c",
+"secondary": "#4f423e"
+},
+{
+"primary": "#8b7c6c",
+"secondary": "#4f423e"
+},
+{
+"primary": "#ce2029",
+"secondary": "#efb9bb"
+},
+{
+"primary": "#ce2029",
+"secondary": "#efb9bb"
+},
+{
+"primary": "#002554",
+"secondary": "#b7912e"
+},
+{
+"primary": "#002554",
+"secondary": "#b7912e"
+},
+{
+"primary": "#978378",
+"secondary": "#ae4649"
+},
+{
+"primary": "#978378",
+"secondary": "#ae4649"
 },
 {
 "primary": null,
@@ -45736,6 +52408,406 @@
 "secondary": "#69222c"
 },
 {
+"primary": "#002944",
+"secondary": "#ffdd00"
+},
+{
+"primary": "#002944",
+"secondary": "#ffdd00"
+},
+{
+"primary": "#0b5640",
+"secondary": "#ffd000"
+},
+{
+"primary": "#0b5640",
+"secondary": "#ffd000"
+},
+{
+"primary": "#ffcc00",
+"secondary": "#4d3e00"
+},
+{
+"primary": "#ffcc00",
+"secondary": "#4d3e00"
+},
+{
+"primary": "#cfb571",
+"secondary": "#e21f26"
+},
+{
+"primary": "#cfb571",
+"secondary": "#e21f26"
+},
+{
+"primary": "#00573f",
+"secondary": "#cb1c38"
+},
+{
+"primary": "#00573f",
+"secondary": "#cb1c38"
+},
+{
+"primary": "#008e52",
+"secondary": "#e9b646"
+},
+{
+"primary": "#008e52",
+"secondary": "#e9b646"
+},
+{
+"primary": "#ffd500",
+"secondary": "#002d59"
+},
+{
+"primary": "#ffd500",
+"secondary": "#002d59"
+},
+{
+"primary": "#ffcc00",
+"secondary": "#007a43"
+},
+{
+"primary": "#ffcc00",
+"secondary": "#007a43"
+},
+{
+"primary": "#002d74",
+"secondary": "#c10230"
+},
+{
+"primary": "#002d74",
+"secondary": "#c10230"
+},
+{
+"primary": "#e84e0f",
+"secondary": "#946a44"
+},
+{
+"primary": "#e84e0f",
+"secondary": "#946a44"
+},
+{
+"primary": "#00358e",
+"secondary": "#3b64a8"
+},
+{
+"primary": "#00358e",
+"secondary": "#3b64a8"
+},
+{
+"primary": "#002e5f",
+"secondary": "#c8102e"
+},
+{
+"primary": "#002e5f",
+"secondary": "#c8102e"
+},
+{
+"primary": "#d20a11",
+"secondary": "#ffcc00"
+},
+{
+"primary": "#d20a11",
+"secondary": "#ffcc00"
+},
+{
+"primary": "#ba0c2f",
+"secondary": "#675652"
+},
+{
+"primary": "#ba0c2f",
+"secondary": "#675652"
+},
+{
+"primary": "#d01f2d",
+"secondary": "#2c5235"
+},
+{
+"primary": "#d01f2d",
+"secondary": "#2c5235"
+},
+{
+"primary": "#e42313",
+"secondary": "#007d32"
+},
+{
+"primary": "#e42313",
+"secondary": "#007d32"
+},
+{
+"primary": "#007a33",
+"secondary": "#ab2328"
+},
+{
+"primary": "#007a33",
+"secondary": "#ab2328"
+},
+{
+"primary": "#fbb906",
+"secondary": "#000000"
+},
+{
+"primary": "#fbb906",
+"secondary": "#000000"
+},
+{
+"primary": "#bc9b6a",
+"secondary": "#ffd12b"
+},
+{
+"primary": "#bc9b6a",
+"secondary": "#ffd12b"
+},
+{
+"primary": "#e33125",
+"secondary": "#124a97"
+},
+{
+"primary": "#e33125",
+"secondary": "#124a97"
+},
+{
+"primary": "#49665c",
+"secondary": "#b2292e"
+},
+{
+"primary": "#49665c",
+"secondary": "#b2292e"
+},
+{
+"primary": "#fdd200",
+"secondary": "#000000"
+},
+{
+"primary": "#fdd200",
+"secondary": "#000000"
+},
+{
+"primary": "#002f60",
+"secondary": "#be9e55"
+},
+{
+"primary": "#002f60",
+"secondary": "#be9e55"
+},
+{
+"primary": "#e4032b",
+"secondary": "#980e1c"
+},
+{
+"primary": "#e4032b",
+"secondary": "#980e1c"
+},
+{
+"primary": "#e31113",
+"secondary": "#d8c581"
+},
+{
+"primary": "#e31113",
+"secondary": "#d8c581"
+},
+{
+"primary": "#002944",
+"secondary": "#ffdd00"
+},
+{
+"primary": "#002944",
+"secondary": "#ffdd00"
+},
+{
+"primary": "#ffcc00",
+"secondary": "#4d3e00"
+},
+{
+"primary": "#ffcc00",
+"secondary": "#4d3e00"
+},
+{
+"primary": "#cfb571",
+"secondary": "#e21f26"
+},
+{
+"primary": "#cfb571",
+"secondary": "#e21f26"
+},
+{
+"primary": "#008e52",
+"secondary": "#e9b646"
+},
+{
+"primary": "#008e52",
+"secondary": "#e9b646"
+},
+{
+"primary": "#00573f",
+"secondary": "#cb1c38"
+},
+{
+"primary": "#00573f",
+"secondary": "#cb1c38"
+},
+{
+"primary": "#ffcc00",
+"secondary": "#007a43"
+},
+{
+"primary": "#ffcc00",
+"secondary": "#007a43"
+},
+{
+"primary": "#ffd500",
+"secondary": "#002d59"
+},
+{
+"primary": "#ffd500",
+"secondary": "#002d59"
+},
+{
+"primary": "#0b5640",
+"secondary": "#ffd000"
+},
+{
+"primary": "#0b5640",
+"secondary": "#ffd000"
+},
+{
+"primary": "#002d74",
+"secondary": "#c10230"
+},
+{
+"primary": "#002d74",
+"secondary": "#c10230"
+},
+{
+"primary": "#e84e0f",
+"secondary": "#946a44"
+},
+{
+"primary": "#e84e0f",
+"secondary": "#946a44"
+},
+{
+"primary": "#002e5f",
+"secondary": "#c8102e"
+},
+{
+"primary": "#002e5f",
+"secondary": "#c8102e"
+},
+{
+"primary": "#d20a11",
+"secondary": "#ffcc00"
+},
+{
+"primary": "#d20a11",
+"secondary": "#ffcc00"
+},
+{
+"primary": "#00358e",
+"secondary": "#3b64a8"
+},
+{
+"primary": "#00358e",
+"secondary": "#3b64a8"
+},
+{
+"primary": "#ba0c2f",
+"secondary": "#675652"
+},
+{
+"primary": "#ba0c2f",
+"secondary": "#675652"
+},
+{
+"primary": "#e42313",
+"secondary": "#007d32"
+},
+{
+"primary": "#e42313",
+"secondary": "#007d32"
+},
+{
+"primary": "#d01f2d",
+"secondary": "#2c5235"
+},
+{
+"primary": "#d01f2d",
+"secondary": "#2c5235"
+},
+{
+"primary": "#e31113",
+"secondary": "#d8c581"
+},
+{
+"primary": "#e31113",
+"secondary": "#d8c581"
+},
+{
+"primary": "#007a33",
+"secondary": "#ab2328"
+},
+{
+"primary": "#007a33",
+"secondary": "#ab2328"
+},
+{
+"primary": "#fbb906",
+"secondary": "#000000"
+},
+{
+"primary": "#fbb906",
+"secondary": "#000000"
+},
+{
+"primary": "#bc9b6a",
+"secondary": "#ffd12b"
+},
+{
+"primary": "#bc9b6a",
+"secondary": "#ffd12b"
+},
+{
+"primary": "#e33125",
+"secondary": "#124a97"
+},
+{
+"primary": "#e33125",
+"secondary": "#124a97"
+},
+{
+"primary": "#fdd200",
+"secondary": "#000000"
+},
+{
+"primary": "#fdd200",
+"secondary": "#000000"
+},
+{
+"primary": "#002f60",
+"secondary": "#be9e55"
+},
+{
+"primary": "#002f60",
+"secondary": "#be9e55"
+},
+{
+"primary": "#49665c",
+"secondary": "#b2292e"
+},
+{
+"primary": "#49665c",
+"secondary": "#b2292e"
+},
+{
+"primary": "#e4032b",
+"secondary": "#980e1c"
+},
+{
+"primary": "#e4032b",
+"secondary": "#980e1c"
+},
+{
 "primary": "#0c665d",
 "secondary": "#042e2b"
 },
@@ -49390,6 +56462,182 @@
 {
 "primary": "#044566",
 "secondary": "#f67f31"
+},
+{
+"primary": "#bfa084",
+"secondary": "#000000"
+},
+{
+"primary": "#bfa084",
+"secondary": "#000000"
+},
+{
+"primary": "#1c355e",
+"secondary": "#2878e0"
+},
+{
+"primary": "#1c355e",
+"secondary": "#2878e0"
+},
+{
+"primary": "#db1d24",
+"secondary": "#06408a"
+},
+{
+"primary": "#db1d24",
+"secondary": "#06408a"
+},
+{
+"primary": "#077fc1",
+"secondary": "#ffffff"
+},
+{
+"primary": "#077fc1",
+"secondary": "#ffffff"
+},
+{
+"primary": "#101f50",
+"secondary": "#565f82"
+},
+{
+"primary": "#101f50",
+"secondary": "#565f82"
+},
+{
+"primary": "#e9312d",
+"secondary": "#5e3528"
+},
+{
+"primary": "#e9312d",
+"secondary": "#5e3528"
+},
+{
+"primary": "#8e5e41",
+"secondary": "#2b2420"
+},
+{
+"primary": "#8e5e41",
+"secondary": "#2b2420"
+},
+{
+"primary": "#eb6608",
+"secondary": "#008ad1"
+},
+{
+"primary": "#eb6608",
+"secondary": "#008ad1"
+},
+{
+"primary": "#f67932",
+"secondary": "#276535"
+},
+{
+"primary": "#f67932",
+"secondary": "#276535"
+},
+{
+"primary": "#f07f1b",
+"secondary": "#019847"
+},
+{
+"primary": "#f07f1b",
+"secondary": "#019847"
+},
+{
+"primary": "#00aeef",
+"secondary": null
+},
+{
+"primary": "#00aeef",
+"secondary": null
+},
+{
+"primary": "#f07f1b",
+"secondary": "#019847"
+},
+{
+"primary": "#f07f1b",
+"secondary": "#019847"
+},
+{
+"primary": "#db1d24",
+"secondary": "#06408a"
+},
+{
+"primary": "#db1d24",
+"secondary": "#06408a"
+},
+{
+"primary": "#077fc1",
+"secondary": "#ffffff"
+},
+{
+"primary": "#077fc1",
+"secondary": "#ffffff"
+},
+{
+"primary": "#e9312d",
+"secondary": "#5e3528"
+},
+{
+"primary": "#e9312d",
+"secondary": "#5e3528"
+},
+{
+"primary": "#8e5e41",
+"secondary": "#2b2420"
+},
+{
+"primary": "#8e5e41",
+"secondary": "#2b2420"
+},
+{
+"primary": "#eb6608",
+"secondary": "#008ad1"
+},
+{
+"primary": "#eb6608",
+"secondary": "#008ad1"
+},
+{
+"primary": "#00aeef",
+"secondary": null
+},
+{
+"primary": "#00aeef",
+"secondary": null
+},
+{
+"primary": "#1c355e",
+"secondary": "#2878e0"
+},
+{
+"primary": "#1c355e",
+"secondary": "#2878e0"
+},
+{
+"primary": "#bfa084",
+"secondary": "#000000"
+},
+{
+"primary": "#bfa084",
+"secondary": "#000000"
+},
+{
+"primary": "#101f50",
+"secondary": "#565f82"
+},
+{
+"primary": "#101f50",
+"secondary": "#565f82"
+},
+{
+"primary": "#f67932",
+"secondary": "#276535"
+},
+{
+"primary": "#f67932",
+"secondary": "#276535"
 },
 {
 "primary": null,
@@ -53764,6 +61012,246 @@
 "secondary": "#97b7d2"
 },
 {
+"primary": "#fcef0a",
+"secondary": "#000002"
+},
+{
+"primary": "#fcef0a",
+"secondary": "#000002"
+},
+{
+"primary": "#004832",
+"secondary": "#486d5f"
+},
+{
+"primary": "#004832",
+"secondary": "#486d5f"
+},
+{
+"primary": "#f899d0",
+"secondary": "#1d2b6e"
+},
+{
+"primary": "#f899d0",
+"secondary": "#1d2b6e"
+},
+{
+"primary": "#e91695",
+"secondary": "#332123"
+},
+{
+"primary": "#e91695",
+"secondary": "#332123"
+},
+{
+"primary": "#eab8ac",
+"secondary": "#e6032c"
+},
+{
+"primary": "#eab8ac",
+"secondary": "#e6032c"
+},
+{
+"primary": "#992032",
+"secondary": "#c76d75"
+},
+{
+"primary": "#992032",
+"secondary": "#c76d75"
+},
+{
+"primary": "#e70012",
+"secondary": "#ef5159"
+},
+{
+"primary": "#e70012",
+"secondary": "#ef5159"
+},
+{
+"primary": "#1e2753",
+"secondary": "#ff5738"
+},
+{
+"primary": "#1e2753",
+"secondary": "#ff5738"
+},
+{
+"primary": "#d74944",
+"secondary": "#32251f"
+},
+{
+"primary": "#d74944",
+"secondary": "#32251f"
+},
+{
+"primary": "#e60012",
+"secondary": "#d2917d"
+},
+{
+"primary": "#e60012",
+"secondary": "#d2917d"
+},
+{
+"primary": "#826048",
+"secondary": "#ebe4a8"
+},
+{
+"primary": "#826048",
+"secondary": "#ebe4a8"
+},
+{
+"primary": "#08a0a3",
+"secondary": "#a2d0d4"
+},
+{
+"primary": "#08a0a3",
+"secondary": "#a2d0d4"
+},
+{
+"primary": "#a7502d",
+"secondary": "#58181d"
+},
+{
+"primary": "#a7502d",
+"secondary": "#58181d"
+},
+{
+"primary": "#063c83",
+"secondary": "#158dc2"
+},
+{
+"primary": "#063c83",
+"secondary": "#158dc2"
+},
+{
+"primary": "#0c336d",
+"secondary": "#f9bf70"
+},
+{
+"primary": "#0c336d",
+"secondary": "#f9bf70"
+},
+{
+"primary": "#f899d0",
+"secondary": "#1d2b6e"
+},
+{
+"primary": "#f899d0",
+"secondary": "#1d2b6e"
+},
+{
+"primary": "#e91695",
+"secondary": "#332123"
+},
+{
+"primary": "#e91695",
+"secondary": "#332123"
+},
+{
+"primary": "#eab8ac",
+"secondary": "#e6032c"
+},
+{
+"primary": "#eab8ac",
+"secondary": "#e6032c"
+},
+{
+"primary": "#e70012",
+"secondary": "#ef5159"
+},
+{
+"primary": "#e70012",
+"secondary": "#ef5159"
+},
+{
+"primary": "#0c336d",
+"secondary": "#f9bf70"
+},
+{
+"primary": "#0c336d",
+"secondary": "#f9bf70"
+},
+{
+"primary": "#826048",
+"secondary": "#ebe4a8"
+},
+{
+"primary": "#826048",
+"secondary": "#ebe4a8"
+},
+{
+"primary": "#d74944",
+"secondary": "#32251f"
+},
+{
+"primary": "#d74944",
+"secondary": "#32251f"
+},
+{
+"primary": "#1e2753",
+"secondary": "#ff5738"
+},
+{
+"primary": "#1e2753",
+"secondary": "#ff5738"
+},
+{
+"primary": "#08a0a3",
+"secondary": "#a2d0d4"
+},
+{
+"primary": "#08a0a3",
+"secondary": "#a2d0d4"
+},
+{
+"primary": "#063c83",
+"secondary": "#158dc2"
+},
+{
+"primary": "#063c83",
+"secondary": "#158dc2"
+},
+{
+"primary": "#e60012",
+"secondary": "#d2917d"
+},
+{
+"primary": "#e60012",
+"secondary": "#d2917d"
+},
+{
+"primary": "#992032",
+"secondary": "#c76d75"
+},
+{
+"primary": "#992032",
+"secondary": "#c76d75"
+},
+{
+"primary": "#004832",
+"secondary": "#486d5f"
+},
+{
+"primary": "#004832",
+"secondary": "#486d5f"
+},
+{
+"primary": "#a7502d",
+"secondary": "#58181d"
+},
+{
+"primary": "#a7502d",
+"secondary": "#58181d"
+},
+{
+"primary": "#fcef0a",
+"secondary": "#000002"
+},
+{
+"primary": "#fcef0a",
+"secondary": "#000002"
+},
+{
 "primary": "#e31837",
 "secondary": "#5091cc"
 },
@@ -55851,6 +63339,182 @@
 {
 "primary": "#e03a3e",
 "secondary": "#002b5c"
+},
+{
+"primary": "#bf9bc2",
+"secondary": "#5f3555"
+},
+{
+"primary": "#bf9bc2",
+"secondary": "#5f3555"
+},
+{
+"primary": "#ffda0c",
+"secondary": "#4d41f7"
+},
+{
+"primary": "#ffda0c",
+"secondary": "#4d41f7"
+},
+{
+"primary": "#6997f0",
+"secondary": "#0a2b42"
+},
+{
+"primary": "#6997f0",
+"secondary": "#0a2b42"
+},
+{
+"primary": "#013b02",
+"secondary": "#e8ddb8"
+},
+{
+"primary": "#013b02",
+"secondary": "#e8ddb8"
+},
+{
+"primary": "#ffafa9",
+"secondary": "#fd1e23"
+},
+{
+"primary": "#ffafa9",
+"secondary": "#fd1e23"
+},
+{
+"primary": "#152c51",
+"secondary": "#28aae2"
+},
+{
+"primary": "#152c51",
+"secondary": "#28aae2"
+},
+{
+"primary": "#fb025f",
+"secondary": "#000000"
+},
+{
+"primary": "#fb025f",
+"secondary": "#000000"
+},
+{
+"primary": "#002a22",
+"secondary": "#8fe2b0"
+},
+{
+"primary": "#002a22",
+"secondary": "#8fe2b0"
+},
+{
+"primary": "#f76f2a",
+"secondary": "#fecc14"
+},
+{
+"primary": "#f76f2a",
+"secondary": "#fecc14"
+},
+{
+"primary": "#00b5e2",
+"secondary": "#957f54"
+},
+{
+"primary": "#00b5e2",
+"secondary": "#957f54"
+},
+{
+"primary": "#f6b522",
+"secondary": "#b9933e"
+},
+{
+"primary": "#f6b522",
+"secondary": "#b9933e"
+},
+{
+"primary": "#002a22",
+"secondary": "#8fe2b0"
+},
+{
+"primary": "#002a22",
+"secondary": "#8fe2b0"
+},
+{
+"primary": "#f6b522",
+"secondary": "#b9933e"
+},
+{
+"primary": "#f6b522",
+"secondary": "#b9933e"
+},
+{
+"primary": "#00b5e2",
+"secondary": "#957f54"
+},
+{
+"primary": "#00b5e2",
+"secondary": "#957f54"
+},
+{
+"primary": "#f76f2a",
+"secondary": "#fecc14"
+},
+{
+"primary": "#f76f2a",
+"secondary": "#fecc14"
+},
+{
+"primary": "#013b02",
+"secondary": "#e8ddb8"
+},
+{
+"primary": "#013b02",
+"secondary": "#e8ddb8"
+},
+{
+"primary": "#ffafa9",
+"secondary": "#fd1e23"
+},
+{
+"primary": "#ffafa9",
+"secondary": "#fd1e23"
+},
+{
+"primary": "#fb025f",
+"secondary": "#000000"
+},
+{
+"primary": "#fb025f",
+"secondary": "#000000"
+},
+{
+"primary": "#ffda0c",
+"secondary": "#4d41f7"
+},
+{
+"primary": "#ffda0c",
+"secondary": "#4d41f7"
+},
+{
+"primary": "#bf9bc2",
+"secondary": "#5f3555"
+},
+{
+"primary": "#bf9bc2",
+"secondary": "#5f3555"
+},
+{
+"primary": "#152c51",
+"secondary": "#28aae2"
+},
+{
+"primary": "#152c51",
+"secondary": "#28aae2"
+},
+{
+"primary": "#6997f0",
+"secondary": "#0a2b42"
+},
+{
+"primary": "#6997f0",
+"secondary": "#0a2b42"
 },
 {
 "primary": "#69b3e7",
