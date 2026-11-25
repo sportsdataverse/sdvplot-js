@@ -9,8 +9,8 @@ import { palette, teamColorsSync } from "../src/colors.js";
 import { INDEX_VERSION, type League } from "../src/data/index.js";
 import { InputError, UnresolvedTeamError, resetWarnings, setWarningHandler } from "../src/errors.js";
 import { preloadAll } from "../src/index-data.js";
-import { cleanNamesSync, teamFactorSync } from "../src/names.js";
-import { aliases, teams } from "../src/teams.js";
+import { cleanNames, cleanNamesSync, teamFactor, teamFactorSync } from "../src/names.js";
+import { aliases, inDivision, teams } from "../src/teams.js";
 
 const fx = JSON.parse(
   readFileSync(new URL("../../../fixtures/sdvplot/cfbplotr.json", import.meta.url), "utf8"),
@@ -198,4 +198,32 @@ test("addAthleteId rejects a key the rows do not have", async () => {
   await expect(addAthleteId([{ p: "A B" }], "p", { teamKey: "tem" })).rejects.toThrow(
     "teamKey must name a key",
   );
+});
+
+test("the async forms, a scalar altColors and the edge branches answer as their Sync forms and Python", async () => {
+  expect(await cleanNames(["utah", "nope"], "cfb")).toEqual(cleanNamesSync(["utah", "nope"], "cfb"));
+  expect(await teamFactor(["KC", "BUF"], "nfl")).toEqual(teamFactorSync(["KC", "BUF"], "nfl"));
+  expect(teamColorsSync("cfb", "Utah", { altColors: "Utah" })).toBe(
+    teamColorsSync("cfb", "Utah", { which: "secondary" }),
+  );
+  // a league whose index has no divisions is an error, as in Python
+  await expect(teams("nfl", { division: "FBS" })).rejects.toThrow("has no nfl divisions");
+  // a tier whose conference id the index lacks warns that the tier may be incomplete
+  warnings.length = 0;
+  resetWarnings();
+  const cfb = (await teams("cfb")).filter((t) => t.conference_id !== "cfb:pac-12");
+  expect(inDivision(cfb, "cfb", "P5").length).toBeGreaterThan(60);
+  expect(warnings.some((w) => w.includes("cfb:pac-12"))).toBe(true);
+  // rows that are not an array; a roster row with no id, or an id that went through a float
+  await expect(addAthleteId("x" as never, "p")).rejects.toThrow("rows must be an array");
+  const text = "athlete_id,first_name,last_name,team,headshot_url\n12.0,A,B,Utah,\n,C,D,Utah,u\n";
+  expect(parseRoster(text, 2021)).toEqual([[2021, "12", "A B", "Utah", null]]);
+  // seasons the way R's as.integer() reads them: booleans and words are no season
+  resetRosterCache();
+  const rows = [
+    { p: "x", season: true },
+    { p: "y", season: "abc" },
+  ];
+  const got = await addAthleteId(rows, "p", { fetch: rosterFetch, today });
+  expect(got.map((r) => r.athlete_id)).toEqual([undefined, undefined]);
 });

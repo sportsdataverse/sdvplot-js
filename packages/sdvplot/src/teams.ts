@@ -36,8 +36,12 @@ export interface TeamsOptions {
   division?: Division | readonly Division[];
 }
 
-/** Port of Python `_index._in_division`: the rows of one league's index rows in any of `division`. */
-function inDivision(rows: readonly Team[], league: League, division: Division | readonly Division[]): Team[] {
+/** Internal (not in the barrel): Python `_index._in_division`, the rows of one league's index rows in any of `division`. */
+export function inDivision(
+  rows: readonly Team[],
+  league: League,
+  division: Division | readonly Division[],
+): Team[] {
   const asked: readonly string[] = typeof division === "string" ? [division] : division;
   if (!Array.isArray(asked) || !asked.length || !asked.every((d) => DIVISIONS.includes(d)))
     throw new InputError(
