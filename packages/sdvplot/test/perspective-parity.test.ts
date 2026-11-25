@@ -58,7 +58,7 @@ afterEach(() => setWarningHandler(null));
 describe("perspectiveConfig equals Python's perspective_sdv_config", () => {
   test("the fixture is the recorded one, from sdvplot's perspective.py of 519695e2 on perspective-python 5.5.1", () => {
     expect(createHash("sha256").update(readFileSync(FILE)).digest("hex")).toBe(
-      "92e9a103de65686084d8982d9e7d54805b9c0b072284d8f6252e30e0e08e08fe",
+      "f888bfe5c675b577850b12653e730593a784f88ff4d701f61ef3b3c565243e8e",
     );
     expect(oracle.meta).toMatchObject({
       perspective_py_commit: "519695e2ee4b968b76bd7f2e167116e8ab81ec8a",
@@ -113,15 +113,15 @@ describe("perspectiveConfig equals Python's perspective_sdv_config", () => {
 describe("perspectiveLogoColumn equals Python's perspective_logo_column", () => {
   test("the logo columns cover string and numeric teams, unresolved and null ones, a variant, a name and seasons", () => {
     expect(oracle.meta).toMatchObject({
-      manifest_etag: '"7f2aa39f8df02fdbcb98e91f9979d416"',
-      manifest_last_modified: "Mon, 09 Nov 2026 05:29:06 GMT",
-      manifest_sha256: "b1ff1a376641bd168718977ded881e492d27ac2e76e956a33ab59d1c21007442",
+      manifest_etag: '"ff1fb76e5cdb83ccf156673b1c84e0a2"',
+      manifest_last_modified: "Wed, 25 Nov 2026 12:04:44 GMT",
+      manifest_sha256: "c8b28283f63eeefec4b82d6553dd701238ca90db03228fc1f13b8517f4bd2ad1",
     });
     // both snapshots pinned: a rebuilt index can move a URL (a rebrand) without any port change, so re-run the oracle
     expect(
       INDEX_VERSION,
       "the bundled index changed: re-run tools/oracle/perspective.py, then update this pin",
-    ).toBe("e04c50e5682e");
+    ).toBe("4ce85fb64837");
     const cases = oracle.logo_columns;
     const has = (f: (c: LogoCase) => boolean) => cases.some(f);
     expect(has((c) => typeof c.rows[0]?.[c.team_col] === "number")).toBe(true);
