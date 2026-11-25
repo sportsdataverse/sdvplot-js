@@ -4,6 +4,22 @@
 
 ```ts
 
+// @public
+export function addAthleteId<R extends Record<string, unknown>>(rows: readonly R[], nameKey: keyof R & string, opts?: AddAthleteIdOptions): Promise<(R & {
+    athlete_id: string | undefined;
+    headshot_url?: string | undefined;
+})[]>;
+
+// @public
+export interface AddAthleteIdOptions {
+    fetch?: typeof fetch;
+    headshotUrls?: boolean;
+    league?: "cfb";
+    seasonKey?: string;
+    teamKey?: string;
+    today?: Date;
+}
+
 // @public (undocumented)
 export interface Alias {
     // (undocumented)
@@ -18,14 +34,33 @@ export interface Alias {
     value: string;
 }
 
+// @public
+export function aliases(league?: League): Promise<readonly LeagueAlias[]>;
+
 // @public (undocumented)
 export function checkAlpha(alpha: unknown): number;
 
 // @public (undocumented)
 export function checkHeight(height: unknown): number;
 
+// @public
+export type CleanColumn = "location" | "short_name" | "name" | "abbr" | "team_id";
+
+// @public
+export function cleanNames<T extends Value | readonly Value[]>(values: T, league: League, opts?: CleanNamesOptions): Promise<T extends readonly Value[] ? (string | undefined)[] : string | undefined>;
+
+// @public
+export interface CleanNamesOptions extends ResolveOptions {
+    column?: CleanColumn;
+    keepNonMatches?: boolean;
+}
+
+// @public
+export function cleanNamesSync<T extends Value | readonly Value[]>(values: T, league: League, opts?: CleanNamesOptions): T extends readonly Value[] ? (string | undefined)[] : string | undefined;
+
 // @public (undocumented)
 export interface ColorOptions extends ResolveOptions {
+    altColors?: Value | readonly Value[];
     // (undocumented)
     which?: Which;
 }
@@ -47,6 +82,9 @@ export interface Cursor {
     readonly field: string;
     readonly value: number;
 }
+
+// @public
+export type Division = "FBS" | "FCS" | "DI" | "DII" | "DIII" | "P4" | "P5" | "G5" | "Conference";
 
 // @public (undocumented)
 export class DownloadError extends OfflineError {
@@ -113,10 +151,18 @@ export class InputError extends SdvplotError {
 export type Kind = "logo" | "wordmark" | "headshot";
 
 // @public
+export function latestRosterSeason(today?: Date): number;
+
+// @public
 export const latestSeason: (league: League) => number | null;
 
 // @public (undocumented)
 export type League = (typeof LEAGUES)[number];
+
+// @public
+export type LeagueAlias = {
+    league: League;
+} & Alias;
 
 // @public (undocumented)
 export interface LeagueData {
@@ -356,6 +402,9 @@ export interface Rankable {
 // @public (undocumented)
 export function resetManifestCache(): void;
 
+// @public
+export function resetRosterCache(): void;
+
 // @public (undocumented)
 export function resetWarnings(): void;
 
@@ -377,6 +426,9 @@ export interface ResolveOptions {
 
 // @public (undocumented)
 export function resolveSync<T extends Value | readonly Value[]>(values: T, league: League, opts?: ResolveOptions): Resolved<T>;
+
+// @public
+export const ROSTER_URL: (season: number) => string;
 
 // @public
 export type RowFilter<Row> = (row: Row) => boolean;
@@ -489,6 +541,18 @@ export function teamColors<T extends Value | readonly Value[]>(league: League, t
 export function teamColorsSync<T extends Value | readonly Value[]>(league: League, teams: T, opts?: ColorOptions): ColorResult<T>;
 
 // @public
+export interface TeamFactor {
+    levels: string[];
+    values: (string | undefined)[];
+}
+
+// @public
+export function teamFactor(teams: readonly Value[], league: League, opts?: ResolveOptions): Promise<TeamFactor>;
+
+// @public
+export function teamFactorSync(teams: readonly Value[], league: League, opts?: ResolveOptions): TeamFactor;
+
+// @public
 export type TeamId = string & {
     readonly [brand]: "TeamId";
 };
@@ -498,6 +562,7 @@ export function teams(league?: League, opts?: TeamsOptions): Promise<readonly Te
 
 // @public
 export interface TeamsOptions {
+    division?: Division | readonly Division[];
     includeConferences?: boolean;
 }
 
