@@ -1,5 +1,0 @@
----
-"@sportsdataverse/sdvplot": patch
----
-
-The bundled team index follows sdvplot's `abd1a34c1550` (was `e04c50e5682e`). It covers 70 leagues (was 49): 21 new international basketball and European hockey leagues (`"euroleague"`, `"acb"`, `"feb"`, `"bbl"`, `"dbbl"`, `"bnxt"`, `"aba"`, `"ibba"`, `"kzs"`, `"lkl"`, `"dbl"`, `"vtb"`, `"bleague"`, `"kbl"`, `"wjbl"`, `"nbl_au"`, `"wnbl"`, `"shl"`, `"ha"`, `"elh"`, `"magnus"`) add 848 teams with their logos and logo colours, 7,457 teams in all (was 6,609). It also takes sdv-reference-data's 2026-11-25 `{league}_team_aliases`, which add 238 Fox, Yahoo and Torvik team ids for college football (now back to 2004) and for men's and women's college basketball, most of them Yahoo's, plus season windows that split many existing ids into one alias per window, and KenPom's 2027 names `"LSU New Orleans"` (New Orleans) and `"West Florida"`: 76,325 aliases in all (was 71,715). Current NBA, WNBA, NFL, MLB and college basketball marks are dated from Sports Reference's logo history. The NFL gsis-to-ESPN map follows nflverse's current players table.
