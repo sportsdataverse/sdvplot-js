@@ -10214,24 +10214,18 @@
 {
 "league": "cfb",
 "value": "60",
-"season": 2006,
+"season": 2012,
 "id_system": "auto"
 },
 {
 "league": "cfb",
-"value": "60",
-"season": 2011,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "518",
+"value": "519",
 "season": null,
 "id_system": "auto"
 },
 {
 "league": "cfb",
-"value": "518",
+"value": "519",
 "season": null,
 "id_system": "fox"
 },
@@ -10250,7 +10244,7 @@
 {
 "league": "cfb",
 "value": "13",
-"season": 2005,
+"season": 2012,
 "id_system": "auto"
 },
 {
@@ -10327,32 +10321,50 @@
 },
 {
 "league": "cfb",
-"value": "283",
+"value": "284",
 "season": null,
 "id_system": "auto"
 },
 {
 "league": "cfb",
-"value": "283",
+"value": "284",
+"season": null,
+"id_system": "fox"
+},
+{
+"league": "cfb",
+"value": "284",
+"season": 2018,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "284",
+"season": 2021,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "130",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "130",
 "season": null,
 "id_system": "fox"
 },
 {
 "league": "cfb",
 "value": "130",
-"season": null,
+"season": 2006,
 "id_system": "auto"
 },
 {
 "league": "cfb",
 "value": "130",
-"season": null,
-"id_system": "fox"
-},
-{
-"league": "cfb",
-"value": "130",
-"season": 2012,
+"season": 2011,
 "id_system": "auto"
 },
 {
@@ -10412,7 +10424,7 @@
 {
 "league": "cfb",
 "value": "21",
-"season": 2005,
+"season": 2012,
 "id_system": "auto"
 },
 {
@@ -10435,68 +10447,56 @@
 },
 {
 "league": "cfb",
-"value": "226",
+"value": "225",
 "season": null,
 "id_system": "auto"
 },
 {
 "league": "cfb",
-"value": "226",
-"season": null,
-"id_system": "fox"
-},
-{
-"league": "cfb",
-"value": "226",
-"season": 2006,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "226",
-"season": 2011,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "1",
-"season": null,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "1",
+"value": "225",
 "season": null,
 "id_system": "fox"
 },
 {
 "league": "cfb",
-"value": "1",
+"value": "225",
 "season": 2005,
 "id_system": "auto"
 },
 {
 "league": "cfb",
-"value": "151",
+"value": "13",
 "season": null,
 "id_system": "auto"
 },
 {
 "league": "cfb",
-"value": "151",
+"value": "13",
 "season": null,
 "id_system": "fox"
 },
 {
 "league": "cfb",
-"value": "151",
-"season": 2006,
+"value": "13",
+"season": 2005,
 "id_system": "auto"
 },
 {
 "league": "cfb",
-"value": "151",
-"season": 2011,
+"value": "150",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "150",
+"season": null,
+"id_system": "fox"
+},
+{
+"league": "cfb",
+"value": "150",
+"season": 2005,
 "id_system": "auto"
 },
 {
@@ -10532,13 +10532,7 @@
 {
 "league": "cfb",
 "value": "259",
-"season": 2012,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "259",
-"season": 2020,
+"season": 2021,
 "id_system": "auto"
 },
 {
@@ -10574,7 +10568,7 @@
 {
 "league": "cfb",
 "value": "40",
-"season": 2012,
+"season": 2005,
 "id_system": "auto"
 },
 {
@@ -10628,173 +10622,167 @@
 {
 "league": "cfb",
 "value": "153",
-"season": 2005,
+"season": 2012,
 "id_system": "auto"
 },
 {
 "league": "cfb",
-"value": "233",
+"value": "232",
 "season": null,
 "id_system": "auto"
 },
 {
 "league": "cfb",
-"value": "233",
+"value": "232",
 "season": null,
 "id_system": "fox"
 },
 {
 "league": "cfb",
-"value": "233",
+"value": "232",
+"season": 2005,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "183",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "183",
+"season": null,
+"id_system": "fox"
+},
+{
+"league": "cfb",
+"value": "183",
+"season": 2005,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "34",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "34",
+"season": null,
+"id_system": "fox"
+},
+{
+"league": "cfb",
+"value": "34",
+"season": 2012,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "164",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "164",
+"season": null,
+"id_system": "fox"
+},
+{
+"league": "cfb",
+"value": "164",
+"season": 2012,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "94",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "94",
+"season": null,
+"id_system": "fox"
+},
+{
+"league": "cfb",
+"value": "94",
+"season": 2012,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "352",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "352",
+"season": null,
+"id_system": "fox"
+},
+{
+"league": "cfb",
+"value": "50",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "50",
+"season": null,
+"id_system": "fox"
+},
+{
+"league": "cfb",
+"value": "50",
+"season": 2005,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "336",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "336",
+"season": null,
+"id_system": "fox"
+},
+{
+"league": "cfb",
+"value": "42",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "42",
+"season": null,
+"id_system": "fox"
+},
+{
+"league": "cfb",
+"value": "42",
 "season": 2006,
 "id_system": "auto"
 },
 {
 "league": "cfb",
-"value": "233",
+"value": "42",
 "season": 2011,
 "id_system": "auto"
 },
 {
 "league": "cfb",
-"value": "183",
-"season": null,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "183",
-"season": null,
-"id_system": "fox"
-},
-{
-"league": "cfb",
-"value": "183",
-"season": 2005,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "34",
-"season": null,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "34",
-"season": null,
-"id_system": "fox"
-},
-{
-"league": "cfb",
-"value": "34",
-"season": 2006,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "34",
-"season": 2011,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "164",
-"season": null,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "164",
-"season": null,
-"id_system": "fox"
-},
-{
-"league": "cfb",
-"value": "164",
-"season": 2012,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "94",
-"season": null,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "94",
-"season": null,
-"id_system": "fox"
-},
-{
-"league": "cfb",
-"value": "94",
-"season": 2012,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "35",
-"season": null,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "35",
-"season": null,
-"id_system": "fox"
-},
-{
-"league": "cfb",
-"value": "35",
-"season": 2005,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "50",
-"season": null,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "50",
-"season": null,
-"id_system": "fox"
-},
-{
-"league": "cfb",
-"value": "50",
-"season": 2005,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "335",
-"season": null,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "335",
-"season": null,
-"id_system": "fox"
-},
-{
-"league": "cfb",
-"value": "416",
-"season": null,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "416",
-"season": null,
-"id_system": "fox"
-},
-{
-"league": "cfb",
 "value": "282",
 "season": null,
 "id_system": "auto"
@@ -10808,13 +10796,7 @@
 {
 "league": "cfb",
 "value": "282",
-"season": 2012,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "282",
-"season": 2020,
+"season": 2021,
 "id_system": "auto"
 },
 {
@@ -10832,7 +10814,7 @@
 {
 "league": "cfb",
 "value": "38",
-"season": 2012,
+"season": 2005,
 "id_system": "auto"
 },
 {
@@ -10868,7 +10850,7 @@
 {
 "league": "cfb",
 "value": "209",
-"season": 2005,
+"season": 2012,
 "id_system": "auto"
 },
 {
@@ -10915,32 +10897,50 @@
 },
 {
 "league": "cfb",
-"value": "776",
+"value": "78",
 "season": null,
 "id_system": "auto"
 },
 {
 "league": "cfb",
-"value": "776",
+"value": "78",
 "season": null,
 "id_system": "fox"
 },
 {
 "league": "cfb",
-"value": "468",
+"value": "78",
+"season": 2006,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "78",
+"season": 2011,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "469",
 "season": null,
 "id_system": "auto"
 },
 {
 "league": "cfb",
-"value": "468",
+"value": "469",
 "season": null,
 "id_system": "fox"
 },
 {
 "league": "cfb",
-"value": "468",
-"season": 2005,
+"value": "469",
+"season": 2006,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "469",
+"season": 2011,
 "id_system": "auto"
 },
 {
@@ -13838,12 +13838,54 @@
 {
 "league": "cfb",
 "value": "ncaaf.t.50",
+"season": 2012,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.368",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.368",
+"season": null,
+"id_system": "yahoo"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.368",
+"season": 2018,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.368",
+"season": 2021,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.134",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.134",
+"season": null,
+"id_system": "yahoo"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.134",
 "season": 2006,
 "id_system": "auto"
 },
 {
 "league": "cfb",
-"value": "ncaaf.t.50",
+"value": "ncaaf.t.134",
 "season": 2011,
 "id_system": "auto"
 },
@@ -13863,6 +13905,84 @@
 "league": "cfb",
 "value": "ncaaf.t.364",
 "season": 2016,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.169",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.169",
+"season": null,
+"id_system": "yahoo"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.169",
+"season": 2015,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.284",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.284",
+"season": null,
+"id_system": "yahoo"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.284",
+"season": 2016,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.94",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.94",
+"season": null,
+"id_system": "yahoo"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.94",
+"season": 2012,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.2630",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.2630",
+"season": null,
+"id_system": "yahoo"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.2630",
+"season": 2018,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.2630",
+"season": 2021,
 "id_system": "auto"
 },
 {
@@ -13891,186 +14011,66 @@
 },
 {
 "league": "cfb",
-"value": "ncaaf.t.364",
+"value": "ncaaf.t.150",
 "season": null,
 "id_system": "auto"
 },
 {
 "league": "cfb",
-"value": "ncaaf.t.364",
+"value": "ncaaf.t.150",
 "season": null,
 "id_system": "yahoo"
 },
 {
 "league": "cfb",
-"value": "ncaaf.t.364",
+"value": "ncaaf.t.150",
+"season": 2012,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.67",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.67",
+"season": null,
+"id_system": "yahoo"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.67",
+"season": 2006,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.67",
+"season": 2011,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.2295",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.2295",
+"season": null,
+"id_system": "yahoo"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.2295",
 "season": 2026,
 "id_system": "auto"
 },
 {
 "league": "cfb",
-"value": "ncaaf.t.169",
-"season": null,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.169",
-"season": null,
-"id_system": "yahoo"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.169",
-"season": 2005,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.284",
-"season": null,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.284",
-"season": null,
-"id_system": "yahoo"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.284",
-"season": 2018,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.284",
-"season": 2021,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.94",
-"season": null,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.94",
-"season": null,
-"id_system": "yahoo"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.94",
-"season": 2012,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.263",
-"season": null,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.263",
-"season": null,
-"id_system": "yahoo"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.263",
-"season": 2012,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.1",
-"season": null,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.1",
-"season": null,
-"id_system": "yahoo"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.1",
-"season": 2005,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.150",
-"season": null,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.150",
-"season": null,
-"id_system": "yahoo"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.150",
-"season": 2012,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.67",
-"season": null,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.67",
-"season": null,
-"id_system": "yahoo"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.67",
-"season": 2006,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.67",
-"season": 2011,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.2299",
-"season": null,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.2299",
-"season": null,
-"id_system": "yahoo"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.2299",
-"season": 2018,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.2299",
-"season": 2021,
-"id_system": "auto"
-},
-{
-"league": "cfb",
 "value": "ncaaf.t.128",
 "season": null,
 "id_system": "auto"
@@ -14102,469 +14102,457 @@
 {
 "league": "cfb",
 "value": "ncaaf.t.2357",
-"season": 2011,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.133",
-"season": null,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.133",
-"season": null,
-"id_system": "yahoo"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.133",
-"season": 2018,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.133",
-"season": 2021,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.161",
-"season": null,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.161",
-"season": null,
-"id_system": "yahoo"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.161",
 "season": 2012,
 "id_system": "auto"
 },
 {
 "league": "cfb",
-"value": "ncaaf.t.273",
+"value": "ncaaf.t.133",
 "season": null,
 "id_system": "auto"
 },
 {
 "league": "cfb",
-"value": "ncaaf.t.273",
-"season": null,
-"id_system": "yahoo"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.273",
-"season": 2006,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.273",
-"season": 2011,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.2539",
-"season": null,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.2539",
+"value": "ncaaf.t.133",
 "season": null,
 "id_system": "yahoo"
 },
 {
 "league": "cfb",
-"value": "ncaaf.t.2539",
-"season": 2011,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.82",
-"season": null,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.82",
-"season": null,
-"id_system": "yahoo"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.82",
-"season": 2012,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.311",
-"season": null,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.311",
-"season": null,
-"id_system": "yahoo"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.311",
-"season": 2012,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.2002",
-"season": null,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.2002",
-"season": null,
-"id_system": "yahoo"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.2002",
-"season": 2018,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.2002",
-"season": 2020,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.468",
-"season": null,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.468",
-"season": null,
-"id_system": "yahoo"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.468",
+"value": "ncaaf.t.133",
 "season": 2015,
 "id_system": "auto"
 },
 {
 "league": "cfb",
-"value": "ncaaf.t.468",
+"value": "ncaaf.t.133",
 "season": 2016,
 "id_system": "auto"
 },
 {
 "league": "cfb",
-"value": "ncaaf.t.164",
+"value": "ncaaf.t.161",
 "season": null,
 "id_system": "auto"
 },
 {
 "league": "cfb",
-"value": "ncaaf.t.164",
+"value": "ncaaf.t.161",
 "season": null,
 "id_system": "yahoo"
 },
 {
 "league": "cfb",
-"value": "ncaaf.t.164",
+"value": "ncaaf.t.161",
 "season": 2006,
 "id_system": "auto"
 },
 {
 "league": "cfb",
-"value": "ncaaf.t.164",
+"value": "ncaaf.t.161",
 "season": 2011,
 "id_system": "auto"
 },
 {
 "league": "cfb",
-"value": "ncaaf.t.2377",
+"value": "ncaaf.t.273",
 "season": null,
 "id_system": "auto"
 },
 {
 "league": "cfb",
-"value": "ncaaf.t.2377",
-"season": null,
-"id_system": "yahoo"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.2377",
-"season": 2018,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.2377",
-"season": 2021,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.193",
-"season": null,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.193",
+"value": "ncaaf.t.273",
 "season": null,
 "id_system": "yahoo"
 },
 {
 "league": "cfb",
-"value": "ncaaf.t.193",
-"season": 2006,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.193",
-"season": 2011,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.291",
-"season": null,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.291",
-"season": null,
-"id_system": "yahoo"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.291",
-"season": 2026,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.175",
-"season": null,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.175",
-"season": null,
-"id_system": "yahoo"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.175",
-"season": 2006,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.175",
-"season": 2011,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.92",
-"season": null,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.92",
-"season": null,
-"id_system": "yahoo"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.92",
+"value": "ncaaf.t.273",
 "season": 2012,
 "id_system": "auto"
 },
 {
 "league": "cfb",
-"value": "ncaaf.t.296",
+"value": "ncaaf.t.273",
+"season": 2014,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.254",
 "season": null,
 "id_system": "auto"
 },
 {
 "league": "cfb",
-"value": "ncaaf.t.296",
+"value": "ncaaf.t.254",
 "season": null,
 "id_system": "yahoo"
 },
 {
 "league": "cfb",
-"value": "ncaaf.t.296",
+"value": "ncaaf.t.254",
+"season": 2015,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.254",
 "season": 2016,
 "id_system": "auto"
 },
 {
 "league": "cfb",
-"value": "ncaaf.t.36",
+"value": "ncaaf.t.82",
 "season": null,
 "id_system": "auto"
 },
 {
 "league": "cfb",
-"value": "ncaaf.t.36",
-"season": null,
-"id_system": "yahoo"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.36",
-"season": 2006,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.36",
-"season": 2011,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.288",
-"season": null,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.288",
+"value": "ncaaf.t.82",
 "season": null,
 "id_system": "yahoo"
 },
 {
 "league": "cfb",
-"value": "ncaaf.t.288",
-"season": 2016,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.322",
-"season": null,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.322",
-"season": null,
-"id_system": "yahoo"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.322",
-"season": 2018,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.322",
-"season": 2021,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.2616",
-"season": null,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.2616",
-"season": null,
-"id_system": "yahoo"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.2616",
-"season": 2016,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.30",
-"season": null,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.30",
-"season": null,
-"id_system": "yahoo"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.30",
+"value": "ncaaf.t.82",
 "season": 2012,
 "id_system": "auto"
 },
 {
 "league": "cfb",
-"value": "ncaaf.t.80",
+"value": "ncaaf.t.311",
 "season": null,
 "id_system": "auto"
 },
 {
 "league": "cfb",
-"value": "ncaaf.t.80",
+"value": "ncaaf.t.311",
 "season": null,
 "id_system": "yahoo"
 },
 {
 "league": "cfb",
-"value": "ncaaf.t.80",
+"value": "ncaaf.t.311",
 "season": 2005,
 "id_system": "auto"
 },
 {
 "league": "cfb",
-"value": "ncaaf.t.229",
+"value": "ncaaf.t.2002",
 "season": null,
 "id_system": "auto"
 },
 {
 "league": "cfb",
-"value": "ncaaf.t.229",
+"value": "ncaaf.t.2002",
 "season": null,
 "id_system": "yahoo"
 },
 {
 "league": "cfb",
-"value": "ncaaf.t.229",
+"value": "ncaaf.t.2002",
+"season": 2015,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.2002",
+"season": 2016,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.468",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.468",
+"season": null,
+"id_system": "yahoo"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.468",
+"season": 2018,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.468",
+"season": 2020,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.163",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.163",
+"season": null,
+"id_system": "yahoo"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.163",
+"season": 2005,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.2375",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.2375",
+"season": null,
+"id_system": "yahoo"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.2375",
+"season": 2026,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.1920",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.1920",
+"season": null,
+"id_system": "yahoo"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.1920",
+"season": 2021,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.291",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.291",
+"season": null,
+"id_system": "yahoo"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.291",
+"season": 2016,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.174",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.174",
+"season": null,
+"id_system": "yahoo"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.174",
+"season": 2005,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.92",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.92",
+"season": null,
+"id_system": "yahoo"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.92",
+"season": 2012,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.297",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.297",
+"season": null,
+"id_system": "yahoo"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.297",
+"season": 2018,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.297",
+"season": 2021,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.36",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.36",
+"season": null,
+"id_system": "yahoo"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.36",
+"season": 2012,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.289",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.289",
+"season": null,
+"id_system": "yahoo"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.289",
+"season": 2026,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.322",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.322",
+"season": null,
+"id_system": "yahoo"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.322",
+"season": 2024,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.322",
+"season": 2025,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.2618",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.2618",
+"season": null,
+"id_system": "yahoo"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.2618",
+"season": 2026,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.30",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.30",
+"season": null,
+"id_system": "yahoo"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.30",
+"season": 2005,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.81",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.81",
+"season": null,
+"id_system": "yahoo"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.81",
 "season": 2006,
 "id_system": "auto"
 },
 {
 "league": "cfb",
-"value": "ncaaf.t.229",
+"value": "ncaaf.t.81",
 "season": 2011,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.228",
+"season": null,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.228",
+"season": null,
+"id_system": "yahoo"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.228",
+"season": 2026,
 "id_system": "auto"
 },
 {
@@ -14587,20 +14575,26 @@
 },
 {
 "league": "cfb",
-"value": "ncaaf.t.361",
+"value": "ncaaf.t.363",
 "season": null,
 "id_system": "auto"
 },
 {
 "league": "cfb",
-"value": "ncaaf.t.361",
+"value": "ncaaf.t.363",
 "season": null,
 "id_system": "yahoo"
 },
 {
 "league": "cfb",
-"value": "ncaaf.t.361",
-"season": 2016,
+"value": "ncaaf.t.363",
+"season": 2006,
+"id_system": "auto"
+},
+{
+"league": "cfb",
+"value": "ncaaf.t.363",
+"season": 2011,
 "id_system": "auto"
 },
 {
@@ -14636,13 +14630,7 @@
 {
 "league": "cfb",
 "value": "ncaaf.t.345",
-"season": 2018,
-"id_system": "auto"
-},
-{
-"league": "cfb",
-"value": "ncaaf.t.345",
-"season": 2021,
+"season": 2026,
 "id_system": "auto"
 },
 {
@@ -33277,25 +33265,25 @@
 },
 {
 "league": "mbb",
-"value": "Cal St. Fullerton",
+"value": "Cal St. Northridge",
 "season": null,
 "id_system": "auto"
 },
 {
 "league": "mbb",
-"value": "Cal St. Fullerton",
+"value": "Cal St. Northridge",
 "season": null,
 "id_system": "kenpom"
 },
 {
 "league": "mbb",
-"value": "Air Force",
+"value": "South Florida",
 "season": null,
 "id_system": "auto"
 },
 {
 "league": "mbb",
-"value": "Air Force",
+"value": "South Florida",
 "season": null,
 "id_system": "kenpom"
 },
@@ -33313,13 +33301,13 @@
 },
 {
 "league": "mbb",
-"value": "Northern Iowa",
+"value": "Northern Kentucky",
 "season": null,
 "id_system": "auto"
 },
 {
 "league": "mbb",
-"value": "Northern Iowa",
+"value": "Northern Kentucky",
 "season": null,
 "id_system": "kenpom"
 },
@@ -33337,25 +33325,25 @@
 },
 {
 "league": "mbb",
-"value": "Nebraska",
+"value": "Nebraska Omaha",
 "season": null,
 "id_system": "auto"
 },
 {
 "league": "mbb",
-"value": "Nebraska",
+"value": "Nebraska Omaha",
 "season": null,
 "id_system": "kenpom"
 },
 {
 "league": "mbb",
-"value": "Canisius",
+"value": "Central Arkansas",
 "season": null,
 "id_system": "auto"
 },
 {
 "league": "mbb",
-"value": "Canisius",
+"value": "Central Arkansas",
 "season": null,
 "id_system": "kenpom"
 },
@@ -33373,25 +33361,25 @@
 },
 {
 "league": "mbb",
-"value": "Utah Valley",
+"value": "Utah Valley St.",
 "season": null,
 "id_system": "auto"
 },
 {
 "league": "mbb",
-"value": "Utah Valley",
+"value": "Utah Valley St.",
 "season": null,
 "id_system": "kenpom"
 },
 {
 "league": "mbb",
-"value": "Kansas",
+"value": "Kansas City",
 "season": null,
 "id_system": "auto"
 },
 {
 "league": "mbb",
-"value": "Kansas",
+"value": "Kansas City",
 "season": null,
 "id_system": "kenpom"
 },
@@ -33409,13 +33397,13 @@
 },
 {
 "league": "mbb",
-"value": "Louisiana Lafayette",
+"value": "Louisiana",
 "season": null,
 "id_system": "auto"
 },
 {
 "league": "mbb",
-"value": "Louisiana Lafayette",
+"value": "Louisiana",
 "season": null,
 "id_system": "kenpom"
 },
@@ -33433,25 +33421,25 @@
 },
 {
 "league": "mbb",
-"value": "Detroit",
+"value": "Detroit Mercy",
 "season": null,
 "id_system": "auto"
 },
 {
 "league": "mbb",
-"value": "Detroit",
+"value": "Detroit Mercy",
 "season": null,
 "id_system": "kenpom"
 },
 {
 "league": "mbb",
-"value": "North Dakota",
+"value": "North Dakota St.",
 "season": null,
 "id_system": "auto"
 },
 {
 "league": "mbb",
-"value": "North Dakota",
+"value": "North Dakota St.",
 "season": null,
 "id_system": "kenpom"
 },
@@ -33481,37 +33469,37 @@
 },
 {
 "league": "mbb",
-"value": "Purdue",
+"value": "Purdue Fort Wayne",
 "season": null,
 "id_system": "auto"
 },
 {
 "league": "mbb",
-"value": "Purdue",
+"value": "Purdue Fort Wayne",
 "season": null,
 "id_system": "kenpom"
 },
 {
 "league": "mbb",
-"value": "Hofstra",
+"value": "Holy Cross",
 "season": null,
 "id_system": "auto"
 },
 {
 "league": "mbb",
-"value": "Hofstra",
+"value": "Holy Cross",
 "season": null,
 "id_system": "kenpom"
 },
 {
 "league": "mbb",
-"value": "TCU",
+"value": "Tarleton St.",
 "season": null,
 "id_system": "auto"
 },
 {
 "league": "mbb",
-"value": "TCU",
+"value": "Tarleton St.",
 "season": null,
 "id_system": "kenpom"
 },
@@ -33529,13 +33517,13 @@
 },
 {
 "league": "mbb",
-"value": "Maryland Eastern Shore",
+"value": "Maryland",
 "season": null,
 "id_system": "auto"
 },
 {
 "league": "mbb",
-"value": "Maryland Eastern Shore",
+"value": "Maryland",
 "season": null,
 "id_system": "kenpom"
 },
@@ -33589,25 +33577,25 @@
 },
 {
 "league": "mbb",
-"value": "Pepperdine",
+"value": "Pittsburgh",
 "season": null,
 "id_system": "auto"
 },
 {
 "league": "mbb",
-"value": "Pepperdine",
+"value": "Pittsburgh",
 "season": null,
 "id_system": "kenpom"
 },
 {
 "league": "mbb",
-"value": "South Florida",
+"value": "Alabama",
 "season": null,
 "id_system": "auto"
 },
 {
 "league": "mbb",
-"value": "South Florida",
+"value": "Alabama",
 "season": null,
 "id_system": "kenpom"
 },
@@ -33625,13 +33613,13 @@
 },
 {
 "league": "mbb",
-"value": "Richmond",
+"value": "Rider",
 "season": null,
 "id_system": "auto"
 },
 {
 "league": "mbb",
-"value": "Richmond",
+"value": "Rider",
 "season": null,
 "id_system": "kenpom"
 },
@@ -33667,61 +33655,61 @@
 },
 {
 "league": "mbb",
-"value": "Weber St.",
+"value": "West Florida",
 "season": null,
 "id_system": "auto"
 },
 {
 "league": "mbb",
-"value": "Weber St.",
+"value": "West Florida",
 "season": null,
 "id_system": "kenpom"
 },
 {
 "league": "mbb",
-"value": "La Salle",
+"value": "LSU New Orleans",
 "season": null,
 "id_system": "auto"
 },
 {
 "league": "mbb",
-"value": "La Salle",
+"value": "LSU New Orleans",
 "season": null,
 "id_system": "kenpom"
 },
 {
 "league": "mbb",
-"value": "Detroit Mercy",
+"value": "Arkansas St.",
 "season": null,
 "id_system": "auto"
 },
 {
 "league": "mbb",
-"value": "Detroit Mercy",
+"value": "Arkansas St.",
 "season": null,
 "id_system": "kenpom"
 },
 {
 "league": "mbb",
-"value": "Southeastern Louisiana",
+"value": "Southern",
 "season": null,
 "id_system": "auto"
 },
 {
 "league": "mbb",
-"value": "Southeastern Louisiana",
+"value": "Southern",
 "season": null,
 "id_system": "kenpom"
 },
 {
 "league": "mbb",
-"value": "UTSA",
+"value": "Utah",
 "season": null,
 "id_system": "auto"
 },
 {
 "league": "mbb",
-"value": "UTSA",
+"value": "Utah",
 "season": null,
 "id_system": "kenpom"
 },

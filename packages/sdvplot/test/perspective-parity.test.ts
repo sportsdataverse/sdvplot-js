@@ -58,7 +58,7 @@ afterEach(() => setWarningHandler(null));
 describe("perspectiveConfig equals Python's perspective_sdv_config", () => {
   test("the fixture is the recorded one, from sdvplot's perspective.py of 519695e2 on perspective-python 5.5.1", () => {
     expect(createHash("sha256").update(readFileSync(FILE)).digest("hex")).toBe(
-      "f888bfe5c675b577850b12653e730593a784f88ff4d701f61ef3b3c565243e8e",
+      "23d9bf9aab6fdbcbe4584603ea503aa683e56741c10b23b2df42bff3851ec1e6",
     );
     expect(oracle.meta).toMatchObject({
       perspective_py_commit: "519695e2ee4b968b76bd7f2e167116e8ab81ec8a",
@@ -121,7 +121,7 @@ describe("perspectiveLogoColumn equals Python's perspective_logo_column", () => 
     expect(
       INDEX_VERSION,
       "the bundled index changed: re-run tools/oracle/perspective.py, then update this pin",
-    ).toBe("4ce85fb64837");
+    ).toBe("abd1a34c1550");
     const cases = oracle.logo_columns;
     const has = (f: (c: LogoCase) => boolean) => cases.some(f);
     expect(has((c) => typeof c.rows[0]?.[c.team_col] === "number")).toBe(true);
